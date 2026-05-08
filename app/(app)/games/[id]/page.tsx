@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 const MAX_VISIBLE_PLAYERS = 8;
@@ -87,9 +87,6 @@ async function GameContent({ gameId }: { gameId: number }) {
   const year = game.initial_release_date
     ? new Date(game.initial_release_date).getFullYear()
     : null;
-  const rating = game.total_rating
-    ? Math.round(Number(game.total_rating))
-    : null;
   const imageUrl = game.art_url ?? game.cover_url;
 
   return (
@@ -125,12 +122,6 @@ async function GameContent({ gameId }: { gameId: number }) {
           <h1 className="text-3xl font-bold tracking-tight">{game.title}</h1>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             {year && <span>{year}</span>}
-            {rating !== null && (
-              <span className="flex items-center gap-1">
-                <Star className="size-3.5 fill-current" />
-                {rating}
-              </span>
-            )}
           </div>
           {game.description && (
             <p className="text-sm text-muted-foreground pt-1 leading-relaxed">

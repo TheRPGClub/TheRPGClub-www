@@ -50,8 +50,8 @@ async function fetchCurrentRound<T extends GotmEntry | NrGotmEntry>(
 
 const gridClass: Record<number, string> = {
   1: "",
-  2: "grid grid-cols-2 gap-4",
-  3: "grid grid-cols-3 gap-4",
+  2: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+  3: "grid grid-cols-1 sm:grid-cols-3 gap-4",
 };
 
 export default function DashboardPage() {
@@ -100,19 +100,23 @@ async function DashboardContent() {
 
       {nrGotm && nrGotm.picks.length > 0 && (
         <div className={gridClass[nrGotm.picks.length] ?? gridClass[3]}>
-          {nrGotm.picks.map((pick, i) => (
-            <GotmCard
-              key={pick.entry.gamedb_game_id ?? i}
-              label={`Non RPG GAME OF THE MONTH · ${nrGotm.month_year}`}
-              imageAlign="left"
-              href={
-                pick.entry.gamedb_game_id
-                  ? `/games/${pick.entry.gamedb_game_id}`
-                  : undefined
-              }
-              {...gotmCardProps(pick.game, pick.entry.game_title)}
-            />
-          ))}
+          {nrGotm.picks.map((pick, i) => {
+            const cardProps = gotmCardProps(pick.game, pick.entry.game_title);
+            return (
+              <GotmCard
+                key={pick.entry.gamedb_game_id ?? i}
+                label={`Non RPG GAME OF THE MONTH · ${nrGotm.month_year}`}
+                imageAlign="left"
+                href={
+                  pick.entry.gamedb_game_id
+                    ? `/games/${pick.entry.gamedb_game_id}`
+                    : undefined
+                }
+                {...cardProps}
+                description={nrGotm.picks.length > 1 ? null : cardProps.description}
+              />
+            );
+          })}
         </div>
       )}
 

@@ -13,7 +13,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star } from "lucide-react";
 
 const PAGE_SIZE = 24;
 const GAMES_REVALIDATE_SECONDS = 300;
@@ -148,8 +147,6 @@ function GameCard({ game }: { game: Game }) {
   const year = game.initial_release_date
     ? new Date(game.initial_release_date).getFullYear()
     : null;
-  const rating = game.total_rating ? Math.round(Number(game.total_rating)) : null;
-
   return (
     <Link href={`/games/${game.game_id}`} className="group block space-y-2">
       <div className="relative aspect-[3/4] overflow-hidden rounded-lg border bg-muted">
@@ -172,12 +169,6 @@ function GameCard({ game }: { game: Game }) {
         <p className="text-sm font-medium leading-tight line-clamp-2">{game.title}</p>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {year && <span>{year}</span>}
-          {rating !== null && (
-            <span className="flex items-center gap-0.5">
-              <Star className="size-3 fill-current" />
-              {rating}
-            </span>
-          )}
         </div>
       </div>
     </Link>

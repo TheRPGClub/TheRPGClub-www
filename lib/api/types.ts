@@ -74,7 +74,6 @@ export interface Game {
   description: string | null;
   igdb_id: number | null;
   slug: string | null;
-  total_rating: string | null;
   igdb_url: string | null;
   cover_url: string | null;
   art_url: string | null;
