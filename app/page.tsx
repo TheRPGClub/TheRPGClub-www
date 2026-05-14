@@ -1,4 +1,23 @@
-export default function Home() {
+import { redirect } from "next/navigation";
+
+type HomeProps = {
+  searchParams?: Promise<{
+    token?: string | string[];
+  }>;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+  const token = firstParam(params?.token);
+
+  if (token) {
+    redirect(`/auth/callback?token=${encodeURIComponent(token)}`);
+  }
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 p-16">
       <h1 className="text-4xl font-bold tracking-tight">The RPG Club</h1>

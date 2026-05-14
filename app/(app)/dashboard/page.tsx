@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Trophy, Gamepad2, type LucideIcon } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
   ApiCollection,
@@ -9,7 +10,7 @@ import type {
 import { GotmCard, gotmCardProps } from "@/components/gotm-card";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSession } from "@/lib/session";
+import { getSession, type SessionPrincipal } from "@/lib/session";
 
 type Pick<T extends GotmEntry | NrGotmEntry = GotmEntry | NrGotmEntry> = {
   entry: T;
@@ -20,10 +21,17 @@ const DASHBOARD_REVALIDATE_SECONDS = 300;
 
 async function fetchCurrentRound<T extends GotmEntry | NrGotmEntry>(
   endpoint: string,
-): Promise<{ month_year: string; picks: Pick<T>[] } | null> {
+): Promise<{
+  month_year: string;
+  round_number: number;
+  picks: Pick<T>[];
+} | null> {
   try {
     const res = await apiFetch(endpoint, {
-      next: { revalidate: DASHBOARD_REVALIDATE_SECONDS, tags: ["dashboard", "games"] },
+      next: {
+        revalidate: DASHBOARD_REVALIDATE_SECONDS,
+        tags: ["dashboard", "games"],
+      },
     });
     if (!res.ok) return null;
     const { data: entries }: ApiCollection<T> = await res.json();
@@ -41,6 +49,7 @@ async function fetchCurrentRound<T extends GotmEntry | NrGotmEntry>(
 
     return {
       month_year: entries[0].month_year,
+      round_number: currentRound,
       picks: picks.sort((a, b) => a.entry.game_index - b.entry.game_index),
     };
   } catch {
@@ -65,59 +74,103 @@ export default function DashboardPage() {
 async function DashboardContent() {
   const [gotm, nrGotm, session] = await Promise.all([
     fetchCurrentRound<GotmEntry>("/api/v1/gotm_entries?limit=10&include=game"),
-    fetchCurrentRound<NrGotmEntry>("/api/v1/nr_gotm_entries?limit=10&include=game"),
+    fetchCurrentRound<NrGotmEntry>(
+      "/api/v1/nr_gotm_entries?limit=10&include=game",
+    ),
     getSession(),
   ]);
 
-  if (!gotm || !gotm.picks.length) {
-    return (
-      <p className="text-muted-foreground">No current Game of the Month.</p>
-    );
-  }
-
   const canManageImages = session?.membership?.admin ?? false;
-  const uploadPicks = uniqueGamePicks([
-    ...gotm.picks,
-    ...(nrGotm?.picks ?? []),
-  ]);
+  const uploadPicks = gotm
+    ? uniqueGamePicks([...gotm.picks, ...(nrGotm?.picks ?? [])])
+    : [];
 
   return (
-    <div className="space-y-4">
-      <div className={gridClass[gotm.picks.length] ?? gridClass[3]}>
-        {gotm.picks.map((pick, i) => (
-          <GotmCard
-            key={pick.entry.gamedb_game_id ?? i}
-            label={`Game of the Month · ${gotm.month_year}`}
-            href={
-              pick.entry.gamedb_game_id
-                ? `/games/${pick.entry.gamedb_game_id}`
-                : undefined
-            }
-            {...gotmCardProps(pick.game, pick.entry.game_title)}
-          />
-        ))}
-      </div>
+    <div className="space-y-8">
+      {session && <DashboardWelcome principal={session.principal} />}
 
-      {nrGotm && nrGotm.picks.length > 0 && (
-        <div className={gridClass[nrGotm.picks.length] ?? gridClass[3]}>
-          {nrGotm.picks.map((pick, i) => {
-            const cardProps = gotmCardProps(pick.game, pick.entry.game_title);
-            return (
-              <GotmCard
-                key={pick.entry.gamedb_game_id ?? i}
-                label={`Non RPG GAME OF THE MONTH · ${nrGotm.month_year}`}
-                imageAlign="left"
-                href={
-                  pick.entry.gamedb_game_id
-                    ? `/games/${pick.entry.gamedb_game_id}`
-                    : undefined
-                }
-                {...cardProps}
-                description={nrGotm.picks.length > 1 ? null : cardProps.description}
+      {!gotm || !gotm.picks.length ? (
+        <p className="text-muted-foreground">No current Game of the Month.</p>
+      ) : (
+        <>
+          <section className="space-y-3">
+            <SectionHeader
+              title="Game of the Month"
+              round={gotm.round_number}
+              monthYear={gotm.month_year}
+              pickCount={gotm.picks.length}
+              accent="emerald"
+              Icon={Trophy}
+            />
+            <div className={gridClass[gotm.picks.length] ?? gridClass[3]}>
+              {gotm.picks.map((pick, i) => {
+                const isCompact = gotm.picks.length >= 3;
+                return (
+                  <GotmCard
+                    key={pick.entry.gamedb_game_id ?? i}
+                    label={isCompact ? "GOTM" : "Game of the Month"}
+                    round={gotm.round_number}
+                    monthYear={gotm.month_year}
+                    accent="emerald"
+                    compact={isCompact}
+                    showMeta={false}
+                    href={
+                      pick.entry.gamedb_game_id
+                        ? `/games/${pick.entry.gamedb_game_id}`
+                        : undefined
+                    }
+                    {...gotmCardProps(pick.game, pick.entry.game_title)}
+                  />
+                );
+              })}
+            </div>
+          </section>
+
+          {nrGotm && nrGotm.picks.length > 0 && (
+            <section className="space-y-3">
+              <SectionHeader
+                title="Non-RPG Game of the Month"
+                round={nrGotm.round_number}
+                monthYear={nrGotm.month_year}
+                pickCount={nrGotm.picks.length}
+                accent="purple"
+                Icon={Gamepad2}
               />
-            );
-          })}
-        </div>
+              <div className={gridClass[nrGotm.picks.length] ?? gridClass[3]}>
+                {nrGotm.picks.map((pick, i) => {
+                  const isCompact = nrGotm.picks.length >= 3;
+                  const cardProps = gotmCardProps(
+                    pick.game,
+                    pick.entry.game_title,
+                  );
+                  return (
+                    <GotmCard
+                      key={pick.entry.gamedb_game_id ?? i}
+                      label={
+                        isCompact ? "NR GOTM" : "Non RPG Game of the Month"
+                      }
+                      round={nrGotm.round_number}
+                      monthYear={nrGotm.month_year}
+                      accent="purple"
+                      compact={isCompact}
+                      showMeta={false}
+                      imageAlign="left"
+                      href={
+                        pick.entry.gamedb_game_id
+                          ? `/games/${pick.entry.gamedb_game_id}`
+                          : undefined
+                      }
+                      {...cardProps}
+                      description={
+                        nrGotm.picks.length > 1 ? null : cardProps.description
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {canManageImages && uploadPicks.length > 0 && (
@@ -149,6 +202,74 @@ async function DashboardContent() {
   );
 }
 
+function DashboardWelcome({ principal }: { principal: SessionPrincipal }) {
+  const displayName = principal.global_name ?? principal.username;
+  return (
+    <div>
+      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        Welcome back,{" "}
+        <span className="bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+          {displayName}
+        </span>
+        <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]">.</span>
+      </h1>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        Here&apos;s what&apos;s happening at the club.
+      </p>
+    </div>
+  );
+}
+
+const sectionAccent = {
+  emerald: {
+    icon: "text-emerald-300 drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]",
+    gradient: "from-emerald-200 via-emerald-300 to-emerald-500",
+    underline: "from-emerald-500/60 via-emerald-500/20 to-transparent",
+  },
+  purple: {
+    icon: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]",
+    gradient: "from-purple-200 via-purple-300 to-purple-500",
+    underline: "from-purple-500/60 via-purple-500/20 to-transparent",
+  },
+} as const;
+
+function SectionHeader({
+  title,
+  round,
+  monthYear,
+  pickCount,
+  accent,
+  Icon,
+}: {
+  title: string;
+  round: number;
+  monthYear: string;
+  pickCount: number;
+  accent: keyof typeof sectionAccent;
+  Icon: LucideIcon;
+}) {
+  const style = sectionAccent[accent];
+  return (
+    <header className="space-y-2">
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+        <div className="flex items-center gap-3">
+          <Icon className={`h-6 w-6 ${style.icon}`} strokeWidth={1.75} />
+          <h2
+            className={`bg-linear-to-r ${style.gradient} bg-clip-text text-2xl font-bold tracking-tight text-transparent sm:text-3xl`}
+          >
+            {title}
+          </h2>
+        </div>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Round {round} · {monthYear}
+          {pickCount > 1 && ` · ${pickCount} winners`}
+        </p>
+      </div>
+      <div className={`h-px w-full bg-linear-to-r ${style.underline}`} />
+    </header>
+  );
+}
+
 function DashboardSkeleton() {
   return (
     <div className="space-y-4">
@@ -177,7 +298,9 @@ function DashboardCardSkeleton({
           left ? "left-0" : "right-0"
         }`}
       />
-      <div className={`relative max-w-[30%] space-y-3 p-6 ${left ? "ml-auto" : ""}`}>
+      <div
+        className={`relative max-w-[30%] space-y-3 p-6 ${left ? "ml-auto" : ""}`}
+      >
         <Skeleton className="h-3 w-28" />
         <Skeleton className="h-7 w-full" />
         <Skeleton className="h-7 w-5/6" />

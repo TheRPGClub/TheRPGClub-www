@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  console.log("[auth/callback] token present:", !!token, "length:", token?.length);
 
   if (!token) {
     return NextResponse.redirect(new URL("/?error=auth_failed", request.url));
@@ -16,6 +15,5 @@ export async function GET(request: NextRequest) {
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  console.log("[auth/callback] cookie set, redirecting to /profile");
   return response;
 }
