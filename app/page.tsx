@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 type HomeProps = {
   searchParams?: Promise<{
@@ -18,6 +19,8 @@ export default async function Home({ searchParams }: HomeProps) {
     redirect(`/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
+  const session = await getSession();
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 p-16">
       <h1 className="text-4xl font-bold tracking-tight">The RPG Club</h1>
@@ -31,12 +34,14 @@ export default async function Home({ searchParams }: HomeProps) {
         >
           Sign in with Discord
         </a>
-        <a
-          href="/profile"
-          className="rounded-full border border-zinc-300 dark:border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-        >
-          My Profile
-        </a>
+        {session && (
+          <a
+            href={`/members/${session.principal.discord_id}`}
+            className="rounded-full border border-zinc-300 dark:border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            My Profile
+          </a>
+        )}
       </div>
     </main>
   );

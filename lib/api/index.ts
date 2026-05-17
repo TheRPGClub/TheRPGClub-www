@@ -12,14 +12,15 @@ import type {
   Platform,
   PublicReminder,
   Region,
-  Release,
   RssFeed,
   Session,
+  SocialPlatform,
   StarboardEntry,
   Suggestion,
   Todo,
   TodoSummary,
   User,
+  UserSocial,
   VotingInfo,
 } from "./types";
 
@@ -54,9 +55,6 @@ export const games = {
 
   relations: (id: number) =>
     apiFetch<ApiSingle<GameRelations>>(`/api/v1/games/${id}/relations`),
-
-  releases: (id: number) =>
-    apiFetch<ApiSingle<Release[]>>(`/api/v1/games/${id}/releases`),
 };
 
 // ─── Platforms ───────────────────────────────────────────────────────────────
@@ -110,6 +108,50 @@ export const users = {
 
   profileImageUrl: (userId: string) =>
     `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}/api/v1/users/${userId}/profile-image`,
+};
+
+// ─── Social Platforms ────────────────────────────────────────────────────────
+
+export const socialPlatforms = {
+  list: () =>
+    apiFetch<ApiCollection<SocialPlatform>>("/api/v1/social_platforms"),
+
+  create: (data: { label: string }) =>
+    apiFetch<ApiSingle<SocialPlatform>>("/api/v1/social_platforms", {
+      method: "POST",
+      body: JSON.stringify({ data }),
+    }),
+};
+
+// ─── User Socials ────────────────────────────────────────────────────────────
+
+export const userSocials = {
+  listForUser: (userId: string) =>
+    apiFetch<ApiCollection<UserSocial>>(`/api/v1/users/${userId}/socials`),
+
+  create: (
+    userId: string,
+    data: { platform_id: number; display_text: string; url?: string | null },
+  ) =>
+    apiFetch<ApiSingle<UserSocial>>(`/api/v1/users/${userId}/socials`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+    }),
+
+  get: (id: number) =>
+    apiFetch<ApiSingle<UserSocial>>(`/api/v1/user_socials/${id}`),
+
+  update: (
+    id: number,
+    data: Partial<Pick<UserSocial, "platform_id" | "display_text" | "url">>,
+  ) =>
+    apiFetch<ApiSingle<UserSocial>>(`/api/v1/user_socials/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data }),
+    }),
+
+  destroy: (id: number) =>
+    apiFetch<void>(`/api/v1/user_socials/${id}`, { method: "DELETE" }),
 };
 
 // ─── Collections ─────────────────────────────────────────────────────────────

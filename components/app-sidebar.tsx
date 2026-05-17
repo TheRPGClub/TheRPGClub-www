@@ -16,36 +16,18 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { discordAvatarUrl, type SessionMembership, type SessionPrincipal } from "@/lib/auth-types";
-import { signOut } from "@/app/actions/auth";
 import {
-  Bell,
-  Gamepad2,
-  LayoutDashboard,
-  Library,
-  ListTodo,
-  LogOut,
-  MessageSquarePlus,
-  Rss,
-  Star,
-  Trophy,
-  Users,
-} from "lucide-react";
+  discordAvatarUrl,
+  type SessionMembership,
+  type SessionPrincipal,
+} from "@/lib/auth-types";
+import { signOut } from "@/app/actions/auth";
+import { LayoutDashboard, Library, LogOut, Users } from "lucide-react";
 
 const navMain = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/gotm", icon: Trophy, label: "Game of the Month" },
-  { href: "/nr-gotm", icon: Gamepad2, label: "NR Game of the Month" },
   { href: "/games", icon: Library, label: "Games" },
   { href: "/members", icon: Users, label: "Members" },
-  { href: "/starboard", icon: Star, label: "Starboard" },
-  { href: "/suggestions", icon: MessageSquarePlus, label: "Suggestions" },
-];
-
-const navAdmin = [
-  { href: "/admin/todos", icon: ListTodo, label: "Todos" },
-  { href: "/admin/reminders", icon: Bell, label: "Reminders" },
-  { href: "/admin/rss", icon: Rss, label: "RSS Feeds" },
 ];
 
 interface AppSidebarProps {
@@ -55,9 +37,13 @@ interface AppSidebarProps {
 
 export function AppSidebar({ principal, membership }: AppSidebarProps) {
   const pathname = usePathname();
-  const isAdmin = membership?.admin || membership?.moderator;
+  const isAdmin = membership?.admin || membership?.moderator || membership?.dev;
   const displayName = principal.global_name ?? principal.username;
-  const avatarUrl = discordAvatarUrl(principal.discord_id, principal.avatar, 64);
+  const avatarUrl = discordAvatarUrl(
+    principal.discord_id,
+    principal.avatar,
+    64,
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -94,30 +80,6 @@ export function AppSidebar({ principal, membership }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {navAdmin.map(({ href, icon: Icon, label }) => (
-                  <SidebarMenuItem key={href}>
-                    <SidebarMenuButton
-                      render={<Link href={href} />}
-                      isActive={
-                        pathname === href || pathname.startsWith(href + "/")
-                      }
-                      tooltip={label}
-                    >
-                      <Icon />
-                      <span>{label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       <SidebarFooter>
@@ -138,7 +100,10 @@ export function AppSidebar({ principal, membership }: AppSidebarProps) {
                   </span>
                 )}
               </div>
-              <form action={signOut} className="group-data-[collapsible=icon]:hidden">
+              <form
+                action={signOut}
+                className="group-data-[collapsible=icon]:hidden"
+              >
                 <button
                   type="submit"
                   title="Sign out"

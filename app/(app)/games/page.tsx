@@ -17,13 +17,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 const PAGE_SIZE = 24;
 const GAMES_REVALIDATE_SECONDS = 300;
 
+type WinnerFilter = "gotm" | "nr_gotm" | null;
+
+function parseWinner(value: string | undefined): WinnerFilter {
+  return value === "gotm" || value === "nr_gotm" ? value : null;
+}
+
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; winner?: string }>;
 }) {
-  const { q = "", page = "1" } = await searchParams;
+  const { q = "", page = "1", winner } = await searchParams;
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
+  const winnerFilter = parseWinner(winner);
 
   return (
     <div className="space-y-6">
@@ -32,17 +39,31 @@ export default async function GamesPage({
         <GamesSearchForm defaultQuery={q} />
       </div>
 
-      <Suspense fallback={<GamesGridSkeleton />}>
-        <GamesGrid q={q} currentPage={currentPage} />
+      <WinnerFilterPills current={winnerFilter} q={q} />
+
+      <Suspense
+        key={`${q}|${winnerFilter ?? ""}|${currentPage}`}
+        fallback={<GamesGridSkeleton />}
+      >
+        <GamesGrid q={q} currentPage={currentPage} winner={winnerFilter} />
       </Suspense>
     </div>
   );
 }
 
-async function GamesGrid({ q, currentPage }: { q: string; currentPage: number }) {
+async function GamesGrid({
+  q,
+  currentPage,
+  winner,
+}: {
+  q: string;
+  currentPage: number;
+  winner: WinnerFilter;
+}) {
   const offset = (currentPage - 1) * PAGE_SIZE;
   const qs = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
   if (q) qs.set("q", q);
+  if (winner) qs.set("winner", winner);
 
   let games: Game[] = [];
   let totalPages = 1;
@@ -65,6 +86,7 @@ async function GamesGrid({ q, currentPage }: { q: string; currentPage: number })
   const pageHref = (p: number) => {
     const ps = new URLSearchParams();
     if (q) ps.set("q", q);
+    if (winner) ps.set("winner", winner);
     if (p > 1) ps.set("page", String(p));
     return `/games${ps.size ? `?${ps}` : ""}`;
   };
@@ -147,6 +169,11 @@ function GameCard({ game }: { game: Game }) {
   const year = game.initial_release_date
     ? new Date(game.initial_release_date).getFullYear()
     : null;
+  const winnerBadge = game.gotm_won
+    ? { label: "GOTM", classes: "bg-emerald-500/20 text-emerald-100 ring-emerald-500/40" }
+    : game.nr_gotm_won
+      ? { label: "NR GOTM", classes: "bg-purple-500/20 text-purple-100 ring-purple-500/40" }
+      : null;
   return (
     <Link href={`/games/${game.game_id}`} className="group block space-y-2">
       <div className="relative aspect-[3/4] overflow-hidden rounded-lg border bg-muted">
@@ -164,6 +191,13 @@ function GameCard({ game }: { game: Game }) {
             </span>
           </div>
         )}
+        {winnerBadge && (
+          <span
+            className={`absolute top-1.5 right-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ring-1 ring-inset shadow-sm backdrop-blur-sm ${winnerBadge.classes}`}
+          >
+            {winnerBadge.label}
+          </span>
+        )}
       </div>
       <div>
         <p className="text-sm font-medium leading-tight line-clamp-2">{game.title}</p>
@@ -172,5 +206,59 @@ function GameCard({ game }: { game: Game }) {
         </div>
       </div>
     </Link>
+  );
+}
+
+function WinnerFilterPills({
+  current,
+  q,
+}: {
+  current: WinnerFilter;
+  q: string;
+}) {
+  const options: { value: WinnerFilter; label: string; activeClasses: string }[] = [
+    {
+      value: null,
+      label: "All",
+      activeClasses: "bg-foreground/10 text-foreground ring-foreground/30",
+    },
+    {
+      value: "gotm",
+      label: "GOTM winners",
+      activeClasses: "bg-emerald-500/20 text-emerald-200 ring-emerald-500/40",
+    },
+    {
+      value: "nr_gotm",
+      label: "NR GOTM winners",
+      activeClasses: "bg-purple-500/20 text-purple-200 ring-purple-500/40",
+    },
+  ];
+
+  const href = (value: WinnerFilter) => {
+    const ps = new URLSearchParams();
+    if (q) ps.set("q", q);
+    if (value) ps.set("winner", value);
+    return `/games${ps.size ? `?${ps}` : ""}`;
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((option) => {
+        const isActive = option.value === current;
+        return (
+          <Link
+            key={option.value ?? "all"}
+            href={href(option.value)}
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider ring-1 ring-inset transition-colors ${
+              isActive
+                ? option.activeClasses
+                : "bg-muted/40 text-muted-foreground ring-border hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            {option.label}
+          </Link>
+        );
+      })}
+    </div>
   );
 }

@@ -15,6 +15,8 @@ export interface SessionMembership {
   member: boolean;
   newcomer: boolean;
   active: boolean;
+  dev: boolean;
+  longstanding: boolean;
 }
 
 export interface AppSession {

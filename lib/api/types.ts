@@ -30,6 +30,8 @@ export interface Membership {
   member: boolean;
   newcomer: boolean;
   active: boolean;
+  dev: boolean;
+  longstanding: boolean;
 }
 
 export interface Session {
@@ -44,6 +46,7 @@ export interface User {
   username: string | null;
   global_name: string | null;
   is_bot: boolean;
+  discord_avatar: string | null;
   server_joined_at: string | null;
   last_seen_at: string | null;
   last_fetched_at: string | null;
@@ -54,16 +57,32 @@ export interface User {
   role_newcomer: boolean;
   server_left_at: string | null;
   message_count: number;
-  completionator_url: string | null;
-  psn_username: string | null;
-  xbl_username: string | null;
-  nsw_friend_code: string | null;
-  steam_url: string | null;
   profile_image_at: string | null;
   donor_notify_on_claim: boolean;
   created_at: string;
   updated_at: string;
   membership?: Membership;
+  socials?: UserSocial[];
+}
+
+export interface SocialPlatform {
+  id: number;
+  label: string;
+  position: number;
+  created_by_user_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserSocial {
+  id: number;
+  user_id: string;
+  platform_id: number;
+  display_text: string;
+  url: string | null;
+  social_platform?: SocialPlatform;
+  created_at: string;
+  updated_at: string;
 }
 
 // Games
@@ -85,6 +104,12 @@ export interface Game {
   initial_release_date: string | null;
   thumbnail_bad: boolean;
   thumbnail_approved: boolean;
+  gotm_won?: boolean;
+  nr_gotm_won?: boolean;
+  gotm_month_year?: string | null;
+  nr_gotm_month_year?: string | null;
+  now_playing?: UserNowPlaying[];
+  completions?: GameCompletion[];
   created_at: string;
   updated_at: string;
 }
@@ -113,20 +138,6 @@ export interface Platform {
 
 export interface Region {
   region_id: number;
-  region_code: string;
-  region_name: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Release {
-  release_id: number;
-  game_id: number;
-  platform_id: number;
-  region_id: number;
-  release_date: string | null;
-  platform_code: string;
-  platform_name: string;
   region_code: string;
   region_name: string;
   created_at: string;
@@ -178,7 +189,6 @@ export interface Theme {
 
 export interface GameRelations {
   platforms: Platform[];
-  releases: Release[];
   companies: Company[];
   franchises: Franchise[];
   genres: Genre[];
@@ -251,6 +261,16 @@ export interface NrGotmEntry {
   reddit_url: string | null;
   voting_results_message_id: string | null;
   game?: Game | null;
+}
+
+export interface DashboardData {
+  gotm: GotmEntry[];
+  nr_gotm: NrGotmEntry[];
+}
+
+export interface DashboardResponse {
+  data: DashboardData;
+  meta: { limit: number };
 }
 
 // Suggestions

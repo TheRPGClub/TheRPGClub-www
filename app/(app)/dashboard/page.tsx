@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Trophy, Gamepad2, type LucideIcon } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
-  ApiCollection,
+  DashboardResponse,
   Game,
   GotmEntry,
   NrGotmEntry,
@@ -17,44 +17,45 @@ type Pick<T extends GotmEntry | NrGotmEntry = GotmEntry | NrGotmEntry> = {
   game: Game | null;
 };
 
-const DASHBOARD_REVALIDATE_SECONDS = 300;
-
-async function fetchCurrentRound<T extends GotmEntry | NrGotmEntry>(
-  endpoint: string,
-): Promise<{
+type Round<T extends GotmEntry | NrGotmEntry> = {
   month_year: string;
   round_number: number;
   picks: Pick<T>[];
-} | null> {
+};
+
+const DASHBOARD_REVALIDATE_SECONDS = 300;
+
+async function fetchDashboard(): Promise<DashboardResponse | null> {
   try {
-    const res = await apiFetch(endpoint, {
+    const res = await apiFetch("/api/v1/dashboard?limit=10", {
       next: {
         revalidate: DASHBOARD_REVALIDATE_SECONDS,
         tags: ["dashboard", "games"],
       },
     });
     if (!res.ok) return null;
-    const { data: entries }: ApiCollection<T> = await res.json();
-    if (!entries.length) return null;
-
-    const currentRound = entries[0].round_number;
-    const currentEntries = entries.filter(
-      (e) => e.round_number === currentRound,
-    );
-
-    const picks = currentEntries.map((entry) => ({
-      entry,
-      game: entry.game ?? null,
-    }));
-
-    return {
-      month_year: entries[0].month_year,
-      round_number: currentRound,
-      picks: picks.sort((a, b) => a.entry.game_index - b.entry.game_index),
-    };
+    return (await res.json()) as DashboardResponse;
   } catch {
     return null;
   }
+}
+
+function currentRound<T extends GotmEntry | NrGotmEntry>(
+  entries: T[] | undefined,
+): Round<T> | null {
+  if (!entries?.length) return null;
+
+  const round_number = entries[0].round_number;
+  const picks = entries
+    .filter((e) => e.round_number === round_number)
+    .map((entry) => ({ entry, game: entry.game ?? null }))
+    .sort((a, b) => a.entry.game_index - b.entry.game_index);
+
+  return {
+    month_year: entries[0].month_year,
+    round_number,
+    picks,
+  };
 }
 
 const gridClass: Record<number, string> = {
@@ -72,15 +73,14 @@ export default function DashboardPage() {
 }
 
 async function DashboardContent() {
-  const [gotm, nrGotm, session] = await Promise.all([
-    fetchCurrentRound<GotmEntry>("/api/v1/gotm_entries?limit=10&include=game"),
-    fetchCurrentRound<NrGotmEntry>(
-      "/api/v1/nr_gotm_entries?limit=10&include=game",
-    ),
+  const [dashboard, session] = await Promise.all([
+    fetchDashboard(),
     getSession(),
   ]);
 
-  const canManageImages = session?.membership?.admin ?? false;
+  const gotm = currentRound<GotmEntry>(dashboard?.data.gotm);
+  const nrGotm = currentRound<NrGotmEntry>(dashboard?.data.nr_gotm);
+
   const uploadPicks = gotm
     ? uniqueGamePicks([...gotm.picks, ...(nrGotm?.picks ?? [])])
     : [];
@@ -172,32 +172,6 @@ async function DashboardContent() {
           )}
         </>
       )}
-
-      {canManageImages && uploadPicks.length > 0 && (
-        <section className="space-y-2 pt-2">
-          <h2 className="text-sm font-medium text-muted-foreground">
-            Game Images
-          </h2>
-          <div className="space-y-2">
-            {uploadPicks.map((pick) => (
-              <div
-                key={pick.entry.gamedb_game_id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
-              >
-                <div className="min-w-52">
-                  <p className="text-sm font-medium">
-                    {pick.game?.title ?? pick.entry.game_title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    #{pick.entry.gamedb_game_id}
-                  </p>
-                </div>
-                <GameImageUploadForm gameId={pick.entry.gamedb_game_id!} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
@@ -211,7 +185,9 @@ function DashboardWelcome({ principal }: { principal: SessionPrincipal }) {
         <span className="bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
           {displayName}
         </span>
-        <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]">.</span>
+        <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]">
+          .
+        </span>
       </h1>
       <p className="mt-1.5 text-sm text-muted-foreground">
         Here&apos;s what&apos;s happening at the club.
