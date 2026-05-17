@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SocialIcon } from "@/components/social-icon";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
 const roleColors: Record<string, string> = {
   red: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
