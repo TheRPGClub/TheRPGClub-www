@@ -12,6 +12,7 @@ import type {
   Platform,
   PublicReminder,
   Region,
+  Review,
   RssFeed,
   Session,
   SocialPlatform,
@@ -20,6 +21,10 @@ import type {
   Todo,
   TodoSummary,
   User,
+  UserBacklog,
+  UserFavorite,
+  UserNowPlaying,
+  UserProfile,
   UserSocial,
   VotingInfo,
 } from "./types";
@@ -102,6 +107,10 @@ export const users = {
 
   get: (userId: string) =>
     apiFetch<ApiSingle<User>>(`/api/v1/users/${userId}`),
+
+  // Aggregated profile (preview slices + counts for every list)
+  profile: (userId: string) =>
+    apiFetch<ApiSingle<UserProfile>>(`/api/v1/users/${userId}`),
 
   avatarUrl: (userId: string) =>
     `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}/api/v1/users/${userId}/avatar`,
@@ -214,6 +223,153 @@ export const completions = {
 
   destroy: (id: number) =>
     apiFetch<void>(`/api/v1/completions/${id}`, { method: "DELETE" }),
+};
+
+// ─── Now Playing ─────────────────────────────────────────────────────────────
+
+export const nowPlaying = {
+  listForUser: (
+    userId: string,
+    params?: { limit?: number; offset?: number },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<UserNowPlaying>>(
+      `/api/v1/users/${userId}/now_playing${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  create: (userId: string, data: Partial<UserNowPlaying>) =>
+    apiFetch<ApiSingle<UserNowPlaying>>(
+      `/api/v1/users/${userId}/now_playing`,
+      { method: "POST", body: JSON.stringify({ data }) },
+    ),
+
+  get: (id: number) =>
+    apiFetch<ApiSingle<UserNowPlaying>>(`/api/v1/now_playing/${id}`),
+
+  update: (id: number, data: Partial<UserNowPlaying>) =>
+    apiFetch<ApiSingle<UserNowPlaying>>(`/api/v1/now_playing/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data }),
+    }),
+
+  destroy: (id: number) =>
+    apiFetch<void>(`/api/v1/now_playing/${id}`, { method: "DELETE" }),
+};
+
+// ─── Favorites ───────────────────────────────────────────────────────────────
+
+export const favorites = {
+  listForUser: (
+    userId: string,
+    params?: { limit?: number; offset?: number },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<UserFavorite>>(
+      `/api/v1/users/${userId}/favorites${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  create: (userId: string, data: Partial<UserFavorite>) =>
+    apiFetch<ApiSingle<UserFavorite>>(`/api/v1/users/${userId}/favorites`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+    }),
+
+  get: (id: number) =>
+    apiFetch<ApiSingle<UserFavorite>>(`/api/v1/favorites/${id}`),
+
+  update: (id: number, data: Partial<UserFavorite>) =>
+    apiFetch<ApiSingle<UserFavorite>>(`/api/v1/favorites/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data }),
+    }),
+
+  destroy: (id: number) =>
+    apiFetch<void>(`/api/v1/favorites/${id}`, { method: "DELETE" }),
+};
+
+// ─── Backlog ─────────────────────────────────────────────────────────────────
+
+export const backlog = {
+  listForUser: (
+    userId: string,
+    params?: { limit?: number; offset?: number },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<UserBacklog>>(
+      `/api/v1/users/${userId}/backlog${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  create: (userId: string, data: Partial<UserBacklog>) =>
+    apiFetch<ApiSingle<UserBacklog>>(`/api/v1/users/${userId}/backlog`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+    }),
+
+  get: (id: number) =>
+    apiFetch<ApiSingle<UserBacklog>>(`/api/v1/backlog/${id}`),
+
+  update: (id: number, data: Partial<UserBacklog>) =>
+    apiFetch<ApiSingle<UserBacklog>>(`/api/v1/backlog/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data }),
+    }),
+
+  destroy: (id: number) =>
+    apiFetch<void>(`/api/v1/backlog/${id}`, { method: "DELETE" }),
+};
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+
+export const reviews = {
+  listForUser: (
+    userId: string,
+    params?: { limit?: number; offset?: number },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<Review>>(
+      `/api/v1/users/${userId}/reviews${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  listForGame: (gameId: number, params?: { limit?: number; offset?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<Review>>(
+      `/api/v1/games/${gameId}/reviews${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  // Reviews are owned by a user, so create lives under the user-nested route
+  // (require_owner! authorizes against :user_id in the URL). The game-nested
+  // /games/:id/reviews route is read-only.
+  create: (userId: string, data: Partial<Review>) =>
+    apiFetch<ApiSingle<Review>>(`/api/v1/users/${userId}/reviews`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+    }),
+
+  get: (id: number) => apiFetch<ApiSingle<Review>>(`/api/v1/reviews/${id}`),
+
+  update: (id: number, data: Partial<Review>) =>
+    apiFetch<ApiSingle<Review>>(`/api/v1/reviews/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data }),
+    }),
+
+  destroy: (id: number) =>
+    apiFetch<void>(`/api/v1/reviews/${id}`, { method: "DELETE" }),
 };
 
 // ─── GOTM ─────────────────────────────────────────────────────────────────────
