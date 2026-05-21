@@ -65,6 +65,34 @@ export interface User {
   socials?: UserSocial[];
 }
 
+// Aggregated profile show payload
+//
+// `previews` carries a small (~5-item) slice per section for the profile page.
+// `counts` covers every list so we can render the section headers and the
+// reference rows (backlog / collection) without extra round-trips.
+export interface UserProfileCounts {
+  favorites: number;
+  now_playing: number;
+  completed: number;
+  backlog: number;
+  collection: number;
+  reviews: number;
+}
+
+export interface UserProfilePreviews {
+  favorites: UserFavorite[];
+  now_playing: UserNowPlaying[];
+  completed: GameCompletion[];
+  backlog: UserBacklog[];
+  collection: GameCollection[];
+  reviews: Review[];
+}
+
+export interface UserProfile extends User {
+  counts: UserProfileCounts;
+  previews: UserProfilePreviews;
+}
+
 export interface SocialPlatform {
   id: number;
   label: string;
@@ -110,6 +138,8 @@ export interface Game {
   nr_gotm_month_year?: string | null;
   now_playing?: UserNowPlaying[];
   completions?: GameCompletion[];
+  reviews?: Review[];
+  reviews_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -198,10 +228,15 @@ export interface GameRelations {
   alternates: Game[];
 }
 
-// Collections, Now Playing & Completions
+// Collections, Now Playing, Backlog, Favorites & Completions
+
+// The five user-scoped game lists each use Rails-style resource-specific PKs
+// (e.g. `completion_id` for completions). We accept any of the plausible names
+// so per-list resolvers stay defensive against schema drift.
 
 export interface UserNowPlaying {
-  entry_id: number;
+  entry_id?: number;
+  now_playing_id?: number;
   user_id: string;
   gamedb_game_id: number | null;
   platform_id: number | null;
@@ -210,10 +245,13 @@ export interface UserNowPlaying {
   sort_order: number | null;
   note_updated_at: string | null;
   user?: User | null;
+  game?: Game | null;
+  platform?: Platform | null;
 }
 
 export interface GameCollection {
-  entry_id: number;
+  entry_id?: number;
+  collection_id?: number;
   user_id: string;
   gamedb_game_id: number;
   platform_id: number | null;
@@ -222,10 +260,14 @@ export interface GameCollection {
   is_shared: boolean;
   created_at: string;
   updated_at: string;
+  user?: User | null;
+  game?: Game | null;
+  platform?: Platform | null;
 }
 
 export interface GameCompletion {
-  entry_id: number;
+  entry_id?: number;
+  completion_id?: number;
   user_id: string;
   gamedb_game_id: number;
   platform_id: number | null;
@@ -235,6 +277,59 @@ export interface GameCompletion {
   created_at: string;
   updated_at: string;
   user?: User | null;
+  game?: Game | null;
+  platform?: Platform | null;
+}
+
+export interface UserFavorite {
+  entry_id?: number;
+  favorite_id?: number;
+  user_id: string;
+  gamedb_game_id: number;
+  platform_id: number | null;
+  sort_order: number | null;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: User | null;
+  game?: Game | null;
+  platform?: Platform | null;
+}
+
+export interface UserBacklog {
+  entry_id?: number;
+  backlog_id?: number;
+  user_id: string;
+  gamedb_game_id: number;
+  platform_id: number | null;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: User | null;
+  game?: Game | null;
+  platform?: Platform | null;
+}
+
+// Reviews
+
+// Backend stores rating as integer 0..100 (CHECK constraint), and it's
+// NOT NULL. The UI works in 1..5 stars and maps 1 -> 20, 5 -> 100.
+export type ReviewRating = number;
+
+export interface Review {
+  review_id: number;
+  user_id: string;
+  gamedb_game_id: number;
+  rating: number;
+  // `text` column on the backend — currently rendered as plain text. The
+  // longer-term plan is rich text JSON (Plate.js) so the column can outgrow
+  // markdown-style escaping.
+  body: string | null;
+  is_shared: boolean;
+  created_at: string;
+  updated_at: string;
+  user?: User | null;
+  game?: Game | null;
 }
 
 // GOTM

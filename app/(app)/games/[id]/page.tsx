@@ -2,10 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
+  ApiCollection,
   ApiSingle,
   Game,
   GameRelations,
+  Review,
   User,
 } from "@/lib/api/types";
 import {
@@ -23,10 +26,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GameReviewsList } from "@/components/member/game-reviews-list";
 import {
   ExternalLink,
   Gamepad2,
   Layers,
+  MessageSquare,
   Trophy,
   type LucideIcon,
 } from "lucide-react";
@@ -107,7 +112,10 @@ export default function GamePage({
 }
 
 async function GameContent({ gameId }: { gameId: number }) {
-  const gameRes = await apiFetch(`/api/v1/games/${gameId}`);
+  const [gameRes, session] = await Promise.all([
+    apiFetch(`/api/v1/games/${gameId}`),
+    getSession(),
+  ]);
 
   if (!gameRes.ok) notFound();
 
@@ -124,6 +132,15 @@ async function GameContent({ gameId }: { gameId: number }) {
 
   const players = uniqueUsers(game.now_playing ?? []);
   const completers = uniqueUsers(game.completions ?? []);
+
+  // "Write review" unlocks once the user has at least started playing the
+  // game (now_playing) or already finished it (completions).
+  const ownerId = session?.principal.discord_id ?? null;
+  const hasStartedPlaying = !!(
+    ownerId &&
+    ((game.now_playing ?? []).some((e) => e.user_id === ownerId) ||
+      (game.completions ?? []).some((e) => e.user_id === ownerId))
+  );
 
   const releaseDate = game.initial_release_date
     ? new Date(game.initial_release_date).toLocaleDateString(undefined, {
@@ -262,11 +279,90 @@ async function GameContent({ gameId }: { gameId: number }) {
         )}
       </section>
 
+      {/* Reviews stream in separately so the hero isn't blocked. */}
+      <Suspense fallback={<ReviewsSectionSkeleton />}>
+        <ReviewsSection
+          gameId={gameId}
+          accent={accent}
+          ownerId={ownerId}
+          canWriteReview={hasStartedPlaying}
+        />
+      </Suspense>
+
       {/* Relations stream in separately — doesn't block the hero */}
       <Suspense fallback={<GameRelationsSkeleton />}>
         <GameRelationsSection gameId={gameId} accent={accent} />
       </Suspense>
     </>
+  );
+}
+
+async function ReviewsSection({
+  gameId,
+  accent,
+  ownerId,
+  canWriteReview,
+}: {
+  gameId: number;
+  accent: AccentProfile | null;
+  ownerId: string | null;
+  canWriteReview: boolean;
+}) {
+  const reviewsRes = await apiFetch(
+    `/api/v1/games/${gameId}/reviews?limit=5`,
+    { cache: "no-store" },
+  );
+
+  let reviews: Review[] = [];
+  let total = 0;
+  if (reviewsRes.ok) {
+    const body: ApiCollection<Review> = await reviewsRes.json();
+    reviews = body.data;
+    total = body.meta.total ?? reviews.length;
+  }
+
+  return (
+    <section className="space-y-4">
+      <SectionHeader
+        title="Reviews"
+        Icon={MessageSquare}
+        accent={accent}
+        meta={total > 0 ? `${total} ${total === 1 ? "review" : "reviews"}` : undefined}
+      />
+
+      <GameReviewsList
+        gameId={gameId}
+        reviews={reviews}
+        ownerId={ownerId}
+        canWriteReview={canWriteReview}
+      />
+
+      {total > reviews.length && (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href={`/games/${gameId}/reviews`} />}
+          >
+            See all reviews →
+          </Button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ReviewsSectionSkeleton() {
+  return (
+    <section className="space-y-4">
+      <SectionHeaderSkeleton />
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-32 w-full rounded-xl" />
+        ))}
+      </div>
+    </section>
   );
 }
 
