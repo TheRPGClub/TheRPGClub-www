@@ -15,6 +15,7 @@ import type {
   ApiCollection,
   ApiSingle,
   GameCompletion,
+  Review,
   UserFavorite,
   UserNowPlaying,
   UserProfile,
@@ -26,6 +27,7 @@ import { SocialIcon } from "@/components/social-icon";
 import { MemberGameSection } from "@/components/member/member-game-section";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberReferenceRow } from "@/components/member/member-reference-row";
+import { MemberReviewList } from "@/components/member/member-review-list";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 const PREVIEW_LIMIT = 5;
@@ -83,6 +85,7 @@ export default async function MemberPage({
     completedPreview,
     backlogPreview,
     collectionPreview,
+    reviewsPreview,
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
@@ -91,6 +94,7 @@ export default async function MemberPage({
     fetchPreview<GameCompletion>(`/api/v1/users/${id}/completions${previewQs}`),
     fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/backlog${previewQs}`),
     fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/collections${previewQs}`),
+    fetchPreview<Review>(`/api/v1/users/${id}/reviews${previewQs}`),
   ]);
 
   if (!userRes.ok) notFound();
@@ -110,9 +114,11 @@ export default async function MemberPage({
     completed: aggregatedCounts?.completed ?? completedPreview.total,
     backlog: aggregatedCounts?.backlog ?? backlogPreview.total,
     collection: aggregatedCounts?.collection ?? collectionPreview.total,
+    reviews: aggregatedCounts?.reviews ?? reviewsPreview.total,
   };
   const nowPlaying = nowPlayingPreview.data;
   const favorites = favoritesPreview.data;
+  const reviewPreviews = reviewsPreview.data;
   const completed = completedPreview.data;
 
   const memberHref = `/members/${user.user_id}`;
@@ -211,9 +217,9 @@ export default async function MemberPage({
         )}
       </div>
 
-      {/* Now Playing → Favorites → Completed, then Backlog and Collection
-          as reference rows. Profile is read-only — all management lives on
-          the edit page. */}
+      {/* Order per issue: Now Playing → Favorites → Reviews → Completed,
+          then Backlog and Collection as reference rows. Profile is
+          read-only — all management lives on the edit page. */}
 
       <MemberGameSection
         title="Now Playing"
@@ -242,6 +248,30 @@ export default async function MemberPage({
           />
         ))}
       </MemberGameSection>
+
+      <section className="space-y-3">
+        <header className="flex items-end justify-between gap-3">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-lg font-semibold tracking-tight">Reviews</h2>
+            <span className="text-sm text-muted-foreground tabular-nums">
+              {counts.reviews}
+            </span>
+          </div>
+          {counts.reviews > 0 && (
+            <Link
+              href={`${memberHref}/reviews`}
+              className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              See all →
+            </Link>
+          )}
+        </header>
+        <MemberReviewList
+          reviews={reviewPreviews}
+          hideUser
+          emptyMessage="No reviews yet."
+        />
+      </section>
 
       <MemberGameSection
         title="Completed"
