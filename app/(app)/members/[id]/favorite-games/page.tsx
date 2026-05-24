@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Star } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
   ApiCollection,
@@ -67,11 +66,6 @@ export default async function FavoriteGamesPage({
               game={entry.game}
               platform={entry.platform}
               note={entry.note}
-              meta={
-                <span className="inline-flex items-center gap-1 text-xs text-amber-500">
-                  <Star className="size-3 fill-amber-400 text-amber-400" /> Favorite
-                </span>
-              }
             />
           ))}
         </div>

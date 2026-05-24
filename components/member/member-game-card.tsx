@@ -27,7 +27,7 @@ export function MemberGameCard({
   const href = game ? `/games/${game.game_id}` : null;
 
   const cover = (
-    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border bg-muted">
+    <div className="relative aspect-3/4 w-full overflow-hidden rounded-md border bg-muted">
       {imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
