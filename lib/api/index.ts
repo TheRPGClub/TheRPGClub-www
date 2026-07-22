@@ -2,12 +2,15 @@ import { apiFetch } from "./client";
 import type {
   ApiCollection,
   ApiSingle,
+  CastVoteResult,
   Game,
   GameImage,
   GameCollection,
   GameCompletion,
   GameRelations,
   GotmEntry,
+  Nomination,
+  NominationVote,
   NrGotmEntry,
   Platform,
   PublicReminder,
@@ -26,6 +29,8 @@ import type {
   UserNowPlaying,
   UserProfile,
   UserSocial,
+  VoteTallyRow,
+  VotingCategory,
   VotingInfo,
 } from "./types";
 
@@ -563,8 +568,12 @@ export const votingInfo = {
     );
   },
 
-  get: (id: number) =>
-    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${id}`),
+  // The current (highest round_number) round, 404 when none exist.
+  current: () =>
+    apiFetch<ApiSingle<VotingInfo>>("/api/v1/voting_info/current"),
+
+  get: (round: number) =>
+    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${round}`),
 
   create: (data: Partial<VotingInfo>) =>
     apiFetch<ApiSingle<VotingInfo>>("/api/v1/voting_info", {
@@ -572,12 +581,64 @@ export const votingInfo = {
       body: JSON.stringify({ data }),
     }),
 
-  update: (id: number, data: Partial<VotingInfo>) =>
-    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${id}`, {
+  update: (round: number, data: Partial<VotingInfo>) =>
+    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${round}`, {
       method: "PATCH",
       body: JSON.stringify({ data }),
     }),
 
-  destroy: (id: number) =>
-    apiFetch<void>(`/api/v1/voting_info/${id}`, { method: "DELETE" }),
+  destroy: (round: number) =>
+    apiFetch<void>(`/api/v1/voting_info/${round}`, { method: "DELETE" }),
+};
+
+// ─── Nominations & Votes (GOTM / NR-GOTM rounds) ─────────────────────────────
+
+const votingCategoryPath: Record<VotingCategory, string> = {
+  gotm: "gotm_entries",
+  nr_gotm: "nr_gotm_entries",
+};
+
+export const nominations = {
+  list: (
+    category: VotingCategory,
+    round: number,
+    params?: { limit?: number; offset?: number },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
+    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    return apiFetch<ApiCollection<Nomination>>(
+      `/api/v1/${votingCategoryPath[category]}/${round}/nominations${qs.size ? `?${qs}` : ""}`,
+    );
+  },
+
+  get: (category: VotingCategory, round: number, userId: string) =>
+    apiFetch<ApiSingle<Nomination>>(
+      `/api/v1/${votingCategoryPath[category]}/${round}/nominations/${userId}`,
+    ),
+};
+
+export const votes = {
+  // Anonymous per-nomination counts; `meta.cap` is the round's per-user cap.
+  tally: (category: VotingCategory, round: number) =>
+    apiFetch<{ data: VoteTallyRow[]; meta: { cap: number } }>(
+      `/api/v1/${votingCategoryPath[category]}/${round}/votes/tally`,
+    ),
+
+  // A single voter's votes for the round (own votes only until voting ends).
+  forUser: (category: VotingCategory, round: number, userId: string) =>
+    apiFetch<ApiSingle<NominationVote[]>>(
+      `/api/v1/${votingCategoryPath[category]}/${round}/votes/${userId}`,
+    ),
+
+  // Cast or toggle the caller's vote on a nomination.
+  cast: (
+    category: VotingCategory,
+    round: number,
+    data: { user_id: string; nomination_id: number },
+  ) =>
+    apiFetch<ApiSingle<CastVoteResult>>(
+      `/api/v1/${votingCategoryPath[category]}/${round}/votes`,
+      { method: "POST", body: JSON.stringify({ data }) },
+    ),
 };

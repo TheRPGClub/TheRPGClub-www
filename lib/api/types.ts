@@ -430,13 +430,68 @@ export interface StarboardEntry {
   updated_at: string;
 }
 
-// Voting Info
+// Voting rounds (GOTM / NR-GOTM nominations & votes)
 
+// Mirrors VotingInfoResource: the bot_voting_info columns plus the derived
+// window state. `next_vote_at` is when nominations close and voting opens;
+// `vote_deadline` is the effective end of voting (explicit `vote_ends_at`
+// override or the computed Friday-to-Sunday default, in UTC). The two
+// booleans are the server's verdict at render time — trust them over
+// re-deriving from the timestamps client-side.
 export interface VotingInfo {
-  voting_id: number;
-  title: string;
-  description: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  round_number: number;
+  nomination_list_id: number | null;
+  next_vote_at: string;
+  five_day_reminder_sent: boolean;
+  one_day_reminder_sent: boolean;
+  vote_ends_at: string | null;
+  vote_deadline: string | null;
+  voting_open: boolean;
+  voting_ended: boolean;
+}
+
+// The GOTM and NR-GOTM tables share identical shapes, so one type serves
+// both categories of nominations and votes.
+
+export type VotingCategory = "gotm" | "nr_gotm";
+
+export interface Nomination {
+  nomination_id: number;
+  round_number: number;
+  user_id: string;
+  gamedb_game_id: number | null;
+  reason: string | null;
+  nominated_at: string;
+  user?: User | null;
+  game?: Game | null;
+}
+
+export interface NominationVote {
+  vote_id: number;
+  round_number: number;
+  user_id: string;
+  nomination_id: number;
+  gamedb_game_id: number | null;
+  voted_at: string;
+  user?: User | null;
+  game?: Game | null;
+}
+
+// One row of the anonymous per-nomination tally. Nominations with zero votes
+// have no row — merge against the round's nominations list.
+export interface VoteTallyRow {
+  nomination_id: number;
+  gamedb_game_id: number | null;
+  vote_count: number;
+}
+
+// Result of casting a vote: `voted` placed one, `unvoted` toggled an existing
+// vote off. `removed_votes` carries toggled-off or cap-evicted votes and
+// `warning` a human-readable note about them.
+export interface CastVoteResult {
+  action: "voted" | "unvoted";
+  vote: NominationVote | null;
+  removed_votes: NominationVote[];
+  cap: number;
+  warning: string | null;
 }
