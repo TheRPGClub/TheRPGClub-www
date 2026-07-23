@@ -22,12 +22,13 @@ import {
   type SessionPrincipal,
 } from "@/lib/auth-types";
 import { signOut } from "@/app/actions/auth";
-import { LayoutDashboard, Library, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, Library, LogOut, Users, Vote } from "lucide-react";
 
 const navMain = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/games", icon: Library, label: "Games" },
   { href: "/members", icon: Users, label: "Members" },
+  { href: "/voting", icon: Vote, label: "Voting" },
 ];
 
 interface AppSidebarProps {
