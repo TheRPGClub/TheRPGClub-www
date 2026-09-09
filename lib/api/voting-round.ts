@@ -125,3 +125,38 @@ export function tallyByGame(rows: VoteTallyRow[]): Map<number, number> {
   }
   return byGame;
 }
+
+// Which action the round is currently accepting. The two windows are exact
+// complements plus a finished state, so this is the whole lifecycle.
+export type VotingPhase = "nominate" | "vote" | "closed";
+
+export function votingPhase(info: VotingInfo): VotingPhase {
+  if (info.voting_open) return "vote";
+  if (info.voting_ended) return "closed";
+  return "nominate";
+}
+
+const PHASE_REVALIDATE_SECONDS = 60;
+
+// The phase alone, for the sidebar badge — which renders on every page in the
+// app. This read is cached rather than no-store: the phase only turns at
+// scheduled boundaries, so a badge that lags the turn by up to a minute costs
+// nothing, where an uncached read would put an API round-trip on every page
+// load. /voting keeps fetchVotingInfo's no-store read and stays exact.
+//
+// Sharing one cache entry between viewers is safe HERE because
+// voting_info/current is global round metadata with nothing per-user in it.
+// Next keys the Data Cache on URL, method and body — NOT on headers — so
+// apiFetch's per-user bearer token does not separate entries. Never cache a
+// per-user endpoint this way.
+export async function fetchCurrentPhase(): Promise<VotingPhase | null> {
+  try {
+    const res = await apiFetch("/api/v1/voting_info/current", {
+      next: { revalidate: PHASE_REVALIDATE_SECONDS, tags: ["voting-info"] },
+    });
+    if (!res.ok) return null;
+    return votingPhase(((await res.json()) as { data: VotingInfo }).data);
+  } catch {
+    return null;
+  }
+}

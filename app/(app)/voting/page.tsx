@@ -285,10 +285,18 @@ function formatEt(iso: string): string {
 // Carries the whole phase: which window is live, and when the other one
 // arrives. With no tabs this is the only place that states the lifecycle, so
 // it names both sides.
-function phaseStatus(info: VotingInfo): { label: string; detail: string } {
+//
+// `title` is the heading and names the action, since the page only ever offers
+// one; `label` is the round pill's state and `detail` the sentence under it.
+function phaseStatus(info: VotingInfo): {
+  title: string;
+  label: string;
+  detail: string;
+} {
   const nextRound = info.round_number + 1;
   if (info.voting_ended) {
     return {
+      title: `Round ${info.round_number} results`,
       label: "Voting closed",
       detail:
         `Voting for Round ${info.round_number} has ended. ` +
@@ -297,6 +305,7 @@ function phaseStatus(info: VotingInfo): { label: string; detail: string } {
   }
   if (info.voting_open) {
     return {
+      title: "Cast your votes",
       label: "Voting open",
       detail: info.vote_deadline
         ? `Voting for Round ${info.round_number} is open until ${formatEt(info.vote_deadline)}. Round ${nextRound} nominations are closed.`
@@ -304,6 +313,7 @@ function phaseStatus(info: VotingInfo): { label: string; detail: string } {
     };
   }
   return {
+    title: "Nominate a game",
     label: "Nominations open",
     detail:
       `Nominating for Round ${nextRound} is open. Voting on the ` +
@@ -318,7 +328,9 @@ function PageHeader({ info }: { info?: VotingInfo }) {
       <div className="flex flex-wrap items-center gap-3">
         <Vote className="h-7 w-7 text-muted-foreground" strokeWidth={1.75} />
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Nominations &amp; Voting
+          {/* Falls back to the section's own name when there is no round to
+              have a phase. */}
+          {status?.title ?? "Nominations & Voting"}
         </h1>
         {info && (
           <span className="rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
