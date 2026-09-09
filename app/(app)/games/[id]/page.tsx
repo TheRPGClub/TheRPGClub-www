@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
+import { CornerRibbon, type RibbonAccent } from "@/components/corner-ribbon";
 import {
   ExternalLink,
   Gamepad2,
@@ -47,10 +48,7 @@ type AccentProfile = {
   icon: string;
   gradient: string;
   underline: string;
-  ribbon: string;
-  ribbonText: string;
-  ribbonRing: string;
-  ribbonTextSize: string;
+  ribbon: RibbonAccent;
   label: string;
 };
 
@@ -62,10 +60,7 @@ const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
     icon: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]",
     gradient: "from-brand-200 via-brand-300 to-brand-500",
     underline: "from-brand-500/60 via-brand-500/20 to-transparent",
-    ribbon: "from-brand-500 to-brand-600",
-    ribbonText: "text-brand-50",
-    ribbonRing: "ring-brand-700/40",
-    ribbonTextSize: "text-[10px] tracking-[0.25em]",
+    ribbon: "brand",
     label: "GOTM Winner",
   },
   purple: {
@@ -75,10 +70,7 @@ const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
     icon: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]",
     gradient: "from-purple-200 via-purple-300 to-purple-500",
     underline: "from-purple-500/60 via-purple-500/20 to-transparent",
-    ribbon: "from-purple-500 to-purple-600",
-    ribbonText: "text-purple-50",
-    ribbonRing: "ring-purple-700/40",
-    ribbonTextSize: "text-[9px] tracking-[0.15em]",
+    ribbon: "purple",
     label: "NR GOTM Winner",
   },
 };
@@ -181,7 +173,13 @@ async function GameContent({ gameId }: { gameId: number }) {
             className={`absolute inset-y-0 left-0 w-[55%] bg-linear-to-r ${accent.glow} pointer-events-none`}
           />
         )}
-        {accent && <WinnerRibbon accent={accent} />}
+        {accent && (
+          <CornerRibbon
+            accent={accent.ribbon}
+            label={accent.label}
+            srLabel={`${accent.label} winner`}
+          />
+        )}
         <div className="relative flex flex-col p-6 sm:p-8 max-w-[55%]">
           {(game.gotm_month_year || game.nr_gotm_month_year) && (
             <span
@@ -625,21 +623,6 @@ function Stat({
       <span className="mt-1.5 block text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </span>
-    </div>
-  );
-}
-
-function WinnerRibbon({ accent }: { accent: AccentProfile }) {
-  return (
-    <div
-      aria-label={`${accent.label} winner`}
-      className="pointer-events-none absolute top-7 -right-14 z-10 flex h-7 w-52 rotate-45 items-center justify-center"
-    >
-      <div
-        className={`flex h-full w-full items-center justify-center whitespace-nowrap bg-linear-to-r font-bold uppercase shadow-md ring-1 ${accent.ribbon} ${accent.ribbonText} ${accent.ribbonTextSize} ${accent.ribbonRing}`}
-      >
-        {accent.label}
-      </div>
     </div>
   );
 }
