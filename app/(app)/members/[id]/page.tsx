@@ -21,6 +21,7 @@ import type {
   UserProfile,
   UserSocial,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SocialIcon } from "@/components/social-icon";
@@ -60,7 +61,7 @@ async function fetchPreview<T>(
     const res = await apiFetch(path, { cache: "no-store" });
     if (!res.ok) return { data: [], total: 0 };
     const body: ApiCollection<T> = await res.json();
-    return { data: body.data, total: body.meta.total ?? body.data.length };
+    return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
     return { data: [], total: 0 };
   }

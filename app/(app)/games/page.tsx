@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Game } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { GamesSearchForm } from "./games-search-form";
 import {
   Pagination,
@@ -75,9 +76,9 @@ async function GamesGrid({
     if (res.ok) {
       const body: ApiCollection<Game> = await res.json();
       games = body.data;
-      if (body.meta.total !== undefined) {
-        totalPages = Math.max(1, Math.ceil(body.meta.total / PAGE_SIZE));
-      }
+      // The server paginates; PAGE_SIZE is only what we asked for, and it
+      // clamps. Take its page count rather than recomputing one.
+      totalPages = paginationOf(body.meta, games.length).totalPages;
     }
   } catch {
     // render empty state

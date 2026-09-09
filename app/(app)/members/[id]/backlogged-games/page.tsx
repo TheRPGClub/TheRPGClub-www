@@ -7,6 +7,7 @@ import type {
   User,
   UserBacklog,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListPagination } from "@/components/member/member-list-pagination";
@@ -40,7 +41,7 @@ export default async function BackloggedGamesPage({
   if (listRes.ok) {
     const body: ApiCollection<UserBacklog> = await listRes.json();
     entries = body.data;
-    total = body.meta.total ?? entries.length;
+    total = paginationOf(body.meta, entries.length).total;
   }
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>

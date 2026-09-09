@@ -13,6 +13,7 @@ import type {
   VotingCategory,
   VotingInfo,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import {
   Avatar,
   AvatarFallback,
@@ -418,7 +419,7 @@ async function ReviewsSection({
   if (reviewsRes.ok) {
     const body: ApiCollection<Review> = await reviewsRes.json();
     reviews = body.data;
-    total = body.meta.total ?? reviews.length;
+    total = paginationOf(body.meta, reviews.length).total;
   }
 
   return (

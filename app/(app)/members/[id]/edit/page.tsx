@@ -15,6 +15,7 @@ import type {
   UserFavorite,
   UserNowPlaying,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 
@@ -25,7 +26,7 @@ async function loadCollection<T>(path: string): Promise<{ data: T[]; total: numb
     const res = await apiFetch(path, { cache: "no-store" });
     if (!res.ok) return { data: [], total: 0 };
     const body: ApiCollection<T> = await res.json();
-    return { data: body.data, total: body.meta.total ?? body.data.length };
+    return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
     return { data: [], total: 0 };
   }

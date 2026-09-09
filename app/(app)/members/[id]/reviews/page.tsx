@@ -7,6 +7,7 @@ import type {
   Review,
   User,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListPagination } from "@/components/member/member-list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
@@ -42,7 +43,7 @@ export default async function MemberReviewsPage({
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
     reviews = body.data;
-    total = body.meta.total ?? reviews.length;
+    total = paginationOf(body.meta, reviews.length).total;
   }
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>

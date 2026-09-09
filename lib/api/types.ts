@@ -1,11 +1,22 @@
+// Pagy-backed pagination meta, from ApplicationController#pagy_meta. It is
+// page-native, not offset-native: `count` is the total across every page,
+// `pages` how many there are, `per` the page size the server actually served
+// (it clamps a requested `limit`), and prev/next are page numbers, null at the
+// ends. The pre-Pagy shape was {limit, offset, total} — read it through
+// paginationOf in ./pagination rather than reaching for fields directly.
+export interface CollectionMeta {
+  page: number;
+  pages: number;
+  count: number;
+  per: number;
+  prev: number | null;
+  next: number | null;
+  resource?: string;
+}
+
 export interface ApiCollection<T> {
   data: T[];
-  meta: {
-    limit: number;
-    offset: number;
-    total?: number;
-    resource?: string;
-  };
+  meta: CollectionMeta;
 }
 
 export interface ApiSingle<T> {
