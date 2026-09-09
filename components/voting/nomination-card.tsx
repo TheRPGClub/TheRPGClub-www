@@ -6,6 +6,7 @@ import type { Nomination } from "@/lib/api/types";
 import { discordAvatarUrl } from "@/lib/auth-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CornerRibbon } from "@/components/corner-ribbon";
+import { PlatformPills } from "@/components/platform-pills";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { BAR_MOTION, type AccentStyle } from "./accents";
@@ -179,6 +180,10 @@ export function NominationCard({
               Nominated by {isOwn ? "you" : nominatorName}
             </span>
           </div>
+
+          {/* Below the byline rather than beside the title, which is already
+              carrying the year and only has ~60% of the card to do it in. */}
+          <PlatformPills platforms={game?.platforms} />
 
           {nomination.reason && (
             <p className="pt-0.5 text-xs italic leading-relaxed text-muted-foreground/80 line-clamp-3">

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { Platform } from "@/lib/api/types";
+import { PlatformPills } from "@/components/platform-pills";
 
 const accentClasses = {
   brand: {
@@ -30,6 +32,7 @@ interface GotmCardProps {
   coverUrl: string | null;
   year: number | null;
   description: string | null | undefined;
+  platforms?: Platform[];
   imageAlign?: "left" | "right";
   compact?: boolean;
   showMeta?: boolean;
@@ -47,6 +50,7 @@ export function GotmCard({
   coverUrl,
   year,
   description,
+  platforms,
   imageAlign = "right",
   compact = false,
   showMeta = true,
@@ -128,6 +132,14 @@ export function GotmCard({
               {year}
             </span>
           )}
+          {/* The text column is 30% of the card once there are three winners,
+              so a compact card shows fewer before collapsing to "+N". It
+              mirrors the card's alignment like the year badge above. */}
+          <PlatformPills
+            platforms={platforms}
+            max={compact ? 2 : 3}
+            className={left ? "justify-end" : ""}
+          />
           {description && (
             <p className="text-xs text-muted-foreground/70 leading-relaxed line-clamp-4">
               {description}
@@ -164,6 +176,7 @@ export function gotmCardProps(
     art_url?: string | null;
     initial_release_date?: string | null;
     description?: string | null;
+    platforms?: Platform[];
   } | null,
   fallbackTitle: string,
 ) {
@@ -177,5 +190,6 @@ export function gotmCardProps(
     artUrl: game?.art_url ?? null,
     year,
     description: game?.description ?? null,
+    platforms: game?.platforms,
   };
 }

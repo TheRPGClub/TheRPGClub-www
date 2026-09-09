@@ -145,6 +145,10 @@ export interface Game {
   thumbnail_approved: boolean;
   gotm_won?: boolean;
   nr_gotm_won?: boolean;
+  // Optional because the embedded game shape (GameSummaryResource) only
+  // carries platforms where a controller preloads them; a game read that
+  // doesn't simply renders no pills.
+  platforms?: Platform[];
   gotm_month_year?: string | null;
   nr_gotm_month_year?: string | null;
   now_playing?: UserNowPlaying[];
@@ -169,12 +173,16 @@ export interface GameImage {
   url: string | null;
 }
 
+// Mirrors PlatformResource's allowlist. `created_at`/`updated_at` are not on
+// it — they were in this type but never sent, and nothing read them.
+// `platform_abbreviation` is the display label ("PS5"); it is nullable, so
+// platformLabel in @/components/platform-pills falls back through code to name.
 export interface Platform {
   platform_id: number;
   platform_code: string;
   platform_name: string;
-  created_at: string;
-  updated_at: string;
+  platform_abbreviation: string | null;
+  igdb_platform_id: number | null;
 }
 
 export interface Region {
