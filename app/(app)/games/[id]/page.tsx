@@ -10,7 +10,10 @@ import type {
   GameRelations,
   Review,
   User,
+  VotingCategory,
+  VotingInfo,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import {
   Avatar,
   AvatarFallback,
@@ -27,6 +30,22 @@ import {
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
+import { CornerRibbon, type RibbonAccent } from "@/components/corner-ribbon";
+import {
+  GameBallotPanel,
+  type GameBallotPanelProps,
+} from "@/components/voting/game-ballot-panel";
+import { accentForCategory } from "@/components/voting/accents";
+import {
+  ballotIsPublic,
+  fetchNominations,
+  fetchTally,
+  fetchUserVotes,
+  fetchVotingInfo,
+  tallyByGame,
+  VOTING_CATEGORIES,
+  VOTING_CATEGORY_TITLE,
+} from "@/lib/api/voting-round";
 import {
   ExternalLink,
   Gamepad2,
@@ -47,10 +66,7 @@ type AccentProfile = {
   icon: string;
   gradient: string;
   underline: string;
-  ribbon: string;
-  ribbonText: string;
-  ribbonRing: string;
-  ribbonTextSize: string;
+  ribbon: RibbonAccent;
   label: string;
 };
 
@@ -62,10 +78,7 @@ const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
     icon: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]",
     gradient: "from-brand-200 via-brand-300 to-brand-500",
     underline: "from-brand-500/60 via-brand-500/20 to-transparent",
-    ribbon: "from-brand-500 to-brand-600",
-    ribbonText: "text-brand-50",
-    ribbonRing: "ring-brand-700/40",
-    ribbonTextSize: "text-[10px] tracking-[0.25em]",
+    ribbon: "brand",
     label: "GOTM Winner",
   },
   purple: {
@@ -75,10 +88,7 @@ const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
     icon: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]",
     gradient: "from-purple-200 via-purple-300 to-purple-500",
     underline: "from-purple-500/60 via-purple-500/20 to-transparent",
-    ribbon: "from-purple-500 to-purple-600",
-    ribbonText: "text-purple-50",
-    ribbonRing: "ring-purple-700/40",
-    ribbonTextSize: "text-[9px] tracking-[0.15em]",
+    ribbon: "purple",
     label: "NR GOTM Winner",
   },
 };
@@ -181,7 +191,13 @@ async function GameContent({ gameId }: { gameId: number }) {
             className={`absolute inset-y-0 left-0 w-[55%] bg-linear-to-r ${accent.glow} pointer-events-none`}
           />
         )}
-        {accent && <WinnerRibbon accent={accent} />}
+        {accent && (
+          <CornerRibbon
+            accent={accent.ribbon}
+            label={accent.label}
+            srLabel={`${accent.label} winner`}
+          />
+        )}
         <div className="relative flex flex-col p-6 sm:p-8 max-w-[55%]">
           {(game.gotm_month_year || game.nr_gotm_month_year) && (
             <span
@@ -241,6 +257,12 @@ async function GameContent({ gameId }: { gameId: number }) {
         </div>
       </div>
 
+      {/* The current round's ballot, when this game is on it. Streams in
+          separately — it is a live read and must not hold up the hero. */}
+      <Suspense fallback={null}>
+        <BallotSection gameId={gameId} />
+      </Suspense>
+
       {/* Currently playing */}
       <section className="space-y-4">
         <SectionHeader
@@ -297,6 +319,85 @@ async function GameContent({ gameId }: { gameId: number }) {
   );
 }
 
+// Offers the vote from the game's own page, so a member who landed here from
+// a link or a search doesn't have to go find the card on /voting. A game can
+// in principle sit on both categories' ballots, so this renders one panel per
+// category it appears on.
+async function BallotSection({ gameId }: { gameId: number }) {
+  const info = await fetchVotingInfo();
+  // Before a round's vote opens its ballot is withheld — /voting won't show
+  // it either, and nothing here should leak what was nominated.
+  if (!info || !ballotIsPublic(info)) return null;
+
+  // getSession is React-cached, so this reuses the hero's fetch.
+  const session = await getSession();
+  const panels = (
+    await Promise.all(
+      VOTING_CATEGORIES.map((category) =>
+        ballotPanel(category, gameId, info, session?.principal.id),
+      ),
+    )
+  ).filter((panel) => panel !== null);
+
+  if (!panels.length) return null;
+
+  return (
+    <div className="space-y-3">
+      {panels.map((panel) => (
+        <GameBallotPanel key={panel.category} {...panel} />
+      ))}
+    </div>
+  );
+}
+
+async function ballotPanel(
+  category: VotingCategory,
+  gameId: number,
+  info: VotingInfo,
+  userId: string | undefined,
+): Promise<GameBallotPanelProps | null> {
+  const round = info.round_number;
+  const nominations = await fetchNominations(category, round);
+  // Two members can nominate the same game in one round, so this is a list.
+  const forGame = nominations.filter((n) => n.gamedb_game_id === gameId);
+  if (!forGame.length) return null;
+
+  const [tally, userVotes] = await Promise.all([
+    fetchTally(category, round),
+    info.voting_open && userId
+      ? fetchUserVotes(category, round, userId)
+      : Promise.resolve([]),
+  ]);
+
+  const byGame = tallyByGame(tally.rows);
+  const count = byGame.get(gameId) ?? 0;
+  const maxCount = Math.max(0, ...byGame.values());
+
+  const votedOn = userVotes.find((vote) => vote.gamedb_game_id === gameId);
+  const earliest = forGame.reduce((a, b) =>
+    a.nominated_at <= b.nominated_at ? a : b,
+  );
+
+  return {
+    category,
+    categoryTitle: VOTING_CATEGORY_TITLE[category],
+    accent: accentForCategory[category],
+    round,
+    nominationId: votedOn?.nomination_id ?? earliest.nomination_id,
+    count,
+    maxCount,
+    voted: votedOn !== undefined,
+    votesUsed: userVotes.length,
+    cap: tally.cap,
+    votingOpen: info.voting_open,
+    isWinner: info.voting_ended && maxCount > 0 && count === maxCount,
+    nominatedBy: forGame.map(
+      (n) => n.user?.global_name ?? n.user?.username ?? "Unknown member",
+    ),
+    signedIn: userId !== undefined,
+  };
+}
+
 async function ReviewsSection({
   gameId,
   accent,
@@ -309,7 +410,7 @@ async function ReviewsSection({
   canWriteReview: boolean;
 }) {
   const reviewsRes = await apiFetch(
-    `/api/v1/games/${gameId}/reviews?limit=5`,
+    `/api/v1/games/${gameId}/reviews?per=5`,
     { cache: "no-store" },
   );
 
@@ -318,7 +419,7 @@ async function ReviewsSection({
   if (reviewsRes.ok) {
     const body: ApiCollection<Review> = await reviewsRes.json();
     reviews = body.data;
-    total = body.meta.total ?? reviews.length;
+    total = paginationOf(body.meta, reviews.length).total;
   }
 
   return (
@@ -625,21 +726,6 @@ function Stat({
       <span className="mt-1.5 block text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </span>
-    </div>
-  );
-}
-
-function WinnerRibbon({ accent }: { accent: AccentProfile }) {
-  return (
-    <div
-      aria-label={`${accent.label} winner`}
-      className="pointer-events-none absolute top-7 -right-14 z-10 flex h-7 w-52 rotate-45 items-center justify-center"
-    >
-      <div
-        className={`flex h-full w-full items-center justify-center whitespace-nowrap bg-linear-to-r font-bold uppercase shadow-md ring-1 ${accent.ribbon} ${accent.ribbonText} ${accent.ribbonTextSize} ${accent.ribbonRing}`}
-      >
-        {accent.label}
-      </div>
     </div>
   );
 }

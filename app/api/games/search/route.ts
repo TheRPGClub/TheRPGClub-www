@@ -8,9 +8,9 @@ import { apiFetch } from "@/lib/api";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const q = url.searchParams.get("q") ?? "";
-  const limit = url.searchParams.get("limit") ?? "8";
+  const per = url.searchParams.get("per") ?? "8";
 
-  const qs = new URLSearchParams({ limit });
+  const qs = new URLSearchParams({ per });
   if (q) qs.set("q", q);
 
   const res = await apiFetch(`/api/v1/games?${qs}`, { cache: "no-store" });

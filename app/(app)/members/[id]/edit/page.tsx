@@ -15,6 +15,7 @@ import type {
   UserFavorite,
   UserNowPlaying,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 
@@ -25,7 +26,7 @@ async function loadCollection<T>(path: string): Promise<{ data: T[]; total: numb
     const res = await apiFetch(path, { cache: "no-store" });
     if (!res.ok) return { data: [], total: 0 };
     const body: ApiCollection<T> = await res.json();
-    return { data: body.data, total: body.meta.total ?? body.data.length };
+    return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
     return { data: [], total: 0 };
   }
@@ -58,21 +59,21 @@ export default async function MemberEditPage({
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     loadCollection<SocialPlatform>("/api/v1/social_platforms"),
-    loadCollection<Platform>("/api/v1/platforms?limit=100"),
+    loadCollection<Platform>("/api/v1/platforms?per=100"),
     loadCollection<UserFavorite>(
-      `/api/v1/users/${id}/favorites?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/favorites?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<UserNowPlaying>(
-      `/api/v1/users/${id}/now_playing?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<GameCompletion>(
-      `/api/v1/users/${id}/completions?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<UserBacklog>(
-      `/api/v1/users/${id}/backlog?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<GameCollection>(
-      `/api/v1/users/${id}/collections?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
     ),
   ]);
 

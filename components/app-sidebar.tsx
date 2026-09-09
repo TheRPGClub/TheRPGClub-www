@@ -23,6 +23,7 @@ import {
   type SessionPrincipal,
 } from "@/lib/auth-types";
 import { signOut } from "@/app/actions/auth";
+import type { VotingPhase } from "@/lib/api/voting-round";
 import {
   LayoutDashboard,
   Library,
@@ -40,12 +41,31 @@ const navMain = [
   { href: "/voting", icon: Vote, label: "Voting" },
 ];
 
+const VOTING_HREF = "/voting";
+
+// The voting item is named for what the club is doing right now, so the nav
+// says whether nominations or the vote are what's live without opening the
+// page. Only the nomination window renames the item; a live vote, a finished
+// round, and a missing or unreadable one all read as the section itself.
+const PHASE_LABEL: Record<VotingPhase, string> = {
+  nominate: "Nominations",
+  vote: "Voting",
+  closed: "Voting",
+};
+
 interface AppSidebarProps {
   principal: SessionPrincipal;
   membership: SessionMembership | null;
+  // null when no round is scheduled or the read failed — the item keeps its
+  // plain name rather than the nav breaking.
+  votingPhase?: VotingPhase | null;
 }
 
-export function AppSidebar({ principal, membership }: AppSidebarProps) {
+export function AppSidebar({
+  principal,
+  membership,
+  votingPhase,
+}: AppSidebarProps) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
   const isAdmin = membership?.admin || membership?.moderator || membership?.dev;
@@ -116,20 +136,29 @@ export function AppSidebar({ principal, membership }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navMain.map(({ href, icon: Icon, label }) => (
-                <SidebarMenuItem key={href}>
-                  <SidebarMenuButton
-                    render={<Link href={href} />}
-                    isActive={
-                      pathname === href || pathname.startsWith(href + "/")
-                    }
-                    tooltip={label}
-                  >
-                    <Icon />
-                    <span>{label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navMain.map(({ href, icon: Icon, label: navLabel }) => {
+                const label =
+                  href === VOTING_HREF && votingPhase
+                    ? PHASE_LABEL[votingPhase]
+                    : navLabel;
+
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      render={<Link href={href} />}
+                      isActive={
+                        pathname === href || pathname.startsWith(href + "/")
+                      }
+                      // Collapsed to the icon rail the label is the tooltip,
+                      // so the phase reaches the reader there too.
+                      tooltip={label}
+                    >
+                      <Icon />
+                      <span>{label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -21,6 +21,7 @@ import type {
   UserProfile,
   UserSocial,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SocialIcon } from "@/components/social-icon";
@@ -60,7 +61,7 @@ async function fetchPreview<T>(
     const res = await apiFetch(path, { cache: "no-store" });
     if (!res.ok) return { data: [], total: 0 };
     const body: ApiCollection<T> = await res.json();
-    return { data: body.data, total: body.meta.total ?? body.data.length };
+    return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
     return { data: [], total: 0 };
   }
@@ -76,7 +77,7 @@ export default async function MemberPage({
   // We fan out to each list endpoint instead of relying on the aggregated
   // `user.previews` slice because that slice doesn't always include the joined
   // game data, leading to missing cover images in the preview grid.
-  const previewQs = `?limit=${PREVIEW_LIMIT}`;
+  const previewQs = `?per=${PREVIEW_LIMIT}`;
   const [
     userRes,
     session,

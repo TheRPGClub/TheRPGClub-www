@@ -7,6 +7,7 @@ import type {
   Review,
   User,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListPagination } from "@/components/member/member-list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
@@ -22,12 +23,11 @@ export default async function MemberReviewsPage({
 }) {
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [userRes, session, listRes] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
-    apiFetch(`/api/v1/users/${id}/reviews?limit=${PAGE_SIZE}&offset=${offset}`, {
+    apiFetch(`/api/v1/users/${id}/reviews?per=${PAGE_SIZE}&page=${currentPage}`, {
       cache: "no-store",
     }),
   ]);
@@ -39,12 +39,15 @@ export default async function MemberReviewsPage({
 
   let reviews: Review[] = [];
   let total = 0;
+  let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
     reviews = body.data;
-    total = body.meta.total ?? reviews.length;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, reviews.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
   }
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>
     `/members/${id}/reviews${p > 1 ? `?page=${p}` : ""}`;
 

@@ -6,6 +6,7 @@ import type {
   User,
   UserFavorite,
 } from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListPagination } from "@/components/member/member-list-pagination";
@@ -21,12 +22,11 @@ export default async function FavoriteGamesPage({
 }) {
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [userRes, listRes] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(
-      `/api/v1/users/${id}/favorites?limit=${PAGE_SIZE}&offset=${offset}`,
+      `/api/v1/users/${id}/favorites?per=${PAGE_SIZE}&page=${currentPage}`,
       { cache: "no-store" },
     ),
   ]);
@@ -38,12 +38,15 @@ export default async function FavoriteGamesPage({
 
   let entries: UserFavorite[] = [];
   let total = 0;
+  let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<UserFavorite> = await listRes.json();
     entries = body.data;
-    total = body.meta.total ?? entries.length;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, entries.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
   }
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>
     `/members/${id}/favorite-games${p > 1 ? `?page=${p}` : ""}`;
 

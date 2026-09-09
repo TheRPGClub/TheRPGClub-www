@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { fetchCurrentPhase } from "@/lib/api/voting-round";
 import {
   SidebarInset,
   SidebarProvider,
@@ -13,7 +14,12 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
+  // Cached, so the sidebar's phase badge costs every page in the app a Data
+  // Cache hit rather than an API round-trip. Runs alongside the session read.
+  const [session, votingPhase] = await Promise.all([
+    getSession(),
+    fetchCurrentPhase(),
+  ]);
   if (!session) redirect("/");
 
   return (
@@ -22,6 +28,7 @@ export default async function AppLayout({
         <AppSidebar
           principal={session.principal}
           membership={session.membership}
+          votingPhase={votingPhase}
         />
         <SidebarInset>
           <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:hidden">

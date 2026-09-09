@@ -1,11 +1,22 @@
+// Pagy-backed pagination meta, from ApplicationController#pagy_meta. It is
+// page-native, not offset-native: `count` is the total across every page,
+// `pages` how many there are, `per` the page size the server actually served
+// (it clamps a requested `limit`), and prev/next are page numbers, null at the
+// ends. The pre-Pagy shape was {limit, offset, total} — read it through
+// paginationOf in ./pagination rather than reaching for fields directly.
+export interface CollectionMeta {
+  page: number;
+  pages: number;
+  count: number;
+  per: number;
+  prev: number | null;
+  next: number | null;
+  resource?: string;
+}
+
 export interface ApiCollection<T> {
   data: T[];
-  meta: {
-    limit: number;
-    offset: number;
-    total?: number;
-    resource?: string;
-  };
+  meta: CollectionMeta;
 }
 
 export interface ApiSingle<T> {
@@ -134,6 +145,10 @@ export interface Game {
   thumbnail_approved: boolean;
   gotm_won?: boolean;
   nr_gotm_won?: boolean;
+  // Optional because the embedded game shape (GameSummaryResource) only
+  // carries platforms where a controller preloads them; a game read that
+  // doesn't simply renders no pills.
+  platforms?: Platform[];
   gotm_month_year?: string | null;
   nr_gotm_month_year?: string | null;
   now_playing?: UserNowPlaying[];
@@ -158,12 +173,16 @@ export interface GameImage {
   url: string | null;
 }
 
+// Mirrors PlatformResource's allowlist. `created_at`/`updated_at` are not on
+// it — they were in this type but never sent, and nothing read them.
+// `platform_abbreviation` is the display label ("PS5"); it is nullable, so
+// platformLabel in @/components/platform-pills falls back through code to name.
 export interface Platform {
   platform_id: number;
   platform_code: string;
   platform_name: string;
-  created_at: string;
-  updated_at: string;
+  platform_abbreviation: string | null;
+  igdb_platform_id: number | null;
 }
 
 export interface Region {
