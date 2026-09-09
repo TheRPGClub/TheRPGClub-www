@@ -12,9 +12,9 @@ import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
 
 const accentClasses = {
-  emerald: {
-    heading: "text-emerald-200/90",
-    ring: "border-emerald-500/30",
+  brand: {
+    heading: "text-brand-200/90",
+    ring: "border-brand-500/30",
   },
   purple: {
     heading: "text-purple-200/90",

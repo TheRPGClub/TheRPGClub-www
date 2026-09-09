@@ -39,7 +39,7 @@ import {
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 const MAX_VISIBLE_PLAYERS = 8;
 
-type AccentVariant = "emerald" | "purple";
+type AccentVariant = "brand" | "purple";
 type AccentProfile = {
   pill: string;
   number: string;
@@ -55,16 +55,16 @@ type AccentProfile = {
 };
 
 const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
-  emerald: {
-    pill: "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-500/30",
-    number: "text-emerald-200/90",
-    glow: "from-emerald-950/40 to-transparent",
-    icon: "text-emerald-300 drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]",
-    gradient: "from-emerald-200 via-emerald-300 to-emerald-500",
-    underline: "from-emerald-500/60 via-emerald-500/20 to-transparent",
-    ribbon: "from-emerald-500 to-emerald-600",
-    ribbonText: "text-emerald-50",
-    ribbonRing: "ring-emerald-700/40",
+  brand: {
+    pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
+    number: "text-brand-200/90",
+    glow: "from-brand-950/40 to-transparent",
+    icon: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]",
+    gradient: "from-brand-200 via-brand-300 to-brand-500",
+    underline: "from-brand-500/60 via-brand-500/20 to-transparent",
+    ribbon: "from-brand-500 to-brand-600",
+    ribbonText: "text-brand-50",
+    ribbonRing: "ring-brand-700/40",
     ribbonTextSize: "text-[10px] tracking-[0.25em]",
     label: "GOTM Winner",
   },
@@ -88,7 +88,7 @@ const NEUTRAL_PILL =
 const NEUTRAL_UNDERLINE = "from-border via-border/40 to-transparent";
 
 function pickAccent(game: Game): AccentProfile | null {
-  if (game.gotm_won) return ACCENT_PROFILES.emerald;
+  if (game.gotm_won) return ACCENT_PROFILES.brand;
   if (game.nr_gotm_won) return ACCENT_PROFILES.purple;
   return null;
 }

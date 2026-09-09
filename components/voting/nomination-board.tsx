@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, Crown, Loader2, X } from "lucide-react";
+import { ArrowUpRight, Check, Crown, X } from "lucide-react";
 import { castVoteAction } from "@/app/actions/votes";
 import type {
   Nomination,
@@ -13,27 +13,18 @@ import type {
 } from "@/lib/api/types";
 import { discordAvatarUrl } from "@/lib/auth-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { accentClasses, BAR_MOTION, type AccentStyle } from "./accents";
+import { OwnNominationCard } from "./own-nomination-card";
 
-const accentClasses = {
-  emerald: {
-    count: "text-emerald-200/90",
-    bar: "bg-emerald-500/50",
-    voted:
-      "border-emerald-500/50 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25",
-    winner: "border-emerald-500/50",
-    crown: "text-emerald-300 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]",
-  },
-  purple: {
-    count: "text-purple-200/90",
-    bar: "bg-purple-500/50",
-    voted:
-      "border-purple-500/50 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25",
-    winner: "border-purple-500/50",
-    crown: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]",
-  },
-} as const;
+
+
+// The viewer's own votes, plus the per-nomination counts they affect.
+interface TallyState {
+  counts: Map<number, number>;
+  votes: { nominationId: number; gameId: number; votedAt: string }[];
+}
 
 export interface NominationBoardProps {
   category: VotingCategory;
@@ -48,6 +39,9 @@ export interface NominationBoardProps {
   votingOpen: boolean;
   votingEnded: boolean;
   emptyMessage?: string;
+  // The signed-in member, so their own nomination can be marked. The board
+  // otherwise only knows about votes, not who nominated what.
+  viewerId?: string;
 }
 
 export function NominationBoard({
@@ -61,32 +55,83 @@ export function NominationBoard({
   votingOpen,
   votingEnded,
   emptyMessage = "No nominations yet.",
+  viewerId,
 }: NominationBoardProps) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<number | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   const accentStyle = accentClasses[accent];
   const showCounts = votingOpen || votingEnded;
 
-  const countByNomination = useMemo(
-    () => new Map(tally.map((row) => [row.nomination_id, row.vote_count])),
-    [tally],
+  // The server state the optimistic layer builds on. Votes are kept oldest
+  // first so the cap eviction below can mirror the backend's choice.
+  const serverState = useMemo<TallyState>(() => {
+    const votes = userVotes
+      .filter((vote) => vote.gamedb_game_id !== null)
+      .map((vote) => ({
+        nominationId: vote.nomination_id,
+        gameId: vote.gamedb_game_id as number,
+        votedAt: vote.voted_at,
+      }))
+      .sort((a, b) => a.votedAt.localeCompare(b.votedAt));
+    return {
+      counts: new Map(tally.map((row) => [row.nomination_id, row.vote_count])),
+      votes,
+    };
+  }, [tally, userVotes]);
+
+  // Casting a vote round-trips the action and then a router.refresh(), so
+  // without this the card sat on stale counts and the button flashed back to
+  // "Vote" before the new tally landed. Applying the change locally lets the
+  // bars animate from the moment of the click; refresh reconciles after.
+  const [state, castOptimistic] = useOptimistic(
+    serverState,
+    (prev, nomination: Nomination): TallyState => {
+      const gameId = nomination.gamedb_game_id;
+      if (gameId === null) return prev;
+
+      const counts = new Map(prev.counts);
+      const bump = (id: number, delta: number) =>
+        counts.set(id, Math.max(0, (counts.get(id) ?? 0) + delta));
+
+      const existing = prev.votes.find((vote) => vote.gameId === gameId);
+      if (existing) {
+        bump(existing.nominationId, -1);
+        return {
+          counts,
+          votes: prev.votes.filter((vote) => vote.gameId !== gameId),
+        };
+      }
+
+      bump(nomination.nomination_id, 1);
+      let votes = [
+        ...prev.votes,
+        {
+          nominationId: nomination.nomination_id,
+          gameId,
+          votedAt: new Date().toISOString(),
+        },
+      ];
+      // Mirrors the backend: voting past the cap evicts the oldest vote.
+      while (votes.length > cap) {
+        const [oldest, ...rest] = votes;
+        bump(oldest.nominationId, -1);
+        votes = rest;
+      }
+      return { counts, votes };
+    },
   );
+
+  const countByNomination = state.counts;
 
   // Votes are per game, not per nomination: a vote on any nomination of a
   // game marks every nomination of that game as "voted" (and voting one of
   // them toggles that vote off).
   const votedGameIds = useMemo(
-    () =>
-      new Set(
-        userVotes
-          .map((vote) => vote.gamedb_game_id)
-          .filter((id): id is number => id !== null),
-      ),
-    [userVotes],
+    () => new Set(state.votes.map((vote) => vote.gameId)),
+    [state.votes],
   );
 
   const ordered = useMemo(() => {
@@ -98,28 +143,30 @@ export function NominationBoard({
     );
   }, [nominations, votingEnded, countByNomination]);
 
+  // Derived from the optimistic counts so every bar rescales in the same
+  // frame as the one that was voted on.
   const maxCount = useMemo(
-    () => Math.max(0, ...tally.map((row) => row.vote_count)),
-    [tally],
+    () => Math.max(0, ...countByNomination.values()),
+    [countByNomination],
   );
 
   const handleVote = (nomination: Nomination) => {
     setError(null);
-    setNotice(null);
     setPendingId(nomination.nomination_id);
     startTransition(async () => {
+      castOptimistic(nomination);
       const result = await castVoteAction(
         category,
         round,
         nomination.nomination_id,
       );
-      setPendingId(null);
       if (!result.ok) {
         setError(result.error ?? "Failed to cast vote.");
+        setPendingId(null);
         return;
       }
-      if (result.data?.warning) setNotice(result.data.warning);
       router.refresh();
+      setPendingId(null);
     });
   };
 
@@ -137,29 +184,19 @@ export function NominationBoard({
         <p className="text-xs text-muted-foreground">
           You&apos;ve used{" "}
           <span className={`font-semibold ${accentStyle.count}`}>
-            {userVotes.length} of {cap}
+            {state.votes.length} of {cap}
           </span>{" "}
           votes. Vote again on a game to take that vote back.
         </p>
       )}
 
-      {(notice || error) && (
-        <div
-          className={cn(
-            "flex items-start justify-between gap-3 rounded-lg border px-3 py-2 text-sm",
-            error
-              ? "border-destructive/40 text-destructive"
-              : "border-border text-muted-foreground",
-          )}
-        >
-          <p>{error ?? notice}</p>
+      {error && (
+        <div className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 px-3 py-2 text-sm text-destructive">
+          <p>{error}</p>
           <button
             type="button"
             aria-label="Dismiss"
-            onClick={() => {
-              setError(null);
-              setNotice(null);
-            }}
+            onClick={() => setError(null)}
             className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="size-3.5" />
@@ -174,20 +211,29 @@ export function NominationBoard({
             nomination.gamedb_game_id !== null &&
             votedGameIds.has(nomination.gamedb_game_id);
           const isWinner = votingEnded && maxCount > 0 && count === maxCount;
+          const isOwn =
+            viewerId !== undefined && nomination.user_id === viewerId;
 
-          return (
+          const shared = {
+            nomination,
+            accentStyle,
+            count: showCounts ? count : null,
+            maxCount,
+            voted,
+            votingOpen,
+            disabled: pendingId === nomination.nomination_id,
+            onVote: () => handleVote(nomination),
+          };
+
+          // The viewer's own nomination gets the showcase treatment; everyone
+          // else's stays a compact row.
+          return isOwn ? (
+            <OwnNominationCard key={nomination.nomination_id} {...shared} />
+          ) : (
             <NominationCard
               key={nomination.nomination_id}
-              nomination={nomination}
-              accentStyle={accentStyle}
-              count={showCounts ? count : null}
-              maxCount={maxCount}
-              voted={voted}
+              {...shared}
               isWinner={isWinner}
-              votingOpen={votingOpen}
-              pending={pendingId === nomination.nomination_id}
-              disabled={pendingId !== null}
-              onVote={() => handleVote(nomination)}
             />
           );
         })}
@@ -204,19 +250,17 @@ function NominationCard({
   voted,
   isWinner,
   votingOpen,
-  pending,
   disabled,
   onVote,
 }: {
   nomination: Nomination;
-  accentStyle: (typeof accentClasses)[keyof typeof accentClasses];
+  accentStyle: AccentStyle;
   // null while counts are hidden (nomination phase).
   count: number | null;
   maxCount: number;
   voted: boolean;
   isWinner: boolean;
   votingOpen: boolean;
-  pending: boolean;
   disabled: boolean;
   onVote: () => void;
 }) {
@@ -229,26 +273,45 @@ function NominationCard({
   const nominator = nomination.user;
   const nominatorName =
     nominator?.global_name ?? nominator?.username ?? "Unknown member";
+  const gameHref = nomination.gamedb_game_id
+    ? `/games/${nomination.gamedb_game_id}`
+    : null;
+  // Voting needs a game to attach to, so unknown-game nominations stay inert.
+  const canVote = votingOpen && nomination.gamedb_game_id !== null;
 
   return (
     <li
       className={cn(
-        "relative overflow-hidden rounded-xl border bg-card p-4",
+        "relative overflow-hidden rounded-xl border bg-card p-4 transition-colors",
         isWinner && accentStyle.winner,
+        voted && votingOpen && accentStyle.card,
       )}
     >
-      <div className="flex items-start gap-4">
-        <div className="h-20 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
-          {coverUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={coverUrl}
-              alt=""
-              aria-hidden
-              className="h-full w-full object-cover"
-            />
-          )}
-        </div>
+      {/* A real button rather than a click handler on the <li>, so the card is
+          reachable by keyboard and announces its toggle state. It covers the
+          card, and the few things that need their own clicks sit above it. */}
+      {canVote && (
+        <button
+          type="button"
+          onClick={onVote}
+          disabled={disabled}
+          aria-pressed={voted}
+          aria-label={voted ? `Remove your vote for ${title}` : `Vote for ${title}`}
+          className="absolute inset-0 z-10 cursor-pointer rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-default"
+        />
+      )}
+
+      <div
+        className={cn(
+          "relative z-20 flex items-start gap-4",
+          // Lets clicks fall through to the vote button underneath; children
+          // that need their own target opt back in with pointer-events-auto.
+          canVote && "pointer-events-none",
+        )}
+      >
+        {/* Same pointer split as the title: inert on touch so the tap votes,
+            a link to the game from sm up. */}
+        <CardCover coverUrl={coverUrl} href={gameHref} inert={canVote} />
 
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex items-center gap-2">
@@ -256,10 +319,13 @@ function NominationCard({
               <Crown className={`size-4 shrink-0 ${accentStyle.crown}`} />
             )}
             <h3 className="truncate font-semibold tracking-tight">
-              {nomination.gamedb_game_id ? (
+              {gameHref ? (
                 <Link
-                  href={`/games/${nomination.gamedb_game_id}`}
-                  className="hover:underline"
+                  href={gameHref}
+                  // Pointer-inert on touch, where the title sits inside the
+                  // card's vote target; the menu below is the way to the game
+                  // page there. From sm up it behaves as a normal link.
+                  className="pointer-events-none hover:underline sm:pointer-events-auto"
                 >
                   {title}
                 </Link>
@@ -267,8 +333,10 @@ function NominationCard({
                 title
               )}
             </h3>
+            {/* Hidden on phones: at 360px it competed directly with the
+                title, and the year is on the game page anyway. */}
             {year && (
-              <span className="shrink-0 rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="hidden shrink-0 rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:inline-block">
                 {year}
               </span>
             )}
@@ -302,7 +370,18 @@ function NominationCard({
           )}
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2 self-center">
+        <div className="flex shrink-0 flex-col items-end gap-1.5 self-center">
+          {/* Touch-only route to the game page. It lives in this column rather
+              than beside the title so it costs the title no width. */}
+          {gameHref && (
+            <Link
+              href={gameHref}
+              aria-label={`View ${title}`}
+              className="pointer-events-auto -mr-1 flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden sm:hidden"
+            >
+              <ArrowUpRight className="size-4" />
+            </Link>
+          )}
           {count !== null && (
             <p className="text-sm text-muted-foreground">
               <span
@@ -313,37 +392,77 @@ function NominationCard({
               {count === 1 ? "vote" : "votes"}
             </p>
           )}
-          {votingOpen && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onVote}
-              disabled={disabled || nomination.gamedb_game_id === null}
-              className={cn(voted && accentStyle.voted)}
-            >
-              {pending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : voted ? (
-                <>
-                  <Check className="size-3.5" />
-                  Voted
-                </>
-              ) : (
-                "Vote"
+          {/* The vote state used to live on the button; with the whole card
+              acting as the control it needs its own mark. */}
+          {votingOpen && voted && (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                accentStyle.voted,
               )}
-            </Button>
+            >
+              <Check className="size-3" />
+              Voted
+            </span>
           )}
         </div>
       </div>
 
       {count !== null && maxCount > 0 && (
-        <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted/60">
-          <div
-            className={`h-full rounded-full ${accentStyle.bar}`}
-            style={{ width: `${(count / maxCount) * 100}%` }}
-          />
-        </div>
+        // Relative to the leader's tally, not an absolute target, so max is
+        // the top count rather than 100.
+        <Progress
+          value={count}
+          max={maxCount}
+          aria-label={`${count} of ${maxCount} votes`}
+          className={cn("relative z-20 mt-3", canVote && "pointer-events-none")}
+          indicatorClassName={cn(accentStyle.bar, BAR_MOTION)}
+        />
       )}
     </li>
+  );
+}
+
+function CardCover({
+  coverUrl,
+  href,
+  inert,
+}: {
+  coverUrl: string | null;
+  href: string | null;
+  inert: boolean;
+}) {
+  const art = coverUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={coverUrl}
+      alt=""
+      aria-hidden
+      className="h-full w-full object-cover"
+    />
+  ) : null;
+
+  if (!href) {
+    return (
+      <div className="h-20 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
+        {art}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      tabIndex={-1}
+      aria-hidden
+      className={cn(
+        "h-20 w-14 shrink-0 overflow-hidden rounded-md bg-muted",
+        // The title link beside it already reaches the game page for keyboard
+        // and screen-reader users, so this is a pointer shortcut only.
+        inert && "pointer-events-none sm:pointer-events-auto",
+      )}
+    >
+      {art}
+    </Link>
   );
 }

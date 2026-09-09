@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,7 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -22,7 +23,15 @@ import {
   type SessionPrincipal,
 } from "@/lib/auth-types";
 import { signOut } from "@/app/actions/auth";
-import { LayoutDashboard, Library, LogOut, Users, Vote } from "lucide-react";
+import {
+  LayoutDashboard,
+  Library,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Users,
+  Vote,
+} from "lucide-react";
 
 const navMain = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -38,6 +47,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ principal, membership }: AppSidebarProps) {
   const pathname = usePathname();
+  const { toggleSidebar } = useSidebar();
   const isAdmin = membership?.admin || membership?.moderator || membership?.dev;
   const displayName = principal.global_name ?? principal.username;
   const avatarUrl = discordAvatarUrl(
@@ -48,14 +58,56 @@ export function AppSidebar({ principal, membership }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
+      {/* Extra top padding so the logo isn't crowded against the top edge. */}
+      <SidebarHeader className="pt-4">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">The RPG Club</span>
-              </div>
-            </SidebarMenuButton>
+          <SidebarMenuItem className="flex items-center gap-2">
+            {/* Collapsed rail: nothing but the logo fits, so it doubles as the
+                expand control and reveals the panel icon on hover. */}
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-label="Expand sidebar"
+              title="Expand sidebar"
+              className="group/logo relative hidden size-8 shrink-0 items-center justify-center rounded-md transition-colors group-data-[collapsible=icon]:flex hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-hidden"
+            >
+              <Image
+                src="/logo.png"
+                alt=""
+                width={32}
+                height={32}
+                className="size-8 transition-opacity group-hover/logo:opacity-0"
+              />
+              <PanelLeftOpen className="absolute size-4 opacity-0 transition-opacity group-hover/logo:opacity-100" />
+            </button>
+
+            {/* Expanded: logo and lettering are one branding link, with the
+                collapse control alongside it rather than hidden on the logo. */}
+            <Link
+              href="/dashboard"
+              className="flex min-w-0 flex-1 items-center gap-2 group-data-[collapsible=icon]:hidden"
+            >
+              <Image
+                src="/logo.png"
+                alt=""
+                width={32}
+                height={32}
+                priority
+                className="size-8 shrink-0"
+              />
+              <span className="truncate text-sm leading-tight font-semibold">
+                The RPG Club
+              </span>
+            </Link>
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-label="Collapse sidebar"
+              title="Collapse sidebar"
+              className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors group-data-[collapsible=icon]:hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-hidden"
+            >
+              <PanelLeftClose className="size-4" />
+            </button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -117,8 +169,6 @@ export function AppSidebar({ principal, membership }: AppSidebarProps) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   );
 }

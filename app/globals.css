@@ -46,6 +46,23 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Brand red — sampled from the club logo. brand-500 is exactly #ff0000, the
+   red in the logo; 600-950 cover the darker reds in its ink strokes. The light
+   end is held near the sRGB chroma ceiling so it stays red rather than pink. */
+@theme {
+    --color-brand-50: oklch(0.86 0.072 29.23);
+    --color-brand-100: oklch(0.805 0.1058 29.23);
+    --color-brand-200: oklch(0.74 0.1508 29.23);
+    --color-brand-300: oklch(0.675 0.2025 29.23);
+    --color-brand-400: oklch(0.648 0.231 29.23);
+    --color-brand-500: oklch(0.6279 0.2577 29.23);
+    --color-brand-600: oklch(0.577 0.2369 29.23);
+    --color-brand-700: oklch(0.505 0.2074 29.23);
+    --color-brand-800: oklch(0.444 0.1824 29.23);
+    --color-brand-900: oklch(0.396 0.1533 29.23);
+    --color-brand-950: oklch(0.258 0.1 29.23);
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -61,7 +78,9 @@
     --muted-foreground: oklch(0.556 0 0);
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
+    /* Honey yellow, toasted for contrast on the light background (4.8:1 on white).
+       Kept off the brand red so destructive UI stays distinguishable. */
+    --destructive: oklch(0.56 0.1123 75);
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
@@ -96,7 +115,8 @@
     --muted-foreground: oklch(0.708 0 0);
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
+    /* Honey yellow (10.3:1 on the dark background). */
+    --destructive: oklch(0.8 0.1604 75);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
