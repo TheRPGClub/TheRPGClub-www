@@ -10,6 +10,8 @@ import type {
   GameRelations,
   Review,
   User,
+  VotingCategory,
+  VotingInfo,
 } from "@/lib/api/types";
 import {
   Avatar,
@@ -28,6 +30,21 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
 import { CornerRibbon, type RibbonAccent } from "@/components/corner-ribbon";
+import {
+  GameBallotPanel,
+  type GameBallotPanelProps,
+} from "@/components/voting/game-ballot-panel";
+import { accentForCategory } from "@/components/voting/accents";
+import {
+  ballotIsPublic,
+  fetchNominations,
+  fetchTally,
+  fetchUserVotes,
+  fetchVotingInfo,
+  tallyByGame,
+  VOTING_CATEGORIES,
+  VOTING_CATEGORY_TITLE,
+} from "@/lib/api/voting-round";
 import {
   ExternalLink,
   Gamepad2,
@@ -239,6 +256,12 @@ async function GameContent({ gameId }: { gameId: number }) {
         </div>
       </div>
 
+      {/* The current round's ballot, when this game is on it. Streams in
+          separately — it is a live read and must not hold up the hero. */}
+      <Suspense fallback={null}>
+        <BallotSection gameId={gameId} />
+      </Suspense>
+
       {/* Currently playing */}
       <section className="space-y-4">
         <SectionHeader
@@ -293,6 +316,85 @@ async function GameContent({ gameId }: { gameId: number }) {
       </Suspense>
     </>
   );
+}
+
+// Offers the vote from the game's own page, so a member who landed here from
+// a link or a search doesn't have to go find the card on /voting. A game can
+// in principle sit on both categories' ballots, so this renders one panel per
+// category it appears on.
+async function BallotSection({ gameId }: { gameId: number }) {
+  const info = await fetchVotingInfo();
+  // Before a round's vote opens its ballot is withheld — /voting won't show
+  // it either, and nothing here should leak what was nominated.
+  if (!info || !ballotIsPublic(info)) return null;
+
+  // getSession is React-cached, so this reuses the hero's fetch.
+  const session = await getSession();
+  const panels = (
+    await Promise.all(
+      VOTING_CATEGORIES.map((category) =>
+        ballotPanel(category, gameId, info, session?.principal.id),
+      ),
+    )
+  ).filter((panel) => panel !== null);
+
+  if (!panels.length) return null;
+
+  return (
+    <div className="space-y-3">
+      {panels.map((panel) => (
+        <GameBallotPanel key={panel.category} {...panel} />
+      ))}
+    </div>
+  );
+}
+
+async function ballotPanel(
+  category: VotingCategory,
+  gameId: number,
+  info: VotingInfo,
+  userId: string | undefined,
+): Promise<GameBallotPanelProps | null> {
+  const round = info.round_number;
+  const nominations = await fetchNominations(category, round);
+  // Two members can nominate the same game in one round, so this is a list.
+  const forGame = nominations.filter((n) => n.gamedb_game_id === gameId);
+  if (!forGame.length) return null;
+
+  const [tally, userVotes] = await Promise.all([
+    fetchTally(category, round),
+    info.voting_open && userId
+      ? fetchUserVotes(category, round, userId)
+      : Promise.resolve([]),
+  ]);
+
+  const byGame = tallyByGame(tally.rows);
+  const count = byGame.get(gameId) ?? 0;
+  const maxCount = Math.max(0, ...byGame.values());
+
+  const votedOn = userVotes.find((vote) => vote.gamedb_game_id === gameId);
+  const earliest = forGame.reduce((a, b) =>
+    a.nominated_at <= b.nominated_at ? a : b,
+  );
+
+  return {
+    category,
+    categoryTitle: VOTING_CATEGORY_TITLE[category],
+    accent: accentForCategory[category],
+    round,
+    nominationId: votedOn?.nomination_id ?? earliest.nomination_id,
+    count,
+    maxCount,
+    voted: votedOn !== undefined,
+    votesUsed: userVotes.length,
+    cap: tally.cap,
+    votingOpen: info.voting_open,
+    isWinner: info.voting_ended && maxCount > 0 && count === maxCount,
+    nominatedBy: forGame.map(
+      (n) => n.user?.global_name ?? n.user?.username ?? "Unknown member",
+    ),
+    signedIn: userId !== undefined,
+  };
 }
 
 async function ReviewsSection({

@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import { Gamepad2, Trophy, Vote, type LucideIcon } from "lucide-react";
-import { apiFetch } from "@/lib/api";
-import type {
-  Nomination,
-  NominationVote,
-  VoteTallyRow,
-  VotingCategory,
-  VotingInfo,
-} from "@/lib/api/types";
+import type { VoteTallyRow, VotingInfo } from "@/lib/api/types";
+import {
+  ballotIsPublic,
+  fetchNominations,
+  fetchTally,
+  fetchUserVotes,
+  fetchVotingInfo,
+} from "@/lib/api/voting-round";
 import { NominationBoard } from "@/components/voting/nomination-board";
 import { NominatePanel } from "@/components/voting/nominate-panel";
 import {
@@ -17,11 +17,6 @@ import {
 } from "@/components/voting/phase-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/lib/session";
-
-const CATEGORY_PATH: Record<VotingCategory, string> = {
-  gotm: "gotm_entries",
-  nr_gotm: "nr_gotm_entries",
-};
 
 // Round layout mirrors the club lifecycle: voting targets the CURRENT round
 // (voting_info/current — its ballot was nominated last cycle), while
@@ -34,75 +29,6 @@ const CATEGORY_PATH: Record<VotingCategory, string> = {
 // to whichever is live. `?phase=` overrides that, which keeps the switch on the
 // server: each tab is a link, so the per-phase fetching below stays honest and
 // a phase is linkable ("come vote: /voting?phase=vote").
-
-// Everything here is no-store: tallies move as other members vote, the page
-// embeds the viewer's own votes and nomination, and the windows can flip
-// between renders.
-
-async function fetchVotingInfo(): Promise<VotingInfo | null> {
-  try {
-    const res = await apiFetch("/api/v1/voting_info/current", {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return ((await res.json()) as { data: VotingInfo }).data;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchNominations(
-  category: VotingCategory,
-  round: number,
-): Promise<Nomination[]> {
-  try {
-    const res = await apiFetch(
-      `/api/v1/${CATEGORY_PATH[category]}/${round}/nominations?limit=200`,
-      { cache: "no-store" },
-    );
-    if (!res.ok) return [];
-    return ((await res.json()) as { data: Nomination[] }).data;
-  } catch {
-    return [];
-  }
-}
-
-async function fetchTally(
-  category: VotingCategory,
-  round: number,
-): Promise<{ rows: VoteTallyRow[]; cap: number }> {
-  try {
-    const res = await apiFetch(
-      `/api/v1/${CATEGORY_PATH[category]}/${round}/votes/tally`,
-      { cache: "no-store" },
-    );
-    if (!res.ok) return { rows: [], cap: 2 };
-    const body = (await res.json()) as {
-      data: VoteTallyRow[];
-      meta: { cap: number };
-    };
-    return { rows: body.data, cap: body.meta.cap };
-  } catch {
-    return { rows: [], cap: 2 };
-  }
-}
-
-async function fetchUserVotes(
-  category: VotingCategory,
-  round: number,
-  userId: string,
-): Promise<NominationVote[]> {
-  try {
-    const res = await apiFetch(
-      `/api/v1/${CATEGORY_PATH[category]}/${round}/votes/${userId}`,
-      { cache: "no-store" },
-    );
-    if (!res.ok) return [];
-    return ((await res.json()) as { data: NominationVote[] }).data;
-  } catch {
-    return [];
-  }
-}
 
 export default function VotingPage({ searchParams }: PageProps<"/voting">) {
   return (
@@ -157,9 +83,7 @@ async function VotingContent({
       ? requested
       : (live ?? "vote");
 
-  // The round's ballot exists once its vote has opened; it stays readable
-  // afterwards as the results board.
-  const showBallot = phase === "vote" && (votingOpen || info.voting_ended);
+  const showBallot = phase === "vote" && ballotIsPublic(info);
   const showNominations = phase === "nominate";
 
   // Only the visible phase is fetched — the other tab's data is a link away.

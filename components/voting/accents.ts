@@ -1,4 +1,5 @@
 import type { RibbonAccent } from "@/components/corner-ribbon";
+import type { VotingCategory } from "@/lib/api/types";
 
 // Per-category accent classes for the nomination board's cards.
 //
@@ -19,6 +20,7 @@ export const accentClasses = {
     winner: "border-brand-500/50",
     own: "border-brand-500/40",
     crown: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.5)]",
+    pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
     // Washes the text side of a card the way the dashboard's GOTM cards do,
     // so the hue survives even when the key art is doing the talking.
     glow: "from-brand-950/40 to-transparent",
@@ -33,6 +35,7 @@ export const accentClasses = {
     winner: "border-purple-500/50",
     own: "border-purple-500/40",
     crown: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]",
+    pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",
     glow: "from-purple-950/40 to-transparent",
     hoverBorder: "hover:border-purple-500/40",
     ribbon: "purple" as RibbonAccent,
@@ -40,6 +43,12 @@ export const accentClasses = {
 } as const;
 
 export type VotingAccent = keyof typeof accentClasses;
+
+// The club's two categories each own a hue, everywhere they appear.
+export const accentForCategory: Record<VotingCategory, VotingAccent> = {
+  gotm: "brand",
+  nr_gotm: "purple",
+};
 export type AccentStyle = (typeof accentClasses)[VotingAccent];
 
 // Slides a tally bar to its new relative scale when a vote lands. Overrides
