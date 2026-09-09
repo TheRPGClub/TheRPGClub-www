@@ -99,7 +99,7 @@ async function DashboardContent() {
               round={gotm.round_number}
               monthYear={gotm.month_year}
               pickCount={gotm.picks.length}
-              accent="emerald"
+              accent="brand"
               Icon={Trophy}
             />
             <div className={gridClass[gotm.picks.length] ?? gridClass[3]}>
@@ -111,7 +111,7 @@ async function DashboardContent() {
                     label={isCompact ? "GOTM" : "Game of the Month"}
                     round={gotm.round_number}
                     monthYear={gotm.month_year}
-                    accent="emerald"
+                    accent="brand"
                     compact={isCompact}
                     showMeta={false}
                     href={
@@ -182,10 +182,10 @@ function DashboardWelcome({ principal }: { principal: SessionPrincipal }) {
     <div>
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
         Welcome back,{" "}
-        <span className="bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+        <span className="bg-linear-to-r from-brand-200 via-brand-300 to-brand-500 bg-clip-text text-transparent">
           {displayName}
         </span>
-        <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]">
+        <span className="text-brand-400 drop-shadow-[0_0_8px_rgba(255,0,0,0.6)]">
           .
         </span>
       </h1>
@@ -197,10 +197,10 @@ function DashboardWelcome({ principal }: { principal: SessionPrincipal }) {
 }
 
 const sectionAccent = {
-  emerald: {
-    icon: "text-emerald-300 drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]",
-    gradient: "from-emerald-200 via-emerald-300 to-emerald-500",
-    underline: "from-emerald-500/60 via-emerald-500/20 to-transparent",
+  brand: {
+    icon: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]",
+    gradient: "from-brand-200 via-brand-300 to-brand-500",
+    underline: "from-brand-500/60 via-brand-500/20 to-transparent",
   },
   purple: {
     icon: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]",

@@ -2,12 +2,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const accentClasses = {
-  emerald: {
-    pill: "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-500/30",
-    number: "text-emerald-200/90",
-    glow: "from-emerald-950/40 to-transparent",
-    hoverBorder: "hover:border-emerald-500/40",
-    cta: "text-emerald-300",
+  brand: {
+    pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
+    number: "text-brand-200/90",
+    glow: "from-brand-950/40 to-transparent",
+    hoverBorder: "hover:border-brand-500/40",
+    cta: "text-brand-300",
   },
   purple: {
     pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",

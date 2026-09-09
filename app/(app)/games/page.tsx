@@ -170,7 +170,7 @@ function GameCard({ game }: { game: Game }) {
     ? new Date(game.initial_release_date).getFullYear()
     : null;
   const winnerBadge = game.gotm_won
-    ? { label: "GOTM", classes: "bg-emerald-500/20 text-emerald-100 ring-emerald-500/40" }
+    ? { label: "GOTM", classes: "bg-brand-500/20 text-brand-100 ring-brand-500/40" }
     : game.nr_gotm_won
       ? { label: "NR GOTM", classes: "bg-purple-500/20 text-purple-100 ring-purple-500/40" }
       : null;
@@ -225,7 +225,7 @@ function WinnerFilterPills({
     {
       value: "gotm",
       label: "GOTM winners",
-      activeClasses: "bg-emerald-500/20 text-emerald-200 ring-emerald-500/40",
+      activeClasses: "bg-brand-500/20 text-brand-200 ring-brand-500/40",
     },
     {
       value: "nr_gotm",

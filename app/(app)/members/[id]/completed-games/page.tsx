@@ -74,7 +74,7 @@ export default async function CompletedGamesPage({
                 platform={entry.platform}
                 note={entry.note}
                 meta={
-                  <span className="inline-flex items-center gap-1 text-xs text-emerald-500">
+                  <span className="inline-flex items-center gap-1 text-xs text-brand-500">
                     <Trophy className="size-3" /> {completed ?? "Completed"}
                   </span>
                 }
