@@ -144,11 +144,14 @@ const PHASE_REVALIDATE_SECONDS = 60;
 // nothing, where an uncached read would put an API round-trip on every page
 // load. /voting keeps fetchVotingInfo's no-store read and stays exact.
 //
-// Sharing one cache entry between viewers is safe HERE because
-// voting_info/current is global round metadata with nothing per-user in it.
-// Next keys the Data Cache on URL, method and body — NOT on headers — so
-// apiFetch's per-user bearer token does not separate entries. Never cache a
-// per-user endpoint this way.
+// CALL THIS ONLY FROM AN AUTHENTICATED CONTEXT. Next keys the Data Cache on
+// URL, method and body — NOT on headers — so apiFetch's per-user bearer token
+// does not separate entries and one entry is shared by every caller. The body
+// is safe to share (global round metadata, nothing per-user), but the
+// *response* is not: this endpoint 401s without a token, and an unauthenticated
+// caller will cache that 401 for the whole revalidate window, blanking the
+// phase for every signed-in reader behind it. app/(app)/layout.tsx therefore
+// calls this after its auth redirect, not alongside it.
 export async function fetchCurrentPhase(): Promise<VotingPhase | null> {
   try {
     const res = await apiFetch("/api/v1/voting_info/current", {
