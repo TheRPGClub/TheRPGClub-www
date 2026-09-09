@@ -23,11 +23,10 @@ export default async function BackloggedGamesPage({
 }) {
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [userRes, listRes] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    apiFetch(`/api/v1/users/${id}/backlog?limit=${PAGE_SIZE}&offset=${offset}`, {
+    apiFetch(`/api/v1/users/${id}/backlog?per=${PAGE_SIZE}&page=${currentPage}`, {
       cache: "no-store",
     }),
   ]);
@@ -38,12 +37,15 @@ export default async function BackloggedGamesPage({
 
   let entries: UserBacklog[] = [];
   let total = 0;
+  let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<UserBacklog> = await listRes.json();
     entries = body.data;
-    total = paginationOf(body.meta, entries.length).total;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, entries.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
   }
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>
     `/members/${id}/backlogged-games${p > 1 ? `?page=${p}` : ""}`;
 

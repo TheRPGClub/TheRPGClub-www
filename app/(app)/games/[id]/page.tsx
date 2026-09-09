@@ -410,7 +410,7 @@ async function ReviewsSection({
   canWriteReview: boolean;
 }) {
   const reviewsRes = await apiFetch(
-    `/api/v1/games/${gameId}/reviews?limit=5`,
+    `/api/v1/games/${gameId}/reviews?per=5`,
     { cache: "no-store" },
   );
 

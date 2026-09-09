@@ -45,7 +45,7 @@ export function GamePicker({
       try {
         setLoading(true);
         const res = await fetch(
-          `/api/games/search?limit=8&q=${encodeURIComponent(trimmedQuery)}`,
+          `/api/games/search?per=8&q=${encodeURIComponent(trimmedQuery)}`,
           { signal: controller.signal },
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

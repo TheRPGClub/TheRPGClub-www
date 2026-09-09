@@ -56,7 +56,7 @@ export async function fetchNominations(
 ): Promise<Nomination[]> {
   try {
     const res = await apiFetch(
-      `/api/v1/${VOTING_CATEGORY_PATH[category]}/${round}/nominations?limit=200`,
+      `/api/v1/${VOTING_CATEGORY_PATH[category]}/${round}/nominations?per=200`,
       { cache: "no-store" },
     );
     if (!res.ok) return [];

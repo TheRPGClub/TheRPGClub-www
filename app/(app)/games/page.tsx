@@ -62,8 +62,10 @@ async function GamesGrid({
   currentPage: number;
   winner: WinnerFilter;
 }) {
-  const offset = (currentPage - 1) * PAGE_SIZE;
-  const qs = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+  const qs = new URLSearchParams({
+    per: String(PAGE_SIZE),
+    page: String(currentPage),
+  });
   if (q) qs.set("q", q);
   if (winner) qs.set("winner", winner);
 

@@ -26,13 +26,12 @@ export default async function GameReviewsPage({
   if (isNaN(gameId)) notFound();
 
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [gameRes, session, listRes] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     getSession(),
     apiFetch(
-      `/api/v1/games/${gameId}/reviews?limit=${PAGE_SIZE}&offset=${offset}`,
+      `/api/v1/games/${gameId}/reviews?per=${PAGE_SIZE}&page=${currentPage}`,
       { cache: "no-store" },
     ),
   ]);
@@ -42,12 +41,15 @@ export default async function GameReviewsPage({
 
   let reviews: Review[] = [];
   let total = 0;
+  let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
     reviews = body.data;
-    total = paginationOf(body.meta, reviews.length).total;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, reviews.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
   }
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>
     `/games/${gameId}/reviews${p > 1 ? `?page=${p}` : ""}`;
 

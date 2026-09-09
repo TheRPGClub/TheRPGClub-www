@@ -23,12 +23,11 @@ export default async function MemberReviewsPage({
 }) {
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
 
   const [userRes, session, listRes] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
-    apiFetch(`/api/v1/users/${id}/reviews?limit=${PAGE_SIZE}&offset=${offset}`, {
+    apiFetch(`/api/v1/users/${id}/reviews?per=${PAGE_SIZE}&page=${currentPage}`, {
       cache: "no-store",
     }),
   ]);
@@ -40,12 +39,15 @@ export default async function MemberReviewsPage({
 
   let reviews: Review[] = [];
   let total = 0;
+  let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
     reviews = body.data;
-    total = paginationOf(body.meta, reviews.length).total;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, reviews.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
   }
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) =>
     `/members/${id}/reviews${p > 1 ? `?page=${p}` : ""}`;
 

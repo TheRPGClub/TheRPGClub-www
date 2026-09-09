@@ -59,21 +59,21 @@ export default async function MemberEditPage({
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     loadCollection<SocialPlatform>("/api/v1/social_platforms"),
-    loadCollection<Platform>("/api/v1/platforms?limit=100"),
+    loadCollection<Platform>("/api/v1/platforms?per=100"),
     loadCollection<UserFavorite>(
-      `/api/v1/users/${id}/favorites?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/favorites?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<UserNowPlaying>(
-      `/api/v1/users/${id}/now_playing?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<GameCompletion>(
-      `/api/v1/users/${id}/completions?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<UserBacklog>(
-      `/api/v1/users/${id}/backlog?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
     ),
     loadCollection<GameCollection>(
-      `/api/v1/users/${id}/collections?limit=${EDITOR_LIMIT}`,
+      `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
     ),
   ]);
 

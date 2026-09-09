@@ -77,7 +77,7 @@ export default async function MemberPage({
   // We fan out to each list endpoint instead of relying on the aggregated
   // `user.previews` slice because that slice doesn't always include the joined
   // game data, leading to missing cover images in the preview grid.
-  const previewQs = `?limit=${PREVIEW_LIMIT}`;
+  const previewQs = `?per=${PREVIEW_LIMIT}`;
   const [
     userRes,
     session,

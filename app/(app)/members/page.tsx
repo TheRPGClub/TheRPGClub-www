@@ -58,7 +58,7 @@ async function MembersList() {
   let users: User[] = [];
 
   try {
-    const res = await apiFetch(`/api/v1/users?limit=${FETCH_LIMIT}`, {
+    const res = await apiFetch(`/api/v1/users?per=${FETCH_LIMIT}`, {
       next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
     });
     if (res.ok) {
