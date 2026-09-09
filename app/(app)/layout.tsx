@@ -14,13 +14,21 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Cached, so the sidebar's phase badge costs every page in the app a Data
-  // Cache hit rather than an API round-trip. Runs alongside the session read.
-  const [session, votingPhase] = await Promise.all([
-    getSession(),
-    fetchCurrentPhase(),
-  ]);
+  const session = await getSession();
   if (!session) redirect("/");
+
+  // Sequenced behind the redirect, NOT run alongside getSession.
+  //
+  // fetchCurrentPhase is cached and Next keys the Data Cache on URL alone, not
+  // on headers, so one entry is shared by every caller. voting_info/current
+  // requires auth and 401s without it — so issuing this in parallel let any
+  // unauthenticated hit on an (app) route (a crawler, a prefetch, a logged-out
+  // visit) cache a 401 for the full revalidate window and blank the phase for
+  // every signed-in user behind it, which is how the nav read "Voting" during
+  // a nomination window. Past the redirect only authenticated requests can
+  // populate it, and the body they get is the same global round metadata for
+  // everyone. The serialisation only costs a cache miss.
+  const votingPhase = await fetchCurrentPhase();
 
   return (
     <TooltipProvider>
