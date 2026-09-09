@@ -210,7 +210,7 @@ export function GameBallotPanel({
           )}
         </span>
         <Link
-          href="/voting?phase=vote"
+          href="/voting"
           className="inline-flex items-center gap-1 font-medium transition-colors hover:text-foreground"
         >
           See the full ballot
