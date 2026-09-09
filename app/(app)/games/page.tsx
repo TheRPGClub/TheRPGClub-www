@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Game } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
+import { CornerRibbon } from "@/components/corner-ribbon";
 import { GamesSearchForm } from "./games-search-form";
 import {
   Pagination,
@@ -170,10 +171,11 @@ function GameCard({ game }: { game: Game }) {
   const year = game.initial_release_date
     ? new Date(game.initial_release_date).getFullYear()
     : null;
-  const winnerBadge = game.gotm_won
-    ? { label: "GOTM", classes: "bg-brand-500/20 text-brand-100 ring-brand-500/40" }
+  // Same device as the game page's hero, at the grid's scale.
+  const winner = game.gotm_won
+    ? { label: "GOTM", accent: "brand" as const }
     : game.nr_gotm_won
-      ? { label: "NR GOTM", classes: "bg-purple-500/20 text-purple-100 ring-purple-500/40" }
+      ? { label: "NR GOTM", accent: "purple" as const }
       : null;
   return (
     <Link href={`/games/${game.game_id}`} className="group block space-y-2">
@@ -192,12 +194,13 @@ function GameCard({ game }: { game: Game }) {
             </span>
           </div>
         )}
-        {winnerBadge && (
-          <span
-            className={`absolute top-1.5 right-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ring-1 ring-inset shadow-sm backdrop-blur-sm ${winnerBadge.classes}`}
-          >
-            {winnerBadge.label}
-          </span>
+        {winner && (
+          <CornerRibbon
+            size="sm"
+            accent={winner.accent}
+            label={winner.label}
+            srLabel={`${winner.label} winner`}
+          />
         )}
       </div>
       <div>

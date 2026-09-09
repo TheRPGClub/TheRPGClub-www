@@ -13,31 +13,62 @@ const ribbonAccents = {
 
 export type RibbonAccent = keyof typeof ribbonAccents;
 
+// Two scales, because the band has to cross the corner at a distance
+// proportional to the card. `default` suits a hero; `sm` a cover in a grid,
+// where the banner sits about 24px in and a hero-sized one would swallow the
+// artwork.
+//
+// The visible span is the diagonal chord, not the band's full width, so a
+// longer label steps down in size and tracking rather than clipping.
+// `fitsUpTo` is where that step falls at each scale.
+const ribbonSizes = {
+  default: {
+    box: "top-7 -right-14 h-7 w-52",
+    // "GOTM Winner" still fits roomy; "NR GOTM Winner" does not.
+    fitsUpTo: 12,
+    roomy: "text-[10px] tracking-[0.25em]",
+    tight: "text-[9px] tracking-[0.15em]",
+  },
+  sm: {
+    box: "top-3 -right-10 h-5 w-32",
+    // "GOTM" fits roomy; "NR GOTM" does not.
+    fitsUpTo: 5,
+    roomy: "text-[9px] tracking-[0.15em]",
+    tight: "text-[8px] tracking-[0.05em]",
+  },
+} as const;
+
+export type RibbonSize = keyof typeof ribbonSizes;
+
 export interface CornerRibbonProps {
   accent: RibbonAccent;
   label: string;
   // Announced to screen readers; defaults to the visible label.
   srLabel?: string;
+  size?: RibbonSize;
 }
 
-// The visible band is a fixed width, so a longer label steps down in size and
-// tracking rather than wrapping or clipping. 12 characters is where "GOTM
-// Winner" still fits at the roomy setting and "NR GOTM Winner" no longer does.
-const LABEL_FITS_UP_TO = 12;
-
-export function CornerRibbon({ accent, label, srLabel }: CornerRibbonProps) {
-  const roomy = label.length <= LABEL_FITS_UP_TO;
+export function CornerRibbon({
+  accent,
+  label,
+  srLabel,
+  size = "default",
+}: CornerRibbonProps) {
+  const scale = ribbonSizes[size];
 
   return (
     <div
       aria-label={srLabel ?? label}
-      className="pointer-events-none absolute top-7 -right-14 z-30 flex h-7 w-52 rotate-45 items-center justify-center"
+      className={cn(
+        "pointer-events-none absolute z-30 flex rotate-45 items-center justify-center",
+        scale.box,
+      )}
     >
       <div
         className={cn(
           "flex h-full w-full items-center justify-center whitespace-nowrap bg-linear-to-r font-bold uppercase shadow-md ring-1",
           ribbonAccents[accent],
-          roomy ? "text-[10px] tracking-[0.25em]" : "text-[9px] tracking-[0.15em]",
+          label.length <= scale.fitsUpTo ? scale.roomy : scale.tight,
         )}
       >
         {label}
