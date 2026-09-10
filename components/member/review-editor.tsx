@@ -15,6 +15,7 @@ export interface ReviewEditorProps {
   onChange: (value: Value) => void;
   disabled?: boolean;
   placeholder?: string;
+  toolbar?: "compact" | "full";
 }
 
 export function ReviewEditor({
@@ -22,6 +23,7 @@ export function ReviewEditor({
   onChange,
   disabled,
   placeholder = "What did you think? (optional)",
+  toolbar = "full",
 }: ReviewEditorProps) {
   const editor = usePlateEditor({
     plugins: reviewPlugins,
@@ -46,7 +48,10 @@ export function ReviewEditor({
         )}
       >
         {!disabled && (
-          <ReviewEditorToolbar className="border-b border-input px-1.5 py-1" />
+          <ReviewEditorToolbar
+            variant={toolbar}
+            className="border-b border-input px-1.5 py-1"
+          />
         )}
         <PlateContent
           placeholder={placeholder}

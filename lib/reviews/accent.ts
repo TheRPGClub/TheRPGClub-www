@@ -24,10 +24,16 @@ export interface ReviewAccentStyle {
   readout: string;
   // Picked up by the readout only while the slider is being dragged.
   glow: string;
+  // Washes the text side of a banner, the way the dashboard's cards and the
+  // game page's hero do. Distinct from `glow`, which is a drop-shadow on the
+  // score readout — same word, different job.
+  wash: string;
   thumb: string;
   // Underlines the score field on hover and focus, so a borderless number
   // still announces itself as editable.
   caret: string;
+  // The category badge, in the treatment the dashboard and game page use.
+  pill: string;
 }
 
 export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
@@ -39,8 +45,10 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     fill: "from-brand-300 to-brand-700",
     readout: "text-brand-200",
     glow: "drop-shadow-[0_0_12px_rgba(255,0,0,0.45)]",
+    wash: "from-brand-950/40 to-transparent",
     thumb: "border-brand-200 bg-brand-500 ring-brand-500/40",
     caret: "bg-brand-400",
+    pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
   },
   purple: {
     label: "Non-RPG Game of the Month",
@@ -50,8 +58,10 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     fill: "from-purple-400 to-purple-700",
     readout: "text-purple-200",
     glow: "drop-shadow-[0_0_12px_rgba(168,85,247,0.45)]",
+    wash: "from-purple-950/40 to-transparent",
     thumb: "border-purple-200 bg-purple-500 ring-purple-500/40",
     caret: "bg-purple-400",
+    pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",
   },
   neutral: {
     label: null,
@@ -61,8 +71,10 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     fill: "from-white/80 to-white/35",
     readout: "text-foreground",
     glow: "drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]",
+    wash: "from-muted/40 to-transparent",
     thumb: "border-white/80 bg-white/90 ring-white/30",
     caret: "bg-foreground/70",
+    pill: "bg-muted/40 text-muted-foreground ring-1 ring-inset ring-border",
   },
 };
 

@@ -10,9 +10,9 @@ import {
 } from "@/app/actions/reviews";
 import type { Review } from "@/lib/api/types";
 import { emptyReviewValue, reviewBodyValue } from "@/lib/api/review-body";
+import { Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
-import { cn } from "@/lib/utils";
+import type { ReviewAccent } from "@/lib/reviews/accent";
 import { RatingInput } from "./rating-input";
 import { ReviewEditor } from "./review-editor";
 import type { Value } from "platejs";
@@ -24,11 +24,25 @@ export interface ReviewFormProps {
   onCancel?: () => void;
   // Fires after a successful save with the updated review.
   onSaved?: (review: Review) => void;
+  // Fires after a successful delete. A caller whose whole page *is* this
+  // review needs to navigate away rather than refresh into a 404, which is
+  // why this is separate from `onCancel`.
+  onDeleted?: () => void;
+  // When given, the form offers to move to the full-page editor. Providing it
+  // is what makes the button exist at all — the small editor on a game page
+  // has somewhere bigger to go, the full page does not.
+  //
+  // The handover saves first: leaving with unsaved edits would silently drop
+  // them, and the new review has no page to move to until it has an id.
+  onTransfer?: (review: Review) => void;
   // Allow callers to render a delete button inline (only useful when editing).
   showDelete?: boolean;
-  // Which hue the window wears — the game's category. Defaults to neutral so
-  // a caller without the game to hand still renders sensibly.
+  // Which hue the rating control wears — the game's category. Defaults to
+  // neutral so a caller without the game to hand still renders sensibly.
   accent?: ReviewAccent;
+  // Narrows the toolbar to lettering styles. The small editor on a game page
+  // uses it; the full-page editor takes the lot.
+  toolbar?: "compact" | "full";
 }
 
 export function ReviewForm({
@@ -37,11 +51,13 @@ export function ReviewForm({
   existing,
   onCancel,
   onSaved,
+  onDeleted,
+  onTransfer,
   showDelete,
   accent = "neutral",
+  toolbar = "full",
 }: ReviewFormProps) {
   const router = useRouter();
-  const style = reviewAccents[accent];
   // Null until chosen, so a new review can't be posted with an unintended
   // score. 0 is a real rating, so it can't double as "unset".
   const [rating, setRating] = useState<number | null>(
@@ -57,8 +73,9 @@ export function ReviewForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // `then` runs only on a successful save, which is how the transfer button
+  // avoids navigating away from an edit the server rejected.
+  const save = (then: (review: Review) => void) => {
     setError(null);
     if (rating === null) {
       setError("Pick a rating before posting.");
@@ -74,7 +91,14 @@ export function ReviewForm({
         setError(result.error ?? "Failed to save review.");
         return;
       }
-      if (result.data) onSaved?.(result.data);
+      if (result.data) then(result.data);
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    save((review) => {
+      onSaved?.(review);
       router.refresh();
     });
   };
@@ -89,26 +113,20 @@ export function ReviewForm({
         setError(result.error ?? "Failed to delete.");
         return;
       }
-      router.refresh();
-      onCancel?.();
+      if (onDeleted) {
+        onDeleted();
+      } else {
+        router.refresh();
+        onCancel?.();
+      }
     });
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn(
-        "relative overflow-hidden rounded-xl border",
-        style.surface,
-      )}
+      className="relative overflow-hidden rounded-xl border bg-card"
     >
-      {/* Identifies the category at a glance, as a rule rather than a wash —
-          the hue marks the surface without colouring what's written on it. */}
-      <span
-        aria-hidden
-        className={cn("absolute inset-x-0 top-0 h-px bg-linear-to-r", style.rule)}
-      />
-
       <div className="space-y-4 p-4">
         <RatingInput
           value={rating}
@@ -121,6 +139,7 @@ export function ReviewForm({
           initialValue={initialValue}
           onChange={setBody}
           disabled={pending}
+          toolbar={toolbar}
         />
 
         {error && (
@@ -143,7 +162,19 @@ export function ReviewForm({
           ) : (
             <span />
           )}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {onTransfer && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => save(onTransfer)}
+                disabled={pending || rating === null}
+              >
+                <Maximize2 />
+                Open full review editor
+              </Button>
+            )}
             {onCancel && (
               <Button
                 type="button"

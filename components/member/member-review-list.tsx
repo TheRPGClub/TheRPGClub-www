@@ -6,7 +6,6 @@ export interface MemberReviewListProps {
   reviews: Review[];
   hideUser?: boolean;
   hideGame?: boolean;
-  showFullBody?: boolean;
   emptyMessage?: string;
   renderTrailing?: (review: Review) => React.ReactNode;
   className?: string;
@@ -16,7 +15,6 @@ export function MemberReviewList({
   reviews,
   hideUser,
   hideGame,
-  showFullBody,
   emptyMessage = "No reviews yet.",
   renderTrailing,
   className,
@@ -37,7 +35,6 @@ export function MemberReviewList({
           review={review}
           hideUser={hideUser}
           hideGame={hideGame}
-          showFullBody={showFullBody}
           trailing={renderTrailing?.(review)}
         />
       ))}

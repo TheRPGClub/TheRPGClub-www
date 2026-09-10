@@ -30,6 +30,7 @@ export type ReviewMark = (typeof REVIEW_MARKS)[number];
 // alongside its content block.
 const BLOCK_CHILDREN = {
   p: "inline",
+  h1: "inline",
   h2: "inline",
   h3: "inline",
   blockquote: "inline",
@@ -98,27 +99,22 @@ export function reviewBodyValue(body: ReviewBody): Value {
   return text ? textToValue(text) : emptyReviewValue();
 }
 
-export const SPOILER_PLACEHOLDER = "[spoiler]";
-
-function nodeText(node: unknown, redactSpoilers = false): string {
+function nodeText(node: unknown): string {
   if (node == null || typeof node !== "object") return "";
   const record = node as Record<string, unknown>;
-  if (typeof record.text === "string") {
-    if (redactSpoilers && record.spoiler === true) return SPOILER_PLACEHOLDER;
-    return record.text;
-  }
+  if (typeof record.text === "string") return record.text;
   if (Array.isArray(record.children)) {
-    return record.children.map((child) => nodeText(child, redactSpoilers)).join("");
+    return record.children.map(nodeText).join("");
   }
   return "";
 }
 
 /**
- * Plain text for previews, line clamps and the length check. Block-level breaks
- * become newlines so a clamped card preview doesn't run sentences together.
+ * Plain text of a value, for length checks and empty checks. Block-level breaks
+ * become newlines so separate blocks don't run together.
  */
 export function reviewValueText(value: Value): string {
-  return value.map((node) => nodeText(node)).join("\n").trim();
+  return value.map(nodeText).join("\n").trim();
 }
 
 /**
@@ -132,21 +128,132 @@ export function reviewBodyText(body: ReviewBody): string | null {
   return legacyText(body);
 }
 
+// A card preview is bounded by trimming the value rather than the rendered
+// text: whole blocks are kept until the budget runs out, and the block that
+// breaches it is cut at a word boundary. That keeps real formatting on the
+// card, bounds the DOM, and needs no line-clamp — which cannot measure across
+// nested block children reliably anyway.
+const EXCERPT_CHARS = 240;
+const EXCERPT_BLOCKS = 4;
+
+export interface ReviewExcerpt {
+  value: Value;
+  // True when anything was left out, so the card can offer the rest.
+  truncated: boolean;
+}
+
+// Cuts inline children to `budget` characters of text, preferring the last
+// word boundary so a preview never ends mid-word. Marks are preserved, so a
+// bold or spoiler run that survives the cut stays bold or hidden.
+function truncateInline(
+  nodes: unknown[],
+  budget: number,
+): { children: (TElement | TText)[]; used: number; cut: boolean } {
+  const children: (TElement | TText)[] = [];
+  let used = 0;
+  let cut = false;
+
+  for (const node of nodes) {
+    if (used >= budget) {
+      cut = true;
+      break;
+    }
+    if (node == null || typeof node !== "object") continue;
+    const record = node as Record<string, unknown>;
+
+    if (typeof record.text === "string") {
+      const remaining = budget - used;
+      if (record.text.length <= remaining) {
+        children.push(record as unknown as TText);
+        used += record.text.length;
+        continue;
+      }
+      const slice = record.text.slice(0, remaining);
+      const boundary = slice.lastIndexOf(" ");
+      const kept = (boundary > remaining * 0.5 ? slice.slice(0, boundary) : slice)
+        .trimEnd();
+      children.push({ ...(record as object), text: `${kept}…` } as TText);
+      used += kept.length;
+      cut = true;
+      break;
+    }
+
+    // A link: keep it whole if it fits, otherwise stop before it rather than
+    // leave a half-labelled link.
+    const nested = Array.isArray(record.children) ? record.children : [];
+    const inner = truncateInline(nested, budget - used);
+    if (inner.children.length > 0) {
+      children.push({ ...(record as object), children: inner.children } as TElement);
+      used += inner.used;
+    }
+    if (inner.cut) {
+      cut = true;
+      break;
+    }
+  }
+
+  return { children, used, cut };
+}
+
 /**
- * Plain text with spoiler runs replaced by a placeholder — for anywhere a body
- * is shown without the click-to-reveal markup, such as a clamped card preview.
- *
- * Marks split a range into several text nodes (a bold word inside a spoiler is
- * its own node), so adjacent placeholders are collapsed to one.
+ * A bounded, still-formatted version of a body for card previews, plus whether
+ * anything was left out.
  */
-export function reviewBodyPreview(body: ReviewBody): string | null {
-  if (!Array.isArray(body)) return legacyText(body);
-  const text = body
-    .map((node) => nodeText(node, true))
-    .join("\n")
-    .replace(/(?:\[spoiler\]\s*){2,}/g, `${SPOILER_PLACEHOLDER} `)
-    .trim();
-  return text || null;
+export function reviewBodyExcerpt(
+  body: ReviewBody,
+  maxChars: number = EXCERPT_CHARS,
+): ReviewExcerpt {
+  const value = reviewBodyValue(body);
+  const blocks: TElement[] = [];
+  let used = 0;
+  let truncated = false;
+
+  for (const block of value) {
+    if (used >= maxChars || blocks.length >= EXCERPT_BLOCKS) {
+      truncated = true;
+      break;
+    }
+    const element = block as TElement;
+    const children = Array.isArray(element.children) ? element.children : [];
+
+    // A list keeps its own block shape, so recurse a level to trim its items
+    // rather than flattening them into a paragraph.
+    if (children.some((child) => isBlockChild(child))) {
+      const inner = reviewBodyExcerpt(children as unknown[], maxChars - used);
+      if (inner.value.length > 0) {
+        blocks.push({ ...element, children: inner.value } as TElement);
+        used += reviewValueText(inner.value).length;
+      }
+      if (inner.truncated) truncated = true;
+      continue;
+    }
+
+    const { children: kept, used: spent, cut } = truncateInline(
+      children,
+      maxChars - used,
+    );
+    if (kept.length > 0) {
+      blocks.push({ ...element, children: ensureInline(kept) });
+      used += spent;
+    }
+    if (cut) {
+      truncated = true;
+      break;
+    }
+  }
+
+  if (blocks.length < value.length) truncated = true;
+
+  return {
+    value: blocks.length > 0 ? blocks : emptyReviewValue(),
+    truncated,
+  };
+}
+
+function isBlockChild(child: unknown): boolean {
+  if (child == null || typeof child !== "object") return false;
+  const type = (child as Record<string, unknown>).type;
+  return typeof type === "string" && type in BLOCK_CHILDREN;
 }
 
 export function isReviewValueEmpty(value: Value): boolean {

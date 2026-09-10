@@ -1,6 +1,7 @@
 import {
   BaseBlockquotePlugin,
   BaseBoldPlugin,
+  BaseH1Plugin,
   BaseH2Plugin,
   BaseH3Plugin,
   BaseItalicPlugin,
@@ -41,6 +42,7 @@ import { ReviewSpoiler } from "./review-spoiler";
 // have to agree on node types — the editor writes them, this reads them.
 // `p` needs no plugin: BaseParagraphPlugin is part of Plate's core set.
 const staticPlugins = [
+  BaseH1Plugin,
   BaseH2Plugin,
   BaseH3Plugin,
   BaseBlockquotePlugin,
@@ -61,7 +63,25 @@ const staticPlugins = [
 // `reviewBodyValue`. Without it, those reviews would reflow.
 function Paragraph(props: SlateElementProps) {
   return (
-    <SlateElement {...props} as="p" className="whitespace-pre-wrap">
+    <SlateElement
+      {...props}
+      as="p"
+      // The gap is in `em`, so one declaration gives a card at text-sm its
+      // tighter rhythm and the reading page at text-base its looser one.
+      className="mt-[0.85em] whitespace-pre-wrap first:mt-0"
+    >
+      {props.children}
+    </SlateElement>
+  );
+}
+
+function Heading1(props: SlateElementProps) {
+  return (
+    <SlateElement
+      {...props}
+      as="h1"
+      className="mt-5 mb-1.5 text-lg font-semibold first:mt-0"
+    >
       {props.children}
     </SlateElement>
   );
@@ -181,6 +201,7 @@ function SpoilerLeaf(props: SlateLeafProps) {
 
 const staticComponents = {
   [KEYS.p]: Paragraph,
+  [KEYS.h1]: Heading1,
   [KEYS.h2]: Heading2,
   [KEYS.h3]: Heading3,
   [KEYS.blockquote]: Blockquote,

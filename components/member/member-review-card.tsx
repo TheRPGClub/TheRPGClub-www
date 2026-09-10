@@ -7,7 +7,7 @@ import {
   reviewAccents,
   type ReviewAccent,
 } from "@/lib/reviews/accent";
-import { reviewBodyPreview } from "@/lib/api/review-body";
+import { reviewBodyExcerpt, reviewBodyText } from "@/lib/api/review-body";
 import { cn } from "@/lib/utils";
 
 // Only the full-body view needs the rich renderer, and the listing views
@@ -27,7 +27,6 @@ export interface MemberReviewCardProps {
   // When false, shows it (we're on a game page).
   hideUser?: boolean;
   hideGame?: boolean;
-  showFullBody?: boolean;
   trailing?: React.ReactNode;
   className?: string;
   // Overrides the hue derived from the review's own game. Game pages pass it
@@ -40,18 +39,18 @@ export function MemberReviewCard({
   review,
   hideUser,
   hideGame,
-  showFullBody,
   trailing,
   className,
   accent,
 }: MemberReviewCardProps) {
   const user = review.user;
   const game = review.game;
-  // Doubles as the empty check: a body with no text has no preview either.
-  // The clamped card renders this plain text rather than the real markup —
-  // line-clamp can't measure rich blocks reliably, and a spoiler has to stay
-  // redacted where there is nothing to click.
-  const preview = reviewBodyPreview(review.body);
+  const hasBody = reviewBodyText(review.body) !== null;
+  // A card always shows a bounded excerpt — the full read has its own page.
+  // The value is trimmed rather than the rendered text, so the formatting
+  // survives; `truncated` is what decides whether there is more to go and
+  // read. See `reviewBodyExcerpt`.
+  const excerpt = reviewBodyExcerpt(review.body);
   const userName = user
     ? (user.global_name ?? user.username ?? user.user_id)
     : null;
@@ -104,16 +103,12 @@ export function MemberReviewCard({
         accent={accent ?? accentForGame(review.game)}
       />
 
-      {preview === null ? (
+      {!hasBody ? (
         <p className="text-sm italic text-muted-foreground">
           No written review.
         </p>
-      ) : showFullBody ? (
-        <ReviewBodyContent body={review.body} />
       ) : (
-        <p className="line-clamp-4 text-sm leading-relaxed whitespace-pre-wrap">
-          {preview}
-        </p>
+        <ReviewBodyContent body={excerpt.value} />
       )}
 
       <footer className="flex items-center justify-between text-xs text-muted-foreground">
@@ -124,14 +119,12 @@ export function MemberReviewCard({
             day: "numeric",
           })}
         </time>
-        {!showFullBody && (
-          <Link
-            href={fullReviewHref}
-            className="font-medium hover:text-foreground transition-colors"
-          >
-            Read more →
-          </Link>
-        )}
+        <Link
+          href={fullReviewHref}
+          className="font-medium transition-colors hover:text-foreground"
+        >
+          {excerpt.truncated ? "Read the rest" : "Open review"}
+        </Link>
       </footer>
     </article>
   );

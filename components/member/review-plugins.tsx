@@ -12,6 +12,7 @@ import {
 import {
   BlockquotePlugin,
   BoldPlugin,
+  H1Plugin,
   H2Plugin,
   H3Plugin,
   ItalicPlugin,
@@ -64,7 +65,21 @@ const SpoilerPlugin = toPlatePlugin(BaseSpoilerPlugin, {
 
 function Paragraph(props: PlateElementProps) {
   return (
-    <PlateElement {...props} as="p">
+    // Matches the published paragraph rhythm, so what you write looks like
+    // what everyone else reads.
+    <PlateElement {...props} as="p" className="mt-[0.85em] first:mt-0">
+      {props.children}
+    </PlateElement>
+  );
+}
+
+function Heading1(props: PlateElementProps) {
+  return (
+    <PlateElement
+      {...props}
+      as="h1"
+      className="mt-5 mb-1.5 text-lg font-semibold first:mt-0"
+    >
       {props.children}
     </PlateElement>
   );
@@ -162,6 +177,7 @@ function Link(props: PlateElementProps) {
 // Plate ships the rules but wires none of them by default, so each plugin
 // opts in.
 export const reviewPlugins = [
+  H1Plugin.withComponent(Heading1),
   H2Plugin.withComponent(Heading2).configure({
     inputRules: [HeadingRules.markdown()],
   }),
