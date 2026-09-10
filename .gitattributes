@@ -1,0 +1,9 @@
+# Normalize all text to LF in the repo, and check it out as LF everywhere.
+# `eol=lf` (rather than bare `text=auto`) so the working tree is LF on Windows
+# too — otherwise the result depends on each clone's core.autocrlf and we get
+# whole-file CRLF churn in diffs.
+* text=auto eol=lf
+
+# Binary assets — never touch these.
+*.png binary
+*.ico binary
