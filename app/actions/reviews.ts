@@ -8,6 +8,7 @@ import {
   reviewValueText,
   sanitizeReviewValue,
 } from "@/lib/api/review-body";
+import { WEIGHT_TOTAL, sanitizeReviewFacets } from "@/lib/reviews/facets";
 import type { Review } from "@/lib/api/types";
 
 export interface ActionResult<T> {
@@ -33,7 +34,20 @@ export interface ReviewInput {
   // the server action boundary, so it is untrusted JSON until
   // `sanitizeReviewValue` has vetted it.
   body: unknown;
+  // The per-category scorecard, `unknown` for the same reason. null (or a
+  // scorecard with no facets on it) is a quick take, which is what every
+  // review written before the scorecard existed already is.
+  facets?: unknown;
   is_shared?: boolean;
+}
+
+function sentWeights(facets: unknown): boolean {
+  return (
+    typeof facets === "object" &&
+    facets !== null &&
+    !Array.isArray(facets) &&
+    (facets as Record<string, unknown>).weights != null
+  );
 }
 
 type Prepared =
@@ -64,11 +78,29 @@ function prepare(input: ReviewInput): Prepared {
     };
   }
 
+  const facets = sanitizeReviewFacets(input.facets);
+
+  // The sanitizer drops a weighting it cannot vouch for, which is right for
+  // reading someone else's row but wrong for saving your own — it would look
+  // like the weights simply never took. If the caller sent weights and none
+  // survived, say so instead.
+  if (facets && !facets.weights && sentWeights(input.facets)) {
+    return {
+      ok: false,
+      error: `Category weights must cover every category and add up to ${WEIGHT_TOTAL}%.`,
+    };
+  }
+
   return {
     ok: true,
     payload: {
       rating: input.rating,
       body,
+      // Always sent, null included: clearing a scorecard on an existing review
+      // is a real edit, and omitting the key would leave the old one in place.
+      // Unknown facets and out-of-range scores are dropped here rather than
+      // trusted; the API validates the same shape again on its side.
+      facets,
       is_shared: input.is_shared ?? true,
     },
   };

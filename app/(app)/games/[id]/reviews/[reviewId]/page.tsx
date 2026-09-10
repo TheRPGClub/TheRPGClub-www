@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ReviewBanner } from "@/components/member/review-banner";
 import { ReviewBodyContent } from "@/components/member/review-body";
 import { ReviewDetail } from "@/components/member/review-detail";
+import { ReviewScorecard } from "@/components/member/review-scorecard";
 import { apiFetch } from "@/lib/api";
 import { reviewBodyText } from "@/lib/api/review-body";
 import type { ApiSingle, Game, Review, User } from "@/lib/api/types";
@@ -97,6 +98,17 @@ export default async function GameReviewDetailPage({
         canEdit={isMine}
         startEditing={edit !== undefined}
       >
+        {/* Inside `children`, so it belongs to the read view — the editor
+            branch has a scorecard of its own and must not show two. The
+            numbers group under the banner's overall, then the prose runs. */}
+        <ReviewScorecard
+          facets={review.facets}
+          accent={accent}
+          overall={review.rating}
+          variant="full"
+          className="mb-8"
+        />
+
         {hasBody ? (
           <ReviewBodyContent
             body={review.body}

@@ -13,7 +13,14 @@ import { emptyReviewValue, reviewBodyValue } from "@/lib/api/review-body";
 import { Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReviewAccent } from "@/lib/reviews/accent";
+import {
+  ensureWeights,
+  sanitizeReviewFacets,
+  weightsError,
+  type ReviewFacets,
+} from "@/lib/reviews/facets";
 import { RatingInput } from "./rating-input";
+import { ReviewScorecardEditor } from "./review-scorecard-editor";
 import { ReviewEditor } from "./review-editor";
 import type { Value } from "platejs";
 
@@ -43,6 +50,15 @@ export interface ReviewFormProps {
   // Narrows the toolbar to lettering styles. The small editor on a game page
   // uses it; the full-page editor takes the lot.
   toolbar?: "compact" | "full";
+  // Whether the scorecard can be built here. The game page's composer is the
+  // quick one — a score and a few words — so it leaves the templates to the
+  // full editor rather than putting a grading rubric in a box the size of a
+  // comment field.
+  //
+  // Off does not mean discarded: a review that already has a scorecard keeps
+  // it through a save made here. Hiding a control is not permission to throw
+  // away what it holds.
+  scorecard?: boolean;
 }
 
 export function ReviewForm({
@@ -56,6 +72,7 @@ export function ReviewForm({
   showDelete,
   accent = "neutral",
   toolbar = "full",
+  scorecard = true,
 }: ReviewFormProps) {
   const router = useRouter();
   // Null until chosen, so a new review can't be posted with an unintended
@@ -70,6 +87,15 @@ export function ReviewForm({
     existing ? reviewBodyValue(existing.body) : emptyReviewValue(),
   );
   const [body, setBody] = useState<Value>(initialValue);
+  // null is the quick take — no scorecard — which is what every review
+  // written before the scorecard existed already stores, and still a choice
+  // rather than an omission.
+  // `ensureWeights` because the composer shows a split on every card: a review
+  // written before weights existed gets the even one it was already being
+  // averaged by, rather than a column of blanks.
+  const [facets, setFacets] = useState<ReviewFacets | null>(() =>
+    ensureWeights(sanitizeReviewFacets(existing?.facets)),
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -81,7 +107,15 @@ export function ReviewForm({
       setError("Pick a rating before posting.");
       return;
     }
-    const payload = { rating, body };
+    // Caught here rather than in the action because the action's sanitizer
+    // drops weights it cannot trust, and silently discarding a weighting
+    // someone spent time on is the one outcome worse than refusing to save.
+    const budgetError = weightsError(facets);
+    if (budgetError) {
+      setError(budgetError);
+      return;
+    }
+    const payload = { rating, body, facets };
     startTransition(async () => {
       const result: ActionResult<Review> = existing
         ? await updateReviewAction(userId, existing.review_id, gameId, payload)
@@ -134,6 +168,29 @@ export function ReviewForm({
           accent={accent}
           disabled={pending}
         />
+
+        {scorecard ? (
+          <ReviewScorecardEditor
+            value={facets}
+            onChange={setFacets}
+            overall={rating}
+            // The average is offered, never imposed — see the footer's comment.
+            onUseAverage={setRating}
+            accent={accent}
+            disabled={pending}
+          />
+        ) : (
+          facets && (
+            // Says the scorecard is still there and where to change it. Without
+            // this the categories simply vanish from the form, which reads like
+            // the save is about to drop them.
+            <p className="text-xs text-muted-foreground">
+              Scored on {facets.order.length}{" "}
+              {facets.order.length === 1 ? "category" : "categories"}, kept as
+              they are. Open the full review editor to change them.
+            </p>
+          )
+        )}
 
         <ReviewEditor
           initialValue={initialValue}

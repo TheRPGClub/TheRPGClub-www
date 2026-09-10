@@ -1,3 +1,5 @@
+import type { ReviewFacets } from "@/lib/reviews/facets";
+
 // Pagy-backed pagination meta, from ApplicationController#pagy_meta. It is
 // page-native, not offset-native: `count` is the total across every page,
 // `pages` how many there are, `per` the page size the server actually served
@@ -331,6 +333,12 @@ export interface UserBacklog {
 
 // Reviews
 
+// The scorecard shape, re-exported from the module that owns the facet
+// catalogue and the sanitizer. It lives there rather than here because the
+// labels, the templates and the validation are one thing, and splitting the
+// type off from them is how the two drift.
+export type { ReviewFacets };
+
 // Backend stores rating as integer 0..100 (CHECK constraint), and it's
 // NOT NULL. The UI works in 1..5 stars and maps 1 -> 20, 5 -> 100.
 export type ReviewRating = number;
@@ -346,6 +354,13 @@ export interface Review {
   user_id: string;
   gamedb_game_id: number;
   rating: number;
+  // The per-category scorecard (story, music, combat...), or null for a review
+  // written without one — which is every review from before it existed, and
+  // still a first-class choice ("quick take"). Never read it directly:
+  // `sanitizeReviewFacets` in @/lib/reviews/facets normalizes it, and
+  // `facetAverage` derives the suggestion the composer shows. The overall
+  // `rating` above stays authored and is allowed to disagree with it.
+  facets: ReviewFacets | null;
   // `body` is a jsonb column holding rich text: a Plate value for rows written
   // since the editor landed, a bare JSON string or `{"summary": ...}` for
   // older ones. Never render it directly — `reviewBodyValue` in

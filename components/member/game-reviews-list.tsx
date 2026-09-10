@@ -50,6 +50,11 @@ export interface GameReviewsListProps {
 // small editor scoped to the card it replaces; the full-page editor is one
 // step further on, offered from inside that editor rather than as a standing
 // button — there is nothing to open until you are actually writing.
+//
+// This composer is the quick one: a score and a few words. The scorecard
+// belongs to the full editor, because grading a game across seven categories
+// is not something to do in a box the size of a comment field. A review that
+// already carries one keeps it through a save made here.
 export function GameReviewsList({
   gameId,
   reviews,
@@ -92,6 +97,7 @@ export function GameReviewsList({
           gameId={gameId}
           accent={accent}
           toolbar="compact"
+          scorecard={false}
           onCancel={() => setComposing(false)}
           onSaved={() => setComposing(false)}
           onTransfer={openFullEditor}
@@ -118,6 +124,7 @@ export function GameReviewsList({
                   accent={accent}
                   showDelete
                   toolbar="compact"
+                  scorecard={false}
                   onCancel={() => setEditingReviewId(null)}
                   onSaved={() => setEditingReviewId(null)}
                   onTransfer={openFullEditor}

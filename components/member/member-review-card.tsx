@@ -9,6 +9,9 @@ import {
 } from "@/lib/reviews/accent";
 import { reviewBodyExcerpt, reviewBodyText } from "@/lib/api/review-body";
 import { cn } from "@/lib/utils";
+// Not code-split the way the body renderer is: this is markup and a lookup
+// table, where that one is the whole Plate static renderer.
+import { ReviewScorecard } from "./review-scorecard";
 
 // Only the full-body view needs the rich renderer, and the listing views
 // (which are the common case) render a plain-text preview instead. A static
@@ -101,6 +104,14 @@ export function MemberReviewCard({
       <ReviewRating
         rating={review.rating}
         accent={accent ?? accentForGame(review.game)}
+      />
+
+      {/* Renders nothing for a review without a scorecard, which is every
+          review written before there was one. */}
+      <ReviewScorecard
+        facets={review.facets}
+        accent={accent ?? accentForGame(review.game)}
+        overall={review.rating}
       />
 
       {!hasBody ? (

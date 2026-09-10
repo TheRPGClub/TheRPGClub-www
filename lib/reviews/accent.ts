@@ -13,7 +13,10 @@ export interface ReviewAccentStyle {
   label: string | null;
   // The compose surface itself: a tinted edge, not a wash.
   surface: string;
-  // Hairline along the top of the surface, brightest at the leading edge.
+  // A rule that starts bright at the leading edge and fades out to the right,
+  // so it needs no end cap. Under the scorecard explainer's title; the three
+  // variants are tuned to read at the same strength as each other, not at the
+  // same numeric opacity — white carries further than a mid-tone hue.
   rule: string;
   // The scale, faint — where the score could go.
   track: string;
@@ -66,7 +69,7 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
   neutral: {
     label: null,
     surface: "border-border bg-card",
-    rule: "from-white/25 via-white/8 to-transparent",
+    rule: "from-white/60 via-white/20 to-transparent",
     track: "from-white/20 to-white/[0.06]",
     fill: "from-white/80 to-white/35",
     readout: "text-foreground",
