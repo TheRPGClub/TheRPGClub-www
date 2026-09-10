@@ -436,6 +436,9 @@ async function ReviewsSection({
         reviews={reviews}
         ownerId={ownerId}
         canWriteReview={canWriteReview}
+        // The page already resolved the game's hue; `ribbon` is the key the
+        // review surfaces use too.
+        accent={accent?.ribbon ?? "neutral"}
       />
 
       {total > reviews.length && (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { accentForGame } from "@/lib/reviews/accent";
 import { getSession } from "@/lib/session";
 import type { ApiSingle, Game, Review } from "@/lib/api/types";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
@@ -60,6 +61,7 @@ export default async function GameReviewDetailPage({
         ownerId={ownerId}
         showComposeCta={false}
         showFullBody
+        accent={accentForGame(game)}
       />
     </div>
   );

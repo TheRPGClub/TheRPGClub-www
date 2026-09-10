@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Pencil, Plus } from "lucide-react";
 import type { Review } from "@/lib/api/types";
+import type { ReviewAccent } from "@/lib/reviews/accent";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -11,7 +13,25 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MemberReviewCard } from "@/components/member/member-review-card";
-import { ReviewForm } from "@/components/member/review-form";
+
+// The form carries the Plate editor, which is by far the heaviest thing on a
+// game page — and most visitors never open it (anonymous ones cannot). Loading
+// it on demand keeps it out of the initial bundle for everyone who is only
+// reading. `ssr: false` because there is nothing to prerender behind a click.
+const ReviewForm = dynamic(
+  () =>
+    import("@/components/member/review-form").then((m) => ({
+      default: m.ReviewForm,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="py-6 text-center text-sm text-muted-foreground">
+        Loading editor…
+      </p>
+    ),
+  },
+);
 
 export interface GameReviewsListProps {
   gameId: number;
@@ -29,6 +49,8 @@ export interface GameReviewsListProps {
   // single-review detail page; listing contexts leave the clamp on so the
   // "Read more →" affordance kicks in.
   showFullBody?: boolean;
+  // The game's category hue, resolved by the page that has the game to hand.
+  accent?: ReviewAccent;
 }
 
 // One source of truth for the reviews block on game pages. It dedupes the
@@ -42,6 +64,7 @@ export function GameReviewsList({
   emptyMessage = "No reviews yet.",
   showComposeCta = true,
   showFullBody = false,
+  accent = "neutral",
 }: GameReviewsListProps) {
   const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
   const [composing, setComposing] = useState(false);
@@ -64,14 +87,13 @@ export function GameReviewsList({
       )}
 
       {composing && ownerId !== null && (
-        <div className="rounded-xl border bg-card p-4 shadow-sm">
-          <ReviewForm
-            userId={ownerId}
-            gameId={gameId}
-            onCancel={() => setComposing(false)}
-            onSaved={() => setComposing(false)}
-          />
-        </div>
+        <ReviewForm
+          userId={ownerId}
+          gameId={gameId}
+          accent={accent}
+          onCancel={() => setComposing(false)}
+          onSaved={() => setComposing(false)}
+        />
       )}
 
       {reviews.length === 0 ? (
@@ -85,19 +107,16 @@ export function GameReviewsList({
           const isOwn = review.user_id === ownerId;
           if (isOwn && editingReviewId === review.review_id) {
             return (
-              <div
+              <ReviewForm
                 key={review.review_id}
-                className="rounded-xl border bg-card p-4 shadow-sm"
-              >
-                <ReviewForm
-                  userId={ownerId!}
-                  gameId={gameId}
-                  existing={review}
-                  showDelete
-                  onCancel={() => setEditingReviewId(null)}
-                  onSaved={() => setEditingReviewId(null)}
-                />
-              </div>
+                userId={ownerId!}
+                gameId={gameId}
+                existing={review}
+                accent={accent}
+                showDelete
+                onCancel={() => setEditingReviewId(null)}
+                onSaved={() => setEditingReviewId(null)}
+              />
             );
           }
           // The owner's row looks identical to everyone else's (same avatar,
@@ -108,6 +127,7 @@ export function GameReviewsList({
               key={review.review_id}
               review={review}
               hideGame
+              accent={accent}
               showFullBody={showFullBody}
               trailing={
                 isOwn ? (

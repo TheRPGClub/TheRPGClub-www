@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { accentForGame } from "@/lib/reviews/accent";
 import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
@@ -87,6 +88,7 @@ export default async function GameReviewsPage({
         reviews={reviews}
         ownerId={ownerId}
         canWriteReview={canWriteReview}
+        accent={accentForGame(game)}
       />
 
       <MemberListPagination

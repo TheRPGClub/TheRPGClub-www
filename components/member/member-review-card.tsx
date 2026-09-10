@@ -1,8 +1,23 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Star } from "lucide-react";
 import type { Review } from "@/lib/api/types";
-import { reviewBodyText } from "@/lib/api/review-body";
+import { MAX_RATING } from "@/lib/api/rating";
+import {
+  accentForGame,
+  reviewAccents,
+  type ReviewAccent,
+} from "@/lib/reviews/accent";
+import { reviewBodyPreview } from "@/lib/api/review-body";
 import { cn } from "@/lib/utils";
+
+// Only the full-body view needs the rich renderer, and the listing views
+// (which are the common case) render a plain-text preview instead. A static
+// import would still put the renderer in the client bundle of every route
+// that reaches this card through a client component — game pages do. No
+// `ssr: false`: this stays server-prerendered, it is just code-split.
+const ReviewBodyContent = dynamic(() =>
+  import("./review-body").then((m) => ({ default: m.ReviewBodyContent })),
+);
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
@@ -15,6 +30,10 @@ export interface MemberReviewCardProps {
   showFullBody?: boolean;
   trailing?: React.ReactNode;
   className?: string;
+  // Overrides the hue derived from the review's own game. Game pages pass it
+  // because their reviews may not embed the game; member pages leave it off
+  // so each row takes its own game's colour.
+  accent?: ReviewAccent;
 }
 
 export function MemberReviewCard({
@@ -24,10 +43,15 @@ export function MemberReviewCard({
   showFullBody,
   trailing,
   className,
+  accent,
 }: MemberReviewCardProps) {
   const user = review.user;
   const game = review.game;
-  const body = reviewBodyText(review.body);
+  // Doubles as the empty check: a body with no text has no preview either.
+  // The clamped card renders this plain text rather than the real markup —
+  // line-clamp can't measure rich blocks reliably, and a spoiler has to stay
+  // redacted where there is nothing to click.
+  const preview = reviewBodyPreview(review.body);
   const userName = user
     ? (user.global_name ?? user.username ?? user.user_id)
     : null;
@@ -75,20 +99,20 @@ export function MemberReviewCard({
         {trailing}
       </header>
 
-      <ReviewRating rating={review.rating} />
+      <ReviewRating
+        rating={review.rating}
+        accent={accent ?? accentForGame(review.game)}
+      />
 
-      {body ? (
-        <p
-          className={cn(
-            "text-sm leading-relaxed whitespace-pre-wrap",
-            !showFullBody && "line-clamp-4",
-          )}
-        >
-          {body}
-        </p>
-      ) : (
+      {preview === null ? (
         <p className="text-sm italic text-muted-foreground">
           No written review.
+        </p>
+      ) : showFullBody ? (
+        <ReviewBodyContent body={review.body} />
+      ) : (
+        <p className="line-clamp-4 text-sm leading-relaxed whitespace-pre-wrap">
+          {preview}
         </p>
       )}
 
@@ -113,32 +137,46 @@ export function MemberReviewCard({
   );
 }
 
-// Rating is stored as integer 0..100; render as 5 stars by scaling.
-const RATING_TO_STARS = 1 / 20;
-
-export function ReviewRating({ rating }: { rating: number | null }) {
+export function ReviewRating({
+  rating,
+  accent = "neutral",
+}: {
+  rating: number | null;
+  accent?: ReviewAccent;
+}) {
   if (rating === null || rating === undefined) {
-    return (
-      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        No rating
-      </p>
-    );
+    return <p className="text-sm text-muted-foreground">No rating</p>;
   }
-  const stars = Math.round(rating * RATING_TO_STARS);
+
+  const style = reviewAccents[accent];
+  // Shown as the score it is rather than scaled into stars, which rounded a
+  // 0..100 rating into five buckets and lost most of it. The ramp is the same
+  // one the composer uses, so a score reads the same wherever it appears.
+  const pct = Math.max(0, Math.min(100, (rating / MAX_RATING) * 100));
+
   return (
-    <div className="flex items-center gap-0.5" aria-label={`${stars} out of 5`}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={cn(
-            "size-4",
-            i < stars
-              ? "fill-amber-400 text-amber-400"
-              : "text-muted-foreground/40",
-          )}
-          strokeWidth={1.5}
+    <div
+      className="flex items-center gap-2"
+      aria-label={`Rated ${rating} out of ${MAX_RATING}`}
+    >
+      <span
+        className={cn("text-sm font-semibold tabular-nums", style.readout)}
+      >
+        {rating}
+      </span>
+      <span className="text-xs text-muted-foreground">/ {MAX_RATING}</span>
+      <div
+        aria-hidden
+        className={cn(
+          "h-1 w-20 overflow-hidden rounded-full bg-linear-to-r",
+          style.track,
+        )}
+      >
+        <div
+          className={cn("h-full rounded-full bg-linear-to-r", style.fill)}
+          style={{ width: `${pct}%` }}
         />
-      ))}
+      </div>
     </div>
   );
 }

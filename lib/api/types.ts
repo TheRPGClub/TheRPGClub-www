@@ -335,18 +335,22 @@ export interface UserBacklog {
 // NOT NULL. The UI works in 1..5 stars and maps 1 -> 20, 5 -> 100.
 export type ReviewRating = number;
 
-export type ReviewBody = string | Record<string, unknown> | null;
+// A Plate value (array of nodes) for anything written since the editor
+// landed, a bare string or `{"summary": ...}` for older rows. `unknown[]`
+// rather than `Value` because this is unvalidated JSON off the wire —
+// `sanitizeReviewValue` is what turns it into a value worth trusting.
+export type ReviewBody = string | Record<string, unknown> | unknown[] | null;
 
 export interface Review {
   review_id: number;
   user_id: string;
   gamedb_game_id: number;
   rating: number;
-  // `body` is a jsonb column, not text: rows written by this app hold a bare
-  // JSON string, older imported rows hold an object (`{"summary": "..."}`).
-  // Never render it directly — go through `reviewBodyText` in
-  // ./review-body.ts. The longer-term plan is rich text JSON (Plate.js), which
-  // is why the column is jsonb in the first place.
+  // `body` is a jsonb column holding rich text: a Plate value for rows written
+  // since the editor landed, a bare JSON string or `{"summary": ...}` for
+  // older ones. Never render it directly — `reviewBodyValue` in
+  // ./review-body.ts normalizes all three for display, `reviewBodyText` gives
+  // plain text for previews and clamps.
   body: ReviewBody;
   is_shared: boolean;
   created_at: string;

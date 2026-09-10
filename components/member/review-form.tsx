@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Star } from "lucide-react";
 import {
   createReviewAction,
   deleteReviewAction,
@@ -10,13 +9,13 @@ import {
   type ActionResult,
 } from "@/app/actions/reviews";
 import type { Review } from "@/lib/api/types";
-import { reviewBodyText } from "@/lib/api/review-body";
+import { emptyReviewValue, reviewBodyValue } from "@/lib/api/review-body";
 import { Button } from "@/components/ui/button";
+import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
-
-// UI works in 1..5 stars; backend stores 0..100. Keep the conversion in
-// `app/actions/reviews.ts` so the form state stays in star-space.
-const STAR_TO_RATING = 20;
+import { RatingInput } from "./rating-input";
+import { ReviewEditor } from "./review-editor";
+import type { Value } from "platejs";
 
 export interface ReviewFormProps {
   userId: string;
@@ -27,12 +26,9 @@ export interface ReviewFormProps {
   onSaved?: (review: Review) => void;
   // Allow callers to render a delete button inline (only useful when editing).
   showDelete?: boolean;
-}
-
-function ratingToStars(rating: number | null | undefined): number | null {
-  if (rating == null) return null;
-  const stars = Math.round(rating / STAR_TO_RATING);
-  return Math.max(1, Math.min(5, stars));
+  // Which hue the window wears — the game's category. Defaults to neutral so
+  // a caller without the game to hand still renders sensibly.
+  accent?: ReviewAccent;
 }
 
 export function ReviewForm({
@@ -42,25 +38,33 @@ export function ReviewForm({
   onCancel,
   onSaved,
   showDelete,
+  accent = "neutral",
 }: ReviewFormProps) {
   const router = useRouter();
-  const [stars, setStars] = useState<number | null>(
-    ratingToStars(existing?.rating),
+  const style = reviewAccents[accent];
+  // Null until chosen, so a new review can't be posted with an unintended
+  // score. 0 is a real rating, so it can't double as "unset".
+  const [rating, setRating] = useState<number | null>(
+    existing?.rating ?? null,
   );
-  const [body, setBody] = useState(
-    existing ? (reviewBodyText(existing.body) ?? "") : "",
+  // `initialValue` seeds the editor once; `body` tracks what it reports back.
+  // A legacy plain-text or imported review is normalized into blocks here, so
+  // editing one silently upgrades it to rich text on the next save.
+  const [initialValue] = useState<Value>(() =>
+    existing ? reviewBodyValue(existing.body) : emptyReviewValue(),
   );
+  const [body, setBody] = useState<Value>(initialValue);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (stars === null) {
+    if (rating === null) {
       setError("Pick a rating before posting.");
       return;
     }
-    const payload = { stars, body };
+    const payload = { rating, body };
     startTransition(async () => {
       const result: ActionResult<Review> = existing
         ? await updateReviewAction(userId, existing.review_id, gameId, payload)
@@ -91,93 +95,72 @@ export function ReviewForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <RatingInput value={stars} onChange={setStars} disabled={pending} />
-
-      <textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        rows={6}
-        maxLength={8000}
-        placeholder="What did you think? (optional)"
-        disabled={pending}
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
+    <form
+      onSubmit={handleSubmit}
+      className={cn(
+        "relative overflow-hidden rounded-xl border",
+        style.surface,
+      )}
+    >
+      {/* Identifies the category at a glance, as a rule rather than a wash —
+          the hue marks the surface without colouring what's written on it. */}
+      <span
+        aria-hidden
+        className={cn("absolute inset-x-0 top-0 h-px bg-linear-to-r", style.rule)}
       />
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      <div className="space-y-4 p-4">
+        <RatingInput
+          value={rating}
+          onChange={setRating}
+          accent={accent}
+          disabled={pending}
+        />
 
-      <div className="flex items-center justify-between gap-2">
-        {showDelete && existing ? (
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-            disabled={pending}
-          >
-            Delete
-          </Button>
-        ) : (
-          <span />
+        <ReviewEditor
+          initialValue={initialValue}
+          onChange={setBody}
+          disabled={pending}
+        />
+
+        {error && (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
         )}
-        <div className="flex gap-2">
-          {onCancel && (
+
+        <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-3">
+          {showDelete && existing ? (
             <Button
               type="button"
-              variant="ghost"
+              variant="destructive"
               size="sm"
-              onClick={onCancel}
+              onClick={handleDelete}
               disabled={pending}
             >
-              Cancel
+              Delete
             </Button>
+          ) : (
+            <span />
           )}
-          <Button
-            type="submit"
-            size="sm"
-            disabled={pending || stars === null}
-          >
-            {existing ? "Save changes" : "Post review"}
-          </Button>
+          <div className="flex gap-2">
+            {onCancel && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onCancel}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+            )}
+            <Button type="submit" size="sm" disabled={pending || rating === null}>
+              {existing ? "Save changes" : "Post review"}
+            </Button>
+          </div>
         </div>
       </div>
     </form>
-  );
-}
-
-function RatingInput({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: number | null;
-  onChange: (next: number) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2" role="radiogroup" aria-label="Rating">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button
-          key={n}
-          type="button"
-          role="radio"
-          aria-checked={value === n}
-          disabled={disabled}
-          onClick={() => onChange(n)}
-          className="rounded p-1 hover:bg-muted disabled:opacity-50"
-        >
-          <Star
-            className={cn(
-              "size-5",
-              value !== null && n <= value
-                ? "fill-amber-400 text-amber-400"
-                : "text-muted-foreground/40",
-            )}
-            strokeWidth={1.5}
-          />
-          <span className="sr-only">{n} stars</span>
-        </button>
-      ))}
-    </div>
   );
 }
