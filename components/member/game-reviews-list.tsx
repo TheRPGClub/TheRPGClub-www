@@ -1,17 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Pencil, Plus } from "lucide-react";
-import type { Review } from "@/lib/api/types";
+
+import { MemberReviewCard } from "@/components/member/member-review-card";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MemberReviewCard } from "@/components/member/member-review-card";
-import { ReviewForm } from "@/components/member/review-form";
+import type { Review } from "@/lib/api/types";
+import type { ReviewAccent } from "@/lib/reviews/accent";
+
+// The editor is the heaviest thing a game page can pull in, and most visitors
+// never open it — anonymous ones cannot. It loads on demand.
+const ReviewForm = dynamic(
+  () =>
+    import("@/components/member/review-form").then((m) => ({
+      default: m.ReviewForm,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="py-6 text-center text-sm text-muted-foreground">
+        Loading editor…
+      </p>
+    ),
+  },
+);
 
 export interface GameReviewsListProps {
   gameId: number;
@@ -22,110 +42,120 @@ export interface GameReviewsListProps {
   // Server-decided eligibility (has now_playing or completion entry for game).
   canWriteReview?: boolean;
   emptyMessage?: string;
-  // When true (the default), shows the "Write a review" CTA above the list
-  // when the owner hasn't reviewed yet. The detail page sets this to false.
-  showComposeCta?: boolean;
-  // Render the full body instead of the line-clamped preview. Used on the
-  // single-review detail page; listing contexts leave the clamp on so the
-  // "Read more →" affordance kicks in.
-  showFullBody?: boolean;
+  // The game's category hue, resolved by the page that has the game to hand.
+  accent?: ReviewAccent;
 }
 
-// One source of truth for the reviews block on game pages. It dedupes the
-// owner's review by injecting an Edit button on their row (instead of
-// rendering a separate "your review" section that duplicates the entry).
+// The reviews block on game pages. Writing and editing happen here, in a
+// small editor scoped to the card it replaces; the full-page editor is one
+// step further on, offered from inside that editor rather than as a standing
+// button — there is nothing to open until you are actually writing.
+//
+// This composer is the quick one: a score and a few words. The scorecard
+// belongs to the full editor, because grading a game across seven categories
+// is not something to do in a box the size of a comment field. A review that
+// already carries one keeps it through a save made here.
 export function GameReviewsList({
   gameId,
   reviews,
   ownerId,
   canWriteReview = false,
   emptyMessage = "No reviews yet.",
-  showComposeCta = true,
-  showFullBody = false,
+  accent = "neutral",
 }: GameReviewsListProps) {
+  const router = useRouter();
   const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
   const [composing, setComposing] = useState(false);
 
   const ownReview =
     ownerId == null
       ? null
-      : reviews.find((r) => r.user_id === ownerId) ?? null;
+      : (reviews.find((r) => r.user_id === ownerId) ?? null);
 
-  const showCta = showComposeCta && ownerId !== null && ownReview === null;
+  const showCta = ownerId !== null && ownReview === null;
+
+  // Handing over to the full page: the save has already happened, so this only
+  // has to go somewhere.
+  // `?edit` so the full page opens in the editor rather than dropping the
+  // writer back into a read view they then have to click out of.
+  const openFullEditor = (review: Review) =>
+    router.push(`/games/${gameId}/reviews/${review.review_id}?edit=1`);
 
   return (
     <div className="space-y-3">
       {showCta && !composing && (
         <ComposeCta
-          ownerId={ownerId!}
+          ownerId={ownerId}
           canWriteReview={canWriteReview}
           onStart={() => setComposing(true)}
         />
       )}
 
       {composing && ownerId !== null && (
-        <div className="rounded-xl border bg-card p-4 shadow-sm">
-          <ReviewForm
-            userId={ownerId}
-            gameId={gameId}
-            onCancel={() => setComposing(false)}
-            onSaved={() => setComposing(false)}
-          />
-        </div>
+        <ReviewForm
+          userId={ownerId}
+          gameId={gameId}
+          accent={accent}
+          toolbar="compact"
+          scorecard={false}
+          onCancel={() => setComposing(false)}
+          onSaved={() => setComposing(false)}
+          onTransfer={openFullEditor}
+        />
       )}
 
-      {reviews.length === 0 ? (
-        <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          {canWriteReview && showComposeCta
-            ? `${emptyMessage} Be the first to share what you think.`
-            : emptyMessage}
-        </p>
-      ) : (
-        reviews.map((review) => {
-          const isOwn = review.user_id === ownerId;
-          if (isOwn && editingReviewId === review.review_id) {
-            return (
-              <div
-                key={review.review_id}
-                className="rounded-xl border bg-card p-4 shadow-sm"
-              >
+      {reviews.length === 0
+        ? !composing && (
+            <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+              {canWriteReview
+                ? `${emptyMessage} Be the first to share what you think.`
+                : emptyMessage}
+            </p>
+          )
+        : reviews.map((review) => {
+            const isOwn = review.user_id === ownerId;
+            if (isOwn && editingReviewId === review.review_id) {
+              return (
                 <ReviewForm
+                  key={review.review_id}
                   userId={ownerId!}
                   gameId={gameId}
                   existing={review}
+                  accent={accent}
                   showDelete
+                  toolbar="compact"
+                  scorecard={false}
                   onCancel={() => setEditingReviewId(null)}
                   onSaved={() => setEditingReviewId(null)}
+                  onTransfer={openFullEditor}
                 />
-              </div>
+              );
+            }
+            // The owner's row looks identical to everyone else's. The only
+            // difference is a trailing pencil that flips the card into the
+            // small editor.
+            return (
+              <MemberReviewCard
+                key={review.review_id}
+                review={review}
+                hideGame
+                accent={accent}
+                trailing={
+                  isOwn ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Edit your review"
+                      onClick={() => setEditingReviewId(review.review_id)}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : undefined
+                }
+              />
             );
-          }
-          // The owner's row looks identical to everyone else's (same avatar,
-          // username, body treatment). The only difference is a trailing
-          // pencil button so they can flip the card into edit mode.
-          return (
-            <MemberReviewCard
-              key={review.review_id}
-              review={review}
-              hideGame
-              showFullBody={showFullBody}
-              trailing={
-                isOwn ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Edit your review"
-                    onClick={() => setEditingReviewId(review.review_id)}
-                  >
-                    <Pencil />
-                  </Button>
-                ) : undefined
-              }
-            />
-          );
-        })
-      )}
+          })}
     </div>
   );
 }
@@ -149,8 +179,8 @@ function ComposeCta({
       </div>
     );
   }
-  // Eligibility gate: disabled native button can't host hover events, so wrap
-  // it in a span that owns the tooltip trigger.
+  // Eligibility gate: a disabled native button can't host hover events, so the
+  // tooltip trigger owns a wrapping span.
   return (
     <div className="rounded-xl border border-dashed bg-card/40 p-4 text-center">
       <Tooltip>

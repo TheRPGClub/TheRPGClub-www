@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "next dev --port 8080",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -11,10 +11,14 @@
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@iconify-react/bi": "^1.0.2",
+    "@platejs/basic-nodes": "^53.0.0",
+    "@platejs/link": "^53.3.5",
+    "@platejs/list-classic": "^53.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
+    "platejs": "^53.3.11",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "shadcn": "^4.7.0",
