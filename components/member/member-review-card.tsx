@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
 import type { Review } from "@/lib/api/types";
+import { reviewBodyText } from "@/lib/api/review-body";
 import { cn } from "@/lib/utils";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
@@ -26,6 +27,7 @@ export function MemberReviewCard({
 }: MemberReviewCardProps) {
   const user = review.user;
   const game = review.game;
+  const body = reviewBodyText(review.body);
   const userName = user
     ? (user.global_name ?? user.username ?? user.user_id)
     : null;
@@ -75,14 +77,14 @@ export function MemberReviewCard({
 
       <ReviewRating rating={review.rating} />
 
-      {review.body ? (
+      {body ? (
         <p
           className={cn(
             "text-sm leading-relaxed whitespace-pre-wrap",
             !showFullBody && "line-clamp-4",
           )}
         >
-          {review.body}
+          {body}
         </p>
       ) : (
         <p className="text-sm italic text-muted-foreground">

@@ -335,15 +335,19 @@ export interface UserBacklog {
 // NOT NULL. The UI works in 1..5 stars and maps 1 -> 20, 5 -> 100.
 export type ReviewRating = number;
 
+export type ReviewBody = string | Record<string, unknown> | null;
+
 export interface Review {
   review_id: number;
   user_id: string;
   gamedb_game_id: number;
   rating: number;
-  // `text` column on the backend — currently rendered as plain text. The
-  // longer-term plan is rich text JSON (Plate.js) so the column can outgrow
-  // markdown-style escaping.
-  body: string | null;
+  // `body` is a jsonb column, not text: rows written by this app hold a bare
+  // JSON string, older imported rows hold an object (`{"summary": "..."}`).
+  // Never render it directly — go through `reviewBodyText` in
+  // ./review-body.ts. The longer-term plan is rich text JSON (Plate.js), which
+  // is why the column is jsonb in the first place.
+  body: ReviewBody;
   is_shared: boolean;
   created_at: string;
   updated_at: string;

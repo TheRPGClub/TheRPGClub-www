@@ -10,6 +10,7 @@ import {
   type ActionResult,
 } from "@/app/actions/reviews";
 import type { Review } from "@/lib/api/types";
+import { reviewBodyText } from "@/lib/api/review-body";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +47,9 @@ export function ReviewForm({
   const [stars, setStars] = useState<number | null>(
     ratingToStars(existing?.rating),
   );
-  const [body, setBody] = useState(existing?.body ?? "");
+  const [body, setBody] = useState(
+    existing ? (reviewBodyText(existing.body) ?? "") : "",
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 

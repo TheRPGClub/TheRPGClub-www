@@ -43,8 +43,10 @@ function buildPayload(input: ReviewInput): Record<string, unknown> {
   const trimmed = input.body.trim();
   return {
     rating: input.stars * STAR_TO_RATING,
-    // Backend column is nullable text — send null instead of empty string so
-    // "no body" reviews don't store stray whitespace.
+    // Backend column is nullable jsonb; a bare JSON string is what this app
+    // writes (older imported rows hold `{"summary": ...}` — see
+    // lib/api/review-body.ts). Send null instead of an empty string so "no
+    // body" reviews don't store stray whitespace.
     body: trimmed.length > 0 ? trimmed : null,
     is_shared: input.is_shared ?? true,
   };
