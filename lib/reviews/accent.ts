@@ -37,6 +37,15 @@ export interface ReviewAccentStyle {
   caret: string;
   // The category badge, in the treatment the dashboard and game page use.
   pill: string;
+  // A pull-quote's rule and text, on the review's own page. A GOTM winner's
+  // review quotes in the same hue as its score; an unplaced game's stays
+  // quiet white.
+  quote: string;
+  // A soft glow behind the review's own page — the page itself carrying the
+  // hue, rather than a bordered panel wearing it. Fades out before the fold,
+  // so it reads as atmosphere behind the banner, not a tinted box around
+  // anything in particular.
+  ambient: string;
 }
 
 export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
@@ -52,6 +61,8 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     thumb: "border-brand-200 bg-brand-500 ring-brand-500/40",
     caret: "bg-brand-400",
     pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
+    quote: "border-brand-500/50 text-brand-100",
+    ambient: "from-brand-500/[0.07] via-brand-500/[0.02] to-transparent",
   },
   purple: {
     label: "Non-RPG Game of the Month",
@@ -65,6 +76,8 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     thumb: "border-purple-200 bg-purple-500 ring-purple-500/40",
     caret: "bg-purple-400",
     pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",
+    quote: "border-purple-500/50 text-purple-100",
+    ambient: "from-purple-500/[0.07] via-purple-500/[0.02] to-transparent",
   },
   neutral: {
     label: null,
@@ -78,6 +91,8 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     thumb: "border-white/80 bg-white/90 ring-white/30",
     caret: "bg-foreground/70",
     pill: "bg-muted/40 text-muted-foreground ring-1 ring-inset ring-border",
+    quote: "border-white/25 text-foreground/90",
+    ambient: "from-white/[0.03] to-transparent",
   },
 };
 

@@ -8,8 +8,9 @@ import { ReviewScorecard } from "@/components/member/review-scorecard";
 import { apiFetch } from "@/lib/api";
 import { reviewBodyText } from "@/lib/api/review-body";
 import type { ApiSingle, Game, Review, User } from "@/lib/api/types";
-import { accentForGame } from "@/lib/reviews/accent";
+import { accentForGame, reviewAccents } from "@/lib/reviews/accent";
 import { getSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 export default async function GameReviewDetailPage({
   params,
@@ -56,7 +57,18 @@ export default async function GameReviewDetailPage({
   const hasBody = reviewBodyText(review.body) !== null;
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {/* The hue lives on the page now, not boxed into a panel — a soft
+          glow behind the banner and scorecard that fades out before the
+          prose, rather than a tinted border around any one thing. */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] bg-linear-to-b",
+          reviewAccents[accent].ambient,
+        )}
+      />
+
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link href="/games" className="transition-colors hover:text-foreground">
           Games
@@ -86,6 +98,8 @@ export default async function GameReviewDetailPage({
         authorId={review.user_id}
         authorName={authorName}
         createdAt={review.created_at}
+        canEdit={isMine}
+        title={review.title}
       />
 
       {/* The review runs the full width of the column, reading and editing
@@ -104,7 +118,6 @@ export default async function GameReviewDetailPage({
         <ReviewScorecard
           facets={review.facets}
           accent={accent}
-          overall={review.rating}
           variant="full"
           className="mb-8"
         />
@@ -112,7 +125,9 @@ export default async function GameReviewDetailPage({
         {hasBody ? (
           <ReviewBodyContent
             body={review.body}
-            className="text-base leading-[1.75]"
+            variant="article"
+            accent={accent}
+            className="leading-[1.8]"
           />
         ) : (
           <p className="text-base text-muted-foreground italic">

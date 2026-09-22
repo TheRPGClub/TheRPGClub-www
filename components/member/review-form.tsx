@@ -10,8 +10,10 @@ import {
 } from "@/app/actions/reviews";
 import type { Review } from "@/lib/api/types";
 import { emptyReviewValue, reviewBodyValue } from "@/lib/api/review-body";
+import { MAX_REVIEW_TITLE_LENGTH } from "@/lib/api/review-title";
 import { Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import {
   ensureWeights,
@@ -75,6 +77,7 @@ export function ReviewForm({
   scorecard = true,
 }: ReviewFormProps) {
   const router = useRouter();
+  const [title, setTitle] = useState(existing?.title ?? "");
   // Null until chosen, so a new review can't be posted with an unintended
   // score. 0 is a real rating, so it can't double as "unset".
   const [rating, setRating] = useState<number | null>(
@@ -115,7 +118,7 @@ export function ReviewForm({
       setError(budgetError);
       return;
     }
-    const payload = { rating, body, facets };
+    const payload = { title, rating, body, facets };
     startTransition(async () => {
       const result: ActionResult<Review> = existing
         ? await updateReviewAction(userId, existing.review_id, gameId, payload)
@@ -162,6 +165,15 @@ export function ReviewForm({
       className="relative overflow-hidden rounded-xl border bg-card"
     >
       <div className="space-y-4 p-4">
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Give your review a title (optional)"
+          maxLength={MAX_REVIEW_TITLE_LENGTH}
+          disabled={pending}
+          aria-label="Review title"
+        />
+
         <RatingInput
           value={rating}
           onChange={setRating}

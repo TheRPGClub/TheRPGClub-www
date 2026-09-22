@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
+// Italic is loaded too: a review's headings lean on it for their voice.
 const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -24,7 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${openSans.variable} dark antialiased`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${openSans.variable} dark antialiased`}
+      suppressHydrationWarning
+    >
       <body className="min-h-svh">{children}</body>
     </html>
   );
