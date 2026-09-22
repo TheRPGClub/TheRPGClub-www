@@ -1,6 +1,5 @@
 import { MAX_RATING } from "@/lib/api/rating";
 import {
-  facetAverage,
   facetLabel,
   isEvenSplit,
   sanitizeReviewFacets,
@@ -12,10 +11,6 @@ export interface ReviewScorecardProps {
   // The raw stored value; normalized here so no caller has to remember to.
   facets: unknown;
   accent?: ReviewAccent;
-  // The review's overall score. Given, the footer can point out where the
-  // reviewer's verdict parts company with their own arithmetic — which is
-  // usually worth reading the review for.
-  overall?: number | null;
   // `compact` is the listing card: two columns, no chrome. `full` is the
   // review's own page.
   variant?: "compact" | "full";
@@ -31,7 +26,6 @@ export interface ReviewScorecardProps {
 export function ReviewScorecard({
   facets,
   accent = "neutral",
-  overall,
   variant = "compact",
   className,
 }: ReviewScorecardProps) {
@@ -44,7 +38,6 @@ export function ReviewScorecard({
   );
   if (scored.length === 0) return null;
 
-  const average = facetAverage(scorecard);
   // Every card the composer writes now carries a split, so "has weights" no
   // longer means the writer chose one. Only a split they actually moved off
   // even is worth a reader's attention — the rest is a column of identical
@@ -54,9 +47,14 @@ export function ReviewScorecard({
   const full = variant === "full";
 
   return (
-    <section className={cn(full && "space-y-3", className)}>
+    <section className={cn(full && "space-y-4", className)}>
       {full && (
-        <h2 className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+        <h2
+          className={cn(
+            "text-xs font-semibold tracking-[0.12em] uppercase",
+            reviewAccents[accent].readout,
+          )}
+        >
           Scorecard
         </h2>
       )}
@@ -64,7 +62,7 @@ export function ReviewScorecard({
       <dl
         className={cn(
           full
-            ? "grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2"
+            ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
             : "grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2",
         )}
       >
@@ -79,21 +77,6 @@ export function ReviewScorecard({
           />
         ))}
       </dl>
-
-      {full && average !== null && (
-        <p className="border-t border-border/60 pt-2.5 text-xs text-muted-foreground">
-          {weighted ? "These weigh out to " : "These average "}
-          <span className="font-semibold tabular-nums">{average}</span>
-          {typeof overall === "number" && overall !== average ? (
-            <>
-              , against an overall of{" "}
-              <span className="font-semibold tabular-nums">{overall}</span>.
-            </>
-          ) : (
-            "."
-          )}
-        </p>
-      )}
     </section>
   );
 }
@@ -119,21 +102,56 @@ function FacetScore({
   const style = reviewAccents[accent];
   const pct = Math.max(0, Math.min(100, (score / MAX_RATING) * 100));
 
+  // `full` is a tile — a card's worth of visual weight per category, built
+  // around a number big enough to actually read as a score rather than a
+  // caption. `compact` stays the quiet single-line row it always was.
+  if (full) {
+    return (
+      <div className="rounded-lg border border-border/50 bg-background/40 p-3">
+        <dt className="truncate text-xs text-muted-foreground">{label}</dt>
+        <div className="mt-0.5 flex items-baseline justify-between gap-2">
+          <dd
+            className={cn(
+              "text-3xl leading-none font-bold tabular-nums",
+              style.readout,
+            )}
+          >
+            {score}
+          </dd>
+          {weight !== undefined && (
+            <span
+              className="text-[10px] text-muted-foreground"
+              title={`${weight}% of the weighting`}
+            >
+              {weight}%
+            </span>
+          )}
+        </div>
+        <div
+          aria-hidden
+          className={cn(
+            "mt-2 h-1.5 overflow-hidden rounded-full bg-linear-to-r",
+            style.track,
+          )}
+        >
+          <div
+            className={cn("h-full rounded-full bg-linear-to-r", style.fill)}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-2.5">
-      <dt
-        className={cn(
-          "shrink-0 truncate text-muted-foreground",
-          full ? "w-32 text-sm" : "w-24 text-xs sm:w-28",
-        )}
-      >
+      <dt className="w-24 shrink-0 truncate text-xs text-muted-foreground sm:w-28">
         {label}
       </dt>
       <div
         aria-hidden
         className={cn(
-          "min-w-0 flex-1 overflow-hidden rounded-full bg-linear-to-r",
-          full ? "h-1.5" : "h-1",
+          "h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-linear-to-r",
           style.track,
         )}
       >
@@ -144,8 +162,7 @@ function FacetScore({
       </div>
       <dd
         className={cn(
-          "w-[3ch] shrink-0 text-right font-semibold tabular-nums",
-          full ? "text-sm" : "text-xs",
+          "w-[3ch] shrink-0 text-right text-xs font-bold tabular-nums",
           style.readout,
         )}
       >
@@ -153,10 +170,7 @@ function FacetScore({
       </dd>
       {weight !== undefined && (
         <span
-          className={cn(
-            "w-[4ch] shrink-0 text-right tabular-nums text-muted-foreground",
-            full ? "text-xs" : "text-[10px]",
-          )}
+          className="w-[4ch] shrink-0 text-right text-[10px] tabular-nums text-muted-foreground"
           title={`${weight}% of the weighting`}
         >
           {weight}%

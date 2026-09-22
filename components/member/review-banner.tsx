@@ -1,3 +1,4 @@
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
 import { CornerRibbon } from "@/components/corner-ribbon";
@@ -24,6 +25,11 @@ export interface ReviewBannerProps {
   authorId?: string | null;
   authorName?: string | null;
   createdAt?: string | null;
+  // Only the author gets the edit affordance, and it lives here rather than
+  // as a control floating below the banner — this card is the review, so
+  // editing it starts where it's introduced. The link just adds `?edit` to
+  // the current URL; ReviewDetail is what actually opens the editor.
+  canEdit?: boolean;
   // The reviewer's own headline, optional. Present, it takes over the
   // banner's main line and the game's name steps down to a small line
   // above it — a cover leads with the story's own title, not the section
@@ -46,6 +52,7 @@ export function ReviewBanner({
   authorId,
   authorName,
   createdAt,
+  canEdit,
   title,
 }: ReviewBannerProps) {
   const style = reviewAccents[accent];
@@ -117,7 +124,7 @@ export function ReviewBanner({
       <div className="relative flex w-full flex-col justify-center gap-3 p-6">
         {!title && pill && <div className="self-start">{pill}</div>}
 
-        <div className="flex items-end justify-between gap-6">
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div className="min-w-0">
             {title ? (
               <>
@@ -187,20 +194,33 @@ export function ReviewBanner({
             )}
           </div>
 
-          {scored && (
-            <div className="flex shrink-0 items-end gap-2">
-              <span
-                className={cn(
-                  "text-5xl leading-[0.85] font-extralight tracking-tight tabular-nums",
-                  style.readout,
-                )}
-              >
-                {rating}
-              </span>
-              <div className="pb-0.5 text-[10px] leading-tight font-medium tracking-[0.2em] text-muted-foreground uppercase">
-                <p>Score</p>
-                <p className="whitespace-nowrap">of {MAX_RATING}</p>
-              </div>
+          {(scored || canEdit) && (
+            <div className="ml-auto flex shrink-0 flex-col items-end gap-2">
+              {scored && (
+                <div className="flex items-end gap-2">
+                  <span
+                    className={cn(
+                      "text-5xl leading-[0.85] font-extralight tracking-tight tabular-nums",
+                      style.readout,
+                    )}
+                  >
+                    {rating}
+                  </span>
+                  <div className="pb-0.5 text-[10px] leading-tight font-medium tracking-[0.2em] text-muted-foreground uppercase">
+                    <p>Score</p>
+                    <p className="whitespace-nowrap">of {MAX_RATING}</p>
+                  </div>
+                </div>
+              )}
+              {canEdit && (
+                <Link
+                  href="?edit=1"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Pencil className="size-3" />
+                  Edit your review
+                </Link>
+              )}
             </div>
           )}
         </div>

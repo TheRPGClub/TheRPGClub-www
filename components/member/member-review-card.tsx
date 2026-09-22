@@ -117,7 +117,6 @@ export function MemberReviewCard({
       <ReviewScorecard
         facets={review.facets}
         accent={accent ?? accentForGame(review.game)}
-        overall={review.rating}
       />
 
       {!hasBody ? (
