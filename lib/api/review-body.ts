@@ -28,12 +28,17 @@ export type ReviewMark = (typeof REVIEW_MARKS)[number];
 // Block types, mapped to the children each may hold. Classic lists nest as
 // ul/ol > li > lic (list item content), which is why `li` allows a nested list
 // alongside its content block.
+//
+// `blockquote` holds `p`, not inline content directly: Plate's
+// BaseBlockquotePlugin normalizes every blockquote's children into a
+// paragraph on each edit (see its `normalizeNode` override), so that's the
+// shape the editor actually saves.
 const BLOCK_CHILDREN = {
   p: "inline",
   h1: "inline",
   h2: "inline",
   h3: "inline",
-  blockquote: "inline",
+  blockquote: ["p"],
   lic: "inline",
   li: ["lic", "ul", "ol"],
   ul: ["li"],
