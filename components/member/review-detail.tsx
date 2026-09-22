@@ -70,19 +70,21 @@ export function ReviewDetail({
 
   return (
     <>
-      {children}
       {canEdit && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="-ml-2.5 mt-6"
-          onClick={() => setEditing(true)}
-        >
-          <Pencil />
-          Edit your review
-        </Button>
+        <div className="mb-4 flex justify-end">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="-mr-2.5"
+            onClick={() => setEditing(true)}
+          >
+            <Pencil />
+            Edit your review
+          </Button>
+        </div>
       )}
+      {children}
     </>
   );
 }

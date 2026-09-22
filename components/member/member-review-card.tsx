@@ -101,6 +101,12 @@ export function MemberReviewCard({
         {trailing}
       </header>
 
+      {review.title && (
+        <Link href={fullReviewHref} className="block hover:underline">
+          <h3 className="font-semibold text-foreground">{review.title}</h3>
+        </Link>
+      )}
+
       <ReviewRating
         rating={review.rating}
         accent={accent ?? accentForGame(review.game)}

@@ -24,6 +24,11 @@ export interface ReviewBannerProps {
   authorId?: string | null;
   authorName?: string | null;
   createdAt?: string | null;
+  // The reviewer's own headline, optional. Present, it takes over the
+  // banner's main line and the game's name steps down to a small line
+  // above it — a cover leads with the story's own title, not the section
+  // it ran in. Absent, the banner reads exactly as it always has.
+  title?: string | null;
 }
 
 /**
@@ -41,6 +46,7 @@ export function ReviewBanner({
   authorId,
   authorName,
   createdAt,
+  title,
 }: ReviewBannerProps) {
   const style = reviewAccents[accent];
   const imageUrl = game.art_url ?? game.cover_url;
@@ -58,6 +64,17 @@ export function ReviewBanner({
       ? `${style.label} of ${monthYear}`
       : style.label
     : null;
+
+  const pill = badge && (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.15em] whitespace-nowrap uppercase",
+        style.pill,
+      )}
+    >
+      {badge}
+    </span>
+  );
 
   return (
     <div className="relative flex min-h-56 overflow-hidden rounded-xl border bg-card">
@@ -98,24 +115,31 @@ export function ReviewBanner({
       )}
 
       <div className="relative flex w-full flex-col justify-center gap-3 p-6">
-        {badge && (
-          <span
-            className={cn(
-              "inline-flex items-center self-start rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.15em] whitespace-nowrap uppercase",
-              style.pill,
-            )}
-          >
-            {badge}
-          </span>
-        )}
+        {!title && pill && <div className="self-start">{pill}</div>}
 
         <div className="flex items-end justify-between gap-6">
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight break-words">
-              <Link href={`/games/${game.game_id}`} className="hover:underline">
-                {game.title}
-              </Link>
-            </h1>
+            {title ? (
+              <>
+                <p className="text-sm">
+                  <Link
+                    href={`/games/${game.game_id}`}
+                    className="font-medium text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    {game.title}
+                  </Link>
+                </p>
+                <h1 className="mt-1.5 text-3xl font-bold tracking-tight break-words">
+                  {title}
+                </h1>
+              </>
+            ) : (
+              <h1 className="text-2xl font-bold tracking-tight break-words">
+                <Link href={`/games/${game.game_id}`} className="hover:underline">
+                  {game.title}
+                </Link>
+              </h1>
+            )}
 
             {authorId && authorName && (
               <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
@@ -145,6 +169,18 @@ export function ReviewBanner({
                         day: "numeric",
                       })}
                     </time>
+                  </>
+                )}
+                {/* The pill rides at the end of the byline rather than up by
+                    the game's name — title present, the game already had its
+                    turn as the small line above the headline; the accolade
+                    belongs with the rest of this row's metadata. */}
+                {title && pill && (
+                  <>
+                    <span aria-hidden className="text-muted-foreground">
+                      ·
+                    </span>
+                    {pill}
                   </>
                 )}
               </p>

@@ -86,6 +86,7 @@ export default async function GameReviewDetailPage({
         authorId={review.user_id}
         authorName={authorName}
         createdAt={review.created_at}
+        title={review.title}
       />
 
       {/* The review runs the full width of the column, reading and editing
@@ -112,7 +113,9 @@ export default async function GameReviewDetailPage({
         {hasBody ? (
           <ReviewBodyContent
             body={review.body}
-            className="text-base leading-[1.75]"
+            variant="article"
+            accent={accent}
+            className="leading-[1.8]"
           />
         ) : (
           <p className="text-base text-muted-foreground italic">

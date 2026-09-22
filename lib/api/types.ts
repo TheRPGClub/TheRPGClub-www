@@ -353,6 +353,10 @@ export interface Review {
   review_id: number;
   user_id: string;
   gamedb_game_id: number;
+  // Optional — most reviews don't have one. `?` rather than `| null`: the
+  // backend doesn't send the key at all until it grows a `title` column, so
+  // this stays truthful about what a response can actually look like today.
+  title?: string | null;
   rating: number;
   // The per-category scorecard (story, music, combat...), or null for a review
   // written without one — which is every review from before it existed, and

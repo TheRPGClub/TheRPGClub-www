@@ -8,6 +8,7 @@ import {
   reviewValueText,
   sanitizeReviewValue,
 } from "@/lib/api/review-body";
+import { MAX_REVIEW_TITLE_LENGTH, sanitizeReviewTitle } from "@/lib/api/review-title";
 import { WEIGHT_TOTAL, sanitizeReviewFacets } from "@/lib/reviews/facets";
 import type { Review } from "@/lib/api/types";
 
@@ -27,6 +28,10 @@ async function errorMessage(response: Response): Promise<string> {
 }
 
 export interface ReviewInput {
+  // Untrusted like `body` below, for the same reason: it crosses the server
+  // action boundary as whatever the client sent. Optional — most reviews
+  // don't have one.
+  title?: unknown;
   // Integer 0..100, matching the column's own scale and CHECK constraint.
   // Required — the column is NOT NULL.
   rating: number;
@@ -65,6 +70,14 @@ function prepare(input: ReviewInput): Prepared {
     };
   }
 
+  const title = sanitizeReviewTitle(input.title);
+  if (title && title.length > MAX_REVIEW_TITLE_LENGTH) {
+    return {
+      ok: false,
+      error: `Title is too long (max ${MAX_REVIEW_TITLE_LENGTH} chars).`,
+    };
+  }
+
   // Anything the allowlist doesn't recognise is dropped here rather than
   // trusted — the value lands in a jsonb column that gets rendered back as
   // markup. Returns null for a body with no text, which is what the nullable
@@ -94,6 +107,9 @@ function prepare(input: ReviewInput): Prepared {
   return {
     ok: true,
     payload: {
+      // Always sent, null included: clearing an existing title is a real
+      // edit, same reasoning as `facets` below.
+      title,
       rating: input.rating,
       body,
       // Always sent, null included: clearing a scorecard on an existing review
