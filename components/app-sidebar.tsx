@@ -48,9 +48,11 @@ const VOTING_HREF = "/voting";
 // page. Only the nomination window renames the item; a live vote, a finished
 // round, and a missing or unreadable one all read as the section itself.
 const PHASE_LABEL: Record<VotingPhase, string> = {
-  nominate: "Nominations",
-  vote: "Voting",
+  nominating: "Nominations",
+  voting: "Voting",
   closed: "Voting",
+  tie: "Voting",
+  decided: "Voting",
 };
 
 interface AppSidebarProps {

@@ -20,7 +20,7 @@ export default async function AppLayout({
   // Sequenced behind the redirect, NOT run alongside getSession.
   //
   // fetchCurrentPhase is cached and Next keys the Data Cache on URL alone, not
-  // on headers, so one entry is shared by every caller. voting_info/current
+  // on headers, so one entry is shared by every caller. voting_rounds/current
   // requires auth and 401s without it — so issuing this in parallel let any
   // unauthenticated hit on an (app) route (a crawler, a prefetch, a logged-out
   // visit) cache a 401 for the full revalidate window and blank the phase for
