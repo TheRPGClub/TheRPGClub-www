@@ -31,7 +31,7 @@ import type {
   UserSocial,
   VoteTallyRow,
   VotingCategory,
-  VotingInfo,
+  VotingRound,
 } from "./types";
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
@@ -556,39 +556,54 @@ export const starboard = {
     apiFetch<void>(`/api/v1/starboard/${messageId}`, { method: "DELETE" }),
 };
 
-// ─── Voting Info ─────────────────────────────────────────────────────────────
+// ─── Voting Rounds ───────────────────────────────────────────────────────────
 
-export const votingInfo = {
-  list: (params?: { limit?: number; offset?: number }) => {
+// The backend-owned round lifecycle. Rounds are never created by hand:
+// deciding one schedules the next.
+export const votingRounds = {
+  list: (params?: { page?: number; per?: number }) => {
     const qs = new URLSearchParams();
-    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
-    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
-    return apiFetch<ApiCollection<VotingInfo>>(
-      `/api/v1/voting_info${qs.size ? `?${qs}` : ""}`,
+    if (params?.page !== undefined) qs.set("page", String(params.page));
+    if (params?.per !== undefined) qs.set("per", String(params.per));
+    return apiFetch<ApiCollection<VotingRound>>(
+      `/api/v1/voting_rounds${qs.size ? `?${qs}` : ""}`,
     );
   },
 
-  // The current (highest round_number) round, 404 when none exist.
+  // The one round the club is on (the lowest undecided), 404 when none is.
   current: () =>
-    apiFetch<ApiSingle<VotingInfo>>("/api/v1/voting_info/current"),
+    apiFetch<ApiSingle<VotingRound>>("/api/v1/voting_rounds/current"),
 
   get: (round: number) =>
-    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${round}`),
+    apiFetch<ApiSingle<VotingRound>>(`/api/v1/voting_rounds/${round}`),
 
-  create: (data: Partial<VotingInfo>) =>
-    apiFetch<ApiSingle<VotingInfo>>("/api/v1/voting_info", {
-      method: "POST",
-      body: JSON.stringify({ data }),
-    }),
-
-  update: (round: number, data: Partial<VotingInfo>) =>
-    apiFetch<ApiSingle<VotingInfo>>(`/api/v1/voting_info/${round}`, {
+  // Admin: reschedule. Moving the open alone keeps the default weekend window.
+  update: (
+    round: number,
+    data: Partial<
+      Pick<VotingRound, "voting_opens_at" | "voting_closes_at" | "month_year">
+    >,
+  ) =>
+    apiFetch<ApiSingle<VotingRound>>(`/api/v1/voting_rounds/${round}`, {
       method: "PATCH",
       body: JSON.stringify({ data }),
     }),
 
-  destroy: (round: number) =>
-    apiFetch<void>(`/api/v1/voting_info/${round}`, { method: "DELETE" }),
+  // Admin: break a category's tie with one or more of the tied games.
+  resolveTie: (
+    round: number,
+    category: VotingCategory,
+    gamedbGameIds: number[],
+  ) =>
+    apiFetch<ApiSingle<VotingRound>>(
+      `/api/v1/voting_rounds/${round}/resolve_tie`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          data: { category, gamedb_game_ids: gamedbGameIds },
+        }),
+      },
+    ),
 };
 
 // ─── Nominations & Votes (GOTM / NR-GOTM rounds) ─────────────────────────────

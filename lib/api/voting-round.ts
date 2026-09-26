@@ -4,8 +4,11 @@ import type {
   NominationVote,
   VoteTallyRow,
   VotingCategory,
-  VotingInfo,
+  VotingPhase,
+  VotingRound,
 } from "./types";
+
+export type { VotingPhase };
 
 // Server-side reads for a voting round, shared by /voting and the ballot
 // panel on a game page.
@@ -38,13 +41,15 @@ export interface RoundTally {
 
 const DEFAULT_CAP = 2;
 
-export async function fetchVotingInfo(): Promise<VotingInfo | null> {
+// The round the club is on, whatever its phase — the backend decides which
+// round that is, so nothing here derives one round number from another.
+export async function fetchVotingRound(): Promise<VotingRound | null> {
   try {
-    const res = await apiFetch("/api/v1/voting_info/current", {
+    const res = await apiFetch("/api/v1/voting_rounds/current", {
       cache: "no-store",
     });
     if (!res.ok) return null;
-    return ((await res.json()) as { data: VotingInfo }).data;
+    return ((await res.json()) as { data: VotingRound }).data;
   } catch {
     return null;
   }
@@ -106,8 +111,8 @@ export async function fetchUserVotes(
 // A round's ballot is public once its vote opens, and stays readable
 // afterwards as the results board. Before that the ballot is withheld, so
 // nothing outside /voting should reveal what is on it.
-export function ballotIsPublic(info: VotingInfo): boolean {
-  return info.voting_open || info.voting_ended;
+export function ballotIsPublic(round: VotingRound): boolean {
+  return round.phase !== "nominating";
 }
 
 // The tally counts votes per nomination, but two members can nominate the
@@ -126,23 +131,13 @@ export function tallyByGame(rows: VoteTallyRow[]): Map<number, number> {
   return byGame;
 }
 
-// Which action the round is currently accepting. The two windows are exact
-// complements plus a finished state, so this is the whole lifecycle.
-export type VotingPhase = "nominate" | "vote" | "closed";
-
-export function votingPhase(info: VotingInfo): VotingPhase {
-  if (info.voting_open) return "vote";
-  if (info.voting_ended) return "closed";
-  return "nominate";
-}
-
 const PHASE_REVALIDATE_SECONDS = 60;
 
 // The phase alone, for the sidebar badge — which renders on every page in the
 // app. This read is cached rather than no-store: the phase only turns at
 // scheduled boundaries, so a badge that lags the turn by up to a minute costs
 // nothing, where an uncached read would put an API round-trip on every page
-// load. /voting keeps fetchVotingInfo's no-store read and stays exact.
+// load. /voting keeps fetchVotingRound's no-store read and stays exact.
 //
 // CALL THIS ONLY FROM AN AUTHENTICATED CONTEXT. Next keys the Data Cache on
 // URL, method and body — NOT on headers — so apiFetch's per-user bearer token
@@ -154,11 +149,11 @@ const PHASE_REVALIDATE_SECONDS = 60;
 // calls this after its auth redirect, not alongside it.
 export async function fetchCurrentPhase(): Promise<VotingPhase | null> {
   try {
-    const res = await apiFetch("/api/v1/voting_info/current", {
-      next: { revalidate: PHASE_REVALIDATE_SECONDS, tags: ["voting-info"] },
+    const res = await apiFetch("/api/v1/voting_rounds/current", {
+      next: { revalidate: PHASE_REVALIDATE_SECONDS, tags: ["voting-round"] },
     });
     if (!res.ok) return null;
-    return votingPhase(((await res.json()) as { data: VotingInfo }).data);
+    return ((await res.json()) as { data: VotingRound }).data.phase;
   } catch {
     return null;
   }

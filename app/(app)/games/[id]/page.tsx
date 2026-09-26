@@ -11,7 +11,7 @@ import type {
   Review,
   User,
   VotingCategory,
-  VotingInfo,
+  VotingRound,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import {
@@ -41,7 +41,7 @@ import {
   fetchNominations,
   fetchTally,
   fetchUserVotes,
-  fetchVotingInfo,
+  fetchVotingRound,
   tallyByGame,
   VOTING_CATEGORIES,
   VOTING_CATEGORY_TITLE,
@@ -324,17 +324,17 @@ async function GameContent({ gameId }: { gameId: number }) {
 // in principle sit on both categories' ballots, so this renders one panel per
 // category it appears on.
 async function BallotSection({ gameId }: { gameId: number }) {
-  const info = await fetchVotingInfo();
+  const round = await fetchVotingRound();
   // Before a round's vote opens its ballot is withheld — /voting won't show
   // it either, and nothing here should leak what was nominated.
-  if (!info || !ballotIsPublic(info)) return null;
+  if (!round || !ballotIsPublic(round)) return null;
 
   // getSession is React-cached, so this reuses the hero's fetch.
   const session = await getSession();
   const panels = (
     await Promise.all(
       VOTING_CATEGORIES.map((category) =>
-        ballotPanel(category, gameId, info, session?.principal.id),
+        ballotPanel(category, gameId, round, session?.principal.id),
       ),
     )
   ).filter((panel) => panel !== null);
@@ -353,10 +353,10 @@ async function BallotSection({ gameId }: { gameId: number }) {
 async function ballotPanel(
   category: VotingCategory,
   gameId: number,
-  info: VotingInfo,
+  voting: VotingRound,
   userId: string | undefined,
 ): Promise<GameBallotPanelProps | null> {
-  const round = info.round_number;
+  const round = voting.round_number;
   const nominations = await fetchNominations(category, round);
   // Two members can nominate the same game in one round, so this is a list.
   const forGame = nominations.filter((n) => n.gamedb_game_id === gameId);
@@ -364,7 +364,7 @@ async function ballotPanel(
 
   const [tally, userVotes] = await Promise.all([
     fetchTally(category, round),
-    info.voting_open && userId
+    voting.voting_open && userId
       ? fetchUserVotes(category, round, userId)
       : Promise.resolve([]),
   ]);
@@ -389,8 +389,13 @@ async function ballotPanel(
     voted: votedOn !== undefined,
     votesUsed: userVotes.length,
     cap: tally.cap,
-    votingOpen: info.voting_open,
-    isWinner: info.voting_ended && maxCount > 0 && count === maxCount,
+    votingOpen: voting.voting_open,
+    // A shared lead is a tie for the admins to break, not a win yet.
+    isWinner:
+      voting.voting_ended &&
+      voting.phase !== "tie" &&
+      maxCount > 0 &&
+      count === maxCount,
     nominatedBy: forGame.map(
       (n) => n.user?.global_name ?? n.user?.username ?? "Unknown member",
     ),

@@ -478,22 +478,28 @@ export interface StarboardEntry {
 
 // Voting rounds (GOTM / NR-GOTM nominations & votes)
 
-// Mirrors VotingInfoResource: the bot_voting_info columns plus the derived
-// window state. `next_vote_at` is when nominations close and voting opens;
-// `vote_deadline` is the effective end of voting (explicit `vote_ends_at`
-// override or the computed Friday-to-Sunday default, in UTC). The two
-// booleans are the server's verdict at render time — trust them over
-// re-deriving from the timestamps client-side.
-export interface VotingInfo {
+// Where a round is in its lifecycle, as the backend decides it: members
+// nominate until the vote opens, vote until it closes, then the tally decides
+// the winners — or leaves a tie for the admins — and the round is decided.
+export type VotingPhase = "nominating" | "voting" | "closed" | "tie" | "decided";
+
+// Mirrors VotingRoundResource. `round_number` is the round being nominated
+// for, voted on and won; nominations close and voting opens at
+// `voting_opens_at`. `phase` and the booleans are the server's verdict at
+// render time — trust them over re-deriving from the timestamps client-side.
+export interface VotingRound {
   round_number: number;
-  nomination_list_id: number | null;
-  next_vote_at: string;
-  five_day_reminder_sent: boolean;
-  one_day_reminder_sent: boolean;
-  vote_ends_at: string | null;
-  vote_deadline: string | null;
+  month_year: string;
+  voting_opens_at: string;
+  voting_closes_at: string;
+  closed_at: string | null;
+  decided_at: string | null;
+  phase: VotingPhase;
+  nominations_open: boolean;
   voting_open: boolean;
   voting_ended: boolean;
+  // Tied games per category, awaiting an admin pick; `{}` when none.
+  pending_ties: Partial<Record<VotingCategory, Game[]>>;
 }
 
 // The GOTM and NR-GOTM tables share identical shapes, so one type serves

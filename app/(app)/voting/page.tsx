@@ -1,18 +1,17 @@
 import { Suspense } from "react";
 import {
-  ChevronRight,
   Gamepad2,
   Trophy,
   Vote,
   type LucideIcon,
 } from "lucide-react";
-import type { VotingCategory, VotingInfo } from "@/lib/api/types";
+import type { VotingCategory, VotingRound } from "@/lib/api/types";
 import {
   ballotIsPublic,
   fetchNominations,
   fetchTally,
   fetchUserVotes,
-  fetchVotingInfo,
+  fetchVotingRound,
   VOTING_CATEGORIES,
   VOTING_CATEGORY_TITLE,
 } from "@/lib/api/voting-round";
@@ -22,14 +21,13 @@ import { accentForCategory } from "@/components/voting/accents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/lib/session";
 
-// Round layout mirrors the club lifecycle: voting targets the CURRENT round
-// (voting_info/current — its ballot was nominated last cycle), while
-// nominations collect for the NEXT round (current + 1) until the current
-// round's vote opens. The backend enforces both windows; this page just
-// renders the same split.
+// One round at a time, as the backend reports it on voting_rounds/current:
+// members nominate for it, then vote on those same nominations, then it is
+// decided and the backend schedules the next. The backend owns which round
+// that is and enforces every window; this page never derives a round number.
 //
-// The two windows are exact complements — the ballot is public when voting is
-// open or ended, the nomination window is neither — so the page renders one
+// The phases are exact complements — nominations close the moment the vote
+// opens, and the ballot is public from then on — so the page renders one
 // phase, not a choice between them. Tabs were the wrong control here: with
 // only one window ever live, the other tab led to an empty view that repeated
 // the header. What the closed phase is still worth saying, and PageHeader
@@ -56,9 +54,12 @@ export default function VotingPage() {
 }
 
 async function VotingContent() {
-  const [info, session] = await Promise.all([fetchVotingInfo(), getSession()]);
+  const [round, session] = await Promise.all([
+    fetchVotingRound(),
+    getSession(),
+  ]);
 
-  if (!info) {
+  if (!round) {
     return (
       <div className="space-y-4">
         <PageHeader />
@@ -70,46 +71,37 @@ async function VotingContent() {
   }
 
   const viewerId = session?.principal.id;
-  const nextRound = info.round_number + 1;
 
   return (
     <div className="space-y-6">
-      <PageHeader info={info} />
+      <PageHeader round={round} />
 
-      {ballotIsPublic(info) ? (
-        <>
-          <BallotPhase info={info} viewerId={viewerId} />
-          {/* Nominations for the next round closed when this round's vote
-              opened, so the queue is final but not yet a ballot. It streams
-              in folded away — browsable, never competing with the vote. */}
-          <Suspense fallback={null}>
-            <QueuedNominations round={nextRound} viewerId={viewerId} />
-          </Suspense>
-        </>
+      {ballotIsPublic(round) ? (
+        <BallotPhase round={round} viewerId={viewerId} />
       ) : (
-        <NominatePhase round={nextRound} viewerId={viewerId} />
+        <NominatePhase round={round.round_number} viewerId={viewerId} />
       )}
     </div>
   );
 }
 
 async function BallotPhase({
-  info,
+  round,
   viewerId,
 }: {
-  info: VotingInfo;
+  round: VotingRound;
   viewerId?: string;
 }) {
-  const round = info.round_number;
+  const roundNumber = round.round_number;
   const columns = await Promise.all(
     CATEGORY_COLUMNS.map(async (column) => {
       const [nominations, tally, userVotes] = await Promise.all([
-        fetchNominations(column.category, round),
-        fetchTally(column.category, round),
+        fetchNominations(column.category, roundNumber),
+        fetchTally(column.category, roundNumber),
         // Own votes are only readable — and only castable — while the window
         // is open; a finished round is just its tally.
-        info.voting_open && viewerId
-          ? fetchUserVotes(column.category, round, viewerId)
+        round.voting_open && viewerId
+          ? fetchUserVotes(column.category, roundNumber, viewerId)
           : Promise.resolve([]),
       ]);
       return { column, nominations, tally, userVotes };
@@ -122,14 +114,14 @@ async function BallotPhase({
         <PhaseColumn key={column.category} column={column}>
           <NominationBoard
             category={column.category}
-            round={round}
+            round={roundNumber}
             accent={column.accent}
             nominations={nominations}
             tally={tally.rows}
             cap={tally.cap}
             userVotes={userVotes}
-            votingOpen={info.voting_open}
-            votingEnded={info.voting_ended}
+            votingOpen={round.voting_open}
+            votingEnded={round.voting_ended}
             viewerId={viewerId}
             emptyMessage="No games on this round's ballot."
           />
@@ -190,59 +182,6 @@ async function NominatePhase({
   );
 }
 
-// The next round's locked queue, shown under a live or finished ballot. A
-// native <details> so it costs no client JS and survives with none.
-async function QueuedNominations({
-  round,
-  viewerId,
-}: {
-  round: number;
-  viewerId?: string;
-}) {
-  const columns = await Promise.all(
-    CATEGORY_COLUMNS.map(async (column) => ({
-      column,
-      nominations: await fetchNominations(column.category, round),
-    })),
-  );
-
-  const total = columns.reduce((sum, c) => sum + c.nominations.length, 0);
-  if (!total) return null;
-
-  return (
-    <details className="group rounded-xl border bg-card/40">
-      <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 rounded-xl px-4 py-3 transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden [&::-webkit-details-marker]:hidden">
-        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90 motion-reduce:transition-none" />
-        <span className="text-sm font-semibold tracking-tight">
-          Round {round} nominations
-        </span>
-        <span className="text-xs text-muted-foreground">
-          Locked · {total} queued for the next vote
-        </span>
-      </summary>
-      <div className="grid gap-8 border-t p-4 sm:p-5 xl:grid-cols-2">
-        {columns.map(({ column, nominations }) => (
-          <PhaseColumn key={column.category} column={column}>
-            <NominationBoard
-              category={column.category}
-              round={round}
-              accent={column.accent}
-              nominations={nominations}
-              tally={[]}
-              cap={0}
-              userVotes={[]}
-              votingOpen={false}
-              votingEnded={false}
-              viewerId={viewerId}
-              emptyMessage="No nominations for this round."
-            />
-          </PhaseColumn>
-        ))}
-      </div>
-    </details>
-  );
-}
-
 function PhaseGrid({ children }: { children: React.ReactNode }) {
   return <div className="grid gap-8 xl:grid-cols-2">{children}</div>;
 }
@@ -269,7 +208,7 @@ function PhaseColumn({
   );
 }
 
-// The club schedules rounds in US Eastern (see BotVotingInfo), so render the
+// The club schedules rounds in US Eastern (see Voting::Schedule), so render the
 // window boundaries in that zone rather than the server's.
 function formatEt(iso: string): string {
   return `${new Date(iso).toLocaleString("en-US", {
@@ -288,41 +227,51 @@ function formatEt(iso: string): string {
 //
 // `title` is the heading and names the action, since the page only ever offers
 // one; `label` is the round pill's state and `detail` the sentence under it.
-function phaseStatus(info: VotingInfo): {
+function phaseStatus(voting: VotingRound): {
   title: string;
   label: string;
   detail: string;
 } {
-  const nextRound = info.round_number + 1;
-  if (info.voting_ended) {
-    return {
-      title: `Round ${info.round_number} results`,
-      label: "Voting closed",
-      detail:
-        `Voting for Round ${info.round_number} has ended. ` +
-        `Round ${nextRound} nominations reopen when the next round is scheduled.`,
-    };
+  const round = voting.round_number;
+  switch (voting.phase) {
+    case "nominating":
+      return {
+        title: "Nominate a game",
+        label: "Nominations open",
+        detail:
+          `Nominating for Round ${round} is open until voting on its ballot ` +
+          `opens ${formatEt(voting.voting_opens_at)}.`,
+      };
+    case "voting":
+      return {
+        title: "Cast your votes",
+        label: "Voting open",
+        detail:
+          `Voting for Round ${round} is open until ` +
+          `${formatEt(voting.voting_closes_at)}. Nominations are closed.`,
+      };
+    case "tie":
+      return {
+        title: `Round ${round} results`,
+        label: "Tie",
+        detail:
+          `Voting for Round ${round} ended in a tie. The admins will pick ` +
+          "the winner, then nominations open for the next round.",
+      };
+    case "closed":
+    case "decided":
+      return {
+        title: `Round ${round} results`,
+        label: "Voting closed",
+        detail:
+          `Voting for Round ${round} has ended. Nominations for the next ` +
+          "round open once the winners are recorded.",
+      };
   }
-  if (info.voting_open) {
-    return {
-      title: "Cast your votes",
-      label: "Voting open",
-      detail: info.vote_deadline
-        ? `Voting for Round ${info.round_number} is open until ${formatEt(info.vote_deadline)}. Round ${nextRound} nominations are closed.`
-        : `Voting for Round ${info.round_number} is open. Round ${nextRound} nominations are closed.`,
-    };
-  }
-  return {
-    title: "Nominate a game",
-    label: "Nominations open",
-    detail:
-      `Nominating for Round ${nextRound} is open. Voting on the ` +
-      `Round ${info.round_number} ballot opens ${formatEt(info.next_vote_at)}.`,
-  };
 }
 
-function PageHeader({ info }: { info?: VotingInfo }) {
-  const status = info ? phaseStatus(info) : null;
+function PageHeader({ round }: { round?: VotingRound }) {
+  const status = round ? phaseStatus(round) : null;
   return (
     <div>
       <div className="flex flex-wrap items-center gap-3">
@@ -332,9 +281,9 @@ function PageHeader({ info }: { info?: VotingInfo }) {
               have a phase. */}
           {status?.title ?? "Nominations & Voting"}
         </h1>
-        {info && (
+        {round && (
           <span className="rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-            Round {info.round_number} · {status?.label}
+            Round {round.round_number} · {status?.label}
           </span>
         )}
       </div>
