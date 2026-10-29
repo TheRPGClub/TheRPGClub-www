@@ -319,6 +319,28 @@ export interface GameCompletion {
   platform?: Platform | null;
 }
 
+// One row of GET /users/:id/completions/common: a game both members completed,
+// with each member's latest entry for it (a full CompletionEntry) and how many
+// times they completed it. `latest_shared_date` is the later of the two latest
+// dates, null when both are undated.
+export interface CommonCompletionSide {
+  latest: GameCompletion;
+  count: number;
+}
+
+export interface CommonCompletion {
+  gamedb_game_id: number;
+  latest_shared_date: string | null;
+  game: Game;
+  left: CommonCompletionSide;
+  right: CommonCompletionSide;
+}
+
+export interface CommonCompletionMeta extends CollectionMeta {
+  left_user_id: string;
+  right_user_id: string;
+}
+
 export interface UserFavorite {
   entry_id?: number;
   favorite_id?: number;
