@@ -8,17 +8,19 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export interface MemberListPaginationProps {
+// Numbered page links for any `?page=`-driven list. Pair with `paginationOf`
+// from @/lib/api/pagination; `buildHref` keeps the other search params.
+export interface ListPaginationProps {
   currentPage: number;
   totalPages: number;
   buildHref: (page: number) => string;
 }
 
-export function MemberListPagination({
+export function ListPagination({
   currentPage,
   totalPages,
   buildHref,
-}: MemberListPaginationProps) {
+}: ListPaginationProps) {
   if (totalPages <= 1) return null;
   return (
     <Pagination>

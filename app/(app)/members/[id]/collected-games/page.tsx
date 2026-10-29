@@ -10,7 +10,7 @@ import type {
 import { paginationOf } from "@/lib/api/pagination";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
-import { MemberListPagination } from "@/components/member/member-list-pagination";
+import { ListPagination } from "@/components/list-pagination";
 
 const PAGE_SIZE = 24;
 
@@ -80,7 +80,7 @@ export default async function CollectedGamesPage({
         </div>
       )}
 
-      <MemberListPagination
+      <ListPagination
         currentPage={currentPage}
         totalPages={totalPages}
         buildHref={href}
