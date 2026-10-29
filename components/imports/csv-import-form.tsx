@@ -3,19 +3,14 @@
 import { useActionState } from "react";
 import { Upload } from "lucide-react";
 import {
-  startCompletionatorImportAction,
-  startCsvImportAction,
+  startCsvFileImportAction,
+  type CsvFileImportKind,
   type CsvImportFormState,
 } from "@/app/actions/imports";
 import { ImportUploadErrors } from "@/components/imports/import-upload-errors";
 import { Button } from "@/components/ui/button";
 
 const initialState: CsvImportFormState = { error: null, rowErrors: [] };
-
-const START_ACTIONS = {
-  csv: startCsvImportAction,
-  completionator: startCompletionatorImportAction,
-};
 
 // Upload step of the CSV-file imports (collection CSV, Completionator). The
 // API validates the whole file; when it rejects it, every row problem is listed.
@@ -24,10 +19,10 @@ export function CsvImportForm({
   kind = "csv",
 }: {
   userId: string;
-  kind?: keyof typeof START_ACTIONS;
+  kind?: CsvFileImportKind;
 }) {
   const [state, formAction, pending] = useActionState(
-    START_ACTIONS[kind].bind(null, userId),
+    startCsvFileImportAction.bind(null, kind, userId),
     initialState,
   );
 
