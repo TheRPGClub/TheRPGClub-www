@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
-import { Trophy } from "lucide-react";
+import Link from "next/link";
+import { Download, FileUp, GitCompareArrows, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -8,9 +10,12 @@ import type {
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
+import { formatCompletedMonth } from "@/lib/completions";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
-import { MemberListPagination } from "@/components/member/member-list-pagination";
+import { ListPagination } from "@/components/list-pagination";
+import { buttonVariants } from "@/components/ui/button";
+import { importsHubHref } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
@@ -24,7 +29,8 @@ export default async function CompletedGamesPage({
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
-  const [userRes, listRes] = await Promise.all([
+  const [session, userRes, listRes] = await Promise.all([
+    getSession(),
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(
       `/api/v1/users/${id}/completions?per=${PAGE_SIZE}&page=${currentPage}`,
@@ -35,6 +41,7 @@ export default async function CompletedGamesPage({
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? id;
+  const isSelf = session?.principal.discord_id === id;
 
   let entries: GameCompletion[] = [];
   let total = 0;
@@ -56,6 +63,35 @@ export default async function CompletedGamesPage({
       displayName={displayName}
       title="Completed games"
       count={total}
+      action={
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/members/${id}/completed-games/compare`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <GitCompareArrows /> Compare
+          </Link>
+          {isSelf && (
+            // A plain link, not next/link: the route handler answers with an
+            // attachment, so the browser downloads it instead of navigating.
+            <a
+              href={`/api/members/${id}/completions/export`}
+              download="completions.csv"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <Download /> Export CSV
+            </a>
+          )}
+          {isSelf && (
+            <Link
+              href={importsHubHref(id)}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <FileUp /> Import
+            </Link>
+          )}
+        </div>
+      }
     >
       {entries.length === 0 ? (
         <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
@@ -64,15 +100,10 @@ export default async function CompletedGamesPage({
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {entries.map((entry) => {
-            const completed = entry.completion_date
-              ? new Date(entry.completion_date).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                })
-              : null;
+            const completed = formatCompletedMonth(entry.completed_at);
             return (
               <MemberGameCard
-                key={entry.entry_id}
+                key={entry.completion_id}
                 game={entry.game}
                 platform={entry.platform}
                 note={entry.note}
@@ -87,7 +118,7 @@ export default async function CompletedGamesPage({
         </div>
       )}
 
-      <MemberListPagination
+      <ListPagination
         currentPage={currentPage}
         totalPages={totalPages}
         buildHref={href}

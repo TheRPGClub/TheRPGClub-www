@@ -17,17 +17,13 @@ export default async function AppLayout({
   const session = await getSession();
   if (!session) redirect("/");
 
-  // Sequenced behind the redirect, NOT run alongside getSession.
+  // Sequenced behind the redirect, not run alongside getSession.
   //
-  // fetchCurrentPhase is cached and Next keys the Data Cache on URL alone, not
-  // on headers, so one entry is shared by every caller. voting_rounds/current
-  // requires auth and 401s without it — so issuing this in parallel let any
-  // unauthenticated hit on an (app) route (a crawler, a prefetch, a logged-out
-  // visit) cache a 401 for the full revalidate window and blank the phase for
-  // every signed-in user behind it, which is how the nav read "Voting" during
-  // a nomination window. Past the redirect only authenticated requests can
-  // populate it, and the body they get is the same global round metadata for
-  // everyone. The serialisation only costs a cache miss.
+  // voting_rounds/current requires auth and 401s without it. Next's Data
+  // Cache key includes the request headers (and so the member's
+  // Authorization), so cached reads are per member and a 401 is never shared;
+  // waiting for the session only keeps a logged-out render from wasting a
+  // fetch that can only fail.
   const votingPhase = await fetchCurrentPhase();
 
   return (

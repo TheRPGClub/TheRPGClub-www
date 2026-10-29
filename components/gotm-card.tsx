@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import type { Platform } from "@/lib/api/types";
+import type { GotmCardLink } from "@/lib/gotm-links";
 import { PlatformPills } from "@/components/platform-pills";
 
 const accentClasses = {
@@ -10,6 +11,7 @@ const accentClasses = {
     glow: "from-brand-950/40 to-transparent",
     hoverBorder: "hover:border-brand-500/40",
     cta: "text-brand-300",
+    link: "hover:text-brand-200 hover:ring-brand-500/40",
   },
   purple: {
     pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",
@@ -17,6 +19,7 @@ const accentClasses = {
     glow: "from-purple-950/40 to-transparent",
     hoverBorder: "hover:border-purple-500/40",
     cta: "text-purple-300",
+    link: "hover:text-purple-200 hover:ring-purple-500/40",
   },
 } as const;
 
@@ -37,6 +40,9 @@ interface GotmCardProps {
   compact?: boolean;
   showMeta?: boolean;
   href?: string;
+  // Outbound links (Reddit, Discord thread, voting results), built with
+  // `gotmLinks` from @/lib/gotm-links. Rendered as a row under the text.
+  links?: GotmCardLink[];
   className?: string;
 }
 
@@ -55,8 +61,10 @@ export function GotmCard({
   compact = false,
   showMeta = true,
   href,
+  links,
   className: extraClassName,
 }: GotmCardProps) {
+  const hasLinks = !!links?.length;
   const left = imageAlign === "left";
   const imageUrl = artUrl ?? coverUrl;
   const accentStyle = accentClasses[accent];
@@ -146,6 +154,25 @@ export function GotmCard({
             </p>
           )}
         </div>
+        {hasLinks && (
+          <ul
+            className={`relative z-20 mt-4 flex flex-wrap gap-1.5 ${left ? "justify-end" : ""}`}
+          >
+            {links.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1 rounded-md bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground ring-1 ring-inset ring-transparent transition-colors ${accentStyle.link}`}
+                >
+                  {link.label}
+                  <ExternalLink className="h-3 w-3" aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
         {href && (
           <div
             className={`mt-4 flex items-center gap-1 text-xs font-medium ${accentStyle.cta}`}
@@ -157,6 +184,21 @@ export function GotmCard({
       </div>
     </>
   );
+
+  // Anchors can't nest, so with outbound links the card stops being one big
+  // <Link>: the game link becomes an overlay under the link row instead.
+  if (href && hasLinks) {
+    return (
+      <div className={className}>
+        {content}
+        <Link
+          href={href}
+          aria-label={`View ${title}`}
+          className="absolute inset-0 z-10 rounded-xl"
+        />
+      </div>
+    );
+  }
 
   if (href) {
     return (

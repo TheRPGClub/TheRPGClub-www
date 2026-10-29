@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
+import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import type { ApiCollection, User } from "@/lib/api/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 const FETCH_LIMIT = 500;
-const MEMBERS_REVALIDATE_SECONDS = 300;
 
 type RoleKey = "admin" | "moderator" | "regular";
 

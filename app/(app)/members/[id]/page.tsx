@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   BookMarked,
   Boxes,
+  GitCompareArrows,
   Pencil,
   Star,
   Trophy,
@@ -11,6 +12,7 @@ import {
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { formatCompletedMonth } from "@/lib/completions";
 import type {
   ApiCollection,
   ApiSingle,
@@ -279,6 +281,19 @@ export default async function MemberPage({
         count={counts.completed}
         seeAllHref={`${memberHref}/completed-games`}
         emptyMessage="No completed games yet."
+        action={
+          session && !isSelf ? (
+            <Button
+              variant="ghost"
+              size="xs"
+              nativeButton={false}
+              render={<Link href={`${memberHref}/completed-games/compare`} />}
+            >
+              <GitCompareArrows />
+              Compare completions
+            </Button>
+          ) : undefined
+        }
       >
         {completed.map((entry, i) => (
           <CompletedCard
@@ -337,12 +352,7 @@ function FavoriteCard({ entry }: { entry: UserFavorite }) {
 }
 
 function CompletedCard({ entry }: { entry: GameCompletion }) {
-  const completed = entry.completion_date
-    ? new Date(entry.completion_date).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-      })
-    : null;
+  const completed = formatCompletedMonth(entry.completed_at);
   return (
     <MemberGameCard
       game={entry.game}

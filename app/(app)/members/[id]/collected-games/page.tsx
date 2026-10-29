@@ -1,16 +1,26 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Boxes } from "lucide-react";
+import { Boxes, FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
+  CollectionPlatformSummary,
   GameCollection,
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
-import { MemberListPagination } from "@/components/member/member-list-pagination";
+import { ListPagination } from "@/components/list-pagination";
+import {
+  CollectionPlatformStrip,
+  collectedGamesHref,
+  parsePlatformFilter,
+} from "@/components/member/collection-platform-strip";
+import { buttonVariants } from "@/components/ui/button";
+import { importsHubHref } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
@@ -19,22 +29,36 @@ export default async function CollectedGamesPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; platform_id?: string }>;
 }) {
-  const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
+  const [{ id }, { page = "1", platform_id }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
+  const platformId = parsePlatformFilter(platform_id);
 
-  const [userRes, listRes] = await Promise.all([
+  const listQuery = new URLSearchParams({
+    per: String(PAGE_SIZE),
+    page: String(currentPage),
+  });
+  if (platformId) listQuery.set("platform_id", platformId);
+
+  const [session, userRes, listRes, summaryRes] = await Promise.all([
+    getSession(),
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    apiFetch(
-      `/api/v1/users/${id}/collections?per=${PAGE_SIZE}&page=${currentPage}`,
-      { cache: "no-store" },
-    ),
+    apiFetch(`/api/v1/users/${id}/collections?${listQuery}`, {
+      cache: "no-store",
+    }),
+    apiFetch(`/api/v1/users/${id}/collections/platform_summary`, {
+      cache: "no-store",
+    }),
   ]);
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? id;
+  const isSelf = session?.principal.discord_id === id;
 
   let entries: GameCollection[] = [];
   let total = 0;
@@ -47,8 +71,13 @@ export default async function CollectedGamesPage({
     total = pagination.total;
     totalPages = pagination.totalPages;
   }
-  const href = (p: number) =>
-    `/members/${id}/collected-games${p > 1 ? `?page=${p}` : ""}`;
+  // The strip is an extra: if the summary fails, the list still renders.
+  let summary: CollectionPlatformSummary | null = null;
+  if (summaryRes.ok) {
+    summary = ((await summaryRes.json()) as ApiSingle<CollectionPlatformSummary>)
+      .data;
+  }
+  const href = (p: number) => collectedGamesHref(id, { page: p, platformId });
 
   return (
     <MemberListShell
@@ -56,10 +85,30 @@ export default async function CollectedGamesPage({
       displayName={displayName}
       title="Collection"
       count={total}
+      action={
+        isSelf && (
+          <Link
+            href={importsHubHref(id)}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <FileUp /> Import
+          </Link>
+        )
+      }
     >
+      {summary && summary.total_count > 0 && (
+        <CollectionPlatformStrip
+          userId={id}
+          summary={summary}
+          current={platformId}
+        />
+      )}
+
       {entries.length === 0 ? (
         <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-          No owned games tracked yet.
+          {platformId
+            ? "No owned games on this platform."
+            : "No owned games tracked yet."}
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -80,7 +129,7 @@ export default async function CollectedGamesPage({
         </div>
       )}
 
-      <MemberListPagination
+      <ListPagination
         currentPage={currentPage}
         totalPages={totalPages}
         buildHref={href}
