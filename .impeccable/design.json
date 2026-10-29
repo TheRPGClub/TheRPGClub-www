@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-29T16:31:42.975549+00:00",
+  "title": "Design System: The RPG Club",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#0b0b0d",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#141417",
+          "#1d1d22",
+          "#2a2a31",
+          "#3a3a43",
+          "#8d8d87",
+          "#b9b9b2",
+          "#f4f4f0"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "#141417"
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "#1d1d22"
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "#2a2a31"
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "#3a3a43"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f4f4f0"
+      },
+      "paper-dim": {
+        "role": "neutral",
+        "displayName": "Dim Paper",
+        "canonical": "#b9b9b2"
+      },
+      "paper-mute": {
+        "role": "neutral",
+        "displayName": "Mute Paper",
+        "canonical": "#8d8d87"
+      },
+      "gotm": {
+        "role": "primary",
+        "displayName": "Masthead Red",
+        "canonical": "oklch(0.6279 0.2577 29.23)",
+        "tonalRamp": [
+          "oklch(0.258 0.1 29.23)",
+          "oklch(0.396 0.1533 29.23)",
+          "oklch(0.505 0.2074 29.23)",
+          "oklch(0.577 0.2369 29.23)",
+          "oklch(0.6279 0.2577 29.23)",
+          "oklch(0.675 0.2025 29.23)",
+          "oklch(0.74 0.1508 29.23)",
+          "oklch(0.86 0.072 29.23)"
+        ]
+      },
+      "gotm-soft": {
+        "role": "primary",
+        "displayName": "Soft Red",
+        "canonical": "#ff5a4f"
+      },
+      "nr": {
+        "role": "secondary",
+        "displayName": "Feature Violet",
+        "canonical": "#8a4dff",
+        "tonalRamp": [
+          "oklch(0.2 0.1 293)",
+          "oklch(0.3 0.15 293)",
+          "oklch(0.42 0.21 293)",
+          "oklch(0.52 0.25 293)",
+          "oklch(0.585 0.255 293)",
+          "oklch(0.7 0.17 293)",
+          "oklch(0.8 0.1 293)",
+          "oklch(0.93 0.04 293)"
+        ]
+      },
+      "nr-soft": {
+        "role": "secondary",
+        "displayName": "Soft Violet",
+        "canonical": "#b896ff"
+      },
+      "highlight": {
+        "role": "tertiary",
+        "displayName": "Highlighter Yellow",
+        "canonical": "#ffd400",
+        "tonalRamp": [
+          "#3a3200",
+          "oklch(0.38 0.08 95)",
+          "oklch(0.5 0.11 95)",
+          "oklch(0.62 0.14 95)",
+          "oklch(0.75 0.16 93)",
+          "oklch(0.88 0.18 92)",
+          "oklch(0.92 0.12 95)",
+          "oklch(0.96 0.06 97)"
+        ]
+      },
+      "highlight-ink": {
+        "role": "tertiary",
+        "displayName": "Yellow Ink",
+        "canonical": "#3a3200"
+      },
+      "destructive": {
+        "role": "neutral",
+        "displayName": "Signal Orange",
+        "canonical": "oklch(0.74 0.17 52)"
+      }
+    },
+    "typographyMeta": {
+      "numeral": {
+        "displayName": "Monumental Numeral",
+        "purpose": "Round numbers, shelf counts, days-left clock; in the track's ink where a track owns it."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "A single winner's cover headline and banner hero names; 3.75rem phone to 5.75rem desktop."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles on a 2px paper rule; 3rem to 3.75rem."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings on a 2px paper rule; panel titles 1.45-2rem."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Blurbs and reviews, 48-68ch measure, tabular numerals."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav, buttons, running head, stats captions, meta; tracked condensed caps."
+      },
+      "chip": {
+        "displayName": "Chip",
+        "purpose": "Fact and track chips."
+      }
+    },
+    "shadows": [
+      {
+        "name": "stamp",
+        "value": "drop-shadow(0 6px 14px rgba(0,0,0,0.45))",
+        "purpose": "The winner starburst."
+      },
+      {
+        "name": "object-lift",
+        "value": "0 18px 40px rgb(0 0 0 / 0.5)",
+        "purpose": "Dealt pick cards, lifted covers, the banner avatar (range 0 12px 30px /0.5 to 0 24px 60px /0.6)."
+      },
+      {
+        "name": "type-on-art",
+        "value": "0 1px 8px rgb(0 0 0 / 0.85)",
+        "purpose": "text-shadow for small labels sitting on key art."
+      },
+      {
+        "name": "inset-ring",
+        "value": "inset 0 0 0 2px var(--color-highlight)",
+        "purpose": "Stroke without layout shift; yellow marks a selection, rule-strong or paper-mute for neutral strokes."
+      }
+    ],
+    "motion": [
+      {
+        "name": "burst-stamp",
+        "value": "480ms cubic-bezier(0.16,1,0.3,1) both",
+        "purpose": "The starburst stamps in once per page from 1.5x scale and 14deg off-tilt; motion-safe only."
+      },
+      {
+        "name": "ease-art",
+        "value": "cubic-bezier(0.2,0.8,0.2,1)",
+        "purpose": "Key art scale on hover (1.03-1.04 over 500-700ms) and progress fills."
+      },
+      {
+        "name": "landing-marquee",
+        "value": "linear infinite, pace set per cover",
+        "purpose": "The landing's foot of GOTM covers; pauses on hover or focus; still scrollable row under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (GOTM)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Masthead red; GOTM actions such as View game on a GOTM cover.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">View game <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 14px; border: 1px solid transparent; border-radius: 2.4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 150ms; } .ds-btn:focus-visible { outline: none; border-color: #ffd400; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); } .ds-btn:active { transform: translateY(1px); } .ds-btn-primary { background: #ff0000; color: #fff; } .ds-btn-primary:hover { background: rgb(255 0 0 / 0.85); }"
+    },
+    {
+      "name": "Highlight Button (call to action)",
+      "kind": "button",
+      "refersTo": "button-highlight",
+      "description": "Highlighter yellow with ink type; nominate, vote.",
+      "html": "<button class=\"ds-btn-hl\">Nominate a game</button>",
+      "css": ".ds-btn-hl { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: 2.4px; background: #ffd400; color: #0b0b0d; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 150ms; } .ds-btn-hl:hover { background: rgb(255 212 0 / 0.85); } .ds-btn-hl:focus-visible { outline: 2px solid #f4f4f0; outline-offset: 2px; } .ds-btn-hl:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "NR Button",
+      "kind": "button",
+      "refersTo": "button-nr",
+      "description": "Violet; NR-GOTM actions only.",
+      "html": "<button class=\"ds-btn-nr\">View game</button>",
+      "css": ".ds-btn-nr { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: 2.4px; background: #8a4dff; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 150ms; } .ds-btn-nr:hover { background: rgb(138 77 255 / 0.85); } .ds-btn-nr:focus-visible { outline: none; border-color: #ffd400; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions on ink.",
+      "html": "<button class=\"ds-btn-outline\">Edit profile</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid rgb(141 141 135 / 0.6); border-radius: 2.4px; background: transparent; color: #f4f4f0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 150ms; } .ds-btn-outline:hover { border-color: #f4f4f0; background: #1d1d22; } .ds-btn-outline:focus-visible { outline: none; border-color: #ffd400; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); }"
+    },
+    {
+      "name": "Chips",
+      "kind": "chip",
+      "refersTo": "chip-neutral",
+      "description": "Fact chips in paper on ink; tracks colour only their own chips.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip\">2025</span><span class=\"ds-chip\">PC</span><span class=\"ds-chip ds-chip-gotm\">GOTM</span><span class=\"ds-chip ds-chip-nr\">NR-GOTM</span><span class=\"ds-chip ds-chip-hl\">Your pick</span></div>",
+      "css": ".ds-chips { display: flex; gap: 6px; flex-wrap: wrap; } .ds-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 2px; background: rgb(244 244 240 / 0.08); color: #b9b9b2; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; } .ds-chip-gotm { background: #ff0000; color: #fff; } .ds-chip-nr { background: #8a4dff; color: #fff; } .ds-chip-hl { background: #ffd400; color: #0b0b0d; }"
+    },
+    {
+      "name": "Top bar with running head",
+      "kind": "nav",
+      "refersTo": "search-field",
+      "description": "The current route as a trail with red slash separators, and the games search.",
+      "html": "<header class=\"ds-top\"><ol class=\"ds-trail\"><li><a href=\"#\">Games</a></li><li><span>/</span><a href=\"#\">Metaphor: ReFantazio</a></li><li><span>/</span><b aria-current=\"page\">Reviews</b></li></ol><label class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input placeholder=\"Search…\"></label></header>",
+      "css": ".ds-top { display: flex; align-items: center; gap: 16px; height: 60px; padding: 0 28px; background: rgb(11 11 13 / 0.95); border-bottom: 1px solid #2a2a31; } .ds-trail { display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; flex: 1; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8d8d87; } .ds-trail li { display: flex; gap: 8px; } .ds-trail span { color: #ff0000; } .ds-trail a { color: inherit; text-decoration: none; transition: color 150ms; } .ds-trail a:hover { color: #f4f4f0; } .ds-trail b { color: #f4f4f0; font-weight: 700; } .ds-search { display: flex; align-items: center; gap: 8px; width: 320px; height: 36px; padding: 0 12px; border: 1px solid #2a2a31; border-radius: 2.4px; background: #141417; color: #8d8d87; transition: border-color 150ms; } .ds-search:focus-within { border-color: #8d8d87; } .ds-search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #f4f4f0; caret-color: #ffd400; font: 0.875rem Barlow, sans-serif; }"
+    },
+    {
+      "name": "Sidebar nav item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Label-voice items; the active one is solid masthead red.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item is-active\" href=\"#\">Dashboard</a><a class=\"ds-nav-item\" href=\"#\">Games</a><a class=\"ds-nav-item\" href=\"#\">GOTM history</a><a class=\"ds-nav-item\" href=\"#\">Voting <i class=\"ds-badge\">Vote</i></a></nav>",
+      "css": ".ds-nav { display: grid; gap: 2px; width: 240px; padding: 8px; background: #141417; } .ds-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 10px; border-radius: 2.4px; color: #b9b9b2; text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.06em; transition: background 150ms, color 150ms; } .ds-nav-item:hover { background: #1d1d22; color: #f4f4f0; } .ds-nav-item:focus-visible { outline: 2px solid #ffd400; } .ds-nav-item.is-active { background: #ff0000; color: #fff; } .ds-badge { margin-left: auto; padding: 1px 6px; border-radius: 2px; background: #ffd400; color: #0b0b0d; font-style: normal; font-weight: 800; font-size: 0.7rem; }"
+    },
+    {
+      "name": "Winner Starburst",
+      "kind": "custom",
+      "refersTo": "starburst",
+      "description": "Signature mark; GOTM and NR-GOTM winners only, tilted, stamped in once.",
+      "html": "<div class=\"ds-burst\"><svg viewBox=\"0 0 100 100\"><polygon points=\"50,0 57,17 73,6 72,25 91,21 82,38 100,43 86,55 98,69 79,71 84,90 66,82 62,100 50,87 38,100 34,82 16,90 21,71 2,69 14,55 0,43 18,38 9,21 28,25 27,6 43,17\"/></svg><span>Game<br>of the<br>Month</span></div>",
+      "css": ".ds-burst { position: relative; display: grid; place-items: center; width: 168px; height: 168px; transform: rotate(-9deg); animation: ds-stamp 480ms cubic-bezier(0.16,1,0.3,1) both; } .ds-burst svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45)); } .ds-burst polygon { fill: #ffd400; } .ds-burst span { position: relative; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.5rem; line-height: 0.92; color: #0b0b0d; } @keyframes ds-stamp { from { opacity: 0; transform: rotate(-23deg) scale(1.5); } to { opacity: 1; transform: rotate(-9deg) scale(1); } } @media (prefers-reduced-motion: reduce) { .ds-burst { animation: none; } }"
+    },
+    {
+      "name": "Cover numeral and two-line headline",
+      "kind": "card",
+      "refersTo": "feature-card",
+      "description": "The cover story's masthead: monumental round number in the track ink over a two-line Anton headline, second line in the track accent.",
+      "html": "<article class=\"ds-cover\"><div class=\"ds-mast\"><p class=\"ds-num\">12</p><p class=\"ds-round\">Round 12<span>August 2026</span></p></div><h2 class=\"ds-head\"><span>Metaphor:</span><span class=\"ds-acc\">ReFantazio</span></h2><div class=\"ds-stats\"><b>14</b> playing <b class=\"ds-w\">6</b> cleared</div></article>",
+      "css": ".ds-cover { padding: 28px; background: linear-gradient(90deg, rgb(11 11 13 / 0.96), rgb(11 11 13 / 0.6)), #000; border-radius: 3.2px; color: #f4f4f0; } .ds-mast { display: flex; align-items: flex-end; gap: 14px; } .ds-num { margin: 0; font-family: Anton, Impact, sans-serif; font-size: 5.75rem; line-height: 0.8; letter-spacing: -0.01em; color: #ff0000; } .ds-round { margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.95rem; } .ds-round span { display: block; font-weight: 700; color: #8d8d87; } .ds-head { margin: 40px 0 0; font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; font-size: 4rem; line-height: 0.9; } .ds-head span { display: block; } .ds-acc { color: #ffd400; } .ds-stats { margin-top: 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; color: #b9b9b2; } .ds-stats b { font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 1.75rem; color: #ffd400; } .ds-stats b.ds-w { color: #f4f4f0; }"
+    },
+    {
+      "name": "Round Panel",
+      "kind": "card",
+      "refersTo": "round-panel",
+      "description": "The club's open business in highlighter yellow with a monumental days-left count.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-panel-top\"><h2>Round 13<br>Nominations</h2><p><b>6</b>days left</p></div><p class=\"ds-panel-copy\">Nominations close Sep 1. You haven't nominated a game yet.</p><div class=\"ds-panel-act\"><button class=\"ds-ink\">Nominate a game</button><button class=\"ds-ghost\">See all 9</button></div></section>",
+      "css": ".ds-panel { width: 340px; padding: 14px 18px 16px; border-radius: 3.2px; background: #ffd400; color: #0b0b0d; } .ds-panel-top { display: flex; justify-content: space-between; gap: 12px; } .ds-panel h2 { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; font-size: 1.65rem; line-height: 0.95; } .ds-panel-top p { margin: 0; text-align: right; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; } .ds-panel-top b { display: block; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 3rem; line-height: 0.85; } .ds-panel-copy { font: 0.9rem/1.4 Barlow, sans-serif; } .ds-panel-act { display: flex; gap: 8px; margin-top: 12px; } .ds-panel-act button { height: 36px; padding: 0 14px; border-radius: 2.4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 150ms; } .ds-ink { background: #0b0b0d; color: #f4f4f0; border: 1px solid transparent; } .ds-ink:hover { background: rgb(11 11 13 / 0.85); } .ds-ghost { background: transparent; color: #0b0b0d; border: 1px solid #0b0b0d; } .ds-ghost:hover { background: rgb(11 11 13 / 0.1); } .ds-panel button:focus-visible { outline: 2px solid #0b0b0d; outline-offset: 2px; }"
+    },
+    {
+      "name": "Game Cover with fallback",
+      "kind": "card",
+      "refersTo": "game-cover-fallback",
+      "description": "3:4 box art; with no art, the title in Anton on ink-3, never a grey void.",
+      "html": "<div class=\"ds-gcover\"><span>Emberlight Chronicles</span></div>",
+      "css": ".ds-gcover { width: 140px; aspect-ratio: 3 / 4; display: grid; place-items: center; overflow: hidden; border-radius: 2.4px; background: #1d1d22; outline: 1px solid rgb(244 244 240 / 0.12); outline-offset: -1px; } .ds-gcover span { padding: 12px; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.5rem; line-height: 0.95; color: #8d8d87; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Monthly Issue",
+    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).",
+    "keyCharacteristics": [
+      "Ink-black ground with three spot inks: masthead red for GOTM, violet for NR-GOTM, highlighter yellow for the member's own business.",
+      "Anton in caps for every headline and numeral, Barlow Condensed tracked caps for every label, Barlow for reading.",
+      "Monumental numerals: the round number, a shelf's count, the days-left clock.",
+      "The winner starburst, stamped once, only on winners.",
+      "Two-line game headlines, with the second line in the track's accent.",
+      "Hard rectangles (2-4px corners) and 2px paper rules under headings."
+    ],
+    "rules": [
+      {
+        "name": "The One Ink Per Track Rule",
+        "body": "Red means GOTM, violet means NR-GOTM, and nothing decorative borrows either. A GOTM element never wears violet and an NR element never wears red. A game that won both tracks reads as GOTM first.",
+        "section": "colors"
+      },
+      {
+        "name": "The Yellow Is Yours Rule",
+        "body": "Highlighter yellow is filled only for calls to action and the GOTM starburst. As type it marks the GOTM headline's second line and interaction states (hover, focus, selection, caret). It never fills a decorative panel.",
+        "section": "colors"
+      },
+      {
+        "name": "The Red Is Also Here Rule",
+        "body": "Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Line Headline Rule",
+        "body": "A game's title breaks at its subtitle colon (\"Metaphor:\" / \"ReFantazio\"). Without a colon it breaks before the last word, and a one-word title is all second line. The second line takes the track's accent: yellow for a GOTM winner, soft violet for an NR-GOTM winner, paper for everything else. Every page that sets a game's name as a headline uses this one rule.",
+        "section": "typography"
+      },
+      {
+        "name": "The Caps Are the Face Rule",
+        "body": "Anton and Barlow Condensed are always set in caps through the `font-headline` and `font-label` utilities. Anton never sets mixed case, and it never sets body text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Empty Track Rule",
+        "body": "A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small \"No Game of the Month this round\" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed rule-strong box with a short muted label. Under a title search, that box stays silent, because absence there means \"no match\".",
+        "section": "layout"
+      },
+      {
+        "name": "The Multi-Winner Rule",
+        "body": "Co-winners share one cover, never a carousel. Two winners split it (1.42fr / 1fr). Three put a tall lead panel beside two stacked panels (1.3fr / 1fr). The lead carries the numeral, a paper \"N winners\" tag and every outbound link, and the narrow panels keep two links. Each winner gets a square letter tile (A, B, C) in its track's ink, and titles step down by panel size. The NR rail does the same: one winner is a feature card, and two or three are a ranked list of covers with A/B/C letters. Side-by-side panels reserve equal blurb height so their stats and actions sit level.",
+        "section": "layout"
+      },
+      {
+        "name": "The Scrim Not Glow Rule",
+        "body": "Key art is darkened from where the type sits (from the left for a single cover, from the foot for split panels) with ink gradients (`rgb(11 11 13 / 0.96 to 0.15)`). Art is never faded into a coloured gradient, and nothing glows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do colour a thing red only if it is GOTM or \"you are here\", violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.",
+      "Do open every page with one monumental object (a numeral or a two-line Anton headline) and rule every heading with 2px paper.",
+      "Do set every game headline with the Two-Line Headline Rule.",
+      "Do give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.",
+      "Do split one cover between co-winners and letter them A, B, C in the track's ink.",
+      "Do fall back to the title in Anton on ink-3 when art is missing.",
+      "Do keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms) and the landing marquee, all behind `motion-safe`."
+    ],
+    "donts": [
+      "Don't fade key art into coloured gradients, add glow accents, or use gradient text.",
+      "Don't put a starburst on anything but a GOTM or NR-GOTM winner.",
+      "Don't put a breadcrumb inside a page; the running head is the only trail.",
+      "Don't add a small tracked-caps kicker or eyebrow above a headline. Track labels sit with a pick's art as data, not above titles as decoration.",
+      "Don't use hard offset shadows; shadows here are soft, black and directional.",
+      "Don't use emoji or text glyphs as icons; icons are line SVGs (Lucide) at 16-18px.",
+      "Don't set Anton in mixed case or at body sizes, or set body copy in Barlow Condensed.",
+      "Don't round corners past 4px except avatars and status dots.",
+      "Don't call the GOTM history \"Back issues\"."
+    ]
+  }
+}
