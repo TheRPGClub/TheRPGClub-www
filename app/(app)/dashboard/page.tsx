@@ -1,10 +1,31 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { fetchCurrentGotmRound } from "@/lib/api/gotm-rounds";
-import { GotmRoundBlock } from "@/components/gotm-round-block";
+import {
+  fetchCurrentGotmRound,
+  fetchGotmRounds,
+} from "@/lib/api/gotm-rounds";
+import { fetchNominations, fetchVotingRound } from "@/lib/api/voting-round";
+import type { VotingRound } from "@/lib/api/types";
+import { CoverStory } from "@/components/issue/cover-story";
+import { NrFeature } from "@/components/issue/nr-feature";
+import { PreviousRounds } from "@/components/issue/previous-rounds";
+import {
+  RoundPanel,
+  type TrackedNomination,
+} from "@/components/issue/round-panel";
+import { headingLinkClass } from "@/components/issue/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSession, type SessionPrincipal } from "@/lib/session";
+import { getSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
+
+// The dashboard is the current issue: the round's GOTM as the cover story,
+// its NR-GOTM as the feature beside it, the club's open business (nominations
+// or the vote) in yellow under that, and the previous rounds below.
+//
+// A round missing one track gives its column away: with no NR-GOTM the
+// nominations panel takes the whole right column; with no GOTM the NR-GOTM is
+// promoted to the cover.
 
 export default function DashboardPage() {
   return (
@@ -14,124 +35,163 @@ export default function DashboardPage() {
   );
 }
 
+const PREVIOUS_ROUNDS = 3;
+
 async function DashboardContent() {
-  // Session first: the current-round read needs auth, so a logged-out render
-  // skips it instead of wasting a fetch that can only 401 (see
-  // lib/api/gotm-rounds.ts).
+  // Session first: every read below needs auth, so a logged-out render skips
+  // them instead of wasting fetches that can only 401.
   const session = await getSession();
-  const round = session ? await fetchCurrentGotmRound() : null;
+  if (!session) return null;
+
+  const [round, history, voting] = await Promise.all([
+    fetchCurrentGotmRound(),
+    fetchGotmRounds({
+      kind: "both",
+      year: null,
+      q: "",
+      sort: "desc",
+      page: 1,
+    }),
+    fetchVotingRound(),
+  ]);
+  const { nominations, now } = await fetchRoundNominations(voting);
 
   // `gotm_rounds/current` is the GOTM round with the same round's NR-GOTM,
   // N/A placeholders already dropped.
   const gotm = round?.gotm?.games.length ? round.gotm : null;
   const nrGotm = round?.nr_gotm?.games.length ? round.nr_gotm : null;
+  const previous = (history?.rounds ?? [])
+    .filter((r) => r.round_number !== round?.round_number)
+    .slice(0, PREVIOUS_ROUNDS);
 
-  return (
-    <div className="space-y-8">
-      {session && <DashboardWelcome principal={session.principal} />}
+  const panel = voting && (
+    <RoundPanel
+      round={voting}
+      nominations={nominations}
+      viewerId={session.principal.id}
+      now={now}
+      tall={!(gotm && nrGotm)}
+    />
+  );
 
-      {!round || !gotm ? (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <p className="text-muted-foreground">No current Game of the Month.</p>
-          <ViewHistoryLink />
+  if (!round || (!gotm && !nrGotm)) {
+    return (
+      <div className="space-y-10">
+        <div className="grid gap-5 lg:grid-cols-[1fr_23rem]">
+          <NoRound />
+          {panel}
         </div>
-      ) : (
-        <>
-          <GotmRoundBlock
-            kind="gotm"
-            roundNumber={round.round_number}
-            block={gotm}
-            action={<ViewHistoryLink />}
-          />
-          {nrGotm && (
-            <GotmRoundBlock
-              kind="nr_gotm"
-              roundNumber={round.round_number}
-              block={nrGotm}
-            />
-          )}
-        </>
-      )}
+        <PreviousRounds rounds={previous} />
+      </div>
+    );
+  }
+
+  const cover = gotm ? (
+    <CoverStory
+      kind="gotm"
+      roundNumber={round.round_number}
+      monthYear={gotm.month_year}
+      games={gotm.games}
+      votingResultsMessageId={gotm.voting_results_message_id}
+    />
+  ) : (
+    <CoverStory
+      kind="nr_gotm"
+      roundNumber={round.round_number}
+      monthYear={nrGotm!.month_year}
+      games={nrGotm!.games}
+      votingResultsMessageId={nrGotm!.voting_results_message_id}
+      absentNote="No Game of the Month this round"
+    />
+  );
+  const rail =
+    gotm && nrGotm ? (
+      <div className="grid content-start gap-5 lg:grid-rows-[1fr_auto]">
+        <NrFeature
+          roundNumber={round.round_number}
+          games={nrGotm.games}
+          votingResultsMessageId={nrGotm.voting_results_message_id}
+        />
+        {panel}
+      </div>
+    ) : (
+      panel
+    );
+
+  return (
+    <div className="space-y-10">
+      <div
+        className={cn(
+          "grid gap-5",
+          rail && "lg:grid-cols-[1fr_23rem]",
+        )}
+      >
+        {cover}
+        {rail}
+      </div>
+      <PreviousRounds rounds={previous} />
     </div>
   );
 }
 
-function ViewHistoryLink() {
-  return (
-    <Link
-      href="/gotm"
-      className="group inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.2em] text-brand-300 transition-colors hover:text-brand-200"
-    >
-      View history
-      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-    </Link>
+// Both tracks' nominations, newest first, for the panel's count and list,
+// stamped with the time they were read so the days-left count is taken
+// against the same moment.
+async function fetchRoundNominations(
+  voting: VotingRound | null,
+): Promise<{ nominations: TrackedNomination[]; now: number }> {
+  if (!voting || !["nominating", "voting"].includes(voting.phase)) {
+    return { nominations: [], now: Date.now() };
+  }
+  const [gotm, nr] = await Promise.all([
+    fetchNominations("gotm", voting.round_number),
+    fetchNominations("nr_gotm", voting.round_number),
+  ]);
+  const nominations = [
+    ...gotm.map((n) => ({ ...n, category: "gotm" as const })),
+    ...nr.map((n) => ({ ...n, category: "nr_gotm" as const })),
+  ].sort(
+    (a, b) =>
+      new Date(b.nominated_at).getTime() - new Date(a.nominated_at).getTime(),
   );
+  return { nominations, now: Date.now() };
 }
 
-function DashboardWelcome({ principal }: { principal: SessionPrincipal }) {
-  const displayName = principal.global_name ?? principal.username;
+function NoRound() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-        Welcome back,{" "}
-        <span className="bg-linear-to-r from-brand-200 via-brand-300 to-brand-500 bg-clip-text text-transparent">
-          {displayName}
-        </span>
-        <span className="text-brand-400 drop-shadow-[0_0_8px_rgba(255,0,0,0.6)]">
-          .
-        </span>
-      </h1>
-      <p className="mt-1.5 text-sm text-muted-foreground">
-        Here&apos;s what&apos;s happening at the club.
+    <section className="flex min-h-64 flex-col justify-end gap-3 rounded-md border border-dashed border-rule-strong p-7">
+      <h2 className="font-headline text-4xl">No winners yet</h2>
+      <p className="max-w-[48ch] text-paper-dim">
+        This round&apos;s Game of the Month hasn&apos;t been decided. Once the
+        vote is in, the winners land here.
       </p>
-    </div>
+      <Link href="/gotm" className={headingLinkClass}>
+        Full history
+        <ArrowRight aria-hidden />
+      </Link>
+    </section>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-4">
-      <div>
-        <DashboardCardSkeleton />
-      </div>
-
-      <div>
-        <DashboardCardSkeleton imageAlign="left" />
-      </div>
-    </div>
-  );
-}
-
-function DashboardCardSkeleton({
-  imageAlign = "right",
-}: {
-  imageAlign?: "left" | "right";
-}) {
-  const left = imageAlign === "left";
-
-  return (
-    <div className="relative min-h-56 overflow-hidden rounded-xl border bg-card">
-      <Skeleton
-        className={`absolute top-0 h-full w-[70%] rounded-none ${
-          left ? "left-0" : "right-0"
-        }`}
-      />
-      <div
-        className={`relative max-w-[30%] space-y-3 p-6 ${left ? "ml-auto" : ""}`}
-      >
-        <Skeleton className="h-3 w-28" />
-        <Skeleton className="h-7 w-full" />
-        <Skeleton className="h-7 w-5/6" />
-        <div className="flex gap-3">
-          <Skeleton className="h-4 w-10" />
-          <Skeleton className="h-4 w-12" />
+    <div className="space-y-10">
+      <div className="grid gap-5 lg:grid-cols-[1fr_23rem]">
+        <Skeleton className="min-h-[30rem] rounded-md lg:min-h-[32rem]" />
+        <div className="grid gap-5 lg:grid-rows-[1fr_auto]">
+          <Skeleton className="min-h-60 rounded-md" />
+          <Skeleton className="h-40 rounded-md" />
         </div>
-        <div className="space-y-2 pt-1">
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-3/4" />
+      </div>
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-72 rounded-sm" />
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <Skeleton key={i} className="h-40 rounded-sm" />
+          ))}
         </div>
       </div>
     </div>
   );
 }
+

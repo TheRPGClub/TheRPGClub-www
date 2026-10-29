@@ -7,7 +7,11 @@
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --font-sans: var(--font-open-sans);
+    --font-sans: var(--font-barlow);
+    /* Monthly Issue type: Anton is the masthead/headline voice (caps only),
+       Barlow Condensed the tracked-caps label voice, Barlow the body. */
+    --font-display: var(--font-anton);
+    --font-cond: var(--font-barlow-condensed);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -61,6 +65,25 @@
     --color-brand-800: oklch(0.444 0.1824 29.23);
     --color-brand-900: oklch(0.396 0.1533 29.23);
     --color-brand-950: oklch(0.258 0.1 29.23);
+
+    /* Monthly Issue palette. Each track owns one ink and nothing decorative
+       borrows it: masthead red is GOTM (and the active nav state), violet is
+       NR-GOTM, highlighter yellow is calls to action (nominations, voting,
+       the GOTM starburst). Paper is the off-white type colour on ink. */
+    --color-ink: #0b0b0d;
+    --color-ink-2: #141417;
+    --color-ink-3: #1d1d22;
+    --color-rule: #2a2a31;
+    --color-rule-strong: #3a3a43;
+    --color-paper: #f4f4f0;
+    --color-paper-dim: #b9b9b2;
+    --color-paper-mute: #8d8d87;
+    --color-gotm: #ff0000;
+    --color-gotm-soft: #ff5a4f;
+    --color-nr: #8a4dff;
+    --color-nr-soft: #b896ff;
+    --color-highlight: #ffd400;
+    --color-highlight-ink: #3a3200;
 }
 
 :root {
@@ -101,38 +124,42 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    /* Honey yellow (10.3:1 on the dark background). */
-    --destructive: oklch(0.8 0.1604 75);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    /* Ink-black issue stock. The neutral tokens shadcn reads are mapped onto
+       the Monthly Issue palette so stock primitives land in-world. */
+    --background: #0b0b0d;
+    --foreground: #f4f4f0;
+    --card: #141417;
+    --card-foreground: #f4f4f0;
+    --popover: #141417;
+    --popover-foreground: #f4f4f0;
+    --primary: #ff0000;
+    --primary-foreground: #ffffff;
+    --secondary: #1d1d22;
+    --secondary-foreground: #f4f4f0;
+    --muted: #1d1d22;
+    --muted-foreground: #9a9a93;
+    --accent: #1d1d22;
+    --accent-foreground: #f4f4f0;
+    /* Signal orange: off both the GOTM red and the highlighter yellow, so a
+       destructive action never reads as a track or a call to action. */
+    --destructive: oklch(0.74 0.17 52);
+    --border: #2a2a31;
+    --input: #3a3a43;
+    --ring: #ffd400;
+    --chart-1: #ff0000;
+    --chart-2: #8a4dff;
+    --chart-3: #ffd400;
+    --chart-4: #b9b9b2;
+    --chart-5: #3a3a43;
+    --radius: 0.25rem;
+    --sidebar: #141417;
+    --sidebar-foreground: #f4f4f0;
+    --sidebar-primary: #ff0000;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #1d1d22;
+    --sidebar-accent-foreground: #f4f4f0;
+    --sidebar-border: #2a2a31;
+    --sidebar-ring: #ffd400;
 }
 
 @layer base {
@@ -141,8 +168,54 @@
     }
     body {
         @apply bg-background text-foreground;
+        font-variant-numeric: tabular-nums;
     }
     html {
         @apply font-sans;
+        color-scheme: dark;
+        scrollbar-color: var(--color-rule-strong) var(--color-ink);
+    }
+    ::selection {
+        background: var(--color-highlight);
+        color: var(--color-ink);
+    }
+    :focus-visible {
+        outline-color: var(--color-highlight);
+    }
+    input,
+    textarea {
+        caret-color: var(--color-highlight);
+    }
+    a {
+        text-underline-offset: 3px;
+    }
+}
+
+/* The masthead voice: Anton is a caps-only display face. */
+@utility font-headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 0.9;
+}
+
+/* The label voice: tracked condensed caps for nav, chips, buttons, meta. */
+@utility font-label {
+    font-family: var(--font-cond);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* The starburst stamps onto the page once: oversized and clear, then pressed
+   flat at its resting tilt. */
+@keyframes burst-stamp {
+    from {
+        opacity: 0;
+        transform: rotate(calc(var(--burst-rot, 0deg) - 14deg)) scale(1.5);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(var(--burst-rot, 0deg)) scale(1);
     }
 }
