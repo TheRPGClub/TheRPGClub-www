@@ -41,8 +41,6 @@ export interface ImportKindConfig {
   summary: string;
   // Member list subpaths the import writes to (for revalidation and links).
   affects: string[];
-  // False until the kind's page ships (www#30 Steam, www#31 Completionator).
-  available: boolean;
 }
 
 export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
@@ -54,7 +52,6 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "collection_csv_import_items",
     summary: "summary",
     affects: ["collected-games"],
-    available: true,
     titleField: "raw_title",
     itemNoun: { one: "row", other: "rows" },
   },
@@ -67,7 +64,6 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     // Steam has no `summary`; `items/counts` returns the same ImportSummary.
     summary: "items/counts",
     affects: ["collected-games"],
-    available: true,
     titleField: "steam_app_name",
     itemNoun: { one: "game", other: "games" },
   },
@@ -79,7 +75,6 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "completionator_import_items",
     summary: "summary",
     affects: ["completed-games"],
-    available: true,
     titleField: "game_title",
     itemNoun: { one: "entry", other: "entries" },
   },

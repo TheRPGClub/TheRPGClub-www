@@ -30,9 +30,7 @@ export default async function ImportsHubPage({
 
   const [userRes, ...active] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    ...IMPORT_KIND_ORDER.map((kind) =>
-      IMPORT_KINDS[kind].available ? loadActiveImport(kind, id) : Promise.resolve(null),
-    ),
+    ...IMPORT_KIND_ORDER.map((kind) => loadActiveImport(kind, id)),
   ]);
 
   if (!userRes.ok) notFound();
@@ -66,7 +64,6 @@ export default async function ImportsHubPage({
             href={importKindHref(id, kind)}
             label={IMPORT_KINDS[kind].label}
             description={IMPORT_KINDS[kind].description}
-            available={IMPORT_KINDS[kind].available}
             active={active[i] as ImportJob | null}
           />
         ))}
@@ -80,14 +77,12 @@ function ImportKindCard({
   href,
   label,
   description,
-  available,
   active,
 }: {
   kind: ImportKind;
   href: string;
   label: string;
   description: string;
-  available: boolean;
   active: ImportJob | null;
 }) {
   return (
@@ -99,7 +94,6 @@ function ImportKindCard({
             {IMPORT_STATUS_LABELS[active.status] ?? active.status}
           </Badge>
         )}
-        {!available && <Badge variant="outline">Coming soon</Badge>}
       </div>
       <p className="flex-1 text-sm text-muted-foreground">{description}</p>
       {active && (
@@ -108,18 +102,16 @@ function ImportKindCard({
           {importItemCount(kind, active.total_count)}
         </p>
       )}
-      {available && (
-        <Link
-          href={href}
-          className={buttonVariants({
-            variant: active ? "default" : "outline",
-            size: "sm",
-            className: "self-start",
-          })}
-        >
-          {active ? "Resume" : "Start"} <ArrowRight />
-        </Link>
-      )}
+      <Link
+        href={href}
+        className={buttonVariants({
+          variant: active ? "default" : "outline",
+          size: "sm",
+          className: "self-start",
+        })}
+      >
+        {active ? "Resume" : "Start"} <ArrowRight />
+      </Link>
     </li>
   );
 }
