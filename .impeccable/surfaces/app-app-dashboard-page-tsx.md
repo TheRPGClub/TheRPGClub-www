@@ -19,7 +19,7 @@ OWN-WORLD: The ground is ink black (#0b0b0d). Masthead red #ff0000 is reserved f
 
 STORY: A member lands, sees this month's issue (what the club is playing, who's in it), acts on the yellow nominations or voting panel, and digs into back issues, games and member pages, which all read as magazine departments.
 
-FIRST VIEWPORT: Dashboard. Sidebar on the left; top bar with "Issue N / Month Year" and search. The GOTM cover takes about two thirds of the width: a monumental red round number, the title in Anton (second line yellow), chips, blurb, playing/cleared/reviews counts, View game in red plus outbound links. The starburst is top-right.
+FIRST VIEWPORT: Dashboard. Sidebar on the left; top bar with the current route as a breadcrumb trail (the @crumbs slot) and search. The GOTM cover takes about two thirds of the width: a monumental red round number, the title in Anton (second line yellow), chips, blurb, playing/cleared/reviews counts, View game in red plus outbound links. The starburst is top-right.
 - 2 or 3 GOTM winners: the cover splits (a lead panel plus stacked panels).
 - The right column holds the NR-GOTM feature card (1 winner) or a ranked list (2-3), with the yellow nominations or voting panel below it.
 - 0 NR-GOTM: the right column is the full-height yellow panel.
@@ -72,3 +72,4 @@ Option letters refer to the captures in .impeccable/mocks/screens/<screen>-<a|b|
   - Add C's footer of every GOTM cover moving (a marquee) at the foot.
 - **Edit profile:** B's sidebar section toggling, with C's expanded image shelves (covers with remove/add tiles) in the selected section.
 - **Imports:** B. **Import review:** C.
+- Top bar (user, 2026-10-29): the running head shows the current route's trail (e.g. GAMES / <TITLE> / REVIEWS), not "Issue N / Month". It replaces every in-page breadcrumb. Phones keep the page and its parent.

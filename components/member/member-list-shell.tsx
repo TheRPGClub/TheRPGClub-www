@@ -22,13 +22,11 @@ export interface MemberListShellProps {
   // the profile payload. Pages outside the lists (imports) leave it off.
   current?: MemberListKey;
   counts?: MemberCounts;
-  // Extra breadcrumb steps between the member and this page.
-  trail?: { href: string; label: string }[];
   children: ReactNode;
 }
 
-// The frame every member sub-page shares: a breadcrumb, the member's name
-// with a switcher across their lists, then the page title on the paper rule
+// The frame every member sub-page shares (the top bar carries the trail): the
+// member's name with a switcher across their lists, then the page title on the paper rule
 // with its actions.
 export function MemberListShell({
   userId,
@@ -39,45 +37,10 @@ export function MemberListShell({
   action,
   current,
   counts,
-  trail = [],
   children,
 }: MemberListShellProps) {
-  const crumbs = [
-    { href: "/members", label: "Members" },
-    { href: `/members/${userId}`, label: displayName },
-    ...trail,
-  ];
-  const label =
-    typeof title === "string"
-      ? title
-      : MEMBER_LISTS.find((l) => l.key === current)?.label;
-
   return (
     <div className="mx-auto w-full max-w-[90rem] space-y-6">
-      <nav
-        aria-label="Breadcrumb"
-        className="font-label flex min-w-0 items-center gap-2 text-sm font-bold tracking-[0.08em] text-paper-mute"
-      >
-        {crumbs.map((crumb) => (
-          <span key={crumb.href} className="flex min-w-0 items-center gap-2">
-            <Link
-              href={crumb.href}
-              className="truncate transition-colors hover:text-paper"
-            >
-              {crumb.label}
-            </Link>
-            <span aria-hidden className="text-rule-strong">
-              /
-            </span>
-          </span>
-        ))}
-        {label && (
-          <span aria-current="page" className="truncate text-paper">
-            {label}
-          </span>
-        )}
-      </nav>
-
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link

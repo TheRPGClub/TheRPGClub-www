@@ -91,33 +91,6 @@ export function ReviewBanner({
         )}
       />
 
-      <nav
-        aria-label="Breadcrumb"
-        className="font-label absolute top-4 left-4 flex min-w-0 max-w-[calc(100%-2rem)] items-center gap-2 text-[0.8rem] tracking-[0.08em] text-paper-mute sm:left-7 md:top-5.5 md:text-[0.88rem]"
-      >
-        <Link href="/games" className="shrink-0 transition-colors hover:text-paper">
-          Games
-        </Link>
-        <span aria-hidden className="text-gotm">
-          /
-        </span>
-        <Link
-          href={`/games/${game.game_id}`}
-          className="truncate transition-colors hover:text-paper"
-        >
-          {game.title}
-        </Link>
-        <span aria-hidden className="text-gotm">
-          /
-        </span>
-        <Link
-          href={`/games/${game.game_id}/reviews`}
-          className="shrink-0 transition-colors hover:text-paper"
-        >
-          Reviews
-        </Link>
-      </nav>
-
       <div className="grid gap-5 px-4 pt-15 pb-6 sm:px-7 md:min-h-[420px] md:grid-cols-[1fr_auto] md:items-end md:gap-7 md:px-8 md:pt-16 md:pb-7.5">
         <div className="min-w-0">
           <h1 className="font-headline max-w-[15ch] text-[2.6rem] leading-[0.9] text-balance break-words md:text-[4.75rem]">

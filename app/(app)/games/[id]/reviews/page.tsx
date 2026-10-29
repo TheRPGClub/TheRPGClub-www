@@ -120,7 +120,7 @@ export default async function GameReviewsPage({
     />
   );
 
-  const strip = <GameStrip game={game} crumbs={[{ label: "Reviews" }]} />;
+  const strip = <GameStrip game={game} />;
 
   // ---- Reader --------------------------------------------------------------
   if (selected) {

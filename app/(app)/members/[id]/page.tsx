@@ -135,21 +135,6 @@ export default async function MemberPage({
 
   return (
     <div className="mx-auto w-full max-w-[90rem] space-y-10">
-      <nav
-        aria-label="Breadcrumb"
-        className="font-label flex items-center gap-2 text-sm font-bold tracking-[0.08em] text-paper-mute"
-      >
-        <Link href="/members" className="transition-colors hover:text-paper">
-          Members
-        </Link>
-        <span aria-hidden className="text-rule-strong">
-          /
-        </span>
-        <span aria-current="page" className="truncate text-paper">
-          {displayName}
-        </span>
-      </nav>
-
       <MemberBanner
         userId={user.user_id}
         displayName={displayName}

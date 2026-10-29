@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import type { Game } from "@/lib/api/types";
 import { Chip } from "@/components/issue/chip";
@@ -60,21 +59,6 @@ export function GameHero({
             : "bg-[linear-gradient(0deg,var(--color-ink)_0%,var(--color-ink-2)_100%)]",
         )}
       />
-
-      <nav
-        aria-label="Breadcrumb"
-        className="font-label absolute top-3.5 left-4 z-10 flex items-center gap-2 text-[0.8rem] tracking-[0.08em] text-paper-mute sm:left-7 md:top-5.5 md:text-[0.88rem]"
-      >
-        <Link href="/games" className="transition-colors hover:text-paper">
-          Games
-        </Link>
-        <span aria-hidden className="text-gotm">
-          /
-        </span>
-        <span aria-current="page" className="max-w-[40vw] truncate text-paper">
-          {game.title}
-        </span>
-      </nav>
 
       {track && (
         <Starburst

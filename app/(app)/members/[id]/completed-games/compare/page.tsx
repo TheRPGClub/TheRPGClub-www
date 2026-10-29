@@ -165,7 +165,6 @@ export default async function CompareCompletionsPage({
       title="Compare completions"
       counts={memberCounts(user)}
       current="completed"
-      trail={[{ href: `/members/${id}/completed-games`, label: "Completed" }]}
     >
       <CompareMemberForm
         // Remount on navigation so the uncontrolled select picks up the URL.

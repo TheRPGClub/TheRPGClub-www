@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import type { ApiSingle, ImportJob, User } from "@/lib/api/types";
+import type { ImportJob } from "@/lib/api/types";
 import { loadActiveImport, loadImportSummary, loadSocials } from "@/lib/imports/active";
 import {
   IMPORT_KINDS,
@@ -51,8 +51,6 @@ export async function ImportPage<J extends ImportJob>({
   ]);
 
   if (!userRes.ok) notFound();
-  const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? userId;
   const counts = active ? await loadImportSummary(kind, active.import_id) : null;
   // An open import keeps going even if the account was unlinked since; only a
   // new start needs the linked account.
@@ -62,10 +60,6 @@ export async function ImportPage<J extends ImportJob>({
 
   return (
     <ImportShell
-      trail={[
-        [displayName, `/members/${userId}`],
-        ["Imports", importsHubHref(userId)],
-      ]}
       title={IMPORT_KINDS[kind].label}
       width={active ? "max-w-[84rem]" : "max-w-4xl"}
       actions={

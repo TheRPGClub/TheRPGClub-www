@@ -131,7 +131,6 @@ export default async function BacklogPickPage({
       title="Pick something to play"
       current="backlog"
       counts={memberCounts(user)}
-      trail={[{ href: `/members/${id}/backlogged-games`, label: "Backlog" }]}
     >
       <PickSentence filters={filters} meta={meta} />
 

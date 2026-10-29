@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { fetchCurrentPhase } from "@/lib/api/voting-round";
-import { fetchCurrentGotmRound } from "@/lib/api/gotm-rounds";
 import {
   SidebarInset,
   SidebarProvider,
@@ -12,8 +11,11 @@ import { TopBar } from "@/components/issue/top-bar";
 
 export default async function AppLayout({
   children,
+  crumbs,
 }: {
   children: React.ReactNode;
+  // The @crumbs slot: the current route's trail for the top bar.
+  crumbs: React.ReactNode;
 }) {
   const session = await getSession();
   if (!session) redirect("/");
@@ -25,19 +27,7 @@ export default async function AppLayout({
   // Authorization), so cached reads are per member and a 401 is never shared;
   // waiting for the session only keeps a logged-out render from wasting a
   // fetch that can only fail.
-  //
-  // The current round names the running head's issue; it's the same cached
-  // read the dashboard makes, so the two never disagree.
-  const [votingPhase, currentRound] = await Promise.all([
-    fetchCurrentPhase(),
-    fetchCurrentGotmRound(),
-  ]);
-  const issueMonth =
-    currentRound?.gotm?.month_year ?? currentRound?.nr_gotm?.month_year;
-  const issue =
-    currentRound && issueMonth
-      ? { roundNumber: currentRound.round_number, monthYear: issueMonth }
-      : null;
+  const votingPhase = await fetchCurrentPhase();
 
   return (
     <TooltipProvider>
@@ -48,7 +38,7 @@ export default async function AppLayout({
           votingPhase={votingPhase}
         />
         <SidebarInset>
-          <TopBar issue={issue} />
+          <TopBar trail={crumbs} />
           <div className="flex flex-1 flex-col px-4 py-6 sm:px-7">{children}</div>
         </SidebarInset>
       </SidebarProvider>

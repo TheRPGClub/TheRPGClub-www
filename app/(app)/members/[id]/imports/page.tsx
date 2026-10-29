@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowRight, ChevronLeft, Link2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import type { ApiSingle, ImportJob, ImportSummary, User } from "@/lib/api/types";
+import type { ImportJob, ImportSummary } from "@/lib/api/types";
 import {
   loadActiveImport,
   loadImportSummary,
@@ -64,8 +64,6 @@ export default async function ImportsHubPage({
   ]);
 
   if (!userRes.ok) notFound();
-  const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
 
   const kinds = IMPORT_KIND_ORDER.map((kind, i) => ({
     kind,
@@ -78,10 +76,6 @@ export default async function ImportsHubPage({
 
   return (
     <ImportShell
-      trail={[
-        ["Members", "/members"],
-        [displayName, `/members/${id}`],
-      ]}
       title="Imports"
       count={open.length > 0 ? `${open.length} open` : undefined}
       description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
