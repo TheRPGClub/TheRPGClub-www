@@ -2,9 +2,11 @@ import type {
   CollectionCsvImportItem,
   CompletionatorImportItem,
   ImportItem,
+  SteamCollectionImportItem,
 } from "@/lib/api/types";
 import { formatImportDate, formatPlaytime } from "@/lib/imports/completionator";
 import type { ImportKind } from "@/lib/imports/kinds";
+import { SteamItemDetails } from "@/components/imports/steam-item-details";
 
 // The source data of the row under review, per import kind. Steam and
 // Completionator add their case here.
@@ -13,6 +15,7 @@ export function ImportItemDetails({ kind, item }: { kind: ImportKind; item: Impo
   if (kind === "completionator") {
     return <CompletionatorItemDetails item={item as CompletionatorImportItem} />;
   }
+  if (kind === "steam") return <SteamItemDetails item={item as SteamCollectionImportItem} />;
   return null;
 }
 

@@ -478,6 +478,25 @@ export interface CollectionCsvImportItem extends ImportItem {
   collection_entry_id: number | null;
 }
 
+export interface SteamCollectionImport extends ImportJob {
+  steam_id64: string;
+  steam_profile_ref: string | null;
+  source_profile_name: string | null;
+}
+
+export interface SteamCollectionImportItem extends ImportItem {
+  steam_app_id: number;
+  steam_app_name: string;
+  playtime_forever_min: number | null;
+  playtime_windows_min: number | null;
+  playtime_mac_min: number | null;
+  playtime_linux_min: number | null;
+  playtime_deck_min: number | null;
+  last_played_at: string | null;
+  collection_entry_id: number | null;
+}
+
+// Also the shape of Steam's `items/counts`, which stands in for `summary`.
 export interface ImportSummary {
   import_id: number;
   by_status: Partial<Record<ImportItemStatus, number>>;
