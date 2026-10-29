@@ -79,6 +79,10 @@ export function AppSidebar({
     principal.avatar,
     64,
   );
+  // Member pages are keyed by Discord id, the same id the owner checks use.
+  const profileHref = `/members/${principal.discord_id}`;
+  const onProfile =
+    pathname === profileHref || pathname.startsWith(profileHref + "/");
 
   return (
     <Sidebar collapsible="icon">
@@ -172,20 +176,30 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-1 py-1.5">
-              <Avatar size="sm">
-                <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback>
-                  {displayName[0]?.toUpperCase() ?? "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-medium">{displayName}</span>
-                {principal.global_name && (
-                  <span className="truncate text-xs text-muted-foreground">
-                    @{principal.username}
-                  </span>
-                )}
-              </div>
+              {/* The avatar and name open the viewer's own member page, where
+                  their lists, imports and profile edit live. Sign-out stays a
+                  sibling because a form can't nest inside a link. */}
+              <Link
+                href={profileHref}
+                title="Your profile"
+                aria-current={onProfile ? "page" : undefined}
+                className="-m-1 flex min-w-0 flex-1 items-center gap-2 rounded-md p-1 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-hidden aria-[current=page]:bg-sidebar-accent"
+              >
+                <Avatar size="sm">
+                  <AvatarImage src={avatarUrl} alt={displayName} />
+                  <AvatarFallback>
+                    {displayName[0]?.toUpperCase() ?? "?"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-medium">{displayName}</span>
+                  {principal.global_name && (
+                    <span className="truncate text-xs text-muted-foreground">
+                      @{principal.username}
+                    </span>
+                  )}
+                </div>
+              </Link>
               <form
                 action={signOut}
                 className="group-data-[collapsible=icon]:hidden"
