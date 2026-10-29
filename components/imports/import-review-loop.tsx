@@ -25,7 +25,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 // Safety net for the "call advance again" loop: each call resolves up to 25
 // rows, so this covers 5,000 automatic rows before asking the member to go on.
 const MAX_ADVANCE_ROUNDS = 200;
-const ADVANCING = "Working through your rows…";
+const advancingLabel = (kind: ImportKind) =>
+  `Working through your ${IMPORT_KINDS[kind].itemNoun.other}…`;
 
 interface ImportReviewLoopProps {
   kind: ImportKind;
@@ -49,7 +50,7 @@ export function ImportReviewLoop({
   const [review, setReview] = useState<ImportReview | null>(null);
   const [counts, setCounts] = useState<ImportSummary | null>(initialCounts);
   const [busy, setBusy] = useState<string | null>(
-    initialImport.status === "active" ? ADVANCING : null,
+    initialImport.status === "active" ? advancingLabel(kind) : null,
   );
   const [error, setError] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -96,10 +97,10 @@ export function ImportReviewLoop({
 
   const advance = useCallback(async () => {
     stopRef.current = false;
-    setBusy(ADVANCING);
+    setBusy(advancingLabel(kind));
     setError(null);
     await advanceLoop();
-  }, [advanceLoop]);
+  }, [kind, advanceLoop]);
 
   const perform: ImportPerform = useCallback(
     async <T,>(
@@ -227,7 +228,7 @@ export function ImportReviewLoop({
           )}
         </div>
 
-        <ImportProgressBar total={total} counts={counts} />
+        <ImportProgressBar kind={kind} total={total} counts={counts} />
         {confirmCancel && (
           <p className="text-sm text-muted-foreground">
             Canceling stops the import. Games already added stay in your list.
@@ -257,7 +258,7 @@ export function ImportReviewLoop({
       {job.status === "paused" && (
         <p className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
           This import is paused. Resume it whenever you like; it picks up at the
-          next row.
+          next {IMPORT_KINDS[kind].itemNoun.one}.
         </p>
       )}
 

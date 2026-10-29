@@ -20,9 +20,20 @@ import type {
 
 export type ImportKind = "csv" | "steam" | "completionator";
 
+// An item field that holds the source title, in any kind's item type.
+type ItemTitleField =
+  | keyof CollectionCsvImportItem
+  | keyof SteamCollectionImportItem
+  | keyof CompletionatorImportItem;
+
 export interface ImportKindConfig {
   label: string;
   description: string;
+  // The item field the review shows and pre-fills searches with.
+  titleField: ItemTitleField;
+  // What one item is called to the member: a CSV row, a Steam game, a
+  // Completionator entry.
+  itemNoun: { one: string; other: string };
   // API resource names.
   imports: string;
   items: string;
@@ -44,6 +55,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     summary: "summary",
     affects: ["collected-games"],
     available: true,
+    titleField: "raw_title",
+    itemNoun: { one: "row", other: "rows" },
   },
   steam: {
     label: "Steam library",
@@ -55,6 +68,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     summary: "items/counts",
     affects: ["collected-games"],
     available: true,
+    titleField: "steam_app_name",
+    itemNoun: { one: "game", other: "games" },
   },
   completionator: {
     label: "Completionator",
@@ -65,6 +80,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     summary: "summary",
     affects: ["completed-games"],
     available: true,
+    titleField: "game_title",
+    itemNoun: { one: "entry", other: "entries" },
   },
 };
 
@@ -142,22 +159,22 @@ export function importProgress(total: number, counts: ImportSummary | null): Imp
   };
 }
 
-// The title the review shows and pre-fills searches with. Steam and
-// Completionator add their own field here.
+// The title the review shows and pre-fills searches with.
 export function importItemTitle(kind: ImportKind, item: ImportItem): string {
-  switch (kind) {
-    case "csv":
-      return (item as CollectionCsvImportItem).raw_title ?? "";
-    case "steam":
-      return (item as SteamCollectionImportItem).steam_app_name ?? "";
-    case "completionator":
-      return (item as CompletionatorImportItem).game_title ?? "";
-    default: {
-      const raw = item as unknown as Record<string, unknown>;
-      const title = raw.raw_title ?? raw.title ?? raw.steam_app_name ?? raw.game_title;
-      return typeof title === "string" ? title : "";
-    }
-  }
+  const title = (item as unknown as Record<string, unknown>)[IMPORT_KINDS[kind].titleField];
+  return typeof title === "string" ? title : "";
+}
+
+// "1 row", "12 games": a count in the kind's item noun.
+export function importItemCount(kind: ImportKind, n: number): string {
+  const { one, other } = IMPORT_KINDS[kind].itemNoun;
+  return `${n} ${n === 1 ? one : other}`;
+}
+
+// "Row", "Game", "Entry": the noun as a heading label.
+export function importItemLabel(kind: ImportKind): string {
+  const { one } = IMPORT_KINDS[kind].itemNoun;
+  return one.charAt(0).toUpperCase() + one.slice(1);
 }
 
 // --- Labels ----------------------------------------------------------------

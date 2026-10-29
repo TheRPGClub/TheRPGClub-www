@@ -9,7 +9,9 @@ import {
   IMPORT_KINDS,
   IMPORT_KIND_ORDER,
   IMPORT_STATUS_LABELS,
+  importItemCount,
   importKindHref,
+  type ImportKind,
 } from "@/lib/imports/kinds";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +62,7 @@ export default async function ImportsHubPage({
         {IMPORT_KIND_ORDER.map((kind, i) => (
           <ImportKindCard
             key={kind}
+            kind={kind}
             href={importKindHref(id, kind)}
             label={IMPORT_KINDS[kind].label}
             description={IMPORT_KINDS[kind].description}
@@ -73,12 +76,14 @@ export default async function ImportsHubPage({
 }
 
 function ImportKindCard({
+  kind,
   href,
   label,
   description,
   available,
   active,
 }: {
+  kind: ImportKind;
   href: string;
   label: string;
   description: string;
@@ -100,7 +105,7 @@ function ImportKindCard({
       {active && (
         <p className="text-xs text-muted-foreground tabular-nums">
           Started {new Date(active.created_at).toLocaleDateString()} ·{" "}
-          {active.total_count} rows
+          {importItemCount(kind, active.total_count)}
         </p>
       )}
       {available && (

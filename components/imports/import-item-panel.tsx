@@ -24,16 +24,16 @@ export interface ImportItemPanelProps {
   perform: ImportPerform;
 }
 
-// The per-row review UI. CSV and Steam share the match panel (candidates,
-// remap, GameDB pick, IGDB, skip). Completionator (www#31) has its own steps
-// (match, then add/update the completion) and plugs in its panel here.
+// The per-item review UI. CSV and Steam share the match panel (candidates,
+// remap, GameDB pick, IGDB, skip). Completionator has its own steps (match,
+// then add/update the completion).
+const ITEM_PANELS: Record<ImportKind, React.ComponentType<ImportItemPanelProps>> = {
+  csv: ImportMatchPanel,
+  steam: ImportMatchPanel,
+  completionator: CompletionatorItemPanel,
+};
+
 export function ImportItemPanel(props: ImportItemPanelProps) {
-  switch (props.kind) {
-    case "completionator":
-      return <CompletionatorItemPanel {...props} />;
-    case "csv":
-    case "steam":
-    default:
-      return <ImportMatchPanel {...props} />;
-  }
+  const Panel = ITEM_PANELS[props.kind];
+  return <Panel {...props} />;
 }
