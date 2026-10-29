@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   BookMarked,
   Boxes,
+  GitCompareArrows,
   Pencil,
   Star,
   Trophy,
@@ -280,6 +281,19 @@ export default async function MemberPage({
         count={counts.completed}
         seeAllHref={`${memberHref}/completed-games`}
         emptyMessage="No completed games yet."
+        action={
+          session && !isSelf ? (
+            <Button
+              variant="ghost"
+              size="xs"
+              nativeButton={false}
+              render={<Link href={`${memberHref}/completed-games/compare`} />}
+            >
+              <GitCompareArrows />
+              Compare completions
+            </Button>
+          ) : undefined
+        }
       >
         {completed.map((entry, i) => (
           <CompletedCard
