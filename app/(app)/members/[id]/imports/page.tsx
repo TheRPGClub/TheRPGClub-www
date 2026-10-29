@@ -9,7 +9,9 @@ import {
   IMPORT_KINDS,
   IMPORT_KIND_ORDER,
   IMPORT_STATUS_LABELS,
+  importItemCount,
   importKindHref,
+  type ImportKind,
 } from "@/lib/imports/kinds";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { Badge } from "@/components/ui/badge";
@@ -28,9 +30,7 @@ export default async function ImportsHubPage({
 
   const [userRes, ...active] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    ...IMPORT_KIND_ORDER.map((kind) =>
-      IMPORT_KINDS[kind].available ? loadActiveImport(kind, id) : Promise.resolve(null),
-    ),
+    ...IMPORT_KIND_ORDER.map((kind) => loadActiveImport(kind, id)),
   ]);
 
   if (!userRes.ok) notFound();
@@ -60,10 +60,10 @@ export default async function ImportsHubPage({
         {IMPORT_KIND_ORDER.map((kind, i) => (
           <ImportKindCard
             key={kind}
+            kind={kind}
             href={importKindHref(id, kind)}
             label={IMPORT_KINDS[kind].label}
             description={IMPORT_KINDS[kind].description}
-            available={IMPORT_KINDS[kind].available}
             active={active[i] as ImportJob | null}
           />
         ))}
@@ -73,16 +73,16 @@ export default async function ImportsHubPage({
 }
 
 function ImportKindCard({
+  kind,
   href,
   label,
   description,
-  available,
   active,
 }: {
+  kind: ImportKind;
   href: string;
   label: string;
   description: string;
-  available: boolean;
   active: ImportJob | null;
 }) {
   return (
@@ -94,27 +94,24 @@ function ImportKindCard({
             {IMPORT_STATUS_LABELS[active.status] ?? active.status}
           </Badge>
         )}
-        {!available && <Badge variant="outline">Coming soon</Badge>}
       </div>
       <p className="flex-1 text-sm text-muted-foreground">{description}</p>
       {active && (
         <p className="text-xs text-muted-foreground tabular-nums">
           Started {new Date(active.created_at).toLocaleDateString()} ·{" "}
-          {active.total_count} rows
+          {importItemCount(kind, active.total_count)}
         </p>
       )}
-      {available && (
-        <Link
-          href={href}
-          className={buttonVariants({
-            variant: active ? "default" : "outline",
-            size: "sm",
-            className: "self-start",
-          })}
-        >
-          {active ? "Resume" : "Start"} <ArrowRight />
-        </Link>
-      )}
+      <Link
+        href={href}
+        className={buttonVariants({
+          variant: active ? "default" : "outline",
+          size: "sm",
+          className: "self-start",
+        })}
+      >
+        {active ? "Resume" : "Start"} <ArrowRight />
+      </Link>
     </li>
   );
 }

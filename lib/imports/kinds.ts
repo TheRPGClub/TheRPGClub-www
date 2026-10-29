@@ -20,9 +20,20 @@ import type {
 
 export type ImportKind = "csv" | "steam" | "completionator";
 
+// An item field that holds the source title, in any kind's item type.
+type ItemTitleField =
+  | keyof CollectionCsvImportItem
+  | keyof SteamCollectionImportItem
+  | keyof CompletionatorImportItem;
+
 export interface ImportKindConfig {
   label: string;
   description: string;
+  // The item field the review shows and pre-fills searches with.
+  titleField: ItemTitleField;
+  // What one item is called to the member: a CSV row, a Steam game, a
+  // Completionator entry.
+  itemNoun: { one: string; other: string };
   // API resource names.
   imports: string;
   items: string;
@@ -30,8 +41,6 @@ export interface ImportKindConfig {
   summary: string;
   // Member list subpaths the import writes to (for revalidation and links).
   affects: string[];
-  // False until the kind's page ships (www#30 Steam, www#31 Completionator).
-  available: boolean;
 }
 
 export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
@@ -43,7 +52,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "collection_csv_import_items",
     summary: "summary",
     affects: ["collected-games"],
-    available: true,
+    titleField: "raw_title",
+    itemNoun: { one: "row", other: "rows" },
   },
   steam: {
     label: "Steam library",
@@ -54,7 +64,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     // Steam has no `summary`; `items/counts` returns the same ImportSummary.
     summary: "items/counts",
     affects: ["collected-games"],
-    available: true,
+    titleField: "steam_app_name",
+    itemNoun: { one: "game", other: "games" },
   },
   completionator: {
     label: "Completionator",
@@ -64,7 +75,8 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "completionator_import_items",
     summary: "summary",
     affects: ["completed-games"],
-    available: true,
+    titleField: "game_title",
+    itemNoun: { one: "entry", other: "entries" },
   },
 };
 
@@ -142,22 +154,22 @@ export function importProgress(total: number, counts: ImportSummary | null): Imp
   };
 }
 
-// The title the review shows and pre-fills searches with. Steam and
-// Completionator add their own field here.
+// The title the review shows and pre-fills searches with.
 export function importItemTitle(kind: ImportKind, item: ImportItem): string {
-  switch (kind) {
-    case "csv":
-      return (item as CollectionCsvImportItem).raw_title ?? "";
-    case "steam":
-      return (item as SteamCollectionImportItem).steam_app_name ?? "";
-    case "completionator":
-      return (item as CompletionatorImportItem).game_title ?? "";
-    default: {
-      const raw = item as unknown as Record<string, unknown>;
-      const title = raw.raw_title ?? raw.title ?? raw.steam_app_name ?? raw.game_title;
-      return typeof title === "string" ? title : "";
-    }
-  }
+  const title = (item as unknown as Record<string, unknown>)[IMPORT_KINDS[kind].titleField];
+  return typeof title === "string" ? title : "";
+}
+
+// "1 row", "12 games": a count in the kind's item noun.
+export function importItemCount(kind: ImportKind, n: number): string {
+  const { one, other } = IMPORT_KINDS[kind].itemNoun;
+  return `${n} ${n === 1 ? one : other}`;
+}
+
+// "Row", "Game", "Entry": the noun as a heading label.
+export function importItemLabel(kind: ImportKind): string {
+  const { one } = IMPORT_KINDS[kind].itemNoun;
+  return one.charAt(0).toUpperCase() + one.slice(1);
 }
 
 // --- Labels ----------------------------------------------------------------
@@ -208,7 +220,7 @@ export function resultReasonRows(counts: ImportSummary | null): [string, number]
 
 const ERROR_MESSAGES: Record<string, string> = {
   import_not_active: "This import isn't running. Resume it to keep going.",
-  item_not_pending: "That row was already resolved.",
+  item_not_pending: "That item was already resolved.",
   game_not_found: "That game isn't in GameDB anymore.",
   igdb_game_not_found: "IGDB doesn't know that game.",
   game_id_or_igdb_id_required: "Choose a game first.",
@@ -218,7 +230,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   igdb_request_failed: "IGDB didn't answer. Try again in a moment.",
   invalid_csv: "The file has problems. Fix the rows below and upload it again.",
   // Completionator
-  no_game_matched: "Choose a game for this row first.",
+  no_game_matched: "Choose a game for this item first.",
   invalid_completion_type: "Choose a completion type.",
   invalid_platform: "That platform isn't in GameDB. Choose another one.",
   invalid_completed_at: "That date isn't valid.",

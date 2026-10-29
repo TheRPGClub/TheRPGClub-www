@@ -1,19 +1,26 @@
 import type { ImportSummary } from "@/lib/api/types";
-import { importProgress, resultReasonLabel, resultReasonRows } from "@/lib/imports/kinds";
+import {
+  IMPORT_KINDS,
+  importProgress,
+  resultReasonLabel,
+  resultReasonRows,
+  type ImportKind,
+} from "@/lib/imports/kinds";
 
 interface ImportProgressBarProps {
+  kind: ImportKind;
   total: number;
   counts: ImportSummary | null;
 }
 
-// Rows resolved out of the total, with a bar. Shared by every import kind.
-export function ImportProgressBar({ total, counts }: ImportProgressBarProps) {
+// Items resolved out of the total, with a bar. Shared by every import kind.
+export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProps) {
   const progress = importProgress(total, counts);
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between text-sm">
         <span className="font-medium">
-          {progress.resolved} of {progress.total} rows done
+          {progress.resolved} of {progress.total} {IMPORT_KINDS[kind].itemNoun.other} done
         </span>
         <span className="text-muted-foreground tabular-nums">{progress.percent}%</span>
       </div>

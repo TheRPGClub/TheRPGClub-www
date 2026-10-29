@@ -38,8 +38,9 @@ export default async function GotmHistoryPage({
 }
 
 async function GotmHistory({ filters }: { filters: Filters }) {
-  // The archive read is cached by URL and needs auth, so confirm a session
-  // first; see lib/api/gotm-rounds.ts. getSession is memoised per request.
+  // The archive read needs auth, so confirm a session first rather than make
+  // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
+  // getSession is memoised per request.
   if (!(await getSession())) redirect("/");
 
   const result = await fetchGotmRounds(filters);

@@ -13,6 +13,8 @@ import type {
   InvalidCsvRowError,
   UserNowPlaying,
 } from "@/lib/api/types";
+import { readApiError } from "@/lib/api/errors";
+import type { AddCompletionPayload } from "@/lib/imports/completionator";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
 import {
   IMPORT_KINDS,
@@ -41,15 +43,15 @@ export interface ImportActionResult<T> extends ActionResult<T> {
 
 const BAD_REQUEST: ImportActionResult<never> = { ok: false, error: "Invalid request." };
 
+// The API error, with its message standing in for a missing code.
+async function errorCode(res: Response) {
+  const err = await readApiError(res);
+  return { ...err, code: err.code ?? err.message };
+}
+
 async function failure(res: Response): Promise<ImportActionResult<never>> {
-  let code: string | undefined;
-  try {
-    const body = await res.json();
-    code = body.error ?? body.message;
-  } catch {
-    // non-JSON error body
-  }
-  return { ok: false, code, error: importErrorMessage(code, res.status) };
+  const { code, status } = await errorCode(res);
+  return { ok: false, code, error: importErrorMessage(code, status) };
 }
 
 function revalidateImportPages(kind: ImportKind, userId: string) {
@@ -87,6 +89,18 @@ export async function advanceImportAction(
 
 export type ImportSelection = { game_id: number } | { igdb_id: number };
 
+// The request `data` for a chosen game, or null when the id isn't valid.
+function selectionData(selection: ImportSelection): ImportSelection | null {
+  const id = "game_id" in selection ? selection.game_id : selection.igdb_id;
+  if (!isRecordId(id)) return null;
+  return "game_id" in selection ? { game_id: id } : { igdb_id: id };
+}
+
+const NO_SELECTION: ImportActionResult<never> = {
+  ok: false,
+  error: importErrorMessage("game_id_or_igdb_id_required"),
+};
+
 export async function applyImportItemAction(
   kind: ImportKind,
   userId: string,
@@ -94,9 +108,8 @@ export async function applyImportItemAction(
   selection: ImportSelection,
 ): Promise<ImportActionResult<null>> {
   if (!validArgs(kind, userId, itemId)) return BAD_REQUEST;
-  const id = "game_id" in selection ? selection.game_id : selection.igdb_id;
-  if (!isRecordId(id)) return { ok: false, error: importErrorMessage("game_id_or_igdb_id_required") };
-  const data = "game_id" in selection ? { game_id: id } : { igdb_id: id };
+  const data = selectionData(selection);
+  if (!data) return NO_SELECTION;
 
   const res = await apiFetch(`${importItemApiPath(kind, itemId)}/apply`, {
     method: "POST",
@@ -158,9 +171,8 @@ export async function matchImportItemAction(
   selection: ImportSelection,
 ): Promise<ImportActionResult<ImportReview>> {
   if (!validArgs(kind, userId, itemId)) return BAD_REQUEST;
-  const id = "game_id" in selection ? selection.game_id : selection.igdb_id;
-  if (!isRecordId(id)) return { ok: false, error: importErrorMessage("game_id_or_igdb_id_required") };
-  const data = "game_id" in selection ? { game_id: id } : { igdb_id: id };
+  const data = selectionData(selection);
+  if (!data) return NO_SELECTION;
 
   const res = await apiFetch(`${importItemApiPath(kind, itemId)}/match`, {
     method: "POST",
@@ -174,14 +186,6 @@ export async function matchImportItemAction(
   return { ok: true, data: body.data };
 }
 
-export interface AddCompletionInput {
-  completion_type: string;
-  platform_id: number | null;
-  // YYYY-MM-DD, or null for an unknown date.
-  completed_at: string | null;
-  final_playtime_hours: number | null;
-}
-
 // Adds the row's completion. `removeNowPlayingIds` are the member's Now
 // Playing entries for the game to remove afterwards, as the bot offers; that
 // part is best effort and never fails the add.
@@ -189,7 +193,7 @@ export async function addCompletionImportItemAction(
   kind: ImportKind,
   userId: string,
   itemId: number,
-  input: AddCompletionInput,
+  input: AddCompletionPayload,
   removeNowPlayingIds: number[] = [],
 ): Promise<ImportActionResult<null>> {
   if (!validArgs(kind, userId, itemId)) return BAD_REQUEST;
@@ -301,7 +305,7 @@ export async function loadImportAction(
   return { ok: true, data: body.data };
 }
 
-// --- Collection CSV ---------------------------------------------------------
+// --- CSV file uploads (collection CSV, Completionator) -----------------------
 
 // Matches the API's MAX_CSV_BYTES; next.config's serverActions.bodySizeLimit
 // leaves room above it for the multipart overhead.
@@ -325,71 +329,58 @@ function csvUpload(formData: FormData, notCsvHint: string): File | string {
 
 // A rejected upload: 422 `invalid_csv` lists every problem in `errors`.
 async function csvUploadFailure(res: Response): Promise<CsvImportFormState> {
-  let body: { error?: string; message?: string; errors?: InvalidCsvRowError[] } = {};
-  try {
-    body = await res.json();
-  } catch {
-    // non-JSON error body
-  }
+  const { code, status, errors } = await errorCode(res);
   return {
-    error: importErrorMessage(body.error ?? body.message, res.status),
-    rowErrors: Array.isArray(body.errors) ? body.errors : [],
+    error: importErrorMessage(code, status),
+    rowErrors: Array.isArray(errors) ? (errors as InvalidCsvRowError[]) : [],
   };
 }
 
-// Starts a collection CSV import from an uploaded file. The API parses and
-// validates the file; a bad file comes back as 422 `invalid_csv` with one
-// error per problem, and nothing is created. Test mode is never sent: on the
-// API it rolls back the rows, which leaves nothing to review.
-export async function startCsvImportAction(
-  userId: string,
-  _state: CsvImportFormState,
-  formData: FormData,
-): Promise<CsvImportFormState> {
-  if (!isMemberId(userId)) return { error: "Invalid request.", rowErrors: [] };
-
-  const file = csvUpload(formData, "Save the template as .csv and try again.");
-  if (typeof file === "string") return { error: file, rowErrors: [] };
-
-  const res = await apiFetch(`/api/v1/users/${userId}/${IMPORT_KINDS.csv.imports}`, {
-    method: "POST",
-    body: JSON.stringify({
-      data: { csv_text: await file.text(), source_file_name: file.name.slice(0, 255) },
-    }),
-  });
-
-  if (!res.ok) return csvUploadFailure(res);
-
-  revalidatePath(importsHubHref(userId));
-  redirect(importKindHref(userId, "csv"));
-}
-
-// --- Completionator ---------------------------------------------------------
-
-// Starts a Completionator import from the exported CSV. The API parses it and
-// answers 422 `invalid_csv` when it can't. No test mode, as for the CSV import.
-export async function startCompletionatorImportAction(
-  userId: string,
-  _state: CsvImportFormState,
-  formData: FormData,
-): Promise<CsvImportFormState> {
-  if (!isMemberId(userId)) return { error: "Invalid request.", rowErrors: [] };
-
-  const file = csvUpload(formData, "Upload the .csv file Completionator exported.");
-  if (typeof file === "string") return { error: file, rowErrors: [] };
-
-  const res = await apiFetch(`/api/v1/users/${userId}/${IMPORT_KINDS.completionator.imports}`, {
-    method: "POST",
+// What differs between the CSV-file kinds' uploads.
+const CSV_FILE_KINDS = {
+  csv: {
+    notCsvHint: "Save the template as .csv and try again.",
+    fileNameField: "source_file_name",
+  },
+  completionator: {
+    notCsvHint: "Upload the .csv file Completionator exported.",
     // Completionator's field is `source_filename` (CSV's is `source_file_name`).
+    fileNameField: "source_filename",
+  },
+} as const satisfies Partial<Record<ImportKind, { notCsvHint: string; fileNameField: string }>>;
+
+export type CsvFileImportKind = keyof typeof CSV_FILE_KINDS;
+
+// Starts a collection CSV or Completionator import from an uploaded file. The
+// API parses and validates the file; a bad file comes back as 422
+// `invalid_csv` with one error per problem, and nothing is created. Test mode
+// is never sent: on the API it rolls back the rows, which leaves nothing to
+// review.
+export async function startCsvFileImportAction(
+  kind: CsvFileImportKind,
+  userId: string,
+  _state: CsvImportFormState,
+  formData: FormData,
+): Promise<CsvImportFormState> {
+  if (!Object.hasOwn(CSV_FILE_KINDS, kind) || !isMemberId(userId)) {
+    return { error: "Invalid request.", rowErrors: [] };
+  }
+  const { notCsvHint, fileNameField } = CSV_FILE_KINDS[kind];
+
+  const file = csvUpload(formData, notCsvHint);
+  if (typeof file === "string") return { error: file, rowErrors: [] };
+
+  const res = await apiFetch(`/api/v1/users/${userId}/${IMPORT_KINDS[kind].imports}`, {
+    method: "POST",
     body: JSON.stringify({
-      data: { csv_text: await file.text(), source_filename: file.name.slice(0, 255) },
+      data: { csv_text: await file.text(), [fileNameField]: file.name.slice(0, 255) },
     }),
   });
 
   if (!res.ok) return csvUploadFailure(res);
 
   revalidatePath(importsHubHref(userId));
-  redirect(importKindHref(userId, "completionator"));
+  redirect(importKindHref(userId, kind));
 }
 
 // --- Steam -------------------------------------------------------------------
@@ -402,7 +393,7 @@ export interface SteamImportFormState {
 
 // Starts a Steam import from a profile URL, SteamID64 or vanity name. The API
 // resolves the profile and reads the library from Steam, so this can take a
-// few seconds. Test mode is never sent (see startCsvImportAction).
+// few seconds. Test mode is never sent (see startCsvFileImportAction).
 export async function startSteamImportAction(
   userId: string,
   _state: SteamImportFormState,
@@ -421,14 +412,8 @@ export async function startSteamImportAction(
   });
 
   if (!res.ok) {
-    let code: string | undefined;
-    try {
-      const body = await res.json();
-      code = body.error ?? body.message;
-    } catch {
-      // non-JSON error body
-    }
-    return { error: steamImportErrorMessage(code, res.status), steamProfile };
+    const { code, status } = await errorCode(res);
+    return { error: steamImportErrorMessage(code, status), steamProfile };
   }
 
   revalidatePath(importsHubHref(userId));

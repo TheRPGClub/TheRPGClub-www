@@ -27,7 +27,7 @@ import {
   todayDate,
   type DateChoice,
 } from "@/lib/imports/completionator";
-import { importItemTitle } from "@/lib/imports/kinds";
+import { IMPORT_KINDS, importItemLabel, importItemTitle } from "@/lib/imports/kinds";
 import type { ImportItemPanelProps } from "@/components/imports/import-item-panel";
 import { ImportCandidateList } from "@/components/imports/import-candidate-list";
 import { ImportIgdbSuggestions } from "@/components/imports/import-igdb-suggestions";
@@ -86,10 +86,10 @@ function CompletionatorStep({
       <div className="space-y-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Row {item.row_index}
+            {importItemLabel(kind)} {item.row_index}
           </p>
           <h2 className="text-xl font-semibold tracking-tight break-words">
-            {title || <span className="text-muted-foreground">Untitled row</span>}
+            {title || <span className="text-muted-foreground">Untitled {IMPORT_KINDS[kind].itemNoun.one}</span>}
           </h2>
         </div>
         <ImportItemDetails kind={kind} item={item} />
@@ -140,7 +140,7 @@ function CompletionatorStep({
             perform("Skipping…", () => skipImportItemAction(kind, userId, item.item_id))
           }
         >
-          <SkipForward /> Skip this row
+          <SkipForward /> Skip this {IMPORT_KINDS[kind].itemNoun.one}
         </Button>
       </div>
     </div>

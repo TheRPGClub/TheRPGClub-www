@@ -72,9 +72,11 @@ export interface AddCompletionForm {
   playtime: string;
 }
 
+// The add_completion request body.
 export interface AddCompletionPayload {
   completion_type: string;
   platform_id: number | null;
+  // YYYY-MM-DD, or null for an unknown date.
   completed_at: string | null;
   final_playtime_hours: number | null;
 }

@@ -447,16 +447,22 @@ export interface ImportJob {
   updated_at: string;
 }
 
+// The fields every kind's item has.
 export interface ImportItem {
   item_id: number;
   import_id: number;
   row_index: number;
   status: ImportItemStatus;
+  gamedb_game_id: number | null;
+  error_text: string | null;
+}
+
+// The collection kinds' items (CSV, Steam) also record how they matched.
+// Completionator's don't.
+export interface CollectionImportItem extends ImportItem {
   match_confidence: string | null;
   match_candidate_json: string | null;
-  gamedb_game_id: number | null;
   result_reason: string | null;
-  error_text: string | null;
 }
 
 export interface CollectionCsvImport extends ImportJob {
@@ -465,7 +471,7 @@ export interface CollectionCsvImport extends ImportJob {
   template_version: string | null;
 }
 
-export interface CollectionCsvImportItem extends ImportItem {
+export interface CollectionCsvImportItem extends CollectionImportItem {
   raw_title: string | null;
   raw_platform: string | null;
   raw_ownership_type: string | null;
@@ -484,7 +490,7 @@ export interface SteamCollectionImport extends ImportJob {
   source_profile_name: string | null;
 }
 
-export interface SteamCollectionImportItem extends ImportItem {
+export interface SteamCollectionImportItem extends CollectionImportItem {
   steam_app_id: number;
   steam_app_name: string;
   playtime_forever_min: number | null;
