@@ -220,7 +220,7 @@ export function resultReasonRows(counts: ImportSummary | null): [string, number]
 
 const ERROR_MESSAGES: Record<string, string> = {
   import_not_active: "This import isn't running. Resume it to keep going.",
-  item_not_pending: "That row was already resolved.",
+  item_not_pending: "That item was already resolved.",
   game_not_found: "That game isn't in GameDB anymore.",
   igdb_game_not_found: "IGDB doesn't know that game.",
   game_id_or_igdb_id_required: "Choose a game first.",
@@ -230,7 +230,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   igdb_request_failed: "IGDB didn't answer. Try again in a moment.",
   invalid_csv: "The file has problems. Fix the rows below and upload it again.",
   // Completionator
-  no_game_matched: "Choose a game for this row first.",
+  no_game_matched: "Choose a game for this item first.",
   invalid_completion_type: "Choose a completion type.",
   invalid_platform: "That platform isn't in GameDB. Choose another one.",
   invalid_completed_at: "That date isn't valid.",
