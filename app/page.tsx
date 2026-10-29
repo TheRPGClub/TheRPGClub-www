@@ -1,15 +1,12 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { firstParam } from "@/lib/search-params";
 
 type HomeProps = {
   searchParams?: Promise<{
     token?: string | string[];
   }>;
 };
-
-function firstParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;

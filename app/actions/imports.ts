@@ -14,6 +14,7 @@ import type {
   UserNowPlaying,
 } from "@/lib/api/types";
 import { readApiError } from "@/lib/api/errors";
+import type { AddCompletionPayload } from "@/lib/imports/completionator";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
 import {
   IMPORT_KINDS,
@@ -185,14 +186,6 @@ export async function matchImportItemAction(
   return { ok: true, data: body.data };
 }
 
-export interface AddCompletionInput {
-  completion_type: string;
-  platform_id: number | null;
-  // YYYY-MM-DD, or null for an unknown date.
-  completed_at: string | null;
-  final_playtime_hours: number | null;
-}
-
 // Adds the row's completion. `removeNowPlayingIds` are the member's Now
 // Playing entries for the game to remove afterwards, as the bot offers; that
 // part is best effort and never fails the add.
@@ -200,7 +193,7 @@ export async function addCompletionImportItemAction(
   kind: ImportKind,
   userId: string,
   itemId: number,
-  input: AddCompletionInput,
+  input: AddCompletionPayload,
   removeNowPlayingIds: number[] = [],
 ): Promise<ImportActionResult<null>> {
   if (!validArgs(kind, userId, itemId)) return BAD_REQUEST;

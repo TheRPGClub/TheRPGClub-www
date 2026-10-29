@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Gamepad2, Trophy } from "lucide-react";
-import type { GotmRoundBlock as GotmRoundBlockData } from "@/lib/api/types";
+import type { GotmRoundBlock as GotmRoundBlockData, VotingCategory } from "@/lib/api/types";
 import { GotmCard, gotmCardProps } from "@/components/gotm-card";
 import { SectionHeader } from "@/components/section-header";
 import { gotmLinks } from "@/lib/gotm-links";
@@ -9,8 +9,6 @@ import { gotmLinks } from "@/lib/gotm-links";
 // SectionHeader over a grid of GotmCards with their Reddit / thread / voting
 // links. Used by the dashboard's current round and the GOTM history archive.
 // Server-only: the Discord link config reads server env vars.
-
-export type GotmBlockKind = "gotm" | "nr_gotm";
 
 const KIND = {
   gotm: {
@@ -48,7 +46,7 @@ export function GotmRoundBlock({
   block,
   action,
 }: {
-  kind: GotmBlockKind;
+  kind: VotingCategory;
   roundNumber: number;
   block: GotmRoundBlockData;
   action?: ReactNode;

@@ -3,6 +3,8 @@
 // and renders. The API (GET /users/:id/completions/common) 422s on a bad
 // `sort` or `year`, so anything unrecognised is dropped here instead.
 
+import { firstParam, type RawSearchParams } from "@/lib/search-params";
+
 export const COMPARE_SORTS = [
   { value: "date_desc", label: "Newest first" },
   { value: "date_asc", label: "Oldest first" },
@@ -25,33 +27,28 @@ export interface CompareFilters {
   page: number;
 }
 
-type RawParams = Record<string, string | string[] | undefined>;
-
-function first(value: string | string[] | undefined): string {
-  return (Array.isArray(value) ? value[0] : value)?.trim() ?? "";
-}
-
 // `viewerId` is the signed-in member. When they are looking at someone else's
 // page and pick nobody, the comparison defaults to them (left = page owner,
 // right = viewer), matching the bot's context-menu "Compare completions".
 export function parseCompareFilters(
-  raw: RawParams,
+  raw: RawSearchParams,
   ownerId: string,
   viewerId: string | null,
 ): CompareFilters {
-  const withParam = first(raw.with);
+  const param = (key: string) => firstParam(raw[key])?.trim() ?? "";
+  const withParam = param("with");
   const fallback = viewerId && viewerId !== ownerId ? viewerId : null;
 
-  const year = first(raw.year).toLowerCase();
-  const platform = parseInt(first(raw.platform), 10);
-  const sort = first(raw.sort);
-  const page = parseInt(first(raw.page), 10);
+  const year = param("year").toLowerCase();
+  const platform = parseInt(param("platform"), 10);
+  const sort = param("sort");
+  const page = parseInt(param("page"), 10);
 
   return {
     with: withParam || fallback,
     year: year === "unknown" || /^\d{4}$/.test(year) ? year : null,
     platform: Number.isInteger(platform) && platform > 0 ? platform : null,
-    q: first(raw.q),
+    q: param("q"),
     sort: COMPARE_SORTS.some((s) => s.value === sort)
       ? (sort as CompareSort)
       : DEFAULT_COMPARE_SORT,

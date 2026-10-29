@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { firstParam, type RawSearchParams } from "@/lib/search-params";
 import type { GotmRound, GotmRoundsMeta } from "./types";
 
 // Server-side reads for GOTM history (`/gotm_rounds`) and the current round
@@ -39,24 +40,18 @@ export const GOTM_SORT_OPTIONS: { value: GotmSort; label: string }[] = [
   { value: "asc", label: "Oldest first" },
 ];
 
-type RawParams = Record<string, string | string[] | undefined>;
-
-function first(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
-
 // Only values the API accepts reach it; anything else falls back to the
 // default rather than turning into a 422.
-export function parseGotmHistoryFilters(raw: RawParams): GotmHistoryFilters {
-  const kind = first(raw.kind);
-  const sort = first(raw.sort);
-  const year = first(raw.year);
-  const page = parseInt(first(raw.page) ?? "", 10);
+export function parseGotmHistoryFilters(raw: RawSearchParams): GotmHistoryFilters {
+  const kind = firstParam(raw.kind);
+  const sort = firstParam(raw.sort);
+  const year = firstParam(raw.year);
+  const page = parseInt(firstParam(raw.page) ?? "", 10);
 
   return {
     kind: kind === "gotm" || kind === "nr_gotm" ? kind : "both",
     year: year && /^\d{4}$/.test(year) ? Number(year) : null,
-    q: (first(raw.q) ?? "").trim(),
+    q: (firstParam(raw.q) ?? "").trim(),
     sort: sort === "asc" ? "asc" : "desc",
     page: Number.isFinite(page) && page > 1 ? page : 1,
   };

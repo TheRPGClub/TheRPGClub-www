@@ -9,6 +9,7 @@ import type {
   Platform,
   User,
 } from "@/lib/api/types";
+import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { paginationOf } from "@/lib/api/pagination";
 import {
   commonCompletionsQuery,
@@ -26,7 +27,6 @@ import { ListPagination } from "@/components/list-pagination";
 // The bot pages shared completions 20 at a time; rows here are tall, so the
 // same size keeps a page scannable.
 const PAGE_SIZE = 20;
-const MEMBERS_REVALIDATE_SECONDS = 300;
 
 function nameOf(user: User): string {
   return user.global_name ?? user.username ?? user.user_id;
