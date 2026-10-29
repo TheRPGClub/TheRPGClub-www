@@ -9,7 +9,7 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { MemberListShell } from "@/components/member/member-list-shell";
-import { MemberListPagination } from "@/components/member/member-list-pagination";
+import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
 
 const PAGE_SIZE = 10;
@@ -66,7 +66,7 @@ export default async function MemberReviewsPage({
         }
       />
 
-      <MemberListPagination
+      <ListPagination
         currentPage={currentPage}
         totalPages={totalPages}
         buildHref={href}

@@ -1,5 +1,6 @@
 "use client";
 
+import { createElement } from "react";
 import { getSocialIcon } from "@/lib/socials-icons";
 
 interface SocialIconProps {
@@ -15,8 +16,13 @@ export function SocialIcon({
   height = "20",
   className,
 }: SocialIconProps) {
-  const Icon = getSocialIcon(label);
-  return (
-    <Icon width={width} height={height} className={className} aria-hidden />
-  );
+  // The icon is one of a fixed set of module-level components, picked by
+  // label; createElement keeps that lookup out of JSX so it isn't mistaken
+  // for a component defined during render.
+  return createElement(getSocialIcon(label), {
+    width,
+    height,
+    className,
+    "aria-hidden": true,
+  });
 }

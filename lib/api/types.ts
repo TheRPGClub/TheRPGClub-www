@@ -286,17 +286,34 @@ export interface GameCollection {
   platform?: Platform | null;
 }
 
+// One row of GET /users/:id/collections/platform_summary. Entries with no
+// platform collapse into a single row whose platform fields are all null.
+export interface CollectionPlatformCount {
+  platform_id: number | null;
+  platform_name: string | null;
+  platform_abbreviation: string | null;
+  count: number;
+}
+
+export interface CollectionPlatformSummary {
+  total_count: number;
+  // Ordered by count desc, then platform name.
+  platform_counts?: CollectionPlatformCount[];
+}
+
+// Matches the API's `CompletionEntry` schema (completion_fields.rb). Unlike the
+// other lists it has no `updated_at`/`is_shared`.
 export interface GameCompletion {
-  entry_id?: number;
-  completion_id?: number;
+  completion_id: number;
   user_id: string;
   gamedb_game_id: number;
   platform_id: number | null;
-  completion_date: string | null;
   note: string | null;
-  is_shared: boolean;
+  // Main Story | Main Story + Side Content | Completionist
+  completion_type: string;
+  completed_at: string | null;
+  final_playtime_hrs: number | null;
   created_at: string;
-  updated_at: string;
   user?: User | null;
   game?: Game | null;
   platform?: Platform | null;
@@ -442,7 +459,6 @@ export interface GotmEntry {
   round_number: number;
   month_year: string;
   game_index: number;
-  game_title: string;
   gamedb_game_id: number | null;
   reddit_url: string | null;
   voting_results_message_id: string | null;
@@ -454,7 +470,6 @@ export interface NrGotmEntry {
   round_number: number;
   month_year: string;
   game_index: number;
-  game_title: string;
   gamedb_game_id: number | null;
   reddit_url: string | null;
   voting_results_message_id: string | null;
