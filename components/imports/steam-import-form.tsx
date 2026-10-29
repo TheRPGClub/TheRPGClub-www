@@ -25,7 +25,10 @@ export function SteamImportForm({
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-1.5">
-        <label htmlFor="steam-profile" className="text-sm font-medium">
+        <label
+          htmlFor="steam-profile"
+          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim"
+        >
           Steam profile
         </label>
         <Input
@@ -41,20 +44,20 @@ export function SteamImportForm({
           aria-invalid={state.error ? true : undefined}
           aria-describedby="steam-profile-help"
         />
-        <p id="steam-profile-help" className="text-xs text-muted-foreground">
+        <p id="steam-profile-help" className="text-xs text-paper-mute">
           Your profile URL, your 17-digit SteamID64 or your custom URL name.
           Your game details must be public.
         </p>
       </div>
 
-      <Button type="submit" disabled={pending}>
-        <Download /> {pending ? "Reading your Steam library…" : "Start import"}
+      <Button type="submit" variant="highlight" disabled={pending}>
+        <Download data-icon="inline-start" /> {pending ? "Reading your Steam library…" : "Start import"}
       </Button>
 
       {state.error && (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          className="rounded-sm border border-destructive/40 bg-destructive/8 px-4 py-3 text-sm text-destructive"
         >
           {state.error}
         </p>

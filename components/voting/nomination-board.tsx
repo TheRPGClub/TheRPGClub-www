@@ -4,13 +4,13 @@ import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { castVoteAction } from "@/app/actions/votes";
+import { cn } from "@/lib/utils";
 import type {
   Nomination,
   NominationVote,
   VoteTallyRow,
   VotingCategory,
 } from "@/lib/api/types";
-import { accentClasses } from "./accents";
 import { NominationCard } from "./nomination-card";
 
 // The viewer's own votes, plus the per-nomination counts they affect.
@@ -22,7 +22,6 @@ interface TallyState {
 export interface NominationBoardProps {
   category: VotingCategory;
   round: number;
-  accent: keyof typeof accentClasses;
   nominations: Nomination[];
   tally: VoteTallyRow[];
   // Per-user vote cap for the round (2, or 3 for fields of 9+ nominations).
@@ -40,7 +39,6 @@ export interface NominationBoardProps {
 export function NominationBoard({
   category,
   round,
-  accent,
   nominations,
   tally,
   cap,
@@ -55,7 +53,6 @@ export function NominationBoard({
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
-  const accentStyle = accentClasses[accent];
   const showCounts = votingOpen || votingEnded;
 
   // The server state the optimistic layer builds on. Votes are kept oldest
@@ -165,18 +162,23 @@ export function NominationBoard({
 
   if (!nominations.length) {
     return (
-      <p className="rounded-lg border border-dashed px-4 py-6 text-sm text-muted-foreground">
+      <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
         {emptyMessage}
       </p>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {votingOpen && (
-        <p className="text-xs text-muted-foreground">
+        <p className="font-label text-[0.9rem] font-bold tracking-[0.04em] text-paper-dim">
           You&apos;ve used{" "}
-          <span className={`font-semibold ${accentStyle.count}`}>
+          <span
+            className={cn(
+              "font-extrabold",
+              category === "gotm" ? "text-gotm-soft" : "text-nr-soft",
+            )}
+          >
             {state.votes.length} of {cap}
           </span>{" "}
           votes. Vote again on a game to take that vote back.
@@ -184,20 +186,23 @@ export function NominationBoard({
       )}
 
       {error && (
-        <div className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 px-3 py-2 text-sm text-destructive">
+        <div
+          role="alert"
+          className="flex items-start justify-between gap-3 rounded-sm border border-destructive/50 px-3 py-2 text-sm text-destructive"
+        >
           <p>{error}</p>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={() => setError(null)}
-            className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-0.5 shrink-0 text-paper-mute transition-colors hover:text-paper"
           >
             <X className="size-3.5" />
           </button>
         </div>
       )}
 
-      <ul className="space-y-3">
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-4.5">
         {ordered.map((nomination) => {
           const count = countByNomination.get(nomination.nomination_id) ?? 0;
           const voted =
@@ -210,8 +215,8 @@ export function NominationBoard({
           return (
             <NominationCard
               key={nomination.nomination_id}
+              category={category}
               nomination={nomination}
-              accentStyle={accentStyle}
               count={showCounts ? count : null}
               maxCount={maxCount}
               voted={voted}

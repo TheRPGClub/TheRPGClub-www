@@ -1,28 +1,8 @@
-import dynamic from "next/dynamic";
-import Link from "next/link";
 import type { Review } from "@/lib/api/types";
 import { MAX_RATING } from "@/lib/api/rating";
-import {
-  accentForGame,
-  reviewAccents,
-  type ReviewAccent,
-} from "@/lib/reviews/accent";
-import { reviewBodyExcerpt, reviewBodyText } from "@/lib/api/review-body";
+import type { ReviewAccent } from "@/lib/reviews/accent";
+import { ReviewCard } from "@/components/issue/review-card";
 import { cn } from "@/lib/utils";
-// Not code-split the way the body renderer is: this is markup and a lookup
-// table, where that one is the whole Plate static renderer.
-import { ReviewScorecard } from "./review-scorecard";
-
-// Only the full-body view needs the rich renderer, and the listing views
-// (which are the common case) render a plain-text preview instead. A static
-// import would still put the renderer in the client bundle of every route
-// that reaches this card through a client component — game pages do. No
-// `ssr: false`: this stays server-prerendered, it is just code-split.
-const ReviewBodyContent = dynamic(() =>
-  import("./review-body").then((m) => ({ default: m.ReviewBodyContent })),
-);
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
 export interface MemberReviewCardProps {
   review: Review;
@@ -32,159 +12,53 @@ export interface MemberReviewCardProps {
   hideGame?: boolean;
   trailing?: React.ReactNode;
   className?: string;
-  // Overrides the hue derived from the review's own game. Game pages pass it
-  // because their reviews may not embed the game; member pages leave it off
-  // so each row takes its own game's colour.
+  // Kept for callers that still pass a hue. Review cards no longer tint by
+  // track: track colour is reserved for GOTM and NR-GOTM marks.
   accent?: ReviewAccent;
 }
 
+// A review in a list, in the Monthly Issue's card: the score block in the
+// corner, the byline, the headline, the first facets and a bounded excerpt.
+// A thin adapter over the shared ReviewCard so member pages keep their props.
 export function MemberReviewCard({
   review,
   hideUser,
   hideGame,
   trailing,
   className,
-  accent,
 }: MemberReviewCardProps) {
-  const user = review.user;
-  const game = review.game;
-  const hasBody = reviewBodyText(review.body) !== null;
-  // A card always shows a bounded excerpt — the full read has its own page.
-  // The value is trimmed rather than the rendered text, so the formatting
-  // survives; `truncated` is what decides whether there is more to go and
-  // read. See `reviewBodyExcerpt`.
-  const excerpt = reviewBodyExcerpt(review.body);
-  const userName = user
-    ? (user.global_name ?? user.username ?? user.user_id)
-    : null;
-  const reviewHref = game
-    ? `/games/${game.game_id ?? review.gamedb_game_id}`
-    : null;
-  const fullReviewHref = `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
-
   return (
-    <article
-      className={cn(
-        "space-y-3 rounded-xl border bg-card p-4 shadow-sm",
-        className,
-      )}
-    >
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          {!hideUser && user && (
-            <Link
-              href={`/members/${user.user_id}`}
-              className="flex items-center gap-2 min-w-0 hover:underline"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${API_BASE}/api/v1/users/${user.user_id}/avatar`}
-                alt={userName ?? ""}
-                className="size-7 shrink-0 rounded-full"
-              />
-              <span className="truncate text-sm font-medium">{userName}</span>
-            </Link>
-          )}
-          {!hideGame && game && (
-            <Link
-              href={reviewHref ?? `/games/${review.gamedb_game_id}`}
-              className={cn(
-                "truncate text-sm",
-                !hideUser && "text-muted-foreground",
-              )}
-            >
-              {!hideUser && "· "}
-              <span className="font-medium">{game.title}</span>
-            </Link>
-          )}
-        </div>
-        {trailing}
-      </header>
-
-      {review.title && (
-        <Link href={fullReviewHref} className="block hover:underline">
-          <h3 className="font-semibold text-foreground">{review.title}</h3>
-        </Link>
-      )}
-
-      <ReviewRating
-        rating={review.rating}
-        accent={accent ?? accentForGame(review.game)}
-      />
-
-      {/* Renders nothing for a review without a scorecard, which is every
-          review written before there was one. */}
-      <ReviewScorecard
-        facets={review.facets}
-        accent={accent ?? accentForGame(review.game)}
-      />
-
-      {!hasBody ? (
-        <p className="text-sm italic text-muted-foreground">
-          No written review.
-        </p>
-      ) : (
-        <ReviewBodyContent body={excerpt.value} />
-      )}
-
-      <footer className="flex items-center justify-between text-xs text-muted-foreground">
-        <time dateTime={review.created_at}>
-          {new Date(review.created_at).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </time>
-        <Link
-          href={fullReviewHref}
-          className="font-medium transition-colors hover:text-foreground"
-        >
-          {excerpt.truncated ? "Read the rest" : "Open review"}
-        </Link>
-      </footer>
-    </article>
+    <ReviewCard
+      review={review}
+      variant="card"
+      showUser={!hideUser}
+      showGame={!hideGame}
+      trailing={trailing}
+      className={className}
+    />
   );
 }
 
+// The score as a compact readout: an Anton numeral over a thin bar.
 export function ReviewRating({
   rating,
-  accent = "neutral",
 }: {
   rating: number | null;
   accent?: ReviewAccent;
 }) {
   if (rating === null || rating === undefined) {
-    return <p className="text-sm text-muted-foreground">No rating</p>;
+    return <p className="text-sm text-paper-mute">No rating</p>;
   }
-
-  const style = reviewAccents[accent];
-  // Shown as the score it is rather than scaled into stars, which rounded a
-  // 0..100 rating into five buckets and lost most of it. The ramp is the same
-  // one the composer uses, so a score reads the same wherever it appears.
   const pct = Math.max(0, Math.min(100, (rating / MAX_RATING) * 100));
-
   return (
     <div
       className="flex items-center gap-2"
       aria-label={`Rated ${rating} out of ${MAX_RATING}`}
     >
-      <span
-        className={cn("text-sm font-semibold tabular-nums", style.readout)}
-      >
-        {rating}
-      </span>
-      <span className="text-xs text-muted-foreground">/ {MAX_RATING}</span>
-      <div
-        aria-hidden
-        className={cn(
-          "h-1 w-20 overflow-hidden rounded-full bg-linear-to-r",
-          style.track,
-        )}
-      >
-        <div
-          className={cn("h-full rounded-full bg-linear-to-r", style.fill)}
-          style={{ width: `${pct}%` }}
-        />
+      <span className="font-headline text-xl leading-none">{rating}</span>
+      <span className="font-label text-xs text-paper-mute">/ {MAX_RATING}</span>
+      <div aria-hidden className="h-1 w-20 overflow-hidden rounded-[2px] bg-ink-3">
+        <div className={cn("h-full bg-paper")} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

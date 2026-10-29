@@ -20,13 +20,28 @@ import { MemberListShell } from "@/components/member/member-list-shell";
 import { CompareCompletionRow } from "@/components/member/compare-completion-row";
 import {
   CompareFiltersForm,
+  CompareMemberForm,
   type CompareMemberOption,
 } from "@/components/member/compare-filters";
+import { MemberListEmpty } from "@/components/member/member-game-card";
+import { memberCounts } from "@/components/member/member-lists";
+import { fetchAllCompletions } from "@/components/member/member-lists-server";
+import { CompareVenn } from "@/components/issue/member-compare-venn";
 import { ListPagination } from "@/components/list-pagination";
 
-// The bot pages shared completions 20 at a time; rows here are tall, so the
-// same size keeps a page scannable.
-const PAGE_SIZE = 20;
+// The bot pages shared completions 20 at a time; the sheet runs 24 so its
+// rows of six (four, two) come out even.
+const PAGE_SIZE = 24;
+
+// Compare completions: the overlap diagram ("only A / both / only B") over a
+// contact sheet of the shared games.
+//
+// The API's `completions/common` gives the shared games (filtered, paged)
+// but nothing about the games only one member finished. Those counts are
+// worked out here, exactly, from both members' full completion lists as
+// distinct games, and the diagram always covers both whole histories; the
+// filters narrow only the sheet below it. If either history can't be read in
+// full the diagram is left out rather than shown with a guess.
 
 function nameOf(user: User): string {
   return user.global_name ?? user.username ?? user.user_id;
@@ -57,7 +72,7 @@ export default async function CompareCompletionsPage({
   );
   const comparable = filters.with !== null && filters.with !== id;
 
-  const [userRes, membersRes, platformsRes, commonRes] = await Promise.all([
+  const [userRes, membersRes, platformsRes, commonRes, leftAll, rightAll] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(`/api/v1/users?per=500`, {
       next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
@@ -69,6 +84,8 @@ export default async function CompareCompletionsPage({
           { cache: "no-store" },
         )
       : null,
+    comparable ? fetchAllCompletions(id) : null,
+    comparable ? fetchAllCompletions(filters.with!) : null,
   ]);
 
   if (!userRes.ok) notFound();
@@ -122,65 +139,114 @@ export default async function CompareCompletionsPage({
   }
 
   const action = `/members/${id}/completed-games/compare`;
-  const title =
-    result.kind === "ok" ? `Shared completions with ${rightName}` : "Compare completions";
+
+  // Distinct games per member, then the overlap, from complete histories
+  // only.
+  let venn: { onlyLeft: number; both: number; onlyRight: number } | null = null;
+  if (leftAll && rightAll && !leftAll.capped && !rightAll.capped) {
+    const leftGames = new Set(leftAll.entries.map((e) => e.gamedb_game_id));
+    const rightGames = new Set(rightAll.entries.map((e) => e.gamedb_game_id));
+    let both = 0;
+    for (const game of leftGames) if (rightGames.has(game)) both += 1;
+    venn = {
+      onlyLeft: leftGames.size - both,
+      both,
+      onlyRight: rightGames.size - both,
+    };
+  }
+  const filtered = Boolean(filters.year || filters.platform || filters.q);
+  const left = { id, name: leftName };
+  const right = { id: filters.with ?? "", name: rightName };
 
   return (
     <MemberListShell
       userId={id}
       displayName={leftName}
-      title={title}
-      count={result.kind === "ok" ? result.total : undefined}
+      title="Compare completions"
+      counts={memberCounts(user)}
+      current="completed"
     >
-      <CompareFiltersForm
-        // Remount on navigation so the uncontrolled fields pick up the new
-        // URL (e.g. after "Clear filters").
-        key={compareHref(id, filters, 1)}
+      <CompareMemberForm
+        // Remount on navigation so the uncontrolled select picks up the URL.
+        key={`member-${filters.with ?? ""}`}
         action={action}
+        ownerName={leftName}
         filters={filters}
         members={members}
-        platforms={platforms}
       />
 
       {result.kind === "none" && (
-        <EmptyState>
+        <MemberListEmpty>
           Pick a member to see which games you&apos;ve both completed.
-        </EmptyState>
+        </MemberListEmpty>
       )}
       {result.kind === "self" && (
-        <EmptyState>Pick someone other than {leftName} to compare with.</EmptyState>
+        <MemberListEmpty>
+          Pick someone other than {leftName} to compare with.
+        </MemberListEmpty>
       )}
-      {result.kind === "error" && <EmptyState>{result.message}</EmptyState>}
-      {result.kind === "ok" &&
-        (result.rows.length === 0 ? (
-          <EmptyState>No shared completions matched those filters.</EmptyState>
-        ) : (
-          <>
-            <ul className="space-y-3">
+      {result.kind === "error" && <MemberListEmpty>{result.message}</MemberListEmpty>}
+
+      {result.kind === "ok" && (
+        <>
+          {venn && (
+            <div className="space-y-1">
+              <CompareVenn
+                left={{ ...left, only: venn.onlyLeft, href: `/members/${id}/completed-games` }}
+                right={{
+                  ...right,
+                  only: venn.onlyRight,
+                  href: `/members/${right.id}/completed-games`,
+                }}
+                both={venn.both}
+              />
+              <p className="text-center text-xs text-paper-mute">
+                Distinct games across every completion each has logged
+                {filtered ? "; the filters below narrow the shared list only." : "."}
+              </p>
+            </div>
+          )}
+
+          <CompareFiltersForm
+            // Remount on navigation so the uncontrolled fields pick up the new
+            // URL (e.g. after "Clear").
+            key={compareHref(id, filters, 1)}
+            action={action}
+            filters={filters}
+            platforms={platforms}
+            heading={
+              filtered
+                ? `${result.total} shared ${result.total === 1 ? "game matches" : "games match"}`
+                : `The ${result.total} in common`
+            }
+          />
+
+          {result.rows.length === 0 ? (
+            <MemberListEmpty>
+              {filtered
+                ? "No shared completions matched those filters."
+                : `${leftName} and ${rightName} haven't completed any of the same games yet.`}
+            </MemberListEmpty>
+          ) : (
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-6">
               {result.rows.map((row) => (
                 <CompareCompletionRow
                   key={row.gamedb_game_id}
                   row={row}
-                  leftName={leftName}
-                  rightName={rightName}
+                  left={left}
+                  right={right}
                 />
               ))}
             </ul>
-            <ListPagination
-              currentPage={filters.page}
-              totalPages={result.totalPages}
-              buildHref={(p) => compareHref(id, filters, p)}
-            />
-          </>
-        ))}
+          )}
+          <ListPagination
+            currentPage={filters.page}
+            totalPages={result.totalPages}
+            buildHref={(p) => compareHref(id, filters, p)}
+          />
+        </>
+      )}
     </MemberListShell>
   );
 }
 
-function EmptyState({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-      {children}
-    </p>
-  );
-}

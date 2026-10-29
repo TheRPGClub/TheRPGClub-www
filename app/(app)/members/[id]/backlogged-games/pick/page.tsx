@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft, Dices, Shuffle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -13,7 +12,6 @@ import type {
   User,
 } from "@/lib/api/types";
 import {
-  PICK_SOURCES,
   backlogPickHref,
   backlogPickQuery,
   parseBacklogPickParams,
@@ -21,13 +19,22 @@ import {
   type BacklogPickParams,
   type BacklogPickSearchParams,
 } from "@/lib/api/backlog-pick";
+import { PickDeal } from "@/components/issue/member-pick-deal";
+import { PickSentence } from "@/components/issue/member-pick-sentence";
 import { MemberListShell } from "@/components/member/member-list-shell";
-import { StartPlayingForm } from "@/components/member/start-playing-form";
+import { memberCounts, memberName } from "@/components/member/member-lists";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-const fieldClass =
-  "h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+// The backlog picker deals a hand of three. The API draws one game per call
+// from a seeded shuffle walked by `position`, so the hand is the same seed
+// read three times in a row (each call starting at the last one's
+// `next_position`). The shuffle covers each candidate once, so the three are
+// distinct; a repeat (the walk wrapped round a small pool) ends the hand
+// early, which is how a pool of one or two deals one or two cards. The whole
+// hand stays in the URL (seed + position), so it can be reloaded or shared,
+// and "Deal again" carries on from where the hand ended.
+
+const HAND = 3;
 
 async function loadPlatforms(): Promise<Platform[]> {
   try {
@@ -38,6 +45,52 @@ async function loadPlatforms(): Promise<Platform[]> {
   } catch {
     return [];
   }
+}
+
+type Deal =
+  | { kind: "ok"; picks: BacklogPick[]; meta: BacklogPickMeta; next: number; wrapped: boolean }
+  | { kind: "empty"; meta: BacklogPickMeta }
+  | { kind: "error"; message: string };
+
+async function dealHand(userId: string, filters: BacklogPickParams): Promise<Deal> {
+  const picks: BacklogPick[] = [];
+  let seed = filters.seed;
+  let position = filters.position;
+  let first: BacklogPickMeta | null = null;
+  let next = position;
+  let wrapped = false;
+
+  for (let i = 0; i < HAND; i++) {
+    const res = await apiFetch(
+      `/api/v1/users/${userId}/backlog/pick${backlogPickQuery({ ...filters, seed, position })}`,
+      { cache: "no-store" },
+    );
+    if (!res.ok) {
+      if (i === 0) {
+        return {
+          kind: "error",
+          message: `Couldn't pick a game right now (HTTP ${res.status}).`,
+        };
+      }
+      break; // Keep the cards already dealt.
+    }
+    const body: BacklogPickResponse = await res.json();
+    first ??= body.meta;
+    seed = body.meta.seed;
+    if (!body.data) break;
+    if (picks.some((p) => p.gamedb_game_id === body.data!.gamedb_game_id)) break;
+    picks.push(body.data);
+    wrapped ||= body.meta.wrapped;
+    next = body.meta.next_position ?? 0;
+    position = next;
+  }
+
+  if (!first) return { kind: "error", message: "Couldn't pick a game right now." };
+  // Later calls carry the server-drawn seed; the first meta lacks nothing
+  // else the page needs.
+  const meta = { ...first, seed: seed ?? first.seed };
+  if (picks.length === 0) return { kind: "empty", meta };
+  return { kind: "ok", picks, meta, next, wrapped };
 }
 
 export default async function BacklogPickPage({
@@ -56,279 +109,69 @@ export default async function BacklogPickPage({
   }
 
   const filters = parseBacklogPickParams(raw);
-  const [userRes, pickRes] = await Promise.all([
+  const [userRes, deal] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    apiFetch(`/api/v1/users/${id}/backlog/pick${backlogPickQuery(filters)}`, {
-      cache: "no-store",
-    }),
+    dealHand(id, filters),
   ]);
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
 
-  let pick: BacklogPick | null = null;
-  let meta: BacklogPickMeta | null = null;
-  let error: string | null = null;
-  if (pickRes.ok) {
-    const body: BacklogPickResponse = await pickRes.json();
-    pick = body.data;
-    meta = body.meta;
-  } else {
-    error = `Couldn't pick a game right now (HTTP ${pickRes.status}).`;
-  }
-
+  const meta = deal.kind === "error" ? null : deal.meta;
   const platforms =
-    pick && pick.platform_id === null ? await loadPlatforms() : undefined;
+    deal.kind === "ok" && deal.picks.some((p) => p.platform_id === null)
+      ? await loadPlatforms()
+      : undefined;
 
   return (
     <MemberListShell
       userId={id}
       displayName={displayName}
       title="Pick something to play"
-      action={
-        <Link
-          href={`/members/${id}/backlogged-games`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronLeft className="size-4" />
-          Back to backlog
-        </Link>
-      }
+      current="backlog"
+      counts={memberCounts(user)}
     >
-      <FilterForm filters={filters} meta={meta} />
+      <PickSentence filters={filters} meta={meta} />
 
-      {error ? (
-        <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-destructive">
-          {error}
+      {deal.kind === "error" && (
+        <p
+          role="alert"
+          className="rounded-sm border border-dashed border-rule-strong px-4 py-10 text-center text-sm text-destructive"
+        >
+          {deal.message}
         </p>
-      ) : pick && meta ? (
-        <PickCard
-          userId={id}
-          pick={pick}
-          meta={meta}
-          filters={filters}
-          platforms={platforms}
-        />
-      ) : (
-        <EmptyState userId={id} filters={filters} total={meta?.total ?? 0} />
+      )}
+      {deal.kind === "empty" && (
+        <EmptyState userId={id} filters={filters} total={deal.meta.total} />
+      )}
+      {deal.kind === "ok" && (
+        <div className="space-y-3">
+          <PickDeal
+            userId={id}
+            picks={deal.picks}
+            platforms={platforms}
+            redealHref={backlogPickHref(id, {
+              ...filters,
+              seed: deal.meta.seed,
+              position: deal.next,
+            })}
+          />
+          {deal.picks.length < HAND && (
+            <p className="text-sm text-paper-mute">
+              Only {deal.picks.length} game{deal.picks.length === 1 ? "" : "s"}{" "}
+              fit{deal.picks.length === 1 ? "s" : ""} these filters, so the hand
+              is short.
+            </p>
+          )}
+          {deal.wrapped && (
+            <p className="text-sm text-paper-mute">
+              Back to the start of your list, so picks may repeat.
+            </p>
+          )}
+        </div>
       )}
     </MemberListShell>
-  );
-}
-
-// A plain GET form: submitting it is a fresh pick under the new filters, so it
-// drops the seed and position and the server draws a new seed.
-function FilterForm({
-  filters,
-  meta,
-}: {
-  filters: BacklogPickParams;
-  meta: BacklogPickMeta | null;
-}) {
-  const platformOptions = meta?.platforms ?? [];
-  const selectedMissing =
-    filters.platformId !== null &&
-    !platformOptions.some((p) => p.platform_id === filters.platformId);
-
-  return (
-    <form
-      method="get"
-      className="flex flex-wrap items-end gap-3 rounded-xl border bg-card p-4"
-    >
-      <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-        Pick from
-        <select name="source" defaultValue={filters.source} className={fieldClass}>
-          {PICK_SOURCES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-        Platform
-        <select
-          name="platform_id"
-          defaultValue={filters.platformId?.toString() ?? ""}
-          className={cn(fieldClass, "max-w-56")}
-        >
-          <option value="">Any platform</option>
-          {selectedMissing && (
-            <option value={filters.platformId!}>Platform #{filters.platformId}</option>
-          )}
-          {platformOptions.map((p) => (
-            <option key={p.platform_id} value={p.platform_id}>
-              {p.platform_name ?? p.platform_abbreviation ?? `Platform #${p.platform_id}`}{" "}
-              ({p.count})
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-        Max hours
-        <input
-          type="number"
-          name="max_hours"
-          min={1}
-          max={1000}
-          step={1}
-          inputMode="numeric"
-          placeholder="Any"
-          defaultValue={filters.maxHours ?? ""}
-          className={cn(fieldClass, "w-24")}
-        />
-      </label>
-      <button type="submit" className={buttonVariants({ variant: "outline" })}>
-        <Dices />
-        Pick
-      </button>
-    </form>
-  );
-}
-
-function filtersSummary(filters: BacklogPickParams, pick: BacklogPick | null): string {
-  const parts: string[] = [pickSourceLabel(filters.source)];
-  if (filters.platformId !== null) {
-    parts.push(pick?.platform?.platform_name ?? `platform #${filters.platformId}`);
-  }
-  if (filters.maxHours !== null) {
-    parts.push(`up to ${filters.maxHours} hour${filters.maxHours === 1 ? "" : "s"}`);
-  }
-  return parts.join(" · ");
-}
-
-function PickCard({
-  userId,
-  pick,
-  meta,
-  filters,
-  platforms,
-}: {
-  userId: string;
-  pick: BacklogPick;
-  meta: BacklogPickMeta;
-  filters: BacklogPickParams;
-  platforms: Platform[] | undefined;
-}) {
-  const game = pick.game;
-  const coverUrl = game.cover_url ?? pick.hltb?.image_url ?? null;
-  const rerollHref = backlogPickHref(userId, {
-    ...filters,
-    seed: meta.seed,
-    position: meta.next_position ?? 0,
-  });
-  const times = [
-    { label: "Main", value: pick.hltb?.main },
-    { label: "Main + Sides", value: pick.hltb?.main_sides },
-    { label: "Completionist", value: pick.hltb?.completionist },
-  ].filter((t): t is { label: string; value: string } => Boolean(t.value));
-
-  return (
-    <div className="space-y-3">
-      <article className="relative overflow-hidden rounded-2xl border bg-card">
-        {game.art_url && (
-          <div className="pointer-events-none absolute inset-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={game.art_url}
-              alt=""
-              aria-hidden
-              className="h-full w-full object-cover opacity-15"
-            />
-            <div className="absolute inset-0 bg-linear-to-r from-card via-card/90 to-card/60" />
-          </div>
-        )}
-        <div className="relative flex flex-col gap-6 p-6 sm:flex-row">
-          <Link
-            href={`/games/${game.game_id}`}
-            className="relative aspect-3/4 w-36 shrink-0 overflow-hidden rounded-lg border bg-muted sm:w-44"
-          >
-            {coverUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={coverUrl}
-                alt={game.title}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            ) : (
-              <span className="flex h-full items-center justify-center p-3 text-center text-xs text-muted-foreground">
-                {game.title}
-              </span>
-            )}
-          </Link>
-
-          <div className="flex min-w-0 flex-1 flex-col gap-4">
-            <div className="space-y-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Try this next
-              </p>
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                <Link href={`/games/${game.game_id}`} className="hover:underline">
-                  {game.title}
-                </Link>
-              </h2>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                {pick.platform && (
-                  <span className="rounded-md bg-muted/60 px-1.5 py-0.5 font-medium uppercase tracking-wider">
-                    {pick.platform.platform_name}
-                  </span>
-                )}
-                <span>
-                  From your {pick.kind === "backlog" ? "backlog" : "collection"}
-                </span>
-              </div>
-            </div>
-
-            {times.length > 0 ? (
-              <dl className="grid max-w-md grid-cols-3 gap-2">
-                {times.map((t) => (
-                  <div key={t.label} className="rounded-lg border bg-background/60 px-3 py-2">
-                    <dt className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      {t.label}
-                    </dt>
-                    <dd className="text-sm font-semibold tabular-nums">{t.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No HowLongToBeat times on file.
-              </p>
-            )}
-
-            {pick.note && (
-              <p className="max-w-prose text-sm italic text-muted-foreground">{pick.note}</p>
-            )}
-
-            <div className="mt-auto flex flex-wrap items-start gap-2">
-              <StartPlayingForm
-                userId={userId}
-                gamedbGameId={pick.gamedb_game_id}
-                platformId={pick.platform_id}
-                platforms={platforms}
-              />
-              <Link href={rerollHref} className={buttonVariants({ variant: "outline" })}>
-                <Shuffle />
-                Reroll
-              </Link>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <div className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
-        <span>Filters: {filtersSummary(filters, pick)}</span>
-        <span className="tabular-nums">
-          {meta.total} game{meta.total === 1 ? "" : "s"} in the draw
-        </span>
-      </div>
-      {meta.wrapped && (
-        <p className="text-xs text-muted-foreground">
-          Back to the start of your list, so picks may repeat.
-        </p>
-      )}
-    </div>
   );
 }
 
@@ -352,8 +195,8 @@ function EmptyState({
   }
 
   return (
-    <div className="space-y-3 rounded-lg border border-dashed px-4 py-10 text-center">
-      <p className="text-sm text-muted-foreground">{message}</p>
+    <div className="space-y-3 rounded-sm border border-dashed border-rule-strong px-4 py-10 text-center">
+      <p className="text-sm text-paper-mute">{message}</p>
       {(filters.platformId !== null || filters.maxHours !== null) && (
         <Link
           href={backlogPickHref(userId, {

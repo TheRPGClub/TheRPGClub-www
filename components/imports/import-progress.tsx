@@ -13,26 +13,29 @@ interface ImportProgressBarProps {
   counts: ImportSummary | null;
 }
 
-// Items resolved out of the total, with a bar. Shared by every import kind.
+// Items resolved out of the total: a monumental count over a yellow bar.
+// Shared by every import kind.
 export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProps) {
   const progress = importProgress(total, counts);
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-baseline justify-between text-sm">
-        <span className="font-medium">
-          {progress.resolved} of {progress.total} {IMPORT_KINDS[kind].itemNoun.other} done
+    <div className="min-w-0">
+      <p className="font-headline text-[3.4rem] leading-[0.8] sm:text-[5.25rem]">
+        {progress.resolved}
+        <span className="font-label mt-2 block text-[0.88rem] leading-tight font-extrabold tracking-[0.08em] text-paper-mute">
+          of {progress.total} {IMPORT_KINDS[kind].itemNoun.other} done
         </span>
-        <span className="text-muted-foreground tabular-nums">{progress.percent}%</span>
-      </div>
+      </p>
       <div
         role="progressbar"
+        aria-label="Import progress"
         aria-valuemin={0}
         aria-valuemax={progress.total}
         aria-valuenow={progress.resolved}
-        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+        aria-valuetext={`${progress.percent}%`}
+        className="mt-3.5 h-2 w-full overflow-hidden bg-ink-3"
       >
         <div
-          className="h-full rounded-full bg-primary transition-[width]"
+          className="h-full bg-highlight transition-[width] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
           style={{ width: `${progress.percent}%` }}
         />
       </div>
@@ -40,18 +43,48 @@ export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProp
   );
 }
 
-// How the resolved rows ended up, by result reason.
-export function ImportOutcomeList({ counts }: { counts: ImportSummary | null }) {
+// How the resolved rows ended up, by result reason, with what's still to
+// review leading in yellow while the import is open.
+export function ImportOutcomeList({
+  counts,
+  pending,
+}: {
+  counts: ImportSummary | null;
+  // Rows still waiting; omitted once the import is over.
+  pending?: number;
+}) {
   const rows = resultReasonRows(counts);
-  if (rows.length === 0) return null;
+  if (rows.length === 0 && !pending) return null;
   return (
-    <ul className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+    <ul className="border-t-2 border-paper">
+      {pending !== undefined && pending > 0 && (
+        <OutcomeRow label="Still to review" n={pending} lead />
+      )}
       {rows.map(([reason, n]) => (
-        <li key={reason} className="flex justify-between gap-3">
-          <span className="text-muted-foreground">{resultReasonLabel(reason)}</span>
-          <span className="tabular-nums">{n}</span>
-        </li>
+        <OutcomeRow key={reason} label={resultReasonLabel(reason)} n={n} />
       ))}
     </ul>
   );
+}
+
+function OutcomeRow({ label, n, lead }: { label: string; n: number; lead?: boolean }) {
+  return (
+    <li className="flex items-baseline justify-between gap-3 border-b border-rule py-2.5 text-sm text-paper-dim">
+      <span>{label}</span>
+      <b
+        className={
+          lead
+            ? "font-headline text-xl font-normal text-highlight"
+            : "font-headline text-xl font-normal text-paper"
+        }
+      >
+        {n}
+      </b>
+    </li>
+  );
+}
+
+// The pending count, for the tally's lead row.
+export function importPending(total: number, counts: ImportSummary | null): number {
+  return importProgress(total, counts).pending;
 }

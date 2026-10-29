@@ -4,8 +4,8 @@
   "description": "The RPG Club community hub",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0a0a0a",
-  "background_color": "#0a0a0a",
+  "theme_color": "#0b0b0d",
+  "background_color": "#0b0b0d",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

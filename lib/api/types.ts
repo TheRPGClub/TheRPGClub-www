@@ -83,12 +83,14 @@ export interface User {
 // `previews` carries a small (~5-item) slice per section for the profile page.
 // `counts` covers every list so we can render the section headers and the
 // reference rows (backlog / collection) without extra round-trips.
+// Keys as the API sends them (`completions`, `collections`), not the list
+// names the UI uses.
 export interface UserProfileCounts {
   favorites: number;
   now_playing: number;
-  completed: number;
+  completions: number;
   backlog: number;
-  collection: number;
+  collections: number;
   reviews: number;
 }
 
@@ -270,6 +272,10 @@ export interface UserNowPlaying {
   platform?: Platform | null;
 }
 
+// A collection entry. The user-scoped list (CollectionEntryResource) embeds
+// the game (the GameSummary shape: no win flags) and the platform, and keeps
+// the flat `platform_name`/`platform_abbreviation` the Discord bot reads. Only
+// the single-entry detail view sends `is_shared` and the timestamps.
 export interface GameCollection {
   entry_id?: number;
   collection_id?: number;
@@ -278,9 +284,11 @@ export interface GameCollection {
   platform_id: number | null;
   ownership_type: string;
   note: string | null;
-  is_shared: boolean;
-  created_at: string;
-  updated_at: string;
+  platform_name?: string | null;
+  platform_abbreviation?: string | null;
+  is_shared?: boolean;
+  created_at?: string;
+  updated_at?: string;
   user?: User | null;
   game?: Game | null;
   platform?: Platform | null;
@@ -312,7 +320,8 @@ export interface GameCompletion {
   // Main Story | Main Story + Side Content | Completionist
   completion_type: string;
   completed_at: string | null;
-  final_playtime_hrs: number | null;
+  // Serialised as a decimal string ("20.0"); see playtimeHours().
+  final_playtime_hrs: string | number | null;
   created_at: string;
   user?: User | null;
   game?: Game | null;
@@ -655,14 +664,36 @@ export interface Review {
   // ./review-body.ts normalizes all three for display, `reviewBodyText` gives
   // plain text for previews and clamps.
   body: ReviewBody;
-  is_shared: boolean;
+  // A write-only input: the review resources never send it back, nor
+  // `updated_at`. Unshared reviews are simply absent for other members.
+  is_shared?: boolean;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   user?: User | null;
+  // Embedded (the GameSummary shape) on the game- and user-scoped review
+  // lists (ReviewEntryResource).
   game?: Game | null;
 }
 
 // GOTM
+
+// One winning game from GET /api/v1/public/winners: the latest 24 rounds,
+// newest round first, GOTM before NR-GOTM, `game_index` order within a track.
+// Club content only (no member data), and readable without a session.
+export interface PublicWinner {
+  round_number: number;
+  month_year: string;
+  kind: VotingCategory;
+  game_id: number;
+  title: string;
+  cover_url: string | null;
+  art_url: string | null;
+}
+
+export interface PublicWinnersMeta {
+  rounds: number;
+}
+
 
 export interface GotmEntry {
   gotm_id: number;

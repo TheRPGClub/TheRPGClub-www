@@ -1,7 +1,7 @@
 import type { SteamCollectionImport } from "@/lib/api/types";
 import { loadSocials } from "@/lib/imports/active";
 import { steamProfileFromSocials } from "@/lib/imports/steam";
-import { ImportPage, ImportingLine } from "@/components/imports/import-page";
+import { ImportPage, ImportStep, ImportingLine } from "@/components/imports/import-page";
 import { SteamImportForm } from "@/components/imports/steam-import-form";
 
 // The start screen. Async so the linked profile is only read when there's no
@@ -10,19 +10,12 @@ import { SteamImportForm } from "@/components/imports/steam-import-form";
 async function SteamImportStart({ userId }: { userId: string }) {
   const steamProfile = steamProfileFromSocials((await loadSocials(userId)) ?? []);
   return (
-    <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
-      <div className="space-y-1">
-        <h2 className="font-semibold">Import your Steam library</h2>
-        <p className="text-sm text-muted-foreground">
-          We read the games you own on Steam and add each one to your
-          collection as a digital copy on Steam. Games with exactly one
-          matching title in GameDB are added straight away; you choose the
-          game for the rest, one at a time. Games already in your
-          collection are skipped.
-        </p>
-      </div>
+    <ImportStep
+      title="Import your Steam library"
+      description="We read the games you own on Steam and add each one to your collection as a digital copy on Steam. Games with exactly one matching title in GameDB are added straight away; you choose the game for the rest, one at a time. Games already in your collection are skipped."
+    >
       <SteamImportForm userId={userId} defaultProfile={steamProfile} />
-    </section>
+    </ImportStep>
   );
 }
 

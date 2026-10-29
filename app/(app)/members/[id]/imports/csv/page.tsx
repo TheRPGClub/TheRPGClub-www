@@ -1,6 +1,6 @@
 import { Download } from "lucide-react";
 import type { CollectionCsvImport } from "@/lib/api/types";
-import { ImportPage, ImportingLine } from "@/components/imports/import-page";
+import { ImportPage, ImportStep, ImportingLine } from "@/components/imports/import-page";
 import { CsvImportForm } from "@/components/imports/csv-import-form";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -29,41 +29,37 @@ export default async function CollectionCsvImportPage({
       intro={(active) => <ImportingLine name={active.source_file_name} />}
       form={
         <>
-          <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
-            <div className="space-y-1">
-              <h2 className="font-semibold">1. Fill in the template</h2>
-              <p className="text-sm text-muted-foreground">
-                One game per row. Rows whose note says EXAMPLE ROW are ignored,
-                so you can leave them in.
-              </p>
-            </div>
+          <ImportStep
+            step={1}
+            title="Fill in the template"
+            description="One game per row. Rows whose note says EXAMPLE ROW are ignored, so you can leave them in."
+          >
             <a
               href={TEMPLATE_HREF}
               download="collection-import-template.csv"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              className={buttonVariants({ variant: "outline" })}
             >
-              <Download /> Download the template
+              <Download data-icon="inline-start" /> Download the template
             </a>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 border-t border-rule text-sm">
               {COLUMNS.map(([column, help]) => (
                 <div key={column} className="contents">
-                  <dt className="font-mono text-xs leading-5">{column}</dt>
-                  <dd className="text-muted-foreground">{help}</dd>
+                  <dt className="border-b border-rule py-2 font-mono text-xs leading-5 text-paper">
+                    {column}
+                  </dt>
+                  <dd className="border-b border-rule py-2 text-paper-dim">{help}</dd>
                 </div>
               ))}
             </dl>
-          </section>
+          </ImportStep>
 
-          <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
-            <div className="space-y-1">
-              <h2 className="font-semibold">2. Upload it</h2>
-              <p className="text-sm text-muted-foreground">
-                Rows with an id, or with exactly one matching title, are added
-                straight away. You choose the game for the rest, one row at a time.
-              </p>
-            </div>
+          <ImportStep
+            step={2}
+            title="Upload it"
+            description="Rows with an id, or with exactly one matching title, are added straight away. You choose the game for the rest, one row at a time."
+          >
             <CsvImportForm userId={id} />
-          </section>
+          </ImportStep>
         </>
       }
     />

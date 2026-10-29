@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
+import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -9,28 +10,26 @@ import type {
   Game,
   GameRelations,
   Review,
-  User,
   VotingCategory,
   VotingRound,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { uniqueUsers } from "@/lib/api/game-counts";
+import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
+import { buttonVariants } from "@/components/ui/button";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
-import { CornerRibbon, type RibbonAccent } from "@/components/corner-ribbon";
+import { GameImageUploadForm } from "@/components/game-image-upload-form";
+import { GameHero } from "@/components/issue/game-hero";
+import {
+  RailFacts,
+  RailHeading,
+  RailMembers,
+} from "@/components/issue/game-rail";
+import {
+  SectionHeading,
+  headingLinkClass,
+} from "@/components/issue/page-header";
 import {
   GameBallotPanel,
   type GameBallotPanelProps,
@@ -46,62 +45,16 @@ import {
   VOTING_CATEGORIES,
   VOTING_CATEGORY_TITLE,
 } from "@/lib/api/voting-round";
-import {
-  ExternalLink,
-  Gamepad2,
-  Layers,
-  MessageSquare,
-  Trophy,
-  type LucideIcon,
-} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const API_BASE = process.env.API_URL ?? "http://localhost:3000";
-const MAX_VISIBLE_PLAYERS = 8;
+// A game's page is its cover story: the hero with the club's numbers, the
+// round it's on the ballot for, then the reviews beside a rail of who's
+// playing it, who finished it and the facts, and its other versions last.
 
-type AccentVariant = "brand" | "purple";
-type AccentProfile = {
-  pill: string;
-  number: string;
-  glow: string;
-  icon: string;
-  gradient: string;
-  underline: string;
-  ribbon: RibbonAccent;
-  label: string;
-};
-
-const ACCENT_PROFILES: Record<AccentVariant, AccentProfile> = {
-  brand: {
-    pill: "bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30",
-    number: "text-brand-200/90",
-    glow: "from-brand-950/40 to-transparent",
-    icon: "text-brand-300 drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]",
-    gradient: "from-brand-200 via-brand-300 to-brand-500",
-    underline: "from-brand-500/60 via-brand-500/20 to-transparent",
-    ribbon: "brand",
-    label: "GOTM Winner",
-  },
-  purple: {
-    pill: "bg-purple-500/15 text-purple-300 ring-1 ring-inset ring-purple-500/30",
-    number: "text-purple-200/90",
-    glow: "from-purple-950/40 to-transparent",
-    icon: "text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]",
-    gradient: "from-purple-200 via-purple-300 to-purple-500",
-    underline: "from-purple-500/60 via-purple-500/20 to-transparent",
-    ribbon: "purple",
-    label: "NR GOTM Winner",
-  },
-};
-
-const NEUTRAL_PILL =
-  "bg-muted/40 text-muted-foreground ring-1 ring-inset ring-border";
-const NEUTRAL_UNDERLINE = "from-border via-border/40 to-transparent";
-
-function pickAccent(game: Game): AccentProfile | null {
-  if (game.gotm_won) return ACCENT_PROFILES.brand;
-  if (game.nr_gotm_won) return ACCENT_PROFILES.purple;
-  return null;
-}
+// The page reads enough reviews to know whether the viewer already wrote one,
+// and shows the first few as the crew strip.
+const REVIEWS_READ = 5;
+const REVIEWS_SHOWN = 3;
 
 export default function GamePage({
   params,
@@ -109,36 +62,48 @@ export default function GamePage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <div className="space-y-6">
-      <Suspense fallback={<GameContentSkeleton />}>
-        {params.then(({ id }) => {
-          const gameId = parseInt(id, 10);
-          if (isNaN(gameId)) notFound();
-          return <GameContent gameId={gameId} />;
-        })}
-      </Suspense>
-    </div>
+    <Suspense fallback={<GameContentSkeleton />}>
+      {params.then(({ id }) => {
+        const gameId = parseInt(id, 10);
+        if (isNaN(gameId)) notFound();
+        return <GameContent gameId={gameId} />;
+      })}
+    </Suspense>
   );
 }
 
+// Read once per request: the details rail and the alternate versions both
+// come out of it, and stream separately.
+const fetchRelations = cache(
+  async (gameId: number): Promise<GameRelations | null> => {
+    const res = await apiFetch(`/api/v1/games/${gameId}/relations`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiSingle<GameRelations>).data;
+  },
+);
+
 async function GameContent({ gameId }: { gameId: number }) {
-  const [gameRes, session] = await Promise.all([
+  const [gameRes, session, reviewsRes] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`),
     getSession(),
+    apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
+      cache: "no-store",
+    }),
   ]);
 
   if (!gameRes.ok) notFound();
 
   const { data: game }: ApiSingle<Game> = await gameRes.json();
 
-  const uniqueUsers = (entries: { user_id: string; user?: User | null }[]) => {
-    const seen = new Set<string>();
-    return entries.flatMap((e) => {
-      if (!e.user || seen.has(e.user_id)) return [];
-      seen.add(e.user_id);
-      return [e.user];
-    });
-  };
+  let reviews: Review[] = [];
+  let reviewTotal: number | null = null;
+  if (reviewsRes.ok) {
+    const body: ApiCollection<Review> = await reviewsRes.json();
+    reviews = body.data;
+    reviewTotal = paginationOf(body.meta, reviews.length).total;
+  }
 
   const players = uniqueUsers(game.now_playing ?? []);
   const completers = uniqueUsers(game.completions ?? []);
@@ -146,116 +111,30 @@ async function GameContent({ gameId }: { gameId: number }) {
   // "Write review" unlocks once the user has at least started playing the
   // game (now_playing) or already finished it (completions).
   const ownerId = session?.principal.discord_id ?? null;
-  const hasStartedPlaying = !!(
-    ownerId &&
-    ((game.now_playing ?? []).some((e) => e.user_id === ownerId) ||
-      (game.completions ?? []).some((e) => e.user_id === ownerId))
-  );
+  const isPlaying =
+    !!ownerId && (game.now_playing ?? []).some((e) => e.user_id === ownerId);
+  const hasCompleted =
+    !!ownerId && (game.completions ?? []).some((e) => e.user_id === ownerId);
+  const canWriteReview = isPlaying || hasCompleted;
+  const isAdmin = !!(session?.membership?.admin || session?.membership?.dev);
 
   const releaseDate = game.initial_release_date
-    ? new Date(game.initial_release_date).toLocaleDateString(undefined, {
+    ? new Date(game.initial_release_date).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
       })
     : null;
-  const imageUrl = game.art_url ?? game.cover_url;
-  const accent = pickAccent(game);
+
+  const stats = [
+    { label: "Playing", value: players.length },
+    { label: "Completed", value: completers.length },
+    ...(reviewTotal !== null ? [{ label: "Reviews", value: reviewTotal }] : []),
+  ];
 
   return (
-    <>
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link href="/games" className="hover:text-foreground transition-colors">
-          Games
-        </Link>
-        <span>›</span>
-        <span className="text-foreground">{game.title}</span>
-      </div>
-
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-xl border bg-card min-h-72">
-        {imageUrl && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageUrl}
-              alt=""
-              aria-hidden
-              className="absolute top-0 right-0 h-full w-[65%] object-cover object-[center_20%]"
-            />
-            <div className="absolute top-0 right-0 h-full w-[65%] bg-linear-to-r from-card to-transparent" />
-          </>
-        )}
-        {accent && (
-          <div
-            className={`absolute inset-y-0 left-0 w-[55%] bg-linear-to-r ${accent.glow} pointer-events-none`}
-          />
-        )}
-        {accent && (
-          <CornerRibbon
-            accent={accent.ribbon}
-            label={accent.label}
-            srLabel={`${accent.label} winner`}
-          />
-        )}
-        <div className="relative flex flex-col p-6 sm:p-8 max-w-[55%]">
-          {(game.gotm_month_year || game.nr_gotm_month_year) && (
-            <span
-              className={`inline-flex self-start items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] ${accent?.pill ?? NEUTRAL_PILL}`}
-            >
-              {game.gotm_month_year
-                ? `Game of the Month of ${game.gotm_month_year}`
-                : `Non RPG Game of the Month of ${game.nr_gotm_month_year}`}
-            </span>
-          )}
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            {accent ? (
-              <span
-                className={`bg-linear-to-r ${accent.gradient} bg-clip-text text-transparent`}
-              >
-                {game.title}
-              </span>
-            ) : (
-              game.title
-            )}
-          </h1>
-          <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-3">
-            <Stat label="Playing" value={players.length} accent={accent} />
-            <Stat label="Completed" value={completers.length} accent={accent} />
-            {releaseDate && (
-              <Stat
-                label="Release Date"
-                value={releaseDate}
-                size="md"
-                accent={accent}
-              />
-            )}
-          </div>
-          {game.description && (
-            <p className="mt-5 text-sm leading-relaxed text-muted-foreground line-clamp-4">
-              {game.description}
-            </p>
-          )}
-          {game.igdb_url && (
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              className="mt-3 -ml-2.5 self-start"
-              render={
-                <a
-                  href={game.igdb_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
-            >
-              View on IGDB
-              <ExternalLink />
-            </Button>
-          )}
-        </div>
-      </div>
+    <div className="pb-8">
+      <GameHero game={game} stats={stats} releaseDate={releaseDate} />
 
       {/* The current round's ballot, when this game is on it. Streams in
           separately — it is a live read and must not hold up the hero. */}
@@ -263,65 +142,84 @@ async function GameContent({ gameId }: { gameId: number }) {
         <BallotSection gameId={gameId} />
       </Suspense>
 
-      {/* Currently playing */}
-      <section className="space-y-4">
-        <SectionHeader
-          title="Currently Playing"
-          Icon={Gamepad2}
-          accent={accent}
-          meta={
-            players.length > 0
-              ? `${players.length} ${players.length === 1 ? "member" : "members"}`
-              : undefined
-          }
-        />
-        {players.length > 0 ? (
-          <UserAvatarGroup users={players} apiBase={API_BASE} />
-        ) : (
-          <EmptyState message="No one is playing this game right now." />
-        )}
-      </section>
+      <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
+        <section aria-labelledby="game-reviews" className="min-w-0">
+          <SectionHeading
+            title={<span id="game-reviews">Reviews</span>}
+            count={
+              reviewTotal
+                ? `${reviewTotal} ${reviewTotal === 1 ? "review" : "reviews"}`
+                : undefined
+            }
+            action={
+              reviewTotal ? (
+                <Link
+                  href={`/games/${gameId}/reviews`}
+                  className={headingLinkClass}
+                >
+                  {reviewTotal === 1 ? "The review" : `All ${reviewTotal} reviews`}
+                  <ArrowRight aria-hidden />
+                </Link>
+              ) : undefined
+            }
+            className="mb-4"
+          />
+          {reviewTotal === null ? (
+            <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+              Reviews couldn&apos;t be loaded right now.
+            </p>
+          ) : (
+            <GameReviewsList
+              gameId={gameId}
+              reviews={reviews}
+              limit={REVIEWS_SHOWN}
+              ownerId={ownerId}
+              canWriteReview={canWriteReview}
+              viewerStatus={
+                isPlaying ? "playing" : hasCompleted ? "completed" : null
+              }
+              layout="crew"
+              accent={accentForGame(game)}
+            />
+          )}
+        </section>
 
-      {/* Completed by */}
-      <section className="space-y-4">
-        <SectionHeader
-          title="Completed By"
-          Icon={Trophy}
-          accent={accent}
-          meta={
-            completers.length > 0
-              ? `${completers.length} ${completers.length === 1 ? "member" : "members"}`
-              : undefined
-          }
-        />
-        {completers.length > 0 ? (
-          <UserAvatarGroup users={completers} apiBase={API_BASE} />
-        ) : (
-          <EmptyState message="No one has completed this game yet." />
-        )}
-      </section>
+        <aside aria-label="About this game" className="space-y-6.5">
+          <RailMembers
+            title="Playing now"
+            users={players}
+            empty="No one is playing this right now."
+          />
+          <RailMembers
+            title="Completed by"
+            users={completers}
+            empty="No one has finished it yet."
+          />
+          <Suspense fallback={<RailDetailsSkeleton />}>
+            <GameDetails gameId={gameId} releaseDate={game.initial_release_date} />
+          </Suspense>
+          {isAdmin && (
+            <section>
+              <RailHeading title="Images" count="Admin" />
+              <p className="mb-3 text-[0.82rem] text-paper-mute">
+                Upload a cover, key art or logo for this game.
+              </p>
+              <GameImageUploadForm gameId={gameId} />
+            </section>
+          )}
+        </aside>
+      </div>
 
-      {/* Reviews stream in separately so the hero isn't blocked. */}
-      <Suspense fallback={<ReviewsSectionSkeleton />}>
-        <ReviewsSection
-          gameId={gameId}
-          accent={accent}
-          ownerId={ownerId}
-          canWriteReview={hasStartedPlaying}
-        />
+      <Suspense fallback={null}>
+        <AlternateVersions gameId={gameId} />
       </Suspense>
-
-      {/* Relations stream in separately — doesn't block the hero */}
-      <Suspense fallback={<GameRelationsSkeleton />}>
-        <GameRelationsSection gameId={gameId} accent={accent} />
-      </Suspense>
-    </>
+    </div>
   );
 }
 
 // Offers the vote from the game's own page, so a member who landed here from
 // a link or a search doesn't have to go find the card on /voting. A game can
-// in principle sit on both categories' ballots, so this renders one panel per
+// in principle sit on both categories' ballots, so this renders one strip per
 // category it appears on.
 async function BallotSection({ gameId }: { gameId: number }) {
   const round = await fetchVotingRound();
@@ -342,7 +240,7 @@ async function BallotSection({ gameId }: { gameId: number }) {
   if (!panels.length) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="mt-1.5 space-y-3">
       {panels.map((panel) => (
         <GameBallotPanel key={panel.category} {...panel} />
       ))}
@@ -403,366 +301,127 @@ async function ballotPanel(
   };
 }
 
-async function ReviewsSection({
+function joinNames(items: { name: string }[]): string | null {
+  return items.length ? items.map((i) => i.name).join(", ") : null;
+}
+
+async function GameDetails({
   gameId,
-  accent,
-  ownerId,
-  canWriteReview,
+  releaseDate,
 }: {
   gameId: number;
-  accent: AccentProfile | null;
-  ownerId: string | null;
-  canWriteReview: boolean;
+  releaseDate: string | null;
 }) {
-  const reviewsRes = await apiFetch(
-    `/api/v1/games/${gameId}/reviews?per=5`,
-    { cache: "no-store" },
-  );
+  const relations = await fetchRelations(gameId);
 
-  let reviews: Review[] = [];
-  let total = 0;
-  if (reviewsRes.ok) {
-    const body: ApiCollection<Review> = await reviewsRes.json();
-    reviews = body.data;
-    total = paginationOf(body.meta, reviews.length).total;
+  const facts: { label: string; value: React.ReactNode }[] = [];
+  if (releaseDate) {
+    facts.push({
+      label: "Released",
+      value: new Date(releaseDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    });
+  }
+  if (relations) {
+    const rows: [string, string | null][] = [
+      ["Genres", joinNames(relations.genres)],
+      ["Themes", joinNames(relations.themes)],
+      ["Game modes", joinNames(relations.modes)],
+      ["Perspectives", joinNames(relations.perspectives)],
+      [
+        "Platforms",
+        relations.platforms.length
+          ? relations.platforms.map((p) => p.platform_name).join(", ")
+          : null,
+      ],
+      ["Franchises", joinNames(relations.franchises)],
+    ];
+    for (const [label, value] of rows) {
+      if (value) facts.push({ label, value });
+    }
+    if (relations.companies.length > 0) {
+      facts.push({
+        label: "Companies",
+        value: (
+          <ul>
+            {relations.companies.map((c) => (
+              <li key={c.company_id}>
+                {c.name}
+                {c.role && (
+                  <small className="text-paper-mute"> · {c.role}</small>
+                )}
+              </li>
+            ))}
+          </ul>
+        ),
+      });
+    }
   }
 
+  return <RailFacts facts={facts} />;
+}
+
+async function AlternateVersions({ gameId }: { gameId: number }) {
+  const relations = await fetchRelations(gameId);
+  const alternates = relations?.alternates ?? [];
+  if (alternates.length === 0) return null;
+
   return (
-    <section className="space-y-4">
-      <SectionHeader
-        title="Reviews"
-        Icon={MessageSquare}
-        accent={accent}
-        meta={total > 0 ? `${total} ${total === 1 ? "review" : "reviews"}` : undefined}
+    <section aria-labelledby="alternate-versions" className="mt-10">
+      <SectionHeading
+        title={<span id="alternate-versions">Alternate versions</span>}
+        count={`${alternates.length} ${alternates.length === 1 ? "version" : "versions"}`}
+        className="mb-4"
       />
-
-      <GameReviewsList
-        gameId={gameId}
-        reviews={reviews}
-        ownerId={ownerId}
-        canWriteReview={canWriteReview}
-        // The page already resolved the game's hue; `ribbon` is the key the
-        // review surfaces use too.
-        accent={accent?.ribbon ?? "neutral"}
-      />
-
-      {total > reviews.length && (
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/games/${gameId}/reviews`} />}
-          >
-            See all reviews →
-          </Button>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function ReviewsSectionSkeleton() {
-  return (
-    <section className="space-y-4">
-      <SectionHeaderSkeleton />
-      <div className="space-y-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-32 w-full rounded-xl" />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-async function GameRelationsSection({
-  gameId,
-  accent,
-}: {
-  gameId: number;
-  accent: AccentProfile | null;
-}) {
-  const relationsRes = await apiFetch(`/api/v1/games/${gameId}/relations`, {
-    cache: "no-store",
-  });
-  if (!relationsRes.ok) return null;
-  const { data: relations }: ApiSingle<GameRelations> =
-    await relationsRes.json();
-
-  return (
-    <>
-      {/* Metadata grid */}
-      <div className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-        {relations.genres.length > 0 && (
-          <MetaSection label="Genres">
-            <BadgeList items={relations.genres.map((g) => g.name)} />
-          </MetaSection>
-        )}
-        {relations.themes.length > 0 && (
-          <MetaSection label="Themes">
-            <BadgeList items={relations.themes.map((t) => t.name)} />
-          </MetaSection>
-        )}
-        {relations.modes.length > 0 && (
-          <MetaSection label="Game Modes">
-            <BadgeList items={relations.modes.map((m) => m.name)} />
-          </MetaSection>
-        )}
-        {relations.perspectives.length > 0 && (
-          <MetaSection label="Perspectives">
-            <BadgeList items={relations.perspectives.map((p) => p.name)} />
-          </MetaSection>
-        )}
-        {relations.platforms.length > 0 && (
-          <MetaSection label="Platforms">
-            <BadgeList
-              items={relations.platforms.map((p) => p.platform_name)}
-            />
-          </MetaSection>
-        )}
-        {relations.franchises.length > 0 && (
-          <MetaSection label="Franchises">
-            <BadgeList items={relations.franchises.map((f) => f.name)} />
-          </MetaSection>
-        )}
-        {relations.companies.length > 0 && (
-          <MetaSection label="Companies">
-            <ul className="space-y-0.5 text-sm">
-              {relations.companies.map((c) => (
-                <li key={c.company_id}>
-                  {c.name}
-                  {c.role && (
-                    <span className="text-muted-foreground"> · {c.role}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </MetaSection>
-        )}
-      </div>
-
-      {/* Alternate versions */}
-      {relations.alternates.length > 0 && (
-        <section className="space-y-4">
-          <SectionHeader
-            title="Alternate Versions"
-            Icon={Layers}
-            accent={accent}
-            meta={`${relations.alternates.length} ${relations.alternates.length === 1 ? "version" : "versions"}`}
-          />
-          <div className="flex flex-wrap gap-2">
-            {relations.alternates.map((alt) => (
-              <Button
-                key={alt.game_id}
-                variant="outline"
-                size="sm"
-                nativeButton={false}
-                render={<Link href={`/games/${alt.game_id}`} />}
-              >
-                {alt.title}
-              </Button>
-            ))}
-          </div>
-        </section>
-      )}
-    </>
-  );
-}
-
-function UserAvatarGroup({
-  users,
-  apiBase,
-}: {
-  users: User[];
-  apiBase: string;
-}) {
-  return (
-    <AvatarGroup>
-      {users.slice(0, MAX_VISIBLE_PLAYERS).map((user) => {
-        const name = user.global_name ?? user.username ?? user.user_id;
-        const initials = name.slice(0, 2).toUpperCase();
-        return (
-          <Tooltip key={user.user_id}>
-            <TooltipTrigger
-              render={<span className="inline-flex cursor-default" />}
+      <ul className="flex flex-wrap gap-2">
+        {alternates.map((alt) => (
+          <li key={alt.game_id}>
+            <Link
+              href={`/games/${alt.game_id}`}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-auto min-h-9 py-1.5 text-left whitespace-normal",
+              )}
             >
-              <Avatar className="ring-2 ring-background">
-                <AvatarImage
-                  src={`${apiBase}/api/v1/users/${user.user_id}/avatar`}
-                  alt={name}
-                />
-                <AvatarFallback>{initials}</AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>{name}</TooltipContent>
-          </Tooltip>
-        );
-      })}
-      {users.length > MAX_VISIBLE_PLAYERS && (
-        <AvatarGroupCount>
-          +{users.length - MAX_VISIBLE_PLAYERS}
-        </AvatarGroupCount>
-      )}
-    </AvatarGroup>
+              {alt.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function RailDetailsSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-7 w-28 rounded-sm" />
+      {Array.from({ length: 5 }, (_, i) => (
+        <Skeleton key={i} className="h-4 w-full rounded-sm" />
+      ))}
+    </div>
   );
 }
 
 function GameContentSkeleton() {
   return (
-    <>
-      {/* Breadcrumb */}
-      <Skeleton className="h-4 w-32" />
-
-      {/* Hero */}
-      <Skeleton className="min-h-72 w-full rounded-xl" />
-
-      {/* Avatar row */}
-      <div className="space-y-4">
-        <SectionHeaderSkeleton />
-        <div className="flex gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="size-8 rounded-full" />
-          ))}
+    <div className="pb-8">
+      <Skeleton className="-mx-4 -mt-6 h-[420px] rounded-none sm:-mx-7" />
+      <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-56 rounded-sm" />
+          <Skeleton className="h-18 w-full rounded-md" />
+          <Skeleton className="h-72 w-full rounded-md" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-20 w-full rounded-sm" />
+          <Skeleton className="h-20 w-full rounded-sm" />
+          <RailDetailsSkeleton />
         </div>
       </div>
-    </>
-  );
-}
-
-function GameRelationsSkeleton() {
-  return (
-    <div className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <Skeleton className="h-3 w-20" />
-          <div className="flex flex-wrap gap-1.5">
-            <Skeleton className="h-5 w-14 rounded-full" />
-            <Skeleton className="h-5 w-20 rounded-full" />
-            <Skeleton className="h-5 w-12 rounded-full" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SectionHeaderSkeleton() {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-end justify-between gap-x-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="size-5 rounded" />
-          <Skeleton className="h-6 w-40" />
-        </div>
-        <Skeleton className="h-3 w-20" />
-      </div>
-      <Skeleton className="h-px w-full" />
-    </div>
-  );
-}
-
-function SectionHeader({
-  title,
-  Icon,
-  meta,
-  accent,
-}: {
-  title: string;
-  Icon: LucideIcon;
-  meta?: string;
-  accent: AccentProfile | null;
-}) {
-  return (
-    <header className="space-y-2">
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-        <div className="flex items-center gap-3">
-          <Icon
-            className={`h-5 w-5 ${accent?.icon ?? "text-muted-foreground"}`}
-            strokeWidth={1.75}
-          />
-          <h2
-            className={`text-xl font-bold tracking-tight sm:text-2xl ${
-              accent
-                ? `bg-linear-to-r ${accent.gradient} bg-clip-text text-transparent`
-                : "text-foreground"
-            }`}
-          >
-            {title}
-          </h2>
-        </div>
-        {meta && (
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            {meta}
-          </p>
-        )}
-      </div>
-      <div
-        className={`h-px w-full bg-linear-to-r ${accent?.underline ?? NEUTRAL_UNDERLINE}`}
-      />
-    </header>
-  );
-}
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="rounded-lg border border-dashed px-4 py-6 text-center">
-      <p className="text-sm text-muted-foreground">{message}</p>
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  size = "lg",
-  accent,
-}: {
-  label: string;
-  value: number | string;
-  size?: "lg" | "md";
-  accent: AccentProfile | null;
-}) {
-  const valueSize =
-    size === "lg" ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl";
-  return (
-    <div>
-      <span
-        className={`block ${valueSize} font-extralight leading-none tracking-tight tabular-nums ${accent?.number ?? "text-foreground"}`}
-      >
-        {value}
-      </span>
-      <span className="mt-1.5 block text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function MetaSection({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <h2 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-        {label}
-      </h2>
-      {children}
-    </div>
-  );
-}
-
-function BadgeList({ items }: { items: string[] }) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {items.map((item) => (
-        <Badge key={item} variant="outline">
-          {item}
-        </Badge>
-      ))}
     </div>
   );
 }

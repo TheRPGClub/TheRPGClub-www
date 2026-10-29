@@ -27,10 +27,10 @@ export function LinkAccountDialog({ account, linkHref, backHref }: LinkAccountDi
     <Dialog open disablePointerDismissal>
       <DialogContent showCloseButton={false} className="max-w-md">
         <DialogHeader>
-          <div className="mb-1 flex size-9 items-center justify-center rounded-full bg-muted">
-            <Link2 className="size-4" />
+          <div className="mb-2 flex size-10 items-center justify-center rounded-sm bg-highlight text-ink">
+            <Link2 aria-hidden className="size-5" />
           </div>
-          <DialogTitle className="text-base font-semibold">
+          <DialogTitle>
             Link your {account} account first
           </DialogTitle>
           <DialogDescription>
@@ -43,7 +43,7 @@ export function LinkAccountDialog({ account, linkHref, backHref }: LinkAccountDi
           <Link href={backHref} className={buttonVariants({ variant: "outline" })}>
             Back to imports
           </Link>
-          <Link href={linkHref} className={cn(buttonVariants(), "gap-1.5")}>
+          <Link href={linkHref} className={cn(buttonVariants({ variant: "highlight" }), "gap-1.5")}>
             Link {account}
           </Link>
         </div>

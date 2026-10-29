@@ -21,14 +21,14 @@ export function MemberReviewList({
 }: MemberReviewListProps) {
   if (reviews.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+      <p className="rounded-md border border-dashed border-rule-strong px-4 py-6 text-center text-sm text-paper-mute">
         {emptyMessage}
       </p>
     );
   }
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("grid items-start gap-4 md:grid-cols-2", className)}>
       {reviews.map((review) => (
         <MemberReviewCard
           key={review.review_id}

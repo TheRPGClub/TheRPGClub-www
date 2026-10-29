@@ -11,6 +11,7 @@ import { paginationOf } from "@/lib/api/pagination";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
+import { memberCounts, memberName } from "@/components/member/member-lists";
 
 const PAGE_SIZE = 10;
 
@@ -35,7 +36,7 @@ export default async function MemberReviewsPage({
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const isSelf = session?.principal.discord_id === id;
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
 
   let reviews: Review[] = [];
   let total = 0;
@@ -57,6 +58,9 @@ export default async function MemberReviewsPage({
       displayName={displayName}
       title="Reviews"
       count={total}
+      countNoun={["review", "reviews"]}
+      current="reviews"
+      counts={memberCounts(user)}
     >
       <MemberReviewList
         reviews={reviews}

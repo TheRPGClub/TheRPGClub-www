@@ -4,15 +4,18 @@ import { fetchCurrentPhase } from "@/lib/api/voting-round";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/app-sidebar";
+import { TopBar } from "@/components/issue/top-bar";
 
 export default async function AppLayout({
   children,
+  crumbs,
 }: {
   children: React.ReactNode;
+  // The @crumbs slot: the current route's trail for the top bar.
+  crumbs: React.ReactNode;
 }) {
   const session = await getSession();
   if (!session) redirect("/");
@@ -34,11 +37,11 @@ export default async function AppLayout({
           membership={session.membership}
           votingPhase={votingPhase}
         />
-        <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:hidden">
-            <SidebarTrigger className="-ml-1" />
-          </header>
-          <div className="flex flex-1 flex-col p-6">{children}</div>
+        {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
+            not widen the column past the window. */}
+        <SidebarInset className="min-w-0">
+          <TopBar trail={crumbs} />
+          <div className="flex flex-1 flex-col px-4 py-6 sm:px-7">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>

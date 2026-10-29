@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Impeccable design-round artefacts: mock captures and their HTML sources are
+# local working material, not source.
+/.impeccable/mocks/
+/.impeccable/reference/
+/.impeccable/review/
+/.impeccable/questions/
+/.impeccable/hook.cache.json

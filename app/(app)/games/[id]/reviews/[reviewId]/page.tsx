@@ -1,16 +1,30 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ReviewBanner } from "@/components/member/review-banner";
 import { ReviewBodyContent } from "@/components/member/review-body";
 import { ReviewDetail } from "@/components/member/review-detail";
-import { ReviewScorecard } from "@/components/member/review-scorecard";
+import { ReviewMore } from "@/components/issue/review-more";
+import { reviewerName } from "@/components/issue/review-meta";
+import { ReviewVerdict } from "@/components/issue/review-verdict";
 import { apiFetch } from "@/lib/api";
+import { paginationOf } from "@/lib/api/pagination";
 import { reviewBodyText } from "@/lib/api/review-body";
-import type { ApiSingle, Game, Review, User } from "@/lib/api/types";
-import { accentForGame, reviewAccents } from "@/lib/reviews/accent";
+import type {
+  ApiCollection,
+  ApiSingle,
+  Game,
+  Review,
+  User,
+} from "@/lib/api/types";
+import { accentForGame } from "@/lib/reviews/accent";
 import { getSession } from "@/lib/session";
-import { cn } from "@/lib/utils";
+
+// A review's own page, read top to bottom like a magazine piece: the cover
+// banner with the headline and the score, the review as an article column,
+// the verdict (overall and the facet scores) once it has made its case, and
+// the club's other takes on the game last.
+
+const MORE_SHOWN = 4;
 
 export default async function GameReviewDetailPage({
   params,
@@ -27,10 +41,15 @@ export default async function GameReviewDetailPage({
   const numericReviewId = parseInt(reviewId, 10);
   if (isNaN(gameId) || isNaN(numericReviewId)) notFound();
 
-  const [reviewRes, gameRes, session] = await Promise.all([
+  const [reviewRes, gameRes, session, othersRes] = await Promise.all([
     apiFetch(`/api/v1/reviews/${numericReviewId}`, { cache: "no-store" }),
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     getSession(),
+    // One more than shown, so the current review can drop out and still
+    // leave a full row.
+    apiFetch(`/api/v1/games/${gameId}/reviews?per=${MORE_SHOWN + 1}`, {
+      cache: "no-store",
+    }),
   ]);
 
   if (!reviewRes.ok || !gameRes.ok) notFound();
@@ -49,7 +68,18 @@ export default async function GameReviewDetailPage({
   const author: User | null = authorRes.ok
     ? ((await authorRes.json()) as ApiSingle<User>).data
     : null;
-  const authorName = author?.global_name ?? author?.username ?? review.user_id;
+  const authorName = reviewerName(author, review.user_id);
+
+  let others: Review[] = [];
+  let otherCount = 0;
+  if (othersRes.ok) {
+    const body: ApiCollection<Review> = await othersRes.json();
+    others = body.data
+      .filter((r) => r.review_id !== review.review_id)
+      .slice(0, MORE_SHOWN);
+    const total = paginationOf(body.meta, body.data.length).total;
+    otherCount = Math.max(0, total - 1);
+  }
 
   const accent = accentForGame(game);
   const ownerId = session?.principal.discord_id ?? null;
@@ -57,40 +87,7 @@ export default async function GameReviewDetailPage({
   const hasBody = reviewBodyText(review.body) !== null;
 
   return (
-    <div className="relative space-y-6">
-      {/* The hue lives on the page now, not boxed into a panel — a soft
-          glow behind the banner and scorecard that fades out before the
-          prose, rather than a tinted border around any one thing. */}
-      <div
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] bg-linear-to-b",
-          reviewAccents[accent].ambient,
-        )}
-      />
-
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link href="/games" className="transition-colors hover:text-foreground">
-          Games
-        </Link>
-        <span>›</span>
-        <Link
-          href={`/games/${game.game_id}`}
-          className="transition-colors hover:text-foreground"
-        >
-          {game.title}
-        </Link>
-        <span>›</span>
-        <Link
-          href={`/games/${game.game_id}/reviews`}
-          className="transition-colors hover:text-foreground"
-        >
-          Reviews
-        </Link>
-        <span>›</span>
-        <span className="text-foreground">{authorName}</span>
-      </div>
-
+    <div className="space-y-10 pb-10">
       <ReviewBanner
         game={game}
         accent={accent}
@@ -102,9 +99,9 @@ export default async function GameReviewDetailPage({
         title={review.title}
       />
 
-      {/* The review runs the full width of the column, reading and editing
-          alike — this page exists so it isn't squeezed into a card on the
-          game page. */}
+      {/* Reading and editing share the column. The editor has its own
+          scorecard, so the verdict lives inside the read view (`children`)
+          and steps aside while the review is being edited. */}
       <ReviewDetail
         review={review}
         gameId={gameId}
@@ -112,31 +109,29 @@ export default async function GameReviewDetailPage({
         canEdit={isMine}
         startEditing={edit !== undefined}
       >
-        {/* Inside `children`, so it belongs to the read view — the editor
-            branch has a scorecard of its own and must not show two. The
-            numbers group under the banner's overall, then the prose runs. */}
-        <ReviewScorecard
-          facets={review.facets}
-          accent={accent}
-          variant="full"
-          className="mb-8"
-        />
+        <div className="space-y-12">
+          <article aria-label="Review" className="max-w-[68ch] md:px-1">
+            {hasBody ? (
+              <ReviewBodyContent body={review.body} variant="article" />
+            ) : (
+              <p className="text-paper-mute italic">
+                {isMine
+                  ? "You scored this game but haven't written anything yet."
+                  : `${authorName} scored this game without writing a review.`}
+              </p>
+            )}
+          </article>
 
-        {hasBody ? (
-          <ReviewBodyContent
-            body={review.body}
-            variant="article"
-            accent={accent}
-            className="leading-[1.8]"
-          />
-        ) : (
-          <p className="text-base text-muted-foreground italic">
-            {isMine
-              ? "You scored this game but haven't written anything yet."
-              : `${authorName} scored this game without writing a review.`}
-          </p>
-        )}
+          <ReviewVerdict review={review} game={game} authorName={authorName} />
+        </div>
       </ReviewDetail>
+
+      <ReviewMore
+        gameId={gameId}
+        gameTitle={game.title}
+        others={others}
+        otherCount={otherCount}
+      />
     </div>
   );
 }

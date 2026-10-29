@@ -33,13 +33,14 @@ import { ImportCandidateList } from "@/components/imports/import-candidate-list"
 import { ImportIgdbSuggestions } from "@/components/imports/import-igdb-suggestions";
 import { ImportItemDetails } from "@/components/imports/import-item-details";
 import { GamePicker } from "@/components/member/game-picker";
+import { ImportItemLayout, ImportRoute, ImportSubhead } from "@/components/issue/import-item-layout";
+import { EDIT_SELECT_CLASS } from "@/components/member/game-list-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Review = CompletionatorImportReview & { item: CompletionatorImportItem };
 
-const SELECT_CLASS =
-  "h-8 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+const SELECT_CLASS = EDIT_SELECT_CLASS;
 
 // Review of one Completionator row. The API's `next_step` drives it: choose
 // the game (`match`), then add the completion, or, when the member already
@@ -81,69 +82,101 @@ function CompletionatorStep({
     step = sameCompletion ? "update_completion" : "add_completion";
   }
 
+  const noun = IMPORT_KINDS[kind].itemNoun.one;
+  const skip = (
+    <Button
+      type="button"
+      variant="outline"
+      disabled={disabled}
+      onClick={() =>
+        perform("Skipping…", () => skipImportItemAction(kind, userId, item.item_id))
+      }
+    >
+      <SkipForward data-icon="inline-start" /> Skip this {noun}
+    </Button>
+  );
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {importItemLabel(kind)} {item.row_index}
-          </p>
-          <h2 className="text-xl font-semibold tracking-tight break-words">
-            {title || <span className="text-muted-foreground">Untitled {IMPORT_KINDS[kind].itemNoun.one}</span>}
-          </h2>
-        </div>
-        <ImportItemDetails kind={kind} item={item} />
+    <ImportItemLayout
+      label={`${importItemLabel(kind)} ${item.row_index}`}
+      title={title || <span className="text-paper-mute">Untitled {noun}</span>}
+      facts={<ImportItemDetails kind={kind} item={item} />}
+      routes={
+        choosing ? (
+          <ChooseRoutes
+            kind={kind}
+            review={review}
+            title={title}
+            disabled={disabled}
+            onMatch={match}
+          />
+        ) : undefined
+      }
+    >
+      <div className="space-y-6">
+        {game && !choosing && (
+          <MatchedGame game={game} disabled={disabled} onChange={() => setChoosing(true)} />
+        )}
+
+        {choosing ? (
+          game ? (
+            <div className="space-y-3">
+              <p className="text-sm text-paper-dim">
+                Pick the right game from GameDB or IGDB, or keep the one it
+                was matched to.
+              </p>
+              <div className="flex flex-wrap gap-2 border-t border-rule pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={disabled}
+                  onClick={() => setChoosing(false)}
+                >
+                  <Undo2 data-icon="inline-start" /> Keep the matched game
+                </Button>
+                {skip}
+              </div>
+            </div>
+          ) : (
+            <ImportCandidateList
+              key={review.candidates.map((c) => c.game_id).join("-")}
+              candidates={review.candidates}
+              confidence={review.match_confidence}
+              disabled={disabled}
+              chooseLabel="Match this game"
+              onChoose={(c) => match(`Matching ${c.title}…`, { game_id: c.game_id })}
+              footer={skip}
+            />
+          )
+        ) : (
+          <>
+            {step === "add_completion" ? (
+              <AddCompletion
+                key="add"
+                kind={kind}
+                userId={userId}
+                review={review}
+                disabled={disabled}
+                perform={perform}
+                onBack={sameCompletion === false ? () => setSameCompletion(null) : undefined}
+              />
+            ) : step === "confirm_same" ? (
+              <ConfirmSame review={review} disabled={disabled} onAnswer={setSameCompletion} />
+            ) : step === "update_completion" ? (
+              <UpdateCompletion
+                kind={kind}
+                userId={userId}
+                review={review}
+                disabled={disabled}
+                perform={perform}
+                onBack={sameCompletion === true ? () => setSameCompletion(null) : undefined}
+              />
+            ) : null}
+            <div className="flex justify-end border-t border-rule pt-4">{skip}</div>
+          </>
+        )}
       </div>
-
-      {game && !choosing && (
-        <MatchedGame game={game} disabled={disabled} onChange={() => setChoosing(true)} />
-      )}
-
-      {choosing ? (
-        <ChooseGame
-          kind={kind}
-          review={review}
-          title={title}
-          disabled={disabled}
-          onMatch={match}
-          onCancel={game ? () => setChoosing(false) : undefined}
-        />
-      ) : step === "add_completion" ? (
-        <AddCompletion
-          key="add"
-          kind={kind}
-          userId={userId}
-          review={review}
-          disabled={disabled}
-          perform={perform}
-          onBack={sameCompletion === false ? () => setSameCompletion(null) : undefined}
-        />
-      ) : step === "confirm_same" ? (
-        <ConfirmSame review={review} disabled={disabled} onAnswer={setSameCompletion} />
-      ) : step === "update_completion" ? (
-        <UpdateCompletion
-          kind={kind}
-          userId={userId}
-          review={review}
-          disabled={disabled}
-          perform={perform}
-          onBack={sameCompletion === true ? () => setSameCompletion(null) : undefined}
-        />
-      ) : null}
-
-      <div className="flex justify-end border-t pt-4">
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={disabled}
-          onClick={() =>
-            perform("Skipping…", () => skipImportItemAction(kind, userId, item.item_id))
-          }
-        >
-          <SkipForward /> Skip this {IMPORT_KINDS[kind].itemNoun.one}
-        </Button>
-      </div>
-    </div>
+    </ImportItemLayout>
   );
 }
 
@@ -157,97 +190,69 @@ function MatchedGame({
   onChange: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border bg-muted/30 p-2">
-      {game.cover_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={game.cover_url} alt="" className="h-16 w-12 shrink-0 rounded object-cover" />
-      ) : (
-        <div className="h-16 w-12 shrink-0 rounded bg-muted" />
-      )}
+    <div className="flex items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_2px_var(--color-highlight)]">
+      <span className="block h-[3.8rem] w-[2.9rem] shrink-0 overflow-hidden rounded-[2px] bg-ink">
+        {game.cover_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={game.cover_url} alt="" className="size-full object-cover" />
+        )}
+      </span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">Matched to</p>
-        <p className="line-clamp-2 font-medium">{game.title}</p>
+        <p className="text-[0.8rem] text-paper-mute">Matched to</p>
+        <p className="font-label line-clamp-2 text-[1.1rem] leading-[1.05] font-extrabold tracking-[0.02em]">
+          {game.title}
+        </p>
       </div>
-      <Button type="button" size="sm" variant="ghost" disabled={disabled} onClick={onChange}>
+      <Button type="button" size="sm" variant="outline" disabled={disabled} onClick={onChange}>
         <RefreshCw /> Wrong game?
       </Button>
     </div>
   );
 }
 
-function ChooseGame({
+// The search routes beside the item while the member is choosing its game.
+function ChooseRoutes({
   kind,
   review,
   title,
   disabled,
   onMatch,
-  onCancel,
 }: {
   kind: ImportItemPanelProps["kind"];
   review: Review;
   title: string;
   disabled: boolean;
   onMatch: (label: string, selection: ImportSelection) => void;
-  onCancel?: () => void;
 }) {
   const [picked, setPicked] = useState<Game | null>(null);
 
   return (
-    <div className="space-y-6">
-      {!onCancel && (
-        <section className="space-y-2">
-          <h3 className="text-sm font-semibold">Matches in GameDB</h3>
-          <ImportCandidateList
-            candidates={review.candidates}
-            confidence={review.match_confidence}
-            disabled={disabled}
-            onChoose={(c) => onMatch(`Matching ${c.title}…`, { game_id: c.game_id })}
-          />
-        </section>
-      )}
-
-      <section className="space-y-2">
-        <h3 className="text-sm font-semibold">Pick a game from GameDB</h3>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-          <GamePicker
-            className="flex-1"
-            compact
-            placeholder="Search GameDB…"
-            onPick={setPicked}
-          />
+    <>
+      <ImportRoute title="Pick from GameDB" defaultOpen={review.candidates.length === 0}>
+        <div className="flex flex-col gap-2">
+          <GamePicker compact placeholder="Search GameDB…" onPick={setPicked} />
           <Button
             type="button"
+            variant="highlight"
             disabled={disabled || !picked}
             onClick={() =>
               picked && onMatch(`Matching ${picked.title}…`, { game_id: picked.game_id })
             }
           >
-            <Check /> Use this game
+            <Check data-icon="inline-start" /> Use this game
           </Button>
         </div>
-      </section>
-
-      <details className="group space-y-2 rounded-lg border px-3 py-2">
-        <summary className="cursor-pointer text-sm font-semibold">
-          Not in GameDB? Look it up on IGDB
-        </summary>
-        <div className="pt-3">
-          <ImportIgdbSuggestions
-            kind={kind}
-            itemId={review.item.item_id}
-            initialQuery={title}
-            disabled={disabled}
-            onChoose={(hit) => onMatch(`Importing ${hit.name}…`, { igdb_id: hit.igdb_id })}
-          />
-        </div>
-      </details>
-
-      {onCancel && (
-        <Button type="button" size="sm" variant="outline" disabled={disabled} onClick={onCancel}>
-          <Undo2 /> Keep the matched game
-        </Button>
-      )}
-    </div>
+      </ImportRoute>
+      <ImportRoute title="Not in GameDB? Try IGDB">
+        <ImportIgdbSuggestions
+          kind={kind}
+          itemId={review.item.item_id}
+          initialQuery={title}
+          disabled={disabled}
+          onChoose={(hit) => onMatch(`Importing ${hit.name}…`, { igdb_id: hit.igdb_id })}
+        />
+      </ImportRoute>
+    </>
   );
 }
 
@@ -322,8 +327,8 @@ function AddCompletion({
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold">Add the completion</h3>
-        <p className="text-sm text-muted-foreground">
+        <ImportSubhead>Add the completion</ImportSubhead>
+        <p className="mt-1 text-sm text-paper-mute">
           {review.existing_completion
             ? "This is added as a separate completion; your existing one stays as it is."
             : "Check the details and add it to your completed games."}
@@ -332,7 +337,7 @@ function AddCompletion({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5 text-sm">
-          <span className="font-medium">Completion type</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Completion type</span>
           <select
             value={completionType}
             onChange={(e) => setCompletionType(e.target.value)}
@@ -347,7 +352,7 @@ function AddCompletion({
         </label>
 
         <label className="space-y-1.5 text-sm">
-          <span className="font-medium">Platform</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Platform</span>
           <select
             value={platformId}
             onChange={(e) => setPlatformId(e.target.value)}
@@ -361,19 +366,20 @@ function AddCompletion({
             ))}
           </select>
           {createsRelease && (
-            <span className="block text-xs text-muted-foreground">
+            <span className="block text-xs text-paper-mute">
               This platform isn&apos;t listed for the game yet; adding it records a release.
             </span>
           )}
         </label>
 
         <fieldset className="space-y-1.5 text-sm sm:col-span-2">
-          <legend className="font-medium">Date finished</legend>
+          <legend className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Date finished</legend>
           <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1">
             {dateOptions.map(([value, label]) => (
               <label key={value} className="inline-flex items-center gap-1.5">
                 <input
                   type="radio"
+                  className="accent-highlight"
                   name={`date-choice-${item.item_id}`}
                   value={value}
                   checked={dateChoice === value}
@@ -396,7 +402,7 @@ function AddCompletion({
         </fieldset>
 
         <label className="space-y-1.5 text-sm">
-          <span className="font-medium">Playtime (hours)</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Playtime (hours)</span>
           <Input
             type="number"
             min={0}
@@ -413,6 +419,7 @@ function AddCompletion({
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
+            className="accent-highlight"
             checked={removeNowPlaying}
             onChange={(e) => setRemoveNowPlaying(e.target.checked)}
           />
@@ -427,8 +434,8 @@ function AddCompletion({
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={disabled}>
-          <Plus /> Add completion
+        <Button type="submit" variant="highlight" disabled={disabled}>
+          <Plus data-icon="inline-start" /> Add completion
         </Button>
         {onBack && (
           <Button type="button" variant="ghost" disabled={disabled} onClick={onBack}>
@@ -451,7 +458,7 @@ function CompletionDiff({
   const rows = completionDiffRows(review.existing_completion, review.item);
   return (
     <table className="w-full text-left text-sm">
-      <thead className="text-xs text-muted-foreground">
+      <thead className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute">
         <tr>
           <th className="py-1 pr-3 font-medium" />
           <th className="py-1 pr-3 font-medium">Your completion</th>
@@ -462,12 +469,12 @@ function CompletionDiff({
         {rows.map(([field, current, incoming]) => {
           const differs = highlight.includes(field);
           return (
-            <tr key={field} className="border-t align-top">
-              <th scope="row" className="py-1.5 pr-3 font-normal text-muted-foreground">
+            <tr key={field} className="border-t border-rule align-top">
+              <th scope="row" className="py-1.5 pr-3 font-normal text-paper-mute">
                 {UPDATE_FIELD_LABELS[field]}
               </th>
               <td className="py-1.5 pr-3">{current}</td>
-              <td className={differs ? "py-1.5 font-medium text-primary" : "py-1.5"}>{incoming}</td>
+              <td className={differs ? "py-1.5 font-semibold text-highlight" : "py-1.5"}>{incoming}</td>
             </tr>
           );
         })}
@@ -488,15 +495,15 @@ function ConfirmSame({
   return (
     <section className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold">Is this the same completion?</h3>
-        <p className="text-sm text-muted-foreground">
+        <ImportSubhead>Is this the same completion?</ImportSubhead>
+        <p className="mt-1 text-sm text-paper-mute">
           You already finished this game, on a different date. Update that
           completion, or add this one as a separate playthrough.
         </p>
       </div>
       <CompletionDiff review={review} highlight={review.diff?.fields ?? []} />
       <div className="flex flex-wrap gap-2">
-        <Button type="button" disabled={disabled} onClick={() => onAnswer(true)}>
+        <Button type="button" variant="highlight" disabled={disabled} onClick={() => onAnswer(true)}>
           Yes, update it
         </Button>
         <Button type="button" variant="outline" disabled={disabled} onClick={() => onAnswer(false)}>
@@ -532,8 +539,8 @@ function UpdateCompletion({
       }}
     >
       <div>
-        <h3 className="text-sm font-semibold">Update your completion</h3>
-        <p className="text-sm text-muted-foreground">
+        <ImportSubhead>Update your completion</ImportSubhead>
+        <p className="mt-1 text-sm text-paper-mute">
           You already finished this game. Choose which values from the file to
           copy onto it.
         </p>
@@ -545,6 +552,7 @@ function UpdateCompletion({
           <label key={field} className="inline-flex items-center gap-1.5">
             <input
               type="checkbox"
+            className="accent-highlight"
               checked={selected.includes(field)}
               onChange={(e) => toggle(field, e.target.checked)}
             />
@@ -553,8 +561,8 @@ function UpdateCompletion({
         ))}
       </fieldset>
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={disabled || selected.length === 0}>
-          <Check /> Update completion
+        <Button type="submit" variant="highlight" disabled={disabled || selected.length === 0}>
+          <Check data-icon="inline-start" /> Update completion
         </Button>
         {onBack && (
           <Button type="button" variant="ghost" disabled={disabled} onClick={onBack}>

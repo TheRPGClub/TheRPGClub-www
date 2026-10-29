@@ -71,6 +71,9 @@ export function AppSidebar({
   votingPhase,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  // Nominations or the vote are live: the club has open business, flagged
+  // in the call-to-action yellow on the nav item itself.
+  const votingOpen = votingPhase === "nominating" || votingPhase === "voting";
   const { toggleSidebar } = useSidebar();
   const isAdmin = membership?.admin || membership?.moderator || membership?.dev;
   const displayName = principal.global_name ?? principal.username;
@@ -87,7 +90,7 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       {/* Extra top padding so the logo isn't crowded against the top edge. */}
-      <SidebarHeader className="pt-4">
+      <SidebarHeader className="pt-4 pb-1">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             {/* Collapsed rail: nothing but the logo fits, so it doubles as the
@@ -118,13 +121,13 @@ export function AppSidebar({
               <Image
                 src="/logo.png"
                 alt=""
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 priority
-                className="size-8 shrink-0"
+                className="size-10 shrink-0"
               />
-              <span className="truncate text-sm leading-tight font-semibold">
-                The RPG Club
+              <span className="font-headline truncate pt-0.5 text-[1.35rem] leading-none tracking-[0.01em]">
+                The <span className="text-gotm">RPG</span> Club
               </span>
             </Link>
             <button
@@ -141,9 +144,9 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="pt-3">
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-0.5">
               {navMain.map(({ href, icon: Icon, label: navLabel }) => {
                 const label =
                   href === VOTING_HREF && votingPhase
@@ -160,9 +163,15 @@ export function AppSidebar({
                       // Collapsed to the icon rail the label is the tooltip,
                       // so the phase reaches the reader there too.
                       tooltip={label}
+                      className="font-label h-10 gap-3 rounded-sm px-2.5 text-[1.05rem] text-paper-dim hover:bg-ink-3 hover:text-paper data-active:bg-gotm data-active:font-bold data-active:text-white [&_svg]:size-[18px]"
                     >
                       <Icon />
                       <span>{label}</span>
+                      {href === VOTING_HREF && votingOpen && (
+                        <span className="font-label ml-auto rounded-xs bg-highlight px-1.5 py-px text-[0.7rem] font-extrabold text-ink group-data-[collapsible=icon]:hidden">
+                          Open
+                        </span>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -172,7 +181,7 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-rule">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-1 py-1.5">
@@ -192,9 +201,9 @@ export function AppSidebar({
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-medium">{displayName}</span>
+                  <span className="truncate font-semibold">{displayName}</span>
                   {principal.global_name && (
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-xs text-paper-mute">
                       @{principal.username}
                     </span>
                   )}
@@ -207,7 +216,8 @@ export function AppSidebar({
                 <button
                   type="submit"
                   title="Sign out"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Sign out"
+                  className="grid size-8 place-items-center rounded-sm text-paper-mute transition-colors hover:bg-ink-3 hover:text-paper"
                 >
                   <LogOut className="size-4" />
                 </button>

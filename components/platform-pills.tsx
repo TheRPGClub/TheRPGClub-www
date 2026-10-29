@@ -34,10 +34,10 @@ export function PlatformPills({
   const shown = platforms.slice(0, max);
   const hidden = platforms.length - shown.length;
   const pill =
-    "inline-flex items-center rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground";
+    "font-label inline-flex h-6 items-center rounded-xs bg-paper/8 px-2 text-[0.78rem] text-paper-dim";
 
   return (
-    <ul className={cn("flex flex-wrap items-center gap-1", className)}>
+    <ul className={cn("flex flex-wrap items-center gap-1.5", className)}>
       {shown.map((platform) => (
         <li key={platform.platform_id} className={pill}>
           {platformLabel(platform)}

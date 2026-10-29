@@ -2,12 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 const DEBOUNCE_MS = 500;
 
-export function GamesSearchForm({ defaultQuery }: { defaultQuery: string }) {
+// The index's search field: searches as you type (debounced) and on Enter.
+// A winner filter in the URL survives a new search, since the filter sits
+// right beside the field and still reads as on.
+export function GamesSearchForm({
+  defaultQuery,
+  winner,
+  placeholder,
+}: {
+  defaultQuery: string;
+  winner: string | null;
+  placeholder: string;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultQuery);
   // Re-sync the input when the URL's query changes (back/forward, a link),
@@ -22,6 +32,7 @@ export function GamesSearchForm({ defaultQuery }: { defaultQuery: string }) {
   function navigate(q: string) {
     const ps = new URLSearchParams();
     if (q.trim()) ps.set("q", q.trim());
+    if (winner) ps.set("winner", winner);
     router.push(`/games${ps.size ? `?${ps}` : ""}`);
   }
 
@@ -45,18 +56,24 @@ export function GamesSearchForm({ defaultQuery }: { defaultQuery: string }) {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
+    <form
+      onSubmit={handleSubmit}
+      role="search"
+      className="flex h-11.5 min-w-0 flex-1 basis-72 items-center gap-2.5 rounded-sm border border-rule-strong bg-ink-2 px-3.5 text-paper-mute transition-colors focus-within:border-paper-mute"
+    >
+      <Search aria-hidden className="size-4 shrink-0" />
+      <label htmlFor="games-search" className="sr-only">
+        Search games
+      </label>
+      <input
+        id="games-search"
         type="search"
         name="q"
-        placeholder="Search games…"
+        placeholder={placeholder}
         value={query}
         onChange={handleChange}
-        className="w-56"
+        className="h-full min-w-0 flex-1 bg-transparent text-[0.95rem] text-paper outline-none placeholder:text-paper-mute"
       />
-      <Button type="submit" variant="outline">
-        Search
-      </Button>
     </form>
   );
 }

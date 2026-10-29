@@ -55,8 +55,8 @@ export function ImportIgdbSuggestions({
   }
 
   return (
-    <div className="space-y-3">
-      <form onSubmit={search} className="flex gap-2">
+    <div className="space-y-2.5">
+      <form onSubmit={search} className="flex flex-col gap-2">
         <Input
           type="search"
           value={query}
@@ -65,7 +65,7 @@ export function ImportIgdbSuggestions({
           aria-label="IGDB search"
         />
         <Button type="submit" variant="outline" disabled={loading || disabled}>
-          <Search /> {loading ? "Searching…" : "Search IGDB"}
+          <Search data-icon="inline-start" /> {loading ? "Searching…" : "Search IGDB"}
         </Button>
       </form>
 
@@ -76,11 +76,11 @@ export function ImportIgdbSuggestions({
       )}
 
       {results && results.length === 0 && (
-        <p className="text-sm text-muted-foreground">IGDB has nothing for that title.</p>
+        <p className="text-sm text-paper-mute">IGDB has nothing for that title.</p>
       )}
 
       {results && results.length > 0 && (
-        <ul className="space-y-2">
+        <ul>
           {results.map((hit) => {
             const year = hit.first_release_date
               ? new Date(hit.first_release_date).getFullYear()
@@ -88,44 +88,38 @@ export function ImportIgdbSuggestions({
             return (
               <li
                 key={hit.igdb_id}
-                className="flex items-center gap-3 rounded-lg border bg-card p-2"
+                className="grid grid-cols-[2.1rem_1fr_auto] items-center gap-2.5 border-t border-rule py-2 text-[0.85rem]"
               >
-                {hit.cover_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={hit.cover_url}
-                    alt=""
-                    className="h-16 w-12 shrink-0 rounded object-cover"
-                  />
-                ) : (
-                  <div className="h-16 w-12 shrink-0 rounded bg-muted" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {hit.name}
-                    {year && (
-                      <span className="ml-1.5 font-normal text-muted-foreground">
-                        ({year})
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {hit.already_imported ? "Already in GameDB" : "New to GameDB"}
+                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-ink-3">
+                  {hit.cover_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={hit.cover_url}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+                  )}
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-semibold break-words">{hit.name}</span>
+                  <span className="block text-xs text-paper-mute">
+                    {year && <>{year} · </>}
+                    {hit.already_imported ? "already in GameDB" : "new to GameDB"}
                     {" · "}
                     {hit.url ? (
                       <a
                         href={hit.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="underline-offset-2 hover:underline"
+                        className="underline-offset-2 hover:text-highlight hover:underline"
                       >
                         IGDB #{hit.igdb_id}
                       </a>
                     ) : (
                       <>IGDB #{hit.igdb_id}</>
                     )}
-                  </p>
-                </div>
+                  </span>
+                </span>
                 <Button
                   type="button"
                   size="sm"
@@ -133,7 +127,7 @@ export function ImportIgdbSuggestions({
                   disabled={disabled}
                   onClick={() => onChoose(hit)}
                 >
-                  <Download /> {hit.already_imported ? "Choose" : "Import & choose"}
+                  {hit.already_imported ? "Choose" : <><Download /> Import &amp; choose</>}
                 </Button>
               </li>
             );

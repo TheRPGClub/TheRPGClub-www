@@ -71,11 +71,11 @@ export function GamePicker({
     return (
       <div
         className={cn(
-          "flex items-center gap-2 rounded-md border bg-muted/40 px-2 py-1.5 text-sm",
+          "flex h-9 items-center gap-2 rounded-sm border border-highlight/60 bg-ink-3 pr-1 pl-3 text-sm",
           className,
         )}
       >
-        <span className="truncate font-medium">{selected.title}</span>
+        <span className="min-w-0 flex-1 truncate font-semibold">{selected.title}</span>
         <Button
           type="button"
           variant="ghost"
@@ -94,16 +94,17 @@ export function GamePicker({
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-1.5", className)}>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-paper-mute" />
         <Input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="pl-8"
+          aria-label={placeholder.replace(/…$/, "")}
+          className="pl-9"
         />
       </div>
 
@@ -112,50 +113,62 @@ export function GamePicker({
       {hasQuery && (
         <div
           className={cn(
-            "max-h-72 overflow-y-auto rounded-md border bg-popover",
-            compact && "max-h-48",
+            "max-h-72 overflow-y-auto rounded-sm border border-rule-strong bg-ink-3 shadow-[0_12px_30px_rgb(0_0_0/0.45)]",
+            compact && "max-h-60",
           )}
           role="listbox"
+          aria-label="Matching games"
         >
           {loading && (
-            <p className="px-3 py-2 text-xs text-muted-foreground">Searching…</p>
+            <p className="px-3 py-2.5 text-xs text-paper-mute">Searching…</p>
           )}
           {!loading && results.length === 0 && !error && (
-            <p className="px-3 py-2 text-xs text-muted-foreground">
-              No matches.
-            </p>
+            <p className="px-3 py-2.5 text-xs text-paper-mute">No matches.</p>
           )}
-          {results.map((game) => (
-            <button
-              key={game.game_id}
-              type="button"
-              onClick={() => {
-                setSelected(game);
-                setResults([]);
-                onPick(game);
-              }}
-              className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted"
-            >
-              {game.cover_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={game.cover_url}
-                  alt=""
-                  className="size-10 shrink-0 rounded object-cover"
-                />
-              ) : (
-                <div className="size-10 shrink-0 rounded bg-muted" />
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{game.title}</p>
-                {game.initial_release_date && (
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(game.initial_release_date).getFullYear()}
-                  </p>
-                )}
-              </div>
-            </button>
-          ))}
+          {results.map((game) => {
+            const year = game.initial_release_date
+              ? new Date(game.initial_release_date).getFullYear()
+              : null;
+            const platforms = (game.platforms ?? [])
+              .slice(0, 3)
+              .map((p) => p.platform_abbreviation ?? p.platform_name);
+            return (
+              <button
+                key={game.game_id}
+                type="button"
+                role="option"
+                aria-selected={false}
+                onClick={() => {
+                  setSelected(game);
+                  setResults([]);
+                  onPick(game);
+                }}
+                className="group/result grid w-full grid-cols-[2.1rem_1fr_auto] items-center gap-3 border-t border-rule px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
+              >
+                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-ink-2">
+                  {game.cover_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={game.cover_url}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+                  )}
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate font-semibold">{game.title}</span>
+                  {(year || platforms.length > 0) && (
+                    <span className="block truncate text-xs text-paper-mute">
+                      {[year, ...platforms].filter(Boolean).join(" · ")}
+                    </span>
+                  )}
+                </span>
+                <span className="font-label rounded-xs border border-rule-strong px-2 py-0.5 text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors group-hover/result:border-highlight group-hover/result:bg-highlight group-hover/result:text-ink">
+                  Pick
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

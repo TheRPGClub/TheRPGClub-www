@@ -9,7 +9,7 @@ import type { VotingCategory } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { accentClasses, BAR_MOTION, type VotingAccent } from "./accents";
+import { BAR_MOTION, type VotingAccent } from "./accents";
 
 export interface GameBallotPanelProps {
   category: VotingCategory;
@@ -43,7 +43,6 @@ export interface GameBallotPanelProps {
 export function GameBallotPanel({
   category,
   categoryTitle,
-  accent,
   round,
   nominationId,
   count,
@@ -59,7 +58,6 @@ export function GameBallotPanel({
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const accentStyle = accentClasses[accent];
 
   // Same reason the board carries one: the action round-trips and then
   // refreshes, so without this the count and the button sit stale until the
@@ -99,62 +97,64 @@ export function GameBallotPanel({
   // larger rather than clipping at a stale maximum.
   const scale = Math.max(maxCount, state.count);
 
+  const gotm = category === "gotm";
+  const status = votingOpen ? "On the ballot" : "Was on the ballot";
+
   return (
     <section
       aria-label={`${categoryTitle} ballot, round ${round}`}
-      className={cn(
-        "space-y-3 rounded-xl border bg-card p-4 sm:p-5",
-        accentStyle.own,
-      )}
+      className="relative overflow-hidden rounded-md border border-rule bg-ink-2 px-4 pt-4 pb-3.5 sm:px-5"
     >
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
-        <div className="min-w-0 space-y-1.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em]",
-                accentStyle.pill,
-              )}
-            >
-              {votingOpen ? "On the ballot" : "Was on the ballot"}
-            </span>
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-x-0 top-0 h-1",
+          gotm ? "bg-gotm" : "bg-nr",
+        )}
+      />
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 sm:grid-cols-[auto_1fr_auto] sm:gap-x-5.5">
+        <p
+          aria-hidden
+          className={cn(
+            "font-headline text-[2.6rem] leading-[0.85] sm:text-[3.4rem]",
+            gotm ? "text-gotm" : "text-nr-soft",
+          )}
+        >
+          {round}
+        </p>
+        <div className="min-w-0">
+          <h2 className="font-label text-[1.05rem] leading-tight font-extrabold tracking-[0.04em] sm:text-lg">
+            Round {round} · {categoryTitle}
             {isWinner && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                <Crown className={cn("size-3.5", accentStyle.crown)} />
+              <span className="font-label ml-2.5 inline-flex translate-y-[-2px] items-center gap-1.5 rounded-xs bg-paper px-1.5 py-px align-middle text-[0.78rem] font-extrabold tracking-[0.08em] text-ink [&_svg]:size-3.5">
+                <Crown aria-hidden />
                 Won the round
               </span>
             )}
-          </div>
-          <p className="text-sm font-semibold tracking-tight">
-            Round {round} · {categoryTitle}
+          </h2>
+          <p className="mt-0.5 text-[0.85rem] text-paper-dim">
+            {status}
+            {nominatedBy.length > 0 && (
+              <> · nominated by {formatList(nominatedBy)}</>
+            )}
           </p>
-          {nominatedBy.length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Nominated by {formatList(nominatedBy)}
-            </p>
-          )}
         </div>
-
-        <div className="flex items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            <span
-              className={cn(
-                "text-2xl font-semibold tabular-nums",
-                accentStyle.count,
-              )}
-            >
+        <div className="col-span-full flex items-center gap-4 sm:col-span-1">
+          <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim sm:text-right">
+            <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-paper sm:mr-0 sm:block sm:text-[2.75rem]">
               {state.count}
-            </span>{" "}
+            </span>
             {state.count === 1 ? "vote" : "votes"}
           </p>
 
           {votingOpen && signedIn && (
             <Button
               type="button"
-              variant={state.voted ? "secondary" : "default"}
+              variant={state.voted ? "outline" : "highlight"}
               onClick={handleVote}
               disabled={pending}
               aria-pressed={state.voted}
+              className="ml-auto sm:ml-0"
             >
               {pending ? (
                 <Loader2 className="animate-spin" />
@@ -175,30 +175,31 @@ export function GameBallotPanel({
           value={state.count}
           max={scale}
           aria-label={`${state.count} of ${scale} votes`}
-          indicatorClassName={cn(accentStyle.bar, BAR_MOTION)}
+          className="mt-3.5"
+          indicatorClassName={cn(gotm ? "bg-gotm" : "bg-nr", BAR_MOTION)}
         />
       )}
 
       {error && (
-        <div className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 px-3 py-2 text-sm text-destructive">
+        <div className="mt-3 flex items-start justify-between gap-3 rounded-sm border border-destructive/40 px-3 py-2 text-sm text-destructive">
           <p>{error}</p>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={() => setError(null)}
-            className="mt-0.5 shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            className="mt-0.5 shrink-0 text-paper-mute transition-colors hover:text-paper"
           >
             <X className="size-3.5" />
           </button>
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[0.8rem] text-paper-mute">
         <span>
           {votingOpen && signedIn ? (
             <>
               You&apos;ve used{" "}
-              <span className={cn("font-semibold", accentStyle.count)}>
+              <span className="font-semibold text-paper">
                 {state.used} of {cap}
               </span>{" "}
               votes. Vote again to take this one back.
@@ -211,7 +212,7 @@ export function GameBallotPanel({
         </span>
         <Link
           href="/voting"
-          className="inline-flex items-center gap-1 font-medium transition-colors hover:text-foreground"
+          className="font-label inline-flex items-center gap-1 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper transition-colors hover:text-highlight [&_svg]:text-gotm"
         >
           See the full ballot
           <ArrowRight className="size-3.5" />
