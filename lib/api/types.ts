@@ -286,6 +286,21 @@ export interface GameCollection {
   platform?: Platform | null;
 }
 
+// One row of GET /users/:id/collections/platform_summary. Entries with no
+// platform collapse into a single row whose platform fields are all null.
+export interface CollectionPlatformCount {
+  platform_id: number | null;
+  platform_name: string | null;
+  platform_abbreviation: string | null;
+  count: number;
+}
+
+export interface CollectionPlatformSummary {
+  total_count: number;
+  // Ordered by count desc, then platform name.
+  platform_counts?: CollectionPlatformCount[];
+}
+
 // Matches the API's `CompletionEntry` schema (completion_fields.rb). Unlike the
 // other lists it has no `updated_at`/`is_shared`.
 export interface GameCompletion {
