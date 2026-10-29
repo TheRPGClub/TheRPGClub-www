@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
 // The gradient title + "Round N · Month Year" header above a GOTM / NR-GOTM
@@ -24,6 +25,7 @@ export function SectionHeader({
   pickCount,
   accent,
   Icon,
+  action,
 }: {
   title: string;
   round: number;
@@ -31,6 +33,8 @@ export function SectionHeader({
   pickCount: number;
   accent: SectionAccent;
   Icon: LucideIcon;
+  // Optional trailing control after the round line (e.g. "View history").
+  action?: ReactNode;
 }) {
   const style = sectionAccent[accent];
   return (
@@ -44,10 +48,13 @@ export function SectionHeader({
             {title}
           </h2>
         </div>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Round {round} · {monthYear}
-          {pickCount > 1 && ` · ${pickCount} winners`}
-        </p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Round {round} · {monthYear}
+            {pickCount > 1 && ` · ${pickCount} winners`}
+          </p>
+          {action}
+        </div>
       </div>
       <div className={`h-px w-full bg-linear-to-r ${style.underline}`} />
     </header>
