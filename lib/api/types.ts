@@ -286,6 +286,21 @@ export interface GameCollection {
   platform?: Platform | null;
 }
 
+// One row of GET /users/:id/collections/platform_summary. Entries with no
+// platform collapse into a single row whose platform fields are all null.
+export interface CollectionPlatformCount {
+  platform_id: number | null;
+  platform_name: string | null;
+  platform_abbreviation: string | null;
+  count: number;
+}
+
+export interface CollectionPlatformSummary {
+  total_count: number;
+  // Ordered by count desc, then platform name.
+  platform_counts?: CollectionPlatformCount[];
+}
+
 export interface GameCompletion {
   entry_id?: number;
   completion_id?: number;
