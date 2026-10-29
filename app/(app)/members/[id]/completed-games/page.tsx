@@ -8,6 +8,7 @@ import type {
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
+import { formatCompletedMonth } from "@/lib/completions";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListPagination } from "@/components/member/member-list-pagination";
@@ -64,15 +65,10 @@ export default async function CompletedGamesPage({
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {entries.map((entry) => {
-            const completed = entry.completion_date
-              ? new Date(entry.completion_date).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                })
-              : null;
+            const completed = formatCompletedMonth(entry.completed_at);
             return (
               <MemberGameCard
-                key={entry.entry_id}
+                key={entry.completion_id}
                 game={entry.game}
                 platform={entry.platform}
                 note={entry.note}

@@ -24,6 +24,8 @@ type Round<T extends GotmEntry | NrGotmEntry> = {
 };
 
 const DASHBOARD_REVALIDATE_SECONDS = 300;
+// Entries carry no title of their own; it comes from the linked game.
+const UNKNOWN_GAME_TITLE = "Unknown game";
 
 async function fetchDashboard(): Promise<DashboardResponse | null> {
   try {
@@ -119,7 +121,7 @@ async function DashboardContent() {
                         ? `/games/${pick.entry.gamedb_game_id}`
                         : undefined
                     }
-                    {...gotmCardProps(pick.game, pick.entry.game_title)}
+                    {...gotmCardProps(pick.game, UNKNOWN_GAME_TITLE)}
                   />
                 );
               })}
@@ -141,7 +143,7 @@ async function DashboardContent() {
                   const isCompact = nrGotm.picks.length >= 3;
                   const cardProps = gotmCardProps(
                     pick.game,
-                    pick.entry.game_title,
+                    UNKNOWN_GAME_TITLE,
                   );
                   return (
                     <GotmCard

@@ -9,7 +9,7 @@ export type { GameListKind } from "@/lib/api/game-list-entry";
 // One server-actions module shared by all six profile lists. They all have the
 // same wire shape: a list scoped to a user, individual entries identified by
 // per-resource PKs, and a payload with `gamedb_game_id` + optional
-// `platform_id` + list-specific extras (note, ownership_type, completion_date).
+// `platform_id` + list-specific extras (note, ownership_type, completion_type, completed_at).
 
 export interface ActionResult<T> {
   ok: boolean;
@@ -78,7 +78,8 @@ export interface GameListPayload {
   // Required for the "completed" list, validated as one of
   // Main Story | Main Story + Side Content | Completionist.
   completion_type?: string | null;
-  completion_date?: string | null;
+  completed_at?: string | null;
+  final_playtime_hrs?: number | null;
   is_shared?: boolean;
   sort_order?: number | null;
 }
