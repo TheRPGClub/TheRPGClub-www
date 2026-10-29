@@ -2,17 +2,32 @@
 
 import { useActionState } from "react";
 import { Upload } from "lucide-react";
-import { startCsvImportAction, type CsvImportFormState } from "@/app/actions/imports";
+import {
+  startCompletionatorImportAction,
+  startCsvImportAction,
+  type CsvImportFormState,
+} from "@/app/actions/imports";
+import { ImportUploadErrors } from "@/components/imports/import-upload-errors";
 import { Button } from "@/components/ui/button";
 
 const initialState: CsvImportFormState = { error: null, rowErrors: [] };
 
-// Upload step of the collection CSV import. The API validates the whole file;
-// when it rejects it, every row problem is listed so the member can fix the
-// file in one go.
-export function CsvImportForm({ userId }: { userId: string }) {
+const START_ACTIONS = {
+  csv: startCsvImportAction,
+  completionator: startCompletionatorImportAction,
+};
+
+// Upload step of the CSV-file imports (collection CSV, Completionator). The
+// API validates the whole file; when it rejects it, every row problem is listed.
+export function CsvImportForm({
+  userId,
+  kind = "csv",
+}: {
+  userId: string;
+  kind?: keyof typeof START_ACTIONS;
+}) {
   const [state, formAction, pending] = useActionState(
-    startCsvImportAction.bind(null, userId),
+    START_ACTIONS[kind].bind(null, userId),
     initialState,
   );
 
@@ -37,33 +52,7 @@ export function CsvImportForm({ userId }: { userId: string }) {
         <Upload /> {pending ? "Checking the file…" : "Start import"}
       </Button>
 
-      {state.error && (
-        <div role="alert" className="space-y-2 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
-          <p className="text-sm text-destructive">{state.error}</p>
-          {state.rowErrors.length > 0 && (
-            <div className="max-h-72 overflow-y-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="text-xs text-muted-foreground">
-                  <tr>
-                    <th className="py-1 pr-3 font-medium">Line</th>
-                    <th className="py-1 pr-3 font-medium">Column</th>
-                    <th className="py-1 font-medium">Problem</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.rowErrors.map((e, i) => (
-                    <tr key={`${e.row_index}-${e.column}-${i}`} className="border-t border-destructive/10 align-top">
-                      <td className="py-1 pr-3 tabular-nums">{e.row_index ?? "–"}</td>
-                      <td className="py-1 pr-3 font-mono text-xs">{e.column}</td>
-                      <td className="py-1">{e.message}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+      <ImportUploadErrors error={state.error} rowErrors={state.rowErrors} />
     </form>
   );
 }

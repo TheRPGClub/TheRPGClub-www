@@ -501,7 +501,8 @@ export interface ImportSummary {
   import_id: number;
   by_status: Partial<Record<ImportItemStatus, number>>;
   // `null` result reasons (pending rows) come back keyed "null"/"".
-  by_result_reason: Record<string, number>;
+  // Completionator's summary has no reasons, only statuses.
+  by_result_reason?: Record<string, number>;
 }
 
 // A GameDB match the server found for a row.
@@ -538,11 +539,74 @@ export interface ImportReview<
 }
 
 // One row problem from a rejected CSV (422 `invalid_csv`). row_index is the
-// 1-based CSV record, so the header is 1.
+// 1-based CSV record, so the header is 1. A whole-file problem has column
+// "file" and row_index 1 (null from older Completionator APIs).
 export interface InvalidCsvRowError {
-  row_index: number;
+  row_index: number | null;
   column: string;
   message: string;
+}
+
+// Completionator import (www#31). Its review adds the completion step on top
+// of the shared match step.
+
+export interface CompletionatorImport extends ImportJob {
+  source_filename: string | null;
+}
+
+export interface CompletionatorImportItem extends ImportItem {
+  game_title: string | null;
+  platform_name: string | null;
+  region_name: string | null;
+  // The export's own type ("Core Game", "+ a few extras", ...).
+  source_type: string | null;
+  time_text: string | null;
+  completed_at: string | null;
+  completion_type: string | null;
+  playtime_hrs: number | null;
+  completion_id: number | null;
+}
+
+// What the row needs from the member. `auto_added` / `auto_skipped` only come
+// back from `match`: the row is done and the loop moves on.
+export type CompletionatorNextStep =
+  | "choose_game"
+  | "add_completion"
+  | "confirm_same"
+  | "update_completion"
+  | "auto_added"
+  | "auto_skipped";
+
+export type CompletionatorUpdateField = "type" | "date" | "playtime";
+
+export interface CompletionatorDiff {
+  // Row values that differ from the existing completion.
+  fields: CompletionatorUpdateField[];
+  // Both dates are set and differ: ask whether it's the same completion.
+  confirm_same: boolean;
+}
+
+// The add form's defaults.
+export interface CompletionatorForm {
+  completion_type: string;
+  platform_id: number | null;
+  // Adding with this platform_id creates the game's missing release.
+  creates_release: boolean;
+  platforms: Platform[];
+  date_choice: "csv" | "unknown";
+  completed_at: string | null;
+  final_playtime_hours: number | null;
+}
+
+export interface CompletionatorImportReview
+  extends ImportReview<CompletionatorImport, CompletionatorImportItem> {
+  next_step: CompletionatorNextStep | null;
+  // The embedded GameSummary shape, not a full Game.
+  game: (Pick<Game, "game_id" | "title"> & Partial<Pick<Game, "cover_url" | "initial_release_date">>) | null;
+  existing_completion: GameCompletion | null;
+  diff: CompletionatorDiff | null;
+  form: CompletionatorForm | null;
+  auto_processed: number;
 }
 
 // Reviews

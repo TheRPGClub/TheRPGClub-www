@@ -1,5 +1,6 @@
 import type {
   CollectionCsvImportItem,
+  CompletionatorImportItem,
   ImportItem,
   SteamCollectionImportItem,
   ImportReview,
@@ -57,12 +58,13 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
   },
   completionator: {
     label: "Completionator",
-    description: "Bring your completions over from a Completionator export.",
+    description:
+      "Bring your completions over from a Completionator export. Rows with one clear match and a known platform are added for you; you review the rest.",
     imports: "completionator_imports",
     items: "completionator_import_items",
     summary: "summary",
     affects: ["completed-games"],
-    available: false,
+    available: true,
   },
 };
 
@@ -148,6 +150,8 @@ export function importItemTitle(kind: ImportKind, item: ImportItem): string {
       return (item as CollectionCsvImportItem).raw_title ?? "";
     case "steam":
       return (item as SteamCollectionImportItem).steam_app_name ?? "";
+    case "completionator":
+      return (item as CompletionatorImportItem).game_title ?? "";
     default: {
       const raw = item as unknown as Record<string, unknown>;
       const title = raw.raw_title ?? raw.title ?? raw.steam_app_name ?? raw.game_title;
@@ -176,6 +180,11 @@ const RESULT_REASON_LABELS: Record<string, string> = {
   invalid_row: "Invalid id in the file",
   add_failed: "Couldn't be added",
   no_candidate: "No match found",
+  // Statuses, for kinds whose summary has no reasons (Completionator).
+  added: "Added",
+  updated: "Updated",
+  skipped: "Skipped",
+  failed: "Failed",
   skip_mapped: "Skipped in an earlier Steam import",
 };
 
@@ -184,10 +193,16 @@ export function resultReasonLabel(reason: string): string {
 }
 
 // The reason counts worth showing: drops the null/blank key of pending rows.
+// Falls back to the status counts when the summary has no reasons.
 export function resultReasonRows(counts: ImportSummary | null): [string, number][] {
   if (!counts) return [];
-  return Object.entries(counts.by_result_reason)
-    .filter(([reason, n]) => reason && reason !== "null" && n > 0)
+  const source: Record<string, number | undefined> =
+    counts.by_result_reason ?? { ...counts.by_status, pending: 0 };
+  return Object.entries(source)
+    .filter((entry): entry is [string, number] => {
+      const [reason, n] = entry;
+      return !!reason && reason !== "null" && typeof n === "number" && n > 0;
+    })
     .sort((a, b) => b[1] - a[1]);
 }
 
@@ -202,6 +217,13 @@ const ERROR_MESSAGES: Record<string, string> = {
   igdb_not_configured: "IGDB search isn't available right now.",
   igdb_request_failed: "IGDB didn't answer. Try again in a moment.",
   invalid_csv: "The file has problems. Fix the rows below and upload it again.",
+  // Completionator
+  no_game_matched: "Choose a game for this row first.",
+  invalid_completion_type: "Choose a completion type.",
+  invalid_platform: "That platform isn't in GameDB. Choose another one.",
+  invalid_completed_at: "That date isn't valid.",
+  invalid_fields: "Tick at least one value to update.",
+  no_existing_completion: "There's no completion to update anymore.",
 };
 
 // Turns an API error code (or message) into something a member can act on.

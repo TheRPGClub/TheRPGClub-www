@@ -1,4 +1,10 @@
-import type { CollectionCsvImportItem, ImportItem, SteamCollectionImportItem } from "@/lib/api/types";
+import type {
+  CollectionCsvImportItem,
+  CompletionatorImportItem,
+  ImportItem,
+  SteamCollectionImportItem,
+} from "@/lib/api/types";
+import { formatImportDate, formatPlaytime } from "@/lib/imports/completionator";
 import type { ImportKind } from "@/lib/imports/kinds";
 import { SteamItemDetails } from "@/components/imports/steam-item-details";
 
@@ -6,8 +12,28 @@ import { SteamItemDetails } from "@/components/imports/steam-item-details";
 // Completionator add their case here.
 export function ImportItemDetails({ kind, item }: { kind: ImportKind; item: ImportItem }) {
   if (kind === "csv") return <CsvItemDetails item={item as CollectionCsvImportItem} />;
+  if (kind === "completionator") {
+    return <CompletionatorItemDetails item={item as CompletionatorImportItem} />;
+  }
   if (kind === "steam") return <SteamItemDetails item={item as SteamCollectionImportItem} />;
   return null;
+}
+
+function CompletionatorItemDetails({ item }: { item: CompletionatorImportItem }) {
+  const none = <span className="text-muted-foreground">None</span>;
+  const rows: [string, React.ReactNode][] = [
+    ["Platform", item.platform_name ? [item.platform_name, item.region_name].filter(Boolean).join(" · ") : none],
+    [
+      "Type",
+      item.source_type
+        ? `${item.source_type}${item.completion_type && item.completion_type !== item.source_type ? ` (${item.completion_type})` : ""}`
+        : (item.completion_type ?? none),
+    ],
+    ["Finished", formatImportDate(item.completed_at) ?? none],
+    ["Playtime", formatPlaytime(item.playtime_hrs) ?? item.time_text ?? none],
+  ];
+  if (item.error_text) rows.push(["Problem", item.error_text]);
+  return <DetailList rows={rows} />;
 }
 
 function CsvItemDetails({ item }: { item: CollectionCsvImportItem }) {
@@ -30,7 +56,10 @@ function CsvItemDetails({ item }: { item: CollectionCsvImportItem }) {
   ];
   if (item.raw_note) rows.push(["Note", item.raw_note]);
   if (item.error_text) rows.push(["Problem", item.error_text]);
+  return <DetailList rows={rows} />;
+}
 
+function DetailList({ rows }: { rows: [string, React.ReactNode][] }) {
   return (
     <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
       {rows.map(([label, value]) => (
