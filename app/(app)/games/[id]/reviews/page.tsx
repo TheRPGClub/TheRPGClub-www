@@ -11,7 +11,7 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
-import { MemberListPagination } from "@/components/member/member-list-pagination";
+import { ListPagination } from "@/components/list-pagination";
 
 const PAGE_SIZE = 10;
 
@@ -91,7 +91,7 @@ export default async function GameReviewsPage({
         accent={accentForGame(game)}
       />
 
-      <MemberListPagination
+      <ListPagination
         currentPage={currentPage}
         totalPages={totalPages}
         buildHref={href}

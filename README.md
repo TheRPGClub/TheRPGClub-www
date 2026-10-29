@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment
+
+Set these in `.env.local` (all server-only, read at request time):
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `API_URL` | no (defaults to `http://localhost:3000`) | Base URL of the TheRPGClub API. |
+| `DISCORD_GUILD_ID` | no | The club's Discord server id. Needed for the "Thread" and "Voting results" links on GOTM cards; without it those links are hidden. |
+| `DISCORD_ANNOUNCEMENTS_CHANNEL_ID` | no | The announcements channel that holds the GOTM voting-results messages (the bot's `ANNOUNCEMENTS_CHANNEL_ID`). Without it the "Voting results" link is hidden. |
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

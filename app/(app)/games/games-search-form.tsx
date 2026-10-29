@@ -10,6 +10,13 @@ const DEBOUNCE_MS = 500;
 export function GamesSearchForm({ defaultQuery }: { defaultQuery: string }) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultQuery);
+  // Re-sync the input when the URL's query changes (back/forward, a link),
+  // adjusting state during render rather than in an effect.
+  const [syncedQuery, setSyncedQuery] = useState(defaultQuery);
+  if (syncedQuery !== defaultQuery) {
+    setSyncedQuery(defaultQuery);
+    setQuery(defaultQuery);
+  }
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function navigate(q: string) {
@@ -30,10 +37,6 @@ export function GamesSearchForm({ defaultQuery }: { defaultQuery: string }) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     navigate(query);
   }
-
-  useEffect(() => {
-    setQuery(defaultQuery);
-  }, [defaultQuery]);
 
   useEffect(() => {
     return () => {

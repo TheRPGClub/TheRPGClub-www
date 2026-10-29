@@ -11,6 +11,7 @@ import {
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { formatCompletedMonth } from "@/lib/completions";
 import type {
   ApiCollection,
   ApiSingle,
@@ -337,12 +338,7 @@ function FavoriteCard({ entry }: { entry: UserFavorite }) {
 }
 
 function CompletedCard({ entry }: { entry: GameCompletion }) {
-  const completed = entry.completion_date
-    ? new Date(entry.completion_date).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-      })
-    : null;
+  const completed = formatCompletedMonth(entry.completed_at);
   return (
     <MemberGameCard
       game={entry.game}
