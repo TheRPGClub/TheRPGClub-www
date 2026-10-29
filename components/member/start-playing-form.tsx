@@ -1,13 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { Play } from "lucide-react";
-import { startPlayingFromPickAction } from "@/app/actions/backlog-pick";
-import type { ActionResult } from "@/app/actions/game-lists";
+import {
+  startPlayingFromPickAction,
+  type StartPlayingResult,
+} from "@/app/actions/backlog-pick";
 import type { Platform } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 
-const initialState: ActionResult<null> = { ok: true, data: null };
+const initialState: StartPlayingResult = { ok: true, data: null };
 
 interface StartPlayingFormProps {
   userId: string;
@@ -59,6 +62,17 @@ export function StartPlayingForm({
       {!state.ok && state.error && (
         <p role="alert" className="w-full text-sm text-destructive">
           {state.error}
+          {state.code === "already_playing" && (
+            <>
+              {" "}
+              <Link
+                href={`/members/${userId}/now-playing-games`}
+                className="underline underline-offset-4 hover:text-foreground"
+              >
+                See Now Playing
+              </Link>
+            </>
+          )}
         </p>
       )}
     </form>
