@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookMarked } from "lucide-react";
+import { BookMarked, Dices } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -11,6 +13,7 @@ import { paginationOf } from "@/lib/api/pagination";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
+import { buttonVariants } from "@/components/ui/button";
 
 const PAGE_SIZE = 24;
 
@@ -24,12 +27,14 @@ export default async function BackloggedGamesPage({
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
-  const [userRes, listRes] = await Promise.all([
+  const [userRes, listRes, session] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(`/api/v1/users/${id}/backlog?per=${PAGE_SIZE}&page=${currentPage}`, {
       cache: "no-store",
     }),
+    getSession(),
   ]);
+  const isSelf = session?.principal.discord_id === id;
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
@@ -55,6 +60,17 @@ export default async function BackloggedGamesPage({
       displayName={displayName}
       title="Backlog"
       count={total}
+      action={
+        isSelf ? (
+          <Link
+            href={`/members/${id}/backlogged-games/pick`}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            <Dices />
+            Pick something to play
+          </Link>
+        ) : undefined
+      }
     >
       {entries.length === 0 ? (
         <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">

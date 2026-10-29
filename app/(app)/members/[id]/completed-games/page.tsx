@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Download, Trophy } from "lucide-react";
+import Link from "next/link";
+import { Download, GitCompareArrows, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -62,17 +63,25 @@ export default async function CompletedGamesPage({
       title="Completed games"
       count={total}
       action={
-        isSelf ? (
-          // A plain link, not next/link: the route handler answers with an
-          // attachment, so the browser downloads it instead of navigating.
-          <a
-            href={`/api/members/${id}/completions/export`}
-            download="completions.csv"
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/members/${id}/completed-games/compare`}
             className={buttonVariants({ variant: "outline", size: "sm" })}
           >
-            <Download /> Export CSV
-          </a>
-        ) : undefined
+            <GitCompareArrows /> Compare
+          </Link>
+          {isSelf && (
+            // A plain link, not next/link: the route handler answers with an
+            // attachment, so the browser downloads it instead of navigating.
+            <a
+              href={`/api/members/${id}/completions/export`}
+              download="completions.csv"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <Download /> Export CSV
+            </a>
+          )}
+        </div>
       }
     >
       {entries.length === 0 ? (
