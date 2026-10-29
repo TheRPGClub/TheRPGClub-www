@@ -41,6 +41,9 @@ export interface ImportKindConfig {
   summary: string;
   // Member list subpaths the import writes to (for revalidation and links).
   affects: string[];
+  // The social platform (by label) the member must have linked on their
+  // profile before this import can start. Unset when anyone can start it.
+  linkedAccount?: string;
 }
 
 export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
@@ -66,6 +69,7 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     affects: ["collected-games"],
     titleField: "steam_app_name",
     itemNoun: { one: "game", other: "games" },
+    linkedAccount: "Steam",
   },
   completionator: {
     label: "Completionator",
@@ -77,6 +81,7 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     affects: ["completed-games"],
     titleField: "game_title",
     itemNoun: { one: "entry", other: "entries" },
+    linkedAccount: "Completionator",
   },
 };
 

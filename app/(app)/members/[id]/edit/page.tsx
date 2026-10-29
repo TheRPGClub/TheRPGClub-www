@@ -122,7 +122,7 @@ export default async function MemberEditPage({
         </div>
       </div>
 
-      <div className="rounded-2xl border bg-card p-6 shadow-sm">
+      <div id="socials" className="scroll-mt-6 rounded-2xl border bg-card p-6 shadow-sm">
         <SocialsEditor
           userId={user.user_id}
           socials={user.socials ?? []}

@@ -29,6 +29,8 @@ import {
   type ImportKind,
 } from "@/lib/imports/kinds";
 import { steamImportErrorMessage } from "@/lib/imports/steam";
+import { loadSocials } from "@/lib/imports/active";
+import { hasRequiredAccount, requiredAccount } from "@/lib/imports/linked-account";
 
 // Server actions for every import kind. They take the kind and build the API
 // path from IMPORT_KINDS, so Steam and Completionator reuse them as is. The
@@ -336,6 +338,15 @@ async function csvUploadFailure(res: Response): Promise<CsvImportFormState> {
   };
 }
 
+// The import page already blocks an unlinked start with a dialog; this is the
+// server-side half, so a direct action call can't create the import (or reach
+// Steam) either. Null when the start may go ahead.
+async function unlinkedAccountError(kind: ImportKind, userId: string): Promise<string | null> {
+  const account = requiredAccount(kind);
+  if (!account || hasRequiredAccount(kind, await loadSocials(userId))) return null;
+  return `Link your ${account} account in your profile's socials before starting this import.`;
+}
+
 // What differs between the CSV-file kinds' uploads.
 const CSV_FILE_KINDS = {
   csv: {
@@ -366,6 +377,9 @@ export async function startCsvFileImportAction(
     return { error: "Invalid request.", rowErrors: [] };
   }
   const { notCsvHint, fileNameField } = CSV_FILE_KINDS[kind];
+
+  const unlinked = await unlinkedAccountError(kind, userId);
+  if (unlinked) return { error: unlinked, rowErrors: [] };
 
   const file = csvUpload(formData, notCsvHint);
   if (typeof file === "string") return { error: file, rowErrors: [] };
@@ -405,6 +419,9 @@ export async function startSteamImportAction(
   if (!steamProfile) {
     return { error: steamImportErrorMessage("invalid_identifier"), steamProfile };
   }
+
+  const unlinked = await unlinkedAccountError("steam", userId);
+  if (unlinked) return { error: unlinked, steamProfile };
 
   const res = await apiFetch(`/api/v1/users/${userId}/${IMPORT_KINDS.steam.imports}`, {
     method: "POST",

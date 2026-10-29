@@ -1,26 +1,14 @@
-import { apiFetch } from "@/lib/api";
-import type { ApiCollection, SteamCollectionImport, UserSocial } from "@/lib/api/types";
+import type { SteamCollectionImport } from "@/lib/api/types";
+import { loadSocials } from "@/lib/imports/active";
 import { steamProfileFromSocials } from "@/lib/imports/steam";
 import { ImportPage, ImportingLine } from "@/components/imports/import-page";
 import { SteamImportForm } from "@/components/imports/steam-import-form";
 
-// The member's linked Steam profile, to prefill the form. Empty when they
-// have none or the socials can't be read.
-async function loadSteamProfile(userId: string): Promise<string> {
-  try {
-    const res = await apiFetch(`/api/v1/users/${userId}/socials`, { cache: "no-store" });
-    if (!res.ok) return "";
-    const body: ApiCollection<UserSocial> = await res.json();
-    return steamProfileFromSocials(body.data ?? []);
-  } catch {
-    return "";
-  }
-}
-
 // The start screen. Async so the linked profile is only read when there's no
-// open import to show instead.
+// open import to show instead; the read is shared with the page's
+// linked-account check.
 async function SteamImportStart({ userId }: { userId: string }) {
-  const steamProfile = await loadSteamProfile(userId);
+  const steamProfile = steamProfileFromSocials((await loadSocials(userId)) ?? []);
   return (
     <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
       <div className="space-y-1">

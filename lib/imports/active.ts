@@ -1,5 +1,12 @@
+import { cache } from "react";
 import { apiFetch } from "@/lib/api";
-import type { ApiSingle, ImportJob, ImportSummary } from "@/lib/api/types";
+import type {
+  ApiCollection,
+  ApiSingle,
+  ImportJob,
+  ImportSummary,
+  UserSocial,
+} from "@/lib/api/types";
 import {
   activeImportApiPath,
   importSummaryApiPath,
@@ -21,6 +28,19 @@ export async function loadActiveImport<J extends ImportJob = ImportJob>(
     return null;
   }
 }
+
+// The member's linked socials, or null when they can't be read. Memoised per
+// request so the linked-account check and the Steam form share one read.
+export const loadSocials = cache(async (userId: string): Promise<UserSocial[] | null> => {
+  try {
+    const res = await apiFetch(`/api/v1/users/${userId}/socials`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const body: ApiCollection<UserSocial> = await res.json();
+    return body.data ?? [];
+  } catch {
+    return null;
+  }
+});
 
 // Item counts for an import, so a paused import can show its progress before
 // the first `advance`. Null when they can't be read.

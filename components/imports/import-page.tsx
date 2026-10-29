@@ -5,10 +5,16 @@ import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type { ApiSingle, ImportJob, User } from "@/lib/api/types";
-import { loadActiveImport, loadImportSummary } from "@/lib/imports/active";
+import { loadActiveImport, loadImportSummary, loadSocials } from "@/lib/imports/active";
 import { IMPORT_KINDS, importsHubHref, type ImportKind } from "@/lib/imports/kinds";
+import {
+  hasRequiredAccount,
+  linkAccountsHref,
+  requiredAccount,
+} from "@/lib/imports/linked-account";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
+import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
 
 interface ImportPageProps<J extends ImportJob> {
   kind: ImportKind;
@@ -43,6 +49,11 @@ export async function ImportPage<J extends ImportJob>({
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? userId;
   const counts = active ? await loadImportSummary(kind, active.import_id) : null;
+  // An open import keeps going even if the account was unlinked since; only a
+  // new start needs the linked account.
+  const account = requiredAccount(kind);
+  const blocked =
+    !active && account !== null && !hasRequiredAccount(kind, await loadSocials(userId));
 
   return (
     <MemberListShell
@@ -69,6 +80,23 @@ export async function ImportPage<J extends ImportJob>({
             initialCounts={counts}
           />
         </div>
+      ) : blocked ? (
+        <>
+          {/* The start screen stays visible behind the dialog, blurred and
+              inert, so the member sees what linking unlocks but can't use it. */}
+          <div
+            inert
+            aria-hidden
+            className="mx-auto grid w-full max-w-3xl gap-6 select-none blur-sm"
+          >
+            {form}
+          </div>
+          <LinkAccountDialog
+            account={account}
+            linkHref={linkAccountsHref(userId)}
+            backHref={importsHubHref(userId)}
+          />
+        </>
       ) : (
         <div className="mx-auto grid w-full max-w-3xl gap-6">{form}</div>
       )}

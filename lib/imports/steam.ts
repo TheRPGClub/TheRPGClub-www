@@ -1,5 +1,6 @@
 import type { UserSocial } from "@/lib/api/types";
 import { importErrorMessage } from "@/lib/imports/kinds";
+import { linkedSocial } from "@/lib/imports/linked-account";
 
 // Steam-only helpers for the Steam import page. Client-safe.
 
@@ -14,9 +15,7 @@ export const steamStoreUrl = (appId: number) =>
 // accepts: the profile URL when there is one, else the display text (a
 // SteamID64 or vanity name). Empty when no Steam social is linked.
 export function steamProfileFromSocials(socials: UserSocial[]): string {
-  const steam = socials.find(
-    (s) => s.social_platform?.label.trim().toLowerCase() === "steam",
-  );
+  const steam = linkedSocial(socials, "Steam");
   if (!steam) return "";
   return (steam.url?.trim() || steam.display_text?.trim()) ?? "";
 }
