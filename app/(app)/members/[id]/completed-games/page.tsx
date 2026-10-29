@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { Trophy } from "lucide-react";
+import { Download, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -12,6 +13,7 @@ import { formatCompletedMonth } from "@/lib/completions";
 import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
+import { buttonVariants } from "@/components/ui/button";
 
 const PAGE_SIZE = 24;
 
@@ -25,7 +27,8 @@ export default async function CompletedGamesPage({
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
-  const [userRes, listRes] = await Promise.all([
+  const [session, userRes, listRes] = await Promise.all([
+    getSession(),
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(
       `/api/v1/users/${id}/completions?per=${PAGE_SIZE}&page=${currentPage}`,
@@ -36,6 +39,7 @@ export default async function CompletedGamesPage({
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? id;
+  const isSelf = session?.principal.discord_id === id;
 
   let entries: GameCompletion[] = [];
   let total = 0;
@@ -57,6 +61,19 @@ export default async function CompletedGamesPage({
       displayName={displayName}
       title="Completed games"
       count={total}
+      action={
+        isSelf ? (
+          // A plain link, not next/link: the route handler answers with an
+          // attachment, so the browser downloads it instead of navigating.
+          <a
+            href={`/api/members/${id}/completions/export`}
+            download="completions.csv"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <Download /> Export CSV
+          </a>
+        ) : undefined
+      }
     >
       {entries.length === 0 ? (
         <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
