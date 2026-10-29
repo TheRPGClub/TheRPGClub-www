@@ -2,14 +2,12 @@
 
 import { useActionState } from "react";
 import { Play } from "lucide-react";
-import {
-  startPlayingFromPickAction,
-  type StartPlayingState,
-} from "@/app/actions/backlog-pick";
+import { startPlayingFromPickAction } from "@/app/actions/backlog-pick";
+import type { ActionResult } from "@/app/actions/game-lists";
 import type { Platform } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 
-const initialState: StartPlayingState = { error: null };
+const initialState: ActionResult<null> = { ok: true, data: null };
 
 interface StartPlayingFormProps {
   userId: string;
@@ -58,7 +56,7 @@ export function StartPlayingForm({
         <Play />
         {pending ? "Starting…" : "Start playing"}
       </Button>
-      {state.error && (
+      {!state.ok && state.error && (
         <p role="alert" className="w-full text-sm text-destructive">
           {state.error}
         </p>

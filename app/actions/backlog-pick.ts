@@ -3,10 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-
-export interface StartPlayingState {
-  error: string | null;
-}
+import type { ActionResult } from "@/app/actions/game-lists";
+import { isMemberId } from "@/lib/imports/kinds";
 
 async function errorMessage(response: Response): Promise<string> {
   try {
@@ -25,14 +23,16 @@ async function errorMessage(response: Response): Promise<string> {
 export async function startPlayingFromPickAction(
   userId: string,
   pick: { gamedb_game_id: number; platform_id: number | null },
-  _state: StartPlayingState,
+  _state: ActionResult<null>,
   formData: FormData,
-): Promise<StartPlayingState> {
+): Promise<ActionResult<null>> {
+  if (!isMemberId(userId)) return { ok: false, error: "Invalid request." };
+
   const chosen = Number(formData.get("platform_id"));
   const platformId =
     pick.platform_id ?? (Number.isInteger(chosen) && chosen > 0 ? chosen : null);
   if (platformId === null) {
-    return { error: "Choose the platform you're playing it on." };
+    return { ok: false, error: "Choose the platform you're playing it on." };
   }
 
   const res = await apiFetch(`/api/v1/users/${userId}/now_playing`, {
@@ -41,7 +41,7 @@ export async function startPlayingFromPickAction(
       data: { gamedb_game_id: pick.gamedb_game_id, platform_id: platformId },
     }),
   });
-  if (!res.ok) return { error: await errorMessage(res) };
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
 
   revalidatePath(`/members/${userId}`);
   revalidatePath(`/members/${userId}/now-playing-games`);
