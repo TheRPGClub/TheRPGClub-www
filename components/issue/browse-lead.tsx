@@ -100,19 +100,20 @@ function LeadCard({
       <span className="mt-auto block px-5 pt-16 pb-4.5">
         <span
           className={cn(
-            "font-label block text-[0.82rem] font-extrabold tracking-[0.1em]",
-            kind === "gotm" ? "text-gotm-soft" : "text-nr-soft",
-          )}
-        >
-          {TRACK_LABEL[kind]} · Round {roundNumber}
-        </span>
-        <span
-          className={cn(
-            "font-headline mt-1.5 block leading-[0.92] text-balance",
+            "font-headline block leading-[0.92] text-balance",
             lead ? "text-4xl md:text-[2.875rem]" : "text-[1.4rem] md:text-3xl",
           )}
         >
           {title}
+        </span>
+        {/* The track and round follow the title as a meta line. */}
+        <span
+          className={cn(
+            "font-label mt-2 block text-[0.82rem] font-extrabold tracking-[0.1em]",
+            kind === "gotm" ? "text-gotm-soft" : "text-nr-soft",
+          )}
+        >
+          {TRACK_LABEL[kind]} · Round {roundNumber}
         </span>
       </span>
     </>

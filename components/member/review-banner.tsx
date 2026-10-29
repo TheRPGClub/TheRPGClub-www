@@ -120,24 +120,27 @@ export function ReviewBanner({
 
       <div className="grid gap-5 px-4 pt-15 pb-6 sm:px-7 md:min-h-[420px] md:grid-cols-[1fr_auto] md:items-end md:gap-7 md:px-8 md:pt-16 md:pb-7.5">
         <div className="min-w-0">
-          <p className="mb-3.5 flex flex-wrap items-center gap-2">
-            {chips.map((chip) => (
-              <Chip key={chip.tone} tone={chip.tone}>
-                {chip.label}
-              </Chip>
-            ))}
-            {title && (
-              <Link
-                href={`/games/${game.game_id}`}
-                className="font-label text-base font-extrabold tracking-[0.06em] text-paper transition-colors hover:text-highlight"
-              >
-                {game.title}
-              </Link>
-            )}
-          </p>
           <h1 className="font-headline max-w-[15ch] text-[2.6rem] leading-[0.9] text-balance break-words md:text-[4.75rem]">
             {headline}
           </h1>
+          {/* What the game is to the club follows the headline, never above it. */}
+          {(chips.length > 0 || title) && (
+            <p className="mt-4 flex flex-wrap items-center gap-2">
+              {chips.map((chip) => (
+                <Chip key={chip.tone} tone={chip.tone}>
+                  {chip.label}
+                </Chip>
+              ))}
+              {title && (
+                <Link
+                  href={`/games/${game.game_id}`}
+                  className="font-label text-base font-extrabold tracking-[0.06em] text-paper transition-colors hover:text-highlight"
+                >
+                  {game.title}
+                </Link>
+              )}
+            </p>
+          )}
 
           {authorId && authorName && (
             <p className="mt-4.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-paper-dim">

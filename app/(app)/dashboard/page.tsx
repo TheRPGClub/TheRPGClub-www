@@ -6,7 +6,8 @@ import {
   fetchGotmRounds,
 } from "@/lib/api/gotm-rounds";
 import { fetchNominations, fetchVotingRound } from "@/lib/api/voting-round";
-import type { VotingRound } from "@/lib/api/types";
+import type { GotmRoundBlock, VotingRound } from "@/lib/api/types";
+import { fetchGameCounts, type GameCounts } from "@/lib/api/game-counts";
 import { CoverStory } from "@/components/issue/cover-story";
 import { NrFeature } from "@/components/issue/nr-feature";
 import { PreviousRounds } from "@/components/issue/previous-rounds";
@@ -54,7 +55,10 @@ async function DashboardContent() {
     }),
     fetchVotingRound(),
   ]);
-  const { nominations, now } = await fetchRoundNominations(voting);
+  const [{ nominations, now }, counts] = await Promise.all([
+    fetchRoundNominations(voting),
+    fetchWinnerCounts([round?.gotm, round?.nr_gotm]),
+  ]);
 
   // `gotm_rounds/current` is the GOTM round with the same round's NR-GOTM,
   // N/A placeholders already dropped.
@@ -93,6 +97,7 @@ async function DashboardContent() {
       monthYear={gotm.month_year}
       games={gotm.games}
       votingResultsMessageId={gotm.voting_results_message_id}
+      counts={counts}
     />
   ) : (
     <CoverStory
@@ -102,15 +107,17 @@ async function DashboardContent() {
       games={nrGotm!.games}
       votingResultsMessageId={nrGotm!.voting_results_message_id}
       absentNote="No Game of the Month this round"
+      counts={counts}
     />
   );
   const rail =
     gotm && nrGotm ? (
-      <div className="grid content-start gap-5 lg:grid-rows-[1fr_auto]">
+      <div className="grid gap-5 lg:grid-rows-[1fr_auto]">
         <NrFeature
           roundNumber={round.round_number}
           games={nrGotm.games}
           votingResultsMessageId={nrGotm.voting_results_message_id}
+          counts={counts}
         />
         {panel}
       </div>
@@ -131,6 +138,26 @@ async function DashboardContent() {
       </div>
       <PreviousRounds rounds={previous} />
     </div>
+  );
+}
+
+// The club's Playing / Completed / Reviews numbers for each of the round's
+// winners, keyed by GameDB id. A failed read leaves its game out.
+async function fetchWinnerCounts(
+  blocks: (GotmRoundBlock | null | undefined)[],
+): Promise<Record<number, GameCounts>> {
+  const ids = [
+    ...new Set(
+      blocks.flatMap((block) =>
+        (block?.games ?? []).flatMap((g) =>
+          g.gamedb_game_id != null ? [g.gamedb_game_id] : [],
+        ),
+      ),
+    ),
+  ];
+  const results = await Promise.all(ids.map((id) => fetchGameCounts(id)));
+  return Object.fromEntries(
+    ids.flatMap((id, i) => (results[i] ? [[id, results[i]]] : [])),
   );
 }
 

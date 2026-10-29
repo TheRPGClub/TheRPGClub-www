@@ -270,6 +270,9 @@ export function ReviewBodyContent({
     <PlateStatic
       editor={editor}
       className={cn(
+        // Pasted links and long words break anywhere rather than push a
+        // phone-width page sideways.
+        "min-w-0 [overflow-wrap:anywhere]",
         article ? "text-base leading-relaxed" : "text-sm leading-relaxed",
         className,
       )}

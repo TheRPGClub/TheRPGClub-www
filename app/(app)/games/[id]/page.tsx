@@ -10,11 +10,11 @@ import type {
   Game,
   GameRelations,
   Review,
-  User,
   VotingCategory,
   VotingRound,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
+import { uniqueUsers } from "@/lib/api/game-counts";
 import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
@@ -83,15 +83,6 @@ const fetchRelations = cache(
     return ((await res.json()) as ApiSingle<GameRelations>).data;
   },
 );
-
-function uniqueUsers(entries: { user_id: string; user?: User | null }[]) {
-  const seen = new Set<string>();
-  return entries.flatMap((e) => {
-    if (!e.user || seen.has(e.user_id)) return [];
-    seen.add(e.user_id);
-    return [e.user];
-  });
-}
 
 async function GameContent({ gameId }: { gameId: number }) {
   const [gameRes, session, reviewsRes] = await Promise.all([

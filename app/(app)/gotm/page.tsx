@@ -48,6 +48,13 @@ function uniqueRounds(rounds: GotmRound[]): GotmRound[] {
   });
 }
 
+// Filtered to one track, the API counts that track's entries, so a round
+// with co-winners counts once per winner: say winners, not rounds.
+function historyCount(kind: Filters["kind"], total: number): string {
+  if (kind === "both") return `${total} ${total === 1 ? "round" : "rounds"}`;
+  return `${total} ${total === 1 ? "winner" : "winners"}`;
+}
+
 async function GotmHistory({ filters }: { filters: Filters }) {
   // The archive read needs auth, so confirm a session first rather than make
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
@@ -65,11 +72,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
     <div className="space-y-6">
       <PageHeader
         title="GOTM history"
-        count={
-          result && total > 0
-            ? `${total} ${total === 1 ? "round" : "rounds"}`
-            : undefined
-        }
+        count={result && total > 0 ? historyCount(filters.kind, total) : undefined}
         actions={
           <GotmHistoryFilters
             // Uncontrolled fields: remount when the URL changes so they re-sync.

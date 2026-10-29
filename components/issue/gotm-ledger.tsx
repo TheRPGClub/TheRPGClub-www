@@ -210,24 +210,28 @@ function ArtPanel({
           className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-paper focus-visible:outline-none focus-visible:ring-inset"
         />
       )}
-      <div className="mt-auto w-full px-4 pt-10 pb-3.5">
-        <p
-          className={cn(
-            "font-label inline-block rounded-xs px-1.75 py-px text-[0.75rem] font-extrabold tracking-[0.1em] text-white",
-            kind === "gotm" ? "bg-gotm" : "bg-nr",
-          )}
-        >
-          {TRACK_LABEL[kind]}
-        </p>
+      {/* Titles hang from a fixed line so co-winners in a row align; the
+          track chip and links sit on the panel's floor. */}
+      <div className="flex w-full flex-col px-4 pt-16 pb-3.5 md:pt-20">
         <h4
           className={cn(
-            "font-headline mt-2 leading-[0.92] text-balance",
+            "font-headline leading-[0.92] text-balance",
             single ? "text-[1.75rem] md:text-[2rem]" : "text-[1.45rem]",
           )}
         >
           {title}
         </h4>
-        <OutboundLinks links={shownLinks} className="mt-2" />
+        <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2.5">
+          <span
+            className={cn(
+              "font-label inline-block rounded-xs px-1.75 py-px text-[0.75rem] font-extrabold tracking-[0.1em] text-white",
+              kind === "gotm" ? "bg-gotm" : "bg-nr",
+            )}
+          >
+            {TRACK_LABEL[kind]}
+          </span>
+          <OutboundLinks links={shownLinks} />
+        </div>
       </div>
     </article>
   );

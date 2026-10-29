@@ -179,11 +179,15 @@ export function PickDeal({
           className="flex flex-wrap items-end justify-between gap-4 rounded-md border border-rule bg-ink-2 px-4.5 py-4"
         >
           <div className="min-w-0">
-            <p className="font-label text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim">
-              You kept
-            </p>
-            <p className="font-headline mt-1 text-[1.65rem] leading-none">
-              {keptPick.game.title}
+            {/* One line, the verb leading the title, rather than a label
+                stacked over it. */}
+            <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+              <span className="font-label text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim">
+                You kept
+              </span>
+              <span className="font-headline text-[1.65rem] leading-none">
+                {keptPick.game.title}
+              </span>
             </p>
             {keptPick.hltb?.url && (
               <a

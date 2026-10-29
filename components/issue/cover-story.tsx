@@ -6,6 +6,7 @@ import { PlatformPills } from "@/components/platform-pills";
 import { Starburst } from "@/components/issue/starburst";
 import { buttonVariants } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
+import type { GameCounts } from "@/lib/api/game-counts";
 import { cn } from "@/lib/utils";
 
 // The issue's cover story: a round's winners for one track, full-bleed key art
@@ -19,12 +20,14 @@ const TRACK = {
     label: "Game of the Month",
     number: "text-gotm",
     accent: "text-highlight",
+    tag: "bg-gotm text-white",
     button: "default",
   },
   nr_gotm: {
     label: "Non-RPG Game of the Month",
     number: "text-nr",
     accent: "text-nr-soft",
+    tag: "bg-nr text-white",
     button: "nr",
   },
 } as const;
@@ -66,6 +69,7 @@ export function CoverStory({
   games,
   votingResultsMessageId,
   absentNote,
+  counts,
 }: {
   kind: VotingCategory;
   roundNumber: number;
@@ -74,6 +78,9 @@ export function CoverStory({
   votingResultsMessageId: string | null;
   // Shown under the masthead when the other track has no winner this round.
   absentNote?: string;
+  // The club's numbers per winner, keyed by GameDB id; a missing entry
+  // leaves that panel's stats out rather than showing zeros.
+  counts?: Record<number, GameCounts>;
 }) {
   const track = TRACK[kind];
   const winners = [...games]
@@ -118,6 +125,11 @@ export function CoverStory({
           monthYear={monthYear}
           votingResultsMessageId={votingResultsMessageId}
           absentNote={i === 0 ? absentNote : undefined}
+          counts={
+            entry.gamedb_game_id != null
+              ? counts?.[entry.gamedb_game_id]
+              : undefined
+          }
         />
       ))}
     </section>
@@ -135,6 +147,7 @@ function CoverPanel({
   monthYear,
   votingResultsMessageId,
   absentNote,
+  counts,
 }: {
   kind: VotingCategory;
   entry: GotmRoundGame;
@@ -146,6 +159,7 @@ function CoverPanel({
   monthYear: string;
   votingResultsMessageId: string | null;
   absentNote?: string;
+  counts?: GameCounts;
 }) {
   const track = TRACK[kind];
   const game = gotmCardProps(entry.game ?? null, UNKNOWN_GAME_TITLE);
@@ -162,6 +176,10 @@ function CoverPanel({
   // lead, which every round has.
   const shownLinks = size === "m" || small ? links.slice(0, 2) : links;
   const single = count === 1;
+  // Side-by-side co-winners share a masthead-height header band (empty on
+  // the second panel), so both stories start at the same line and their
+  // action rows sit on the same floor.
+  const split = count === 2;
 
   return (
     <article
@@ -196,8 +214,16 @@ function CoverPanel({
           small ? "p-5" : "p-6 sm:p-7",
         )}
       >
-        {lead && (
-          <div className="space-y-2">
+        {(lead || split) && (
+          <div
+            className={cn(
+              "space-y-2",
+              split && "sm:min-h-36",
+              !lead && "hidden sm:block",
+            )}
+          >
+            {lead && (
+              <>
             <div className="flex items-end gap-3.5">
               <p
                 className={cn(
@@ -228,32 +254,38 @@ function CoverPanel({
                 {absentNote}
               </p>
             )}
+              </>
+            )}
           </div>
         )}
 
-        <div className="mt-auto pt-6">
-          <h2
-            className={cn(
-              "font-headline text-balance",
-              TITLE_SIZE[size],
-              single && "max-w-[11ch]",
+        <div
+          className="mt-auto pt-6"
+        >
+          <div className="flex items-start gap-3">
+            {count > 1 && (
+              <p
+                aria-label={`Winner ${"ABC"[index]}`}
+                className={cn(
+                  "font-headline mt-1 grid shrink-0 place-items-center rounded-xs leading-none",
+                  small ? "size-9 text-[1.6rem]" : "size-11 text-[2rem]",
+                  track.tag,
+                )}
+              >
+                {"ABC"[index]}
+              </p>
             )}
-          >
-            {/* Co-winners are lettered in the track's ink, leading the
-                headline's first line. */}
-            {first && (
-              <span className="block">
-                <WinnerLetter count={count} index={index} className={track.number} />
-                {first}
-              </span>
-            )}
-            <span className={cn("block", track.accent)}>
-              {!first && (
-                <WinnerLetter count={count} index={index} className={track.number} />
+            <h2
+              className={cn(
+                "font-headline min-w-0 text-balance",
+                TITLE_SIZE[size],
+                single && "max-w-[11ch]",
               )}
-              {second}
-            </span>
-          </h2>
+            >
+              {first && <span className="block">{first}</span>}
+              <span className={cn("block", track.accent)}>{second}</span>
+            </h2>
+          </div>
 
           <div className={cn("flex flex-wrap gap-1.5", small ? "mt-2.5" : "mt-3.5")}>
             {game.year && (
@@ -269,10 +301,24 @@ function CoverPanel({
               className={cn(
                 "mt-3 line-clamp-3 text-paper-dim",
                 single ? "max-w-[52ch] text-[0.97rem]" : "max-w-[46ch] text-sm",
+                // Side-by-side co-winners reserve the clamp's three lines,
+                // so the story blocks end level and the stats and actions
+                // line up across the split.
+                split && "sm:min-h-[3lh]",
               )}
             >
               {game.description}
             </p>
+          )}
+
+          {counts && (
+            <CoverStats
+              counts={counts}
+              accent={track.accent}
+              small={small}
+              compact={small}
+              narrow={size === "m"}
+            />
           )}
 
           <div
@@ -312,20 +358,55 @@ function CoverPanel({
   );
 }
 
-function WinnerLetter({
-  count,
-  index,
-  className,
+// The club's numbers in the masthead voice: Anton numerals over condensed
+// caps, the first in the track's accent. Narrow panels keep two.
+function CoverStats({
+  counts,
+  accent,
+  small,
+  compact,
+  narrow,
 }: {
-  count: number;
-  index: number;
-  className: string;
+  counts: GameCounts;
+  accent: string;
+  small: boolean;
+  compact: boolean;
+  // A co-winner's narrower panel.
+  narrow: boolean;
 }) {
-  if (count < 2) return null;
+  const stats = [
+    { label: "playing", value: counts.playing },
+    { label: "cleared", value: counts.completed },
+    ...(!compact && counts.reviews != null
+      ? [{ label: counts.reviews === 1 ? "review" : "reviews", value: counts.reviews }]
+      : []),
+  ];
   return (
-    <span className={cn("mr-[0.3em]", className)}>
-      {"ABC"[index]}
-      <span className="sr-only">.</span>
-    </span>
+    <dl
+      className={cn(
+        // Tighter on co-winner panels so all three counts hold one line and
+        // the action rows stay level across the split.
+        "flex flex-wrap gap-y-1",
+        narrow ? "gap-x-3" : "gap-x-4.5",
+        small ? "mt-2.5" : "mt-3.5",
+      )}
+    >
+      {stats.map((stat, i) => (
+        <div key={stat.label} className="flex items-baseline gap-1.5">
+          <dt className="font-label order-2 text-[0.82rem] font-extrabold text-paper-dim">
+            {stat.label}
+          </dt>
+          <dd
+            className={cn(
+              "font-headline leading-none",
+              small ? "text-[1.4rem]" : narrow ? "text-[1.55rem]" : "text-[1.75rem]",
+              i === 0 && accent,
+            )}
+          >
+            {stat.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
