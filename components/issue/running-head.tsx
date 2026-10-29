@@ -56,6 +56,13 @@ export function RunningHead({ trail }: { trail: Crumb[] }) {
             )}
           </li>
         ))}
+        {/* A section root closes on its slash ("DASHBOARD /"), so a lone
+            crumb still reads as the start of a trail. */}
+        {last === 0 && (
+          <li aria-hidden className="shrink-0 text-gotm">
+            /
+          </li>
+        )}
       </ol>
     </nav>
   );

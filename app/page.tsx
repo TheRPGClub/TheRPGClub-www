@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, UserRound } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { fetchPublicWinners } from "@/lib/api/public-winners";
 import type { PublicWinner, VotingCategory } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
@@ -56,41 +55,6 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <div className="flex min-h-svh flex-col bg-ink text-paper">
-      <header className="absolute inset-x-0 top-0 z-20 flex items-center gap-3.5 px-4 py-3.5 sm:px-10 sm:py-4.5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo.png"
-          alt="The RPG Club"
-          width={44}
-          height={44}
-          className="size-9 sm:size-11"
-        />
-        {latest && (
-          <p className="font-label hidden text-sm font-extrabold tracking-[0.1em] text-paper-dim [text-shadow:0_1px_8px_rgb(0_0_0/0.85)] md:block">
-            <span className="text-paper">Issue {latest.round_number}</span>
-            <span aria-hidden className="mx-2 text-gotm">
-              /
-            </span>
-            {latest.month_year}
-          </p>
-        )}
-        <div className="ml-auto flex items-center gap-2">
-          {profileHref ? (
-            <Link
-              href={profileHref}
-              className={buttonVariants({ variant: "outline" })}
-            >
-              <UserRound data-icon="inline-start" />
-              My Profile
-            </Link>
-          ) : (
-            <a href={signInHref} className={buttonVariants({ variant: "outline" })}>
-              Sign in
-            </a>
-          )}
-        </div>
-      </header>
-
       <main className="flex-1">
         {lead && latest ? (
           <LandingCover

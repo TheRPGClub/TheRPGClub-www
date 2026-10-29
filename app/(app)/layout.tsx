@@ -37,7 +37,9 @@ export default async function AppLayout({
           membership={session.membership}
           votingPhase={votingPhase}
         />
-        <SidebarInset>
+        {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
+            not widen the column past the window. */}
+        <SidebarInset className="min-w-0">
           <TopBar trail={crumbs} />
           <div className="flex flex-1 flex-col px-4 py-6 sm:px-7">{children}</div>
         </SidebarInset>
