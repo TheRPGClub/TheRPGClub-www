@@ -370,6 +370,63 @@ export interface UserBacklog {
   platform?: Platform | null;
 }
 
+// Backlog pick (GET /users/:id/backlog/pick)
+
+// HltbResource. The times are the scraped display strings ("12½ Hours"), not
+// numbers; the pick's own `hours` is the parsed figure the filter used.
+export interface Hltb {
+  name: string | null;
+  url: string | null;
+  image_url: string | null;
+  main: string | null;
+  main_sides: string | null;
+  completionist: string | null;
+  single_player: string | null;
+  co_op: string | null;
+  vs: string | null;
+  source_query: string | null;
+  scraped_at: string | null;
+  updated_at: string | null;
+}
+
+export type BacklogPickSource = "backlog" | "collection" | "both";
+
+export interface BacklogPick {
+  kind: "backlog" | "collection";
+  entry_id: number;
+  gamedb_game_id: number;
+  platform_id: number | null;
+  note: string | null;
+  hours: number | null;
+  // GameSummary: no embedded platforms.
+  game: Game;
+  platform: Platform | null;
+  hltb: Hltb | null;
+}
+
+export interface BacklogPickPlatform {
+  platform_id: number;
+  platform_name: string | null;
+  platform_abbreviation: string | null;
+  count: number;
+}
+
+export interface BacklogPickMeta {
+  seed: number;
+  // Both null when there is no pick.
+  position: number | null;
+  next_position: number | null;
+  wrapped: boolean;
+  // Candidates after the source and platform filters, before max_hours.
+  total: number;
+  platforms: BacklogPickPlatform[];
+}
+
+export interface BacklogPickResponse {
+  data: BacklogPick | null;
+  meta: BacklogPickMeta;
+}
+
 // Reviews
 
 // The scorecard shape, re-exported from the module that owns the facet
