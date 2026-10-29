@@ -38,7 +38,6 @@ import {
   memberName,
   monthShort,
 } from "@/components/member/member-lists";
-import { withGames } from "@/components/member/member-lists-server";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk (face-on key art), everything else is closed books on a bookcase, one
@@ -96,10 +95,8 @@ export default async function MemberPage({
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<UserProfile> = await userRes.json();
-  const [collection, reviews] = await Promise.all([
-    withGames(collectionPreview.data),
-    withGames(reviewsPreview.data),
-  ]);
+  const collection = collectionPreview.data;
+  const reviews = reviewsPreview.data;
 
   const displayName = memberName(user);
   const isSelf = session?.principal.discord_id === user.user_id;

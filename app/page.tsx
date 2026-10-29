@@ -1,26 +1,24 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, UserRound } from "lucide-react";
-import {
-  fetchCurrentGotmRound,
-  fetchGotmRounds,
-} from "@/lib/api/gotm-rounds";
-import type { GotmRound, GotmRoundGame, VotingCategory } from "@/lib/api/types";
+import { fetchPublicWinners } from "@/lib/api/public-winners";
+import type { PublicWinner, VotingCategory } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
 import { firstParam } from "@/lib/search-params";
 import { buttonVariants } from "@/components/ui/button";
-import { Starburst } from "@/components/issue/starburst";
+import { LandingCover, LandingPitch } from "@/components/issue/landing-cover";
 import {
   LandingMarquee,
   type LandingMarqueeItem,
 } from "@/components/issue/landing-marquee";
 import { cn } from "@/lib/utils";
 
-// The logged-out front page: the club pitched as its own magazine. Every
-// GOTM read needs a session (the API has no public round endpoint), so a
-// visitor who isn't signed in sees the club described in plain words only:
-// no current round, no winners, no counts. A signed-in visitor gets the same
-// page dressed with the real current issue and the winners marquee.
+// The front page: the club pitched as its own magazine, for everyone. The
+// recent winners are public club content (GET /api/v1/public/winners), so a
+// logged-out visit gets this round's Game of the Month as the cover, the two
+// tracks' latest picks and the winners marquee. When that read fails or comes
+// back empty, the page describes the club in plain words only: flat track
+// panels for a cover, no shelves, no marquee.
 
 type HomeProps = {
   searchParams?: Promise<{
@@ -38,35 +36,22 @@ export default async function Home({ searchParams }: HomeProps) {
     redirect(`/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
-  const session = await getSession();
+  const [session, winners] = await Promise.all([
+    getSession(),
+    fetchPublicWinners(),
+  ]);
   const signInHref = `${process.env.API_URL ?? "http://localhost:3000"}/auth/discord`;
   const profileHref = session
     ? `/members/${session.principal.discord_id}`
     : null;
 
-  const [current, history] = session
-    ? await Promise.all([
-        fetchCurrentGotmRound(),
-        fetchGotmRounds({
-          kind: "both",
-          year: null,
-          q: "",
-          sort: "desc",
-          page: 1,
-        }),
-      ])
-    : [null, null];
-  const rounds = history?.rounds ?? [];
-  const lead = current?.gotm?.games.length
-    ? leadWinner(current.gotm.games)
-    : null;
-  const leadArt = lead?.game?.art_url ?? null;
-  const issue = current
-    ? {
-        roundNumber: current.round_number,
-        monthYear:
-          current.gotm?.month_year ?? current.nr_gotm?.month_year ?? null,
-      }
+  // Newest round first, and GOTM before NR-GOTM in `game_index` order within
+  // a round, so the first GOTM of the latest round is its lead.
+  const latest = winners[0] ?? null;
+  const lead = latest
+    ? (winners.find(
+        (w) => w.round_number === latest.round_number && w.kind === "gotm",
+      ) ?? null)
     : null;
 
   return (
@@ -80,17 +65,13 @@ export default async function Home({ searchParams }: HomeProps) {
           height={44}
           className="size-9 sm:size-11"
         />
-        {issue && (
-          <p className="font-label hidden text-sm font-extrabold tracking-[0.1em] text-paper-dim [text-shadow:0_1px_8px_rgb(0_0_0/0.85)] sm:block">
-            <span className="text-paper">Issue {issue.roundNumber}</span>
-            {issue.monthYear && (
-              <>
-                <span aria-hidden className="mx-2 text-gotm">
-                  /
-                </span>
-                {issue.monthYear}
-              </>
-            )}
+        {latest && (
+          <p className="font-label hidden text-sm font-extrabold tracking-[0.1em] text-paper-dim [text-shadow:0_1px_8px_rgb(0_0_0/0.85)] md:block">
+            <span className="text-paper">Issue {latest.round_number}</span>
+            <span aria-hidden className="mx-2 text-gotm">
+              /
+            </span>
+            {latest.month_year}
           </p>
         )}
         <div className="ml-auto flex items-center gap-2">
@@ -111,22 +92,21 @@ export default async function Home({ searchParams }: HomeProps) {
       </header>
 
       <main className="flex-1">
-        <Hero
-          signInHref={signInHref}
-          profileHref={profileHref}
-          art={leadArt}
-          lead={lead}
-          nrLead={
-            current?.nr_gotm?.games.length
-              ? leadWinner(current.nr_gotm.games)
-              : null
-          }
-        />
+        {lead && latest ? (
+          <LandingCover
+            lead={lead}
+            issueNumber={latest.round_number}
+            signInHref={signInHref}
+            profileHref={profileHref}
+          />
+        ) : (
+          <FlatHero signInHref={signInHref} profileHref={profileHref} />
+        )}
         <HowItWorks />
-        <TwoTracks rounds={rounds} />
+        <TwoTracks winners={winners} />
         <YourShelf />
         <Close signInHref={signInHref} />
-        <LandingMarquee items={marqueeItems(rounds)} />
+        <LandingMarquee items={marqueeItems(winners)} />
       </main>
 
       <footer className="flex items-center gap-3 border-t border-rule px-4 py-5 text-[0.8rem] text-paper-mute sm:px-10">
@@ -138,130 +118,33 @@ export default async function Home({ searchParams }: HomeProps) {
   );
 }
 
-function leadWinner(games: GotmRoundGame[]): GotmRoundGame {
-  return [...games].sort((a, b) => a.game_index - b.game_index)[0];
-}
+// --- Fallback hero -------------------------------------------------------------
 
-// --- Hero --------------------------------------------------------------------
-
-function Hero({
+// Without winners to put on the cover: the pitch beside the two tracks as
+// flat colour plates that describe them.
+function FlatHero({
   signInHref,
   profileHref,
-  art,
-  lead,
-  nrLead,
 }: {
   signInHref: string;
   profileHref: string | null;
-  art: string | null;
-  lead: GotmRoundGame | null;
-  nrLead: GotmRoundGame | null;
 }) {
   return (
-    <section className="relative isolate overflow-hidden">
-      {art && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={art}
-            alt=""
-            className="absolute inset-0 -z-20 size-full object-cover object-[62%_30%]"
-          />
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(11_11_13/0.97)_0%,rgb(11_11_13/0.86)_40%,rgb(11_11_13/0.25)_75%,rgb(11_11_13/0.45)_100%),linear-gradient(0deg,rgb(11_11_13)_0%,transparent_34%),linear-gradient(180deg,rgb(11_11_13/0.7)_0%,transparent_22%)]"
-          />
-        </>
-      )}
-
-      <div className="grid gap-10 px-4 pt-24 pb-12 sm:px-10 sm:pt-28 sm:pb-16 lg:min-h-[52rem] lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-end lg:gap-14">
-        <div className="flex flex-col">
-          <p
-            aria-hidden
-            className="font-headline text-[5.6rem] leading-[0.8] tracking-[-0.01em] sm:text-[8rem] xl:text-[9.75rem]"
-          >
-            The <span className="text-gotm">RPG</span>
-            <br />
-            Club
-          </p>
-          <h1 className="font-headline mt-12 max-w-[15ch] text-[2.75rem] leading-[0.92] text-balance sm:mt-16 sm:text-[4rem]">
-            <span className="sr-only">The RPG Club: </span>
-            An <span className="text-gotm">RPG</span> and a{" "}
-            <span className="text-nr-soft">wildcard</span>, every month.{" "}
-            <span className="text-highlight">Played together.</span>
-          </h1>
-          <p className="mt-5 max-w-[52ch] text-[1.05rem] text-paper-dim">
-            The RPG Club is a Discord community that votes on a Game of the
-            Month and plays it together, with a second pick for everything
-            that isn&apos;t an RPG. This site is the club&apos;s hub: the
-            current round, the ballot, every past winner, and every
-            member&apos;s shelf.
-          </p>
-          <div className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-            <a
-              href={signInHref}
-              className={cn(
-                buttonVariants({ variant: "highlight", size: "lg" }),
-                "h-13 px-6 text-lg",
-              )}
-            >
-              Sign in with Discord
-              <ArrowRight data-icon="inline-end" />
-            </a>
-            {profileHref ? (
-              <Link
-                href={profileHref}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-13 px-6 text-lg",
-                )}
-              >
-                My Profile
-              </Link>
-            ) : (
-              <a
-                href="#how"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-13 px-6 text-lg",
-                )}
-              >
-                How the club works
-              </a>
-            )}
-          </div>
-        </div>
-
-        <TrackPlates lead={lead} nrLead={nrLead} />
+    <section className="grid gap-10 px-4 pt-24 pb-12 sm:px-10 sm:pt-28 sm:pb-16 lg:min-h-[52rem] lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-end lg:gap-14">
+      <LandingPitch signInHref={signInHref} profileHref={profileHref} />
+      <div className="grid gap-2.5">
+        <Plate
+          kind="gotm"
+          name="Game of the Month"
+          blurb="An RPG, nominated and voted in by the club, played through the month."
+        />
+        <Plate
+          kind="nr_gotm"
+          name="Non-RPG Game of the Month"
+          blurb="The wildcard: roguelikes, farming sims, metroidvanias, anything that isn't an RPG."
+        />
       </div>
     </section>
-  );
-}
-
-// The two tracks as cover plates beside the masthead. They describe the
-// tracks; only a signed-in read puts this month's actual winners on them.
-function TrackPlates({
-  lead,
-  nrLead,
-}: {
-  lead: GotmRoundGame | null;
-  nrLead: GotmRoundGame | null;
-}) {
-  return (
-    <div className="relative grid gap-2.5">
-      <Plate
-        kind="gotm"
-        name="Game of the Month"
-        blurb="An RPG, nominated and voted in by the club, played through the month."
-        winner={lead}
-      />
-      <Plate
-        kind="nr_gotm"
-        name="Non-RPG Game of the Month"
-        blurb="The wildcard: roguelikes, farming sims, metroidvanias, anything that isn't an RPG."
-        winner={nrLead}
-      />
-    </div>
   );
 }
 
@@ -269,43 +152,24 @@ function Plate({
   kind,
   name,
   blurb,
-  winner,
 }: {
   kind: VotingCategory;
   name: string;
   blurb: string;
-  winner: GotmRoundGame | null;
 }) {
-  const title = winner?.game?.title;
-  const gotm = kind === "gotm";
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-md px-5 pt-4.5 pb-5 text-white",
-        gotm ? "bg-gotm" : "bg-nr",
+        "rounded-md px-5 pt-4.5 pb-5 text-white",
+        kind === "gotm" ? "bg-gotm" : "bg-nr",
       )}
     >
-      {title && gotm && (
-        <Starburst
-          track="gotm"
-          className="absolute top-3 right-3 size-22"
-          textClassName="text-[0.78rem]"
-        />
-      )}
       <h2 className="font-headline max-w-[11ch] text-[2.4rem] leading-[0.9] sm:text-[2.75rem]">
         {name}
       </h2>
       <p className="mt-2.5 max-w-[34ch] text-[0.92rem] font-medium text-white/85">
         {blurb}
       </p>
-      {title && (
-        <p className="font-label mt-3.5 border-t border-white/30 pt-2.5 text-[0.95rem] font-extrabold tracking-[0.04em]">
-          This month the club plays{" "}
-          <span className="font-headline block pt-1 text-[1.6rem] leading-[0.95] tracking-normal">
-            {title}
-          </span>
-        </p>
-      )}
     </section>
   );
 }
@@ -366,15 +230,18 @@ function HowItWorks() {
   );
 }
 
-function TwoTracks({ rounds }: { rounds: GotmRound[] }) {
-  const shelf = (kind: VotingCategory) =>
-    rounds
-      .flatMap((round) => {
-        const block = kind === "gotm" ? round.gotm : round.nr_gotm;
-        const entry = block?.games.length ? leadWinner(block.games) : null;
-        return entry ? [{ round: round.round_number, entry }] : [];
+function TwoTracks({ winners }: { winners: PublicWinner[] }) {
+  // Each round's lead pick per track, newest first.
+  const shelf = (kind: VotingCategory) => {
+    const seen = new Set<number>();
+    return winners
+      .filter((w) => {
+        if (w.kind !== kind || seen.has(w.round_number)) return false;
+        seen.add(w.round_number);
+        return true;
       })
       .slice(0, SHELF_SIZE);
+  };
 
   return (
     <section
@@ -409,7 +276,7 @@ function Track({
   kind: VotingCategory;
   name: string;
   body: string;
-  picks: { round: number; entry: GotmRoundGame }[];
+  picks: PublicWinner[];
 }) {
   const gotm = kind === "gotm";
   return (
@@ -425,32 +292,32 @@ function Track({
       <p className="mt-2.5 max-w-[52ch] text-paper-dim">{body}</p>
       {picks.length > 0 && (
         <ul className="mt-5 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
-          {picks.map(({ round, entry }, i) => {
-            const title = entry.game?.title ?? "Unknown game";
-            const cover = entry.game?.cover_url ?? null;
-            return (
-              <li key={round} className={cn(i >= 3 && "max-sm:hidden")}>
-                <div
-                  className={cn(
-                    "aspect-[3/4] overflow-hidden border-b-4 bg-ink-3",
-                    gotm ? "border-gotm" : "border-nr",
-                  )}
-                >
-                  {cover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={cover} alt={title} className="size-full object-cover" />
-                  ) : (
-                    <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-paper-mute">
-                      {title}
-                    </span>
-                  )}
-                </div>
-                <p className="font-label mt-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute">
-                  Round {round}
-                </p>
-              </li>
-            );
-          })}
+          {picks.map((pick, i) => (
+            <li key={pick.round_number} className={cn(i >= 3 && "max-sm:hidden")}>
+              <div
+                className={cn(
+                  "aspect-[3/4] overflow-hidden border-b-4 bg-ink-3",
+                  gotm ? "border-gotm" : "border-nr",
+                )}
+              >
+                {pick.cover_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={pick.cover_url}
+                    alt={pick.title}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-paper-mute">
+                    {pick.title}
+                  </span>
+                )}
+              </div>
+              <p className="font-label mt-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                Round {pick.round_number}
+              </p>
+            </li>
+          ))}
         </ul>
       )}
     </div>
@@ -514,15 +381,14 @@ function Close({ signInHref }: { signInHref: string }) {
   );
 }
 
-function marqueeItems(rounds: GotmRound[]): LandingMarqueeItem[] {
-  return rounds.flatMap((round) =>
-    [...(round.gotm?.games ?? [])]
-      .sort((a, b) => a.game_index - b.game_index)
-      .map((entry, i) => ({
-        key: `${round.round_number}-${entry.gamedb_game_id ?? i}`,
-        title: entry.game?.title ?? "Unknown game",
-        coverUrl: entry.game?.cover_url ?? null,
-        roundNumber: round.round_number,
-      })),
-  );
+// Every Game of the Month in the public window, newest first.
+function marqueeItems(winners: PublicWinner[]): LandingMarqueeItem[] {
+  return winners
+    .filter((w) => w.kind === "gotm")
+    .map((w) => ({
+      key: `${w.round_number}-${w.game_id}`,
+      title: w.title,
+      coverUrl: w.cover_url,
+      roundNumber: w.round_number,
+    }));
 }

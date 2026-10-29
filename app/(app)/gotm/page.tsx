@@ -8,7 +8,6 @@ import {
   parseGotmHistoryFilters,
   type GotmHistoryFilters as Filters,
 } from "@/lib/api/gotm-rounds";
-import type { GotmRound } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { GotmCoverWall } from "@/components/issue/gotm-cover-wall";
 import { GotmLedger } from "@/components/issue/gotm-ledger";
@@ -37,24 +36,6 @@ export default async function GotmHistoryPage({
   );
 }
 
-// A round can come back more than once when a track has co-winners (seen
-// with kind=gotm); one row per round is what the page means.
-function uniqueRounds(rounds: GotmRound[]): GotmRound[] {
-  const seen = new Set<number>();
-  return rounds.filter((round) => {
-    if (seen.has(round.round_number)) return false;
-    seen.add(round.round_number);
-    return true;
-  });
-}
-
-// Filtered to one track, the API counts that track's entries, so a round
-// with co-winners counts once per winner: say winners, not rounds.
-function historyCount(kind: Filters["kind"], total: number): string {
-  if (kind === "both") return `${total} ${total === 1 ? "round" : "rounds"}`;
-  return `${total} ${total === 1 ? "winner" : "winners"}`;
-}
-
 async function GotmHistory({ filters }: { filters: Filters }) {
   // The archive read needs auth, so confirm a session first rather than make
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
@@ -62,7 +43,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
   if (!(await getSession())) redirect("/");
 
   const result = await fetchGotmRounds(filters);
-  const rounds = uniqueRounds(result?.rounds ?? []);
+  const rounds = result?.rounds ?? [];
   const { total, totalPages } = paginationOf(
     result?.meta ?? undefined,
     rounds.length,
@@ -72,7 +53,11 @@ async function GotmHistory({ filters }: { filters: Filters }) {
     <div className="space-y-6">
       <PageHeader
         title="GOTM history"
-        count={result && total > 0 ? historyCount(filters.kind, total) : undefined}
+        count={
+          result && total > 0
+            ? `${total} ${total === 1 ? "round" : "rounds"}`
+            : undefined
+        }
         actions={
           <GotmHistoryFilters
             // Uncontrolled fields: remount when the URL changes so they re-sync.

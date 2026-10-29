@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
-// The landing's foot: every Game of the Month the club has played, drifting
-// past as a slow row of covers. It only renders with real winners (the API's
-// rounds need a session, so a logged-out visit gets no marquee rather than
-// stand-in art). Hover or focus pauses it; reduced motion gets a still,
+// The landing's foot: the recent Games of the Month (the public winners
+// window), drifting past as a slow row of covers. It only renders with real
+// winners: when the public read fails, there is no marquee rather than
+// stand-in art. Hover or focus pauses it; reduced motion gets a still,
 // scrollable row instead.
 
 export interface LandingMarqueeItem {
@@ -35,7 +35,7 @@ export function LandingMarquee({ items: winners }: { items: LandingMarqueeItem[]
 
   return (
     <section
-      aria-label="Every Game of the Month"
+      aria-label="Recent Games of the Month"
       className="group/marquee relative overflow-hidden border-t border-rule bg-ink motion-reduce:overflow-x-auto"
     >
       <style href="landing-marquee" precedence="default">

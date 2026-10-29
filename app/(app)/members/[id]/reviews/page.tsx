@@ -12,7 +12,6 @@ import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
 import { memberCounts, memberName } from "@/components/member/member-lists";
-import { withGames } from "@/components/member/member-lists-server";
 
 const PAGE_SIZE = 10;
 
@@ -44,7 +43,7 @@ export default async function MemberReviewsPage({
   let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
-    reviews = await withGames(body.data);
+    reviews = body.data;
     // The server owns the split; PAGE_SIZE is only what we asked for.
     const pagination = paginationOf(body.meta, reviews.length);
     total = pagination.total;

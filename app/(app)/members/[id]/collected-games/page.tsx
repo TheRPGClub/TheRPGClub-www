@@ -18,7 +18,6 @@ import {
 } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { memberCounts, memberName } from "@/components/member/member-lists";
-import { withGames } from "@/components/member/member-lists-server";
 import { ListPagination } from "@/components/list-pagination";
 import {
   CollectionPlatformStrip,
@@ -73,7 +72,7 @@ export default async function CollectedGamesPage({
   let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<GameCollection> = await listRes.json();
-    entries = await withGames(body.data);
+    entries = body.data;
     // The server owns the split; PAGE_SIZE is only what we asked for.
     const pagination = paginationOf(body.meta, entries.length);
     total = pagination.total;
