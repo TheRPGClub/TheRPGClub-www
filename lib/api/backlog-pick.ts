@@ -2,8 +2,8 @@ import type { BacklogPickSource } from "./types";
 
 // The pick page is driven entirely by its URL, so a reroll is just a link and
 // any pick can be shared or reloaded. These helpers own that URL: they read the
-// raw search params into clean filters (dropping anything the API would 400
-// on) and write them back out, for both the API query and the page's links.
+// raw search params into clean filters (dropping anything the API would
+// reject with 422 `invalid_*`) and write them back out, for both the API query and the page's links.
 
 export const PICK_SOURCES: ReadonlyArray<{ value: BacklogPickSource; label: string }> = [
   { value: "backlog", label: "Backlog" },
