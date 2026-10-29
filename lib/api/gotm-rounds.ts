@@ -4,10 +4,11 @@ import type { GotmRound, GotmRoundsMeta } from "./types";
 // Server-side reads for GOTM history (`/gotm_rounds`) and the current round
 // (`/gotm_rounds/current`), plus the archive page's filter parsing.
 //
-// Both endpoints require auth and Next keys the Data Cache on URL alone, so
-// callers must have confirmed a session BEFORE calling these: otherwise an
-// unauthenticated render could cache a 401 for every member (see the note in
-// app/(app)/layout.tsx). The body is the same club-wide history for everyone.
+// Both endpoints require auth. Next's Data Cache key includes the request
+// headers (and so the member's Authorization), so cached reads are per member
+// and a 401 is never shared. Callers still confirm a session first, so a
+// logged-out render doesn't waste an unauthenticated fetch. The body is the
+// same club-wide history for everyone.
 
 export const GOTM_REVALIDATE_SECONDS = 300;
 const GOTM_FETCH: RequestInit = {

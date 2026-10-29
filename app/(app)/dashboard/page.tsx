@@ -15,8 +15,9 @@ export default function DashboardPage() {
 }
 
 async function DashboardContent() {
-  // Session first: the current-round read is cached by URL and needs auth, so
-  // it must not run for a logged-out render (see lib/api/gotm-rounds.ts).
+  // Session first: the current-round read needs auth, so a logged-out render
+  // skips it instead of wasting a fetch that can only 401 (see
+  // lib/api/gotm-rounds.ts).
   const session = await getSession();
   const round = session ? await fetchCurrentGotmRound() : null;
 
