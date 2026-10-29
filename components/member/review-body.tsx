@@ -27,7 +27,7 @@ import {
 
 import { reviewBodyValue } from "@/lib/api/review-body";
 import type { ReviewBody } from "@/lib/api/types";
-import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
+import type { ReviewAccent } from "@/lib/reviews/accent";
 import { BaseSpoilerPlugin, SPOILER_KEY } from "@/lib/reviews/spoiler-plugin";
 import { cn } from "@/lib/utils";
 import { ReviewSpoiler } from "./review-spoiler";
@@ -59,46 +59,23 @@ const staticPlugins = [
   BaseListItemContentPlugin,
 ];
 
-// The literal `first-letter:`/`marker:` classes a drop cap and a list marker
-// need, per accent. Tailwind finds utilities by scanning source text for
-// whole class strings — a template built from `style.readout` at render time
-// wouldn't be in that text, so each one is spelled out here instead.
-const DROP_CAP: Record<ReviewAccent, string> = {
-  brand: "first-letter:text-brand-200",
-  purple: "first-letter:text-purple-200",
-  neutral: "first-letter:text-foreground",
-};
-
-const LIST_MARKER: Record<ReviewAccent, string> = {
-  brand: "marker:text-brand-300",
-  purple: "marker:text-purple-300",
-  neutral: "marker:text-muted-foreground",
-};
-
+// Article typography follows the Monthly Issue: prose in Barlow at a reading
+// measure, headings in the condensed label voice, set in caps. The accent no
+// longer tints the prose — track colour is reserved for GOTM and NR-GOTM
+// marks — so `accent` is accepted for compatibility and otherwise unused.
+//
 // Paragraphs keep `whitespace-pre-wrap` because a legacy plain-text review is
 // normalized into paragraphs that still carry their single newlines — see
 // `reviewBodyValue`. Without it, those reviews would reflow.
-//
-// `article` is the review's own page: a looser line-height meant for a
-// sitting, and its opening paragraph — path `[0]`, the static renderer
-// always supplies one — gets a drop cap. The numbers end at the scorecard
-// above it, and this is where the writing actually starts.
-function makeParagraph(article: boolean, accent: ReviewAccent) {
+function makeParagraph(article: boolean) {
   return function Paragraph(props: SlateElementProps) {
-    const isOpening =
-      article && props.path?.length === 1 && props.path[0] === 0;
-
     return (
       <SlateElement
         {...props}
         as="p"
         className={cn(
           "mt-[0.85em] whitespace-pre-wrap first:mt-0",
-          article && "text-[1.0625rem] leading-[1.8]",
-          isOpening && [
-            "first-letter:float-left first-letter:mt-1 first-letter:mr-2.5 first-letter:text-[3.75rem] first-letter:leading-[0.8] first-letter:font-bold",
-            DROP_CAP[accent],
-          ],
+          article && "mt-[1.1em] text-[1.09rem] leading-[1.8] text-paper/90",
         )}
       >
         {props.children}
@@ -108,22 +85,19 @@ function makeParagraph(article: boolean, accent: ReviewAccent) {
 }
 
 // Italics are a mark the writer applies themselves (the toolbar's Italic
-// button) — a heading doesn't get to assume that voice for them. What a
-// heading gets automatically is the review's own hue: the same accent its
-// score and scorecard already wear.
-function makeHeading(level: 1 | 2 | 3, article: boolean, accent: ReviewAccent) {
+// button) — a heading doesn't get to assume that voice for them.
+function makeHeading(level: 1 | 2 | 3, article: boolean) {
   const tag = `h${level}` as const;
   const compact = {
-    1: "mt-5 mb-1.5 text-lg font-semibold",
-    2: "mt-4 mb-1 text-base font-semibold",
-    3: "mt-3 mb-1 text-sm font-semibold",
+    1: "mt-4 mb-1 text-[1.05rem]",
+    2: "mt-3 mb-1 text-base",
+    3: "mt-3 mb-1 text-[0.95rem]",
   }[level];
   const styled = {
-    1: "mt-9 mb-2 text-[1.75rem] leading-tight font-semibold",
-    2: "mt-7 mb-1.5 text-xl leading-snug font-semibold",
-    3: "mt-6 mb-1 text-lg leading-snug font-semibold",
+    1: "mt-[1.6em] mb-[0.5em] text-[1.75rem]",
+    2: "mt-[1.6em] mb-[0.5em] text-[1.55rem]",
+    3: "mt-[1.5em] mb-[0.4em] text-[1.25rem]",
   }[level];
-  const style = reviewAccents[accent];
 
   return function Heading(props: SlateElementProps) {
     return (
@@ -131,7 +105,8 @@ function makeHeading(level: 1 | 2 | 3, article: boolean, accent: ReviewAccent) {
         {...props}
         as={tag}
         className={cn(
-          article ? [styled, style.readout] : compact,
+          "font-label leading-[1.1] font-extrabold tracking-[0.02em] text-paper",
+          article ? styled : compact,
           "first:mt-0",
         )}
       >
@@ -141,18 +116,18 @@ function makeHeading(level: 1 | 2 | 3, article: boolean, accent: ReviewAccent) {
   };
 }
 
-function makeBlockquote(article: boolean, accent: ReviewAccent) {
+// In an article a blockquote is the writer's own pull quote, set big in the
+// headline voice. In a card it stays a quiet indented aside.
+function makeBlockquote(article: boolean) {
   return function Blockquote(props: SlateElementProps) {
-    const style = reviewAccents[accent];
     return (
       <SlateElement
         {...props}
         as="blockquote"
         className={cn(
-          "border-l-2",
           article
-            ? ["my-6 pl-5 text-xl leading-snug italic", style.quote]
-            : "my-2 border-muted-foreground/30 pl-3 text-muted-foreground italic",
+            ? "font-headline my-[1.4em] border-y-2 border-paper py-4 text-[2rem] leading-[1.02] text-paper [&_p]:m-0 [&_p]:text-[length:inherit] [&_p]:leading-[inherit] [&_p]:text-paper"
+            : "my-2 border-l border-rule-strong pl-3 text-paper-mute italic",
         )}
       >
         {props.children}
@@ -161,15 +136,15 @@ function makeBlockquote(article: boolean, accent: ReviewAccent) {
   };
 }
 
-function makeBulletedList(article: boolean, accent: ReviewAccent) {
+function makeBulletedList(article: boolean) {
   return function BulletedList(props: SlateElementProps) {
     return (
       <SlateElement
         {...props}
         as="ul"
         className={cn(
-          "my-2 ml-5 list-disc [&_ul]:my-0 [&_ul]:list-[circle] [&_ol]:my-0",
-          article && LIST_MARKER[accent],
+          "my-2 ml-5 list-disc marker:text-paper-mute [&_ul]:my-0 [&_ul]:list-[circle] [&_ol]:my-0",
+          article && "my-[1em] text-[1.09rem] leading-[1.8] text-paper/90",
         )}
       >
         {props.children}
@@ -178,15 +153,15 @@ function makeBulletedList(article: boolean, accent: ReviewAccent) {
   };
 }
 
-function makeNumberedList(article: boolean, accent: ReviewAccent) {
+function makeNumberedList(article: boolean) {
   return function NumberedList(props: SlateElementProps) {
     return (
       <SlateElement
         {...props}
         as="ol"
         className={cn(
-          "my-2 ml-5 list-decimal [&_ol]:my-0 [&_ol]:list-[lower-alpha] [&_ul]:my-0",
-          article && LIST_MARKER[accent],
+          "my-2 ml-5 list-decimal marker:text-paper-mute [&_ol]:my-0 [&_ol]:list-[lower-alpha] [&_ul]:my-0",
+          article && "my-[1em] text-[1.09rem] leading-[1.8] text-paper/90",
         )}
       >
         {props.children}
@@ -232,7 +207,7 @@ function Link(props: SlateElementProps) {
           ? { target: "_blank", rel: "noopener noreferrer nofollow ugc" }
           : {}),
       }}
-      className="underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
+      className="underline decoration-paper-mute/60 underline-offset-2 hover:text-highlight hover:decoration-highlight"
     >
       {props.children}
     </SlateElement>
@@ -252,10 +227,9 @@ export interface ReviewBodyContentProps {
   className?: string;
   // `compact` is every place a review is quoted alongside other UI: the
   // listing card's excerpt, the composer's own preview. `article` is the
-  // review's own page — the one place its writing gets to look like writing,
-  // in the serif and at the measure the rest of the site never uses.
+  // review's own page and the reviews list's reader, set at a reading measure.
   variant?: "compact" | "article";
-  // Only read in `article` variant, for the drop cap and pull-quotes.
+  // Kept for callers that still pass it; the article no longer tints by track.
   accent?: ReviewAccent;
 }
 
@@ -268,7 +242,6 @@ export function ReviewBodyContent({
   body,
   className,
   variant = "compact",
-  accent = "neutral",
 }: ReviewBodyContentProps) {
   const value = reviewBodyValue(body);
   const article = variant === "article";
@@ -276,13 +249,13 @@ export function ReviewBodyContent({
   const editor = createStaticEditor({
     plugins: staticPlugins,
     components: {
-      [KEYS.p]: makeParagraph(article, accent),
-      [KEYS.h1]: makeHeading(1, article, accent),
-      [KEYS.h2]: makeHeading(2, article, accent),
-      [KEYS.h3]: makeHeading(3, article, accent),
-      [KEYS.blockquote]: makeBlockquote(article, accent),
-      [KEYS.ulClassic]: makeBulletedList(article, accent),
-      [KEYS.olClassic]: makeNumberedList(article, accent),
+      [KEYS.p]: makeParagraph(article),
+      [KEYS.h1]: makeHeading(1, article),
+      [KEYS.h2]: makeHeading(2, article),
+      [KEYS.h3]: makeHeading(3, article),
+      [KEYS.blockquote]: makeBlockquote(article),
+      [KEYS.ulClassic]: makeBulletedList(article),
+      [KEYS.olClassic]: makeNumberedList(article),
       [KEYS.li]: ListItem,
       [KEYS.lic]: ListItemContent,
       [KEYS.link]: Link,

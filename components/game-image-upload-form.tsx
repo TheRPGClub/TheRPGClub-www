@@ -26,9 +26,11 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
 
   return (
     <form action={formAction} className="flex flex-wrap items-center gap-2">
+      {/* Admin-only: the API refuses uploads from anyone else. */}
       <select
         name="kind"
-        className="h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        aria-label="Image kind"
+        className="h-9 rounded-sm border border-rule-strong bg-ink-2 px-2 text-sm text-paper outline-none focus-visible:border-paper-mute focus-visible:ring-3 focus-visible:ring-ring/50"
         defaultValue="cover"
       >
         <option value="cover">Cover</option>
@@ -37,7 +39,8 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
       </select>
       <select
         name="is_primary"
-        className="h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        aria-label="Primary or extra image"
+        className="h-9 rounded-sm border border-rule-strong bg-ink-2 px-2 text-sm text-paper outline-none focus-visible:border-paper-mute focus-visible:ring-3 focus-visible:ring-ring/50"
         defaultValue="true"
       >
         <option value="true">Primary</option>
@@ -47,9 +50,10 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
         type="file"
         name="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
+        aria-label="Image file"
         className="max-w-64"
       />
-      <Button type="submit" disabled={pending} size="sm">
+      <Button type="submit" variant="outline" disabled={pending}>
         <Upload />
         {pending ? "Uploading" : "Upload"}
       </Button>
@@ -58,7 +62,7 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
           className={
             state.status === "error"
               ? "text-sm text-destructive"
-              : "text-sm text-muted-foreground"
+              : "text-sm text-paper-dim"
           }
         >
           {state.message}

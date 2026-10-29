@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Boxes, FileUp } from "lucide-react";
+import { FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -11,8 +11,14 @@ import type {
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { MemberGameCard } from "@/components/member/member-game-card";
+import {
+  MemberGameCard,
+  MemberListEmpty,
+  memberGridClass,
+} from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
+import { memberCounts, memberName } from "@/components/member/member-lists";
+import { withGames } from "@/components/member/member-lists-server";
 import { ListPagination } from "@/components/list-pagination";
 import {
   CollectionPlatformStrip,
@@ -24,6 +30,8 @@ import { importsHubHref } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
+// The collection: owned games, filtered by the platform strip, each with how
+// it's owned.
 export default async function CollectedGamesPage({
   params,
   searchParams,
@@ -57,7 +65,7 @@ export default async function CollectedGamesPage({
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
   const isSelf = session?.principal.discord_id === id;
 
   let entries: GameCollection[] = [];
@@ -65,7 +73,7 @@ export default async function CollectedGamesPage({
   let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<GameCollection> = await listRes.json();
-    entries = body.data;
+    entries = await withGames(body.data);
     // The server owns the split; PAGE_SIZE is only what we asked for.
     const pagination = paginationOf(body.meta, entries.length);
     total = pagination.total;
@@ -85,13 +93,15 @@ export default async function CollectedGamesPage({
       displayName={displayName}
       title="Collection"
       count={total}
+      current="collection"
+      counts={memberCounts(user)}
       action={
         isSelf && (
           <Link
             href={importsHubHref(id)}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            className={buttonVariants({ variant: "outline" })}
           >
-            <FileUp /> Import
+            <FileUp data-icon="inline-start" /> Import
           </Link>
         )
       }
@@ -105,28 +115,24 @@ export default async function CollectedGamesPage({
       )}
 
       {entries.length === 0 ? (
-        <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
+        <MemberListEmpty>
           {platformId
             ? "No owned games on this platform."
             : "No owned games tracked yet."}
-        </p>
+        </MemberListEmpty>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {entries.map((entry) => (
-            <MemberGameCard
-              key={entry.entry_id}
-              game={entry.game}
-              platform={entry.platform}
-              note={entry.note}
-              meta={
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Boxes className="size-3" />
-                  {entry.ownership_type ? ` ${entry.ownership_type}` : " Owned"}
-                </span>
-              }
-            />
+        <ul className={memberGridClass}>
+          {entries.map((entry, i) => (
+            <li key={entry.entry_id ?? entry.collection_id ?? i}>
+              <MemberGameCard
+                game={entry.game}
+                platform={entry.platform}
+                note={entry.note}
+                meta={entry.ownership_type || "Owned"}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       <ListPagination

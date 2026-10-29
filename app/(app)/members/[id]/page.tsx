@@ -1,60 +1,53 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  BookMarked,
-  Boxes,
-  GitCompareArrows,
-  Pencil,
-  Star,
-  Trophy,
-  Gamepad2,
-} from "lucide-react";
+import { ArrowRight, Dices, GitCompareArrows } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
-import { formatCompletedMonth } from "@/lib/completions";
 import type {
   ApiCollection,
   ApiSingle,
+  GameCollection,
   GameCompletion,
   Review,
+  UserBacklog,
   UserFavorite,
   UserNowPlaying,
   UserProfile,
   UserSocial,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { SocialIcon } from "@/components/social-icon";
-import { MemberGameSection } from "@/components/member/member-game-section";
-import { MemberGameCard } from "@/components/member/member-game-card";
-import { MemberReferenceRow } from "@/components/member/member-reference-row";
-import { MemberReviewList } from "@/components/member/member-review-list";
+import { importsHubHref } from "@/lib/imports/kinds";
+import { MemberBanner } from "@/components/issue/member-banner";
+import { platformShort } from "@/components/issue/member-cover";
+import { NowPlayingBooks } from "@/components/issue/member-now-playing";
+import { MemberReviewRows } from "@/components/issue/member-review-rows";
+import {
+  MemberShelf,
+  PodiumSpines,
+  Spine,
+} from "@/components/issue/member-shelf";
+import {
+  SectionHeading,
+  headingLinkClass,
+} from "@/components/issue/page-header";
+import {
+  completionMonth,
+  memberCounts,
+  memberListHref,
+  memberName,
+  monthShort,
+} from "@/components/member/member-lists";
+import { withGames } from "@/components/member/member-lists-server";
 
-const API_BASE = process.env.API_URL ?? "http://localhost:3000";
-const PREVIEW_LIMIT = 5;
+// A member's page reads as one idea: what they're playing now is open on the
+// desk (face-on key art), everything else is closed books on a bookcase, one
+// shelf per list, and their latest reviews follow. Read-only; managing the
+// lists lives on the edit page.
 
-const roleColors: Record<string, string> = {
-  red: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  orange:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  green: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  purple:
-    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  zinc: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-};
-
-function Badge({ label, color }: { label: string; color: string }) {
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-medium ${roleColors[color] ?? roleColors.zinc}`}
-    >
-      {label}
-    </span>
-  );
-}
+const SHELF_LIMIT = 12;
+// Phones show this many spines per shelf; the rest are a tap on the list.
+const MOBILE_SPINES = 6;
 
 async function fetchPreview<T>(
   path: string,
@@ -63,7 +56,10 @@ async function fetchPreview<T>(
     const res = await apiFetch(path, { cache: "no-store" });
     if (!res.ok) return { data: [], total: 0 };
     const body: ApiCollection<T> = await res.json();
-    return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
+    return {
+      data: body.data,
+      total: paginationOf(body.meta, body.data.length).total,
+    };
   } catch {
     return { data: [], total: 0 };
   }
@@ -76,10 +72,8 @@ export default async function MemberPage({
 }) {
   const { id } = await params;
 
-  // We fan out to each list endpoint instead of relying on the aggregated
-  // `user.previews` slice because that slice doesn't always include the joined
-  // game data, leading to missing cover images in the preview grid.
-  const previewQs = `?per=${PREVIEW_LIMIT}`;
+  // Each list is read on its own rather than from the profile's `previews`
+  // slice, which doesn't always carry the joined game (and so the art).
   const [
     userRes,
     session,
@@ -92,278 +86,246 @@ export default async function MemberPage({
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
-    fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/now_playing${previewQs}`),
-    fetchPreview<UserFavorite>(`/api/v1/users/${id}/favorites${previewQs}`),
-    fetchPreview<GameCompletion>(`/api/v1/users/${id}/completions${previewQs}`),
-    fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/backlog${previewQs}`),
-    fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/collections${previewQs}`),
-    fetchPreview<Review>(`/api/v1/users/${id}/reviews${previewQs}`),
+    fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/now_playing?per=6`),
+    fetchPreview<UserFavorite>(`/api/v1/users/${id}/favorites?per=${SHELF_LIMIT}`),
+    fetchPreview<GameCompletion>(`/api/v1/users/${id}/completions?per=${SHELF_LIMIT}`),
+    fetchPreview<UserBacklog>(`/api/v1/users/${id}/backlog?per=${SHELF_LIMIT}`),
+    fetchPreview<GameCollection>(`/api/v1/users/${id}/collections?per=${SHELF_LIMIT}`),
+    fetchPreview<Review>(`/api/v1/users/${id}/reviews?per=3`),
   ]);
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<UserProfile> = await userRes.json();
+  const [collection, reviews] = await Promise.all([
+    withGames(collectionPreview.data),
+    withGames(reviewsPreview.data),
+  ]);
 
-  const displayName = user.global_name ?? user.username ?? user.user_id;
-  const initials = displayName.slice(0, 2).toUpperCase();
-  const membership = user.membership;
+  const displayName = memberName(user);
   const isSelf = session?.principal.discord_id === user.user_id;
   const socials: UserSocial[] = user.socials ?? [];
-  // Backend ships `counts` on the aggregated user payload; fall back to the
-  // totals from the per-list fetches if it's missing.
-  const aggregatedCounts = user.counts;
+  // The profile payload's counts, else the per-list totals.
+  const aggregated = memberCounts(user);
   const counts = {
-    now_playing: aggregatedCounts?.now_playing ?? nowPlayingPreview.total,
-    favorites: aggregatedCounts?.favorites ?? favoritesPreview.total,
-    completed: aggregatedCounts?.completed ?? completedPreview.total,
-    backlog: aggregatedCounts?.backlog ?? backlogPreview.total,
-    collection: aggregatedCounts?.collection ?? collectionPreview.total,
-    reviews: aggregatedCounts?.reviews ?? reviewsPreview.total,
+    now_playing: aggregated.now_playing ?? nowPlayingPreview.total,
+    favorites: aggregated.favorites ?? favoritesPreview.total,
+    completed: aggregated.completed ?? completedPreview.total,
+    reviews: aggregated.reviews ?? reviewsPreview.total,
+    backlog: aggregated.backlog ?? backlogPreview.total,
+    collection: aggregated.collection ?? collectionPreview.total,
   };
   const nowPlaying = nowPlayingPreview.data;
   const favorites = favoritesPreview.data;
-  const reviewPreviews = reviewsPreview.data;
-  const completed = completedPreview.data;
-
   const memberHref = `/members/${user.user_id}`;
+  const listHref = (key: Parameters<typeof memberListHref>[1]) =>
+    memberListHref(user.user_id, key);
+
+  // The banner wears the member's own pick: their #1 favorite's art, else
+  // what they're playing. No pick, no art.
+  const bannerGame =
+    [favorites[0]?.game, ...nowPlaying.map((e) => e.game)].find(
+      (g) => g?.art_url,
+    ) ?? null;
+
+  const mobileCut = (i: number) => (i >= MOBILE_SPINES ? "max-sm:hidden" : "");
+  const more = (key: Parameters<typeof memberListHref>[1], total: number, shown: number) => ({
+    count: total - shown,
+    href: listHref(key),
+  });
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8">
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link
-          href="/members"
-          className="hover:text-foreground transition-colors"
-        >
+    <div className="mx-auto w-full max-w-[90rem] space-y-10">
+      <nav
+        aria-label="Breadcrumb"
+        className="font-label flex items-center gap-2 text-sm font-bold tracking-[0.08em] text-paper-mute"
+      >
+        <Link href="/members" className="transition-colors hover:text-paper">
           Members
         </Link>
-        <span>›</span>
-        <span className="text-foreground">{displayName}</span>
-      </div>
+        <span aria-hidden className="text-rule-strong">
+          /
+        </span>
+        <span aria-current="page" className="truncate text-paper">
+          {displayName}
+        </span>
+      </nav>
 
-      <div className="relative flex flex-col items-center gap-6 rounded-2xl border bg-card p-8 shadow-sm">
-        {isSelf && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute right-4 top-4"
-            nativeButton={false}
-            render={<Link href={`${memberHref}/edit`} />}
-          >
-            <Pencil />
-            Edit
-          </Button>
-        )}
+      <MemberBanner
+        userId={user.user_id}
+        displayName={displayName}
+        username={user.username}
+        joinedAt={user.server_joined_at}
+        membership={user.membership}
+        socials={socials}
+        art={bannerGame?.art_url ?? null}
+        owner={
+          isSelf
+            ? {
+                editHref: `${memberHref}/edit`,
+                importsHref: importsHubHref(user.user_id),
+              }
+            : null
+        }
+      />
 
-        <Avatar size="lg" className="size-24">
-          <AvatarImage
-            src={`${API_BASE}/api/v1/users/${user.user_id}/avatar`}
-            alt={displayName}
-          />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-
-        <div className="text-center">
-          <p className="text-xl font-semibold">{displayName}</p>
-          {user.global_name &&
-            user.username &&
-            user.global_name !== user.username && (
-              <p className="text-sm text-muted-foreground">@{user.username}</p>
-            )}
-        </div>
-
-        {membership && (
-          <div className="flex flex-wrap justify-center gap-2">
-            {membership.admin && <Badge label="Admin" color="red" />}
-            {membership.dev && <Badge label="Dev" color="purple" />}
-            {membership.moderator && (
-              <Badge label="Moderator" color="orange" />
-            )}
-            {membership.regular && <Badge label="Regular" color="blue" />}
-            {membership.member && <Badge label="Member" color="green" />}
-            {membership.longstanding && (
-              <Badge label="Longstanding" color="green" />
-            )}
-            {membership.newcomer && <Badge label="Newcomer" color="zinc" />}
-            {!membership.active && <Badge label="Inactive" color="zinc" />}
-          </div>
-        )}
-
-        {socials.length > 0 && (
-          <dl className="grid w-full grid-cols-1 gap-x-6 gap-y-3 border-t pt-6 sm:grid-cols-2">
-            {socials.map((social) => (
-              <div key={social.id} className="flex items-start gap-3">
-                <SocialIcon
-                  label={social.social_platform?.label}
-                  className="mt-0.5 shrink-0 text-muted-foreground"
-                />
-                <div className="flex min-w-0 flex-col">
-                  <dt className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                    {social.social_platform?.label ?? "Unknown"}
-                  </dt>
-                  <dd className="text-sm">
-                    {social.url ? (
-                      <a
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="break-all underline-offset-2 hover:underline"
-                      >
-                        {social.display_text}
-                      </a>
-                    ) : (
-                      <span className="break-all">{social.display_text}</span>
-                    )}
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-        )}
-      </div>
-
-      {/* Order per issue: Now Playing → Favorites → Reviews → Completed,
-          then Backlog and Collection as reference rows. Profile is
-          read-only — all management lives on the edit page. */}
-
-      <MemberGameSection
-        title="Now Playing"
-        count={counts.now_playing}
-        seeAllHref={`${memberHref}/now-playing-games`}
-        emptyMessage="Nothing in progress right now."
-      >
-        {nowPlaying.map((entry, i) => (
-          <NowPlayingCard
-            key={resolveEntryId("now_playing", entry) ?? i}
-            entry={entry}
-          />
-        ))}
-      </MemberGameSection>
-
-      <MemberGameSection
-        title="Favorites"
-        count={counts.favorites}
-        seeAllHref={`${memberHref}/favorite-games`}
-        emptyMessage="No favorites picked yet."
-      >
-        {favorites.map((entry, i) => (
-          <FavoriteCard
-            key={resolveEntryId("favorite", entry) ?? i}
-            entry={entry}
-          />
-        ))}
-      </MemberGameSection>
-
-      <section className="space-y-3">
-        <header className="flex items-end justify-between gap-3">
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-lg font-semibold tracking-tight">Reviews</h2>
-            <span className="text-sm text-muted-foreground tabular-nums">
-              {counts.reviews}
-            </span>
-          </div>
-          {counts.reviews > 0 && (
-            <Link
-              href={`${memberHref}/reviews`}
-              className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              See all →
-            </Link>
-          )}
-        </header>
-        <MemberReviewList
-          reviews={reviewPreviews}
-          hideUser
-          emptyMessage="No reviews yet."
+      <section aria-labelledby="now-playing" className="space-y-4.5">
+        <SectionHeading
+          title={<span id="now-playing">Now playing</span>}
+          count={counts.now_playing}
+          action={
+            counts.now_playing > 0 && (
+              <Link href={listHref("now_playing")} className={headingLinkClass}>
+                See all
+                <ArrowRight aria-hidden />
+              </Link>
+            )
+          }
         />
+        {nowPlaying.length > 0 ? (
+          <NowPlayingBooks entries={nowPlaying} />
+        ) : (
+          <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            Nothing in progress right now.
+          </p>
+        )}
       </section>
 
-      <MemberGameSection
-        title="Completed"
-        count={counts.completed}
-        seeAllHref={`${memberHref}/completed-games`}
-        emptyMessage="No completed games yet."
-        action={
-          session && !isSelf ? (
-            <Button
-              variant="ghost"
-              size="xs"
-              nativeButton={false}
-              render={<Link href={`${memberHref}/completed-games/compare`} />}
-            >
-              <GitCompareArrows />
-              Compare completions
-            </Button>
-          ) : undefined
-        }
-      >
-        {completed.map((entry, i) => (
-          <CompletedCard
-            key={resolveEntryId("completed", entry) ?? i}
-            entry={entry}
+      <div className="border-t-2 border-paper">
+        <MemberShelf
+          label="Favorites"
+          count={counts.favorites}
+          blurb={`Ranked by ${displayName}.`}
+          links={[{ href: listHref("favorites"), label: "Open list" }]}
+          more={more("favorites", counts.favorites, favorites.length)}
+          empty="No favorites picked yet."
+        >
+          <PodiumSpines
+            items={favorites.slice(0, 3).map((entry) => ({
+              href: entry.game ? `/games/${entry.gamedb_game_id}` : null,
+              game: entry.game,
+              title: entry.game?.title ?? "Unknown game",
+            }))}
           />
-        ))}
-      </MemberGameSection>
+          {favorites.slice(3).map((entry, i) => (
+            <Spine
+              key={resolveEntryId("favorite", entry) ?? i}
+              href={entry.game ? `/games/${entry.gamedb_game_id}` : null}
+              game={entry.game}
+              title={entry.game?.title ?? "Unknown game"}
+              numeral={i + 4}
+              height={206}
+              className={mobileCut(i + 3)}
+            />
+          ))}
+        </MemberShelf>
 
-      <MemberReferenceRow
-        title="Backlog"
-        count={counts.backlog}
-        href={`${memberHref}/backlogged-games`}
-        Icon={BookMarked}
-        emptyMessage="Nothing queued up."
-      />
-      <MemberReferenceRow
-        title="Collection"
-        count={counts.collection}
-        href={`${memberHref}/collected-games`}
-        Icon={Boxes}
-        emptyMessage="No owned games tracked."
-      />
+        <MemberShelf
+          label="Completed"
+          count={counts.completed}
+          blurb="Newest on the left."
+          links={[
+            { href: listHref("completed"), label: "Open list" },
+            ...(session && !isSelf
+              ? [
+                  {
+                    href: `${memberHref}/completed-games/compare`,
+                    label: "Compare",
+                    icon: <GitCompareArrows aria-hidden />,
+                  },
+                ]
+              : []),
+          ]}
+          more={more("completed", counts.completed, completedPreview.data.length)}
+          empty="No completed games yet."
+        >
+          {completedPreview.data.map((entry, i) => {
+            const month = completionMonth(entry.completed_at);
+            return (
+              <Spine
+                key={resolveEntryId("completed", entry) ?? i}
+                href={entry.game ? `/games/${entry.gamedb_game_id}` : null}
+                game={entry.game}
+                title={entry.game?.title ?? "Unknown game"}
+                tag={month ? `${monthShort(month)} ${month.slice(2, 4)}` : null}
+                className={mobileCut(i)}
+              />
+            );
+          })}
+        </MemberShelf>
+
+        <MemberShelf
+          label="Backlog"
+          count={counts.backlog}
+          blurb="Queued up."
+          links={[
+            { href: listHref("backlog"), label: "Open list" },
+            ...(isSelf
+              ? [
+                  {
+                    href: `${memberHref}/backlogged-games/pick`,
+                    label: "Pick one at random",
+                    icon: <Dices aria-hidden />,
+                  },
+                ]
+              : []),
+          ]}
+          more={more("backlog", counts.backlog, backlogPreview.data.length)}
+          empty="Nothing queued up."
+        >
+          {backlogPreview.data.map((entry, i) => (
+            <Spine
+              key={resolveEntryId("backlog", entry) ?? i}
+              href={entry.game ? `/games/${entry.gamedb_game_id}` : null}
+              game={entry.game}
+              title={entry.game?.title ?? "Unknown game"}
+              tag={platformShort(entry.platform)}
+              className={mobileCut(i)}
+            />
+          ))}
+        </MemberShelf>
+
+        <MemberShelf
+          label="Collection"
+          count={counts.collection}
+          blurb="Owned, by platform."
+          links={[{ href: listHref("collection"), label: "Open list" }]}
+          more={more("collection", counts.collection, collection.length)}
+          empty="No owned games tracked."
+        >
+          {collection.map((entry, i) => (
+            <Spine
+              key={resolveEntryId("collection", entry) ?? i}
+              href={entry.game ? `/games/${entry.gamedb_game_id}` : null}
+              game={entry.game}
+              title={entry.game?.title ?? "Unknown game"}
+              tag={platformShort(entry.platform)}
+              className={mobileCut(i)}
+            />
+          ))}
+        </MemberShelf>
+      </div>
+
+      <section aria-labelledby="reviews" className="space-y-1">
+        <SectionHeading
+          title={<span id="reviews">Reviews</span>}
+          count={counts.reviews}
+          action={
+            counts.reviews > 0 && (
+              <Link href={listHref("reviews")} className={headingLinkClass}>
+                See all
+                <ArrowRight aria-hidden />
+              </Link>
+            )
+          }
+        />
+        {reviews.length > 0 ? (
+          <MemberReviewRows reviews={reviews} />
+        ) : (
+          <p className="mt-4 rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            No reviews yet.
+          </p>
+        )}
+      </section>
     </div>
   );
 }
-
-function NowPlayingCard({ entry }: { entry: UserNowPlaying }) {
-  return (
-    <MemberGameCard
-      game={entry.game}
-      platform={entry.platform}
-      note={entry.note}
-      meta={
-        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-          <Gamepad2 className="size-3" /> Playing
-        </span>
-      }
-    />
-  );
-}
-
-function FavoriteCard({ entry }: { entry: UserFavorite }) {
-  return (
-    <MemberGameCard
-      game={entry.game}
-      platform={entry.platform}
-      note={entry.note}
-      meta={
-        <span className="inline-flex items-center gap-1 text-xs text-amber-500">
-          <Star className="size-3 fill-amber-400 text-amber-400" /> Favorite
-        </span>
-      }
-    />
-  );
-}
-
-function CompletedCard({ entry }: { entry: GameCompletion }) {
-  const completed = formatCompletedMonth(entry.completed_at);
-  return (
-    <MemberGameCard
-      game={entry.game}
-      platform={entry.platform}
-      note={entry.note}
-      meta={
-        <span className="inline-flex items-center gap-1 text-xs text-brand-500">
-          <Trophy className="size-3" /> {completed ?? "Completed"}
-        </span>
-      }
-    />
-  );
-}
-

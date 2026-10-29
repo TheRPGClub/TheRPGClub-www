@@ -1,14 +1,15 @@
 import { cn } from "@/lib/utils";
 
 // The diagonal banner across a card's top-right corner. It started life on the
-// game page marking GOTM / NR-GOTM winners; the voting board reuses it to mark
+// game page marking GOTM / NR-GOTM winners (the starburst does that job
+// there now); the voting board reuses it to mark
 // the viewer's own nomination, so the two places read as the same device.
 //
 // It only works inside a positioned, `overflow-hidden` container — the banner
 // is wider than the corner it crosses and relies on the card clipping it.
 const ribbonAccents = {
-  brand: "from-brand-500 to-brand-600 text-brand-50 ring-brand-700/40",
-  purple: "from-purple-500 to-purple-600 text-purple-50 ring-purple-700/40",
+  brand: "bg-gotm text-white",
+  purple: "bg-nr text-white",
 } as const;
 
 export type RibbonAccent = keyof typeof ribbonAccents;
@@ -66,7 +67,7 @@ export function CornerRibbon({
     >
       <div
         className={cn(
-          "flex h-full w-full items-center justify-center whitespace-nowrap bg-linear-to-r font-bold uppercase shadow-md ring-1",
+          "font-label flex h-full w-full items-center justify-center font-extrabold whitespace-nowrap shadow-md",
           ribbonAccents[accent],
           label.length <= scale.fitsUpTo ? scale.roomy : scale.tight,
         )}

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import {
   addGameToListAction,
   removeGameListEntryAction,
@@ -13,6 +13,7 @@ import {
   type GameListKind,
 } from "@/lib/api/game-list-entry";
 import type { Game, Platform } from "@/lib/api/types";
+import { SectionHeading } from "@/components/issue/page-header";
 import { Button } from "@/components/ui/button";
 import { GamePicker } from "./game-picker";
 
@@ -36,6 +37,13 @@ const COMPLETION_TYPES = [
 ] as const;
 const OWNERSHIP_TYPES = ["Digital", "Physical", "Subscription", "Other"] as const;
 
+// In-world native selects: ink field, paper text, yellow focus.
+export const EDIT_SELECT_CLASS =
+  "h-9 w-full min-w-0 rounded-sm border border-rule-strong bg-ink-2 px-2.5 text-sm text-paper outline-none transition-colors focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
+
+// One of the member's lists as a shelf of covers: each cover carries its
+// remove button, and the dashed Add tile at the end opens the game picker
+// inline above the shelf.
 export function GameListEditor({
   userId,
   kind,
@@ -95,164 +103,219 @@ export function GameListEditor({
     });
   };
 
+  const openPicker = () => {
+    setAdding(true);
+    setError(null);
+  };
+  const closePicker = () => {
+    setAdding(false);
+    setPlatformId(null);
+  };
+
   const shownCount = entries.length;
   const displayedTotal = total ?? shownCount;
   const hasMoreThanShown = total !== undefined && total > shownCount;
+  const showPlatform = platforms.length > 0 && kind !== "favorite";
 
   return (
-    <section className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">
-      <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="flex items-baseline gap-2">
-          <h3 className="text-base font-semibold tracking-tight">{title}</h3>
-          <span className="text-sm text-muted-foreground tabular-nums">
-            {displayedTotal}
-          </span>
-        </div>
-        {!adding && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setAdding(true);
-              setError(null);
-            }}
-            disabled={pending}
-          >
-            <Plus />
-            Add
-          </Button>
+    <section aria-label={title} className="space-y-4">
+      <div className="space-y-2.5">
+        <SectionHeading
+          as="h2"
+          title={title}
+          count={`${displayedTotal} ${displayedTotal === 1 ? "game" : "games"}`}
+          className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
+          action={
+            pending ? (
+              <span className="font-label inline-flex items-center gap-1.5 text-sm text-paper-mute">
+                <Loader2 aria-hidden className="size-3.5 animate-spin" />
+                Saving…
+              </span>
+            ) : undefined
+          }
+        />
+        {description && (
+          <p className="text-sm text-paper-mute">{description}</p>
         )}
-      </header>
+      </div>
 
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
       )}
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
       {adding && (
-        <div className="space-y-2 rounded-lg border bg-background p-3">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
-              Add a game
+        <div className="space-y-2.5 rounded-md border border-highlight bg-ink-2 p-3 sm:p-3.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-label mr-auto text-[0.95rem] font-extrabold tracking-[0.06em] text-highlight">
+              Add to {title}
             </p>
             <Button
               type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Cancel"
-              onClick={() => {
-                setAdding(false);
-                setPlatformId(null);
-              }}
+              variant="outline"
+              size="sm"
+              onClick={closePicker}
               disabled={pending}
             >
-              <X />
+              Cancel
             </Button>
           </div>
-          {platforms.length > 0 && kind !== "favorite" && (
-            <select
-              value={platformId ?? ""}
-              onChange={(e) =>
-                setPlatformId(e.target.value ? Number(e.target.value) : null)
-              }
-              className="h-8 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <option value="">Platform (optional)…</option>
-              {platforms.map((p) => (
-                <option key={p.platform_id} value={p.platform_id}>
-                  {p.platform_name}
-                </option>
-              ))}
-            </select>
+          {(showPlatform || kind === "completed" || kind === "collection") && (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {showPlatform && (
+                <select
+                  value={platformId ?? ""}
+                  onChange={(e) =>
+                    setPlatformId(e.target.value ? Number(e.target.value) : null)
+                  }
+                  aria-label="Platform"
+                  className={EDIT_SELECT_CLASS}
+                >
+                  <option value="">Platform (optional)…</option>
+                  {platforms.map((p) => (
+                    <option key={p.platform_id} value={p.platform_id}>
+                      {p.platform_name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {kind === "completed" && (
+                <select
+                  value={completionType}
+                  onChange={(e) => setCompletionType(e.target.value)}
+                  className={EDIT_SELECT_CLASS}
+                  aria-label="Completion type"
+                >
+                  {COMPLETION_TYPES.map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {kind === "collection" && (
+                <select
+                  value={ownershipType}
+                  onChange={(e) => setOwnershipType(e.target.value)}
+                  className={EDIT_SELECT_CLASS}
+                  aria-label="Ownership type"
+                >
+                  {OWNERSHIP_TYPES.map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
           )}
-          {kind === "completed" && (
-            <select
-              value={completionType}
-              onChange={(e) => setCompletionType(e.target.value)}
-              className="h-8 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              aria-label="Completion type"
-            >
-              {COMPLETION_TYPES.map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          )}
-          {kind === "collection" && (
-            <select
-              value={ownershipType}
-              onChange={(e) => setOwnershipType(e.target.value)}
-              className="h-8 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              aria-label="Ownership type"
-            >
-              {OWNERSHIP_TYPES.map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          )}
-          <GamePicker compact autoFocus onPick={handleAdd} />
+          <GamePicker
+            compact
+            autoFocus
+            onPick={handleAdd}
+            placeholder={`Search games to add to ${title.toLowerCase()}…`}
+          />
         </div>
       )}
 
-      {shownCount === 0 ? (
-        <p className="rounded-lg border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
-          Nothing here yet.
-        </p>
-      ) : (
-        <ul className="divide-y rounded-lg border">
-          {entries.map((entry, index) => {
-            const id = resolveEntryId(kind, entry);
-            return (
-              <li
-                key={id ?? `unresolved-${index}`}
-                className="flex items-center gap-3 px-3 py-2 text-sm"
-              >
+      <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {entries.map((entry, index) => {
+          const id = resolveEntryId(kind, entry);
+          const gameTitle =
+            entry.game?.title ?? `Game #${entry.gamedb_game_id ?? "?"}`;
+          const meta = entryMeta(kind, entry);
+          return (
+            <li key={id ?? `unresolved-${index}`} className="min-w-0">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-ink-3">
                 {entry.game?.cover_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={entry.game.cover_url}
                     alt=""
-                    className="size-10 shrink-0 rounded object-cover"
+                    className="size-full object-cover"
                   />
                 ) : (
-                  <div className="size-10 shrink-0 rounded bg-muted" />
+                  <span className="font-headline grid size-full place-items-center p-2 text-center text-base text-paper-mute sm:text-lg">
+                    {gameTitle}
+                  </span>
                 )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">
-                    {entry.game?.title ?? `Game #${entry.gamedb_game_id ?? "?"}`}
-                  </p>
-                  {entry.platform?.platform_name && (
-                    <p className="text-xs text-muted-foreground">
-                      {entry.platform.platform_name}
-                    </p>
-                  )}
-                </div>
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="icon-sm"
                   onClick={() => handleRemove(id)}
                   disabled={pending || id === undefined}
-                  aria-label="Remove"
+                  aria-label={`Remove ${gameTitle}`}
+                  className="absolute top-1.5 right-1.5 grid size-7.5 place-items-center rounded-full bg-ink/85 text-paper transition-colors hover:bg-paper hover:text-ink disabled:pointer-events-none disabled:opacity-50"
                 >
-                  <Trash2 />
-                </Button>
-              </li>
-            );
-          })}
-        </ul>
+                  <X aria-hidden className="size-4" />
+                </button>
+              </div>
+              <p className="font-label mt-2 line-clamp-2 text-[0.95rem] leading-[1.1] font-extrabold tracking-[0.02em]">
+                {gameTitle}
+              </p>
+              {meta && (
+                <p className="font-label mt-1 truncate text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                  {meta}
+                </p>
+              )}
+              {entry.note && (
+                <p className="mt-1 line-clamp-2 text-[0.8rem] text-paper-mute">
+                  {entry.note}
+                </p>
+              )}
+            </li>
+          );
+        })}
+        {!adding && (
+          <li>
+            <button
+              type="button"
+              onClick={openPicker}
+              disabled={pending}
+              className="font-label flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-[3px] border border-dashed border-rule-strong text-[0.85rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
+            >
+              <Plus aria-hidden className="size-5" />
+              Add a game
+            </button>
+          </li>
+        )}
+      </ul>
+
+      {shownCount === 0 && (
+        <p className="text-sm text-paper-mute">
+          Nothing here yet. Add a game to start this list.
+        </p>
       )}
 
       {hasMoreThanShown && (
-        <p className="text-center text-xs text-muted-foreground">
-          Showing the first {shownCount}. Use the profile page to browse the full list.
+        <p className="text-sm text-paper-mute">
+          Showing the first {shownCount}. Use the profile page to browse the
+          full list.
         </p>
       )}
     </section>
   );
+}
+
+const MONTH = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+// The one line of facts under a cover: when it was finished, how it's
+// owned, or just the platform.
+function entryMeta(kind: GameListKind, entry: GameListEntry): string | null {
+  const platform =
+    entry.platform?.platform_abbreviation ?? entry.platform?.platform_name ?? null;
+  if (kind === "completed" && "completion_id" in entry) {
+    const date = entry.completed_at ? new Date(entry.completed_at) : null;
+    const when =
+      date && !Number.isNaN(date.getTime()) ? MONTH.format(date) : null;
+    return [when, platform].filter(Boolean).join(" · ") || entry.completion_type;
+  }
+  if (kind === "collection" && "ownership_type" in entry) {
+    return [platform, entry.ownership_type].filter(Boolean).join(" · ") || null;
+  }
+  return platform;
 }

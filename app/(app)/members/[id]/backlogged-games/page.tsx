@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookMarked, Dices } from "lucide-react";
+import { Dices } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -10,13 +10,24 @@ import type {
   UserBacklog,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { MemberGameCard } from "@/components/member/member-game-card";
+import {
+  MemberGameCard,
+  MemberListEmpty,
+  memberGridClass,
+} from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
+import {
+  memberCounts,
+  memberName,
+  shortDate,
+} from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
 import { buttonVariants } from "@/components/ui/button";
 
 const PAGE_SIZE = 24;
 
+// The backlog: what's queued up, in the member's order, each with its note
+// and when it went on the list. The owner can have one picked for them.
 export default async function BackloggedGamesPage({
   params,
   searchParams,
@@ -38,7 +49,7 @@ export default async function BackloggedGamesPage({
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
 
   let entries: UserBacklog[] = [];
   let total = 0;
@@ -60,38 +71,38 @@ export default async function BackloggedGamesPage({
       displayName={displayName}
       title="Backlog"
       count={total}
+      current="backlog"
+      counts={memberCounts(user)}
       action={
         isSelf ? (
           <Link
             href={`/members/${id}/backlogged-games/pick`}
-            className={buttonVariants({ variant: "outline" })}
+            className={buttonVariants({ variant: "highlight" })}
           >
-            <Dices />
+            <Dices data-icon="inline-start" />
             Pick something to play
           </Link>
         ) : undefined
       }
     >
       {entries.length === 0 ? (
-        <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-          Nothing in the backlog yet.
-        </p>
+        <MemberListEmpty>Nothing in the backlog yet.</MemberListEmpty>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {entries.map((entry) => (
-            <MemberGameCard
-              key={entry.entry_id}
-              game={entry.game}
-              platform={entry.platform}
-              note={entry.note}
-              meta={
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <BookMarked className="size-3" /> Backlog
-                </span>
-              }
-            />
-          ))}
-        </div>
+        <ul className={memberGridClass}>
+          {entries.map((entry, i) => {
+            const added = shortDate(entry.created_at);
+            return (
+              <li key={entry.entry_id ?? entry.backlog_id ?? i}>
+                <MemberGameCard
+                  game={entry.game}
+                  platform={entry.platform}
+                  note={entry.note}
+                  meta={added ? <>Queued {added}</> : undefined}
+                />
+              </li>
+            );
+          })}
+        </ul>
       )}
 
       <ListPagination

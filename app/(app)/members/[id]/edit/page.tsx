@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft, FileUp } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -19,6 +19,9 @@ import { paginationOf } from "@/lib/api/pagination";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { importsHubHref } from "@/lib/imports/kinds";
+import { PageHeader } from "@/components/issue/page-header";
+import { EditSections, type EditSection } from "@/components/issue/edit-sections";
+import { buttonVariants } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;
 
@@ -82,102 +85,93 @@ export default async function MemberEditPage({
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? user.user_id;
 
-  return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link
-          href="/members"
-          className="hover:text-foreground transition-colors"
-        >
-          Members
-        </Link>
-        <span>›</span>
-        <Link
-          href={`/members/${user.user_id}`}
-          className="hover:text-foreground transition-colors"
-        >
-          {displayName}
-        </Link>
-        <span>›</span>
-        <span className="text-foreground">Edit</span>
-      </div>
+  const lists = [
+    {
+      id: "now-playing",
+      kind: "now_playing",
+      title: "Now playing",
+      description: "Games you're actively playing.",
+      list: nowPlaying,
+    },
+    {
+      id: "favorites",
+      kind: "favorite",
+      title: "Favorites",
+      description: "Your all-time picks.",
+      list: favorites,
+    },
+    {
+      id: "completed",
+      kind: "completed",
+      title: "Completed",
+      description: "Games you've finished.",
+      list: completed,
+    },
+    {
+      id: "backlog",
+      kind: "backlog",
+      title: "Backlog",
+      description: "Games you'd like to play.",
+      list: backlog,
+    },
+    {
+      id: "collection",
+      kind: "collection",
+      title: "Collection",
+      description: "Games you own.",
+      list: collection,
+    },
+  ] as const;
 
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold tracking-tight">Edit profile</h1>
-        <div className="flex items-center gap-4">
-          <Link
-            href={importsHubHref(user.user_id)}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <FileUp className="size-4" />
-            Import games
-          </Link>
-          <Link
-            href={`/members/${user.user_id}`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ChevronLeft className="size-4" />
-            Back to profile
-          </Link>
-        </div>
-      </div>
-
-      <div id="socials" className="scroll-mt-6 rounded-2xl border bg-card p-6 shadow-sm">
+  const sections: EditSection[] = [
+    ...lists.map(({ id: sectionId, kind, title, description, list }) => ({
+      id: sectionId,
+      label: title,
+      count: list.total,
+      content: (
+        <GameListEditor
+          userId={user.user_id}
+          kind={kind}
+          title={title}
+          description={description}
+          entries={list.data}
+          total={list.total}
+          platforms={platforms.data}
+        />
+      ),
+    })),
+    {
+      id: "socials",
+      label: "Socials",
+      count: user.socials?.length ?? 0,
+      content: (
         <SocialsEditor
           userId={user.user_id}
           socials={user.socials ?? []}
           platforms={socialPlatforms.data}
         />
-      </div>
+      ),
+    },
+  ];
 
-      <GameListEditor
-        userId={user.user_id}
-        kind="now_playing"
-        title="Now playing"
-        description="Games you're actively playing."
-        entries={nowPlaying.data}
-        total={nowPlaying.total}
-        platforms={platforms.data}
+  return (
+    <div className="mx-auto w-full max-w-7xl space-y-7">
+      <PageHeader
+        title="Edit profile"
+        count={displayName}
+        actions={
+          <Link
+            href={`/members/${user.user_id}`}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            <ChevronLeft data-icon="inline-start" />
+            Back to profile
+          </Link>
+        }
       />
-
-      <GameListEditor
-        userId={user.user_id}
-        kind="favorite"
-        title="Favorites"
-        description="Your all-time picks."
-        entries={favorites.data}
-        total={favorites.total}
-        platforms={platforms.data}
-      />
-
-      <GameListEditor
-        userId={user.user_id}
-        kind="completed"
-        title="Completed"
-        description="Games you've finished."
-        entries={completed.data}
-        total={completed.total}
-        platforms={platforms.data}
-      />
-
-      <GameListEditor
-        userId={user.user_id}
-        kind="backlog"
-        title="Backlog"
-        description="Games you'd like to play."
-        entries={backlog.data}
-        total={backlog.total}
-        platforms={platforms.data}
-      />
-
-      <GameListEditor
-        userId={user.user_id}
-        kind="collection"
-        title="Collection"
-        description="Games you own."
-        entries={collection.data}
-        total={collection.total}
-        platforms={platforms.data}
+      <EditSections
+        sections={sections}
+        importsHref={importsHubHref(user.user_id)}
       />
     </div>
   );

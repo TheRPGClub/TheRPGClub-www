@@ -9,6 +9,7 @@ import {
 } from "@/app/actions/backlog-pick";
 import type { Platform } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
+import { MemberField, MemberSelect } from "@/components/issue/member-field";
 
 const initialState: StartPlayingResult = { ok: true, data: null };
 
@@ -36,27 +37,23 @@ export function StartPlayingForm({
   const needsPlatform = platformId === null;
 
   return (
-    <form action={formAction} className="flex flex-wrap items-center gap-2">
+    <form action={formAction} className="flex flex-wrap items-end gap-2.5">
       {needsPlatform && (
-        <select
-          name="platform_id"
-          required
-          defaultValue=""
-          aria-label="Platform"
-          className="h-8 max-w-56 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          <option value="" disabled>
-            Playing it on…
-          </option>
-          {(platforms ?? []).map((p) => (
-            <option key={p.platform_id} value={p.platform_id}>
-              {p.platform_name}
+        <MemberField label="Play on" className="w-full max-w-60">
+          <MemberSelect name="platform_id" required defaultValue="">
+            <option value="" disabled>
+              Playing it on…
             </option>
-          ))}
-        </select>
+            {(platforms ?? []).map((p) => (
+              <option key={p.platform_id} value={p.platform_id}>
+                {p.platform_name}
+              </option>
+            ))}
+          </MemberSelect>
+        </MemberField>
       )}
-      <Button type="submit" disabled={pending}>
-        <Play />
+      <Button type="submit" variant="highlight" disabled={pending}>
+        <Play data-icon="inline-start" />
         {pending ? "Starting…" : "Start playing"}
       </Button>
       {!state.ok && state.error && (
@@ -67,7 +64,7 @@ export function StartPlayingForm({
               {" "}
               <Link
                 href={`/members/${userId}/now-playing-games`}
-                className="underline underline-offset-4 hover:text-foreground"
+                className="underline underline-offset-4 hover:text-paper"
               >
                 See Now Playing
               </Link>

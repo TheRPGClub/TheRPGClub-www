@@ -47,8 +47,14 @@ export function todayDate(now: Date = new Date()): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-export function formatPlaytime(hours: number | null | undefined): string | null {
-  if (hours === null || hours === undefined || !Number.isFinite(hours)) return null;
+// Completions serialise playtime as a decimal string ("20.0"); import items
+// send a number. Both read the same.
+export function formatPlaytime(
+  value: string | number | null | undefined,
+): string | null {
+  if (value === null || value === undefined || value === "") return null;
+  const hours = Number(value);
+  if (!Number.isFinite(hours)) return null;
   return `${Number(hours.toFixed(2))} h`;
 }
 

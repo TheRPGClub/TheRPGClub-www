@@ -11,6 +11,8 @@ import {
 } from "@/app/actions/socials";
 import type { SocialPlatform, UserSocial } from "@/lib/api/types";
 import { SocialIcon } from "@/components/social-icon";
+import { SectionHeading } from "@/components/issue/page-header";
+import { EDIT_SELECT_CLASS } from "@/components/member/game-list-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -60,40 +62,37 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
   };
 
   return (
-    <section className="w-full space-y-3 border-t pt-6">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          Socials
-        </h3>
-        {!addingNew && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setAddingNew(true);
-              setEditingId(null);
-              setError(null);
-            }}
-            disabled={pending}
-          >
-            <Plus />
-            Add
-          </Button>
-        )}
+    <section aria-label="Socials" className="space-y-4">
+      <div className="space-y-2.5">
+        <SectionHeading
+          title="Socials"
+          count={`${socials.length} linked`}
+          className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
+        />
+        <p className="text-sm text-paper-mute">
+          Handles, friend codes and profiles. Imports from Steam and
+          Completionator read the accounts linked here.
+        </p>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
 
-      <ul className="divide-y rounded-lg border">
+      <ul className="grid gap-2.5 lg:grid-cols-2">
         {socials.length === 0 && !addingNew && (
-          <li className="px-4 py-3 text-sm text-muted-foreground">
-            No socials yet. Click Add to share your handles.
+          <li className="text-sm text-paper-mute lg:col-span-2">
+            No socials yet. Link an account to share your handles.
           </li>
         )}
         {socials.map((social) =>
           editingId === social.id ? (
-            <li key={social.id} className="p-3">
+            <li
+              key={social.id}
+              className="rounded-md border border-highlight bg-ink-2 p-3 lg:col-span-2"
+            >
               <SocialForm
                 userId={userId}
                 platforms={platforms}
@@ -116,29 +115,31 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
           ) : (
             <li
               key={social.id}
-              className="flex items-center gap-3 px-3 py-2 text-sm"
+              className="flex min-h-15 items-center gap-3 rounded-md border border-rule bg-ink-2 py-2 pr-2 pl-3.5 text-sm"
             >
               <SocialIcon
                 label={social.social_platform?.label}
-                className="shrink-0 text-muted-foreground"
+                className="shrink-0 text-paper-mute"
               />
-              <div className="flex flex-1 flex-col gap-0.5 min-w-0">
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                  {social.social_platform?.label ?? "Unknown"}
-                </span>
+              <span className="font-label w-24 shrink-0 truncate text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                {social.social_platform?.label ?? "Unknown"}
+              </span>
+              <span className="min-w-0 flex-1">
                 {social.url ? (
                   <a
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate underline-offset-2 hover:underline"
+                    className="block truncate font-semibold underline-offset-3 hover:text-highlight hover:underline"
                   >
                     {social.display_text}
                   </a>
                 ) : (
-                  <span className="truncate">{social.display_text}</span>
+                  <span className="block truncate font-semibold">
+                    {social.display_text}
+                  </span>
                 )}
-              </div>
+              </span>
               <Button
                 type="button"
                 variant="ghost"
@@ -149,7 +150,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
                   setError(null);
                 }}
                 disabled={pending}
-                aria-label="Edit"
+                aria-label={`Edit ${social.social_platform?.label ?? "social"}`}
               >
                 <Pencil />
               </Button>
@@ -159,15 +160,15 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
                 size="icon-sm"
                 onClick={() => handleDelete(social.id)}
                 disabled={pending}
-                aria-label="Delete"
+                aria-label={`Delete ${social.social_platform?.label ?? "social"}`}
               >
                 <Trash2 />
               </Button>
             </li>
           ),
         )}
-        {addingNew && (
-          <li className="p-3">
+        {addingNew ? (
+          <li className="rounded-md border border-highlight bg-ink-2 p-3 lg:col-span-2">
             <SocialForm
               userId={userId}
               platforms={platforms}
@@ -182,6 +183,22 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
               pending={pending}
               startTransition={startTransition}
             />
+          </li>
+        ) : (
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                setAddingNew(true);
+                setEditingId(null);
+                setError(null);
+              }}
+              disabled={pending}
+              className="font-label flex min-h-15 w-full items-center justify-center gap-2 rounded-md border border-dashed border-rule-strong text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
+            >
+              <Plus aria-hidden className="size-4" />
+              Link another account
+            </button>
           </li>
         )}
       </ul>
@@ -270,6 +287,7 @@ function SocialForm({
           <Input
             type="text"
             placeholder="e.g. Bluesky"
+            aria-label="New platform name"
             maxLength={80}
             value={newPlatformLabel}
             onChange={(e) => setNewPlatformLabel(e.target.value)}
@@ -291,7 +309,8 @@ function SocialForm({
       ) : (
         <select
           name="platform_id"
-          className="h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label="Platform"
+          className={EDIT_SELECT_CLASS}
           value={platformId ?? ""}
           onChange={(e) => {
             const v = e.target.value;
@@ -317,6 +336,7 @@ function SocialForm({
       <Input
         type="text"
         placeholder="Display text (gamertag, friend code, …)"
+        aria-label="Display text"
         maxLength={80}
         required
         value={displayText}
@@ -325,23 +345,23 @@ function SocialForm({
       <Input
         type="url"
         placeholder="https://… (optional)"
+        aria-label="Link"
         maxLength={512}
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
       <div className="flex gap-1">
-        <Button type="submit" variant="default" size="icon-sm" disabled={pending} aria-label="Save">
-          <Check />
+        <Button type="submit" variant="highlight" disabled={pending}>
+          <Check data-icon="inline-start" />
+          Save
         </Button>
         <Button
           type="button"
           variant="ghost"
-          size="icon-sm"
           onClick={onCancel}
           disabled={pending}
-          aria-label="Cancel"
         >
-          <X />
+          Cancel
         </Button>
       </div>
     </form>

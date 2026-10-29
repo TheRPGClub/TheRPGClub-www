@@ -1,22 +1,25 @@
 import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768
+const QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
 
-function getIsMobile() {
-  return typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT
+function subscribe(onChange: () => void) {
+  const mql = window.matchMedia(QUERY)
+  mql.addEventListener("change", onChange)
+  return () => mql.removeEventListener("change", onChange)
+}
+
+function getSnapshot() {
+  return window.matchMedia(QUERY).matches
+}
+
+// The server can't know the viewport, so it renders the desktop tree.
+// Hydration uses this same snapshot and only then switches to the real
+// value, so a phone no longer hydrates a tree the server never sent.
+function getServerSnapshot() {
+  return false
 }
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(getIsMobile)
-
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(getIsMobile())
-    }
-    mql.addEventListener("change", onChange)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
-
-  return isMobile
+  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }

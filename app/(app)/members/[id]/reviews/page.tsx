@@ -11,6 +11,8 @@ import { paginationOf } from "@/lib/api/pagination";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
+import { memberCounts, memberName } from "@/components/member/member-lists";
+import { withGames } from "@/components/member/member-lists-server";
 
 const PAGE_SIZE = 10;
 
@@ -35,14 +37,14 @@ export default async function MemberReviewsPage({
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const isSelf = session?.principal.discord_id === id;
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
 
   let reviews: Review[] = [];
   let total = 0;
   let totalPages = 1;
   if (listRes.ok) {
     const body: ApiCollection<Review> = await listRes.json();
-    reviews = body.data;
+    reviews = await withGames(body.data);
     // The server owns the split; PAGE_SIZE is only what we asked for.
     const pagination = paginationOf(body.meta, reviews.length);
     total = pagination.total;
@@ -57,6 +59,9 @@ export default async function MemberReviewsPage({
       displayName={displayName}
       title="Reviews"
       count={total}
+      countNoun={["review", "reviews"]}
+      current="reviews"
+      counts={memberCounts(user)}
     >
       <MemberReviewList
         reviews={reviews}

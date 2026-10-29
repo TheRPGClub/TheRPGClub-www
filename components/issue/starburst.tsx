@@ -30,6 +30,8 @@ export function Starburst({
   className,
   textClassName,
   rotate = -9,
+  lines,
+  still = false,
 }: {
   track: StarburstTrack;
   // Size and position, e.g. "absolute right-8 top-8 size-40".
@@ -38,14 +40,22 @@ export function Starburst({
   textClassName?: string;
   // Degrees; a burst is never set square.
   rotate?: number;
+  // Overrides the track's lettering, e.g. ["GOTM"] at badge scale.
+  lines?: readonly string[];
+  // Skips the stamp-in: for bursts repeated across a grid, where the page's
+  // one authored moment lives elsewhere.
+  still?: boolean;
 }) {
   const style = TRACK[track];
+  const lettering = lines ?? style.lines;
   return (
     <div
       aria-hidden
       style={{ "--burst-rot": `${rotate}deg` } as React.CSSProperties}
       className={cn(
-        "pointer-events-none grid [transform:rotate(var(--burst-rot))] place-items-center motion-safe:animate-[burst-stamp_480ms_cubic-bezier(0.16,1,0.3,1)_both]",
+        "pointer-events-none grid [transform:rotate(var(--burst-rot))] place-items-center",
+        !still &&
+          "motion-safe:animate-[burst-stamp_480ms_cubic-bezier(0.16,1,0.3,1)_both]",
         className,
       )}
     >
@@ -62,7 +72,7 @@ export function Starburst({
           textClassName ?? "text-xl",
         )}
       >
-        {style.lines.map((line) => (
+        {lettering.map((line) => (
           <span key={line} className="block">
             {line}
           </span>

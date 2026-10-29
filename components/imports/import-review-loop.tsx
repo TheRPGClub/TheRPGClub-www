@@ -18,8 +18,12 @@ import {
   type ImportKind,
 } from "@/lib/imports/kinds";
 import { ImportItemPanel, type ImportPerform } from "@/components/imports/import-item-panel";
-import { ImportOutcomeList, ImportProgressBar } from "@/components/imports/import-progress";
-import { Badge } from "@/components/ui/badge";
+import {
+  ImportOutcomeList,
+  ImportProgressBar,
+  importPending,
+} from "@/components/imports/import-progress";
+import { Chip } from "@/components/issue/chip";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 // Safety net for the "call advance again" loop: each call resolves up to 25
@@ -160,43 +164,74 @@ export function ImportReviewLoop({
   const resultsPath = IMPORT_KINDS[kind].affects[0];
   const finished = job.status === "completed" || job.status === "canceled";
 
+  const statusLabel = IMPORT_STATUS_LABELS[job.status] ?? job.status;
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Badge variant={job.status === "active" ? "default" : "secondary"}>
-              {IMPORT_STATUS_LABELS[job.status] ?? job.status}
-            </Badge>
-            {busy && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Loader2 className="size-3.5 animate-spin" /> {busy}
-              </span>
-            )}
-          </div>
-          {!finished && (
+    <div className="grid items-start gap-6 lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-7">
+      <aside
+        aria-label="Import progress"
+        className="space-y-4.5 lg:sticky lg:top-20"
+      >
+        <ImportProgressBar kind={kind} total={total} counts={counts} />
+        {/* The full tally is a desktop rail; phones keep the count and bar
+            so the item under review comes up sooner. */}
+        <div className={finished ? undefined : "max-lg:hidden"}>
+          <ImportOutcomeList
+            counts={counts}
+            pending={finished ? undefined : importPending(total, counts)}
+          />
+        </div>
+        <div className="flex min-h-6 flex-wrap items-center gap-2">
+          <Chip tone={job.status === "active" ? "highlight" : "neutral"}>
+            {statusLabel}
+          </Chip>
+          {busy && (
+            <span
+              role="status"
+              className="inline-flex items-center gap-1.5 text-[0.82rem] text-paper-dim"
+            >
+              <Loader2 aria-hidden className="size-3.5 animate-spin" /> {busy}
+            </span>
+          )}
+        </div>
+        {!finished && (
+          <div className="space-y-2.5">
             <div className="flex flex-wrap items-center gap-2">
               {job.status === "active" ? (
                 <Button
                   type="button"
-                  size="sm"
                   variant="outline"
                   onClick={() => changeStatus("paused")}
                 >
-                  <Pause /> Pause
+                  <Pause data-icon="inline-start" /> Pause
                 </Button>
               ) : (
                 <Button
                   type="button"
-                  size="sm"
+                  variant="highlight"
                   disabled={!!busy}
                   onClick={() => changeStatus("active")}
                 >
-                  <Play /> Resume
+                  <Play data-icon="inline-start" /> Resume
                 </Button>
               )}
-              {confirmCancel ? (
-                <>
+              {!confirmCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setConfirmCancel(true)}
+                >
+                  <Ban data-icon="inline-start" /> Cancel
+                </Button>
+              )}
+            </div>
+            {confirmCancel && (
+              <div className="space-y-2.5 rounded-sm border border-destructive/40 p-3">
+                <p className="text-[0.85rem] text-paper-dim">
+                  Canceling stops the import. Games already added stay in
+                  your list.
+                </p>
+                <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
                     size="sm"
@@ -213,37 +248,24 @@ export function ImportReviewLoop({
                   >
                     Keep going
                   </Button>
-                </>
-              ) : (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setConfirmCancel(true)}
-                >
-                  <Ban /> Cancel
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </aside>
 
-        <ImportProgressBar kind={kind} total={total} counts={counts} />
-        {confirmCancel && (
-          <p className="text-sm text-muted-foreground">
-            Canceling stops the import. Games already added stay in your list.
+      <div className="min-w-0 space-y-4">
+        {error && (
+          <p
+            role="alert"
+            className="rounded-sm border border-destructive/40 bg-destructive/8 px-4 py-3 text-sm text-destructive"
+          >
+            {error}
           </p>
         )}
-      </div>
 
-      {error && (
-        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {error}
-        </p>
-      )}
-
-      {job.status === "active" && item && review && (
-        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        {job.status === "active" && item && review && (
           <ImportItemPanel
             key={item.item_id}
             kind={kind}
@@ -252,42 +274,57 @@ export function ImportReviewLoop({
             disabled={!!busy}
             perform={perform}
           />
-        </div>
-      )}
+        )}
 
-      {job.status === "paused" && (
-        <p className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-          This import is paused. Resume it whenever you like; it picks up at the
-          next {IMPORT_KINDS[kind].itemNoun.one}.
-        </p>
-      )}
-
-      {finished && (
-        <div className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
-          <h2 className="text-lg font-semibold">
-            {job.status === "completed" ? "Import finished" : "Import canceled"}
-          </h2>
-          <ImportOutcomeList counts={counts} />
-          <div className="flex flex-wrap gap-2">
-            {resultsPath && (
-              <Link
-                href={`/members/${userId}/${resultsPath}`}
-                className={buttonVariants({ variant: "default", size: "sm" })}
-              >
-                See your list
-              </Link>
-            )}
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => router.refresh()}
-            >
-              <RotateCcw /> Start another import
-            </Button>
+        {job.status === "active" && !item && busy && (
+          <div className="grid min-h-60 place-items-center rounded-md border border-dashed border-rule-strong px-6 text-center">
+            <p className="font-label inline-flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em] text-paper-dim">
+              <Loader2 aria-hidden className="size-4 animate-spin" />
+              {busy}
+            </p>
           </div>
-        </div>
-      )}
+        )}
+
+        {job.status === "paused" && (
+          <div className="rounded-md border border-dashed border-rule-strong px-6 py-12 text-center">
+            <h2 className="font-headline text-4xl">Paused</h2>
+            <p className="mx-auto mt-2 max-w-[48ch] text-sm text-paper-dim">
+              Resume it whenever you like; it picks up at the next{" "}
+              {IMPORT_KINDS[kind].itemNoun.one}.
+            </p>
+          </div>
+        )}
+
+        {finished && (
+          <section className="space-y-4 rounded-md border border-rule bg-ink-2 p-5 sm:p-6">
+            <h2 className="font-headline text-[2.6rem] leading-[0.9]">
+              {job.status === "completed" ? "Import finished" : "Import canceled"}
+            </h2>
+            <p className="text-sm text-paper-dim">
+              {job.status === "completed"
+                ? "Everything in the file has been dealt with. The tally on the left is how it went."
+                : "The import stopped. Anything added before you canceled stays in your list."}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {resultsPath && (
+                <Link
+                  href={`/members/${userId}/${resultsPath}`}
+                  className={buttonVariants({ variant: "highlight" })}
+                >
+                  See your list
+                </Link>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.refresh()}
+              >
+                <RotateCcw data-icon="inline-start" /> Start another import
+              </Button>
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

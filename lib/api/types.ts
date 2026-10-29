@@ -83,12 +83,14 @@ export interface User {
 // `previews` carries a small (~5-item) slice per section for the profile page.
 // `counts` covers every list so we can render the section headers and the
 // reference rows (backlog / collection) without extra round-trips.
+// Keys as the API sends them (`completions`, `collections`), not the list
+// names the UI uses.
 export interface UserProfileCounts {
   favorites: number;
   now_playing: number;
-  completed: number;
+  completions: number;
   backlog: number;
-  collection: number;
+  collections: number;
   reviews: number;
 }
 
@@ -312,7 +314,8 @@ export interface GameCompletion {
   // Main Story | Main Story + Side Content | Completionist
   completion_type: string;
   completed_at: string | null;
-  final_playtime_hrs: number | null;
+  // Serialised as a decimal string ("20.0"); see playtimeHours().
+  final_playtime_hrs: string | number | null;
   created_at: string;
   user?: User | null;
   game?: Game | null;

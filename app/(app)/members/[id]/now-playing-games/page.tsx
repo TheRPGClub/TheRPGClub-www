@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Gamepad2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
   ApiCollection,
@@ -8,12 +7,16 @@ import type {
   UserNowPlaying,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { MemberGameCard } from "@/components/member/member-game-card";
+import { NowPlayingBooks } from "@/components/issue/member-now-playing";
 import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListEmpty } from "@/components/member/member-game-card";
+import { memberCounts, memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
 
 const PAGE_SIZE = 24;
 
+// Now Playing in full: every game on the desk face-on, with the member's note
+// and when they picked it up.
 export default async function NowPlayingGamesPage({
   params,
   searchParams,
@@ -34,7 +37,7 @@ export default async function NowPlayingGamesPage({
 
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
+  const displayName = memberName(user);
 
   let entries: UserNowPlaying[] = [];
   let total = 0;
@@ -56,27 +59,13 @@ export default async function NowPlayingGamesPage({
       displayName={displayName}
       title="Now playing"
       count={total}
+      current="now_playing"
+      counts={memberCounts(user)}
     >
       {entries.length === 0 ? (
-        <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-          Nothing in progress.
-        </p>
+        <MemberListEmpty>Nothing in progress.</MemberListEmpty>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {entries.map((entry) => (
-            <MemberGameCard
-              key={entry.entry_id}
-              game={entry.game}
-              platform={entry.platform}
-              note={entry.note}
-              meta={
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Gamepad2 className="size-3" /> Playing
-                </span>
-              }
-            />
-          ))}
-        </div>
+        <NowPlayingBooks entries={entries} showSince />
       )}
 
       <ListPagination

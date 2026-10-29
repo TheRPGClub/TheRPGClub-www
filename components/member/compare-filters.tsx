@@ -1,64 +1,89 @@
 import Form from "next/form";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Platform } from "@/lib/api/types";
 import {
   COMPARE_SORTS,
   compareYearOptions,
   type CompareFilters,
 } from "@/lib/completions-compare";
+import {
+  MemberField,
+  MemberSelect,
+  memberControlClass,
+} from "@/components/issue/member-field";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-const SELECT_CLASS =
-  "h-8 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export interface CompareMemberOption {
   user_id: string;
   name: string;
 }
 
-export interface CompareFiltersFormProps {
-  action: string;
-  filters: CompareFilters;
-  members: CompareMemberOption[];
-  platforms: Platform[];
-}
-
-// A GET form: submitting navigates to the same page with new search params,
-// which resets paging (no `page` field). next/form keeps it client-side.
-export function CompareFiltersForm({
+// The member picker at the top of the compare page. A GET form: choosing
+// someone new starts a fresh comparison, so the filters drop.
+export function CompareMemberForm({
   action,
+  ownerName,
   filters,
   members,
-  platforms,
-}: CompareFiltersFormProps) {
+}: {
+  action: string;
+  ownerName: string;
+  filters: CompareFilters;
+  members: CompareMemberOption[];
+}) {
   return (
-    <Form
-      action={action}
-      className="grid grid-cols-2 gap-3 rounded-lg border bg-card p-3 sm:grid-cols-3 lg:grid-cols-6"
-    >
-      <label className="col-span-2 space-y-1 text-xs text-muted-foreground sm:col-span-1 lg:col-span-2">
-        <span>Compare with</span>
-        <select
-          name="with"
-          defaultValue={filters.with ?? ""}
-          className={SELECT_CLASS}
-        >
+    <Form action={action} className="flex flex-wrap items-end gap-2.5">
+      <MemberField
+        label={`Compare ${ownerName} with`}
+        className="w-full max-w-72"
+      >
+        <MemberSelect name="with" defaultValue={filters.with ?? ""}>
           <option value="">Pick a member…</option>
           {members.map((m) => (
             <option key={m.user_id} value={m.user_id}>
               {m.name}
             </option>
           ))}
-        </select>
-      </label>
-      <label className="space-y-1 text-xs text-muted-foreground">
-        <span>Year</span>
-        <select
-          name="year"
-          defaultValue={filters.year ?? ""}
-          className={SELECT_CLASS}
-        >
+        </MemberSelect>
+      </MemberField>
+      <Button type="submit" variant="outline">
+        Compare
+      </Button>
+    </Form>
+  );
+}
+
+export interface CompareFiltersFormProps {
+  action: string;
+  filters: CompareFilters;
+  platforms: Platform[];
+  // The heading the bar sits beside ("The 37 in common").
+  heading?: ReactNode;
+}
+
+// The shared games' filters. A GET form: submitting navigates to the same
+// page with new search params, which resets paging (no `page` field), and
+// keeps the member being compared with. next/form keeps it client-side.
+export function CompareFiltersForm({
+  action,
+  filters,
+  platforms,
+  heading,
+}: CompareFiltersFormProps) {
+  return (
+    <Form
+      action={action}
+      className="flex flex-wrap items-end gap-2.5 border-t-2 border-paper pt-3.5"
+    >
+      {heading && (
+        <h2 className="font-headline mr-auto w-full self-center text-[2rem] leading-none lg:w-auto">
+          {heading}
+        </h2>
+      )}
+      {filters.with && <input type="hidden" name="with" value={filters.with} />}
+      <MemberField label="Year" className="min-w-0 flex-[1_1_8.5rem] lg:w-38 lg:flex-none">
+        <MemberSelect name="year" defaultValue={filters.year ?? ""}>
           <option value="">Any year</option>
           <option value="unknown">No date</option>
           {compareYearOptions().map((y) => (
@@ -66,56 +91,50 @@ export function CompareFiltersForm({
               {y}
             </option>
           ))}
-        </select>
-      </label>
-      <label className="space-y-1 text-xs text-muted-foreground">
-        <span>Platform</span>
-        <select
-          name="platform"
-          defaultValue={filters.platform ?? ""}
-          className={SELECT_CLASS}
-        >
+        </MemberSelect>
+      </MemberField>
+      <MemberField label="Platform" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
+        <MemberSelect name="platform" defaultValue={filters.platform ?? ""}>
           <option value="">Any platform</option>
           {platforms.map((p) => (
             <option key={p.platform_id} value={p.platform_id}>
               {p.platform_name}
             </option>
           ))}
-        </select>
-      </label>
-      <label className="space-y-1 text-xs text-muted-foreground">
-        <span>Title</span>
-        <Input
+        </MemberSelect>
+      </MemberField>
+      <MemberField label="Search" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
+        <input
           type="search"
           name="q"
           defaultValue={filters.q}
-          placeholder="Search…"
+          placeholder="Game title"
+          className={memberControlClass}
         />
-      </label>
-      <label className="space-y-1 text-xs text-muted-foreground">
-        <span>Sort</span>
-        <select name="sort" defaultValue={filters.sort} className={SELECT_CLASS}>
+      </MemberField>
+      <MemberField label="Sort" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
+        <MemberSelect name="sort" defaultValue={filters.sort}>
           {COMPARE_SORTS.map((s) => (
             <option key={s.value} value={s.value}>
               {s.label}
             </option>
           ))}
-        </select>
-      </label>
-      <div className="col-span-2 flex items-end justify-end gap-2 sm:col-span-3 lg:col-span-6">
+        </MemberSelect>
+      </MemberField>
+      <div className="flex gap-1.5">
+        <Button type="submit" variant="outline" className="h-9.5">
+          Apply
+        </Button>
         <Link
           href={
             filters.with
               ? `${action}?with=${encodeURIComponent(filters.with)}`
               : action
           }
-          className={buttonVariants({ variant: "ghost", size: "sm" })}
+          className={buttonVariants({ variant: "ghost", className: "h-9.5" })}
         >
-          Clear filters
+          Clear
         </Link>
-        <Button type="submit" variant="outline" size="sm">
-          Compare
-        </Button>
       </div>
     </Form>
   );

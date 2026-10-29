@@ -7,6 +7,7 @@ import type {
 import { formatImportDate, formatPlaytime } from "@/lib/imports/completionator";
 import type { ImportKind } from "@/lib/imports/kinds";
 import { SteamItemDetails } from "@/components/imports/steam-item-details";
+import { DetailList } from "@/components/issue/import-facts";
 
 // The source data of the item under review, per import kind.
 const ITEM_DETAILS: Record<ImportKind, (item: ImportItem) => React.ReactNode> = {
@@ -20,7 +21,7 @@ export function ImportItemDetails({ kind, item }: { kind: ImportKind; item: Impo
 }
 
 function CompletionatorItemDetails({ item }: { item: CompletionatorImportItem }) {
-  const none = <span className="text-muted-foreground">None</span>;
+  const none = <span className="text-paper-mute">None</span>;
   const rows: [string, React.ReactNode][] = [
     ["Platform", item.platform_name ? [item.platform_name, item.region_name].filter(Boolean).join(" · ") : none],
     [
@@ -32,8 +33,7 @@ function CompletionatorItemDetails({ item }: { item: CompletionatorImportItem })
     ["Finished", formatImportDate(item.completed_at) ?? none],
     ["Playtime", formatPlaytime(item.playtime_hrs) ?? item.time_text ?? none],
   ];
-  if (item.error_text) rows.push(["Problem", item.error_text]);
-  return <DetailList rows={rows} />;
+  return <DetailList rows={rows} problem={item.error_text} />;
 }
 
 function CsvItemDetails({ item }: { item: CollectionCsvImportItem }) {
@@ -45,29 +45,14 @@ function CsvItemDetails({ item }: { item: CollectionCsvImportItem }) {
         <>
           {item.raw_platform}
           {platformUnresolved && (
-            <span className="text-muted-foreground"> (not recognized: added without a platform)</span>
+            <span className="text-paper-mute normal-case"> (not recognized: added without a platform)</span>
           )}
         </>
       ) : (
-        <span className="text-muted-foreground">None</span>
+        <span className="text-paper-mute">None</span>
       ),
     ],
     ["Ownership", item.ownership_type ?? item.raw_ownership_type ?? "Digital"],
   ];
-  if (item.raw_note) rows.push(["Note", item.raw_note]);
-  if (item.error_text) rows.push(["Problem", item.error_text]);
-  return <DetailList rows={rows} />;
-}
-
-function DetailList({ rows }: { rows: [string, React.ReactNode][] }) {
-  return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-      {rows.map(([label, value]) => (
-        <div key={label} className="contents">
-          <dt className="text-muted-foreground">{label}</dt>
-          <dd className="min-w-0 break-words">{value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
+  return <DetailList rows={rows} note={item.raw_note} problem={item.error_text} />;
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CollectionPlatformSummary } from "@/lib/api/types";
+import { cn } from "@/lib/utils";
 
 // The `platform_id` filter value: a gamedb platform id, or "none" for entries
 // with no platform. null means unfiltered.
@@ -32,7 +33,7 @@ export interface CollectionPlatformStripProps {
 }
 
 // Total plus one chip per platform, each linking to the list filtered to it.
-// Same chip treatment as the games index winner filter.
+// The member pages' tab treatment: the active platform is set in paper.
 export function CollectionPlatformStrip({
   userId,
   summary,
@@ -53,8 +54,11 @@ export function CollectionPlatformStrip({
   ];
 
   return (
-    <nav aria-label="Filter by platform">
-      <ul className="flex flex-wrap gap-2">
+    <nav
+      aria-label="Filter by platform"
+      className="border-y border-rule py-2.5"
+    >
+      <ul className="flex flex-wrap gap-1">
         {chips.map((chip) => {
           const isActive = chip.value === current;
           return (
@@ -63,14 +67,17 @@ export function CollectionPlatformStrip({
                 href={collectedGamesHref(userId, { platformId: chip.value })}
                 aria-current={isActive ? "page" : undefined}
                 title={"title" in chip ? chip.title : undefined}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider ring-1 ring-inset transition-colors ${
+                className={cn(
+                  "font-label inline-flex h-8 items-center gap-2 rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors",
                   isActive
-                    ? "bg-foreground/10 text-foreground ring-foreground/30"
-                    : "bg-muted/40 text-muted-foreground ring-border hover:bg-muted hover:text-foreground"
-                }`}
+                    ? "bg-paper text-ink"
+                    : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                )}
               >
                 {chip.label}
-                <span className="tabular-nums opacity-70">{chip.count}</span>
+                <span className="font-headline text-[1.05rem] font-normal tracking-normal">
+                  {chip.count}
+                </span>
               </Link>
             </li>
           );

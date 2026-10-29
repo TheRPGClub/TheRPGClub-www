@@ -48,9 +48,14 @@ function PaginationLink({
 }: PaginationLinkProps) {
   return (
     <Button
-      variant={isActive ? "outline" : "ghost"}
+      variant="ghost"
       size={size}
-      className={cn(className)}
+      // The current page is set in paper like a selected tab; the rest are
+      // quiet condensed numerals.
+      className={cn(
+        "size-9 text-base text-paper-dim hover:text-paper data-[active=true]:bg-paper data-[active=true]:text-ink",
+        className,
+      )}
       nativeButton={false}
       render={
         <Link

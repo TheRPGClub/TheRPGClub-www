@@ -14,7 +14,7 @@ const buttonVariants = cva(
         // The NR-GOTM track's own ink.
         nr: "bg-nr text-white hover:bg-nr/85",
         outline:
-          "border-rule-strong bg-transparent text-paper hover:border-paper-mute hover:bg-ink-3 aria-expanded:bg-ink-3",
+          "border-paper-mute/60 bg-transparent text-paper hover:border-paper hover:bg-ink-3 aria-expanded:bg-ink-3",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
