@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Boxes } from "lucide-react";
+import { Boxes, FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -17,6 +19,8 @@ import {
   collectedGamesHref,
   parsePlatformFilter,
 } from "@/components/member/collection-platform-strip";
+import { buttonVariants } from "@/components/ui/button";
+import { importsHubHref } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
@@ -40,7 +44,8 @@ export default async function CollectedGamesPage({
   });
   if (platformId) listQuery.set("platform_id", platformId);
 
-  const [userRes, listRes, summaryRes] = await Promise.all([
+  const [session, userRes, listRes, summaryRes] = await Promise.all([
+    getSession(),
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     apiFetch(`/api/v1/users/${id}/collections?${listQuery}`, {
       cache: "no-store",
@@ -53,6 +58,7 @@ export default async function CollectedGamesPage({
   if (!userRes.ok) notFound();
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = user.global_name ?? user.username ?? id;
+  const isSelf = session?.principal.discord_id === id;
 
   let entries: GameCollection[] = [];
   let total = 0;
@@ -79,6 +85,16 @@ export default async function CollectedGamesPage({
       displayName={displayName}
       title="Collection"
       count={total}
+      action={
+        isSelf && (
+          <Link
+            href={importsHubHref(id)}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <FileUp /> Import
+          </Link>
+        )
+      }
     >
       {summary && summary.total_count > 0 && (
         <CollectionPlatformStrip

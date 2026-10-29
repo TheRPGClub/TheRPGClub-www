@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -18,6 +18,7 @@ import type {
 import { paginationOf } from "@/lib/api/pagination";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
+import { importsHubHref } from "@/lib/imports/kinds";
 
 const EDITOR_LIMIT = 50;
 
@@ -103,13 +104,22 @@ export default async function MemberEditPage({
 
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight">Edit profile</h1>
-        <Link
-          href={`/members/${user.user_id}`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronLeft className="size-4" />
-          Back to profile
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href={importsHubHref(user.user_id)}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <FileUp className="size-4" />
+            Import games
+          </Link>
+          <Link
+            href={`/members/${user.user_id}`}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronLeft className="size-4" />
+            Back to profile
+          </Link>
+        </div>
       </div>
 
       <div className="rounded-2xl border bg-card p-6 shadow-sm">

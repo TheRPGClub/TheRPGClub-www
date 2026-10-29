@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Download, GitCompareArrows, Trophy } from "lucide-react";
+import { Download, FileUp, GitCompareArrows, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
@@ -15,6 +15,7 @@ import { MemberGameCard } from "@/components/member/member-game-card";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { ListPagination } from "@/components/list-pagination";
 import { buttonVariants } from "@/components/ui/button";
+import { importsHubHref } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
@@ -80,6 +81,14 @@ export default async function CompletedGamesPage({
             >
               <Download /> Export CSV
             </a>
+          )}
+          {isSelf && (
+            <Link
+              href={importsHubHref(id)}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <FileUp /> Import
+            </Link>
           )}
         </div>
       }
