@@ -427,6 +427,105 @@ export interface BacklogPickResponse {
   meta: BacklogPickMeta;
 }
 
+// Imports (collection CSV, Steam, Completionator). Every kind shares the job,
+// item and review shapes below; each kind's item adds its own raw fields.
+
+export type ImportStatus = "active" | "paused" | "completed" | "canceled";
+
+export type ImportItemStatus = "pending" | "added" | "updated" | "skipped" | "failed";
+
+export type ImportMatchConfidence = "exact" | "fuzzy" | "manual";
+
+export interface ImportJob {
+  import_id: number;
+  user_id: string;
+  status: ImportStatus;
+  current_index: number;
+  total_count: number;
+  test_mode: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ImportItem {
+  item_id: number;
+  import_id: number;
+  row_index: number;
+  status: ImportItemStatus;
+  match_confidence: string | null;
+  match_candidate_json: string | null;
+  gamedb_game_id: number | null;
+  result_reason: string | null;
+  error_text: string | null;
+}
+
+export interface CollectionCsvImport extends ImportJob {
+  source_file_name: string | null;
+  source_file_size: number | null;
+  template_version: string | null;
+}
+
+export interface CollectionCsvImportItem extends ImportItem {
+  raw_title: string | null;
+  raw_platform: string | null;
+  raw_ownership_type: string | null;
+  raw_note: string | null;
+  raw_gamedb_id: number | null;
+  raw_igdb_id: number | null;
+  platform_id: number | null;
+  ownership_type: string | null;
+  note: string | null;
+  collection_entry_id: number | null;
+}
+
+export interface ImportSummary {
+  import_id: number;
+  by_status: Partial<Record<ImportItemStatus, number>>;
+  // `null` result reasons (pending rows) come back keyed "null"/"".
+  by_result_reason: Record<string, number>;
+}
+
+// A GameDB match the server found for a row.
+export interface ImportCandidate {
+  game_id: number;
+  title: string;
+  cover_url: string | null;
+}
+
+export interface ImportIgdbCandidate {
+  igdb_id: number;
+  name: string;
+  slug: string | null;
+  summary: string | null;
+  url: string | null;
+  total_rating: number | null;
+  first_release_date: string | null;
+  cover_url: string | null;
+  // Already in GameDB: applying it won't create a new game.
+  already_imported: boolean;
+}
+
+// What `advance` and `remap` return. `item: null` with an active import means
+// the server stopped after its per-call auto-apply cap: call advance again.
+export interface ImportReview<
+  J extends ImportJob = ImportJob,
+  I extends ImportItem = ImportItem,
+> {
+  import: J;
+  item: I | null;
+  candidates: ImportCandidate[];
+  match_confidence: ImportMatchConfidence | null;
+  counts: ImportSummary;
+}
+
+// One row problem from a rejected CSV (422 `invalid_csv`). row_index is the
+// 1-based CSV record, so the header is 1.
+export interface InvalidCsvRowError {
+  row_index: number;
+  column: string;
+  message: string;
+}
+
 // Reviews
 
 // The scorecard shape, re-exported from the module that owns the facet
