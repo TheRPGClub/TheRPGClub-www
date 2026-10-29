@@ -1,14 +1,6 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
-import type { ApiSingle, CompletionatorImport, User } from "@/lib/api/types";
-import { loadActiveImport, loadImportSummary } from "@/lib/imports/active";
-import { importsHubHref } from "@/lib/imports/kinds";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import type { CompletionatorImport } from "@/lib/api/types";
+import { ImportPage, ImportingLine } from "@/components/imports/import-page";
 import { CsvImportForm } from "@/components/imports/csv-import-form";
-import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 
 export default async function CompletionatorImportPage({
   params,
@@ -16,52 +8,14 @@ export default async function CompletionatorImportPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-
-  if (!session) redirect("/");
-  if (session.principal.discord_id !== id) redirect(`/members/${id}`);
-
-  const [userRes, active] = await Promise.all([
-    apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    loadActiveImport<CompletionatorImport>("completionator", id),
-  ]);
-
-  if (!userRes.ok) notFound();
-  const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = user.global_name ?? user.username ?? id;
-  const counts = active ? await loadImportSummary("completionator", active.import_id) : null;
 
   return (
-    <MemberListShell
+    <ImportPage<CompletionatorImport>
+      kind="completionator"
       userId={id}
-      displayName={displayName}
-      title="Completionator import"
-      action={
-        <Link
-          href={importsHubHref(id)}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronLeft className="size-4" />
-          All imports
-        </Link>
-      }
-    >
-      {active ? (
-        <div className="mx-auto w-full max-w-3xl space-y-3">
-          {active.source_filename && (
-            <p className="text-sm text-muted-foreground">
-              Importing <span className="font-medium text-foreground">{active.source_filename}</span>
-            </p>
-          )}
-          <ImportReviewLoop
-            kind="completionator"
-            userId={id}
-            initialImport={active}
-            initialCounts={counts}
-          />
-        </div>
-      ) : (
-        <div className="mx-auto grid w-full max-w-3xl gap-6">
+      intro={(active) => <ImportingLine name={active.source_filename} />}
+      form={
+        <>
           <section className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">
             <h2 className="font-semibold">1. Export from Completionator</h2>
             <p className="text-sm text-muted-foreground">
@@ -83,8 +37,8 @@ export default async function CompletionatorImportPage({
             </div>
             <CsvImportForm userId={id} kind="completionator" />
           </section>
-        </div>
-      )}
-    </MemberListShell>
+        </>
+      }
+    />
   );
 }
