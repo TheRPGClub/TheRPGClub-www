@@ -419,6 +419,38 @@ export interface NrGotmEntry {
   game?: Game | null;
 }
 
+// GOTM history grouped by round (GET /api/v1/gotm_rounds and
+// /gotm_rounds/current). A kind's block is null when the round has no entries
+// of that kind (or none matched the filters); a block made only of NR-GOTM
+// "N/A" placeholders comes back with `games: []`.
+
+export interface GotmRoundGame {
+  game_index: number;
+  gamedb_game_id: number | null;
+  reddit_url: string | null;
+  // The game's newest linked Discord thread.
+  thread_id: string | null;
+  game?: Game | null;
+}
+
+export interface GotmRoundBlock {
+  month_year: string;
+  voting_results_message_id: string | null;
+  games: GotmRoundGame[];
+}
+
+export interface GotmRound {
+  round_number: number;
+  gotm: GotmRoundBlock | null;
+  nr_gotm: GotmRoundBlock | null;
+}
+
+// Every year with entries for the selected kind(s), newest first, regardless
+// of the `year` and `q` filters.
+export interface GotmRoundsMeta extends CollectionMeta {
+  years: number[];
+}
+
 export interface DashboardData {
   gotm: GotmEntry[];
   nr_gotm: NrGotmEntry[];
