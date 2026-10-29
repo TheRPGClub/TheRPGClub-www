@@ -23,6 +23,7 @@ import {
   isRecordId,
   type ImportKind,
 } from "@/lib/imports/kinds";
+import { steamImportErrorMessage } from "@/lib/imports/steam";
 
 // Server actions for every import kind. They take the kind and build the API
 // path from IMPORT_KINDS, so Steam and Completionator reuse them as is. The
@@ -233,4 +234,47 @@ export async function startCsvImportAction(
 
   revalidatePath(importsHubHref(userId));
   redirect(importKindHref(userId, "csv"));
+}
+
+// --- Steam -------------------------------------------------------------------
+
+export interface SteamImportFormState {
+  error: string | null;
+  // What the member typed, so a failed attempt keeps it in the input.
+  steamProfile: string;
+}
+
+// Starts a Steam import from a profile URL, SteamID64 or vanity name. The API
+// resolves the profile and reads the library from Steam, so this can take a
+// few seconds. Test mode is never sent (see startCsvImportAction).
+export async function startSteamImportAction(
+  userId: string,
+  _state: SteamImportFormState,
+  formData: FormData,
+): Promise<SteamImportFormState> {
+  const raw = formData.get("steam_profile");
+  const steamProfile = typeof raw === "string" ? raw.trim().slice(0, 500) : "";
+  if (!isMemberId(userId)) return { error: "Invalid request.", steamProfile };
+  if (!steamProfile) {
+    return { error: steamImportErrorMessage("invalid_identifier"), steamProfile };
+  }
+
+  const res = await apiFetch(`/api/v1/users/${userId}/${IMPORT_KINDS.steam.imports}`, {
+    method: "POST",
+    body: JSON.stringify({ data: { steam_profile: steamProfile } }),
+  });
+
+  if (!res.ok) {
+    let code: string | undefined;
+    try {
+      const body = await res.json();
+      code = body.error ?? body.message;
+    } catch {
+      // non-JSON error body
+    }
+    return { error: steamImportErrorMessage(code, res.status), steamProfile };
+  }
+
+  revalidatePath(importsHubHref(userId));
+  redirect(importKindHref(userId, "steam"));
 }

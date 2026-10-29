@@ -1,6 +1,7 @@
 import type {
   CollectionCsvImportItem,
   ImportItem,
+  SteamCollectionImportItem,
   ImportReview,
   ImportStatus,
   ImportSummary,
@@ -45,13 +46,14 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
   },
   steam: {
     label: "Steam library",
-    description: "Add the games in your Steam library to your collection.",
+    description:
+      "Add the games in your Steam library to your collection. Games with a single exact title match are added for you; you review the rest.",
     imports: "steam_collection_imports",
     items: "steam_collection_import_items",
-    // Steam has no `summary`; check that `items/counts` matches ImportSummary.
+    // Steam has no `summary`; `items/counts` returns the same ImportSummary.
     summary: "items/counts",
     affects: ["collected-games"],
-    available: false,
+    available: true,
   },
   completionator: {
     label: "Completionator",
@@ -144,6 +146,8 @@ export function importItemTitle(kind: ImportKind, item: ImportItem): string {
   switch (kind) {
     case "csv":
       return (item as CollectionCsvImportItem).raw_title ?? "";
+    case "steam":
+      return (item as SteamCollectionImportItem).steam_app_name ?? "";
     default: {
       const raw = item as unknown as Record<string, unknown>;
       const title = raw.raw_title ?? raw.title ?? raw.steam_app_name ?? raw.game_title;
@@ -172,6 +176,7 @@ const RESULT_REASON_LABELS: Record<string, string> = {
   invalid_row: "Invalid id in the file",
   add_failed: "Couldn't be added",
   no_candidate: "No match found",
+  skip_mapped: "Skipped in an earlier Steam import",
 };
 
 export function resultReasonLabel(reason: string): string {
