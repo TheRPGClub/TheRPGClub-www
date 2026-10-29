@@ -30,6 +30,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  Trophy,
   Users,
   Vote,
 } from "lucide-react";
@@ -37,6 +38,7 @@ import {
 const navMain = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/games", icon: Library, label: "Games" },
+  { href: "/gotm", icon: Trophy, label: "GOTM history" },
   { href: "/members", icon: Users, label: "Members" },
   { href: "/voting", icon: Vote, label: "Voting" },
 ];

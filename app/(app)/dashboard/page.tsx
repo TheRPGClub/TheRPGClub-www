@@ -1,71 +1,10 @@
 import { Suspense } from "react";
-import { Trophy, Gamepad2 } from "lucide-react";
-import { apiFetch } from "@/lib/api";
-import type {
-  DashboardResponse,
-  Game,
-  GotmEntry,
-  NrGotmEntry,
-} from "@/lib/api/types";
-import { GotmCard, gotmCardProps } from "@/components/gotm-card";
-import { SectionHeader } from "@/components/section-header";
-import { GameImageUploadForm } from "@/components/game-image-upload-form";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { fetchCurrentGotmRound } from "@/lib/api/gotm-rounds";
+import { GotmRoundBlock } from "@/components/gotm-round-block";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession, type SessionPrincipal } from "@/lib/session";
-
-type Pick<T extends GotmEntry | NrGotmEntry = GotmEntry | NrGotmEntry> = {
-  entry: T;
-  game: Game | null;
-};
-
-type Round<T extends GotmEntry | NrGotmEntry> = {
-  month_year: string;
-  round_number: number;
-  picks: Pick<T>[];
-};
-
-const DASHBOARD_REVALIDATE_SECONDS = 300;
-// Entries carry no title of their own; it comes from the linked game.
-const UNKNOWN_GAME_TITLE = "Unknown game";
-
-async function fetchDashboard(): Promise<DashboardResponse | null> {
-  try {
-    const res = await apiFetch("/api/v1/dashboard?limit=10", {
-      next: {
-        revalidate: DASHBOARD_REVALIDATE_SECONDS,
-        tags: ["dashboard", "games"],
-      },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as DashboardResponse;
-  } catch {
-    return null;
-  }
-}
-
-function currentRound<T extends GotmEntry | NrGotmEntry>(
-  entries: T[] | undefined,
-): Round<T> | null {
-  if (!entries?.length) return null;
-
-  const round_number = entries[0].round_number;
-  const picks = entries
-    .filter((e) => e.round_number === round_number)
-    .map((entry) => ({ entry, game: entry.game ?? null }))
-    .sort((a, b) => a.entry.game_index - b.entry.game_index);
-
-  return {
-    month_year: entries[0].month_year,
-    round_number,
-    picks,
-  };
-}
-
-const gridClass: Record<number, string> = {
-  1: "",
-  2: "grid grid-cols-1 sm:grid-cols-2 gap-4",
-  3: "grid grid-cols-1 sm:grid-cols-3 gap-4",
-};
 
 export default function DashboardPage() {
   return (
@@ -76,106 +15,55 @@ export default function DashboardPage() {
 }
 
 async function DashboardContent() {
-  const [dashboard, session] = await Promise.all([
-    fetchDashboard(),
-    getSession(),
-  ]);
+  // Session first: the current-round read is cached by URL and needs auth, so
+  // it must not run for a logged-out render (see lib/api/gotm-rounds.ts).
+  const session = await getSession();
+  const round = session ? await fetchCurrentGotmRound() : null;
 
-  const gotm = currentRound<GotmEntry>(dashboard?.data.gotm);
-  const nrGotm = currentRound<NrGotmEntry>(dashboard?.data.nr_gotm);
-
-  const uploadPicks = gotm
-    ? uniqueGamePicks([...gotm.picks, ...(nrGotm?.picks ?? [])])
-    : [];
+  // `gotm_rounds/current` is the GOTM round with the same round's NR-GOTM,
+  // N/A placeholders already dropped.
+  const gotm = round?.gotm?.games.length ? round.gotm : null;
+  const nrGotm = round?.nr_gotm?.games.length ? round.nr_gotm : null;
 
   return (
     <div className="space-y-8">
       {session && <DashboardWelcome principal={session.principal} />}
 
-      {!gotm || !gotm.picks.length ? (
-        <p className="text-muted-foreground">No current Game of the Month.</p>
+      {!round || !gotm ? (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <p className="text-muted-foreground">No current Game of the Month.</p>
+          <ViewHistoryLink />
+        </div>
       ) : (
         <>
-          <section className="space-y-3">
-            <SectionHeader
-              title="Game of the Month"
-              round={gotm.round_number}
-              monthYear={gotm.month_year}
-              pickCount={gotm.picks.length}
-              accent="brand"
-              Icon={Trophy}
+          <GotmRoundBlock
+            kind="gotm"
+            roundNumber={round.round_number}
+            block={gotm}
+            action={<ViewHistoryLink />}
+          />
+          {nrGotm && (
+            <GotmRoundBlock
+              kind="nr_gotm"
+              roundNumber={round.round_number}
+              block={nrGotm}
             />
-            <div className={gridClass[gotm.picks.length] ?? gridClass[3]}>
-              {gotm.picks.map((pick, i) => {
-                const isCompact = gotm.picks.length >= 3;
-                return (
-                  <GotmCard
-                    key={pick.entry.gamedb_game_id ?? i}
-                    label={isCompact ? "GOTM" : "Game of the Month"}
-                    round={gotm.round_number}
-                    monthYear={gotm.month_year}
-                    accent="brand"
-                    compact={isCompact}
-                    showMeta={false}
-                    href={
-                      pick.entry.gamedb_game_id
-                        ? `/games/${pick.entry.gamedb_game_id}`
-                        : undefined
-                    }
-                    {...gotmCardProps(pick.game, UNKNOWN_GAME_TITLE)}
-                  />
-                );
-              })}
-            </div>
-          </section>
-
-          {nrGotm && nrGotm.picks.length > 0 && (
-            <section className="space-y-3">
-              <SectionHeader
-                title="Non-RPG Game of the Month"
-                round={nrGotm.round_number}
-                monthYear={nrGotm.month_year}
-                pickCount={nrGotm.picks.length}
-                accent="purple"
-                Icon={Gamepad2}
-              />
-              <div className={gridClass[nrGotm.picks.length] ?? gridClass[3]}>
-                {nrGotm.picks.map((pick, i) => {
-                  const isCompact = nrGotm.picks.length >= 3;
-                  const cardProps = gotmCardProps(
-                    pick.game,
-                    UNKNOWN_GAME_TITLE,
-                  );
-                  return (
-                    <GotmCard
-                      key={pick.entry.gamedb_game_id ?? i}
-                      label={
-                        isCompact ? "NR GOTM" : "Non RPG Game of the Month"
-                      }
-                      round={nrGotm.round_number}
-                      monthYear={nrGotm.month_year}
-                      accent="purple"
-                      compact={isCompact}
-                      showMeta={false}
-                      imageAlign="left"
-                      href={
-                        pick.entry.gamedb_game_id
-                          ? `/games/${pick.entry.gamedb_game_id}`
-                          : undefined
-                      }
-                      {...cardProps}
-                      description={
-                        nrGotm.picks.length > 1 ? null : cardProps.description
-                      }
-                    />
-                  );
-                })}
-              </div>
-            </section>
           )}
         </>
       )}
     </div>
+  );
+}
+
+function ViewHistoryLink() {
+  return (
+    <Link
+      href="/gotm"
+      className="group inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.2em] text-brand-300 transition-colors hover:text-brand-200"
+    >
+      View history
+      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+    </Link>
   );
 }
 
@@ -245,15 +133,4 @@ function DashboardCardSkeleton({
       </div>
     </div>
   );
-}
-
-function uniqueGamePicks(picks: Pick[]) {
-  const seen = new Set<number>();
-  return picks.filter((pick) => {
-    const gameId = pick.entry.gamedb_game_id;
-    if (!gameId || seen.has(gameId)) return false;
-
-    seen.add(gameId);
-    return true;
-  });
 }
