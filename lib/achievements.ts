@@ -278,3 +278,36 @@ export function completionLabel(
   }
   return `${name} · Completed ${formatUnlockDate(completion.completed_at)}`;
 }
+
+// A Rarity tier, the die-cut edge's ink: common >= 50%, uncommon 15-50%,
+// rare 5-15%, ultra under 5% (the Highlight line). Judged on the overall
+// Rarity, like the `rare` Highlight; null when the Provider gives none.
+export type RarityTier = "common" | "uncommon" | "rare" | "ultra";
+
+export const RARITY_TIER_LABEL: Record<RarityTier, string> = {
+  common: "Common",
+  uncommon: "Uncommon",
+  rare: "Rare",
+  ultra: "Ultra rare",
+};
+
+export function rarityTier(rarity: number | null | undefined): RarityTier | null {
+  if (rarity == null) return null;
+  if (isUltraRare(rarity)) return "ultra";
+  if (rarity < 15) return "rare";
+  if (rarity < 50) return "uncommon";
+  return "common";
+}
+
+// A small, stable tilt in degrees (-1.5 to 1.5) for an icon, derived from
+// its id so the server and client render agree and a grid never looks
+// machine-aligned.
+export function stableTilt(id: number | string): number {
+  const s = String(id);
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (((h >>> 0) % 31) - 15) / 10;
+}
