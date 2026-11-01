@@ -11,6 +11,7 @@ import type {
   GameAchievementSet,
   GameRelations,
   Review,
+  UserSummary,
   VotingCategory,
   VotingRound,
 } from "@/lib/api/types";
@@ -20,7 +21,16 @@ import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
-import { GameSetCard } from "@/components/achievements/game-set-card";
+import { ClubSetPage } from "@/components/achievements/club-set-page";
+import { GameAchievementTabs } from "@/components/achievements/game-achievement-tabs";
+import { memberName } from "@/lib/achievements";
+import {
+  groupSetsByProvider,
+  pickInitialTab,
+  setSwitchLabel,
+} from "@/lib/achievements/game-page";
+import { getSetTint } from "@/lib/achievements/tint";
+import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { GameHero } from "@/components/issue/game-hero";
 import {
@@ -60,18 +70,30 @@ const REVIEWS_SHOWN = 3;
 
 export default function GamePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   return (
     <Suspense fallback={<GameContentSkeleton />}>
-      {params.then(({ id }) => {
+      {Promise.all([params, searchParams]).then(([{ id }, query]) => {
         const gameId = parseInt(id, 10);
         if (isNaN(gameId)) notFound();
-        return <GameContent gameId={gameId} />;
+        return (
+          <GameContent
+            gameId={gameId}
+            ach={firstParam(query.ach)}
+            achSet={firstParam(query.ach_set)}
+          />
+        );
       })}
     </Suspense>
   );
+}
+
+function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
 }
 
 // Read once per request: the details rail and the alternate versions both
@@ -86,7 +108,16 @@ const fetchRelations = cache(
   },
 );
 
-async function GameContent({ gameId }: { gameId: number }) {
+async function GameContent({
+  gameId,
+  ach,
+  achSet,
+}: {
+  gameId: number;
+  // The Achievement tab and set to open (`?ach=steam&ach_set=3`).
+  ach?: string;
+  achSet?: string;
+}) {
   const [gameRes, session, reviewsRes] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`),
     getSession(),
@@ -214,7 +245,13 @@ async function GameContent({ gameId }: { gameId: number }) {
 
       {/* The game's Achievement Sets, only when it has any. */}
       <Suspense fallback={null}>
-        <GameAchievements gameId={gameId} />
+        <GameAchievements
+          gameId={gameId}
+          coverUrl={game.cover_url}
+          viewerId={ownerId}
+          ach={ach}
+          achSet={achSet}
+        />
       </Suspense>
 
       <Suspense fallback={null}>
@@ -371,10 +408,24 @@ async function GameDetails({
   return <RailFacts facts={facts} />;
 }
 
-// The Achievement showcase: each linked Achievement Set with the members who
-// completed it and the viewer's own progress. A game without sets (or a read
-// that fails) shows nothing, so the page doesn't apologise for it.
-async function GameAchievements({ gameId }: { gameId: number }) {
+// The Achievement showcase: one composite page per Achievement Set, behind
+// Provider tabs (only the Providers with a set). Each page rings every
+// Achievement with the members who hold it and signs its Completions in the
+// margin. A game without sets (or a read that fails) shows nothing, so the
+// page doesn't apologise for it.
+async function GameAchievements({
+  gameId,
+  coverUrl,
+  viewerId,
+  ach,
+  achSet,
+}: {
+  gameId: number;
+  coverUrl: string | null;
+  viewerId: string | null;
+  ach?: string;
+  achSet?: string;
+}) {
   let sets: GameAchievementSet[];
   try {
     const res = await apiFetch(`/api/v1/games/${gameId}/achievement_sets`, {
@@ -382,28 +433,71 @@ async function GameAchievements({ gameId }: { gameId: number }) {
     });
     if (!res.ok) return null;
     const body: { data?: GameAchievementSet[] } = await res.json();
-    sets = body.data ?? [];
+    sets = (body.data ?? []).map((set) => ({
+      ...set,
+      achievements: set.achievements ?? [],
+    }));
   } catch {
     return null;
   }
-  if (sets.length === 0) return null;
+  const tabs = groupSetsByProvider(sets);
+  const initial = pickInitialTab(tabs, ach, achSet);
+  if (!initial) return null;
+
+  const [names, tints] = await Promise.all([
+    fetchMemberNames(),
+    Promise.all(
+      sets.map((set) =>
+        getSetTint({ coverUrl, iconUrl: set.icon_url, setId: set.id }),
+      ),
+    ),
+  ]);
+  const tintOf = new Map(sets.map((set, i) => [set.id, tints[i]]));
 
   return (
     <section aria-labelledby="game-achievements" className="mt-10">
       <SectionHeading
         title={<span id="game-achievements">Achievements</span>}
         count={`${sets.length} ${sets.length === 1 ? "set" : "sets"}`}
-        className="mb-4"
+        className="mb-5"
       />
-      <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {sets.map((set) => (
-          <li key={set.id} className="flex">
-            <GameSetCard set={set} className="flex-1" />
-          </li>
-        ))}
-      </ul>
+      <GameAchievementTabs
+        initialProvider={initial.provider}
+        initialSetId={initial.setId}
+        tabs={tabs.map((tab) => ({
+          provider: tab.provider,
+          sets: tab.sets.map((set) => ({
+            id: set.id,
+            label: setSwitchLabel(set, tab.sets),
+            page: (
+              <ClubSetPage
+                set={set}
+                tint={tintOf.get(set.id)!}
+                names={names}
+                viewerId={viewerId}
+              />
+            ),
+          })),
+        }))}
+      />
     </section>
   );
+}
+
+// user_id -> display name for the ring's members, from the cached member
+// directory. Empty when it can't be read: names then fall back to the
+// Completions' users.
+async function fetchMemberNames(): Promise<Map<string, string>> {
+  try {
+    const res = await apiFetch(`/api/v1/users?per=500`, {
+      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
+    });
+    if (!res.ok) return new Map();
+    const { data }: ApiCollection<UserSummary> = await res.json();
+    return new Map(data.map((user) => [user.user_id, memberName(user)]));
+  } catch {
+    return new Map();
+  }
 }
 
 async function AlternateVersions({ gameId }: { gameId: number }) {
