@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 
 // A Rarity tier as a solid chip in its ink, with ink type: "Ultra rare ·
 // 2.1%". The tier follows the overall Rarity (as the die-cut edge and the
-// `rare` Highlight do); `figure` overrides the printed percentage, e.g. with
-// displayRarity's hardcore figure. Renders nothing without a Rarity.
+// `rare` Highlight do), so the overall figure always prints. A different
+// `figure` (displayRarity's hardcore one) prints after it: "Rare · 6.5% ·
+// HC 3.1%". Renders nothing without a Rarity.
 export const RARITY_FILL: Record<RarityTier, string> = {
   common: "bg-rarity-common",
   uncommon: "bg-rarity-uncommon",
@@ -32,7 +33,7 @@ export function RarityChip({
 }) {
   const tier = rarityTier(rarity);
   if (!tier || rarity == null) return null;
-  const shown = figure ?? rarity;
+  const hardcore = figure != null && figure !== rarity ? figure : null;
   return (
     <span
       className={cn(
@@ -43,7 +44,8 @@ export function RarityChip({
       )}
     >
       {RARITY_TIER_LABEL[tier]}
-      {showFigure && ` · ${formatRarity(shown)}`}
+      {showFigure && ` · ${formatRarity(rarity)}`}
+      {showFigure && hardcore != null && ` · HC ${formatRarity(hardcore)}`}
     </span>
   );
 }
