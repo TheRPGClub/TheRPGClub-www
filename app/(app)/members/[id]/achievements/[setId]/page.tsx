@@ -7,6 +7,7 @@ import type { AchievementSetDetail, ApiSingle } from "@/lib/api/types";
 import {
   formatUnlockDate,
   memberName,
+  progressFill,
   progressPercent,
   setBadges,
   setTitle,
@@ -67,7 +68,7 @@ export default async function MemberAchievementSetPage({
   const ra = set.provider === "retroachievements";
   const total = progress?.total_count ?? set.achievements_count;
   const earned = progress?.earned_count ?? 0;
-  const fill = total > 0 ? Math.min(100, (earned / total) * 100) : 0;
+  const fill = progressFill({ earned_count: earned, total_count: total });
 
   return (
     <MemberListShell

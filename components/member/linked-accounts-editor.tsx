@@ -25,10 +25,9 @@ import type {
   LinkedAccount,
   UserSocial,
 } from "@/lib/api/types";
-import { PROVIDER_LABEL } from "@/lib/achievements";
+import { ACHIEVEMENT_PROVIDERS, PROVIDER_LABEL } from "@/lib/achievements";
 import {
   IDENTIFIER_FIELD,
-  LINKED_ACCOUNT_PROVIDERS,
   canRetry,
   canSyncNow,
   formatCountdown,
@@ -97,7 +96,7 @@ export function LinkedAccountsEditor({
       <div className="space-y-2.5">
         <SectionHeading
           title="Linked Accounts"
-          count={`${linked} of ${LINKED_ACCOUNT_PROVIDERS.length} linked`}
+          count={`${linked} of ${ACHIEVEMENT_PROVIDERS.length} linked`}
           className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
         />
         <p className="max-w-[65ch] text-sm text-paper-mute">
@@ -116,7 +115,7 @@ export function LinkedAccountsEditor({
         </p>
       ) : (
         <ul className="grid gap-2.5">
-          {LINKED_ACCOUNT_PROVIDERS.map((provider) => {
+          {ACHIEVEMENT_PROVIDERS.map((provider) => {
             const account = accounts.find((a) => a.provider === provider);
             return (
               <li

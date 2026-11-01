@@ -15,6 +15,19 @@ import type {
 // grid order and the hub's links. No React here, so pages and components on
 // either side of the client boundary share them.
 
+// Every Provider, in the order rows, filters and options list them.
+export const ACHIEVEMENT_PROVIDERS: readonly AchievementProvider[] = [
+  "retroachievements",
+  "steam",
+  "psn",
+];
+
+export function isAchievementProvider(
+  value: string | null | undefined,
+): value is AchievementProvider {
+  return ACHIEVEMENT_PROVIDERS.includes(value as AchievementProvider);
+}
+
 export const PROVIDER_LABEL: Record<AchievementProvider, string> = {
   retroachievements: "RetroAchievements",
   steam: "Steam",
@@ -204,6 +217,15 @@ export function progressPercent(
 ): number {
   if (progress.total_count <= 0) return 0;
   return Math.floor((progress.earned_count / progress.total_count) * 100);
+}
+
+// A progress bar's width, 0-100. Unlike progressPercent the bar is exact,
+// while the label floors, so it says 100 only when done.
+export function progressFill(
+  progress: Pick<SetProgress, "earned_count" | "total_count"> | null | undefined,
+): number {
+  if (!progress || progress.total_count <= 0) return 0;
+  return Math.min(100, (progress.earned_count / progress.total_count) * 100);
 }
 
 // The badges a set's progress has earned. Mastery is a Completion, so it

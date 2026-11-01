@@ -13,13 +13,6 @@ import { PROVIDER_LABEL } from "@/lib/achievements";
 // as copy. No React and no server imports, so the server action and the
 // client editor share them.
 
-// One row per Provider, always in this order.
-export const LINKED_ACCOUNT_PROVIDERS: readonly AchievementProvider[] = [
-  "retroachievements",
-  "steam",
-  "psn",
-];
-
 export interface IdentifierField {
   // The input's accessible name.
   label: string;

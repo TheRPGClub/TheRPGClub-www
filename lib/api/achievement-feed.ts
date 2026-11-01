@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
-import { isUnknownUnlockDate } from "@/lib/achievements";
+import { isAchievementProvider, isUnknownUnlockDate } from "@/lib/achievements";
 import type {
   AchievementFeedCard,
   AchievementFeedView,
@@ -18,9 +18,7 @@ import type {
 
 export const ACHIEVEMENTS_HUB_PATH = "/achievements";
 const FEED_PER = 30;
-const FEED_FETCH: RequestInit = {
-  next: { revalidate: 60, tags: ["achievements"] },
-};
+const FEED_FETCH: RequestInit = { next: { revalidate: 60 } };
 
 export interface AchievementFeedFilters {
   view: AchievementFeedView;
@@ -33,12 +31,6 @@ export const FEED_VIEW_OPTIONS: { value: AchievementFeedView; label: string }[] 
   { value: "highlights", label: "Highlights" },
 ];
 
-const PROVIDERS: readonly AchievementProvider[] = ["retroachievements", "steam", "psn"];
-
-function isProvider(value: string | undefined): value is AchievementProvider {
-  return PROVIDERS.includes(value as AchievementProvider);
-}
-
 // The API 422s on an unknown view or provider, so anything else falls back
 // to the default rather than reaching it.
 export function parseFeedFilters(raw: RawSearchParams): AchievementFeedFilters {
@@ -47,7 +39,7 @@ export function parseFeedFilters(raw: RawSearchParams): AchievementFeedFilters {
   const page = parseInt(firstParam(raw.page) ?? "", 10);
   return {
     view: view === "highlights" ? "highlights" : "latest",
-    provider: isProvider(provider) ? provider : null,
+    provider: isAchievementProvider(provider) ? provider : null,
     page: Number.isFinite(page) && page > 1 ? page : 1,
   };
 }

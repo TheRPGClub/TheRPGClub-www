@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 import type { AchievementSet, SetProgress } from "@/lib/api/types";
-import { progressPercent, setBadges, setTitle } from "@/lib/achievements";
+import { progressFill, progressPercent, setBadges, setTitle } from "@/lib/achievements";
 import { Chip } from "@/components/issue/chip";
 import { cn } from "@/lib/utils";
 import { ProviderBadge } from "./provider-badge";
@@ -35,11 +35,7 @@ export function SetProgressCard({
 }) {
   const title = setTitle(set);
   const percent = progress ? progressPercent(progress) : 0;
-  // The bar is exact; the label floors, so it says 100 only when done.
-  const fill =
-    progress && progress.total_count > 0
-      ? Math.min(100, (progress.earned_count / progress.total_count) * 100)
-      : 0;
+  const fill = progressFill(progress);
   const badges = progress ? setBadges(progress) : [];
   const ra = set.provider === "retroachievements";
 
