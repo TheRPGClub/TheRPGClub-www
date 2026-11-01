@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
 import type { AchievementSetDetail, ApiSingle } from "@/lib/api/types";
 import {
   formatUnlockDate,
@@ -13,6 +14,7 @@ import {
   type AchievementView,
 } from "@/lib/achievements";
 import { achievementRowId, setDetailPath } from "@/lib/member-achievements";
+import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { AchievementGrid } from "@/components/achievements/achievement-grid";
 import { AchievementList } from "@/components/achievements/achievement-list";
 import { ProviderBadge } from "@/components/achievements/provider-badge";
@@ -41,7 +43,16 @@ export default async function MemberAchievementSetPage({
   const { id, setId } = await params;
   if (!/^\d+$/.test(setId)) notFound();
 
-  const res = await apiFetch(setDetailPath(setId, id), { cache: "no-store" });
+  const [session, summary, res] = await Promise.all([
+    getSession(),
+    fetchAchievementSummary(id),
+    apiFetch(setDetailPath(setId, id), { cache: "no-store" }),
+  ]);
+  // The hub is opt-in: like the achievements page, a member with no Linked
+  // Account has no set pages, except for the member themselves.
+  if (summary.status === "none" && session?.principal.discord_id !== id) {
+    notFound();
+  }
   if (res.status === 404) notFound();
   if (!res.ok) throw new Error(`Achievement Set ${setId} failed to load (${res.status})`);
   const { data: set }: ApiSingle<AchievementSetDetail> = await res.json();
