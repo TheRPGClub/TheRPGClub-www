@@ -14,11 +14,15 @@ export const PROVIDER_FILL: Record<AchievementProvider, string> = {
 export function ProviderBadge({
   provider,
   short = false,
+  name,
   className,
 }: {
   provider: AchievementProvider;
   // "RA" / "Steam" / "PSN", for tight rows.
   short?: boolean;
+  // The member's name on the Provider, set inside the chip after the label
+  // in Barlow (a Linked Account chip).
+  name?: string | null;
   className?: string;
 }) {
   return (
@@ -31,6 +35,11 @@ export function ProviderBadge({
       )}
     >
       {short ? PROVIDER_SHORT_LABEL[provider] : PROVIDER_LABEL[provider]}
+      {name && (
+        <span className="ml-1.5 min-w-0 truncate font-sans text-[0.85rem] font-semibold tracking-normal normal-case">
+          {name}
+        </span>
+      )}
     </span>
   );
 }
