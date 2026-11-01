@@ -18,6 +18,8 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { importsHubHref } from "@/lib/imports/kinds";
+import { fetchAchievementSummary } from "@/lib/member-achievements-server";
+import { MemberAchievementsSection } from "@/components/achievements/member-achievements-section";
 import { MemberBanner } from "@/components/issue/member-banner";
 import { platformShort } from "@/components/issue/member-cover";
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
@@ -82,6 +84,7 @@ export default async function MemberPage({
     backlogPreview,
     collectionPreview,
     reviewsPreview,
+    achievements,
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
@@ -91,6 +94,7 @@ export default async function MemberPage({
     fetchPreview<UserBacklog>(`/api/v1/users/${id}/backlog?per=${SHELF_LIMIT}`),
     fetchPreview<GameCollection>(`/api/v1/users/${id}/collections?per=${SHELF_LIMIT}`),
     fetchPreview<Review>(`/api/v1/users/${id}/reviews?per=3`),
+    fetchAchievementSummary(id),
   ]);
 
   if (!userRes.ok) notFound();
@@ -286,6 +290,11 @@ export default async function MemberPage({
           ))}
         </MemberShelf>
       </div>
+
+      {/* Opt-in: only members with a Linked Account get the department. */}
+      {achievements.status === "ok" && (
+        <MemberAchievementsSection summary={achievements.summary} />
+      )}
 
       <section aria-labelledby="reviews" className="space-y-1">
         <SectionHeading

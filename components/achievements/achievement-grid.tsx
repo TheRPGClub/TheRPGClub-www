@@ -14,11 +14,15 @@ export function AchievementGrid({
   order = "unlocked-first",
   label = "Achievements",
   empty = "No achievements in this set.",
+  hrefFor,
 }: {
   items: AchievementView[];
   order?: AchievementOrder;
   label?: string;
   empty?: string;
+  // Links each icon somewhere (e.g. its row in an AchievementList), so a
+  // tap, which never opens the hover card, still reaches the details.
+  hrefFor?: (view: AchievementView) => string;
 }) {
   if (items.length === 0) {
     return (
@@ -35,7 +39,11 @@ export function AchievementGrid({
     >
       {sortAchievements(items, order).map((view) => (
         <li key={view.id}>
-          <AchievementHoverCard view={view} className="w-full">
+          <AchievementHoverCard
+            view={view}
+            href={hrefFor?.(view)}
+            className="w-full"
+          >
             <AchievementIcon
               view={view}
               size="md"
