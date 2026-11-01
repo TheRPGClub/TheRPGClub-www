@@ -16,7 +16,7 @@ import { SpoilerText } from "./spoiler-text";
 
 // A member's four rarest Unlocks (the summary's `rarest_unlocks`), laid on
 // the page as large die-cut icons, each taped down at its own tilt. An
-// Unlock that earned a Completion, Mastery or Platinum sits in a foil frame
+// Unlock that earned a Completion, Mastery or Platinum wears the foil edge
 // and is captioned with it; the rest are captioned with their Rarity in the
 // tier's ink. Each links to the member's set page.
 
@@ -70,13 +70,12 @@ export function RarestUnlocks({
                   aria-hidden
                   className="absolute -top-1.5 left-1/2 z-10 h-3 w-8 -translate-x-1/2 -rotate-3 bg-paper/25"
                 />
-                {foil ? (
-                  <span className="foil block rounded-[8px] p-[3px] shadow-[0_3px_6px_rgb(0_0_0/0.5)]">
-                    <AchievementIcon view={view} size="lg" className="size-[4.25rem] sm:size-20" />
-                  </span>
-                ) : (
-                  <AchievementIcon view={view} size="lg" className="size-[4.25rem] sm:size-[5.375rem]" />
-                )}
+                <AchievementIcon
+                  view={view}
+                  size="lg"
+                  foil={foil}
+                  className="size-[4.25rem] sm:size-[5.375rem]"
+                />
               </span>
               <span className="font-label flex flex-col items-center text-center text-[0.72rem] leading-[1.1] tracking-[0.05em] text-paper-dim">
                 {foil && unlock.highlight ? (
