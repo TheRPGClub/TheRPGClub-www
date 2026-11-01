@@ -1044,6 +1044,8 @@ export interface MemberAchievementSummary {
   providers: AchievementProviderTotals[];
   linked_accounts: LinkedAccountSummary[];
   latest_unlocks: AchievementUnlock[];
+  // At most 4, by the Achievement's Rarity ascending, unrated last.
+  rarest_unlocks: AchievementUnlock[];
 }
 
 // An Achievement on a set page. `unlocked_at` and `hardcore` are the shown
@@ -1096,11 +1098,30 @@ export interface AchievementSetCompletion {
   completed_at: string;
 }
 
+// One Achievement of a game's set on GET /games/:id/achievement_sets:
+// `holders` are the active members who unlocked it (user_ids, earliest
+// Unlock first). Hidden Achievements keep their name and description.
+export interface GameSetAchievement {
+  id: number;
+  name: string | null;
+  description: string | null;
+  icon_url: string | null;
+  icon_locked_url: string | null;
+  hidden: boolean;
+  tier: AchievementTier | null;
+  points: number | null;
+  rarity: number | null;
+  holders: string[];
+  viewer_unlocked: boolean;
+}
+
 // One set of GET /games/:id/achievement_sets (unpaginated): the members who
-// completed it, oldest Completion first, and the viewer's own progress.
+// completed it, oldest Completion first, the viewer's own progress, and its
+// non-removed Achievements in display order.
 export interface GameAchievementSet extends AchievementSet {
   completions: AchievementSetCompletion[];
   viewer_progress: SetProgress | null;
+  achievements: GameSetAchievement[];
 }
 
 // Linked Accounts (owner view): GET/POST /users/:id/linked_accounts,

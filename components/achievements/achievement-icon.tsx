@@ -96,10 +96,14 @@ export function AchievementIcon({
   size = "md",
   slot,
   tint,
+  foil = false,
   className,
 }: {
   view: AchievementIconView;
   size?: AchievementIconSize;
+  // A foil die-cut edge in place of the Rarity ink: only for the Unlock
+  // behind a Platinum, Mastery or Completion.
+  foil?: boolean;
   // The slot number a locked tile shows (1-based, set order).
   slot?: number;
   // The game tint (SetTint.tint): the hidden seal and the slot number.
@@ -119,7 +123,7 @@ export function AchievementIcon({
       )}
     >
       {view.unlocked ? (
-        <UnlockedTile view={view} s={s} />
+        <UnlockedTile view={view} s={s} foil={foil} />
       ) : sealed ? (
         <SealedTile id={view.id} s={s} tint={tint} />
       ) : (
@@ -131,7 +135,23 @@ export function AchievementIcon({
 
 type SizeSpec = (typeof SIZE)[AchievementIconSize];
 
-function UnlockedTile({ view, s }: { view: AchievementIconView; s: SizeSpec }) {
+// The foil edge: a transparent border over the conic foil, the tile's ink
+// clipped to the padding box so only the edge shows it.
+const FOIL_EDGE: React.CSSProperties = {
+  borderColor: "transparent",
+  background:
+    "linear-gradient(var(--color-ink-3), var(--color-ink-3)) padding-box, var(--foil-sheen) border-box, var(--foil-conic) border-box",
+};
+
+function UnlockedTile({
+  view,
+  s,
+  foil,
+}: {
+  view: AchievementIconView;
+  s: SizeSpec;
+  foil: boolean;
+}) {
   const tier = rarityTier(view.rarity);
   const psnTier = view.provider === "psn" ? view.tier : null;
   return (
@@ -143,7 +163,12 @@ function UnlockedTile({ view, s }: { view: AchievementIconView; s: SizeSpec }) {
         s.edge,
         tier ? RARITY_EDGE[tier] : "border-paper-mute",
       )}
-      style={{ "--tilt": `${stableTilt(view.id)}deg` } as React.CSSProperties}
+      style={
+        {
+          "--tilt": `${stableTilt(view.id)}deg`,
+          ...(foil ? FOIL_EDGE : null),
+        } as React.CSSProperties
+      }
     >
       {view.iconUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- remote Provider icons

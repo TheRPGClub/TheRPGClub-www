@@ -6,12 +6,13 @@ import {
   SectionHeading,
   headingLinkClass,
 } from "@/components/issue/page-header";
-import { AchievementTotalsRow, LinkedAccountBadges } from "./achievement-totals";
-import { UnlockList } from "./unlock-list";
+import { BinderTotals, LinkedAccountChips } from "./member-binder";
+import { RarestUnlocks } from "./rarest-unlocks";
 
-// The Achievements department on a member's profile: their totals, Linked
-// Accounts and five latest Unlocks, with a link to the full page. Rendered
-// only when the summary read answers 200 (the member has a Linked Account).
+// The Achievements department on a member's profile, built from the
+// binder's pieces: their totals and Linked Accounts on one side, their four
+// rarest Unlocks on the other, and a link into the binder. Rendered only
+// when the summary read answers 200 (the member has a Linked Account).
 export function MemberAchievementsSection({
   summary,
 }: {
@@ -33,23 +34,27 @@ export function MemberAchievementsSection({
           </Link>
         }
       />
-      <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="space-y-5">
-          <AchievementTotalsRow totals={summary.totals} linked={linked} />
-          <LinkedAccountBadges accounts={summary.linked_accounts} />
+      <div className="grid gap-x-12 gap-y-7 rounded-md bg-ink-2 px-5 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8 lg:flex-col lg:items-start lg:justify-start">
+          <BinderTotals totals={summary.totals} linked={linked} className="w-full max-w-[24rem]" />
+          <LinkedAccountChips accounts={summary.linked_accounts} className="flex-row flex-wrap" />
         </div>
-        {summary.latest_unlocks.length > 0 ? (
-          <UnlockList
-            unlocks={summary.latest_unlocks}
-            userId={userId}
-            compact
-            className="-my-3"
-          />
-        ) : (
-          <p className="self-start rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
-            No Unlocks synced yet.
-          </p>
-        )}
+        <div className="flex flex-col gap-3 lg:border-l lg:border-rule lg:pl-10">
+          <h3 className="font-label text-[0.78rem] tracking-[0.1em] text-paper-mute">
+            Rarest Unlocks
+          </h3>
+          {summary.rarest_unlocks.length > 0 ? (
+            <RarestUnlocks
+              unlocks={summary.rarest_unlocks}
+              userId={userId}
+              className="max-w-[26rem]"
+            />
+          ) : (
+            <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+              No Unlocks synced yet.
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

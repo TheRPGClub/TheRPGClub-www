@@ -3,13 +3,15 @@
 // Rarity; never sticker, album, pack or pull.
 //
 // Components
-//   <AchievementIcon view size? slot? tint? className?>
+//   <AchievementIcon view size? slot? tint? foil? className?>
 //     size: "sm" 40px | "md" 56px | "lg" 80px | "xl" 128px (or className
 //     "size-auto w-full aspect-square" to fill a grid cell).
 //     Unlocked: die-cut tile, 3px Rarity-ink edge, stable +-1.5deg tilt.
 //     Hidden (spoiler, not unlocked): sealed tile, seal in `tint`, "?".
 //     Locked: dashed slot showing `slot` (1-based) in `tint`, else a lock.
-//   <ProviderBadge provider short? className?>   solid Provider chip, ink type
+//     foil: foil die-cut edge (the Platinum/Mastery/Completion Unlock).
+//   <ProviderBadge provider short? name? className?>   solid Provider chip,
+//     ink type; `name` adds the member's Provider name (Linked Account chip)
 //   <RarityChip rarity figure? showFigure? size?: "sm"|"md" className?>
 //     "Ultra rare · 2.1%" in the tier's ink; null without a Rarity.
 //   <RarityLabel rarity ultraRare hardcore? chip? className?>  label-voice line
@@ -18,6 +20,11 @@
 //   <TintSpine tint width?=12 className?>  left-edge spine; parent `relative`
 //   <TintBand tint={SetTint} as? className?>  solid title band, AA type
 //   <SpoilerText spoiler className?>  blurred until clicked (hidden names)
+//   <RarestUnlocks unlocks userId className?>  four rarest Unlocks, taped
+//     down large; foil edge + Highlight caption, else Rarity in tier ink
+//   member-binder: <BinderTotals totals linked>, <LinkedAccountChips
+//     accounts>, <BinderIndexRow row number tint href>, <SlotDots earned
+//     total tint>, <BinderRings count> (the member page's binder)
 //
 // Maps: PROVIDER_FILL (bg-provider-*), RARITY_FILL (bg-rarity-*), TIER_RING.
 // Tokens (globals.css): rarity-{common,uncommon,rare,ultra},
@@ -40,3 +47,11 @@ export { RarityLabel } from "./rarity-label";
 export { SetBadgeChip } from "./set-badge";
 export { SpoilerText } from "./spoiler-text";
 export { TintBand, TintSpine } from "./tint";
+export { RarestUnlocks } from "./rarest-unlocks";
+export {
+  BinderIndexRow,
+  BinderRings,
+  BinderTotals,
+  LinkedAccountChips,
+  SlotDots,
+} from "./member-binder";
