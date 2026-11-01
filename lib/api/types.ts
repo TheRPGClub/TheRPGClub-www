@@ -1103,13 +1103,12 @@ export interface GameAchievementSet extends AchievementSet {
   viewer_progress: SetProgress | null;
 }
 
-// Linked Accounts (owner view)
-//
-// PROVISIONAL: api-05 (the owner-scoped /users/:id/linked_accounts routes)
-// has not merged, so this follows its ticket and the user_linked_accounts
-// columns rather than a swagger schema. www-01 must check it against the
-// swagger once api-05 lands.
+// Linked Accounts (owner view): GET/POST /users/:id/linked_accounts,
+// DELETE /users/:id/linked_accounts/:id, POST .../:id/retry and .../:id/sync.
+// The list is `{ data: [...] }`, at most one per Provider, with no meta.
 
+// pending until the first sync finishes; private/not_found stop syncing until
+// Retry; error is transient (the next Sync Window tries again).
 export type LinkedAccountSyncStatus =
   | "pending"
   | "ok"
@@ -1117,14 +1116,48 @@ export type LinkedAccountSyncStatus =
   | "not_found"
   | "error";
 
+// backfill until the first full import finishes, then incremental.
+export type LinkedAccountSyncMode = "backfill" | "incremental";
+
 export interface LinkedAccount {
   id: number;
+  user_id: string;
   provider: AchievementProvider;
-  display_name: string | null;
+  // The Provider's stable id: RA ULID, SteamID64 or PSN accountId.
+  external_id: string;
+  // The member's name on the Provider, as resolved when linked.
+  display_name?: string | null;
   sync_status: LinkedAccountSyncStatus;
-  sync_error: string | null;
-  last_synced_at: string | null;
-  backfilled_at: string | null;
-  // Now, or the end of the 15-minute "Sync now" cooldown.
+  sync_mode: LinkedAccountSyncMode;
+  // The Provider's message for the last failure.
+  sync_error?: string | null;
+  last_synced_at?: string | null;
+  backfilled_at?: string | null;
+  // The last Sync now.
+  sync_requested_at?: string | null;
+  // Now, or the end of the 15-minute Sync now cooldown.
+  sync_available_at: string;
+  created_at: string;
+}
+
+// The 422 reasons of the Linked Account writes (LinkedAccountError).
+export type LinkedAccountErrorReason =
+  | "provider_already_linked"
+  | "identity_claimed"
+  | "not_found"
+  | "private"
+  | "invalid_provider"
+  | "retry_not_allowed"
+  | "retry_required";
+
+export interface LinkedAccountError {
+  error: LinkedAccountErrorReason;
+  message: string;
+}
+
+// 429 from Sync now inside the cooldown.
+export interface SyncCooldownError {
+  error: "sync_cooldown";
+  message: string;
   sync_available_at: string;
 }
