@@ -8,6 +8,7 @@ import type {
   ApiCollection,
   ApiSingle,
   Game,
+  GameAchievementSet,
   GameRelations,
   Review,
   VotingCategory,
@@ -19,6 +20,7 @@ import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
+import { GameSetCard } from "@/components/achievements/game-set-card";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { GameHero } from "@/components/issue/game-hero";
 import {
@@ -210,6 +212,11 @@ async function GameContent({ gameId }: { gameId: number }) {
         </aside>
       </div>
 
+      {/* The game's Achievement Sets, only when it has any. */}
+      <Suspense fallback={null}>
+        <GameAchievements gameId={gameId} />
+      </Suspense>
+
       <Suspense fallback={null}>
         <AlternateVersions gameId={gameId} />
       </Suspense>
@@ -362,6 +369,35 @@ async function GameDetails({
   }
 
   return <RailFacts facts={facts} />;
+}
+
+// The Achievement showcase: each linked Achievement Set with the members who
+// completed it and the viewer's own progress. A game without sets (or a read
+// that fails) shows nothing, so the page doesn't apologise for it.
+async function GameAchievements({ gameId }: { gameId: number }) {
+  const res = await apiFetch(`/api/v1/games/${gameId}/achievement_sets`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const { data: sets }: { data: GameAchievementSet[] } = await res.json();
+  if (sets.length === 0) return null;
+
+  return (
+    <section aria-labelledby="game-achievements" className="mt-10">
+      <SectionHeading
+        title={<span id="game-achievements">Achievements</span>}
+        count={`${sets.length} ${sets.length === 1 ? "set" : "sets"}`}
+        className="mb-4"
+      />
+      <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {sets.map((set) => (
+          <li key={set.id} className="flex">
+            <GameSetCard set={set} className="flex-1" />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
 async function AlternateVersions({ gameId }: { gameId: number }) {
