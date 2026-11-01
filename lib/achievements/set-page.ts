@@ -45,6 +45,27 @@ export function formatSlot(slot: number): string {
   return String(slot).padStart(2, "0");
 }
 
+// The Achievement the spread opens on: the shown member's latest Unlock,
+// skipping `exclude` (the checklist's headline, already on show) unless it
+// is their only one. Null when they have no Unlocks.
+export function latestUnlockId(
+  items: SlottedAchievement[],
+  exclude: number | null = null,
+): number | null {
+  let best: AchievementView | null = null;
+  let fallback: number | null = null;
+  for (const { view } of items) {
+    if (!view.unlocked) continue;
+    if (view.id === exclude) {
+      fallback = view.id;
+      continue;
+    }
+    if (!best) best = view;
+    else if ((view.unlockedAt ?? "") > (best.unlockedAt ?? "")) best = view;
+  }
+  return best?.id ?? fallback;
+}
+
 // Rarer first; no Rarity sorts last; ties keep slot order.
 function byRarity(a: SlottedAchievement, b: SlottedAchievement): number {
   const ra = a.view.rarity ?? Number.POSITIVE_INFINITY;

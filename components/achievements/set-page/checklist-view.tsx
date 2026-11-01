@@ -25,6 +25,7 @@ export function ChecklistView({
   tint,
   selectedId,
   onSelect,
+  inlineId,
   inlineDetail,
   headline,
 }: SpreadViewProps & {
@@ -44,7 +45,7 @@ export function ChecklistView({
             selected={selectedId === headline.item.view.id}
             onSelect={onSelect}
           />
-          {selectedId === headline.item.view.id && inlineDetail(headline.item)}
+          {inlineId === headline.item.view.id && inlineDetail(headline.item)}
         </>
       )}
 
@@ -61,7 +62,7 @@ export function ChecklistView({
                   onSelect={onSelect}
                 />
               </li>
-              {selectedId === item.view.id && <li className="py-3 xl:hidden">{inlineDetail(item)}</li>}
+              {inlineId === item.view.id && <li className="py-3 xl:hidden">{inlineDetail(item)}</li>}
             </Fragment>
           ))}
         </ol>

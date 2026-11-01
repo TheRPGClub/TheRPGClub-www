@@ -10,13 +10,15 @@ import type { SetTint } from "@/lib/achievements/tint-color";
 import { cn } from "@/lib/utils";
 
 // What every view of the spread gets: the set's Achievements with their
-// slots, the tint, the picked one, and the phone-only detail card to place
-// under the picked item.
+// slots, the tint, the selected one, and the phone-only detail card to place
+// under `inlineId` (the reader's own pick; the default selection opens no
+// card).
 export interface SpreadViewProps {
   items: SlottedAchievement[];
   tint: SetTint;
   memberName: string;
   selectedId: number | null;
+  inlineId: number | null;
   onSelect: (id: number) => void;
   inlineDetail: (item: SlottedAchievement) => React.ReactNode;
 }
