@@ -3,12 +3,13 @@
 // Rarity; never sticker, album, pack or pull.
 //
 // Components
-//   <AchievementIcon view size? slot? tint? className?>
+//   <AchievementIcon view size? slot? tint? foil? className?>
 //     size: "sm" 40px | "md" 56px | "lg" 80px | "xl" 128px (or className
 //     "size-auto w-full aspect-square" to fill a grid cell).
 //     Unlocked: die-cut tile, 3px Rarity-ink edge, stable +-1.5deg tilt.
 //     Hidden (spoiler, not unlocked): sealed tile, seal in `tint`, "?".
 //     Locked: dashed slot showing `slot` (1-based) in `tint`, else a lock.
+//     foil: foil die-cut edge (the Platinum/Mastery/Completion Unlock).
 //   <ProviderBadge provider short? className?>   solid Provider chip, ink type
 //   <RarityChip rarity figure? showFigure? size?: "sm"|"md" className?>
 //     "Ultra rare · 2.1%" in the tier's ink; null without a Rarity.
