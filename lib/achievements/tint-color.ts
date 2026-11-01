@@ -85,6 +85,13 @@ export function finishTint(rgb: Rgb): SetTint {
   return { tint: rgbToHex(out), contrast: bestContrast(out).color };
 }
 
+// The type colour (ink or paper) for a hex colour; null when `color` isn't
+// a #rrggbb hex. For callers that only hold the tint, not its SetTint.
+export function contrastOn(color: string): SetTint["contrast"] | null {
+  if (!/^#[0-9a-f]{6}$/i.test(color)) return null;
+  return bestContrast(hexToRgb(color)).color;
+}
+
 function bestContrast(rgb: Rgb): { color: SetTint["contrast"]; ratio: number } {
   const onInk = contrastRatio(rgb, hexToRgb(INK));
   const onPaper = contrastRatio(rgb, hexToRgb(PAPER));

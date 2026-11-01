@@ -7,13 +7,15 @@ import {
   type AchievementView,
   type RarityTier,
 } from "@/lib/achievements";
+import { contrastOn } from "@/lib/achievements/tint-color";
 import { cn } from "@/lib/utils";
 
 // An Achievement's icon as a die-cut tile resting in its slot. Three states:
 // - Unlocked (by the shown member): the art inside a 3px edge in its Rarity
 //   ink, 6px corners and a stable tilt from the id. PSN trophies carry a
 //   corner dot in their tier's metal (Platinum is foil); RetroAchievements
-//   hardcore Unlocks carry an "HC" tag.
+//   hardcore Unlocks carry an "HC" tag. With no art, the tile fills with
+//   the game tint and shows the slot number (or a trophy) in its contrast.
 // - Hidden (a spoiler: hidden and the viewer hasn't unlocked it, and the
 //   shown member hasn't either): a sealed tile crossed by a diagonal seal in
 //   the game tint, with a "?".
@@ -106,7 +108,8 @@ export function AchievementIcon({
   foil?: boolean;
   // The slot number a locked tile shows (1-based, set order).
   slot?: number;
-  // The game tint (SetTint.tint): the hidden seal and the slot number.
+  // The game tint (SetTint.tint): the hidden seal, the slot number and the
+  // fill of an unlocked tile without art.
   tint?: string;
   className?: string;
 }) {
@@ -123,7 +126,7 @@ export function AchievementIcon({
       )}
     >
       {view.unlocked ? (
-        <UnlockedTile view={view} s={s} foil={foil} />
+        <UnlockedTile view={view} s={s} foil={foil} slot={slot} tint={tint} />
       ) : sealed ? (
         <SealedTile id={view.id} s={s} tint={tint} />
       ) : (
@@ -147,13 +150,20 @@ function UnlockedTile({
   view,
   s,
   foil,
+  slot,
+  tint,
 }: {
   view: AchievementIconView;
   s: SizeSpec;
   foil: boolean;
+  slot?: number;
+  tint?: string;
 }) {
   const tier = rarityTier(view.rarity);
   const psnTier = view.provider === "psn" ? view.tier : null;
+  // Without art, the tile is the tint with its contrast type.
+  const ink = !view.iconUrl && tint ? contrastOn(tint) : null;
+  const fill = ink && tint ? tint : null;
   return (
     <span
       className={cn(
@@ -167,6 +177,13 @@ function UnlockedTile({
         {
           "--tilt": `${stableTilt(view.id)}deg`,
           ...(foil ? FOIL_EDGE : null),
+          ...(fill
+            ? foil
+              ? {
+                  background: `linear-gradient(${fill}, ${fill}) padding-box, var(--foil-sheen) border-box, var(--foil-conic) border-box`,
+                }
+              : { background: fill }
+            : null),
         } as React.CSSProperties
       }
     >
@@ -182,8 +199,15 @@ function UnlockedTile({
         <span
           aria-hidden
           className="flex size-full items-center justify-center text-paper-dim"
+          style={ink ? { color: ink } : undefined}
         >
-          <Trophy className={s.glyph} />
+          {fill && slot != null ? (
+            <span className={cn("font-headline leading-none", s.mark)}>
+              {String(slot).padStart(2, "0")}
+            </span>
+          ) : (
+            <Trophy className={s.glyph} />
+          )}
         </span>
       )}
       {psnTier && (
