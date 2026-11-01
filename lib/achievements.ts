@@ -2,6 +2,7 @@ import type {
   AchievementHighlightKind,
   AchievementProvider,
   AchievementSet,
+  AchievementSetCompletion,
   AchievementTier,
   AchievementUnlock,
   SetAchievement,
@@ -232,4 +233,16 @@ export function memberAchievementsHref(userId: string): string {
 
 export function memberSetHref(userId: string, setId: number): string {
   return `/members/${userId}/achievements/${setId}`;
+}
+
+// A Completion on the game page's showcase: "Ana · Completed Mar 3, 2026"
+// (or "Completed, unknown date" for an Unlock the Provider gave no time).
+export function completionLabel(
+  completion: Pick<AchievementSetCompletion, "user" | "completed_at">,
+): string {
+  const name = memberName(completion.user);
+  if (isUnknownUnlockDate(completion.completed_at)) {
+    return `${name} · Completed, unknown date`;
+  }
+  return `${name} · Completed ${formatUnlockDate(completion.completed_at)}`;
 }
