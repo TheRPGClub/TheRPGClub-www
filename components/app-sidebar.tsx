@@ -25,6 +25,7 @@ import {
 import { signOut } from "@/app/actions/auth";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import {
+  Award,
   LayoutDashboard,
   Library,
   LogOut,
@@ -40,6 +41,7 @@ const navMain = [
   { href: "/games", icon: Library, label: "Games" },
   { href: "/gotm", icon: Trophy, label: "GOTM history" },
   { href: "/members", icon: Users, label: "Members" },
+  { href: "/achievements", icon: Award, label: "Achievements" },
   { href: "/voting", icon: Vote, label: "Voting" },
 ];
 

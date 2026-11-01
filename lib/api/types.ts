@@ -892,3 +892,293 @@ export interface CastVoteResult {
   cap: number;
   warning: string | null;
 }
+
+// Achievement Hub
+//
+// Mirrors the api's swagger (feat/achievement-hub-api, api-09): the member
+// summary, set grid, Unlocks, set page, community feed and game showcase.
+// Glossary terms are binding: Provider, Linked Account, Achievement Set,
+// Unlock, Rarity, Completion, Mastery, Platinum, Highlight.
+//
+// Every Unlock in a read carries `viewer_unlocked`: the signed-in viewer's
+// own state, which decides the spoiler blur on a hidden Achievement. An
+// `unlocked_at` of 1970-01-01 means the Provider gave no time ("unknown
+// date"); those sort last.
+
+export type AchievementProvider = "retroachievements" | "steam" | "psn";
+
+// PSN trophy tiers. Null for RetroAchievements and Steam.
+export type AchievementTier = "bronze" | "silver" | "gold" | "platinum";
+
+// Why an Unlock is a Highlight; null when it isn't one. `rare` is an Unlock
+// with Rarity under 5%.
+export type AchievementHighlightKind =
+  | "platinum"
+  | "completion"
+  | "mastery"
+  | "rare";
+
+// The embedded member shape (UserSummary). Name a member global_name, then
+// username, then user_id.
+export interface UserSummary {
+  user_id: string;
+  username: string | null;
+  global_name: string | null;
+  is_bot: boolean;
+  role_admin: boolean;
+  role_moderator: boolean;
+  role_regular: boolean;
+  server_left_at?: string | null;
+}
+
+// The embedded GameDB game shape (GameSummary): no win flags.
+export interface GameSummary {
+  game_id: number;
+  title: string;
+  description?: string | null;
+  igdb_id?: number | null;
+  slug?: string | null;
+  igdb_url?: string | null;
+  initial_release_date?: string | null;
+  cover_url?: string | null;
+  art_url?: string | null;
+  logo_url?: string | null;
+}
+
+// A Provider's list of Achievements for one title. `game_id` is the linked
+// GameDB game, null until one is linked.
+export interface AchievementSet {
+  id: number;
+  provider: AchievementProvider;
+  external_id: string;
+  title?: string | null;
+  platform_label?: string | null;
+  icon_url?: string | null;
+  game_id?: number | null;
+  achievements_count: number;
+  points_total: number;
+}
+
+// One Achievement definition, shared by every member. `rarity` and
+// `rarity_hardcore` are the Provider's global percentages (0-100).
+export interface Achievement {
+  id: number;
+  name?: string | null;
+  description?: string | null;
+  icon_url?: string | null;
+  icon_locked_url?: string | null;
+  hidden: boolean;
+  points?: number | null;
+  tier?: AchievementTier | null;
+  display_order?: number | null;
+  removed_at?: string | null;
+  rarity?: number | null;
+  rarity_hardcore?: number | null;
+}
+
+// A member's Unlock, with its Achievement and Achievement Set embedded.
+export interface AchievementUnlock {
+  id: number;
+  user_id: string;
+  unlocked_at: string;
+  hardcore: boolean;
+  highlight: AchievementHighlightKind | null;
+  viewer_unlocked: boolean;
+  achievement: Achievement;
+  achievement_set: AchievementSet;
+}
+
+// A member's progress through one Achievement Set. The `*_at` stamps are
+// set once the member reaches a Completion, a Mastery (RA) or a Platinum
+// (PSN).
+export interface SetProgress {
+  id: number;
+  user_id: string;
+  achievement_set_id: number;
+  earned_count: number;
+  hardcore_earned_count: number;
+  total_count: number;
+  points_earned: number;
+  completed_at?: string | null;
+  mastered_at?: string | null;
+  platinum_at?: string | null;
+  last_unlocked_at?: string | null;
+  playtime_minutes?: number | null;
+}
+
+// One card of GET /users/:id/achievements/sets.
+export interface AchievementSetProgress extends SetProgress {
+  provider: AchievementProvider;
+  achievement_set: AchievementSet;
+}
+
+export type AchievementSetsStatus = "in_progress" | "completed";
+export type AchievementSetsSort = "recent" | "progress" | "title";
+
+// Unlocks, Completions, Masteries, Platinums and RA points earned.
+export interface AchievementTotals {
+  unlocks: number;
+  completions: number;
+  masteries: number;
+  platinums: number;
+  points: number;
+}
+
+export interface AchievementProviderTotals extends AchievementTotals {
+  provider: AchievementProvider;
+}
+
+// A Linked Account as the public summary shows it: Provider and name only.
+export interface LinkedAccountSummary {
+  provider: AchievementProvider;
+  display_name?: string | null;
+}
+
+// GET /users/:id/achievements/summary. 404 when the member has no Linked
+// Account or has left the server. One `providers` row per Linked Account
+// (zeros until its first sync); `latest_unlocks` holds at most 5, newest
+// first.
+export interface MemberAchievementSummary {
+  user: UserSummary;
+  totals: AchievementTotals;
+  providers: AchievementProviderTotals[];
+  linked_accounts: LinkedAccountSummary[];
+  latest_unlocks: AchievementUnlock[];
+  // At most 4, by the Achievement's Rarity ascending, unrated last.
+  rarest_unlocks: AchievementUnlock[];
+}
+
+// An Achievement on a set page. `unlocked_at` and `hardcore` are the shown
+// member's (null/false without `user_id`); `viewer_unlocked` is always the
+// signed-in viewer's own.
+export interface SetAchievement extends Achievement {
+  unlocked_at: string | null;
+  hardcore: boolean;
+  viewer_unlocked: boolean;
+}
+
+// GET /achievement_sets/:id(?user_id=). `removed_achievements` lists removed
+// Achievements the shown member unlocked, for a "Removed" footer.
+export interface AchievementSetDetail extends AchievementSet {
+  game: GameSummary | null;
+  user: UserSummary | null;
+  progress: SetProgress | null;
+  achievements: SetAchievement[];
+  removed_achievements: SetAchievement[];
+}
+
+export type AchievementFeedView = "latest" | "highlights";
+
+// A `view=latest` feed card: one member's Unlocks in one Achievement Set on
+// one UTC day (`day` is YYYY-MM-DD). `count` is every Unlock of the card;
+// `unlocks` holds at most 8, newest first.
+export interface AchievementFeedGroup {
+  kind: "group";
+  user: UserSummary;
+  achievement_set: AchievementSet;
+  day: string;
+  count: number;
+  latest_unlocked_at: string;
+  unlocks: AchievementUnlock[];
+}
+
+// A `view=highlights` feed card: one Highlight Unlock.
+export interface AchievementFeedHighlight extends AchievementUnlock {
+  kind: "highlight";
+  user: UserSummary;
+}
+
+// GET /achievements/feed returns either kind; tell them apart by `kind`.
+export type AchievementFeedCard =
+  | AchievementFeedGroup
+  | AchievementFeedHighlight;
+
+export interface AchievementSetCompletion {
+  user: UserSummary;
+  completed_at: string;
+}
+
+// One Achievement of a game's set on GET /games/:id/achievement_sets:
+// `holders` are the active members who unlocked it (user_ids, earliest
+// Unlock first). Hidden Achievements keep their name and description.
+export interface GameSetAchievement {
+  id: number;
+  name: string | null;
+  description: string | null;
+  icon_url: string | null;
+  icon_locked_url: string | null;
+  hidden: boolean;
+  tier: AchievementTier | null;
+  points: number | null;
+  rarity: number | null;
+  holders: string[];
+  viewer_unlocked: boolean;
+}
+
+// One set of GET /games/:id/achievement_sets (unpaginated): the members who
+// completed it, oldest Completion first, the viewer's own progress, and its
+// non-removed Achievements in display order.
+export interface GameAchievementSet extends AchievementSet {
+  completions: AchievementSetCompletion[];
+  viewer_progress: SetProgress | null;
+  achievements: GameSetAchievement[];
+}
+
+// Linked Accounts (owner view): GET/POST /users/:id/linked_accounts,
+// DELETE /users/:id/linked_accounts/:id, POST .../:id/retry and .../:id/sync.
+// The list is `{ data: [...] }`, at most one per Provider, with no meta.
+
+// pending until the first sync finishes; private/not_found stop syncing until
+// Retry; error is transient (the next Sync Window tries again).
+export type LinkedAccountSyncStatus =
+  | "pending"
+  | "ok"
+  | "private"
+  | "not_found"
+  | "error";
+
+// backfill until the first full import finishes, then incremental.
+export type LinkedAccountSyncMode = "backfill" | "incremental";
+
+export interface LinkedAccount {
+  id: number;
+  user_id: string;
+  provider: AchievementProvider;
+  // The Provider's stable id: RA ULID, SteamID64 or PSN accountId.
+  external_id: string;
+  // The member's name on the Provider, as resolved when linked.
+  display_name?: string | null;
+  sync_status: LinkedAccountSyncStatus;
+  sync_mode: LinkedAccountSyncMode;
+  // The Provider's message for the last failure.
+  sync_error?: string | null;
+  last_synced_at?: string | null;
+  backfilled_at?: string | null;
+  // The last Sync now.
+  sync_requested_at?: string | null;
+  // Now, or the end of the 15-minute Sync now cooldown.
+  sync_available_at: string;
+  created_at: string;
+}
+
+// The 422 reasons of the Linked Account writes (LinkedAccountError).
+export type LinkedAccountErrorReason =
+  | "provider_already_linked"
+  | "identity_claimed"
+  | "not_found"
+  | "private"
+  | "invalid_provider"
+  | "retry_not_allowed"
+  | "retry_required";
+
+export interface LinkedAccountError {
+  error: LinkedAccountErrorReason;
+  message: string;
+}
+
+// 429 from Sync now inside the cooldown.
+export interface SyncCooldownError {
+  error: "sync_cooldown";
+  message: string;
+  sync_available_at: string;
+}

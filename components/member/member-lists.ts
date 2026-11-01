@@ -44,9 +44,9 @@ export function memberCounts(
   };
 }
 
-export function memberName(user: User): string {
-  return user.global_name ?? user.username ?? user.user_id;
-}
+// One name rule for every member page (global_name, then username, then the
+// Discord id, skipping blanks like the API does).
+export { memberName } from "@/lib/achievements";
 
 export function memberListHref(userId: string, key: MemberListKey): string {
   const list = MEMBER_LISTS.find((l) => l.key === key)!;
