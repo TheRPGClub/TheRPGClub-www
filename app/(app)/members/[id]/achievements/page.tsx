@@ -17,6 +17,7 @@ import { paginationOf } from "@/lib/api/pagination";
 import {
   PROVIDER_SHORT_LABEL,
   linkedAccountsEditHref,
+  memberName,
   memberSetHref,
 } from "@/lib/achievements";
 import {
@@ -40,7 +41,6 @@ import { SetProgressCard } from "@/components/achievements/set-progress-card";
 import { UnlockList } from "@/components/achievements/unlock-list";
 import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListEmpty } from "@/components/member/member-game-card";
-import { memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
 import { buttonVariants } from "@/components/ui/button";
 
