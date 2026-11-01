@@ -51,9 +51,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// While an account imports its history, re-read the page this often so the
-// row moves on to "Last synced" without a manual reload.
+// While an account syncs, re-read the page this often so the row moves on to
+// "Last synced" without a manual reload. Each refresh re-renders the whole
+// edit page, so ticks are skipped while the tab is hidden and stop after a
+// while; a long import shows its result on the next reload.
 const PENDING_REFRESH_MS = 15_000;
+const PENDING_REFRESH_FOR_MS = 5 * 60_000;
 
 interface LinkedAccountsEditorProps {
   userId: string;
@@ -76,7 +79,14 @@ export function LinkedAccountsEditor({
 
   useEffect(() => {
     if (!anyPending) return;
-    const timer = window.setInterval(() => router.refresh(), PENDING_REFRESH_MS);
+    const stopAt = Date.now() + PENDING_REFRESH_FOR_MS;
+    const timer = window.setInterval(() => {
+      if (Date.now() >= stopAt) {
+        window.clearInterval(timer);
+        return;
+      }
+      if (!document.hidden) router.refresh();
+    }, PENDING_REFRESH_MS);
     return () => window.clearInterval(timer);
   }, [anyPending, router]);
 
