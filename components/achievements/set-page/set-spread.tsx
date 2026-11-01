@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { RARITY_TIER_LABEL, type RarityTier } from "@/lib/achievements";
 import {
-  HEADLINE_LABEL,
   SET_PAGE_VIEWS,
   rarityBands,
   setPageViewHref,
@@ -55,7 +54,6 @@ export function SetSpread({
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const selected = items.find((i) => i.view.id === selectedId) ?? null;
   const headlineItem = headline ? items.find((i) => i.view.id === headline.id) ?? null : null;
-  const headlineLabel = headline ? HEADLINE_LABEL[headline.reason] : null;
 
   const onSelect = (id: number) => setSelectedId((cur) => (cur === id ? null : id));
   const detailFor = (item: SlottedAchievement, className?: string) => (
@@ -63,7 +61,7 @@ export function SetSpread({
       item={item}
       tint={tint.tint}
       memberName={memberName}
-      headline={headline?.id === item.view.id ? headlineLabel : null}
+      headline={headline?.id === item.view.id ? headline.reason : null}
       onClose={() => setSelectedId(null)}
       className={className}
     />
@@ -116,7 +114,7 @@ export function SetSpread({
           {view === "checklist" && (
             <ChecklistView
               {...viewProps}
-              headline={headlineItem && headlineLabel ? { item: headlineItem, label: headlineLabel } : null}
+              headline={headlineItem && headline ? { item: headlineItem, reason: headline.reason } : null}
             />
           )}
           {view === "rarity" && <RarityView {...viewProps} />}

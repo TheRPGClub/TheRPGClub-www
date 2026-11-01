@@ -7,10 +7,14 @@ import {
   formatUnlockDate,
   isSpoiler,
 } from "@/lib/achievements";
-import { formatSlot, type SlottedAchievement } from "@/lib/achievements/set-page";
+import {
+  formatSlot,
+  type HeadlineReason,
+  type SlottedAchievement,
+} from "@/lib/achievements/set-page";
 import { AchievementIcon } from "@/components/achievements/achievement-icon";
 import { RarityChip } from "@/components/achievements/rarity-chip";
-import { AchievementName, itemClass, type SpreadViewProps } from "./shared";
+import { AchievementName, HeadlineChip, itemClass, type SpreadViewProps } from "./shared";
 import { cn } from "@/lib/utils";
 
 // CHECKLIST: the headline Achievement as a hero on the tint, then every
@@ -24,7 +28,7 @@ export function ChecklistView({
   inlineDetail,
   headline,
 }: SpreadViewProps & {
-  headline: { item: SlottedAchievement; label: string } | null;
+  headline: { item: SlottedAchievement; reason: HeadlineReason } | null;
 }) {
   const rest = headline ? items.filter((i) => i.view.id !== headline.item.view.id) : items;
 
@@ -34,7 +38,7 @@ export function ChecklistView({
         <>
           <Hero
             item={headline.item}
-            label={headline.label}
+            reason={headline.reason}
             tint={tint.tint}
             contrast={tint.contrast}
             selected={selectedId === headline.item.view.id}
@@ -68,14 +72,14 @@ export function ChecklistView({
 
 function Hero({
   item,
-  label,
+  reason,
   tint,
   contrast,
   selected,
   onSelect,
 }: {
   item: SlottedAchievement;
-  label: string;
+  reason: HeadlineReason;
   tint: string;
   contrast: string;
   selected: boolean;
@@ -100,14 +104,11 @@ function Hero({
         size="xl"
         slot={slot}
         tint={contrast}
-        className="max-sm:size-20 sm:row-span-4"
+        className="max-sm:size-20 sm:row-span-3"
       />
-      <span className="font-label self-end text-[0.85rem] max-sm:self-center">
-        {label} · No. {formatSlot(slot)}
-      </span>
       <AchievementName
         view={view}
-        className="font-headline block text-[2.25rem] leading-[0.92] [overflow-wrap:anywhere] max-sm:col-span-2 sm:text-[3rem]"
+        className="font-headline block self-end text-[2.25rem] leading-[0.92] [overflow-wrap:anywhere] max-sm:self-center sm:text-[3rem]"
       />
       {view.description && !spoiler && (
         <span className="line-clamp-3 max-w-[52ch] text-[0.95rem] leading-snug max-sm:col-span-2">
@@ -115,6 +116,11 @@ function Hero({
         </span>
       )}
       <span className="font-label flex flex-wrap items-center gap-x-3 gap-y-1.5 self-start text-[0.85rem] max-sm:col-span-2">
+        <HeadlineChip
+          reason={reason}
+          className="shadow-[0_0_0_2px_rgb(11_11_13/0.35)]"
+          style={{ background: contrast, color: tint }}
+        />
         {!(spoiler && !view.unlocked) && (
           <RarityChip
             rarity={view.rarity}

@@ -10,10 +10,15 @@ import {
   isSpoiler,
   rarityTier,
 } from "@/lib/achievements";
-import { formatSlot, type SlottedAchievement } from "@/lib/achievements/set-page";
+import {
+  formatSlot,
+  type HeadlineReason,
+  type SlottedAchievement,
+} from "@/lib/achievements/set-page";
 import { AchievementIcon } from "@/components/achievements/achievement-icon";
 import { RarityChip } from "@/components/achievements/rarity-chip";
 import { SpoilerText } from "@/components/achievements/spoiler-text";
+import { HeadlineChip } from "./shared";
 import { cn } from "@/lib/utils";
 
 const EDGE: Record<string, string> = {
@@ -41,7 +46,7 @@ export function AchievementDetail({
   tint: string;
   memberName: string;
   // The headline reason, when this is the set's headline Achievement.
-  headline?: string | null;
+  headline?: HeadlineReason | null;
   onClose: () => void;
   id?: string;
   className?: string;
@@ -73,11 +78,8 @@ export function AchievementDetail({
 
       <div className="flex items-end gap-4">
         <AchievementIcon view={view} size="lg" slot={slot} tint={tint} />
-        <p className="font-label flex flex-col gap-0.5 pb-1 text-[0.85rem] text-paper-mute">
-          <span>
-            No. <span style={{ color: tint }}>{formatSlot(slot)}</span>
-          </span>
-          {headline && <span className="text-paper-dim">{headline}</span>}
+        <p className="font-label pb-1 text-[0.85rem] text-paper-mute">
+          No. <span style={{ color: tint }}>{formatSlot(slot)}</span>
         </p>
       </div>
 
@@ -112,6 +114,9 @@ export function AchievementDetail({
           >
             {view.tier === "platinum" ? HIGHLIGHT_LABEL.platinum : TIER_LABEL[view.tier]}
           </span>
+        )}
+        {headline && !(headline === "platinum" && view.tier === "platinum") && (
+          <HeadlineChip reason={headline} className="bg-paper/8 text-paper-dim" />
         )}
       </div>
 

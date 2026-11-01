@@ -55,9 +55,9 @@ function byRarity(a: SlottedAchievement, b: SlottedAchievement): number {
 export type HeadlineReason = "platinum" | "points" | "rarest";
 
 export const HEADLINE_LABEL: Record<HeadlineReason, string> = {
-  platinum: "The Platinum",
+  platinum: "Platinum",
   points: "Most points",
-  rarest: "The rarest",
+  rarest: "Rarest",
 };
 
 // The set's headline Achievement, which the checklist leads with: the PSN
