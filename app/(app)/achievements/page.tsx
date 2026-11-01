@@ -14,7 +14,11 @@ import {
 } from "@/lib/api/achievement-feed";
 import { paginationOf } from "@/lib/api/pagination";
 import type { AchievementFeedCard, AchievementProvider } from "@/lib/api/types";
-import { PROVIDER_LABEL, formatFeedDay } from "@/lib/achievements";
+import {
+  PROVIDER_LABEL,
+  formatFeedDay,
+  linkedAccountsEditHref,
+} from "@/lib/achievements";
 import { FeedCard } from "@/components/achievements/feed-card";
 import { PageHeader } from "@/components/issue/page-header";
 import { ListPagination } from "@/components/list-pagination";
@@ -51,7 +55,7 @@ async function AchievementsHub({ filters }: { filters: Filters }) {
     result?.meta ?? undefined,
     cards.length,
   );
-  const editHref = `/members/${session.principal.discord_id}/edit`;
+  const editHref = linkedAccountsEditHref(session.principal.discord_id);
 
   return (
     <div className="space-y-6">

@@ -14,7 +14,11 @@ import type {
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { PROVIDER_SHORT_LABEL, memberSetHref } from "@/lib/achievements";
+import {
+  PROVIDER_SHORT_LABEL,
+  linkedAccountsEditHref,
+  memberSetHref,
+} from "@/lib/achievements";
 import {
   MEMBER_ACHIEVEMENTS_TABS,
   SET_SORT_LABEL,
@@ -45,10 +49,6 @@ import { buttonVariants } from "@/components/ui/button";
 // by recent, progress or title); Unlocks is the flat list, newest first.
 // The hub is opt-in, so a member with no Linked Account has no page here,
 // except for the member themselves, who is asked to link one.
-
-// Where www-01's Linked Accounts section sits on the edit page.
-const linkAccountsHref = (userId: string) =>
-  `/members/${userId}/edit#linked-accounts`;
 
 interface Page<T> {
   items: T[];
@@ -128,7 +128,7 @@ export default async function MemberAchievementsPage({
       action={
         isSelf && (
           <Link
-            href={linkAccountsHref(id)}
+            href={linkedAccountsEditHref(id)}
             className={buttonVariants({ variant: "outline" })}
           >
             <Link2 data-icon="inline-start" /> Linked Accounts
@@ -173,7 +173,7 @@ function LinkAccountCta({ userId }: { userId: string }) {
         until you do.
       </p>
       <Link
-        href={linkAccountsHref(userId)}
+        href={linkedAccountsEditHref(userId)}
         className={buttonVariants({ variant: "highlight" })}
       >
         <Link2 data-icon="inline-start" /> Link an account

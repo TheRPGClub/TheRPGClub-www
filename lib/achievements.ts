@@ -235,6 +235,12 @@ export function memberSetHref(userId: string, setId: number): string {
   return `/members/${userId}/achievements/${setId}`;
 }
 
+// The Linked Accounts section of the member's edit page. EditSections shows
+// only the section the hash names, so the hash is required.
+export function linkedAccountsEditHref(userId: string): string {
+  return `/members/${userId}/edit#linked-accounts`;
+}
+
 // A Completion on the game page's showcase: "Ana · Completed Mar 3, 2026"
 // (or "Completed, unknown date" for an Unlock the Provider gave no time).
 export function completionLabel(
