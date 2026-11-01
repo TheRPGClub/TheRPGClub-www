@@ -4,10 +4,13 @@ import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
 import type {
+  AchievementProviderTotals,
   ApiCollection,
   ApiSingle,
   GameCollection,
   GameCompletion,
+  LinkedAccount,
+  MemberAchievementSummary,
   Platform,
   SocialPlatform,
   User,
@@ -18,6 +21,7 @@ import type {
 import { paginationOf } from "@/lib/api/pagination";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
+import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { importsHubHref } from "@/lib/imports/kinds";
 import { PageHeader } from "@/components/issue/page-header";
 import { EditSections, type EditSection } from "@/components/issue/edit-sections";
@@ -33,6 +37,40 @@ async function loadCollection<T>(path: string): Promise<{ data: T[]; total: numb
     return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
     return { data: [], total: 0 };
+  }
+}
+
+// The member's Linked Accounts (`{ data: [...] }`, no meta). Null when the
+// list can't be read, so the editor says so instead of offering to link
+// accounts the member may already have.
+async function loadLinkedAccounts(userId: string): Promise<LinkedAccount[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/users/${userId}/linked_accounts`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const body: { data: LinkedAccount[] } = await res.json();
+    return body.data;
+  } catch {
+    return null;
+  }
+}
+
+// Unlocks per Provider, for the unlink warning. The summary is 404 for a
+// member with no Linked Account, which means no Unlocks anywhere.
+async function loadProviderTotals(
+  userId: string,
+): Promise<AchievementProviderTotals[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/users/${userId}/achievements/summary`, {
+      cache: "no-store",
+    });
+    if (res.status === 404) return [];
+    if (!res.ok) return null;
+    const body: ApiSingle<MemberAchievementSummary> = await res.json();
+    return body.data.providers;
+  } catch {
+    return null;
   }
 }
 
@@ -60,6 +98,8 @@ export default async function MemberEditPage({
     completed,
     backlog,
     collection,
+    linkedAccounts,
+    providerTotals,
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     loadCollection<SocialPlatform>("/api/v1/social_platforms"),
@@ -79,6 +119,8 @@ export default async function MemberEditPage({
     loadCollection<GameCollection>(
       `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
     ),
+    loadLinkedAccounts(id),
+    loadProviderTotals(id),
   ]);
 
   if (!userRes.ok) notFound();
@@ -149,6 +191,20 @@ export default async function MemberEditPage({
           userId={user.user_id}
           socials={user.socials ?? []}
           platforms={socialPlatforms.data}
+        />
+      ),
+    },
+    {
+      // www-03's "link an account" CTA lands on /edit#linked-accounts.
+      id: "linked-accounts",
+      label: "Linked Accounts",
+      count: linkedAccounts?.length ?? 0,
+      content: (
+        <LinkedAccountsEditor
+          userId={user.user_id}
+          accounts={linkedAccounts}
+          socials={user.socials ?? []}
+          totals={providerTotals}
         />
       ),
     },
