@@ -1,6 +1,5 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import sharp from "sharp";
 import { fallbackTint, pickVividColor, type SetTint } from "./tint-color";
 
 export type { SetTint } from "./tint-color";
@@ -46,6 +45,10 @@ async function sampleImage(url: string): Promise<SetTint | null> {
   if (length > MAX_BYTES) throw new Error(`tint: ${url} is too large`);
   const input = Buffer.from(await res.arrayBuffer());
   if (input.byteLength > MAX_BYTES) throw new Error(`tint: ${url} is too large`);
+  // Loaded here, not at the top: a missing native binary then rejects inside
+  // getSetTint's try and falls back to the hashed tint instead of failing the
+  // whole route at module load.
+  const { default: sharp } = await import("sharp");
   const { data, info } = await sharp(input)
     .resize(48, 48, { fit: "cover" })
     .ensureAlpha()
