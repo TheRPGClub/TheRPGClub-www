@@ -15,6 +15,19 @@ import type {
 // grid order and the hub's links. No React here, so pages and components on
 // either side of the client boundary share them.
 
+// Every Provider, in the order rows, filters and options list them.
+export const ACHIEVEMENT_PROVIDERS: readonly AchievementProvider[] = [
+  "retroachievements",
+  "steam",
+  "psn",
+];
+
+export function isAchievementProvider(
+  value: string | null | undefined,
+): value is AchievementProvider {
+  return ACHIEVEMENT_PROVIDERS.includes(value as AchievementProvider);
+}
+
 export const PROVIDER_LABEL: Record<AchievementProvider, string> = {
   retroachievements: "RetroAchievements",
   steam: "Steam",
@@ -42,8 +55,9 @@ export const HIGHLIGHT_LABEL: Record<AchievementHighlightKind, string> = {
 };
 
 // A Highlight is an Unlock rarer than this (Provider Rarity, in percent).
-// RarityLabel says "Ultra rare" under the same line, so the two never
-// disagree.
+// The API judges it on the overall Rarity, never RetroAchievements'
+// hardcore figure, and so does the "Ultra rare" chip (see displayRarity),
+// so the two never disagree.
 export const ULTRA_RARE_BELOW = 5;
 
 // Feed cards show at most this many icons; the rest is "+N".
@@ -130,18 +144,21 @@ export function isUltraRare(rarity: number | null | undefined): boolean {
 }
 
 // The Rarity to show: RetroAchievements' hardcore figure for a hardcore
-// Unlock when the Provider has one, else the overall figure.
+// Unlock when the Provider has one, else the overall figure. `ultraRare`
+// always follows the overall figure, as the API's `rare` Highlight does, so
+// a hardcore figure under the line alone doesn't earn the chip.
 export function displayRarity(
   view: Pick<AchievementView, "provider" | "hardcore" | "rarity" | "rarityHardcore">,
-): { rarity: number | null; hardcore: boolean } {
+): { rarity: number | null; hardcore: boolean; ultraRare: boolean } {
+  const ultraRare = isUltraRare(view.rarity);
   if (
     view.provider === "retroachievements" &&
     view.hardcore &&
     view.rarityHardcore != null
   ) {
-    return { rarity: view.rarityHardcore, hardcore: true };
+    return { rarity: view.rarityHardcore, hardcore: true, ultraRare };
   }
-  return { rarity: view.rarity, hardcore: false };
+  return { rarity: view.rarity, hardcore: false, ultraRare };
 }
 
 // "0.8%", "12%", "<0.1%": Rarity as the Provider reports it, trimmed.
@@ -202,6 +219,15 @@ export function progressPercent(
   return Math.floor((progress.earned_count / progress.total_count) * 100);
 }
 
+// A progress bar's width, 0-100. Unlike progressPercent the bar is exact,
+// while the label floors, so it says 100 only when done.
+export function progressFill(
+  progress: Pick<SetProgress, "earned_count" | "total_count"> | null | undefined,
+): number {
+  if (!progress || progress.total_count <= 0) return 0;
+  return Math.min(100, (progress.earned_count / progress.total_count) * 100);
+}
+
 // The badges a set's progress has earned. Mastery is a Completion, so it
 // stands in for it rather than beside it.
 export type SetBadge = "completion" | "mastery" | "platinum";
@@ -233,6 +259,12 @@ export function memberAchievementsHref(userId: string): string {
 
 export function memberSetHref(userId: string, setId: number): string {
   return `/members/${userId}/achievements/${setId}`;
+}
+
+// The Linked Accounts section of the member's edit page. EditSections shows
+// only the section the hash names, so the hash is required.
+export function linkedAccountsEditHref(userId: string): string {
+  return `/members/${userId}/edit#linked-accounts`;
 }
 
 // A Completion on the game page's showcase: "Ana · Completed Mar 3, 2026"

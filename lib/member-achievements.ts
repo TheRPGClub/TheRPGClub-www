@@ -4,7 +4,7 @@ import type {
   AchievementSetsStatus,
   AchievementTotals,
 } from "@/lib/api/types";
-import { memberAchievementsHref } from "@/lib/achievements";
+import { ACHIEVEMENT_PROVIDERS, memberAchievementsHref } from "@/lib/achievements";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
 
 // Pure helpers behind a member's achievement pages: the tab, the Sets
@@ -20,12 +20,6 @@ export const MEMBER_ACHIEVEMENTS_TABS: {
 }[] = [
   { key: "sets", label: "Sets" },
   { key: "unlocks", label: "Unlocks" },
-];
-
-export const PROVIDERS: AchievementProvider[] = [
-  "retroachievements",
-  "steam",
-  "psn",
 ];
 
 export const SET_STATUS_LABEL: Record<AchievementSetsStatus, string> = {
@@ -71,7 +65,7 @@ export function parseMemberAchievementsQuery(
   return {
     tab: oneOf(firstParam(raw.tab), ["sets", "unlocks"] as const) ?? "sets",
     filter: {
-      provider: oneOf(firstParam(raw.provider), PROVIDERS),
+      provider: oneOf(firstParam(raw.provider), ACHIEVEMENT_PROVIDERS),
       status: oneOf(
         firstParam(raw.status),
         Object.keys(SET_STATUS_LABEL) as AchievementSetsStatus[],

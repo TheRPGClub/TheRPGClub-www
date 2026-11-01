@@ -195,6 +195,7 @@ export function FeedHighlightCard({
           </p>
           <RarityLabel
             rarity={rarity.rarity}
+            ultraRare={rarity.ultraRare}
             hardcore={rarity.hardcore}
             // A rare Highlight already wears "Ultra rare" up top.
             chip={kind !== "rare"}

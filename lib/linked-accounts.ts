@@ -13,13 +13,6 @@ import { PROVIDER_LABEL } from "@/lib/achievements";
 // as copy. No React and no server imports, so the server action and the
 // client editor share them.
 
-// One row per Provider, always in this order.
-export const LINKED_ACCOUNT_PROVIDERS: readonly AchievementProvider[] = [
-  "retroachievements",
-  "steam",
-  "psn",
-];
-
 export interface IdentifierField {
   // The input's accessible name.
   label: string;
@@ -91,13 +84,27 @@ export function canSyncNow(status: LinkedAccountSyncStatus): boolean {
   return status === "ok";
 }
 
-export const STATUS_LABEL: Record<LinkedAccountSyncStatus, string> = {
+const STATUS_LABEL: Record<LinkedAccountSyncStatus, string> = {
   pending: "Importing",
   ok: "Synced",
   private: "Private",
   not_found: "Not found",
   error: "Sync failed",
 };
+
+// A pending account is importing its history only on its first (backfill)
+// sync; after a Retry it is back to pending but only catching up.
+function isImporting(account: Pick<LinkedAccount, "sync_status" | "sync_mode">): boolean {
+  return account.sync_status === "pending" && account.sync_mode === "backfill";
+}
+
+// The status chip's label.
+export function statusLabel(
+  account: Pick<LinkedAccount, "sync_status" | "sync_mode">,
+): string {
+  if (account.sync_status === "pending" && !isImporting(account)) return "Syncing";
+  return STATUS_LABEL[account.sync_status];
+}
 
 // Times in UTC, so the server render and the client agree.
 const DATE_TIME = new Intl.DateTimeFormat("en-US", {
@@ -119,7 +126,7 @@ export function formatSyncedAt(iso: string): string {
 export function statusLine(account: LinkedAccount): string {
   switch (account.sync_status) {
     case "pending":
-      return "Importing your history…";
+      return isImporting(account) ? "Importing your history…" : "Syncing…";
     case "ok":
       return account.last_synced_at
         ? `Last synced ${formatSyncedAt(account.last_synced_at)}`

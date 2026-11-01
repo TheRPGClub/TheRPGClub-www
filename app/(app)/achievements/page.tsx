@@ -13,13 +13,18 @@ import {
   type AchievementFeedFilters as Filters,
 } from "@/lib/api/achievement-feed";
 import { paginationOf } from "@/lib/api/pagination";
-import type { AchievementFeedCard, AchievementProvider } from "@/lib/api/types";
-import { PROVIDER_LABEL, formatFeedDay } from "@/lib/achievements";
+import type { AchievementFeedCard } from "@/lib/api/types";
+import {
+  ACHIEVEMENT_PROVIDERS,
+  PROVIDER_LABEL,
+  formatFeedDay,
+  linkedAccountsEditHref,
+} from "@/lib/achievements";
 import { FeedCard } from "@/components/achievements/feed-card";
+import { SegmentedLinks } from "@/components/achievements/segmented-links";
 import { PageHeader } from "@/components/issue/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 // The community hub: every member's Unlocks across the club, newest first.
 // "Latest" groups a member's Unlocks per Achievement Set and UTC day;
@@ -51,7 +56,7 @@ async function AchievementsHub({ filters }: { filters: Filters }) {
     result?.meta ?? undefined,
     cards.length,
   );
-  const editHref = `/members/${session.principal.discord_id}/edit`;
+  const editHref = linkedAccountsEditHref(session.principal.discord_id);
 
   return (
     <div className="space-y-6">
@@ -120,66 +125,39 @@ function cardKey(card: AchievementFeedCard): string {
     : `h-${card.id}`;
 }
 
-const SEGMENT =
-  "font-label inline-flex h-9.5 flex-1 items-center justify-center border-l border-rule-strong px-3.5 text-[0.92rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-colors first:border-l-0 sm:flex-none";
-
-function segmentClass(active: boolean): string {
-  return cn(
-    SEGMENT,
-    active ? "bg-paper text-ink" : "text-paper-dim hover:bg-ink-3 hover:text-paper",
-  );
-}
-
 function ViewTabs({ filters }: { filters: Filters }) {
   return (
-    <nav
-      aria-label="Feed view"
-      className="flex w-full overflow-hidden rounded-sm border border-rule-strong sm:inline-flex sm:w-auto"
-    >
-      {FEED_VIEW_OPTIONS.map((option) => {
-        const active = option.value === filters.view;
-        return (
-          <Link
-            key={option.value}
-            href={feedHref(filters, { view: option.value, page: 1 })}
-            aria-current={active ? "page" : undefined}
-            className={segmentClass(active)}
-          >
-            {option.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <SegmentedLinks
+      label="Feed view"
+      options={FEED_VIEW_OPTIONS.map((option) => ({
+        key: option.value,
+        label: option.label,
+        href: feedHref(filters, { view: option.value, page: 1 }),
+        on: option.value === filters.view,
+      }))}
+    />
   );
 }
-
-const PROVIDER_OPTIONS: { value: AchievementProvider | null; label: string }[] = [
-  { value: null, label: "All" },
-  { value: "retroachievements", label: PROVIDER_LABEL.retroachievements },
-  { value: "steam", label: PROVIDER_LABEL.steam },
-  { value: "psn", label: PROVIDER_LABEL.psn },
-];
 
 function ProviderFilter({ filters }: { filters: Filters }) {
   return (
-    <nav
-      aria-label="Provider"
-      className="flex w-full overflow-x-auto rounded-sm border border-rule-strong sm:inline-flex sm:w-auto"
-    >
-      {PROVIDER_OPTIONS.map((option) => {
-        const active = option.value === filters.provider;
-        return (
-          <Link
-            key={option.value ?? "all"}
-            href={feedHref(filters, { provider: option.value, page: 1 })}
-            aria-current={active ? "page" : undefined}
-            className={segmentClass(active)}
-          >
-            {option.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <SegmentedLinks
+      label="Provider"
+      options={[
+        {
+          key: "all",
+          label: "All",
+          href: feedHref(filters, { provider: null, page: 1 }),
+          on: filters.provider == null,
+        },
+        ...ACHIEVEMENT_PROVIDERS.map((provider) => ({
+          key: provider,
+          label: PROVIDER_LABEL[provider],
+          href: feedHref(filters, { provider, page: 1 }),
+          on: filters.provider === provider,
+        })),
+      ]}
+    />
   );
 }
 
@@ -246,8 +224,8 @@ function HubSkeleton() {
     <div className="space-y-6">
       <PageHeader title="Achievements" />
       <div className="flex flex-wrap justify-between gap-3">
-        <Skeleton className="h-9.5 w-56 rounded-sm" />
-        <Skeleton className="h-9.5 w-96 max-w-full rounded-sm" />
+        <Skeleton className="h-9 w-48 rounded-[3px]" />
+        <Skeleton className="h-9 w-96 max-w-full rounded-[3px]" />
       </div>
       <div className="space-y-3">
         <Skeleton className="h-5 w-32" />

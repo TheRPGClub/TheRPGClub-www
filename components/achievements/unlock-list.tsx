@@ -69,7 +69,11 @@ export function UnlockList({
                   {ra && unlock.hardcore ? " · Hardcore" : ""}
                 </span>
                 {!compact && (
-                  <RarityLabel rarity={rarity.rarity} hardcore={rarity.hardcore} />
+                  <RarityLabel
+                    rarity={rarity.rarity}
+                    ultraRare={rarity.ultraRare}
+                    hardcore={rarity.hardcore}
+                  />
                 )}
               </div>
             </div>

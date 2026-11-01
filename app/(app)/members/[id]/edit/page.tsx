@@ -10,7 +10,6 @@ import type {
   GameCollection,
   GameCompletion,
   LinkedAccount,
-  MemberAchievementSummary,
   Platform,
   SocialPlatform,
   User,
@@ -19,6 +18,7 @@ import type {
   UserNowPlaying,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
+import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
@@ -61,17 +61,9 @@ async function loadLinkedAccounts(userId: string): Promise<LinkedAccount[] | nul
 async function loadProviderTotals(
   userId: string,
 ): Promise<AchievementProviderTotals[] | null> {
-  try {
-    const res = await apiFetch(`/api/v1/users/${userId}/achievements/summary`, {
-      cache: "no-store",
-    });
-    if (res.status === 404) return [];
-    if (!res.ok) return null;
-    const body: ApiSingle<MemberAchievementSummary> = await res.json();
-    return body.data.providers;
-  } catch {
-    return null;
-  }
+  const result = await fetchAchievementSummary(userId);
+  if (result.status === "ok") return result.summary.providers;
+  return result.status === "none" ? [] : null;
 }
 
 export default async function MemberEditPage({

@@ -5,6 +5,7 @@ import {
   completionLabel,
   memberName,
   memberSetHref,
+  progressFill,
   progressPercent,
   setBadges,
   setTitle,
@@ -134,11 +135,7 @@ function ViewerProgress({
   title: string;
 }) {
   const percent = progressPercent(progress);
-  // The bar is exact; the label floors, so it says 100 only when done.
-  const fill =
-    progress.total_count > 0
-      ? Math.min(100, (progress.earned_count / progress.total_count) * 100)
-      : 0;
+  const fill = progressFill(progress);
   const badges = setBadges(progress);
 
   return (

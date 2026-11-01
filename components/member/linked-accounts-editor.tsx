@@ -25,15 +25,14 @@ import type {
   LinkedAccount,
   UserSocial,
 } from "@/lib/api/types";
-import { PROVIDER_LABEL } from "@/lib/achievements";
+import { ACHIEVEMENT_PROVIDERS, PROVIDER_LABEL } from "@/lib/achievements";
 import {
   IDENTIFIER_FIELD,
-  LINKED_ACCOUNT_PROVIDERS,
-  STATUS_LABEL,
   canRetry,
   canSyncNow,
   formatCountdown,
   identifierFromSocials,
+  statusLabel,
   statusLine,
   syncCooldownSeconds,
   unlinkWarning,
@@ -51,9 +50,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// While an account imports its history, re-read the page this often so the
-// row moves on to "Last synced" without a manual reload.
+// While an account syncs, re-read the page this often so the row moves on to
+// "Last synced" without a manual reload. Each refresh re-renders the whole
+// edit page, so ticks are skipped while the tab is hidden and stop after a
+// while; a long import shows its result on the next reload.
 const PENDING_REFRESH_MS = 15_000;
+const PENDING_REFRESH_FOR_MS = 5 * 60_000;
 
 interface LinkedAccountsEditorProps {
   userId: string;
@@ -76,7 +78,14 @@ export function LinkedAccountsEditor({
 
   useEffect(() => {
     if (!anyPending) return;
-    const timer = window.setInterval(() => router.refresh(), PENDING_REFRESH_MS);
+    const stopAt = Date.now() + PENDING_REFRESH_FOR_MS;
+    const timer = window.setInterval(() => {
+      if (Date.now() >= stopAt) {
+        window.clearInterval(timer);
+        return;
+      }
+      if (!document.hidden) router.refresh();
+    }, PENDING_REFRESH_MS);
     return () => window.clearInterval(timer);
   }, [anyPending, router]);
 
@@ -87,7 +96,7 @@ export function LinkedAccountsEditor({
       <div className="space-y-2.5">
         <SectionHeading
           title="Linked Accounts"
-          count={`${linked} of ${LINKED_ACCOUNT_PROVIDERS.length} linked`}
+          count={`${linked} of ${ACHIEVEMENT_PROVIDERS.length} linked`}
           className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
         />
         <p className="max-w-[65ch] text-sm text-paper-mute">
@@ -106,7 +115,7 @@ export function LinkedAccountsEditor({
         </p>
       ) : (
         <ul className="grid gap-2.5">
-          {LINKED_ACCOUNT_PROVIDERS.map((provider) => {
+          {ACHIEVEMENT_PROVIDERS.map((provider) => {
             const account = accounts.find((a) => a.provider === provider);
             return (
               <li
@@ -277,7 +286,7 @@ function LinkedRow({
             </span>
             <Chip>
               <StatusIcon status={account.sync_status} />
-              {STATUS_LABEL[account.sync_status]}
+              {statusLabel(account)}
             </Chip>
           </div>
           <p className="mt-1 text-sm text-paper-dim">
