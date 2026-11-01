@@ -134,7 +134,7 @@ export function ClubSetPage({
               </span>
               <ArrowRight
                 aria-hidden
-                className="size-4 self-center text-gotm transition-transform group-hover/you:translate-x-0.5"
+                className="size-4 self-center text-paper-mute transition-transform group-hover/you:translate-x-0.5 group-hover/you:text-highlight"
               />
             </Link>
           )}
