@@ -42,8 +42,9 @@ export const HIGHLIGHT_LABEL: Record<AchievementHighlightKind, string> = {
 };
 
 // A Highlight is an Unlock rarer than this (Provider Rarity, in percent).
-// RarityLabel says "Ultra rare" under the same line, so the two never
-// disagree.
+// The API judges it on the overall Rarity, never RetroAchievements'
+// hardcore figure, and so does the "Ultra rare" chip (see displayRarity),
+// so the two never disagree.
 export const ULTRA_RARE_BELOW = 5;
 
 // Feed cards show at most this many icons; the rest is "+N".
@@ -130,18 +131,21 @@ export function isUltraRare(rarity: number | null | undefined): boolean {
 }
 
 // The Rarity to show: RetroAchievements' hardcore figure for a hardcore
-// Unlock when the Provider has one, else the overall figure.
+// Unlock when the Provider has one, else the overall figure. `ultraRare`
+// always follows the overall figure, as the API's `rare` Highlight does, so
+// a hardcore figure under the line alone doesn't earn the chip.
 export function displayRarity(
   view: Pick<AchievementView, "provider" | "hardcore" | "rarity" | "rarityHardcore">,
-): { rarity: number | null; hardcore: boolean } {
+): { rarity: number | null; hardcore: boolean; ultraRare: boolean } {
+  const ultraRare = isUltraRare(view.rarity);
   if (
     view.provider === "retroachievements" &&
     view.hardcore &&
     view.rarityHardcore != null
   ) {
-    return { rarity: view.rarityHardcore, hardcore: true };
+    return { rarity: view.rarityHardcore, hardcore: true, ultraRare };
   }
-  return { rarity: view.rarity, hardcore: false };
+  return { rarity: view.rarity, hardcore: false, ultraRare };
 }
 
 // "0.8%", "12%", "<0.1%": Rarity as the Provider reports it, trimmed.

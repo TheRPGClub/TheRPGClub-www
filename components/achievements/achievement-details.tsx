@@ -68,7 +68,11 @@ export function AchievementDetails({ view }: { view: AchievementView }) {
             Locked
           </span>
         )}
-        <RarityLabel rarity={rarity.rarity} hardcore={rarity.hardcore} />
+        <RarityLabel
+          rarity={rarity.rarity}
+          ultraRare={rarity.ultraRare}
+          hardcore={rarity.hardcore}
+        />
       </div>
     </div>
   );
