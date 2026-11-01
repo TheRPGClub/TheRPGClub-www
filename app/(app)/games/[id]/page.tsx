@@ -375,11 +375,17 @@ async function GameDetails({
 // completed it and the viewer's own progress. A game without sets (or a read
 // that fails) shows nothing, so the page doesn't apologise for it.
 async function GameAchievements({ gameId }: { gameId: number }) {
-  const res = await apiFetch(`/api/v1/games/${gameId}/achievement_sets`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-  const { data: sets }: { data: GameAchievementSet[] } = await res.json();
+  let sets: GameAchievementSet[];
+  try {
+    const res = await apiFetch(`/api/v1/games/${gameId}/achievement_sets`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const body: { data?: GameAchievementSet[] } = await res.json();
+    sets = body.data ?? [];
+  } catch {
+    return null;
+  }
   if (sets.length === 0) return null;
 
   return (
