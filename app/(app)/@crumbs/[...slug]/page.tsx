@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { setDetailPath } from "@/lib/member-achievements";
 import { RunningHead, type Crumb } from "@/components/issue/running-head";
 
 // The top bar's running head: the current route as a trail, resolved on the
@@ -24,6 +25,7 @@ const MEMBER_PAGES: Record<string, string> = {
   "backlogged-games": "Backlog",
   "collected-games": "Collection",
   reviews: "Reviews",
+  achievements: "Achievements",
   edit: "Edit profile",
   imports: "Imports",
 };
@@ -60,6 +62,19 @@ async function memberName(id: string): Promise<string> {
   }
 }
 
+// An Achievement Set's title, from the set page's own read.
+async function achievementSetTitle(setId: string, userId: string): Promise<string> {
+  if (!/^\d+$/.test(setId)) return "Set";
+  try {
+    const res = await apiFetch(setDetailPath(setId, userId), { cache: "no-store" });
+    if (!res.ok) return "Set";
+    const body = (await res.json()) as { data?: { title?: string | null } };
+    return body.data?.title?.trim() || "Set";
+  } catch {
+    return "Set";
+  }
+}
+
 async function trailFor(slug: string[]): Promise<Crumb[]> {
   const [section, id, page, sub] = slug;
   const root = `/${section}`;
@@ -79,7 +94,12 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
     trail.push({ label: await memberName(id), href: base });
     if (page && MEMBER_PAGES[page]) {
       trail.push({ label: MEMBER_PAGES[page], href: `${base}/${page}` });
-      if (sub && MEMBER_SUBPAGES[sub]) {
+      if (page === "achievements" && sub) {
+        trail.push({
+          label: await achievementSetTitle(sub, id),
+          href: `${base}/${page}/${sub}`,
+        });
+      } else if (sub && MEMBER_SUBPAGES[sub]) {
         trail.push({ label: MEMBER_SUBPAGES[sub], href: `${base}/${page}/${sub}` });
       }
     }

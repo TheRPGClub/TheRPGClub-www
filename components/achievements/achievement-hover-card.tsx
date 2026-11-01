@@ -11,11 +11,15 @@ import { AchievementDetails } from "./achievement-details";
 export function AchievementHoverCard({
   view,
   children,
+  href,
   className,
 }: {
   view: AchievementView;
   // The trigger's face, usually an AchievementIcon.
   children: React.ReactNode;
+  // Makes the trigger a link. Taps never open a hover card, so a set page
+  // points each icon at the Achievement's inline details.
+  href?: string;
   className?: string;
 }) {
   const label = isSpoiler(view)
@@ -27,7 +31,7 @@ export function AchievementHoverCard({
       <PreviewCard.Trigger
         delay={120}
         closeDelay={80}
-        render={<button type="button" />}
+        render={href ? <a href={href} /> : <button type="button" />}
         aria-label={`${label}, ${view.unlocked ? "unlocked" : "locked"}`}
         className={cn(
           "block rounded-sm outline-none transition-transform duration-150",
