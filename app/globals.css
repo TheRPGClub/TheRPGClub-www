@@ -84,6 +84,36 @@
     --color-nr-soft: #b896ff;
     --color-highlight: #ffd400;
     --color-highlight-ink: #3a3200;
+
+    /* Achievement Hub roles, used on achievement surfaces only. Rarity inks
+       are the 3px die-cut edge of an unlocked icon, by the Provider's global
+       Rarity: common >= 50%, uncommon 15-50%, rare 5-15%, ultra under 5%. */
+    --color-rarity-common: #f4f4f0;
+    --color-rarity-uncommon: #5fd08a;
+    --color-rarity-rare: #4aa8ff;
+    --color-rarity-ultra: #ff4fa3;
+    /* Provider colours: solid chip and tab fills under ink type. PlayStation
+       is lifted from the mocks' #3b6fe0 so ink type on it clears AA. */
+    --color-provider-retroachievements: #2ec4b6;
+    --color-provider-steam: #66c0f4;
+    --color-provider-psn: #4677e6;
+    /* PSN trophy tiers: the corner dot on a PSN icon. Platinum is foil. */
+    --color-tier-bronze: #c8814a;
+    --color-tier-silver: #c0c6cc;
+    --color-tier-gold: #e0b84a;
+}
+
+/* Foil: the system's one sanctioned gradient. A holographic conic edge under
+   a soft diagonal sheen, only on Platinum, Mastery and Completion, never on
+   text. Pair it with ink type. */
+:root {
+    --foil-conic: conic-gradient(from 210deg, #b9f3ff, #ffd6f5, #fff3b0, #c7ffd9, #b9f3ff);
+    --foil-sheen: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.55) 44%, transparent 58%);
+}
+
+@utility foil {
+    background: var(--foil-sheen), var(--foil-conic);
+    color: var(--color-ink);
 }
 
 :root {
