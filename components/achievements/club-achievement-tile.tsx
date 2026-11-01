@@ -128,7 +128,15 @@ export function ClubAchievementTile({
         </span>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner sideOffset={8} collisionPadding={12} className="z-50">
+        {/* Beside the tile, top-aligned, so the card never covers the set
+            title or the tiles' names below; it flips left near the edge. */}
+        <Popover.Positioner
+          side="right"
+          align="start"
+          sideOffset={12}
+          collisionPadding={16}
+          className="z-50"
+        >
           <Popover.Popup
             className={cn(
               "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-rule-strong bg-ink-2 p-3.5 text-paper shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",

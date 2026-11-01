@@ -40,6 +40,7 @@ export function RarityView({
   tint,
   selectedId,
   onSelect,
+  inlineId,
   inlineDetail,
 }: SpreadViewProps) {
   const bands = rarityBands(items);
@@ -118,7 +119,7 @@ export function RarityView({
                 })}
               </ul>
             )}
-            {picked && <div className="md:col-span-2">{inlineDetail(picked)}</div>}
+            {picked && picked.view.id === inlineId && <div className="md:col-span-2">{inlineDetail(picked)}</div>}
           </section>
         );
       })}

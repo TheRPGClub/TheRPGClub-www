@@ -13,7 +13,8 @@
 //   <ProviderBadge provider short? name? className?>   solid Provider chip,
 //     ink type; `name` adds the member's Provider name (Linked Account chip)
 //   <RarityChip rarity figure? showFigure? size?: "sm"|"md" className?>
-//     "Ultra rare · 2.1%" in the tier's ink; null without a Rarity.
+//     "Ultra rare · 2.1%" in the tier's ink (tier from overall Rarity; a
+//     different `figure` adds " · HC 3.1%"); null without a Rarity.
 //   <RarityLabel rarity ultraRare hardcore? chip? className?>  label-voice line
 //   <SetBadgeChip badge className?>   flat foil chip: Completion/Mastery/Platinum
 //   <FoilStamp kind size?: "sm"|"md"|"lg" className?>  tilted foil stamp

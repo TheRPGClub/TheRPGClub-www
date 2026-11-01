@@ -56,12 +56,14 @@ function PaginationLink({
         "size-9 text-base text-paper-dim hover:text-paper data-[active=true]:bg-paper data-[active=true]:text-ink",
         className,
       )}
+      // data-slot goes on the Button, not the Link: Button sets its own and
+      // the two merge differently on server and client (hydration mismatch).
+      data-slot="pagination-link"
       nativeButton={false}
       render={
         <Link
           href={href ?? "/"}
           aria-current={isActive ? "page" : undefined}
-          data-slot="pagination-link"
           data-active={isActive}
           {...props}
         />

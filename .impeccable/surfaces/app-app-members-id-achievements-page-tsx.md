@@ -14,6 +14,8 @@ related_targets: ["app/(app)/members/[id]/achievements/[setId]/page.tsx","app/(a
 **Unresolved:**
 - The game-art tint needs a stored colour per Achievement Set from the API.
 - The game page's per-achievement holders need an API extension.
+- Hub club totals panel (sketch hub-a) omitted: the API has no weekly/monthly club aggregates; follow-up if wanted.
+- Member page 'Unlocks' view kept beside Index (not in sketch): flat Unlock list, carried over from the previous page.
 
 ## Direction contract
 

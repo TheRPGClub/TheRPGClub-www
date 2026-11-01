@@ -30,11 +30,11 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const dayLabel = (day: string) => DAY.format(new Date(`${day}T00:00:00Z`));
 
 export function TimelineView(props: SpreadViewProps) {
-  const { items, selectedId, inlineDetail } = props;
+  const { items, inlineId, inlineDetail } = props;
   const model = timelineModel(items);
   const pickedOnAxis = model.clusters
     .flatMap((c) => c.items)
-    .find((i) => i.view.id === selectedId);
+    .find((i) => i.view.id === inlineId);
 
   const runDays =
     model.firstAt && model.lastAt
@@ -301,6 +301,7 @@ function VerticalRun({
   tint,
   selectedId,
   onSelect,
+  inlineId,
   inlineDetail,
 }: SpreadViewProps & { clusters: TimelineCluster[] }) {
   const monthOf = (day: string) => MONTH_YEAR.format(new Date(`${day}T00:00:00Z`));
@@ -372,7 +373,7 @@ function VerticalRun({
                 })}
               </ul>
             </li>
-            {picked && <li className="py-2 pl-[3.6rem]">{inlineDetail(picked)}</li>}
+            {picked && picked.view.id === inlineId && <li className="py-2 pl-[3.6rem]">{inlineDetail(picked)}</li>}
           </Fragment>
         );
       })}
@@ -390,6 +391,7 @@ function Tray({
   tint,
   selectedId,
   onSelect,
+  inlineId,
   inlineDetail,
 }: SpreadViewProps & { title: string; note: string; group: SlottedAchievement[] }) {
   const picked = group.find((i) => i.view.id === selectedId);
@@ -440,7 +442,7 @@ function Tray({
           );
         })}
       </ul>
-      {picked && inlineDetail(picked)}
+      {picked && picked.view.id === inlineId && inlineDetail(picked)}
     </section>
   );
 }

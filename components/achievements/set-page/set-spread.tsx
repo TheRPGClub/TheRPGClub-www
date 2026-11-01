@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { RARITY_TIER_LABEL, type RarityTier } from "@/lib/achievements";
 import {
-  HEADLINE_LABEL,
   SET_PAGE_VIEWS,
+  latestUnlockId,
   rarityBands,
   setPageViewHref,
   type HeadlineReason,
@@ -52,19 +52,25 @@ export function SetSpread({
   memberName: string;
   headline: { id: number; reason: HeadlineReason } | null;
 }) {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const selected = items.find((i) => i.view.id === selectedId) ?? null;
+  // `undefined` until the reader picks: the spread then opens on the
+  // member's latest Unlock (in the checklist, the latest besides the
+  // headline). Phones open no card until a pick.
+  const [picked, setPicked] = useState<number | null | undefined>(undefined);
   const headlineItem = headline ? items.find((i) => i.view.id === headline.id) ?? null : null;
-  const headlineLabel = headline ? HEADLINE_LABEL[headline.reason] : null;
+  const selectedId =
+    picked === undefined
+      ? latestUnlockId(items, view === "checklist" ? (headline?.id ?? null) : null)
+      : picked;
+  const selected = items.find((i) => i.view.id === selectedId) ?? null;
 
-  const onSelect = (id: number) => setSelectedId((cur) => (cur === id ? null : id));
+  const onSelect = (id: number) => setPicked(selectedId === id ? null : id);
   const detailFor = (item: SlottedAchievement, className?: string) => (
     <AchievementDetail
       item={item}
       tint={tint.tint}
       memberName={memberName}
-      headline={headline?.id === item.view.id ? headlineLabel : null}
-      onClose={() => setSelectedId(null)}
+      headline={headline?.id === item.view.id ? headline.reason : null}
+      onClose={() => setPicked(null)}
       className={className}
     />
   );
@@ -74,6 +80,7 @@ export function SetSpread({
     memberName,
     selectedId,
     onSelect,
+    inlineId: picked ?? null,
     inlineDetail: (item: SlottedAchievement) => detailFor(item, "xl:hidden"),
   };
   const unlocked = items.filter((i) => i.view.unlocked).length;
@@ -116,7 +123,7 @@ export function SetSpread({
           {view === "checklist" && (
             <ChecklistView
               {...viewProps}
-              headline={headlineItem && headlineLabel ? { item: headlineItem, label: headlineLabel } : null}
+              headline={headlineItem && headline ? { item: headlineItem, reason: headline.reason } : null}
             />
           )}
           {view === "rarity" && <RarityView {...viewProps} />}
