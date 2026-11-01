@@ -57,12 +57,16 @@ function MemberByline({
   const name = memberName(user);
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <ReviewerAvatar userId={user.user_id} name={name} size="sm" />
+      {/* The avatar and name both lead to the member's achievements page. */}
       <Link
         href={memberAchievementsHref(user.user_id)}
-        className={cn("font-label truncate text-[0.9rem] text-paper", LINK)}
+        className={cn(
+          "font-label flex min-w-0 items-center gap-2 text-[0.9rem] text-paper",
+          LINK,
+        )}
       >
-        {name}
+        <ReviewerAvatar userId={user.user_id} name={name} size="sm" className="shrink-0" />
+        <span className="truncate">{name}</span>
       </Link>
       <span className="font-label shrink-0 text-[0.78rem] text-paper-mute">
         {date}
