@@ -3,8 +3,13 @@ import type {
   AchievementSetsSort,
   AchievementSetsStatus,
   AchievementTotals,
+  SetProgress,
 } from "@/lib/api/types";
-import { ACHIEVEMENT_PROVIDERS, memberAchievementsHref } from "@/lib/achievements";
+import {
+  ACHIEVEMENT_PROVIDERS,
+  memberAchievementsHref,
+  type SetBadge,
+} from "@/lib/achievements";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
 
 // Pure helpers behind a member's achievement pages: the tab, the Sets
@@ -24,7 +29,7 @@ export const MEMBER_ACHIEVEMENTS_TABS: {
 
 export const SET_STATUS_LABEL: Record<AchievementSetsStatus, string> = {
   in_progress: "In progress",
-  completed: "Completed",
+  completed: "Complete",
 };
 
 export const SET_SORT_LABEL: Record<AchievementSetsSort, string> = {
@@ -157,4 +162,52 @@ export function achievementRowId(id: number): string {
 // running head both read it with this URL, so the request is shared.
 export function setDetailPath(setId: string, userId: string): string {
   return `/api/v1/achievement_sets/${setId}?user_id=${encodeURIComponent(userId)}`;
+}
+
+// The binder's index rows: one dot per slot, earned first. A set larger than
+// `max` is drawn at `max` dots, each standing for several slots, so a long
+// set still fits one or two lines. A started set never reads as empty and an
+// unfinished one never reads as full.
+export function slotDots(
+  earned: number,
+  total: number,
+  max = 60,
+): { filled: number; empty: number } {
+  if (total <= 0) return { filled: 0, empty: 0 };
+  const done = Math.min(Math.max(earned, 0), total);
+  if (total <= max) return { filled: done, empty: total - done };
+  let filled = Math.round((done / total) * max);
+  if (done > 0 && filled === 0) filled = 1;
+  if (done < total && filled === max) filled = max - 1;
+  return { filled, empty: max - filled };
+}
+
+// The one foil stamp an index row carries: Platinum over Mastery over
+// Completion.
+export function topSetBadge(
+  progress: Pick<SetProgress, "completed_at" | "mastered_at" | "platinum_at">,
+): SetBadge | null {
+  if (progress.platinum_at) return "platinum";
+  if (progress.mastered_at) return "mastery";
+  if (progress.completed_at) return "completion";
+  return null;
+}
+
+// A Provider tab toggles: tapping the active Provider clears the filter.
+export function providerToggle(
+  current: AchievementProvider | null,
+  provider: AchievementProvider,
+): AchievementProvider | null {
+  return current === provider ? null : provider;
+}
+
+// The member's name on the binder's left page is the monument, stepped down
+// by length so a long Discord name still fits the page.
+export function binderNameSize(name: string): "xl" | "lg" | "md" | "sm" | "xs" {
+  const n = [...name].length;
+  if (n <= 4) return "xl";
+  if (n <= 6) return "lg";
+  if (n <= 9) return "md";
+  if (n <= 14) return "sm";
+  return "xs";
 }

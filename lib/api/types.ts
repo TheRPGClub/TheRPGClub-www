@@ -1044,6 +1044,8 @@ export interface MemberAchievementSummary {
   providers: AchievementProviderTotals[];
   linked_accounts: LinkedAccountSummary[];
   latest_unlocks: AchievementUnlock[];
+  // At most 4, by the Achievement's Rarity ascending, unrated last.
+  rarest_unlocks: AchievementUnlock[];
 }
 
 // An Achievement on a set page. `unlocked_at` and `hardcore` are the shown
