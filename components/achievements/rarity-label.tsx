@@ -1,10 +1,10 @@
-import { Gem } from "lucide-react";
-import { formatRarity } from "@/lib/achievements";
+import { RARITY_TIER_LABEL, formatRarity } from "@/lib/achievements";
 import { cn } from "@/lib/utils";
+import { RARITY_FILL } from "./rarity-chip";
 
 // The Provider's Rarity in the label voice. An ultra-rare Achievement (under
 // the Highlight line on its overall Rarity, see displayRarity) also wears
-// "Ultra rare" on a paper chip, the loudest neutral there is.
+// the "Ultra rare" chip in its Rarity ink.
 export function RarityLabel({
   rarity,
   ultraRare,
@@ -30,9 +30,13 @@ export function RarityLabel({
       )}
     >
       {ultraRare && chip && (
-        <span className="inline-flex h-5 items-center gap-1 rounded-xs bg-paper px-1.5 text-ink [&_svg]:size-3">
-          <Gem aria-hidden />
-          Ultra rare
+        <span
+          className={cn(
+            "inline-flex h-5 items-center rounded-xs px-1.5 text-[0.72rem] text-ink",
+            RARITY_FILL.ultra,
+          )}
+        >
+          {RARITY_TIER_LABEL.ultra}
         </span>
       )}
       <span>
