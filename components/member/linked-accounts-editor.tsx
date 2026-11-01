@@ -29,11 +29,11 @@ import { PROVIDER_LABEL } from "@/lib/achievements";
 import {
   IDENTIFIER_FIELD,
   LINKED_ACCOUNT_PROVIDERS,
-  STATUS_LABEL,
   canRetry,
   canSyncNow,
   formatCountdown,
   identifierFromSocials,
+  statusLabel,
   statusLine,
   syncCooldownSeconds,
   unlinkWarning,
@@ -287,7 +287,7 @@ function LinkedRow({
             </span>
             <Chip>
               <StatusIcon status={account.sync_status} />
-              {STATUS_LABEL[account.sync_status]}
+              {statusLabel(account)}
             </Chip>
           </div>
           <p className="mt-1 text-sm text-paper-dim">
