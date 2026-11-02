@@ -821,6 +821,63 @@ export interface StarboardEntry {
   updated_at: string;
 }
 
+// Bot jobs (GET /api/v1/bot_jobs/:id)
+//
+// A Discord action the website asked the bot to carry out. The bot claims
+// queued jobs about every 10 seconds and acks them done or failed; a claim
+// that isn't acked within the lease goes back to queued, and fails with a
+// claim-timeout error after three claims. Readable by the member who queued
+// it, Admins and Superadmins. The payload is not exposed.
+
+export type BotJobKind =
+  | "giveaway_claim_notice"
+  | "giveaway_hub_refresh"
+  | "suggestion_submitted"
+  | "suggestion_outcome"
+  | "voting_poll_wakeup";
+
+export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
+
+export interface BotJob {
+  id: number;
+  kind: BotJobKind;
+  status: BotJobStatus;
+  // The member whose action queued it; null for system jobs.
+  requested_by_user_id: string | null;
+  // Claims so far, including ones that timed out.
+  attempts: number;
+  // The bot's error, or the claim-timeout error. Set when status is failed.
+  error_message: string | null;
+  claimed_at: string | null;
+  finished_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Guild channels (GET /api/v1/guild_channels)
+//
+// The guild's text (type 0) and announcement (type 5) channels as the bot
+// last reported them, for channel pickers. The list is ordered as Discord
+// shows it (uncategorized first, then category position, then channel
+// position) and is not paginated: `meta.count` is the row count.
+
+export interface GuildChannel {
+  // Discord snowflake.
+  channel_id: string;
+  name: string;
+  // Discord's numeric ChannelType: 0 text, 5 announcement.
+  channel_type: number;
+  // The category's channel id, or null when uncategorized.
+  parent_id: string | null;
+  position: number;
+  category_name: string | null;
+}
+
+export interface GuildChannelList {
+  data: GuildChannel[];
+  meta: { count: number };
+}
+
 // Voting rounds (GOTM / NR-GOTM nominations & votes)
 
 // Where a round is in its lifecycle, as the backend decides it: members
