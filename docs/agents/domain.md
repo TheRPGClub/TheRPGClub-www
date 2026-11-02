@@ -4,46 +4,28 @@ How the engineering skills should consume this repo's domain documentation when 
 
 ## Before exploring, read these
 
-- **The club glossary and ADRs in TheRPGClub-api.** This repo has none of its own; the club's domain language and system-wide decisions live there. Read them from a sibling api checkout when one exists, otherwise from GitHub:
+- **The club glossary and ADRs in TheRPGClub-api.** This repo has none of its own; the club's domain language and system-wide decisions live there. Read them from the api repo's default branch on GitHub (a local `../api` checkout may sit on a feature branch):
   - `gh api repos/TheRPGClub/TheRPGClub-api/contents/GLOSSARY.md -H "Accept: application/vnd.github.raw"`
   - `gh api repos/TheRPGClub/TheRPGClub-api/contents/docs/adr --jq '.[].name'`, then fetch the relevant ADR the same way.
-- **`GLOSSARY.md`** at the repo root, or
-- **`GLOSSARY-MAP.md`** at the repo root if it exists: it points at one `GLOSSARY.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`**: read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- **`GLOSSARY.md`** at the repo root, if one appears.
+- **`docs/adr/`**: read ADRs that touch the area you're about to work in.
 
-If one of the repo-root files in this list doesn't exist, **proceed silently** (the api glossary always exists). Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
+If one of the repo-root files in this list doesn't exist, **proceed silently** (the api glossary always exists). Don't create a glossary or ADRs in this repo: when `/domain-modeling` resolves a term or decision, it goes in TheRPGClub-api's `GLOSSARY.md` or `docs/adr/`, so the club keeps one vocabulary and one ADR sequence.
 
 ## File structure
 
-Single-context repo (most repos):
+This repo is single-context. If it ever grows its own glossary, it goes at the root:
 
 ```
 /
 ├── GLOSSARY.md
 ├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
 └── src/
-```
-
-Multi-context repo (presence of `GLOSSARY-MAP.md` at the root):
-
-```
-/
-├── GLOSSARY-MAP.md
-├── docs/adr/                          ← system-wide decisions
-└── src/
-    ├── ordering/
-    │   ├── GLOSSARY.md
-    │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
-        ├── GLOSSARY.md
-        └── docs/adr/
 ```
 
 ## Use the glossary's vocabulary
 
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `GLOSSARY.md`. Don't drift to synonyms the glossary explicitly avoids.
+When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in TheRPGClub-api's `GLOSSARY.md`. Don't drift to synonyms the glossary explicitly avoids.
 
 If the concept you need isn't in the glossary yet, that's a signal: either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
 
@@ -51,4 +33,4 @@ If the concept you need isn't in the glossary yet, that's a signal: either you'r
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
-> _Contradicts ADR-0007 (event-sourced orders), but worth reopening because…_
+> _Contradicts TheRPGClub-api ADR-0001 (achievement definitions separate from unlocks), but worth reopening because…_
