@@ -73,11 +73,15 @@ export function PublicRemindersEditor({
     });
   };
 
+  // Close the form in the same transition as the refresh, so the row comes
+  // back with the saved values rather than flashing the old ones.
   const done = () => {
-    setAdding(false);
-    setEditingId(null);
-    setError(null);
-    router.refresh();
+    startTransition(() => {
+      setAdding(false);
+      setEditingId(null);
+      setError(null);
+      router.refresh();
+    });
   };
 
   return (
