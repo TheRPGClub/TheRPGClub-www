@@ -800,11 +800,27 @@ export interface RssFeed {
 
 // Public Reminders
 
+// The bot's recurrence units, as /publicreminder offers them.
+export type PublicReminderRecurUnit =
+  | "minutes"
+  | "hours"
+  | "days"
+  | "weeks"
+  | "months"
+  | "years";
+
+// Mirrors PublicReminderResource. `due_at` comes back in UTC; the bot posts
+// `message` to `channel_id` then, and moves `due_at` on by the recurrence.
 export interface PublicReminder {
   reminder_id: number;
+  channel_id: string;
   message: string;
-  scheduled_at: string;
-  is_sent: boolean;
+  due_at: string;
+  recur_every: number | null;
+  recur_unit: PublicReminderRecurUnit | null;
+  enabled: boolean;
+  // Discord id of the admin who made it.
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }
