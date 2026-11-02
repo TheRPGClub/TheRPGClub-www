@@ -15,9 +15,4 @@ export async function fetchGuildChannels(): Promise<GuildChannel[] | null> {
   }
 }
 
-// The picker label: "#name", with the category when there is one.
-export function guildChannelLabel(channel: GuildChannel): string {
-  return channel.category_name
-    ? `#${channel.name} (${channel.category_name})`
-    : `#${channel.name}`;
-}
+export { guildChannelLabel } from "@/lib/api/guild-channel-label";
