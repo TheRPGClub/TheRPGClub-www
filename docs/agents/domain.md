@@ -2,15 +2,16 @@
 
 How the engineering skills should consume this repo's domain documentation when exploring the codebase.
 
-The club's domain glossary and system-wide ADRs live in the TheRPGClub-api repo (`../api/GLOSSARY.md` and `../api/docs/adr/` in the workspace checkout, or on GitHub). Read those; this repo has no glossary of its own unless one appears at its root.
-
 ## Before exploring, read these
 
+- **The club glossary and ADRs in TheRPGClub-api.** This repo has none of its own; the club's domain language and system-wide decisions live there. Read them from a sibling api checkout when one exists, otherwise from GitHub:
+  - `gh api repos/TheRPGClub/TheRPGClub-api/contents/GLOSSARY.md -H "Accept: application/vnd.github.raw"`
+  - `gh api repos/TheRPGClub/TheRPGClub-api/contents/docs/adr --jq '.[].name'`, then fetch the relevant ADR the same way.
 - **`GLOSSARY.md`** at the repo root, or
 - **`GLOSSARY-MAP.md`** at the repo root if it exists: it points at one `GLOSSARY.md` per context. Read each one relevant to the topic.
 - **`docs/adr/`**: read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
+If a repo-root file below doesn't exist, **proceed silently** (the api glossary above always exists). Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
 
 ## File structure
 
