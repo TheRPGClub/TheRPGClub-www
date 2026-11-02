@@ -36,10 +36,10 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
   const [job, setJob] = useState<BotJob | null>(initialJob ?? null);
   const [error, setError] = useState<string | null>(null);
   // The refresh run, decided once at mount: skipped when the job is already
-  // settled, and started a step in when the first read was handed in.
+  // settled, and opened with an immediate read when none was handed in.
   const [plan] = useState(() => ({
     run: !(initialJob && isBotJobSettled(initialJob)),
-    firstDelay: initialJob ? BOT_JOB_REFRESH_DELAYS_MS[0] : 0,
+    delays: initialJob ? BOT_JOB_REFRESH_DELAYS_MS : [0, ...BOT_JOB_REFRESH_DELAYS_MS],
   }));
   const [refreshing, setRefreshing] = useState(plan.run);
   // A read that can't succeed on a retry (403, 404): no manual check either.
@@ -71,14 +71,14 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
         }
       }
       step += 1;
-      if (step < BOT_JOB_REFRESH_DELAYS_MS.length) {
-        timer = window.setTimeout(tick, BOT_JOB_REFRESH_DELAYS_MS[step]);
+      if (step < plan.delays.length) {
+        timer = window.setTimeout(tick, plan.delays[step]);
       } else {
         setRefreshing(false);
       }
     };
 
-    timer = window.setTimeout(tick, plan.firstDelay);
+    timer = window.setTimeout(tick, plan.delays[0]);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
@@ -104,6 +104,19 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
     : { label: "Queued", detail: "Checking with the bot." };
   const settled = job ? isBotJobSettled(job) : false;
   const busy = refreshing || checking;
+
+  // Never read and never will be (403, 404): say why, with no status to show.
+  if (!job && stuck) {
+    return (
+      <div role="status" className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm", className)}>
+        <Chip>
+          <AlertTriangle aria-hidden className="size-3.5 shrink-0" />
+          Unavailable
+        </Chip>
+        <span className="text-paper-dim">{error}</span>
+      </div>
+    );
+  }
 
   return (
     <div
