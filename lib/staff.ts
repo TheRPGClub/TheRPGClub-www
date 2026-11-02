@@ -50,8 +50,8 @@ const TIER_GATE: Record<StaffTier, (m: Flags) => boolean> = {
 
 // Who a tier admits, for a refusal message ("Only Admins can ...").
 export const TIER_AUDIENCE: Record<StaffTier, string> = {
-  moderator: "Moderators and Admins",
-  admin: "Admins",
+  moderator: "Moderators, Admins and Superadmins",
+  admin: "Admins and Superadmins",
   superadmin: "Superadmins",
 };
 
