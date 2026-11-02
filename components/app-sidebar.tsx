@@ -24,13 +24,17 @@ import {
 } from "@/lib/auth-types";
 import { signOut } from "@/app/actions/auth";
 import type { VotingPhase } from "@/lib/api/voting-round";
+import { staffSectionsFor, type StaffSection } from "@/lib/staff";
 import {
   Award,
+  BellRing,
+  ClipboardCheck,
   LayoutDashboard,
   Library,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  ShieldCheck,
   Trophy,
   Users,
   Vote,
@@ -46,6 +50,15 @@ const navMain = [
 ];
 
 const VOTING_HREF = "/voting";
+
+const STAFF_ICON: Record<StaffSection["key"], typeof ShieldCheck> = {
+  overview: ShieldCheck,
+  reminders: BellRing,
+  suggestions: ClipboardCheck,
+};
+
+const NAV_BUTTON_CLASS =
+  "font-label h-10 gap-3 rounded-sm px-2.5 text-[1.05rem] text-paper-dim hover:bg-ink-3 hover:text-paper data-active:bg-gotm data-active:font-bold data-active:text-white [&_svg]:size-[18px]";
 
 // The voting item is named for what the club is doing right now, so the nav
 // says whether nominations or the vote are what's live without opening the
@@ -77,7 +90,8 @@ export function AppSidebar({
   // in the call-to-action yellow on the nav item itself.
   const votingOpen = votingPhase === "nominating" || votingPhase === "voting";
   const { toggleSidebar } = useSidebar();
-  const isAdmin = membership?.admin || membership?.moderator || membership?.dev;
+  // The /admin sections this member's role can use; none for most members.
+  const staffSections = staffSectionsFor(membership);
   const displayName = principal.global_name ?? principal.username;
   const avatarUrl = discordAvatarUrl(
     principal.discord_id,
@@ -165,7 +179,7 @@ export function AppSidebar({
                       // Collapsed to the icon rail the label is the tooltip,
                       // so the phase reaches the reader there too.
                       tooltip={label}
-                      className="font-label h-10 gap-3 rounded-sm px-2.5 text-[1.05rem] text-paper-dim hover:bg-ink-3 hover:text-paper data-active:bg-gotm data-active:font-bold data-active:text-white [&_svg]:size-[18px]"
+                      className={NAV_BUTTON_CLASS}
                     >
                       <Icon />
                       <span>{label}</span>
@@ -181,6 +195,40 @@ export function AppSidebar({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {staffSections.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute uppercase">
+              Staff
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0.5">
+                {staffSections.map(({ key, href, label }) => {
+                  const Icon = STAFF_ICON[key];
+                  // The overview is the section root: only its own path
+                  // marks it, so a tool page doesn't light both items.
+                  const active =
+                    key === "overview"
+                      ? pathname === href
+                      : pathname === href || pathname.startsWith(href + "/");
+                  return (
+                    <SidebarMenuItem key={key}>
+                      <SidebarMenuButton
+                        render={<Link href={href} />}
+                        isActive={active}
+                        tooltip={label}
+                        className={NAV_BUTTON_CLASS}
+                      >
+                        <Icon />
+                        <span>{label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-rule">
