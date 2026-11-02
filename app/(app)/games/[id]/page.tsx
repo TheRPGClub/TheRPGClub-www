@@ -4,6 +4,7 @@ import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
+import { isAdminOrAbove } from "@/lib/staff";
 import type {
   ApiCollection,
   ApiSingle,
@@ -149,7 +150,7 @@ async function GameContent({
   const hasCompleted =
     !!ownerId && (game.completions ?? []).some((e) => e.user_id === ownerId);
   const canWriteReview = isPlaying || hasCompleted;
-  const isAdmin = !!(session?.membership?.admin || session?.membership?.dev);
+  const isAdmin = isAdminOrAbove(session?.membership);
 
   const releaseDate = game.initial_release_date
     ? new Date(game.initial_release_date).toLocaleDateString("en-US", {
