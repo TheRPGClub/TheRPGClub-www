@@ -4,7 +4,7 @@ import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import { isAdminOrAbove, isMemberOrStaff } from "@/lib/staff";
+import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 import type {
   ApiCollection,
   ApiSingle,
@@ -36,6 +36,8 @@ import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { GameHero } from "@/components/issue/game-hero";
 import { GameJournalSection } from "@/components/journal/game-journal-section";
+import { GameThreads } from "@/components/game-links/game-threads";
+import { LinkVersionForm } from "@/components/game-links/link-version-form";
 import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import {
   RailFacts,
@@ -154,6 +156,8 @@ async function GameContent({
     !!ownerId && (game.completions ?? []).some((e) => e.user_id === ownerId);
   const canWriteReview = isPlaying || hasCompleted;
   const isAdmin = isAdminOrAbove(session?.membership);
+  // Thread link and unlink: the API's Regulars-or-staff gate.
+  const canEditThreads = isRegularOrStaff(session?.membership);
   // Refresh release info needs an IGDB link and the API's member gate.
   const canRefreshReleases =
     game.igdb_id != null && isMemberOrStaff(session?.membership);
@@ -250,6 +254,9 @@ async function GameContent({
               canRefreshReleases={canRefreshReleases}
             />
           </Suspense>
+          <Suspense fallback={null}>
+            <GameThreads gameId={gameId} canEdit={canEditThreads} />
+          </Suspense>
           {isAdmin && (
             <section>
               <RailHeading title="Images" count="Admin" />
@@ -283,7 +290,7 @@ async function GameContent({
       </Suspense>
 
       <Suspense fallback={null}>
-        <AlternateVersions gameId={gameId} />
+        <AlternateVersions gameId={gameId} canLink={isAdmin} />
       </Suspense>
     </div>
   );
@@ -534,19 +541,36 @@ async function fetchMemberNames(): Promise<Map<string, string>> {
   }
 }
 
-async function AlternateVersions({ gameId }: { gameId: number }) {
+// Admins also get "Link a version" here, so the section shows for them even
+// before the game has any.
+async function AlternateVersions({
+  gameId,
+  canLink,
+}: {
+  gameId: number;
+  canLink: boolean;
+}) {
   const relations = await fetchRelations(gameId);
   const alternates = relations?.alternates ?? [];
-  if (alternates.length === 0) return null;
+  if (alternates.length === 0 && !canLink) return null;
 
   return (
     <section aria-labelledby="alternate-versions" className="mt-10">
       <SectionHeading
         title={<span id="alternate-versions">Alternate versions</span>}
-        count={`${alternates.length} ${alternates.length === 1 ? "version" : "versions"}`}
+        count={
+          alternates.length
+            ? `${alternates.length} ${alternates.length === 1 ? "version" : "versions"}`
+            : undefined
+        }
         className="mb-4"
       />
-      <ul className="flex flex-wrap gap-2">
+      {alternates.length === 0 && (
+        <p className="text-sm text-paper-mute">
+          No other version of this game is linked yet.
+        </p>
+      )}
+      <ul className="flex flex-wrap gap-2 empty:hidden">
         {alternates.map((alt) => (
           <li key={alt.game_id}>
             <Link
@@ -561,6 +585,12 @@ async function AlternateVersions({ gameId }: { gameId: number }) {
           </li>
         ))}
       </ul>
+      {canLink && (
+        <LinkVersionForm
+          gameId={gameId}
+          alternateIds={alternates.map((alt) => alt.game_id)}
+        />
+      )}
     </section>
   );
 }
