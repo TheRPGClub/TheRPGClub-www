@@ -20,6 +20,29 @@ export function isBotJobSettled(job: Pick<BotJob, "status">): boolean {
 // settle inside the first two or three reads; the whole run is under a minute.
 export const BOT_JOB_REFRESH_DELAYS_MS: readonly number[] = [3_000, 6_000, 10_000, 15_000, 20_000];
 
+// A schedule as gaps (ms): each step's gap repeated until that step's
+// running total (from the first read) is reached.
+function backoffDelays(steps: readonly { every: number; until: number }[]): number[] {
+  const delays: number[] = [];
+  let total = 0;
+  for (const { every, until } of steps) {
+    while (total + every <= until) {
+      delays.push(every);
+      total += every;
+    }
+  }
+  return delays;
+}
+
+// For a job that runs for minutes (a memberscan has a 30 minute lease):
+// every 10 s for the first 2 minutes, every 30 s to 10 minutes, then every
+// minute to 35 minutes, a little past the lease.
+export const BOT_JOB_LONG_REFRESH_DELAYS_MS: readonly number[] = backoffDelays([
+  { every: 10_000, until: 120_000 },
+  { every: 30_000, until: 600_000 },
+  { every: 60_000, until: 2_100_000 },
+]);
+
 // Jobs per page on the /admin wire.
 export const WIRE_PAGE_SIZE = 25;
 

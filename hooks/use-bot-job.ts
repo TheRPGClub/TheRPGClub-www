@@ -30,18 +30,24 @@ export interface BotJobState {
   checkAgain: () => void;
 }
 
-// Follows one bot job: re-reads it at BOT_JOB_REFRESH_DELAYS_MS until it is
-// done or failed, then stops and leaves `checkAgain` for a manual read. The
-// caller keys its component on the job id so a new job starts a new run.
-// <BotJobStatus> and <ProofCard> both read a job through this.
-export function useBotJob(jobId: number, initialJob?: BotJob | null): BotJobState {
+// Follows one bot job: re-reads it at `delays` (BOT_JOB_REFRESH_DELAYS_MS by
+// default; BOT_JOB_LONG_REFRESH_DELAYS_MS for a job that runs for minutes)
+// until it is done or failed, then stops and leaves `checkAgain` for a
+// manual read. A read due while the tab is hidden waits until it is shown
+// again. The caller keys its component on the job id so a new job starts a
+// new run. <BotJobStatus> and <ProofCard> both read a job through this.
+export function useBotJob(
+  jobId: number,
+  initialJob?: BotJob | null,
+  delays: readonly number[] = BOT_JOB_REFRESH_DELAYS_MS,
+): BotJobState {
   const [job, setJob] = useState<BotJob | null>(initialJob ?? null);
   const [error, setError] = useState<string | null>(null);
   // The refresh run, decided once at mount: skipped when the job is already
   // settled, and opened with an immediate read when none was handed in.
   const [plan] = useState(() => ({
     run: !(initialJob && isBotJobSettled(initialJob)),
-    delays: initialJob ? BOT_JOB_REFRESH_DELAYS_MS : [0, ...BOT_JOB_REFRESH_DELAYS_MS],
+    delays: initialJob ? delays : [0, ...delays],
   }));
   const [refreshing, setRefreshing] = useState(plan.run);
   const [stuck, setStuck] = useState(false);
@@ -53,7 +59,17 @@ export function useBotJob(jobId: number, initialJob?: BotJob | null): BotJobStat
     let timer: number | undefined;
     let step = 0;
 
+    const onVisible = () => {
+      if (document.visibilityState === "hidden") return;
+      document.removeEventListener("visibilitychange", onVisible);
+      void tick();
+    };
+
     const tick = async () => {
+      if (document.visibilityState === "hidden") {
+        document.addEventListener("visibilitychange", onVisible);
+        return;
+      }
       const result = await readJob(jobId);
       if (cancelled) return;
       if (result.lost) {
@@ -89,6 +105,7 @@ export function useBotJob(jobId: number, initialJob?: BotJob | null): BotJobStat
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [jobId, plan]);
 
