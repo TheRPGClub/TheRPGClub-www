@@ -12,7 +12,8 @@ import {
 import { SuggestionCard } from "@/components/suggestions/suggestion-card";
 import { cn } from "@/lib/utils";
 
-const FOOT_LINK =
+// The small footer controls on a card (also the review page's).
+export const FOOT_LINK =
   "font-label inline-flex h-[30px] items-center gap-1.5 rounded-sm px-2 text-[0.82rem] font-extrabold transition-colors disabled:opacity-50 [&_svg]:size-3.5";
 
 // A board card with the member's controls: upvote (one each, removable) and,
