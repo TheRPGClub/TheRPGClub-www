@@ -6,6 +6,7 @@ import type { ApiCollection, Game } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 
 export interface GamePickerProps {
   // Renders the input + result list inline. Use `compact` for embedded use
@@ -18,6 +19,10 @@ export interface GamePickerProps {
   placeholder?: string;
   autoFocus?: boolean;
   className?: string;
+  // Offer "add it from IGDB" when the GameDB has no match (the list picker).
+  // The added game is picked like any other. `blockedReason` explains why the
+  // viewer can't add one, or is null when they can.
+  igdbFallback?: { listLabel: string; blockedReason: string | null };
 }
 
 export function GamePicker({
@@ -27,12 +32,16 @@ export function GamePicker({
   placeholder = "Search games…",
   autoFocus,
   className,
+  igdbFallback,
 }: GamePickerProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Game | null>(initialSelection ?? null);
+  // The query `results` answer, so the IGDB fallback waits for this query's
+  // GameDB search rather than showing on a stale or pending one.
+  const [searchedQuery, setSearchedQuery] = useState<string | null>(null);
 
   const trimmedQuery = query.trim();
   const hasQuery = trimmedQuery.length >= 2;
@@ -51,6 +60,7 @@ export function GamePicker({
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = (await res.json()) as ApiCollection<Game>;
         setResults(body.data);
+        setSearchedQuery(trimmedQuery);
         setError(null);
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
@@ -66,6 +76,19 @@ export function GamePicker({
       controller.abort();
     };
   }, [trimmedQuery, hasQuery]);
+
+  const pick = (game: Game) => {
+    setSelected(game);
+    setResults([]);
+    onPick(game);
+  };
+  const showIgdb =
+    !!igdbFallback &&
+    hasQuery &&
+    !loading &&
+    !error &&
+    searchedQuery === trimmedQuery &&
+    results.length === 0;
 
   if (selected) {
     return (
@@ -110,7 +133,18 @@ export function GamePicker({
 
       {error && <p className="text-xs text-destructive">{error}</p>}
 
-      {hasQuery && (
+      {showIgdb && (
+        <IgdbFallback
+          key={trimmedQuery}
+          query={trimmedQuery}
+          variant="picker"
+          listLabel={igdbFallback.listLabel}
+          blockedReason={igdbFallback.blockedReason}
+          onAdded={pick}
+        />
+      )}
+
+      {hasQuery && !showIgdb && (
         <div
           className={cn(
             "max-h-72 overflow-y-auto rounded-sm border border-rule-strong bg-ink-3 shadow-[0_12px_30px_rgb(0_0_0/0.45)]",
@@ -138,11 +172,7 @@ export function GamePicker({
                 type="button"
                 role="option"
                 aria-selected={false}
-                onClick={() => {
-                  setSelected(game);
-                  setResults([]);
-                  onPick(game);
-                }}
+                onClick={() => pick(game)}
                 className="group/result grid w-full grid-cols-[2.1rem_1fr_auto] items-center gap-3 border-t border-rule px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
               >
                 <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-ink-2">

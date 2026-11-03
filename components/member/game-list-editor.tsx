@@ -26,6 +26,8 @@ export interface GameListEditorProps {
   // Total count from the backend — we may only have a partial preview window.
   total?: number;
   platforms: Platform[];
+  // Why the viewer can't add a missing game from IGDB, or null when they can.
+  igdbBlockedReason: string | null;
 }
 
 // Backend validates these as check constraints; the order here drives the
@@ -52,6 +54,7 @@ export function GameListEditor({
   entries,
   total,
   platforms,
+  igdbBlockedReason,
 }: GameListEditorProps) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
@@ -214,6 +217,7 @@ export function GameListEditor({
             compact
             autoFocus
             onPick={handleAdd}
+            igdbFallback={{ listLabel: title, blockedReason: igdbBlockedReason }}
             placeholder={`Search games to add to ${title.toLowerCase()}…`}
           />
         </div>
