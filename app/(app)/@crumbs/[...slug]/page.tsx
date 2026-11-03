@@ -20,6 +20,7 @@ const SECTIONS: Record<string, string> = {
   giveaways: "Giveaways",
   admin: "Staff desk",
   suggestions: "Suggestion Board",
+  journals: "Game Journals",
 };
 
 // /admin tool pages, labelled as the sidebar's Staff group names them.
@@ -37,6 +38,7 @@ const MEMBER_PAGES: Record<string, string> = {
   "backlogged-games": "Backlog",
   "collected-games": "Collection",
   reviews: "Reviews",
+  journal: "Journal",
   achievements: "Achievements",
   edit: "Edit profile",
   imports: "Imports",

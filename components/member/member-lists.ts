@@ -8,7 +8,8 @@ export type MemberListKey =
   | "completed"
   | "reviews"
   | "backlog"
-  | "collection";
+  | "collection"
+  | "journal";
 
 export const MEMBER_LISTS: {
   key: MemberListKey;
@@ -21,6 +22,7 @@ export const MEMBER_LISTS: {
   { key: "reviews", label: "Reviews", path: "reviews" },
   { key: "backlog", label: "Backlog", path: "backlogged-games" },
   { key: "collection", label: "Collection", path: "collected-games" },
+  { key: "journal", label: "Journal", path: "journal" },
 ];
 
 export type MemberCounts = Partial<Record<MemberListKey, number>>;
@@ -41,6 +43,7 @@ export function memberCounts(
     reviews: raw.reviews,
     backlog: raw.backlog,
     collection: raw.collections,
+    journal: raw.journal,
   };
 }
 
