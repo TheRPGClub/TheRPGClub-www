@@ -25,6 +25,9 @@ export interface IgdbFallbackProps {
   blockedReason?: string | null;
   // The picker's list, for its copy ("on your Backlog").
   listLabel?: string;
+  // What the picked game is for: a list (the default, using `listLabel`) or a
+  // donated key, which has no list.
+  purpose?: "list" | "donation";
   onAdded?: (game: Game) => void;
 }
 
@@ -43,11 +46,13 @@ export function IgdbFallback({
   variant,
   blockedReason = null,
   listLabel,
+  purpose = "list",
   onAdded,
 }: IgdbFallbackProps) {
   const router = useRouter();
   const picker = variant === "picker";
   const allowed = !blockedReason;
+  const donation = purpose === "donation";
   const [search, setSearch] = useState<SearchState>(() =>
     picker && allowed ? { status: "loading" } : { status: "idle" },
   );
@@ -135,7 +140,9 @@ export function IgdbFallback({
         {picker ? (
           <p className="flex-1 text-sm text-paper-dim">
             {allowed
-              ? `Not in the GameDB. These are from IGDB: adding one puts it in the GameDB and on your ${listLabel ?? "list"}.`
+              ? donation
+                ? "Not in the GameDB. These are from IGDB: adding one puts it in the GameDB and picks it for your key."
+                : `Not in the GameDB. These are from IGDB: adding one puts it in the GameDB and on your ${listLabel ?? "list"}.`
               : `Not in the GameDB. ${blockedReason}`}
           </p>
         ) : (
@@ -215,8 +222,9 @@ export function IgdbFallback({
           )}
           {picker && busyHit && (
             <p className="mt-2.5 flex items-center gap-2.5 rounded-[2.4px] bg-ink-3 px-3 py-2.5 text-sm text-paper-dim">
-              You stay here. {busyHit.name} goes on your {listLabel ?? "list"} as soon
-              as it is added.
+              {donation
+                ? `You stay here. ${busyHit.name} is picked for your key as soon as it is added.`
+                : `You stay here. ${busyHit.name} goes on your ${listLabel ?? "list"} as soon as it is added.`}
             </p>
           )}
         </section>

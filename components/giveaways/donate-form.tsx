@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check, Eye, EyeOff, Gift, X } from "lucide-react";
 import { donateKeyAction } from "@/app/actions/giveaways";
 import type { Game } from "@/lib/api/types";
-import { DONATE_PLATFORMS, GAME_KEY_REGIONS, MAX_KEY, MAX_PLATFORM, MAX_TITLE } from "@/lib/giveaways";
+import { DONATE_PLATFORMS, GAME_KEY_REGIONS, MAX_KEY, MAX_PLATFORM } from "@/lib/giveaways";
 import { GamePicker } from "@/components/member/game-picker";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -14,11 +14,12 @@ const FIELD = "border-ink bg-[#fff8cc] text-ink caret-ink placeholder:text-ink/5
 const LABEL = "font-label mb-1.5 block text-sm text-ink";
 const OTHER = "Other";
 
-// "Wrap a key": the donate form, on the yellow call-to-action panel.
-export function DonateForm() {
+// "Wrap a key": the donate form, on the yellow call-to-action panel. The game
+// must come from the GameDB; one that isn't there can be added from IGDB.
+// `igdbBlockedReason` says why the donor can't add one, or is null when they can.
+export function DonateForm({ igdbBlockedReason }: { igdbBlockedReason: string | null }) {
   const [game, setGame] = useState<Game | null>(null);
   const [pickerKey, setPickerKey] = useState(0);
-  const [typedTitle, setTypedTitle] = useState<string | null>(null);
   const [platform, setPlatform] = useState<string>("");
   const [otherPlatform, setOtherPlatform] = useState("");
   const [region, setRegion] = useState("Global");
@@ -31,7 +32,6 @@ export function DonateForm() {
   const reset = () => {
     setGame(null);
     setPickerKey((k) => k + 1);
-    setTypedTitle(null);
     setPlatform("");
     setOtherPlatform("");
     setRegion("Global");
@@ -46,7 +46,6 @@ export function DonateForm() {
     startTransition(async () => {
       const result = await donateKeyAction({
         gamedb_game_id: game?.game_id ?? null,
-        game_title: game ? "" : (typedTitle ?? ""),
         platform: platform === OTHER ? otherPlatform : platform,
         region,
         key_value: keyValue,
@@ -73,21 +72,7 @@ export function DonateForm() {
         <span className={LABEL} id="donate-game">
           Game
         </span>
-        {typedTitle !== null ? (
-          <div className="space-y-1.5">
-            <Input
-              aria-labelledby="donate-game"
-              value={typedTitle}
-              maxLength={MAX_TITLE}
-              onChange={(e) => setTypedTitle(e.target.value)}
-              placeholder="The game's title"
-              className={FIELD}
-            />
-            <button type="button" onClick={() => setTypedTitle(null)} className="font-label text-xs text-ink underline underline-offset-2">
-              Search the GameDB instead
-            </button>
-          </div>
-        ) : game ? (
+        {game ? (
           <div className="flex h-9 items-center gap-2 rounded-sm border border-ink bg-ink pr-1 pl-3 text-sm text-paper">
             <Check aria-hidden className="size-4 text-highlight" />
             <span className="min-w-0 flex-1 truncate font-semibold">{game.title}</span>
@@ -104,11 +89,14 @@ export function DonateForm() {
             </button>
           </div>
         ) : (
-          <div className="space-y-1.5 [&_input]:border-ink [&_input]:bg-[#fff8cc] [&_input]:text-ink [&_input]:caret-ink [&_input]:placeholder:text-ink/55">
-            <GamePicker key={pickerKey} compact onPick={setGame} placeholder="Search the GameDB…" />
-            <button type="button" onClick={() => setTypedTitle("")} className="font-label text-xs text-ink underline underline-offset-2">
-              Not in the GameDB? Type the title
-            </button>
+          <div className="[&_input]:border-ink [&_input]:bg-[#fff8cc] [&_input]:text-ink [&_input]:caret-ink [&_input]:placeholder:text-ink/55">
+            <GamePicker
+              key={pickerKey}
+              compact
+              onPick={setGame}
+              placeholder="Search the GameDB…"
+              igdbFallback={{ purpose: "donation", blockedReason: igdbBlockedReason }}
+            />
           </div>
         )}
       </div>
