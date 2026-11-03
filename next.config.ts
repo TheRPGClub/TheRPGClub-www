@@ -12,9 +12,10 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      // The collection CSV import uploads the file through a server action;
-      // the API accepts up to 2 MB, plus room for the multipart overhead.
-      bodySizeLimit: "3mb",
+      // The collection CSV import (2 MB) and the live event image (10 MB)
+      // upload through server actions; this is the larger, plus room for the
+      // multipart overhead.
+      bodySizeLimit: "11mb",
     },
   },
   images: {

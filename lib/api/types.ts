@@ -1417,3 +1417,43 @@ export interface ThreadSearchResult {
   thread_name: string;
   games: { game_id: number; title: string }[];
 }
+
+// Bot presence (GET/POST /api/v1/bot_presence, GET /bot_presence/latest)
+//
+// The bot's "Playing ..." activity, one row per change, newest first. A staff
+// POST records the setter from the session and queues `presence_set` so the
+// bot applies it at once; the bot's own `/mod presence` writes as the service.
+// Moderator and up.
+
+export interface BotPresence {
+  activity_name: string;
+  set_at: string;
+  set_by_user_id: string | null;
+  set_by_username: string | null;
+}
+
+// Live events (GET/POST /api/v1/live_events, GET /live_events/:id)
+//
+// A forum thread in the Live Events forum and a Discord scheduled event, made
+// by the `live_event_create` bot job. Moderator and up.
+
+export type LiveEventStatus = "queued" | "thread_created" | "created" | "failed";
+
+export interface LiveEvent {
+  id: number;
+  topic: string;
+  // UTC instants.
+  starts_at: string;
+  ends_at: string;
+  // The URL given, or the uploaded image's public URL; null for none.
+  image_url: string | null;
+  status: LiveEventStatus;
+  discord_thread_id: string | null;
+  discord_event_id: string | null;
+  created_by_user_id: string | null;
+  // The `live_event_create` job, when the API returns it (an API fix adds
+  // it). Without it the page follows `status` alone.
+  bot_job_id?: number | null;
+  created_at: string;
+  updated_at: string;
+}

@@ -8,11 +8,14 @@ export async function apiFetch(
 ): Promise<Response> {
   const cookieStore = await cookies();
   const token = cookieStore.get("rpgclub_token")?.value;
+  // A FormData body is multipart: fetch sets the Content-Type with its
+  // boundary, so the JSON default must stay off.
+  const multipart = init?.body instanceof FormData;
 
   return fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(multipart ? { Accept: "application/json" } : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
