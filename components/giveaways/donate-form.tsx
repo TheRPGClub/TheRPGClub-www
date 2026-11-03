@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 const FIELD = "border-ink bg-[#fff8cc] text-ink caret-ink placeholder:text-ink/55 focus-visible:border-ink focus-visible:ring-ink/20";
 const LABEL = "font-label mb-1.5 block text-sm text-ink";
 const OTHER = "Other";
+// The IGDB fallback is drawn for the dark page, so it sits on a dark panel
+// here, like the picker's result list.
+const IGDB_PANEL = "rounded-sm border border-rule-strong bg-ink-3 p-2.5 text-paper";
 
 // "Wrap a key": the donate form, on the yellow call-to-action panel. The game
 // must come from the GameDB; one that isn't there can be added from IGDB.
@@ -95,7 +98,7 @@ export function DonateForm({ igdbBlockedReason }: { igdbBlockedReason: string | 
               compact
               onPick={setGame}
               placeholder="Search the GameDB…"
-              igdbFallback={{ purpose: "donation", blockedReason: igdbBlockedReason }}
+              igdbFallback={{ purpose: "donation", blockedReason: igdbBlockedReason, className: IGDB_PANEL }}
             />
           </div>
         )}

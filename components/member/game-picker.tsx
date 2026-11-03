@@ -22,10 +22,12 @@ export interface GamePickerProps {
   // Offer "add it from IGDB" when the GameDB has no match. The added game is
   // picked like any other. `blockedReason` explains why the viewer can't add
   // one, or is null when they can. A list picker names its list; the donate
-  // form passes `purpose: "donation"` instead.
-  igdbFallback?:
-    | { listLabel: string; purpose?: "list"; blockedReason: string | null }
-    | { purpose: "donation"; blockedReason: string | null };
+  // form passes `purpose: "donation"` instead. `className` styles a box around
+  // the fallback, for a picker on a light surface (its copy is light on dark).
+  igdbFallback?: (
+    | { listLabel: string; purpose?: "list" }
+    | { purpose: "donation" }
+  ) & { blockedReason: string | null; className?: string };
 }
 
 export function GamePicker({
@@ -137,15 +139,17 @@ export function GamePicker({
       {error && <p className="text-xs text-destructive">{error}</p>}
 
       {showIgdb && (
-        <IgdbFallback
-          key={trimmedQuery}
-          query={trimmedQuery}
-          variant="picker"
-          listLabel={"listLabel" in igdbFallback ? igdbFallback.listLabel : undefined}
-          purpose={igdbFallback.purpose}
-          blockedReason={igdbFallback.blockedReason}
-          onAdded={pick}
-        />
+        <div className={igdbFallback.className}>
+          <IgdbFallback
+            key={trimmedQuery}
+            query={trimmedQuery}
+            variant="picker"
+            listLabel={"listLabel" in igdbFallback ? igdbFallback.listLabel : undefined}
+            purpose={igdbFallback.purpose}
+            blockedReason={igdbFallback.blockedReason}
+            onAdded={pick}
+          />
+        </div>
       )}
 
       {hasQuery && !showIgdb && (
