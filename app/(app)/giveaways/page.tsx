@@ -34,61 +34,64 @@ export default async function GiveawaysPage({
   const total = allShelves.reduce((n, s) => n + s.count, 0);
   const counts = new Map(allShelves.map((s) => [s.family.key, s.count]));
 
-  return (
-    <div className="space-y-5">
+  const header = (
+    <>
       <PageHeader
         title="Giveaways"
         count={keys === null ? undefined : `${total} ${total === 1 ? "key" : "keys"} on the shelf`}
       />
-
       {!canClaim && (
         <p className="max-w-[65ch] text-sm text-paper-dim">
           You can browse and donate, but claiming a key needs the Members role in Discord, as it does in the bot. If you
           have it, sign out and back in to refresh your roles.
         </p>
       )}
+      <nav aria-label="Platforms" className="flex flex-wrap gap-2">
+        <PlatformTab href="/giveaways" active={!picked} label="All" count={total} />
+        {PLATFORM_FAMILIES.filter((f) => f.key !== "other" || counts.has("other")).map((f) => (
+          <PlatformTab
+            key={f.key}
+            href={`/giveaways?platform=${f.key}`}
+            active={picked?.key === f.key}
+            label={f.label}
+            count={counts.get(f.key) ?? 0}
+            ink={f.ink}
+          />
+        ))}
+      </nav>
+    </>
+  );
 
-      {keys === null ? (
+  if (keys === null) {
+    return (
+      <div className="space-y-5">
+        <PageHeader title="Giveaways" />
         <p role="alert" className="text-destructive">
           {"Couldn't load the shelf. Refresh to try again."}
         </p>
-      ) : (
+      </div>
+    );
+  }
+
+  return (
+    <GiveawayShelf
+      shelves={shelves}
+      viewerId={viewerId}
+      canClaim={canClaim}
+      canRevokeAny={isAdminOrAbove(session.membership)}
+      names={Object.fromEntries(names)}
+      emptyCopy={
+        picked ? `No ${picked.label} keys on the shelf right now.` : "The shelf is empty right now. Got a spare key? Put it up."
+      }
+      header={header}
+      rail={
         <>
-          <nav aria-label="Platforms" className="flex flex-wrap gap-2">
-            <PlatformTab href="/giveaways" active={!picked} label="All" count={total} />
-            {PLATFORM_FAMILIES.filter((f) => f.key !== "other" || counts.has("other")).map((f) => (
-              <PlatformTab
-                key={f.key}
-                href={`/giveaways?platform=${f.key}`}
-                active={picked?.key === f.key}
-                label={f.label}
-                count={counts.get(f.key) ?? 0}
-                ink={f.ink}
-              />
-            ))}
-          </nav>
-          <GiveawayShelf
-            shelves={shelves}
-            viewerId={viewerId}
-            canClaim={canClaim}
-            canRevokeAny={isAdminOrAbove(session.membership)}
-            names={Object.fromEntries(names)}
-            emptyCopy={
-              picked
-                ? `No ${picked.label} keys on the shelf right now.`
-                : "The shelf is empty right now. Got a spare key? Put it up."
-            }
-            rail={
-              <>
-                <DonatePanel canClaimCopy="Put it on the shelf. Any member with the Members role can claim it." />
-                <ClaimedMini keys={claimed} />
-                <DonationsMini keys={donated} />
-              </>
-            }
-          />
+          <DonatePanel canClaimCopy="Put it on the shelf. Any member with the Members role can claim it." />
+          <ClaimedMini keys={claimed} />
+          <DonationsMini keys={donated} />
         </>
-      )}
-    </div>
+      }
+    />
   );
 }
 

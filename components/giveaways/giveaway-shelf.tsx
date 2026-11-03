@@ -1,12 +1,24 @@
 "use client";
 
-import { useState, useTransition, type ComponentProps, type CSSProperties, type ReactNode } from "react";
+import {
+  useState,
+  useTransition,
+  type ComponentProps,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Gift, Lock, Undo2 } from "lucide-react";
 import { claimKeyAction, revokeKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
-import { CLAIM_REFUSAL_COPY, shelfAge, tagTilt, type KeyBox, type PlatformShelf } from "@/lib/giveaways";
+import {
+  CLAIM_REFUSAL_COPY,
+  shelfAge,
+  tagTilt,
+  type KeyBox,
+  type PlatformShelf,
+} from "@/lib/giveaways";
 import { GameCover } from "@/components/issue/game-cover";
 import { UnwrappedKey } from "@/components/giveaways/unwrapped-key";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
@@ -21,6 +33,8 @@ export interface GiveawayShelfProps {
   canRevokeAny: boolean;
   // user_id -> display name.
   names: Record<string, string>;
+  // The page header and platform tabs, replaced by the key panel on a claim.
+  header: ReactNode;
   // The right-hand rail (donate panel, claimed keys, donations).
   rail: ReactNode;
   // Shown when the filter leaves no shelves.
@@ -36,12 +50,23 @@ interface Claimed {
 // The prize shelf: each box is a gift-wrapped cover tied in its platform's
 // ribbon, with a paper tag carrying its title, donor and Claim. A claim
 // unwraps the box into the key panel in place, at once.
-export function GiveawayShelf({ shelves, viewerId, canClaim, canRevokeAny, names, rail, emptyCopy }: GiveawayShelfProps) {
+export function GiveawayShelf({
+  shelves,
+  viewerId,
+  canClaim,
+  canRevokeAny,
+  names,
+  header,
+  rail,
+  emptyCopy,
+}: GiveawayShelfProps) {
   const router = useRouter();
   const [claimed, setClaimed] = useState<Claimed | null>(null);
   // Keys lost in a race (or gone) since the page loaded.
   const [lost, setLost] = useState<ReadonlySet<number>>(new Set());
-  const [notice, setNotice] = useState<{ title: string; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ title: string; text: string } | null>(
+    null,
+  );
   const [pendingBox, setPendingBox] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -54,14 +79,21 @@ export function GiveawayShelf({ shelves, viewerId, canClaim, canRevokeAny, names
       const result = await claimKeyAction(key.key_id);
       setPendingBox(null);
       if (result.ok && result.key) {
-        setClaimed({ key: result.key, jobId: result.jobId ?? null, donorName: nameOf(result.key.donor_user_id) });
+        setClaimed({
+          key: result.key,
+          jobId: result.jobId ?? null,
+          donorName: nameOf(result.key.donor_user_id),
+        });
         window.scrollTo({ top: 0 });
         return;
       }
       if (result.refusal === "already_claimed" || result.refusal === "gone") {
         setLost((prev) => new Set(prev).add(key.key_id));
       }
-      setNotice({ title: box.title, text: result.error ?? "Couldn't claim that key. Try again." });
+      setNotice({
+        title: box.title,
+        text: result.error ?? "Couldn't claim that key. Try again.",
+      });
     });
   };
 
@@ -69,7 +101,10 @@ export function GiveawayShelf({ shelves, viewerId, canClaim, canRevokeAny, names
     startTransition(async () => {
       const result = await revokeKeyAction(key.key_id);
       if (!result.ok) {
-        setNotice({ title: key.game_title, text: result.error ?? "Couldn't take that key off the shelf." });
+        setNotice({
+          title: key.game_title,
+          text: result.error ?? "Couldn't take that key off the shelf.",
+        });
         return;
       }
       router.refresh();
@@ -89,62 +124,76 @@ export function GiveawayShelf({ shelves, viewerId, canClaim, canRevokeAny, names
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem]">
-      <div className="min-w-0 space-y-9">
-        {shelves.length === 0 && (
-          <p className="rounded-md border border-dashed border-rule-strong px-5 py-8 text-paper-mute">{emptyCopy}</p>
-        )}
-        {shelves.map((shelf) => (
-          <section key={shelf.family.key} aria-labelledby={`shelf-${shelf.family.key}`}>
-            <div className="mb-3 flex items-center gap-2.5">
-              <h2 id={`shelf-${shelf.family.key}`} className="font-headline text-2xl">
-                {shelf.family.label}
-              </h2>
-              <PlatformChip ink={shelf.family.ink}>
-                {shelf.count} {shelf.count === 1 ? "key" : "keys"}
-              </PlatformChip>
-            </div>
-            <ul
-              className="relative flex snap-x gap-[18px] overflow-x-auto border-b-[6px] border-rule-strong px-1.5 pt-2.5 [scrollbar-width:thin]"
-              style={{ "--p": shelf.family.ink } as CSSProperties}
-            >
-              {shelf.boxes.map((box) => {
-                const open = box.keys.filter((k) => !lost.has(k.key_id));
-                return (
-                  <GiftBox
-                    key={box.id}
-                    box={box}
-                    open={open}
-                    viewerId={viewerId}
-                    canClaim={canClaim}
-                    canRevokeAny={canRevokeAny}
-                    donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
-                    busy={isPending && pendingBox === box.id}
-                    disabled={isPending}
-                    onClaim={(key) => claim(box, key)}
-                    onRevoke={revoke}
-                  />
-                );
-              })}
-            </ul>
-            <div aria-hidden className="mt-1 h-2 bg-ink-3" />
-          </section>
-        ))}
-      </div>
-      <aside className="space-y-6">
-        {notice && (
-          <div
-            role="alert"
-            className="flex items-start gap-2.5 rounded-sm bg-paper/6 px-3 py-2.5 text-sm text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
-          >
-            <AlertCircle aria-hidden className="mt-0.5 size-4 shrink-0 text-highlight" />
-            <p>
-              <b>{notice.title}:</b> {notice.text}
+    <div className="space-y-5">
+      {header}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem]">
+        <div className="min-w-0 space-y-9">
+          {shelves.length === 0 && (
+            <p className="rounded-md border border-dashed border-rule-strong px-5 py-8 text-paper-mute">
+              {emptyCopy}
             </p>
-          </div>
-        )}
-        {rail}
-      </aside>
+          )}
+          {shelves.map((shelf) => (
+            <section
+              key={shelf.family.key}
+              aria-labelledby={`shelf-${shelf.family.key}`}
+            >
+              <div className="mb-3 flex items-center gap-2.5">
+                <h2
+                  id={`shelf-${shelf.family.key}`}
+                  className="font-headline text-2xl"
+                >
+                  {shelf.family.label}
+                </h2>
+                <PlatformChip ink={shelf.family.ink}>
+                  {shelf.count} {shelf.count === 1 ? "key" : "keys"}
+                </PlatformChip>
+              </div>
+              <ul
+                className="relative flex snap-x gap-[18px] overflow-x-auto border-b-[6px] border-rule-strong px-1.5 pt-2.5 [scrollbar-width:thin]"
+                style={{ "--p": shelf.family.ink } as CSSProperties}
+              >
+                {shelf.boxes.map((box) => {
+                  const open = box.keys.filter((k) => !lost.has(k.key_id));
+                  return (
+                    <GiftBox
+                      key={box.id}
+                      box={box}
+                      open={open}
+                      viewerId={viewerId}
+                      canClaim={canClaim}
+                      canRevokeAny={canRevokeAny}
+                      donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
+                      busy={isPending && pendingBox === box.id}
+                      disabled={isPending}
+                      onClaim={(key) => claim(box, key)}
+                      onRevoke={revoke}
+                    />
+                  );
+                })}
+              </ul>
+              <div aria-hidden className="mt-1 h-2 bg-ink-3" />
+            </section>
+          ))}
+        </div>
+        <aside className="space-y-6">
+          {notice && (
+            <div
+              role="alert"
+              className="flex items-start gap-2.5 rounded-sm bg-paper/6 px-3 py-2.5 text-sm text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+            >
+              <AlertCircle
+                aria-hidden
+                className="mt-0.5 size-4 shrink-0 text-highlight"
+              />
+              <p>
+                <b>{notice.title}:</b> {notice.text}
+              </p>
+            </div>
+          )}
+          {rail}
+        </aside>
+      </div>
     </div>
   );
 }
@@ -183,9 +232,20 @@ function GiftBox({
     <li className="w-32 shrink-0 snap-start">
       <div className="relative">
         <div className={cn("relative", gone && "brightness-50 grayscale")}>
-          <GameCover title={box.title} coverUrl={box.coverUrl} className="w-32" fallbackClassName="text-base" />
-          <i aria-hidden className="absolute inset-y-0 left-[72%] w-3.5 bg-(--p)" />
-          <i aria-hidden className="absolute inset-x-0 top-[62%] h-3.5 bg-(--p)" />
+          <GameCover
+            title={box.title}
+            coverUrl={box.coverUrl}
+            className="w-32"
+            fallbackClassName="text-base"
+          />
+          <i
+            aria-hidden
+            className="absolute inset-y-0 left-[72%] w-3.5 bg-(--p)"
+          />
+          <i
+            aria-hidden
+            className="absolute inset-x-0 top-[62%] h-3.5 bg-(--p)"
+          />
           <i
             aria-hidden
             className="absolute top-[calc(62%+7px)] left-[calc(72%+7px)] -mt-[15px] -ml-[15px] size-[30px] rotate-45 rounded-[3px] bg-(--p) shadow-[0_3px_6px_rgb(0_0_0/0.45)] after:absolute after:inset-[9px] after:rounded-[2px] after:bg-ink/25"
@@ -200,7 +260,9 @@ function GiftBox({
       <div
         className={cn(
           "relative mt-2.5 mb-[22px] rounded-sm px-[9px] pt-2 pb-[9px] shadow-[0_3px_8px_rgb(0_0_0/0.45)] before:absolute before:-top-1.5 before:left-1/2 before:-ml-1 before:size-2 before:rounded-full before:bg-ink before:shadow-[0_0_0_2px_var(--color-paper)]",
-          gone ? "bg-ink-3 text-paper shadow-[inset_0_0_0_1px_var(--color-destructive)]" : "bg-paper text-ink",
+          gone
+            ? "bg-ink-3 text-paper shadow-[inset_0_0_0_1px_var(--color-destructive)]"
+            : "bg-paper text-ink",
         )}
         style={{ transform: `rotate(${tilt}deg)` }}
       >
@@ -219,7 +281,8 @@ function GiftBox({
           </p>
         ) : (
           <p className="mt-[3px] text-[0.74rem] leading-tight text-ink/70">
-            {mine ? "Your donation" : `From ${donorName}`} · {shelfAge(next.created_at)}
+            {mine ? "Your donation" : `From ${donorName}`} ·{" "}
+            {shelfAge(next.created_at)}
             {region}
           </p>
         )}
@@ -235,17 +298,28 @@ function GiftBox({
             Manage
           </Link>
         ) : canClaim ? (
-          <TagButton disabled={disabled} onClick={() => onClaim(next)} aria-label={`Claim ${box.title} (${box.platform})`}>
+          <TagButton
+            disabled={disabled}
+            onClick={() => onClaim(next)}
+            aria-label={`Claim ${box.title} (${box.platform})`}
+          >
             <Gift aria-hidden className="size-3.5" />
             {busy ? "Unwrapping…" : "Claim"}
           </TagButton>
         ) : (
           <>
-            <TagButton disabled className="bg-[#d6d6cf] text-[#55554f]" aria-describedby={`why-${box.id}`}>
+            <TagButton
+              disabled
+              className="bg-[#d6d6cf] text-[#55554f]"
+              aria-describedby={`why-${box.id}`}
+            >
               <Lock aria-hidden className="size-3.5" />
               Claim
             </TagButton>
-            <p id={`why-${box.id}`} className="mt-[7px] text-[0.74rem] leading-tight text-ink/75">
+            <p
+              id={`why-${box.id}`}
+              className="mt-[7px] text-[0.74rem] leading-tight text-ink/75"
+            >
               {CLAIM_REFUSAL_COPY.not_member}
             </p>
           </>
@@ -262,7 +336,11 @@ function GiftBox({
                 >
                   Revoke key
                 </button>
-                <button type="button" onClick={() => setConfirming(false)} className="font-label text-ink/70 hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setConfirming(false)}
+                  className="font-label text-ink/70 hover:underline"
+                >
                   Keep it
                 </button>
               </span>
@@ -283,7 +361,11 @@ function GiftBox({
   );
 }
 
-function TagButton({ className, children, ...props }: ComponentProps<"button">) {
+function TagButton({
+  className,
+  children,
+  ...props
+}: ComponentProps<"button">) {
   return (
     <button
       type="button"

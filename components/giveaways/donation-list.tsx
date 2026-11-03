@@ -69,7 +69,7 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
                         {shortDate(k.claimed_at)}
                       </span>
                     ) : (
-                      <span>On the shelf since {shelfAge(k.created_at)}</span>
+                      <span>Put up {shelfAge(k.created_at)}</span>
                     )}
                   </p>
                 </div>
