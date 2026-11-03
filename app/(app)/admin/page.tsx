@@ -1,4 +1,8 @@
 import { listBotJobsAction } from "@/app/actions/bot-jobs";
+import { listPresenceAction } from "@/app/actions/presence";
+import { apiFetch } from "@/lib/api";
+import type { ApiCollection, LiveEvent } from "@/lib/api/types";
+import { upcomingCount } from "@/lib/live-events";
 import { fetchSuggestions } from "@/lib/api/suggestions";
 import type { VotingPhase, VotingRound } from "@/lib/api/types";
 import { fetchVotingRound } from "@/lib/api/voting-round";
@@ -28,6 +32,19 @@ const PHASE_NOTE: Record<VotingPhase, string> = {
   decided: "decided",
 };
 
+// Upcoming live events among the newest, for the desk's note; null when the
+// list can't be read.
+async function upcomingLiveEvents(): Promise<number | null> {
+  try {
+    const res = await apiFetch("/api/v1/live_events?page=1&per=50", { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as ApiCollection<LiveEvent>;
+    return upcomingCount(body.data);
+  } catch {
+    return null;
+  }
+}
+
 function roundNote(round: VotingRound): DeskNote {
   return { text: `Round ${round.round_number} ${PHASE_NOTE[round.phase]}`, tone: "live" };
 }
@@ -46,16 +63,24 @@ export default async function StaffDeskPage() {
   const areas = staffDeskFor(m);
   const toolCount = areas.reduce((n, a) => n + a.sections.length, 0);
 
-  const [wire, round, pending] = await Promise.all([
+  const [wire, round, pending, presence, upcoming] = await Promise.all([
     listBotJobsAction(1),
     isAdminOrAbove(m) ? fetchVotingRound() : null,
     isSuperadmin(m) ? fetchSuggestions(["pending"], 1) : null,
+    listPresenceAction(1),
+    upcomingLiveEvents(),
   ]);
   const jobs = wire.ok ? (wire.data ?? []) : [];
 
   const notes: Partial<Record<StaffSectionKey, DeskNote>> = {};
   if (round) notes.voting = roundNote(round);
   if (pending) notes.suggestions = { text: `${pending.total} pending` };
+  const nowPlaying = presence.ok ? presence.data?.[0]?.activity_name : null;
+  if (nowPlaying) {
+    notes.presence = { text: nowPlaying.length > 16 ? `${nowPlaying.slice(0, 15).trimEnd()}...` : nowPlaying };
+  }
+  if (presence.ok && presence.meta) notes["presence-history"] = { text: `${presence.meta.count} set` };
+  if (upcoming !== null) notes["live-events"] = { text: `${upcoming} upcoming` };
   const now = new Date();
   for (const area of areas) {
     for (const section of area.sections) {
