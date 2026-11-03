@@ -129,8 +129,15 @@ function SynonymEditor({
     }
     setSaving(true);
     setError(null);
-    const result = await saveSynonymGroupAction(groupId, checked.terms);
-    setSaving(false);
+    let result: Awaited<ReturnType<typeof saveSynonymGroupAction>>;
+    try {
+      result = await saveSynonymGroupAction(groupId, checked.terms);
+    } catch {
+      setError("Couldn't reach the club's server. Try again.");
+      return;
+    } finally {
+      setSaving(false);
+    }
     if (!result.ok) {
       setError(result.error ?? "Couldn't save the entry.");
       return;

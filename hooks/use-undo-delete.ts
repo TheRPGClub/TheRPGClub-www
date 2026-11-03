@@ -79,22 +79,24 @@ export function useUndoDelete<K extends string | number>({
     setHeld((prev) => without(prev, key));
   }, []);
 
-  // Leaving the page sends what is still held.
+  // Leaving the page sends what is still held, through `send`, so the held
+  // set is cleared and the outcome recorded: a page restored from the
+  // back/forward cache shows the entry gone (or back, with the refusal)
+  // rather than a dead Undo bar.
   useEffect(() => {
     const pending = timers.current;
     const flush = () => {
-      for (const [key, timer] of pending) {
+      for (const [key, timer] of [...pending]) {
         window.clearTimeout(timer);
-        void commitRef.current(key).catch(() => {});
+        send(key);
       }
-      pending.clear();
     };
     window.addEventListener("pagehide", flush);
     return () => {
       window.removeEventListener("pagehide", flush);
       flush();
     };
-  }, []);
+  }, [send]);
 
   return { held, gone, errors, hold, undo, delayMs };
 }

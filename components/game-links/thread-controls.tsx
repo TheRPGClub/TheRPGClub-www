@@ -92,7 +92,8 @@ export function LinkThreadPicker({ gameId }: { gameId: number }) {
           setSearchError((err as Error).message);
         }
       } finally {
-        setLoading(false);
+        // A newer search aborted this one and is still in flight.
+        if (!controller.signal.aborted) setLoading(false);
       }
     }, 250);
     return () => {

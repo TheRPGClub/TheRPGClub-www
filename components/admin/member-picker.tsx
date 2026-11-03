@@ -48,7 +48,8 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
       } catch (err) {
         if ((err as Error).name !== "AbortError") setError("Search failed. Try again.");
       } finally {
-        setLoading(false);
+        // A newer search aborted this one and is still in flight.
+        if (!controller.signal.aborted) setLoading(false);
       }
     }, 250);
     return () => {
