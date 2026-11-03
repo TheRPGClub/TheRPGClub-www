@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { BotJob } from "@/lib/api/types";
-import { botJobPhase } from "@/lib/bot-jobs";
+import { botJobPhase, type BotJobPhase } from "@/lib/bot-jobs";
 import { useBotJob } from "@/hooks/use-bot-job";
 import { BotJobStatusView } from "@/components/bot-job-status";
 import { Stamp } from "@/components/admin/desk/stamp";
@@ -18,6 +18,9 @@ export interface ProofCardProps {
   // Set once the form was sent: stamps the proof and follows the job.
   jobId?: number | null;
   initialJob?: BotJob | null;
+  // With no job to follow: stamp the proof with this phase anyway, for a
+  // tool that tracks its own record's progress (a live event's status).
+  phase?: BotJobPhase | null;
   // The Discord side in staff words, for the status line ("The live event").
   what?: string;
   // A note under the proof, e.g. "The proof shows the image as Discord crops it."
@@ -35,11 +38,12 @@ export interface ProofCardProps {
 // A proof of what a form will post. Before sending it is just the proof;
 // once a job id is handed in it is stamped Queued in the corner, and the
 // stamp follows the job (the same refresh run as <BotJobStatus>, whose
-// status line sits under the proof) to Done or Failed.
+// status line sits under the proof) to Done or Failed. Without a job,
+// `phase` stamps it from the caller's own reading.
 export function ProofCard(props: ProofCardProps) {
   if (props.jobId == null) {
     return (
-      <ProofFrame {...props}>
+      <ProofFrame {...props} stamp={props.phase ? <Stamp key={props.phase} phase={props.phase} size="lg" /> : undefined}>
         {typeof props.children === "function" ? props.children(null) : props.children}
       </ProofFrame>
     );
