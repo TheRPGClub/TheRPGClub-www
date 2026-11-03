@@ -92,6 +92,8 @@ export interface UserProfileCounts {
   backlog: number;
   collections: number;
   reviews: number;
+  // Distinct games the member has journaled (chapters), not entries.
+  journal?: number;
 }
 
 export interface UserProfilePreviews {
@@ -540,6 +542,20 @@ export interface ImportIgdbCandidate {
   already_imported: boolean;
 }
 
+// A candidate from `GET /igdb/search`, for adding a game the GameDB is
+// missing (`POST /games {igdb_id}`). The same fields as an import candidate,
+// plus the searched title it matched in a multi-title search.
+export interface IgdbSearchCandidate extends ImportIgdbCandidate {
+  matched_query?: string | null;
+}
+
+// `meta` of `POST /games/:id/refresh-releases`: how many releases the refresh
+// added (never negative) and the new total.
+export interface ReleaseRefreshMeta {
+  added: number;
+  total: number;
+}
+
 // What `advance` and `remap` return. `item: null` with an active import means
 // the server stopped after its per-call auto-apply cap: call advance again.
 export interface ImportReview<
@@ -761,13 +777,36 @@ export interface DashboardResponse {
 
 // Suggestions
 
+export type SuggestionStatus = "pending" | "approved" | "rejected" | "withdrawn";
+
+// A member's proposal for the bot or the website (GET /api/v1/suggestions).
+// Kept after review: Pending until a Superadmin approves it into a GitHub
+// issue or rejects it with a reason, or its author withdraws it.
 export interface Suggestion {
   suggestion_id: number;
-  user_id: string;
-  gamedb_game_id: number | null;
-  suggestion_text: string;
+  title: string;
+  details: string | null;
+  // The author's Discord id and display name (null for very old rows).
+  created_by: string | null;
+  created_by_name: string | null;
   created_at: string;
   updated_at: string;
+  // Comma-separated type labels ("New Feature, Bug"); they become the GitHub
+  // issue's labels on approval.
+  labels: string | null;
+  status: SuggestionStatus;
+  // The reviewing Superadmin's Discord id.
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  rejection_reason: string | null;
+  // "TheRPGClub/TheRPGClub-www" etc. once approved.
+  target_repo: string | null;
+  github_issue_number: number | null;
+  github_issue_url: string | null;
+  // Approved only, cached about ten minutes; null when GitHub can't say.
+  github_issue_state: "open" | "closed" | null;
+  upvote_count: number;
+  viewer_upvoted: boolean;
 }
 
 // Todos
@@ -800,11 +839,27 @@ export interface RssFeed {
 
 // Public Reminders
 
+// The bot's recurrence units, as /publicreminder offers them.
+export type PublicReminderRecurUnit =
+  | "minutes"
+  | "hours"
+  | "days"
+  | "weeks"
+  | "months"
+  | "years";
+
+// Mirrors PublicReminderResource. `due_at` comes back in UTC; the bot posts
+// `message` to `channel_id` then, and moves `due_at` on by the recurrence.
 export interface PublicReminder {
   reminder_id: number;
+  channel_id: string;
   message: string;
-  scheduled_at: string;
-  is_sent: boolean;
+  due_at: string;
+  recur_every: number | null;
+  recur_unit: PublicReminderRecurUnit | null;
+  enabled: boolean;
+  // Discord id of the admin who made it.
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -819,6 +874,63 @@ export interface StarboardEntry {
   star_count: number;
   created_at: string;
   updated_at: string;
+}
+
+// Bot jobs (GET /api/v1/bot_jobs/:id)
+//
+// A Discord action the website asked the bot to carry out. The bot claims
+// queued jobs about every 10 seconds and acks them done or failed; a claim
+// that isn't acked within the lease goes back to queued, and fails with a
+// claim-timeout error after three claims. Readable by the member who queued
+// it, Admins and Superadmins. The payload is not exposed.
+
+export type BotJobKind =
+  | "giveaway_claim_notice"
+  | "giveaway_hub_refresh"
+  | "suggestion_submitted"
+  | "suggestion_outcome"
+  | "voting_poll_wakeup";
+
+export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
+
+export interface BotJob {
+  id: number;
+  kind: BotJobKind;
+  status: BotJobStatus;
+  // The member whose action queued it; null for system jobs.
+  requested_by_user_id: string | null;
+  // Claims so far, including ones that timed out.
+  attempts: number;
+  // The bot's error, or the claim-timeout error. Set when status is failed.
+  error_message: string | null;
+  claimed_at: string | null;
+  finished_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Guild channels (GET /api/v1/guild_channels)
+//
+// The guild's text (type 0) and announcement (type 5) channels as the bot
+// last reported them, for channel pickers. The list is ordered as Discord
+// shows it (uncategorized first, then category position, then channel
+// position) and is not paginated: `meta.count` is the row count.
+
+export interface GuildChannel {
+  // Discord snowflake.
+  channel_id: string;
+  name: string;
+  // Discord's numeric ChannelType: 0 text, 5 announcement.
+  channel_type: number;
+  // The category's channel id, or null when uncategorized.
+  parent_id: string | null;
+  position: number;
+  category_name: string | null;
+}
+
+export interface GuildChannelList {
+  data: GuildChannel[];
+  meta: { count: number };
 }
 
 // Voting rounds (GOTM / NR-GOTM nominations & votes)
@@ -1181,4 +1293,86 @@ export interface SyncCooldownError {
   error: "sync_cooldown";
   message: string;
   sync_available_at: string;
+}
+
+// Game keys (giveaways: /api/v1/game_keys)
+//
+// A donated key on the giveaway shelf. `key_value` (the secret) is present
+// only in a successful claim's response, in GET /game_keys/:id for those
+// entitled to it, and in the claimer's own claimed-keys list. `game` is the
+// linked GameDB game, null when the key carries only its free-text title.
+
+export type GameKeyRegion = "Global" | "NA" | "EU" | "UK" | "RU/CIS" | "Asia" | "Unknown";
+
+export interface GameKey {
+  key_id: number;
+  game_title: string;
+  platform: string;
+  region: GameKeyRegion;
+  gamedb_game_id?: number | null;
+  donor_user_id: string;
+  claimed_by_user_id?: string | null;
+  claimed_at?: string | null;
+  donor_notify_on_claim: boolean;
+  created_at: string;
+  updated_at: string;
+  key_value?: string | null;
+  game?: GameSummary | null;
+}
+
+// POST /game_keys/:id/claim's meta: the giveaway_claim_notice job (DM the
+// key, log the claim, tell the donor). Null when the bot claimed.
+export interface GameKeyClaimMeta {
+  claim_notice_job_id: number | null;
+}
+
+// Game Journals (/api/v1/users/:id/journal, /games/:id/journal, /journal_entries)
+//
+// A member's notes on a game they're playing, one entry at a time. Every read
+// needs a signed-in member; only the entry's author can write it (staff get
+// 403 on someone else's). The title is optional; the API caps it at 120
+// characters, and the website caps the body at 2000 as the bot's modal does.
+
+// One row of GET /users/:id/journal: a game the member has journaled, with
+// their full entry count for it and the newest entry's time.
+export interface JournaledGame {
+  game?: GameSummary | null;
+  entry_count: number;
+  last_entry_at: string | null;
+}
+
+// The entry fields every journal shape shares.
+export interface JournalEntry {
+  entry_id: number;
+  user_id: string;
+  gamedb_game_id: number;
+  entry_title: string | null;
+  entry_body: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// GET /games/:id/journal rows carry the author.
+export interface JournalEntryUser extends JournalEntry {
+  user?: UserSummary | null;
+}
+
+// Writes and GET /journal_entries/:id carry the game.
+export interface JournalEntryGame extends JournalEntry {
+  game?: GameSummary | null;
+}
+
+// GET /journal_entries (search) carries both.
+export interface JournalEntryGameUser extends JournalEntry {
+  game?: GameSummary | null;
+  user?: UserSummary | null;
+}
+
+// GET /journal_entries/contributors, most games journaled first.
+export interface JournalContributor {
+  user_id: string;
+  username: string | null;
+  global_name: string | null;
+  game_count: number;
+  entry_count: number;
 }

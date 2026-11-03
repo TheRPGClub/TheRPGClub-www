@@ -20,7 +20,6 @@ import type {
   Session,
   SocialPlatform,
   StarboardEntry,
-  Suggestion,
   Todo,
   TodoSummary,
   User,
@@ -405,31 +404,6 @@ export const nrGotmEntries = {
 
   get: (id: number) =>
     apiFetch<ApiSingle<NrGotmEntry>>(`/api/v1/nr_gotm_entries/${id}`),
-};
-
-// ─── Suggestions ─────────────────────────────────────────────────────────────
-
-export const suggestions = {
-  list: (params?: { limit?: number; offset?: number }) => {
-    const qs = new URLSearchParams();
-    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
-    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
-    return apiFetch<ApiCollection<Suggestion>>(
-      `/api/v1/suggestions${qs.size ? `?${qs}` : ""}`,
-    );
-  },
-
-  get: (id: number) =>
-    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}`),
-
-  create: (data: Partial<Suggestion>) =>
-    apiFetch<ApiSingle<Suggestion>>("/api/v1/suggestions", {
-      method: "POST",
-      body: JSON.stringify({ data }),
-    }),
-
-  destroy: (id: number) =>
-    apiFetch<void>(`/api/v1/suggestions/${id}`, { method: "DELETE" }),
 };
 
 // ─── Todos ───────────────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { setDetailPath } from "@/lib/member-achievements";
+import { STAFF_SECTIONS } from "@/lib/staff";
 import { RunningHead, type Crumb } from "@/components/issue/running-head";
 
 // The top bar's running head: the current route as a trail, resolved on the
@@ -16,7 +17,19 @@ const SECTIONS: Record<string, string> = {
   achievements: "Achievements",
   members: "Members",
   voting: "Voting",
+  giveaways: "Giveaways",
+  admin: "Staff desk",
+  suggestions: "Suggestion Board",
+  journals: "Game Journals",
 };
+
+// /admin tool pages, labelled as the sidebar's Staff group names them.
+const ADMIN_PAGES: Record<string, string> = Object.fromEntries(
+  STAFF_SECTIONS.filter((s) => s.key !== "overview").map((s) => [
+    s.href.split("/")[2],
+    s.label,
+  ]),
+);
 
 const MEMBER_PAGES: Record<string, string> = {
   "now-playing-games": "Now playing",
@@ -25,9 +38,15 @@ const MEMBER_PAGES: Record<string, string> = {
   "backlogged-games": "Backlog",
   "collected-games": "Collection",
   reviews: "Reviews",
+  journal: "Journal",
   achievements: "Achievements",
   edit: "Edit profile",
   imports: "Imports",
+};
+
+const GIVEAWAY_PAGES: Record<string, string> = {
+  donate: "Donate",
+  claimed: "Your claimed keys",
 };
 
 const MEMBER_SUBPAGES: Record<string, string> = {
@@ -103,6 +122,18 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
         trail.push({ label: MEMBER_SUBPAGES[sub], href: `${base}/${page}/${sub}` });
       }
     }
+  }
+
+  if (section === "giveaways" && id && GIVEAWAY_PAGES[id]) {
+    trail.push({ label: GIVEAWAY_PAGES[id], href: `${root}/${id}` });
+  }
+
+  if (section === "suggestions" && id === "new") {
+    trail.push({ label: "Suggest something", href: `${root}/new` });
+  }
+
+  if (section === "admin" && id && ADMIN_PAGES[id]) {
+    trail.push({ label: ADMIN_PAGES[id], href: `${root}/${id}` });
   }
 
   return trail;

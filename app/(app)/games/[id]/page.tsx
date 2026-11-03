@@ -4,6 +4,7 @@ import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
+import { isAdminOrAbove, isMemberOrStaff } from "@/lib/staff";
 import type {
   ApiCollection,
   ApiSingle,
@@ -32,7 +33,10 @@ import {
 import { getSetTint } from "@/lib/achievements/tint";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
+import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { GameHero } from "@/components/issue/game-hero";
+import { GameJournalSection } from "@/components/journal/game-journal-section";
+import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import {
   RailFacts,
   RailHeading,
@@ -149,7 +153,10 @@ async function GameContent({
   const hasCompleted =
     !!ownerId && (game.completions ?? []).some((e) => e.user_id === ownerId);
   const canWriteReview = isPlaying || hasCompleted;
-  const isAdmin = !!(session?.membership?.admin || session?.membership?.dev);
+  const isAdmin = isAdminOrAbove(session?.membership);
+  // Refresh release info needs an IGDB link and the API's member gate.
+  const canRefreshReleases =
+    game.igdb_id != null && isMemberOrStaff(session?.membership);
 
   const releaseDate = game.initial_release_date
     ? new Date(game.initial_release_date).toLocaleDateString("en-US", {
@@ -218,6 +225,14 @@ async function GameContent({
         </section>
 
         <aside aria-label="About this game" className="space-y-6.5">
+          {/* Saved HowLongToBeat times, or the lookup. Never scrapes on view. */}
+          <Suspense fallback={<GameHltbSkeleton />}>
+            <GameHltb
+              gameId={gameId}
+              title={game.title}
+              releaseDate={game.initial_release_date}
+            />
+          </Suspense>
           <RailMembers
             title="Playing now"
             users={players}
@@ -229,7 +244,11 @@ async function GameContent({
             empty="No one has finished it yet."
           />
           <Suspense fallback={<RailDetailsSkeleton />}>
-            <GameDetails gameId={gameId} releaseDate={game.initial_release_date} />
+            <GameDetails
+              gameId={gameId}
+              releaseDate={game.initial_release_date}
+              canRefreshReleases={canRefreshReleases}
+            />
           </Suspense>
           {isAdmin && (
             <section>
@@ -242,6 +261,15 @@ async function GameContent({
           )}
         </aside>
       </div>
+
+      {/* Members' Game Journals on this game: one chapter line per member. */}
+      <Suspense fallback={null}>
+        <GameJournalSection
+          gameId={gameId}
+          completions={game.completions ?? []}
+          viewerId={ownerId}
+        />
+      </Suspense>
 
       {/* The game's Achievement Sets, only when it has any. */}
       <Suspense fallback={null}>
@@ -352,9 +380,11 @@ function joinNames(items: { name: string }[]): string | null {
 async function GameDetails({
   gameId,
   releaseDate,
+  canRefreshReleases,
 }: {
   gameId: number;
   releaseDate: string | null;
+  canRefreshReleases: boolean;
 }) {
   const relations = await fetchRelations(gameId);
 
@@ -405,7 +435,11 @@ async function GameDetails({
     }
   }
 
-  return <RailFacts facts={facts} />;
+  return (
+    <RailFacts facts={facts}>
+      {canRefreshReleases && <RefreshReleasesButton gameId={gameId} />}
+    </RailFacts>
+  );
 }
 
 // The Achievement showcase: one composite page per Achievement Set, behind
