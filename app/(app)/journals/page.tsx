@@ -50,9 +50,12 @@ export default async function JournalsPage({
   const wholeShelf = firstParam(query.shelf) === "all";
   const volParam = firstParam(query.vol) || null;
 
-  const [contributors, everything, results, gameTitle] = await Promise.all([
+  // With no filter the catalogue's own count is the whole archive's, so the
+  // separate count read is only for a filtered search.
+  const filtered = Boolean(q || by || gameId);
+  const [contributors, everything, results, gameTitle, volGames] = await Promise.all([
     fetchJournalContributors(),
-    searchJournalEntries({ per: 1 }),
+    filtered ? searchJournalEntries({ per: 1 }) : null,
     searchJournalEntries({
       q: q || undefined,
       userId: by ?? undefined,
@@ -61,11 +64,17 @@ export default async function JournalsPage({
       per: CATALOGUE_PER_PAGE,
     }),
     gameId ? readGameTitle(gameId) : Promise.resolve(null),
+    // The pulled volume's games, when the URL names it: read alongside.
+    volParam ? fetchJournaledGames(volParam) : null,
   ]);
 
   const people = contributors?.data ?? [];
   const pulled = people.find((c) => c.user_id === volParam) ?? people[0] ?? null;
-  const pulledGames = pulled ? await fetchJournaledGames(pulled.user_id) : null;
+  const pulledGames = !pulled
+    ? null
+    : pulled.user_id === volParam
+      ? volGames
+      : await fetchJournaledGames(pulled.user_id);
   const onShelf = wholeShelf ? people : people.slice(0, SHELF_VOLUMES);
 
   // The page's own params, kept as volumes are pulled and searches change.
@@ -85,10 +94,9 @@ export default async function JournalsPage({
     return `/journals${qs ? `?${qs}` : ""}${hash}`;
   };
 
-  const entryTotal = everything?.meta.count ?? null;
+  const entryTotal = (filtered ? everything : results)?.meta.count ?? null;
   const contributorTotal = contributors?.meta.count ?? people.length;
   const found = results?.meta.count ?? 0;
-  const filtered = !!(q || by || gameId);
 
   return (
     <div className="mx-auto w-full max-w-[90rem] space-y-6.5">

@@ -98,24 +98,35 @@ export default async function MemberJournalPage({
   const openGameId = startingNew ? null : (gameParam ?? chapters[0]?.game.game_id ?? null);
   const chapterIndex = chapters.findIndex((c) => c.game.game_id === openGameId);
   const row = chapterIndex >= 0 ? chapters[chapterIndex] : null;
-  // A chapter not in the book yet (the owner arriving from a game page).
-  const openGame = row?.game ?? (openGameId ? await readGame(openGameId) : null);
-
-  const entries = openGame
-    ? await fetchGameJournal(openGame.game_id, { userId: user.user_id, page: pageParam, per: PER_PAGE })
-    : null;
+  // The chapter's game (read only when it isn't in the book yet: the owner
+  // arriving from a game page) and its page of entries, read together. When
+  // the chapter is in the book its count is known, so the oldest entry (for
+  // the run's first date) is read alongside unless this page holds it.
+  const oldestOnThisPage = row ? pageParam >= Math.ceil(row.entryCount / PER_PAGE) : true;
+  const [openGame, openEntries, oldestAt] = await Promise.all([
+    row?.game ?? (openGameId ? readGame(openGameId) : null),
+    openGameId
+      ? fetchGameJournal(openGameId, { userId: user.user_id, page: pageParam, per: PER_PAGE })
+      : null,
+    row && !oldestOnThisPage
+      ? fetchFirstEntryAt(row.game.game_id, user.user_id, row.entryCount)
+      : undefined,
+  ]);
+  const entries = openGame ? openEntries : null;
   const count = entries?.meta.count ?? 0;
   const pages = Math.max(1, entries?.meta.pages ?? 1);
   const per = entries?.meta.per || PER_PAGE;
   const lastPage = entries ? entries.meta.page >= pages : true;
-  // The run's first entry: on this page when it's the last one, else one
-  // extra read for the oldest.
+  // The run's first entry: on this page when it's the last one, else the
+  // oldest read above, else one extra read for it.
   const firstEntryAt =
     entries && entries.data.length > 0 && lastPage
       ? entries.data[entries.data.length - 1].created_at
-      : openGame && count > 0
-        ? await fetchFirstEntryAt(openGame.game_id, user.user_id, count)
-        : null;
+      : oldestAt !== undefined
+        ? oldestAt
+        : openGame && count > 0
+          ? await fetchFirstEntryAt(openGame.game_id, user.user_id, count)
+          : null;
   const lastEntryAt = row?.lastEntryAt ?? (pageParam === 1 ? (entries?.data[0]?.created_at ?? null) : null);
   const today = journalDate(new Date().toISOString(), true) ?? "";
 
