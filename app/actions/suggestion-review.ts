@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import type { Suggestion } from "@/lib/api/types";
@@ -88,9 +87,9 @@ async function review(
     return { ok: false, error: "Couldn't reach the club's server. Try again." };
   }
   if (!res.ok) return failure(res, action);
-  // The board shows the outcome too. The review page itself isn't
-  // revalidated here: the reviewed card stays put with its job status.
-  revalidatePath("/suggestions");
+  // No revalidatePath: in a Server Function it re-renders the page in view,
+  // which would drop the reviewed card (and its job status) from the queue.
+  // Both pages read with no-store, so the next visit is fresh anyway.
   const body = (await res.json()) as {
     data: Suggestion;
     meta?: { outcome_job_id?: number };
