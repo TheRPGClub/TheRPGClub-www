@@ -23,12 +23,13 @@ const SECTIONS: Record<string, string> = {
   journals: "Game Journals",
 };
 
-// /admin tool pages, labelled as the sidebar's Staff group names them.
+// /admin tool pages, labelled as the desk names them. Sections that live
+// elsewhere (versions on the game page) or on another section's page (a
+// #hash) have no page of their own.
 const ADMIN_PAGES: Record<string, string> = Object.fromEntries(
-  STAFF_SECTIONS.filter((s) => s.key !== "overview").map((s) => [
-    s.href.split("/")[2],
-    s.label,
-  ]),
+  STAFF_SECTIONS.filter(
+    (s) => s.href.startsWith("/admin/") && !s.href.includes("#"),
+  ).map((s) => [s.href.split("/")[2], s.label]),
 );
 
 const MEMBER_PAGES: Record<string, string> = {
