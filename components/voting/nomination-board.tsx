@@ -2,7 +2,7 @@
 
 import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { EyeOff, X } from "lucide-react";
 import { castVoteAction } from "@/app/actions/votes";
 import { cn } from "@/lib/utils";
 import type {
@@ -30,6 +30,9 @@ export interface NominationBoardProps {
   userVotes: NominationVote[];
   votingOpen: boolean;
   votingEnded: boolean;
+  // The API withholds the counts from this viewer while voting is open
+  // (only Admins see them then): show that instead of a board of zeros.
+  countsHidden?: boolean;
   emptyMessage?: string;
   // The signed-in member, so their own nomination can be marked. The board
   // otherwise only knows about votes, not who nominated what.
@@ -45,6 +48,7 @@ export function NominationBoard({
   userVotes,
   votingOpen,
   votingEnded,
+  countsHidden = false,
   emptyMessage = "No nominations yet.",
   viewerId,
 }: NominationBoardProps) {
@@ -53,7 +57,7 @@ export function NominationBoard({
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
-  const showCounts = votingOpen || votingEnded;
+  const showCounts = (votingOpen || votingEnded) && !countsHidden;
 
   // The server state the optimistic layer builds on. Votes are kept oldest
   // first so the cap eviction below can mirror the backend's choice.
@@ -185,6 +189,8 @@ export function NominationBoard({
         </p>
       )}
 
+      {countsHidden && <CountsHiddenNote />}
+
       {error && (
         <div
           role="alert"
@@ -230,5 +236,21 @@ export function NominationBoard({
         })}
       </ul>
     </div>
+  );
+}
+
+// Where the counts would be: they stay secret until the vote ends, so an
+// early lead can't steer the rest of the ballot.
+export function CountsHiddenNote({ className }: { className?: string }) {
+  return (
+    <p
+      className={cn(
+        "font-label flex items-center gap-2 text-[0.85rem] font-bold tracking-[0.06em] text-paper-mute",
+        className,
+      )}
+    >
+      <EyeOff aria-hidden className="size-4 shrink-0" />
+      Counts hidden until voting ends.
+    </p>
   );
 }

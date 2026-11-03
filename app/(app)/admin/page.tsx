@@ -27,6 +27,7 @@ const PHASE_NOTE: Record<VotingPhase, string> = {
   nominating: "nominations",
   voting: "open",
   closed: "closed",
+  runoff: "runoff",
   tie: "tie break",
   decided: "decided",
 };

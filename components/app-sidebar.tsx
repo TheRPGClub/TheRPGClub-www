@@ -82,6 +82,7 @@ const PHASE_LABEL: Record<VotingPhase, string> = {
   nominating: "Nominations",
   voting: "Voting",
   closed: "Voting",
+  runoff: "Voting",
   tie: "Voting",
   decided: "Voting",
 };

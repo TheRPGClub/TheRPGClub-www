@@ -982,8 +982,10 @@ export interface GuildChannelList {
 
 // Where a round is in its lifecycle, as the backend decides it: members
 // nominate until the vote opens, vote until it closes, then the tally decides
-// the winners — or leaves a tie for the admins — and the round is decided.
-export type VotingPhase = "nominating" | "voting" | "closed" | "tie" | "decided";
+// the winners. A tied category goes to a member runoff between the tied
+// games; a tie the runoff leaves is for the admins to break. Then the round
+// is decided.
+export type VotingPhase = "nominating" | "voting" | "closed" | "runoff" | "tie" | "decided";
 
 // Mirrors VotingRoundResource. `round_number` is the round being nominated
 // for, voted on and won; nominations close and voting opens at
@@ -995,13 +997,21 @@ export interface VotingRound {
   voting_opens_at: string;
   voting_closes_at: string;
   closed_at: string | null;
+  runoff_opens_at?: string | null;
+  runoff_closes_at?: string | null;
+  runoff_closed_at?: string | null;
   decided_at: string | null;
   phase: VotingPhase;
   nominations_open: boolean;
   voting_open: boolean;
   voting_ended: boolean;
-  // Tied games per category, awaiting an admin pick; `{}` when none.
+  runoff_open?: boolean;
+  runoff_ended?: boolean;
+  // Tied games per category still awaiting a decision: the runoff's ballot
+  // while it is open, then any tie it left for an admin pick; `{}` when none.
   pending_ties: Partial<Record<VotingCategory, Game[]>>;
+  // The runoff's ballot as it opened; `{}` when the round had no runoff.
+  runoff_ties?: Partial<Record<VotingCategory, Game[]>>;
 }
 
 // The GOTM and NR-GOTM tables share identical shapes, so one type serves
@@ -1037,6 +1047,15 @@ export interface VoteTallyRow {
   nomination_id: number;
   gamedb_game_id: number | null;
   vote_count: number;
+}
+
+// The tally's meta. `counts_hidden` is true when the caller may not see the
+// counts yet (below Admin, while that ballot's voting is open): `data` is
+// then empty rather than all zeros.
+export interface VoteTallyMeta {
+  cap: number;
+  runoff: boolean;
+  counts_hidden: boolean;
 }
 
 // Result of casting a vote: `voted` placed one, `unvoted` toggled an existing

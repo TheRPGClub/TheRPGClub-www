@@ -363,6 +363,7 @@ async function ballotPanel(
     nominationId: votedOn?.nomination_id ?? earliest.nomination_id,
     count,
     maxCount,
+    countsHidden: tally.countsHidden,
     voted: votedOn !== undefined,
     votesUsed: userVotes.length,
     cap: tally.cap,
@@ -371,6 +372,7 @@ async function ballotPanel(
     isWinner:
       voting.voting_ended &&
       voting.phase !== "tie" &&
+      voting.phase !== "runoff" &&
       maxCount > 0 &&
       count === maxCount,
     nominatedBy: forGame.map(
