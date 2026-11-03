@@ -35,6 +35,7 @@ import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { GameHero } from "@/components/issue/game-hero";
+import { GameJournalSection } from "@/components/journal/game-journal-section";
 import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import {
   RailFacts,
@@ -260,6 +261,15 @@ async function GameContent({
           )}
         </aside>
       </div>
+
+      {/* Members' Game Journals on this game: one chapter line per member. */}
+      <Suspense fallback={null}>
+        <GameJournalSection
+          gameId={gameId}
+          completions={game.completions ?? []}
+          viewerId={ownerId}
+        />
+      </Suspense>
 
       {/* The game's Achievement Sets, only when it has any. */}
       <Suspense fallback={null}>

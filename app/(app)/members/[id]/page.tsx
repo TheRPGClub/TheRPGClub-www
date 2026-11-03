@@ -9,6 +9,7 @@ import type {
   ApiSingle,
   GameCollection,
   GameCompletion,
+  JournaledGame,
   Review,
   UserBacklog,
   UserFavorite,
@@ -18,6 +19,7 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { importsHubHref } from "@/lib/imports/kinds";
+import { chapterHref, journalDate } from "@/lib/journals";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { MemberAchievementsSection } from "@/components/achievements/member-achievements-section";
 import { MemberBanner } from "@/components/issue/member-banner";
@@ -116,6 +118,11 @@ export default async function MemberPage({
     collection: aggregated.collection ?? collectionPreview.total,
   };
   const nowPlaying = nowPlayingPreview.data;
+  // The profile payload's newest chapters (the API's `journal` preview).
+  const journalPreview = (
+    (user as UserProfile & { journal?: JournaledGame[] }).journal ?? []
+  ).filter((row) => row.game);
+  const journalChapters = aggregated.journal ?? journalPreview.length;
   const favorites = favoritesPreview.data;
   const memberHref = `/members/${user.user_id}`;
   const listHref = (key: Parameters<typeof memberListHref>[1]) =>
@@ -314,6 +321,50 @@ export default async function MemberPage({
         ) : (
           <p className="mt-4 rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
             No reviews yet.
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="journal" className="space-y-4">
+        <SectionHeading
+          title={<span id="journal">Game Journal</span>}
+          count={`${journalChapters} ${journalChapters === 1 ? "chapter" : "chapters"}`}
+          action={
+            (journalChapters > 0 || isSelf) && (
+              <Link href={listHref("journal")} className={headingLinkClass}>
+                {journalChapters > 0 ? "Open the journal" : "Start your journal"}
+                <ArrowRight aria-hidden />
+              </Link>
+            )
+          }
+        />
+        {journalPreview.length > 0 ? (
+          <ol className="grid gap-x-8 sm:grid-cols-2">
+            {journalPreview.map((row) => (
+              <li key={row.game!.game_id} className="border-b border-rule">
+                <Link
+                  href={chapterHref(user.user_id, row.game!.game_id)}
+                  className="group flex items-baseline gap-3 py-2"
+                >
+                  <span className="font-label min-w-0 flex-1 truncate text-base tracking-[0.04em] group-hover:text-highlight">
+                    {row.game!.title}
+                  </span>
+                  {row.last_entry_at && (
+                    <span className="text-[0.82rem] text-paper-mute">
+                      Last entry {journalDate(row.last_entry_at)}
+                    </span>
+                  )}
+                  <span className="font-headline text-[1.15rem]">
+                    {row.entry_count}
+                    <span className="sr-only"> {row.entry_count === 1 ? "entry" : "entries"}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            No journal entries yet.
           </p>
         )}
       </section>
