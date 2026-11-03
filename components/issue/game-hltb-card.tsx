@@ -158,7 +158,7 @@ function Bar({
       </span>
       <span className="text-right font-headline text-[1.35rem] leading-none">
         {figure}
-        {unit && <small className="text-[0.8rem] text-paper-dim">{unit}</small>}
+        {unit && <small className="text-[0.8rem] text-paper-dim normal-case">{unit}</small>}
       </span>
     </li>
   );

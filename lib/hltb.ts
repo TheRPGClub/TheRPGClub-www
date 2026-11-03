@@ -85,8 +85,12 @@ function splitFigure(raw: string): { figure: string; unit: string } {
   };
 }
 
-// "14 Mar 2025" in the club's time zone, or null.
-function clubDate(iso: string | null | undefined): string | null {
+// "14 Mar 2025", or null. Instants read in the club's time zone; release
+// dates are calendar dates stored at UTC midnight, so they read in UTC.
+function clubDate(
+  iso: string | null | undefined,
+  timeZone: string = CLUB_TIME_ZONE,
+): string | null {
   if (!iso) return null;
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return null;
@@ -94,7 +98,7 @@ function clubDate(iso: string | null | undefined): string | null {
     day: "numeric",
     month: "short",
     year: "numeric",
-    timeZone: CLUB_TIME_ZONE,
+    timeZone,
   });
 }
 
@@ -107,13 +111,13 @@ export function hltbLookedUpLabel(hltb: Hltb): string | null {
 // Why a lookup's times weren't saved: the API saves them only once the game's
 // initial release is six months old (undated games never).
 export function hltbNotSavedNote(releaseDate: string | null): string {
-  const released = clubDate(releaseDate);
+  const released = clubDate(releaseDate, "UTC");
   if (!releaseDate || !released) {
     return "This game has no release date, so these times aren't saved.";
   }
   const after = new Date(releaseDate);
   after.setUTCMonth(after.getUTCMonth() + 6);
-  return `Released ${released}. Times are saved once a game is six months old; look up again after ${clubDate(after.toISOString())}.`;
+  return `Released ${released}. Times are saved once a game is six months old; look up again after ${clubDate(after.toISOString(), "UTC")}.`;
 }
 
 // HowLongToBeat's own search, for a title it had no match for.
