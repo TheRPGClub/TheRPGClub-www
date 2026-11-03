@@ -92,6 +92,8 @@ export interface UserProfileCounts {
   backlog: number;
   collections: number;
   reviews: number;
+  // Distinct games the member has journaled (chapters), not entries.
+  journal?: number;
 }
 
 export interface UserProfilePreviews {
@@ -1322,4 +1324,55 @@ export interface GameKey {
 // key, log the claim, tell the donor). Null when the bot claimed.
 export interface GameKeyClaimMeta {
   claim_notice_job_id: number | null;
+}
+
+// Game Journals (/api/v1/users/:id/journal, /games/:id/journal, /journal_entries)
+//
+// A member's notes on a game they're playing, one entry at a time. Every read
+// needs a signed-in member; only the entry's author can write it (staff get
+// 403 on someone else's). The title is optional; the API caps it at 120
+// characters, and the website caps the body at 2000 as the bot's modal does.
+
+// One row of GET /users/:id/journal: a game the member has journaled, with
+// their full entry count for it and the newest entry's time.
+export interface JournaledGame {
+  game?: GameSummary | null;
+  entry_count: number;
+  last_entry_at: string | null;
+}
+
+// The entry fields every journal shape shares.
+export interface JournalEntry {
+  entry_id: number;
+  user_id: string;
+  gamedb_game_id: number;
+  entry_title: string | null;
+  entry_body: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// GET /games/:id/journal rows carry the author.
+export interface JournalEntryUser extends JournalEntry {
+  user?: UserSummary | null;
+}
+
+// Writes and GET /journal_entries/:id carry the game.
+export interface JournalEntryGame extends JournalEntry {
+  game?: GameSummary | null;
+}
+
+// GET /journal_entries (search) carries both.
+export interface JournalEntryGameUser extends JournalEntry {
+  game?: GameSummary | null;
+  user?: UserSummary | null;
+}
+
+// GET /journal_entries/contributors, most games journaled first.
+export interface JournalContributor {
+  user_id: string;
+  username: string | null;
+  global_name: string | null;
+  game_count: number;
+  entry_count: number;
 }
