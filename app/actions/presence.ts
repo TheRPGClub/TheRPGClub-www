@@ -52,12 +52,14 @@ export interface PresenceHistoryResult {
   error?: string;
 }
 
-// One page of the presence history, newest first.
-export async function listPresenceAction(page = 1): Promise<PresenceHistoryResult> {
+// One page of the presence history, newest first. `per` (1 to 50) lets
+// the desk read just the newest row and the count.
+export async function listPresenceAction(page = 1, per = PRESENCE_PAGE_SIZE): Promise<PresenceHistoryResult> {
   const p = Number.isInteger(page) && page > 0 ? page : 1;
+  const size = Number.isInteger(per) && per > 0 ? Math.min(per, PRESENCE_PAGE_SIZE) : PRESENCE_PAGE_SIZE;
   let res: Response;
   try {
-    res = await apiFetch(`/api/v1/bot_presence?page=${p}&per=${PRESENCE_PAGE_SIZE}`, { cache: "no-store" });
+    res = await apiFetch(`/api/v1/bot_presence?page=${p}&per=${size}`, { cache: "no-store" });
   } catch {
     return { ok: false, error: UNREACHABLE };
   }

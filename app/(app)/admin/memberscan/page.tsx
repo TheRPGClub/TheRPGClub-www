@@ -9,8 +9,9 @@ import { StaffOnly } from "@/components/staff-only";
 const SECTION = staffSection("memberscan");
 
 // How far back the page looks on the wire for earlier scans, and how many
-// it lists. The API has no kind filter, so this reads one wide page.
-const LOOKBACK = 200;
+// it lists. The API has no kind filter, so this reads one wide page; scans
+// are rare, so older ones past it are only on the wire.
+const LOOKBACK = 100;
 const SHOWN = 5;
 
 async function fetchRecentScans(): Promise<BotJob[]> {
