@@ -1,4 +1,4 @@
-import type { BotJob, BotJobStatus } from "@/lib/api/types";
+import type { BotJob, BotJobKind, BotJobStatus } from "@/lib/api/types";
 
 // What a member sees of a bot job: still waiting, done, or failed. A claimed
 // job (the bot has picked it up but not acked it) still reads as waiting; the
@@ -20,6 +20,9 @@ export function isBotJobSettled(job: Pick<BotJob, "status">): boolean {
 // settle inside the first two or three reads; the whole run is under a minute.
 export const BOT_JOB_REFRESH_DELAYS_MS: readonly number[] = [3_000, 6_000, 10_000, 15_000, 20_000];
 
+// Jobs per page on the /admin wire.
+export const WIRE_PAGE_SIZE = 25;
+
 export interface BotJobStatusCopy {
   label: string;
   detail: string;
@@ -34,7 +37,10 @@ export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJ
     case "claimed":
       return { label: "Queued", detail: "The bot is working on it." };
     case "done":
-      return { label: "Done", detail: `${what} went out on Discord.` };
+      return {
+        label: "Done",
+        detail: job.result_text?.trim() || `${what} went out on Discord.`,
+      };
     case "failed":
       return {
         label: "Failed",
@@ -58,4 +64,92 @@ export function botJobReadError(status: number): { message: string; final: boole
   if (status === 403) return { message: "You can't see this job's status.", final: true };
   if (status === 404) return { message: "That bot job doesn't exist.", final: true };
   return { message: `Couldn't check with the bot (HTTP ${status}).`, final: false };
+}
+
+// The wire's headline for a job: the kind of Discord action, in staff
+// words. A ticket that adds a kind adds its label here; an unlisted kind
+// reads as its humanised name ("member_scan" -> "Member scan").
+const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
+  giveaway_claim_notice: "Giveaway claim",
+  giveaway_hub_refresh: "Giveaway hub",
+  suggestion_submitted: "New Suggestion",
+  suggestion_outcome: "Suggestion outcome",
+  voting_poll_wakeup: "Voting wake-up",
+};
+
+export function humanizeKind(kind: string): string {
+  const words = kind.replace(/_/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+export function botJobKindLabel(kind: string): string {
+  return KIND_LABEL[kind as BotJobKind] ?? humanizeKind(kind);
+}
+
+// The summary line under the headline, or null when it only repeats the
+// kind (old jobs were backfilled with their humanised kind as the summary).
+export function botJobSummaryLine(job: Pick<BotJob, "kind" | "summary">): string | null {
+  const summary = job.summary?.trim();
+  if (!summary) return null;
+  const same = (a: string) => a.toLowerCase() === summary.toLowerCase();
+  if (same(humanizeKind(job.kind)) || same(botJobKindLabel(job.kind))) return null;
+  return summary;
+}
+
+// Who queued the job, for an Admin's wire; null for system jobs.
+export function botJobRequester(job: Pick<BotJob, "requested_by" | "requested_by_user_id">): string | null {
+  const user = job.requested_by;
+  if (user) return user.global_name || user.username || user.user_id;
+  return job.requested_by_user_id;
+}
+
+// The wire's time stamp in the viewer's zone: the clock ("21:14") and the
+// day under it ("Today", "Yesterday", "Nov 2"; with the year once it isn't
+// this year's). `now` and `timeZone` are passed in so this stays pure.
+export function wireStamp(
+  iso: string,
+  now: Date,
+  timeZone?: string,
+): { clock: string; day: string } {
+  const at = new Date(iso);
+  const clock = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(at);
+  const dayKey = (d: Date) =>
+    new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+  const today = dayKey(now);
+  const yesterday = dayKey(new Date(now.getTime() - 86_400_000));
+  const key = dayKey(at);
+  if (key === today) return { clock, day: "Today" };
+  if (key === yesterday) return { clock, day: "Yesterday" };
+  const sameYear = key.slice(0, 4) === today.slice(0, 4);
+  const day = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    month: "short",
+    day: "numeric",
+    year: sameYear ? undefined : "numeric",
+  }).format(at);
+  return { clock, day };
+}
+
+// "just now", "12 min ago", "3 h ago", "2 d ago".
+export function agoText(iso: string, now: Date): string {
+  const minutes = Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} h ago`;
+  return `${Math.floor(hours / 24)} d ago`;
+}
+
+// The newest job of any of `kinds` in a newest-first list, when it failed.
+export function latestFailure(
+  jobs: readonly BotJob[],
+  kinds: readonly string[],
+): BotJob | null {
+  const latest = jobs.find((j) => kinds.includes(j.kind));
+  return latest && latest.status === "failed" ? latest : null;
 }

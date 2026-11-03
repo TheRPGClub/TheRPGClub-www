@@ -876,7 +876,7 @@ export interface StarboardEntry {
   updated_at: string;
 }
 
-// Bot jobs (GET /api/v1/bot_jobs/:id)
+// Bot jobs (GET /api/v1/bot_jobs, GET /api/v1/bot_jobs/:id)
 //
 // A Discord action the website asked the bot to carry out. The bot claims
 // queued jobs about every 10 seconds and acks them done or failed; a claim
@@ -896,14 +896,22 @@ export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
 export interface BotJob {
   id: number;
   kind: BotJobKind;
+  // What the job does in plain words, set when it was queued ("Announce the
+  // new Suggestion ..."). Up to 200 characters; holds no secrets.
+  summary: string;
   status: BotJobStatus;
   // The member whose action queued it; null for system jobs.
   requested_by_user_id: string | null;
+  requested_by?: UserSummary | null;
   // Claims so far, including ones that timed out.
   attempts: number;
   // The bot's error, or the claim-timeout error. Set when status is failed.
   error_message: string | null;
+  // What the bot reported when it acked the job done (memberscan counts).
+  result_text?: string | null;
   claimed_at: string | null;
+  // While claimed: when the claim goes back to the queue unless acked.
+  lease_expires_at?: string | null;
   finished_at: string | null;
   created_at: string;
   updated_at: string;
