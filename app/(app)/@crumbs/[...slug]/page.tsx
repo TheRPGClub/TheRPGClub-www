@@ -135,6 +135,9 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {
     trail.push({ label: ADMIN_PAGES[id], href: `${root}/${id}` });
+    if (id === "live-events" && page === "new") {
+      trail.push({ label: "New", href: `${root}/${id}/new` });
+    }
   }
 
   return trail;
