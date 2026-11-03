@@ -14,6 +14,7 @@ import type { SessionMembership } from "@/lib/auth-types";
 //   hasRegularRole      Regulars role only
 //   hasMemberRole       Members role only
 //   isMemberOrStaff     Members role, or Moderator and above
+//   isRegularOrStaff    Regulars role, or Moderator and above
 //
 // Like the API, the Regulars and Members gates check that one role. A feature
 // that should also admit staff combines them, e.g.
@@ -46,6 +47,12 @@ export function hasMemberRole(m: Flags): boolean {
 // release info, HLTB lookup.
 export function isMemberOrStaff(m: Flags): boolean {
   return hasMemberRole(m) || isModeratorOrAbove(m);
+}
+
+// The API's `regular_or_staff?` gate: the Regulars role, or Moderator and
+// above. It admits linking and unlinking a game's Discord threads.
+export function isRegularOrStaff(m: Flags): boolean {
+  return hasRegularRole(m) || isModeratorOrAbove(m);
 }
 
 // The staff tiers, lowest first. A page or nav item names the tier it needs.
