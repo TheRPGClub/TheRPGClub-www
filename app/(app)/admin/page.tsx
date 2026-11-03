@@ -76,7 +76,7 @@ export default async function StaffDeskPage() {
   if (pending) notes.suggestions = { text: `${pending.total} pending` };
   const nowPlaying = presence.ok ? presence.data?.[0]?.activity_name : null;
   if (nowPlaying) {
-    notes.presence = { text: nowPlaying.length > 24 ? `${nowPlaying.slice(0, 23).trimEnd()}...` : nowPlaying };
+    notes.presence = { text: nowPlaying.length > 16 ? `${nowPlaying.slice(0, 15).trimEnd()}...` : nowPlaying };
   }
   if (presence.ok && presence.meta) notes["presence-history"] = { text: `${presence.meta.count} set` };
   if (upcoming !== null) notes["live-events"] = { text: `${upcoming} upcoming` };

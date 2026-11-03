@@ -193,7 +193,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
 
           <fieldset className="mt-5" disabled={locked}>
             <legend className={LABEL}>
-              Image <span className="normal-case">(optional)</span>
+              Image (optional)
             </legend>
             <div className="mt-1 flex flex-wrap items-center gap-2.5">
               {imageMode === "file" ? (
