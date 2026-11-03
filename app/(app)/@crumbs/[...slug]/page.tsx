@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { setDetailPath } from "@/lib/member-achievements";
+import { roundEditHref, TRACK_NAME, trackFromSlug } from "@/lib/rounds";
 import { STAFF_SECTIONS } from "@/lib/staff";
 import { RunningHead, type Crumb } from "@/components/issue/running-head";
 
@@ -23,12 +24,13 @@ const SECTIONS: Record<string, string> = {
   journals: "Game Journals",
 };
 
-// /admin tool pages, labelled as the sidebar's Staff group names them.
+// /admin tool pages, labelled as the desk names them. Sections that live
+// elsewhere (versions on the game page) or on another section's page (a
+// #hash) have no page of their own.
 const ADMIN_PAGES: Record<string, string> = Object.fromEntries(
-  STAFF_SECTIONS.filter((s) => s.key !== "overview").map((s) => [
-    s.href.split("/")[2],
-    s.label,
-  ]),
+  STAFF_SECTIONS.filter(
+    (s) => s.href.startsWith("/admin/") && !s.href.includes("#"),
+  ).map((s) => [s.href.split("/")[2], s.label]),
 );
 
 const MEMBER_PAGES: Record<string, string> = {
@@ -134,6 +136,14 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {
     trail.push({ label: ADMIN_PAGES[id], href: `${root}/${id}` });
+    // A round's edit page: /admin/rounds/<gotm|nr-gotm>/<round>.
+    const track = id === "rounds" ? trackFromSlug(page) : null;
+    if (track && sub && /^\d+$/.test(sub)) {
+      trail.push({ label: `${TRACK_NAME[track]} round ${sub}`, href: roundEditHref(track, Number(sub)) });
+    }
+    if (id === "live-events" && page === "new") {
+      trail.push({ label: "New", href: `${root}/${id}/new` });
+    }
   }
 
   return trail;

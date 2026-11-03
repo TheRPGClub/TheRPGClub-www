@@ -1,30 +1,12 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
 import { AlertTriangle, Check, Clock, Loader2, RefreshCw } from "lucide-react";
-import { getBotJobAction, type BotJobReadResult } from "@/app/actions/bot-jobs";
 import type { BotJob } from "@/lib/api/types";
-import {
-  BOT_JOB_REFRESH_DELAYS_MS,
-  botJobPhase,
-  botJobStatusCopy,
-  isBotJobSettled,
-} from "@/lib/bot-jobs";
+import { botJobPhase, botJobStatusCopy, isBotJobSettled } from "@/lib/bot-jobs";
+import { useBotJob, type BotJobState } from "@/hooks/use-bot-job";
 import { Chip } from "@/components/issue/chip";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const LOST = "Lost touch with the club's server. Check again in a moment.";
-
-// One status read. A rejected Server Action call (a network drop, a 5xx on
-// the action itself) comes back as a non-final error instead of throwing.
-async function readJob(jobId: number): Promise<BotJobReadResult & { lost?: boolean }> {
-  try {
-    return await getBotJobAction(jobId);
-  } catch {
-    return { ok: false, error: LOST, lost: true };
-  }
-}
 
 export interface BotJobStatusProps {
   // The job id the action returned.
@@ -33,6 +15,8 @@ export interface BotJobStatusProps {
   initialJob?: BotJob | null;
   // The Discord side of the action in the member's words, e.g. "Your DM".
   what?: string;
+  // Staff surfaces only: show what the bot reported once it is done.
+  showResult?: boolean;
   className?: string;
 }
 
@@ -44,81 +28,28 @@ export function BotJobStatus(props: BotJobStatusProps) {
   return <BotJobStatusInner key={props.jobId} {...props} />;
 }
 
-function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusProps) {
-  const [job, setJob] = useState<BotJob | null>(initialJob ?? null);
-  const [error, setError] = useState<string | null>(null);
-  // The refresh run, decided once at mount: skipped when the job is already
-  // settled, and opened with an immediate read when none was handed in.
-  const [plan] = useState(() => ({
-    run: !(initialJob && isBotJobSettled(initialJob)),
-    delays: initialJob ? BOT_JOB_REFRESH_DELAYS_MS : [0, ...BOT_JOB_REFRESH_DELAYS_MS],
-  }));
-  const [refreshing, setRefreshing] = useState(plan.run);
-  // A read that can't succeed on a retry (403, 404): no manual check either.
-  const [stuck, setStuck] = useState(false);
-  const [checking, startTransition] = useTransition();
+function BotJobStatusInner({ jobId, initialJob, what, showResult, className }: BotJobStatusProps) {
+  const state = useBotJob(jobId, initialJob);
+  return <BotJobStatusView state={state} what={what} showResult={showResult} className={className} />;
+}
 
-  useEffect(() => {
-    if (!plan.run) return;
-    let cancelled = false;
-    let timer: number | undefined;
-    let step = 0;
-
-    const tick = async () => {
-      const result = await readJob(jobId);
-      if (cancelled) return;
-      if (result.lost) {
-        // The call itself failed: stop and offer "Check again".
-        setError(result.error ?? LOST);
-        setRefreshing(false);
-        return;
-      }
-      if (result.ok && result.data) {
-        setJob(result.data);
-        setError(null);
-        if (isBotJobSettled(result.data)) {
-          setRefreshing(false);
-          return;
-        }
-      } else {
-        setError(result.error ?? "Couldn't check with the bot.");
-        if (result.final) {
-          setStuck(true);
-          setRefreshing(false);
-          return;
-        }
-      }
-      step += 1;
-      if (step < plan.delays.length) {
-        timer = window.setTimeout(tick, plan.delays[step]);
-      } else {
-        setRefreshing(false);
-      }
-    };
-
-    timer = window.setTimeout(tick, plan.delays[0]);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [jobId, plan]);
-
-  const checkAgain = () => {
-    startTransition(async () => {
-      const result = await readJob(jobId);
-      if (result.ok && result.data) {
-        setJob(result.data);
-        setError(null);
-      } else {
-        setError(result.error ?? "Couldn't check with the bot.");
-        if (result.final) setStuck(true);
-      }
-    });
-  };
-
+// The status line for a job someone else is following with useBotJob (the
+// proof card does, so its stamp and this line share one refresh run).
+export function BotJobStatusView({
+  state,
+  what,
+  showResult,
+  className,
+}: {
+  state: BotJobState;
+  what?: string;
+  showResult?: boolean;
+  className?: string;
+}) {
+  const { job, error, stuck, refreshing, checking, checkAgain } = state;
   const phase = job ? botJobPhase(job.status) : "queued";
   const copy = job
-    ? botJobStatusCopy(job, what)
+    ? botJobStatusCopy(job, what, { showResult })
     : { label: "Queued", detail: "Checking with the bot." };
   const settled = job ? isBotJobSettled(job) : false;
   const busy = refreshing || checking;

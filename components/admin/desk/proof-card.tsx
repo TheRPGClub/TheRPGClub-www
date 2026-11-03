@@ -1,0 +1,100 @@
+"use client";
+
+import type { ReactNode } from "react";
+import type { BotJob } from "@/lib/api/types";
+import { botJobPhase, type BotJobPhase } from "@/lib/bot-jobs";
+import { useBotJob } from "@/hooks/use-bot-job";
+import { BotJobStatusView } from "@/components/bot-job-status";
+import { Stamp } from "@/components/admin/desk/stamp";
+import { cn } from "@/lib/utils";
+
+type ProofChildren = ReactNode | ((job: BotJob | null) => ReactNode);
+
+export interface ProofCardProps {
+  // The proof itself: what will be posted, drawn by the tool (a poster, a
+  // message). A function gets the job as it last read, e.g. to add the
+  // thread link once it is done.
+  children: ProofChildren;
+  // Set once the form was sent: stamps the proof and follows the job.
+  jobId?: number | null;
+  initialJob?: BotJob | null;
+  // The re-read gaps (ms), for a job that runs longer than most (a scan).
+  refreshDelays?: readonly number[];
+  // With no job to follow: stamp the proof with this phase anyway, for a
+  // tool that tracks its own record's progress (a live event's status).
+  phase?: BotJobPhase | null;
+  // The Discord side in staff words, for the status line ("The live event").
+  what?: string;
+  // A note under the proof, e.g. "The proof shows the image as Discord crops it."
+  caption?: ReactNode;
+  // Drop the lifted frame (rounded, clipped, soft shadow) for proofs that
+  // draw their own.
+  bare?: boolean;
+  // Let the stamp hang off the proof's right edge, as in the live event
+  // mock. Leave it off when the proof touches the page edge (the overhang
+  // would scroll the page sideways).
+  overhang?: boolean;
+  className?: string;
+}
+
+// A proof of what a form will post. Before sending it is just the proof;
+// once a job id is handed in it is stamped Queued in the corner, and the
+// stamp follows the job (the same refresh run as <BotJobStatus>, whose
+// status line sits under the proof) to Done or Failed. Without a job,
+// `phase` stamps it from the caller's own reading.
+export function ProofCard(props: ProofCardProps) {
+  if (props.jobId == null) {
+    return (
+      <ProofFrame {...props} stamp={props.phase ? <Stamp key={props.phase} phase={props.phase} size="lg" /> : undefined}>
+        {typeof props.children === "function" ? props.children(null) : props.children}
+      </ProofFrame>
+    );
+  }
+  // Keyed so a new job starts its own refresh run.
+  return <SentProof key={props.jobId} {...props} jobId={props.jobId} />;
+}
+
+function SentProof(props: ProofCardProps & { jobId: number }) {
+  const state = useBotJob(props.jobId, props.initialJob, props.refreshDelays);
+  const phase = botJobPhase(state.job?.status ?? "queued");
+  return (
+    <ProofFrame
+      {...props}
+      stamp={<Stamp key={phase} phase={phase} size="lg" />}
+      status={<BotJobStatusView state={state} what={props.what} showResult className="mt-3" />}
+    >
+      {typeof props.children === "function" ? props.children(state.job) : props.children}
+    </ProofFrame>
+  );
+}
+
+function ProofFrame({
+  children,
+  caption,
+  bare,
+  overhang,
+  className,
+  stamp,
+  status,
+}: Omit<ProofCardProps, "children"> & {
+  children: ReactNode;
+  stamp?: ReactNode;
+  status?: ReactNode;
+}) {
+  return (
+    <figure className={cn("relative", className)}>
+      <div
+        className={cn(
+          !bare && "overflow-hidden rounded-md shadow-[0_24px_60px_rgb(0_0_0/0.55)]",
+        )}
+      >
+        {children}
+      </div>
+      {stamp && (
+        <div className={cn("absolute top-[22px] right-3", overhang && "sm:-right-3.5")}>{stamp}</div>
+      )}
+      {status}
+      {caption && <figcaption className="mt-3 text-[0.82rem] text-paper-mute">{caption}</figcaption>}
+    </figure>
+  );
+}

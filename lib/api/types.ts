@@ -876,7 +876,7 @@ export interface StarboardEntry {
   updated_at: string;
 }
 
-// Bot jobs (GET /api/v1/bot_jobs/:id)
+// Bot jobs (GET /api/v1/bot_jobs, GET /api/v1/bot_jobs/:id)
 //
 // A Discord action the website asked the bot to carry out. The bot claims
 // queued jobs about every 10 seconds and acks them done or failed; a claim
@@ -885,26 +885,71 @@ export interface StarboardEntry {
 // it, Admins and Superadmins. The payload is not exposed.
 
 export type BotJobKind =
+  | "completion_announce"
   | "giveaway_claim_notice"
   | "giveaway_hub_refresh"
+  | "nomination_deleted"
   | "suggestion_submitted"
   | "suggestion_outcome"
-  | "voting_poll_wakeup";
+  | "voting_poll_wakeup"
+  | "voting_results_publish"
+  | "voting_panels_repost"
+  | "voting_tie_broken"
+  | "gotm_cache_reload"
+  | "live_event_create"
+  | "say"
+  | "memberscan"
+  | "presence_set";
 
 export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
 
 export interface BotJob {
   id: number;
   kind: BotJobKind;
+  // What the job does in plain words, set when it was queued ("Announce the
+  // new Suggestion ..."). Up to 200 characters; holds no secrets.
+  summary: string;
   status: BotJobStatus;
   // The member whose action queued it; null for system jobs.
   requested_by_user_id: string | null;
+  requested_by?: UserSummary | null;
   // Claims so far, including ones that timed out.
   attempts: number;
   // The bot's error, or the claim-timeout error. Set when status is failed.
   error_message: string | null;
+  // What the bot reported when it acked the job done (memberscan counts).
+  result_text?: string | null;
   claimed_at: string | null;
+  // While claimed: when the claim goes back to the queue unless acked.
+  lease_expires_at?: string | null;
   finished_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Image backfill runs (GET /api/v1/image_backfill_runs/latest): one run of
+// the API's background import of IGDB images for games with none stored.
+export type ImageBackfillStatus = "queued" | "running" | "completed" | "failed";
+
+export interface ImageBackfillRun {
+  id: number;
+  // queued, then running, then completed; failed when the run stopped
+  // (see last_error).
+  status: ImageBackfillStatus;
+  // Games with no stored images when the run started.
+  total: number;
+  // Games whose images were imported.
+  done: number;
+  // Games with no IGDB id.
+  skipped: number;
+  // Games whose import failed.
+  failed: number;
+  // The Superadmin who started it; null for the service.
+  started_by_user_id: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  // The latest failure, per game ("Game 12: ...") or for the run.
+  last_error: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -937,8 +982,10 @@ export interface GuildChannelList {
 
 // Where a round is in its lifecycle, as the backend decides it: members
 // nominate until the vote opens, vote until it closes, then the tally decides
-// the winners — or leaves a tie for the admins — and the round is decided.
-export type VotingPhase = "nominating" | "voting" | "closed" | "tie" | "decided";
+// the winners. A tied category goes to a member runoff between the tied
+// games; a tie the runoff leaves is for the admins to break. Then the round
+// is decided.
+export type VotingPhase = "nominating" | "voting" | "closed" | "runoff" | "tie" | "decided";
 
 // Mirrors VotingRoundResource. `round_number` is the round being nominated
 // for, voted on and won; nominations close and voting opens at
@@ -950,13 +997,21 @@ export interface VotingRound {
   voting_opens_at: string;
   voting_closes_at: string;
   closed_at: string | null;
+  runoff_opens_at?: string | null;
+  runoff_closes_at?: string | null;
+  runoff_closed_at?: string | null;
   decided_at: string | null;
   phase: VotingPhase;
   nominations_open: boolean;
   voting_open: boolean;
   voting_ended: boolean;
-  // Tied games per category, awaiting an admin pick; `{}` when none.
+  runoff_open?: boolean;
+  runoff_ended?: boolean;
+  // Tied games per category still awaiting a decision: the runoff's ballot
+  // while it is open, then any tie it left for an admin pick; `{}` when none.
   pending_ties: Partial<Record<VotingCategory, Game[]>>;
+  // The runoff's ballot as it opened; `{}` when the round had no runoff.
+  runoff_ties?: Partial<Record<VotingCategory, Game[]>>;
 }
 
 // The GOTM and NR-GOTM tables share identical shapes, so one type serves
@@ -992,6 +1047,15 @@ export interface VoteTallyRow {
   nomination_id: number;
   gamedb_game_id: number | null;
   vote_count: number;
+}
+
+// The tally's meta. `counts_hidden` is true when the caller may not see the
+// counts yet (below Admin, while that ballot's voting is open): `data` is
+// then empty rather than all zeros.
+export interface VoteTallyMeta {
+  cap: number;
+  runoff: boolean;
+  counts_hidden: boolean;
 }
 
 // Result of casting a vote: `voted` placed one, `unvoted` toggled an existing
@@ -1375,4 +1439,108 @@ export interface JournalContributor {
   global_name: string | null;
   game_count: number;
   entry_count: number;
+}
+
+// Discord threads: a forum thread the bot tracks, and the games it is linked
+// to (`thread_game_links`; a thread can link to several games).
+export interface Thread {
+  thread_id: string;
+  forum_channel_id: string;
+  thread_name: string;
+  // The lowest linked game_id, derived by the API.
+  gamedb_game_id: number | null;
+  // Stored as a string ("true" / "false").
+  is_archived: string;
+  created_at: string;
+  last_seen_at: string | null;
+  skip_linking: string;
+  jump_url: string | null;
+}
+
+// A row of the thread link picker (`GET /threads?q=`).
+export interface ThreadSearchResult {
+  thread_id: string;
+  thread_name: string;
+  games: { game_id: number; title: string }[];
+}
+
+// Bot presence (GET/POST /api/v1/bot_presence, GET /bot_presence/latest)
+//
+// The bot's "Playing ..." activity, one row per change, newest first. A staff
+// POST records the setter from the session and queues `presence_set` so the
+// bot applies it at once; the bot's own `/mod presence` writes as the service.
+// Moderator and up.
+
+export interface BotPresence {
+  activity_name: string;
+  set_at: string;
+  set_by_user_id: string | null;
+  set_by_username: string | null;
+}
+
+// The `meta` of the job-queuing staff writes: the id of the bot job each
+// one queued, for polling GET /api/v1/bot_jobs/{id}. Null when none was
+// queued (service writes, owner deletes, completions not announced).
+export interface BotPresenceCreateMeta {
+  presence_job_id: number | null;
+}
+
+export interface GotmReloadMeta {
+  reload_job_id: number | null;
+}
+
+export interface CompletionCreateMeta {
+  announce_job_id: number | null;
+}
+
+export interface NominationDeletedResponse {
+  deleted: boolean;
+  meta?: { announce_job_id: number | null };
+}
+
+// Live events (GET/POST /api/v1/live_events, GET /live_events/:id)
+//
+// A forum thread in the Live Events forum and a Discord scheduled event, made
+// by the `live_event_create` bot job. Moderator and up.
+
+export type LiveEventStatus = "queued" | "thread_created" | "created" | "failed";
+
+export interface LiveEvent {
+  id: number;
+  topic: string;
+  // UTC instants.
+  starts_at: string;
+  ends_at: string;
+  // The URL given, or the uploaded image's public URL; null for none.
+  image_url: string | null;
+  status: LiveEventStatus;
+  discord_thread_id: string | null;
+  discord_event_id: string | null;
+  created_by_user_id: string | null;
+  // Its `live_event_create` job (GET /bot_jobs/:id for the bot's error).
+  // Null for an event made before the API stored it; the page then follows
+  // `status` alone.
+  bot_job_id?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// One search term of a synonym group (`SearchSynonym`). `term_norm` is the
+// API's lowercase letters-and-digits key.
+export interface SearchSynonym {
+  term_id: number;
+  group_id: number;
+  term_text: string;
+  term_norm: string;
+  created_at: string;
+  created_by: string | null;
+}
+
+// A synonym group read with `?include=terms` (`SearchSynonymGroupWithTerms`):
+// a search for any of its terms finds the games the others find.
+export interface SearchSynonymGroup {
+  group_id: number;
+  created_at: string;
+  created_by: string | null;
+  terms: SearchSynonym[];
 }

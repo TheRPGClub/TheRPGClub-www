@@ -84,6 +84,11 @@
     --color-nr-soft: #b896ff;
     --color-highlight: #ffd400;
     --color-highlight-ink: #3a3200;
+    /* Type on a solid signal-orange (destructive) fill. */
+    --color-destructive-ink: #2a1300;
+    /* Staff desk only: the Done stamp on a bot job. Never a fill behind type
+       and never on member surfaces (green is the uncommon ring there). */
+    --color-ok: #5fd08a;
 
     /* Achievement Hub roles, used on achievement surfaces only. Rarity inks
        are the 3px die-cut edge of an unlocked icon, by the Provider's global
@@ -247,5 +252,15 @@
     to {
         opacity: 1;
         transform: rotate(var(--burst-rot, 0deg)) scale(1);
+    }
+}
+
+/* The Undo bar drains from full to empty over the hold. */
+@keyframes undo-drain {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
     }
 }
