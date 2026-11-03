@@ -1292,3 +1292,34 @@ export interface SyncCooldownError {
   message: string;
   sync_available_at: string;
 }
+
+// Game keys (giveaways: /api/v1/game_keys)
+//
+// A donated key on the giveaway shelf. `key_value` (the secret) is present
+// only in a successful claim's response, in GET /game_keys/:id for those
+// entitled to it, and in the claimer's own claimed-keys list. `game` is the
+// linked GameDB game, null when the key carries only its free-text title.
+
+export type GameKeyRegion = "Global" | "NA" | "EU" | "UK" | "RU/CIS" | "Asia" | "Unknown";
+
+export interface GameKey {
+  key_id: number;
+  game_title: string;
+  platform: string;
+  region: GameKeyRegion;
+  gamedb_game_id?: number | null;
+  donor_user_id: string;
+  claimed_by_user_id?: string | null;
+  claimed_at?: string | null;
+  donor_notify_on_claim: boolean;
+  created_at: string;
+  updated_at: string;
+  key_value?: string | null;
+  game?: GameSummary | null;
+}
+
+// POST /game_keys/:id/claim's meta: the giveaway_claim_notice job (DM the
+// key, log the claim, tell the donor). Null when the bot claimed.
+export interface GameKeyClaimMeta {
+  claim_notice_job_id: number | null;
+}
