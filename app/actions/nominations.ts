@@ -2,8 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { getSession } from "@/lib/session";
-import type { Nomination, VotingCategory } from "@/lib/api/types";
+import type { BotJob, Nomination, VotingCategory } from "@/lib/api/types";
+import { findQueuedJob, REMOVAL_REASON_MAX, summaryNamesRound } from "@/lib/rounds";
+import { isAdminOrAbove } from "@/lib/staff";
+import { listBotJobsAction } from "@/app/actions/bot-jobs";
 
 export interface ActionResult<T> {
   ok: boolean;
@@ -92,4 +96,73 @@ export async function deleteNominationAction(
 
   revalidatePath("/voting");
   return { ok: true, data: null };
+}
+
+export interface StaffNominationDeleteResult {
+  ok: boolean;
+  // The nomination_deleted job the API queued, when the wire shows it.
+  // Null for the viewer's own nomination (no announcement) or when the
+  // wire doesn't show it yet.
+  job?: BotJob | null;
+  error?: string;
+}
+
+const REMOVAL_ERRORS: Record<string, string> = {
+  reason_required: "Give a reason: the bot posts it with the change.",
+  reason_too_long: `Keep the reason to ${REMOVAL_REASON_MAX} characters.`,
+};
+
+// An Admin deletes any member's nomination for the round, with a reason.
+// Someone else's needs the reason, and the API queues the bot's
+// announcement (the change and the refreshed list in the nomination
+// channel; no DM). The viewer's own needs none and posts nothing.
+export async function staffDeleteNominationAction(
+  category: VotingCategory,
+  round: number,
+  userId: string,
+  reason: string,
+): Promise<StaffNominationDeleteResult> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sign in again to delete nominations." };
+  if (!isAdminOrAbove(session.membership)) {
+    return { ok: false, error: "Only Admins and Superadmins can delete nominations." };
+  }
+
+  const own = session.principal.id === userId;
+  const trimmed = reason.trim();
+  if (!own && !trimmed) return { ok: false, error: REMOVAL_ERRORS.reason_required };
+  if (trimmed.length > REMOVAL_REASON_MAX) return { ok: false, error: REMOVAL_ERRORS.reason_too_long };
+
+  const query = !own ? `?reason=${encodeURIComponent(trimmed)}` : "";
+  const since = new Date();
+  let res: Response;
+  try {
+    res = await apiFetch(
+      `/api/v1/${CATEGORY_PATH[category]}/${round}/nominations/${encodeURIComponent(userId)}${query}`,
+      { method: "DELETE" },
+    );
+  } catch {
+    return { ok: false, error: "Couldn't reach the club's server. Try again." };
+  }
+  if (!res.ok) {
+    if (res.status === 404) return { ok: false, error: "That nomination is already gone." };
+    if (res.status === 403) return { ok: false, error: "Only Admins and Superadmins can delete nominations." };
+    return { ok: false, error: apiErrorMessage(await readApiError(res), REMOVAL_ERRORS) };
+  }
+
+  revalidatePath("/voting");
+  revalidatePath("/admin/nominations");
+  if (own) return { ok: true, job: null };
+
+  const wire = await listBotJobsAction(1);
+  const job =
+    wire.ok && wire.data
+      ? findQueuedJob(wire.data, {
+          kind: "nomination_deleted",
+          requesterId: session.principal.id,
+          since,
+          matches: (summary) => summaryNamesRound(summary, category, round),
+        })
+      : null;
+  return { ok: true, job };
 }
