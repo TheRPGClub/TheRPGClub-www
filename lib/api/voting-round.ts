@@ -2,6 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type {
   Nomination,
   NominationVote,
+  VoteTallyMeta,
   VoteTallyRow,
   VotingCategory,
   VotingPhase,
@@ -37,6 +38,12 @@ export interface RoundTally {
   rows: VoteTallyRow[];
   // Per-user vote cap for the round (2, or 3 for fields of 9+ nominations).
   cap: number;
+  // The API withholds the counts from the viewer until this ballot's voting
+  // ends (only Admins see them while it is open). `rows` is then empty, not
+  // a tally of zeros, so say the counts are hidden instead of showing them.
+  countsHidden: boolean;
+  // False when the tally couldn't be read; `rows` is then empty too.
+  ok: boolean;
 }
 
 const DEFAULT_CAP = 2;
@@ -71,23 +78,31 @@ export async function fetchNominations(
   }
 }
 
+// The round's tally, or with `runoff` its tie-breaker runoff ballot's.
 export async function fetchTally(
   category: VotingCategory,
   round: number,
+  { runoff = false }: { runoff?: boolean } = {},
 ): Promise<RoundTally> {
+  const failed: RoundTally = { rows: [], cap: DEFAULT_CAP, countsHidden: false, ok: false };
   try {
     const res = await apiFetch(
-      `/api/v1/${VOTING_CATEGORY_PATH[category]}/${round}/votes/tally`,
+      `/api/v1/${VOTING_CATEGORY_PATH[category]}/${round}/votes/tally${runoff ? "?runoff=true" : ""}`,
       { cache: "no-store" },
     );
-    if (!res.ok) return { rows: [], cap: DEFAULT_CAP };
+    if (!res.ok) return failed;
     const body = (await res.json()) as {
       data: VoteTallyRow[];
-      meta: { cap: number };
+      meta: Partial<VoteTallyMeta>;
     };
-    return { rows: body.data, cap: body.meta.cap };
+    return {
+      rows: body.data,
+      cap: body.meta.cap ?? DEFAULT_CAP,
+      countsHidden: body.meta.counts_hidden === true,
+      ok: true,
+    };
   } catch {
-    return { rows: [], cap: DEFAULT_CAP };
+    return failed;
   }
 }
 

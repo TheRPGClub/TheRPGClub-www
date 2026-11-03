@@ -3,7 +3,7 @@
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Crown, Loader2, Vote, X } from "lucide-react";
+import { ArrowRight, Check, Crown, EyeOff, Loader2, Vote, X } from "lucide-react";
 import { castVoteAction } from "@/app/actions/votes";
 import type { VotingCategory } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,10 @@ export interface GameBallotPanelProps {
   // nomination separately.
   count: number;
   maxCount: number;
+  // The API withholds the counts from this viewer while voting is open
+  // (only Admins see them then); `count` and `maxCount` are 0 and mean
+  // nothing, so say the counts are hidden instead.
+  countsHidden: boolean;
   voted: boolean;
   // How many of the viewer's votes are already spent, out of the round's cap.
   votesUsed: number;
@@ -47,6 +51,7 @@ export function GameBallotPanel({
   nominationId,
   count,
   maxCount,
+  countsHidden,
   voted,
   votesUsed,
   cap,
@@ -140,12 +145,19 @@ export function GameBallotPanel({
           </p>
         </div>
         <div className="col-span-full flex items-center gap-4 sm:col-span-1">
-          <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim sm:text-right">
-            <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-paper sm:mr-0 sm:block sm:text-[2.75rem]">
-              {state.count}
-            </span>
-            {state.count === 1 ? "vote" : "votes"}
-          </p>
+          {countsHidden ? (
+            <p className="font-label flex items-center gap-1.5 text-[0.82rem] leading-tight font-extrabold tracking-[0.08em] text-paper-mute sm:max-w-36 sm:text-right">
+              <EyeOff aria-hidden className="size-4 shrink-0" />
+              Counts hidden until voting ends
+            </p>
+          ) : (
+            <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim sm:text-right">
+              <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-paper sm:mr-0 sm:block sm:text-[2.75rem]">
+                {state.count}
+              </span>
+              {state.count === 1 ? "vote" : "votes"}
+            </p>
+          )}
 
           {votingOpen && signedIn && (
             <Button
@@ -169,7 +181,7 @@ export function GameBallotPanel({
         </div>
       </div>
 
-      {scale > 0 && (
+      {!countsHidden && scale > 0 && (
         // Relative to the leading game's tally, matching the board's bars.
         <Progress
           value={state.count}

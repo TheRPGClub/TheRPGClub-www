@@ -79,7 +79,12 @@ async function loadRound(
         fetchNominations(category, round.round_number),
         ballot
           ? fetchTally(category, round.round_number)
-          : Promise.resolve({ rows: [], cap: 0 }),
+          : Promise.resolve<RoundTally>({
+              rows: [],
+              cap: 0,
+              countsHidden: false,
+              ok: true,
+            }),
         // Own votes are only readable (and only castable) while the window
         // is open; a finished round is just its tally.
         round.voting_open && viewerId
@@ -177,6 +182,7 @@ async function VotingContent() {
               userVotes={track.userVotes}
               votingOpen={round.voting_open}
               votingEnded={round.voting_ended}
+              countsHidden={track.tally.countsHidden}
               viewerId={viewerId}
               emptyMessage={
                 ballot
@@ -265,7 +271,9 @@ function ResultSlot({
           {tied.map((game) => game.title).join(" / ")}
         </p>
         <p className="text-[0.82rem] font-medium text-highlight-ink">
-          Tied. The admins will pick the winner.
+          {round.phase === "runoff"
+            ? "Tied. A runoff between them decides it."
+            : "Tied. The admins will pick the winner."}
         </p>
       </div>
     );
@@ -357,6 +365,17 @@ function phaseCopy(
         },
       };
     }
+    case "runoff":
+      return {
+        title: "Results",
+        clock: {
+          figure: "Runoff",
+          label: "Voting ended in a tie",
+          detail: round.runoff_closes_at
+            ? `A runoff between the tied games closes ${formatEt(round.runoff_closes_at)}.`
+            : "A runoff between the tied games decides the winner.",
+        },
+      };
     case "tie":
       return {
         title: "Results",
