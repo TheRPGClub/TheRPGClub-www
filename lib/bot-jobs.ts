@@ -52,8 +52,14 @@ export interface BotJobStatusCopy {
 }
 
 // The status line. `what` names the Discord side of the action in the
-// member's words ("Your DM"), defaulting to a generic phrase.
-export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJobStatusCopy {
+// member's words ("Your DM"), defaulting to a generic phrase. `showResult`
+// (staff surfaces only) puts what the bot reported on Done in place of the
+// worded line; members never see the bot's raw result text.
+export function botJobStatusCopy(
+  job: BotJob,
+  what = "The Discord update",
+  { showResult = false }: { showResult?: boolean } = {},
+): BotJobStatusCopy {
   switch (job.status) {
     case "queued":
       return { label: "Queued", detail: `${what} is waiting for the bot.` };
@@ -62,7 +68,7 @@ export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJ
     case "done":
       return {
         label: "Done",
-        detail: job.result_text?.trim() || `${what} went out on Discord.`,
+        detail: (showResult && job.result_text?.trim()) || `${what} went out on Discord.`,
       };
     case "failed":
       return {

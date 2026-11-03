@@ -29,7 +29,7 @@ export function JobLine({
   what: string;
 }) {
   const isClient = useIsClient();
-  if (fresh) return <BotJobStatus jobId={fresh.id} initialJob={fresh} what={what} className="mt-2.5" />;
+  if (fresh) return <BotJobStatus jobId={fresh.id} initialJob={fresh} what={what} showResult className="mt-2.5" />;
   if (!job) return null;
   const phase = botJobPhase(job.status);
   const at = job.finished_at ?? job.created_at;

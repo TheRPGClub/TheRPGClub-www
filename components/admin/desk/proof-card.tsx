@@ -61,7 +61,7 @@ function SentProof(props: ProofCardProps & { jobId: number }) {
     <ProofFrame
       {...props}
       stamp={<Stamp key={phase} phase={phase} size="lg" />}
-      status={<BotJobStatusView state={state} what={props.what} className="mt-3" />}
+      status={<BotJobStatusView state={state} what={props.what} showResult className="mt-3" />}
     >
       {typeof props.children === "function" ? props.children(state.job) : props.children}
     </ProofFrame>

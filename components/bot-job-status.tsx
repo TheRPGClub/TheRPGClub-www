@@ -15,6 +15,8 @@ export interface BotJobStatusProps {
   initialJob?: BotJob | null;
   // The Discord side of the action in the member's words, e.g. "Your DM".
   what?: string;
+  // Staff surfaces only: show what the bot reported once it is done.
+  showResult?: boolean;
   className?: string;
 }
 
@@ -26,9 +28,9 @@ export function BotJobStatus(props: BotJobStatusProps) {
   return <BotJobStatusInner key={props.jobId} {...props} />;
 }
 
-function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusProps) {
+function BotJobStatusInner({ jobId, initialJob, what, showResult, className }: BotJobStatusProps) {
   const state = useBotJob(jobId, initialJob);
-  return <BotJobStatusView state={state} what={what} className={className} />;
+  return <BotJobStatusView state={state} what={what} showResult={showResult} className={className} />;
 }
 
 // The status line for a job someone else is following with useBotJob (the
@@ -36,16 +38,18 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
 export function BotJobStatusView({
   state,
   what,
+  showResult,
   className,
 }: {
   state: BotJobState;
   what?: string;
+  showResult?: boolean;
   className?: string;
 }) {
   const { job, error, stuck, refreshing, checking, checkAgain } = state;
   const phase = job ? botJobPhase(job.status) : "queued";
   const copy = job
-    ? botJobStatusCopy(job, what)
+    ? botJobStatusCopy(job, what, { showResult })
     : { label: "Queued", detail: "Checking with the bot." };
   const settled = job ? isBotJobSettled(job) : false;
   const busy = refreshing || checking;
