@@ -37,6 +37,8 @@ import {
   NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
+  Radio,
+  Replace,
   ShieldCheck,
   Trophy,
   Users,
@@ -59,8 +61,12 @@ const navMain = [
 
 const VOTING_HREF = "/voting";
 
-const STAFF_ICON: Record<StaffSection["key"], typeof ShieldCheck> = {
+// Icons for the sections marked `nav` in lib/staff.ts.
+const STAFF_ICON: Partial<Record<StaffSection["key"], typeof ShieldCheck>> = {
   overview: ShieldCheck,
+  voting: Vote,
+  synonyms: Replace,
+  "live-events": Radio,
   reminders: BellRing,
   suggestions: ClipboardCheck,
 };
@@ -98,8 +104,9 @@ export function AppSidebar({
   // in the call-to-action yellow on the nav item itself.
   const votingOpen = votingPhase === "nominating" || votingPhase === "voting";
   const { toggleSidebar } = useSidebar();
-  // The /admin sections this member's role can use; none for most members.
-  const staffSections = staffSectionsFor(membership);
+  // The /admin sections this member's role can use and the sidebar lists;
+  // none for most members. The desk lists the rest.
+  const staffSections = staffSectionsFor(membership).filter((s) => s.nav);
   const displayName = principal.global_name ?? principal.username;
   const avatarUrl = discordAvatarUrl(
     principal.discord_id,
@@ -212,7 +219,7 @@ export function AppSidebar({
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
                 {staffSections.map(({ key, href, label }) => {
-                  const Icon = STAFF_ICON[key];
+                  const Icon = STAFF_ICON[key] ?? ShieldCheck;
                   // The overview is the section root: only its own path
                   // marks it, so a tool page doesn't light both items.
                   const active =
