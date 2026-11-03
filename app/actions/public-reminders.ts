@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import type { PublicReminder } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
 import { validateReminderInput } from "@/lib/public-reminders";
@@ -27,12 +28,7 @@ async function errorMessage(res: Response): Promise<string> {
   if (res.status === 403)
     return "Only Admins and Superadmins can change public reminders.";
   if (res.status === 404) return "That reminder no longer exists.";
-  try {
-    const body = await res.json();
-    return body.error ?? body.message ?? `Request failed (HTTP ${res.status}).`;
-  } catch {
-    return `Request failed (HTTP ${res.status}).`;
-  }
+  return apiErrorMessage(await readApiError(res));
 }
 
 async function send(
