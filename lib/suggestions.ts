@@ -152,3 +152,37 @@ export function byReviewedDesc(a: Suggestion, b: Suggestion): number {
 export function votesLabel(n: number): string {
   return n === 1 ? "vote" : "votes";
 }
+
+// ─── Review (Superadmins) ────────────────────────────────────────────────────
+
+// The repos an approval can open its GitHub issue in, as the API's
+// `RpgClubSuggestion::TARGET_REPOS` lists them.
+export const SUGGESTION_TARGET_REPOS = [
+  { value: "TheRPGClub/TheRPGClub-bot", label: "Bot", blurb: "The Discord bot" },
+  { value: "TheRPGClub/TheRPGClub-www", label: "Website", blurb: "This site" },
+  { value: "TheRPGClub/TheRPGClub-api", label: "API", blurb: "The server behind both" },
+] as const;
+
+export type SuggestionTargetRepo = (typeof SUGGESTION_TARGET_REPOS)[number]["value"];
+
+export function isSuggestionTargetRepo(value: string): value is SuggestionTargetRepo {
+  return SUGGESTION_TARGET_REPOS.some((r) => r.value === value);
+}
+
+// The API's cap on a rejection reason.
+export const REJECTION_REASON_MAX = 2000;
+
+// A reason the API will take: trimmed, present, within the cap.
+export function validateRejectionReason(
+  raw: string,
+): { ok: true; reason: string } | { ok: false; error: string } {
+  const reason = raw.trim();
+  if (!reason) return { ok: false, error: "Say why it isn't going ahead." };
+  if (reason.length > REJECTION_REASON_MAX) {
+    return {
+      ok: false,
+      error: `Keep the reason to ${REJECTION_REASON_MAX} characters.`,
+    };
+  }
+  return { ok: true, reason };
+}
