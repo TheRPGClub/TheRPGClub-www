@@ -20,7 +20,6 @@ import type {
   Session,
   SocialPlatform,
   StarboardEntry,
-  Suggestion,
   Todo,
   TodoSummary,
   User,
@@ -405,46 +404,6 @@ export const nrGotmEntries = {
 
   get: (id: number) =>
     apiFetch<ApiSingle<NrGotmEntry>>(`/api/v1/nr_gotm_entries/${id}`),
-};
-
-// ─── Suggestions ─────────────────────────────────────────────────────────────
-
-export const suggestions = {
-  // `status` is comma-separated (the Suggestion Board's default is
-  // "pending,approved"); absent lists every status.
-  list: (params?: { status?: string; page?: number; per?: number }) => {
-    const qs = new URLSearchParams();
-    if (params?.status) qs.set("status", params.status);
-    if (params?.page !== undefined) qs.set("page", String(params.page));
-    if (params?.per !== undefined) qs.set("per", String(params.per));
-    return apiFetch<ApiCollection<Suggestion>>(
-      `/api/v1/suggestions${qs.size ? `?${qs}` : ""}`,
-    );
-  },
-
-  get: (id: number) =>
-    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}`),
-
-  create: (data: Pick<Suggestion, "title" | "details" | "labels">) =>
-    apiFetch<ApiSingle<Suggestion>>("/api/v1/suggestions", {
-      method: "POST",
-      body: JSON.stringify({ data }),
-    }),
-
-  withdraw: (id: number) =>
-    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/withdraw`, {
-      method: "POST",
-    }),
-
-  upvote: (id: number) =>
-    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/upvote`, {
-      method: "POST",
-    }),
-
-  removeUpvote: (id: number) =>
-    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/upvote`, {
-      method: "DELETE",
-    }),
 };
 
 // ─── Todos ───────────────────────────────────────────────────────────────────
