@@ -6,6 +6,7 @@ import type { ApiCollection, Game } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { fetchGotmRounds } from "@/lib/api/gotm-rounds";
 import { getSession } from "@/lib/session";
+import { igdbAddBlockedReason } from "@/lib/igdb";
 import { BrowseGameCard } from "@/components/issue/browse-game-card";
 import { BrowseLead, latestWinners } from "@/components/issue/browse-lead";
 import {
@@ -14,6 +15,7 @@ import {
   headingLinkClass,
 } from "@/components/issue/page-header";
 import { ListPagination } from "@/components/list-pagination";
+import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { GamesSearchForm } from "./games-search-form";
@@ -198,6 +200,12 @@ async function GamesGrid({
   const result = await fetchGames({ q, winner, page: currentPage });
   const games = result?.games ?? [];
   const total = result?.total ?? 0;
+  // A search the GameDB has no match for offers adding the game from IGDB.
+  const offerIgdb = !!result && games.length === 0 && !!q && !winner;
+  const session = offerIgdb ? await getSession() : null;
+  const igdbBlocked = offerIgdb
+    ? igdbAddBlockedReason(!!session, session?.membership)
+    : null;
 
   const pageHref = (p: number) => {
     const ps = new URLSearchParams();
@@ -228,6 +236,13 @@ async function GamesGrid({
 
       {!result ? (
         <EmptyState>Couldn&apos;t load the GameDB. Try again in a moment.</EmptyState>
+      ) : offerIgdb ? (
+        <IgdbFallback
+          key={q}
+          query={q}
+          variant="page"
+          blockedReason={igdbBlocked}
+        />
       ) : games.length === 0 ? (
         <EmptyState>
           {q

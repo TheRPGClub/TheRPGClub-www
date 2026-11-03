@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
+import { igdbAddBlockedReason } from "@/lib/igdb";
 import type {
   AchievementProviderTotals,
   ApiCollection,
@@ -171,6 +172,7 @@ export default async function MemberEditPage({
           entries={list.data}
           total={list.total}
           platforms={platforms.data}
+          igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
         />
       ),
     })),
