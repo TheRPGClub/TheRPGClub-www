@@ -63,7 +63,7 @@ export function TermInput({
       )}
       onClick={() => inputRef.current?.focus()}
     >
-      <ul className="contents" aria-label={`${label}: ${terms.length} terms`}>
+      <ul className="contents" aria-label={`Terms added: ${terms.length}`}>
         {terms.map((term, i) => (
           <li
             key={`${term}-${i}`}

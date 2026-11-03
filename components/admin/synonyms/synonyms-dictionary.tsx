@@ -87,7 +87,8 @@ export function SynonymsDictionary({ groups }: { groups: SearchSynonymGroup[] })
             key={g.group_id}
             groupId={g.group_id}
             initialTerms={[synonymHeadword(g), ...synonymAlso(g)]}
-            onDone={() => setEditingKey(null)}
+            // A save that lands after another entry was opened leaves that one open.
+            onDone={() => setEditingKey((k) => (k === g.group_id ? null : k))}
           />
         )}
         empty={
