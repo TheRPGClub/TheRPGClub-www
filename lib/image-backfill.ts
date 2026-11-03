@@ -18,7 +18,10 @@ export function backfillProgress(
 ): { handled: number; percent: number } {
   const handled = run.done + run.skipped + run.failed;
   if (run.total <= 0) return { handled, percent: run.status === "completed" ? 100 : 0 };
-  return { handled, percent: Math.min(100, Math.round((handled / run.total) * 100)) };
+  return {
+    handled,
+    percent: Math.min(100, Math.round((handled / run.total) * 100)),
+  };
 }
 
 export const BACKFILL_STATUS_LABEL: Record<ImageBackfillStatus, string> = {

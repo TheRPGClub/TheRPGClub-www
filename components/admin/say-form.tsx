@@ -19,12 +19,23 @@ const PROBLEM = "text-[0.82rem] text-destructive";
 // /admin/say: pick a text channel, write the message, optionally paste the
 // link of a message to reply to. The proof beside it shows the message as
 // the bot will post it, and is stamped Queued once sent.
-export function SayForm({ channels }: { channels: GuildChannel[] }) {
+export function SayForm({
+  channels,
+  guildId,
+}: {
+  channels: GuildChannel[];
+  // The club's server id, to refuse a link to another server before sending.
+  guildId: string | null;
+}) {
   const [channelId, setChannelId] = useState("");
   const [replyLink, setReplyLink] = useState("");
   const [content, setContent] = useState("");
   // Field problems show once the form has been tried, or the field left.
-  const [touched, setTouched] = useState({ channel: false, content: false, replyLink: false });
+  const [touched, setTouched] = useState({
+    channel: false,
+    content: false,
+    replyLink: false,
+  });
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<BotJob | null>(null);
   const [pending, startTransition] = useTransition();
@@ -34,7 +45,7 @@ export function SayForm({ channels }: { channels: GuildChannel[] }) {
     const channel = channelById(id);
     return channel ? `#${channel.name}` : "that channel";
   };
-  const problems = validateSay({ channelId, content, replyLink }, channelName);
+  const problems = validateSay({ channelId, content, replyLink }, channelName, guildId);
   const locked = pending || sent !== null;
   const length = content.trim().length;
 
@@ -68,7 +79,8 @@ export function SayForm({ channels }: { channels: GuildChannel[] }) {
   };
 
   const show = (field: keyof typeof touched) => touched[field] && problems[field];
-  const replying = replyLink.trim() !== "" && !problems.replyLink ? parseMessageLink(replyLink) : null;
+  const replying =
+    replyLink.trim() !== "" && !problems.replyLink ? parseMessageLink(replyLink) : null;
 
   return (
     <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem]">
@@ -162,7 +174,9 @@ export function SayForm({ channels }: { channels: GuildChannel[] }) {
               <Plus data-icon="inline-start" />
               Say another
             </Button>
-            <span className={HINT}>{"This one's with the bot. Its status is under the proof."}</span>
+            <span className={HINT}>
+              {"This one's with the bot. Its status is under the proof."}
+            </span>
           </div>
         ) : (
           <Button type="submit" variant="highlight" disabled={pending}>

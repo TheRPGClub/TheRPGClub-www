@@ -15,7 +15,9 @@ const SHOWN = 5;
 
 async function fetchRecentScans(): Promise<BotJob[]> {
   try {
-    const res = await apiFetch(`/api/v1/bot_jobs?page=1&per=${LOOKBACK}`, { cache: "no-store" });
+    const res = await apiFetch(`/api/v1/bot_jobs?page=1&per=${LOOKBACK}`, {
+      cache: "no-store",
+    });
     if (!res.ok) return [];
     const body = (await res.json()) as ApiCollection<BotJob>;
     return body.data.filter((j) => j.kind === "memberscan").slice(0, SHOWN);

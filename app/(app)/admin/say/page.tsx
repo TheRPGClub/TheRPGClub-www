@@ -39,7 +39,7 @@ export default async function SayPage() {
           No channels have been synced from Discord yet. The bot sends the list when it starts.
         </p>
       ) : (
-        <SayForm channels={channels} />
+        <SayForm channels={channels} guildId={process.env.DISCORD_GUILD_ID || null} />
       )}
     </div>
   );

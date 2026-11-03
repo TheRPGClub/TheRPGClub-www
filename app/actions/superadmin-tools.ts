@@ -3,7 +3,7 @@
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import type { BotJob, ImageBackfillRun } from "@/lib/api/types";
-import { hasSayProblems, validateSay, type SayInput } from "@/lib/say";
+import { hasSayProblems, sayRefusal, validateSay, type SayInput } from "@/lib/say";
 
 // The Superadmin tools on /admin: say as the bot, memberscan, and the image
 // backfill. The API makes the final call on who may use them; these shape
@@ -23,7 +23,11 @@ export interface BotJobQueuedResult {
   error?: string;
 }
 
-async function queue(path: string, body?: unknown): Promise<BotJobQueuedResult> {
+async function queue(
+  path: string,
+  body?: unknown,
+  explain: (message: string) => string = (m) => m,
+): Promise<BotJobQueuedResult> {
   let res: Response;
   try {
     res = await apiFetch(path, {
@@ -37,7 +41,10 @@ async function queue(path: string, body?: unknown): Promise<BotJobQueuedResult> 
   if (!res.ok) {
     const known = refusal(res.status);
     if (known) return { ok: false, error: known };
-    return { ok: false, error: apiErrorMessage(await readApiError(res)) };
+    return {
+      ok: false,
+      error: explain(apiErrorMessage(await readApiError(res))),
+    };
   }
   const json = (await res.json()) as { data: BotJob };
   return { ok: true, job: json.data };
@@ -45,18 +52,25 @@ async function queue(path: string, body?: unknown): Promise<BotJobQueuedResult> 
 
 // Queue a `say` job: the bot posts the message, or replies to the linked one.
 export async function sayAction(input: SayInput): Promise<BotJobQueuedResult> {
-  const problems = validateSay(input);
+  const problems = validateSay(input, undefined, process.env.DISCORD_GUILD_ID);
   if (hasSayProblems(problems)) {
-    return { ok: false, error: problems.channel ?? problems.content ?? problems.replyLink };
+    return {
+      ok: false,
+      error: problems.channel ?? problems.content ?? problems.replyLink,
+    };
   }
   const link = input.replyLink.trim();
-  return queue("/api/v1/bot_say", {
-    data: {
-      channel_id: input.channelId,
-      content: input.content.trim(),
-      reply_to_message_link: link || null,
+  return queue(
+    "/api/v1/bot_say",
+    {
+      data: {
+        channel_id: input.channelId,
+        content: input.content.trim(),
+        reply_to_message_link: link || null,
+      },
     },
-  });
+    sayRefusal,
+  );
 }
 
 // Queue a `memberscan` job. Two clicks queue two scans, as the API allows.
@@ -77,7 +91,9 @@ export interface BackfillResult {
 export async function latestBackfillAction(): Promise<BackfillResult> {
   let res: Response;
   try {
-    res = await apiFetch("/api/v1/image_backfill_runs/latest", { cache: "no-store" });
+    res = await apiFetch("/api/v1/image_backfill_runs/latest", {
+      cache: "no-store",
+    });
   } catch {
     return { ok: false, error: UNREACHABLE };
   }
@@ -96,16 +112,26 @@ export async function latestBackfillAction(): Promise<BackfillResult> {
 export async function startBackfillAction(): Promise<BackfillResult> {
   let res: Response;
   try {
-    res = await apiFetch("/api/v1/image_backfill_runs", { method: "POST", cache: "no-store" });
+    res = await apiFetch("/api/v1/image_backfill_runs", {
+      method: "POST",
+      cache: "no-store",
+    });
   } catch {
     return { ok: false, error: UNREACHABLE };
   }
   if (res.status === 409) {
-    return { ok: false, inProgress: true, error: "A download is already running. Its progress is below." };
+    return {
+      ok: false,
+      inProgress: true,
+      error: "A download is already running. Its progress is below.",
+    };
   }
   if (!res.ok) {
     const known = refusal(res.status);
-    return { ok: false, error: known ?? apiErrorMessage(await readApiError(res)) };
+    return {
+      ok: false,
+      error: known ?? apiErrorMessage(await readApiError(res)),
+    };
   }
   const json = (await res.json()) as { data: ImageBackfillRun };
   return { ok: true, run: json.data };

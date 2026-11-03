@@ -89,9 +89,9 @@ export function ImageBackfillDesk({
     <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem]">
       <div className="min-w-0">
         <p className="max-w-[60ch] text-paper-dim">
-          The club&rsquo;s server looks up every GameDB game with no stored images on IGDB and
-          saves its cover and art. Games with no IGDB id are skipped. It runs on the server, not
-          the bot, so it carries on if you leave this page.
+          The club&rsquo;s server looks up every GameDB game with no stored images on IGDB and saves
+          its cover and art. Games with no IGDB id are skipped. It runs on the server, not the bot,
+          so it carries on if you leave this page.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Button
@@ -171,7 +171,10 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
           )}
         >
           {live && (
-            <span aria-hidden className="size-2 rounded-full bg-current motion-safe:animate-pulse" />
+            <span
+              aria-hidden
+              className="size-2 rounded-full bg-current motion-safe:animate-pulse"
+            />
           )}
           {BACKFILL_STATUS_LABEL[run.status]}
         </span>
@@ -179,7 +182,9 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
 
       <div className="mt-4 border-t border-rule pt-4" role="status" aria-live="polite">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="font-headline text-[3.4rem] leading-[0.85] tabular-nums">{percent}%</span>
+          <span className="font-headline text-[3.4rem] leading-[0.85] tabular-nums">
+            {percent}%
+          </span>
           <span className="text-[0.86rem] text-paper-mute tabular-nums">
             {handled} of {run.total} games
           </span>
@@ -204,11 +209,10 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
 
       <dl className="mt-4 grid grid-cols-2 border-t border-rule sm:grid-cols-4">
         {cells.map((cell, i) => (
-          <div
-            key={cell.label}
-            className={cn("border-rule py-3", CELL_EDGE[i])}
-          >
-            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">{cell.label}</dt>
+          <div key={cell.label} className={cn("border-rule py-3", CELL_EDGE[i])}>
+            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">
+              {cell.label}
+            </dt>
             <dd
               className={cn(
                 "font-headline mt-1 text-[2.2rem] leading-[0.9] tabular-nums",

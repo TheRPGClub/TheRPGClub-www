@@ -37,15 +37,17 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
   };
 
   return (
-    <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem]">
-      <div className="min-w-0">
+    // On a phone the sheet sits right under the button; from lg it is the
+    // right column beside both the button and the earlier scans.
+    <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem] lg:grid-rows-[auto_1fr]">
+      <div className="min-w-0 lg:col-start-1">
         <p className="max-w-[60ch] text-paper-dim">
-          The bot reads every member of the server, updates each one&rsquo;s profile and roles,
-          and marks members who have left as departed. It takes a few minutes on a big server;
-          the counts land on the sheet when it is done.
+          The bot reads every member of the server, updates each one&rsquo;s profile and roles, and
+          marks members who have left as departed. It takes a few minutes on a big server; the
+          counts land on the sheet when it is done.
         </p>
         {waiting && (
-          <p className="mt-3 text-[0.9rem] text-highlight">
+          <p className="mt-3 text-[0.9rem] text-paper">
             A scan is already waiting for the bot. Starting another queues a second one.
           </p>
         )}
@@ -60,46 +62,53 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
             </p>
           )}
         </div>
-
-        <section aria-labelledby="memberscan-earlier" className="mt-9">
-          <h2
-            id="memberscan-earlier"
-            className="font-label border-b-2 border-paper pb-1.5 text-[1.05rem] tracking-[0.06em]"
-          >
-            Earlier scans
-          </h2>
-          {earlier.length === 0 ? (
-            <p className="py-3 text-sm text-paper-dim">No scans on the wire yet.</p>
-          ) : (
-            <ol>
-              {earlier.map((job) => (
-                <li key={job.id}>
-                  <WireSlip job={job} showRequester />
-                </li>
-              ))}
-            </ol>
-          )}
-        </section>
       </div>
 
-      {started ? (
-        <ProofCard jobId={started.id} initialJob={started} what="The scan" overhang>
-          {(job) => <CountSheet job={job} heading={`Scan #${started.id}`} />}
-        </ProofCard>
-      ) : (
-        <ProofCard
-          overhang
-          caption={
-            lastDone
-              ? `Counts from the last scan${
-                  isClient ? `, ${agoText(lastDone.finished_at ?? lastDone.updated_at, new Date())}` : ""
-                }.`
-              : "No finished scan yet."
-          }
+      <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        {started ? (
+          <ProofCard jobId={started.id} initialJob={started} what="The scan" overhang>
+            {(job) => <CountSheet job={job} heading={`Scan #${started.id}`} />}
+          </ProofCard>
+        ) : (
+          <ProofCard
+            overhang
+            caption={
+              lastDone
+                ? `Counts from the last scan${
+                    isClient
+                      ? `, ${agoText(lastDone.finished_at ?? lastDone.updated_at, new Date())}`
+                      : ""
+                  }.`
+                : "No finished scan yet."
+            }
+          >
+            <CountSheet
+              job={lastDone}
+              heading={lastDone ? `Scan #${lastDone.id}` : "No scan yet"}
+            />
+          </ProofCard>
+        )}
+      </div>
+
+      <section aria-labelledby="memberscan-earlier" className="min-w-0 lg:col-start-1">
+        <h2
+          id="memberscan-earlier"
+          className="font-label border-b-2 border-paper pb-1.5 text-[1.05rem] tracking-[0.06em]"
         >
-          <CountSheet job={lastDone} heading={lastDone ? `Scan #${lastDone.id}` : "No scan yet"} />
-        </ProofCard>
-      )}
+          Earlier scans
+        </h2>
+        {earlier.length === 0 ? (
+          <p className="py-3 text-sm text-paper-dim">No scans on the wire yet.</p>
+        ) : (
+          <ol>
+            {earlier.map((job) => (
+              <li key={job.id}>
+                <WireSlip job={job} showRequester />
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
     </div>
   );
 }
@@ -120,7 +129,9 @@ function CountSheet({ job, heading }: { job: BotJob | null; heading: string }) {
       <dl className="mt-4 grid grid-cols-3 border-t border-rule">
         {cells.map((cell, i) => (
           <div key={cell.label} className={i > 0 ? "border-l border-rule pt-3 pl-4" : "pt-3 pr-4"}>
-            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">{cell.label}</dt>
+            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">
+              {cell.label}
+            </dt>
             <dd className="font-headline mt-1 text-[2.6rem] leading-[0.9] tabular-nums">
               {cell.value ?? "--"}
             </dd>
