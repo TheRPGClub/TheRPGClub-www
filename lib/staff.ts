@@ -12,6 +12,7 @@ import type { SessionMembership } from "@/lib/auth-types";
 //   isModeratorOrAbove  Moderator, Admin or Superadmin
 //   hasRegularRole      Regulars role only
 //   hasMemberRole       Members role only
+//   isMemberOrStaff     Members role, or Moderator and above
 //
 // Like the API, the Regulars and Members gates check that one role. A feature
 // that should also admit staff combines them, e.g.
@@ -37,6 +38,13 @@ export function hasRegularRole(m: Flags): boolean {
 
 export function hasMemberRole(m: Flags): boolean {
   return m?.member === true;
+}
+
+// The API's `member_or_staff?` gate: the Members role, or Moderator and above.
+// It admits the "any member" features: adding a game from IGDB, refreshing
+// release info, HLTB lookup.
+export function isMemberOrStaff(m: Flags): boolean {
+  return hasMemberRole(m) || isModeratorOrAbove(m);
 }
 
 // The staff tiers, lowest first. A page or nav item names the tier it needs.
