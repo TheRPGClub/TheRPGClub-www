@@ -29,6 +29,7 @@ import {
   Award,
   BellRing,
   ClipboardCheck,
+  Gift,
   LayoutDashboard,
   Library,
   LogOut,
@@ -47,6 +48,7 @@ const navMain = [
   { href: "/members", icon: Users, label: "Members" },
   { href: "/achievements", icon: Award, label: "Achievements" },
   { href: "/voting", icon: Vote, label: "Voting" },
+  { href: "/giveaways", icon: Gift, label: "Giveaways" },
 ];
 
 const VOTING_HREF = "/voting";

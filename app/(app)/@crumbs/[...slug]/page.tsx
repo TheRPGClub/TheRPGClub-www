@@ -17,6 +17,7 @@ const SECTIONS: Record<string, string> = {
   achievements: "Achievements",
   members: "Members",
   voting: "Voting",
+  giveaways: "Giveaways",
   admin: "Staff desk",
 };
 
@@ -38,6 +39,11 @@ const MEMBER_PAGES: Record<string, string> = {
   achievements: "Achievements",
   edit: "Edit profile",
   imports: "Imports",
+};
+
+const GIVEAWAY_PAGES: Record<string, string> = {
+  donate: "Donate",
+  claimed: "Your claimed keys",
 };
 
 const MEMBER_SUBPAGES: Record<string, string> = {
@@ -113,6 +119,10 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
         trail.push({ label: MEMBER_SUBPAGES[sub], href: `${base}/${page}/${sub}` });
       }
     }
+  }
+
+  if (section === "giveaways" && id && GIVEAWAY_PAGES[id]) {
+    trail.push({ label: GIVEAWAY_PAGES[id], href: `${root}/${id}` });
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {
