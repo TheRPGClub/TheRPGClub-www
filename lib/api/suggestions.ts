@@ -32,29 +32,3 @@ export async function fetchSuggestions(
     return null;
   }
 }
-
-// Display names for Discord ids (e.g. the reviewing Superadmins), read once
-// each. An id that can't be read is left out.
-export async function fetchMemberNames(
-  ids: readonly (string | null | undefined)[],
-): Promise<Map<string, string>> {
-  const unique = [...new Set(ids.filter((id): id is string => !!id))];
-  const pairs = await Promise.all(
-    unique.map(async (id): Promise<[string, string] | null> => {
-      try {
-        const res = await apiFetch(`/api/v1/users/${encodeURIComponent(id)}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) return null;
-        const body = (await res.json()) as {
-          data?: { global_name?: string | null; username?: string | null };
-        };
-        const name = body.data?.global_name ?? body.data?.username;
-        return name ? [id, name] : null;
-      } catch {
-        return null;
-      }
-    }),
-  );
-  return new Map(pairs.filter((p): p is [string, string] => p !== null));
-}

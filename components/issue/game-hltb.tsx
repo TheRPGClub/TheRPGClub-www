@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import type { Hltb } from "@/lib/hltb";
 import { getSession } from "@/lib/session";
-import { hasMemberRole, isModeratorOrAbove } from "@/lib/staff";
+import { isMemberOrStaff } from "@/lib/staff";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHltbCard } from "@/components/issue/game-hltb-card";
 
@@ -17,9 +17,7 @@ export async function GameHltb({
   releaseDate: string | null;
 }) {
   const [hltb, session] = await Promise.all([fetchSavedHltb(gameId), getSession()]);
-  // The API's member_or_staff gate: the Members role, or Moderator and above.
-  const canLookUp =
-    hasMemberRole(session?.membership) || isModeratorOrAbove(session?.membership);
+  const canLookUp = isMemberOrStaff(session?.membership);
   return (
     <GameHltbCard
       gameId={gameId}

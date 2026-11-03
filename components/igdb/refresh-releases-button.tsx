@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Check, CircleCheck, LoaderCircle, RefreshCw } from "lucide-react";
 import { refreshReleasesAction } from "@/app/actions/igdb";
 import { releaseRefreshSummary } from "@/lib/igdb";
@@ -13,9 +12,9 @@ type Outcome =
 
 // "Refresh release info" in the game page's Details rail: re-reads the game's
 // releases from IGDB, then prints what happened underneath (running, how many
-// were added, or nothing new) and refreshes the page so new platforms show.
+// were added, or nothing new). The action revalidates the page, so new
+// platforms show.
 export function RefreshReleasesButton({ gameId }: { gameId: number }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
@@ -28,7 +27,6 @@ export function RefreshReleasesButton({ gameId }: { gameId: number }) {
         return;
       }
       setOutcome(releaseRefreshSummary(result.data.added));
-      router.refresh();
     });
   }
 

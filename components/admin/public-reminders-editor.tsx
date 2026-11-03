@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useSyncExternalStore, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   createPublicReminderAction,
@@ -48,7 +47,6 @@ export function PublicRemindersEditor({
   // Null when the synced channel list can't be read.
   channels: GuildChannel[] | null;
 }) {
-  const router = useRouter();
   const isClient = useIsClient();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
@@ -69,18 +67,16 @@ export function PublicRemindersEditor({
         setError(result.error ?? "Failed to delete.");
         return;
       }
-      router.refresh();
     });
   };
 
-  // Close the form in the same transition as the refresh, so the row comes
-  // back with the saved values rather than flashing the old ones.
+  // The action's revalidatePath has already brought the saved values in by
+  // the time this runs, so the row comes back with them.
   const done = () => {
     startTransition(() => {
       setAdding(false);
       setEditingId(null);
       setError(null);
-      router.refresh();
     });
   };
 

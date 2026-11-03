@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { AlertTriangle, Check, Clock, Loader2, RefreshCw } from "lucide-react";
-import { getBotJobAction } from "@/app/actions/bot-jobs";
+import { getBotJobAction, type BotJobReadResult } from "@/app/actions/bot-jobs";
 import type { BotJob } from "@/lib/api/types";
 import {
   BOT_JOB_REFRESH_DELAYS_MS,
@@ -13,6 +13,18 @@ import {
 import { Chip } from "@/components/issue/chip";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+const LOST = "Lost touch with the club's server. Check again in a moment.";
+
+// One status read. A rejected Server Action call (a network drop, a 5xx on
+// the action itself) comes back as a non-final error instead of throwing.
+async function readJob(jobId: number): Promise<BotJobReadResult & { lost?: boolean }> {
+  try {
+    return await getBotJobAction(jobId);
+  } catch {
+    return { ok: false, error: LOST, lost: true };
+  }
+}
 
 export interface BotJobStatusProps {
   // The job id the action returned.
@@ -53,8 +65,14 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
     let step = 0;
 
     const tick = async () => {
-      const result = await getBotJobAction(jobId);
+      const result = await readJob(jobId);
       if (cancelled) return;
+      if (result.lost) {
+        // The call itself failed: stop and offer "Check again".
+        setError(result.error ?? LOST);
+        setRefreshing(false);
+        return;
+      }
       if (result.ok && result.data) {
         setJob(result.data);
         setError(null);
@@ -87,7 +105,7 @@ function BotJobStatusInner({ jobId, initialJob, what, className }: BotJobStatusP
 
   const checkAgain = () => {
     startTransition(async () => {
-      const result = await getBotJobAction(jobId);
+      const result = await readJob(jobId);
       if (result.ok && result.data) {
         setJob(result.data);
         setError(null);

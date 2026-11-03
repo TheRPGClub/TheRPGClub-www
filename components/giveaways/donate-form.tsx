@@ -2,7 +2,6 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Check, Eye, EyeOff, Gift, X } from "lucide-react";
 import { donateKeyAction } from "@/app/actions/giveaways";
 import type { Game } from "@/lib/api/types";
@@ -17,7 +16,6 @@ const OTHER = "Other";
 
 // "Wrap a key": the donate form, on the yellow call-to-action panel.
 export function DonateForm() {
-  const router = useRouter();
   const [game, setGame] = useState<Game | null>(null);
   const [pickerKey, setPickerKey] = useState(0);
   const [typedTitle, setTypedTitle] = useState<string | null>(null);
@@ -59,7 +57,6 @@ export function DonateForm() {
       }
       setDone(`${result.data?.game_title ?? "Your key"} is on the shelf.`);
       reset();
-      router.refresh();
     });
   };
 

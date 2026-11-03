@@ -32,8 +32,8 @@ import {
   Gift,
   LayoutDashboard,
   Library,
+  Lightbulb,
   LogOut,
-  MessageSquarePlus,
   NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
@@ -52,7 +52,9 @@ const navMain = [
   { href: "/achievements", icon: Award, label: "Achievements" },
   { href: "/voting", icon: Vote, label: "Voting" },
   { href: "/giveaways", icon: Gift, label: "Giveaways" },
-  { href: "/suggestions/new", icon: MessageSquarePlus, label: "Suggest something" },
+  // The board, open to every signed-in member; its "Suggest something"
+  // button leads Members role holders and staff on to the form.
+  { href: "/suggestions", icon: Lightbulb, label: "Suggestion Board" },
 ];
 
 const VOTING_HREF = "/voting";

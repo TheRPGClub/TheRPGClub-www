@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AlertCircle, Gift, Lock, Undo2 } from "lucide-react";
 import { claimKeyAction, revokeKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
@@ -60,7 +59,6 @@ export function GiveawayShelf({
   rail,
   emptyCopy,
 }: GiveawayShelfProps) {
-  const router = useRouter();
   const [claimed, setClaimed] = useState<Claimed | null>(null);
   // Keys lost in a race (or gone) since the page loaded.
   const [lost, setLost] = useState<ReadonlySet<number>>(new Set());
@@ -107,7 +105,6 @@ export function GiveawayShelf({
         });
         return;
       }
-      router.refresh();
     });
   };
 
@@ -221,8 +218,11 @@ function GiftBox({
   onClaim: (key: GameKey) => void;
   onRevoke: (key: GameKey) => void;
 }) {
-  const [confirming, setConfirming] = useState(false);
+  // The key the Admin asked to revoke. Keyed by key_id, so once that key is
+  // gone the next one in the box asks again.
+  const [confirmingKey, setConfirmingKey] = useState<number | null>(null);
   const next = open[0];
+  const confirming = next !== undefined && confirmingKey === next.key_id;
   const gone = !next;
   const mine = next?.donor_user_id === viewerId;
   const tilt = tagTilt(box.keys[0].key_id);
@@ -338,7 +338,7 @@ function GiftBox({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setConfirming(false)}
+                  onClick={() => setConfirmingKey(null)}
                   className="font-label text-ink/70 hover:underline"
                 >
                   Keep it
@@ -347,7 +347,7 @@ function GiftBox({
             ) : (
               <button
                 type="button"
-                onClick={() => setConfirming(true)}
+                onClick={() => setConfirmingKey(next.key_id)}
                 className="font-label inline-flex items-center gap-1 text-ink/70 hover:text-ink hover:underline"
               >
                 <Undo2 aria-hidden className="size-3" />
