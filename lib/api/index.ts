@@ -410,10 +410,13 @@ export const nrGotmEntries = {
 // ─── Suggestions ─────────────────────────────────────────────────────────────
 
 export const suggestions = {
-  list: (params?: { limit?: number; offset?: number }) => {
+  // `status` is comma-separated (the Suggestion Board's default is
+  // "pending,approved"); absent lists every status.
+  list: (params?: { status?: string; page?: number; per?: number }) => {
     const qs = new URLSearchParams();
-    if (params?.limit !== undefined) qs.set("limit", String(params.limit));
-    if (params?.offset !== undefined) qs.set("offset", String(params.offset));
+    if (params?.status) qs.set("status", params.status);
+    if (params?.page !== undefined) qs.set("page", String(params.page));
+    if (params?.per !== undefined) qs.set("per", String(params.per));
     return apiFetch<ApiCollection<Suggestion>>(
       `/api/v1/suggestions${qs.size ? `?${qs}` : ""}`,
     );
@@ -422,14 +425,26 @@ export const suggestions = {
   get: (id: number) =>
     apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}`),
 
-  create: (data: Partial<Suggestion>) =>
+  create: (data: Pick<Suggestion, "title" | "details" | "labels">) =>
     apiFetch<ApiSingle<Suggestion>>("/api/v1/suggestions", {
       method: "POST",
       body: JSON.stringify({ data }),
     }),
 
-  destroy: (id: number) =>
-    apiFetch<void>(`/api/v1/suggestions/${id}`, { method: "DELETE" }),
+  withdraw: (id: number) =>
+    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/withdraw`, {
+      method: "POST",
+    }),
+
+  upvote: (id: number) =>
+    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/upvote`, {
+      method: "POST",
+    }),
+
+  removeUpvote: (id: number) =>
+    apiFetch<ApiSingle<Suggestion>>(`/api/v1/suggestions/${id}/upvote`, {
+      method: "DELETE",
+    }),
 };
 
 // ─── Todos ───────────────────────────────────────────────────────────────────

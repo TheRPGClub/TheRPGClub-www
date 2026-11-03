@@ -35,6 +35,7 @@ import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { GameImageUploadForm } from "@/components/game-image-upload-form";
 import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { GameHero } from "@/components/issue/game-hero";
+import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import {
   RailFacts,
   RailHeading,
@@ -223,6 +224,14 @@ async function GameContent({
         </section>
 
         <aside aria-label="About this game" className="space-y-6.5">
+          {/* Saved HowLongToBeat times, or the lookup. Never scrapes on view. */}
+          <Suspense fallback={<GameHltbSkeleton />}>
+            <GameHltb
+              gameId={gameId}
+              title={game.title}
+              releaseDate={game.initial_release_date}
+            />
+          </Suspense>
           <RailMembers
             title="Playing now"
             users={players}
