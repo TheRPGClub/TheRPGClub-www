@@ -38,9 +38,18 @@ export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJ
     case "failed":
       return {
         label: "Failed",
-        detail: job.error_message?.trim() || "The bot couldn't finish this.",
+        detail: botJobFailureReason(job.error_message) || "The bot couldn't finish this.",
       };
   }
+}
+
+// The bot's dispatcher prefixes every handler failure with "Bot job N (kind)
+// failed: " (or a newline before a request dump). That label is for the logs;
+// the member reads the reason after it.
+const DISPATCHER_PREFIX = /^Bot job \d+ \([a-z_]+\) failed(?::\s*|\n)/;
+
+export function botJobFailureReason(message: string | null | undefined): string {
+  return (message ?? "").trim().replace(DISPATCHER_PREFIX, "").trim();
 }
 
 // A failed read, by HTTP status. 403 and 404 won't change on a retry.
