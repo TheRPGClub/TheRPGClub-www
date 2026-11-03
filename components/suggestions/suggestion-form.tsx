@@ -59,6 +59,7 @@ export function SuggestionForm({
   const [pending, startTransition] = useTransition();
 
   function toggle(type: SuggestionType) {
+    setError(null);
     setTypes((current) =>
       current.includes(type) ? current.filter((t) => t !== type) : [...current, type],
     );
@@ -112,7 +113,10 @@ export function SuggestionForm({
           <input
             id="suggestion-title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setError(null);
+            }}
             maxLength={SUGGESTION_TITLE_MAX}
             required
             disabled={pending}
@@ -134,7 +138,10 @@ export function SuggestionForm({
           <textarea
             id="suggestion-details"
             value={details}
-            onChange={(e) => setDetails(e.target.value)}
+            onChange={(e) => {
+              setDetails(e.target.value);
+              setError(null);
+            }}
             maxLength={SUGGESTION_DETAILS_MAX}
             required
             rows={7}
