@@ -1417,3 +1417,23 @@ export interface ThreadSearchResult {
   thread_name: string;
   games: { game_id: number; title: string }[];
 }
+
+// One search term of a synonym group (`SearchSynonym`). `term_norm` is the
+// API's lowercase letters-and-digits key.
+export interface SearchSynonym {
+  term_id: number;
+  group_id: number;
+  term_text: string;
+  term_norm: string;
+  created_at: string;
+  created_by: string | null;
+}
+
+// A synonym group read with `?include=terms` (`SearchSynonymGroupWithTerms`):
+// a search for any of its terms finds the games the others find.
+export interface SearchSynonymGroup {
+  group_id: number;
+  created_at: string;
+  created_by: string | null;
+  terms: SearchSynonym[];
+}
