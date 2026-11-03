@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AlertCircle, Gift, Lock, Undo2 } from "lucide-react";
 import { claimKeyAction, revokeKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
@@ -60,7 +59,6 @@ export function GiveawayShelf({
   rail,
   emptyCopy,
 }: GiveawayShelfProps) {
-  const router = useRouter();
   const [claimed, setClaimed] = useState<Claimed | null>(null);
   // Keys lost in a race (or gone) since the page loaded.
   const [lost, setLost] = useState<ReadonlySet<number>>(new Set());
@@ -107,7 +105,6 @@ export function GiveawayShelf({
         });
         return;
       }
-      router.refresh();
     });
   };
 

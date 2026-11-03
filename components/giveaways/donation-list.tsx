@@ -2,7 +2,6 @@
 
 import { Fragment, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { TriangleAlert, Undo2 } from "lucide-react";
 import { revokeKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
@@ -17,7 +16,6 @@ const REVOKE_OUTLINE =
 // The member's donations, newest first. An unclaimed key can be revoked,
 // after a confirm row under it.
 export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<string, string> }) {
-  const router = useRouter();
   const [confirming, setConfirming] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -31,7 +29,6 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
         return;
       }
       setConfirming(null);
-      router.refresh();
     });
   };
 

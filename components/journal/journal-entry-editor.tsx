@@ -81,12 +81,9 @@ export function JournalEntryEditor({
       }
       if (game.game_id !== chapterGameId) {
         router.push(chapterHref(userId, game.game_id));
-      } else {
-        if (!entryId) {
-          setTitle("");
-          setBody("");
-        }
-        router.refresh();
+      } else if (!entryId) {
+        setTitle("");
+        setBody("");
       }
       onSaved?.();
     });

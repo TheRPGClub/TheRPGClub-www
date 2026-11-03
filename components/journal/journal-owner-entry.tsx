@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { PenLine, Pencil, Trash2 } from "lucide-react";
 import type { JournalEntry } from "@/lib/api/types";
 import { journalDate } from "@/lib/journals";
@@ -31,7 +30,6 @@ export function JournalOwnerEntry({
   clamp?: 2 | 3;
   className?: string;
 }) {
-  const router = useRouter();
   const [mode, setMode] = useState<"read" | "edit" | "confirm">("read");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -67,7 +65,6 @@ export function JournalOwnerEntry({
         setError(res.error ?? "Couldn't delete it. Try again.");
         return;
       }
-      router.refresh();
     });
   }
 

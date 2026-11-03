@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { ThumbsUp, Undo2 } from "lucide-react";
 import type { Suggestion } from "@/lib/api/types";
 import { canUpvote, canWithdraw } from "@/lib/suggestions";
@@ -31,7 +30,6 @@ export function BoardCard({
   canVote: boolean;
   highlight?: boolean;
 }) {
-  const router = useRouter();
   const [suggestion, setSuggestion] = useState(initial);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +55,8 @@ export function BoardCard({
     startTransition(async () => {
       const res = await withdrawSuggestionAction(suggestion.suggestion_id);
       if (res.ok) {
-        // Withdrawn Suggestions leave the board; the refresh fixes the counts.
-        router.refresh();
+        // Withdrawn Suggestions leave the board; the action's revalidatePath
+        // re-renders it with the new counts.
         if (res.data) setSuggestion(res.data);
       } else {
         setConfirming(false);
