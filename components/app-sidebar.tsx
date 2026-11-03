@@ -32,6 +32,7 @@ import {
   LayoutDashboard,
   Library,
   LogOut,
+  MessageSquarePlus,
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
@@ -47,6 +48,7 @@ const navMain = [
   { href: "/members", icon: Users, label: "Members" },
   { href: "/achievements", icon: Award, label: "Achievements" },
   { href: "/voting", icon: Vote, label: "Voting" },
+  { href: "/suggestions/new", icon: MessageSquarePlus, label: "Suggest something" },
 ];
 
 const VOTING_HREF = "/voting";

@@ -18,6 +18,7 @@ const SECTIONS: Record<string, string> = {
   members: "Members",
   voting: "Voting",
   admin: "Staff desk",
+  suggestions: "Suggestion Board",
 };
 
 // /admin tool pages, labelled as the sidebar's Staff group names them.
@@ -113,6 +114,10 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
         trail.push({ label: MEMBER_SUBPAGES[sub], href: `${base}/${page}/${sub}` });
       }
     }
+  }
+
+  if (section === "suggestions" && id === "new") {
+    trail.push({ label: "Suggest something", href: `${root}/new` });
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {
