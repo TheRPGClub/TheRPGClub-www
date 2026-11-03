@@ -27,6 +27,6 @@ export function backfillProgress(
 export const BACKFILL_STATUS_LABEL: Record<ImageBackfillStatus, string> = {
   queued: "Queued",
   running: "Running",
-  completed: "Finished",
+  completed: "Complete",
   failed: "Stopped",
 };
