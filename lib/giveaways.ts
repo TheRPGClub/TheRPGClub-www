@@ -178,7 +178,6 @@ export function validateDonation(input: DonationInput): DonationCheck {
 export const DONATION_GAME_ERRORS: Readonly<Record<string, string>> = {
   game_not_in_gamedb: "That game isn't in the GameDB. Search for it again, or add it from IGDB.",
   game_not_found: "That game is no longer in the GameDB. Change the game and pick it again.",
-  game_required: "Pick the game from the GameDB.",
 };
 
 // The claim's refusals, by the API's status and code.
