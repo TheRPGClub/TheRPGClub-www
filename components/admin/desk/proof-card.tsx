@@ -25,6 +25,10 @@ export interface ProofCardProps {
   // Drop the lifted frame (rounded, clipped, soft shadow) for proofs that
   // draw their own.
   bare?: boolean;
+  // Let the stamp hang off the proof's right edge, as in the live event
+  // mock. Leave it off when the proof touches the page edge (the overhang
+  // would scroll the page sideways).
+  overhang?: boolean;
   className?: string;
 }
 
@@ -62,6 +66,7 @@ function ProofFrame({
   children,
   caption,
   bare,
+  overhang,
   className,
   stamp,
   status,
@@ -79,7 +84,9 @@ function ProofFrame({
       >
         {children}
       </div>
-      {stamp && <div className="absolute top-[22px] right-2 sm:-right-3.5">{stamp}</div>}
+      {stamp && (
+        <div className={cn("absolute top-[22px] right-3", overhang && "sm:-right-3.5")}>{stamp}</div>
+      )}
       {status}
       {caption && <figcaption className="mt-3 text-[0.82rem] text-paper-mute">{caption}</figcaption>}
     </figure>

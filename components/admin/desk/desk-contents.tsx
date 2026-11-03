@@ -25,7 +25,7 @@ export function DeskContents({
         <section
           key={area.key}
           aria-labelledby={`desk-${area.key}`}
-          className="grid gap-2 border-b border-rule py-4 first:pt-0 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-5"
+          className="grid gap-2 border-b border-rule py-4 first:pt-0 last:border-b-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
         >
           <div>
             <h2 id={`desk-${area.key}`} className="font-headline text-[1.9rem]">
@@ -48,7 +48,7 @@ export function DeskContents({
                 >
                   <Link
                     href={section.href}
-                    className="font-semibold text-paper transition-colors hover:text-highlight sm:whitespace-nowrap"
+                    className="min-w-0 font-semibold text-paper transition-colors hover:text-highlight"
                   >
                     {section.label}
                   </Link>
