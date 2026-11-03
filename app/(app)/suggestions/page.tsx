@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { MessageSquarePlus, Pin } from "lucide-react";
-import { fetchMemberNames, fetchSuggestions } from "@/lib/api/suggestions";
+import { fetchMemberNames } from "@/lib/api/members";
+import { fetchSuggestions } from "@/lib/api/suggestions";
 import { requireAuth } from "@/lib/session";
 import { PHASE_INK, byReviewedDesc, canSuggest } from "@/lib/suggestions";
 import { PageHeader } from "@/components/issue/page-header";

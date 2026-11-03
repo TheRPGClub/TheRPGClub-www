@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { requireAuth } from "@/lib/session";
-import { fetchClaimedKeys, fetchMemberNames } from "@/lib/api/game-keys";
+import { fetchClaimedKeys } from "@/lib/api/game-keys";
+import { fetchMemberNames } from "@/lib/api/members";
 import { platformFamily, shortDate } from "@/lib/giveaways";
 import { PageHeader } from "@/components/issue/page-header";
 import { GameCover } from "@/components/issue/game-cover";
