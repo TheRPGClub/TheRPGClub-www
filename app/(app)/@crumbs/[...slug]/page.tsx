@@ -141,6 +141,9 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
     if (track && sub && /^\d+$/.test(sub)) {
       trail.push({ label: `${TRACK_NAME[track]} round ${sub}`, href: roundEditHref(track, Number(sub)) });
     }
+    if (id === "live-events" && page === "new") {
+      trail.push({ label: "New", href: `${root}/${id}/new` });
+    }
   }
 
   return trail;

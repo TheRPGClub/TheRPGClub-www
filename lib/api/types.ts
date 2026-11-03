@@ -927,6 +927,33 @@ export interface BotJob {
   updated_at: string;
 }
 
+// Image backfill runs (GET /api/v1/image_backfill_runs/latest): one run of
+// the API's background import of IGDB images for games with none stored.
+export type ImageBackfillStatus = "queued" | "running" | "completed" | "failed";
+
+export interface ImageBackfillRun {
+  id: number;
+  // queued, then running, then completed; failed when the run stopped
+  // (see last_error).
+  status: ImageBackfillStatus;
+  // Games with no stored images when the run started.
+  total: number;
+  // Games whose images were imported.
+  done: number;
+  // Games with no IGDB id.
+  skipped: number;
+  // Games whose import failed.
+  failed: number;
+  // The Superadmin who started it; null for the service.
+  started_by_user_id: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  // The latest failure, per game ("Game 12: ...") or for the run.
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Guild channels (GET /api/v1/guild_channels)
 //
 // The guild's text (type 0) and announcement (type 5) channels as the bot
@@ -1416,4 +1443,65 @@ export interface ThreadSearchResult {
   thread_id: string;
   thread_name: string;
   games: { game_id: number; title: string }[];
+}
+
+// Bot presence (GET/POST /api/v1/bot_presence, GET /bot_presence/latest)
+//
+// The bot's "Playing ..." activity, one row per change, newest first. A staff
+// POST records the setter from the session and queues `presence_set` so the
+// bot applies it at once; the bot's own `/mod presence` writes as the service.
+// Moderator and up.
+
+export interface BotPresence {
+  activity_name: string;
+  set_at: string;
+  set_by_user_id: string | null;
+  set_by_username: string | null;
+}
+
+// Live events (GET/POST /api/v1/live_events, GET /live_events/:id)
+//
+// A forum thread in the Live Events forum and a Discord scheduled event, made
+// by the `live_event_create` bot job. Moderator and up.
+
+export type LiveEventStatus = "queued" | "thread_created" | "created" | "failed";
+
+export interface LiveEvent {
+  id: number;
+  topic: string;
+  // UTC instants.
+  starts_at: string;
+  ends_at: string;
+  // The URL given, or the uploaded image's public URL; null for none.
+  image_url: string | null;
+  status: LiveEventStatus;
+  discord_thread_id: string | null;
+  discord_event_id: string | null;
+  created_by_user_id: string | null;
+  // Its `live_event_create` job (GET /bot_jobs/:id for the bot's error).
+  // Null for an event made before the API stored it; the page then follows
+  // `status` alone.
+  bot_job_id?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// One search term of a synonym group (`SearchSynonym`). `term_norm` is the
+// API's lowercase letters-and-digits key.
+export interface SearchSynonym {
+  term_id: number;
+  group_id: number;
+  term_text: string;
+  term_norm: string;
+  created_at: string;
+  created_by: string | null;
+}
+
+// A synonym group read with `?include=terms` (`SearchSynonymGroupWithTerms`):
+// a search for any of its terms finds the games the others find.
+export interface SearchSynonymGroup {
+  group_id: number;
+  created_at: string;
+  created_by: string | null;
+  terms: SearchSynonym[];
 }
