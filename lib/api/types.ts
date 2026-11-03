@@ -761,13 +761,36 @@ export interface DashboardResponse {
 
 // Suggestions
 
+export type SuggestionStatus = "pending" | "approved" | "rejected" | "withdrawn";
+
+// A member's proposal for the bot or the website (GET /api/v1/suggestions).
+// Kept after review: Pending until a Superadmin approves it into a GitHub
+// issue or rejects it with a reason, or its author withdraws it.
 export interface Suggestion {
   suggestion_id: number;
-  user_id: string;
-  gamedb_game_id: number | null;
-  suggestion_text: string;
+  title: string;
+  details: string | null;
+  // The author's Discord id and display name (null for very old rows).
+  created_by: string | null;
+  created_by_name: string | null;
   created_at: string;
   updated_at: string;
+  // Comma-separated type labels ("New Feature, Bug"); they become the GitHub
+  // issue's labels on approval.
+  labels: string | null;
+  status: SuggestionStatus;
+  // The reviewing Superadmin's Discord id.
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  rejection_reason: string | null;
+  // "TheRPGClub/TheRPGClub-www" etc. once approved.
+  target_repo: string | null;
+  github_issue_number: number | null;
+  github_issue_url: string | null;
+  // Approved only, cached about ten minutes; null when GitHub can't say.
+  github_issue_state: "open" | "closed" | null;
+  upvote_count: number;
+  viewer_upvoted: boolean;
 }
 
 // Todos

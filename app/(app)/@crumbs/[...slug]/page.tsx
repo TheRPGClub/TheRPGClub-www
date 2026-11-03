@@ -19,6 +19,7 @@ const SECTIONS: Record<string, string> = {
   voting: "Voting",
   giveaways: "Giveaways",
   admin: "Staff desk",
+  suggestions: "Suggestion Board",
 };
 
 // /admin tool pages, labelled as the sidebar's Staff group names them.
@@ -123,6 +124,10 @@ async function trailFor(slug: string[]): Promise<Crumb[]> {
 
   if (section === "giveaways" && id && GIVEAWAY_PAGES[id]) {
     trail.push({ label: GIVEAWAY_PAGES[id], href: `${root}/${id}` });
+  }
+
+  if (section === "suggestions" && id === "new") {
+    trail.push({ label: "Suggest something", href: `${root}/new` });
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {
