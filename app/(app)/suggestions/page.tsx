@@ -42,6 +42,13 @@ export default async function SuggestionBoardPage({
     fetchSuggestions(["rejected"], tab === "rejected" ? undefined : 1),
   ]);
   const shown = tab === "open" ? open : rejected;
+  // The banner after a submit: only for the viewer's own, still Pending one.
+  const pinnedIsViewersPending = !!open?.rows.some(
+    (s) =>
+      s.suggestion_id === pinned &&
+      s.created_by === viewerId &&
+      s.status === "pending",
+  );
   const reviewers =
     tab === "rejected" && rejected
       ? await fetchMemberNames(rejected.rows.map((s) => s.reviewed_by))
@@ -137,7 +144,7 @@ export default async function SuggestionBoardPage({
         </p>
       )}
 
-      {tab === "open" && open?.rows.some((s) => s.suggestion_id === pinned) && (
+      {tab === "open" && pinnedIsViewersPending && (
         <p
           role="status"
           className="inline-flex items-center gap-2.5 rounded-md bg-highlight px-3.5 py-2.5 text-[0.92rem] font-semibold text-ink shadow-[0_12px_30px_rgb(0_0_0/0.5)]"
