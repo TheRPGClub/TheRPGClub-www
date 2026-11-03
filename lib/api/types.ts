@@ -1376,3 +1376,26 @@ export interface JournalContributor {
   game_count: number;
   entry_count: number;
 }
+
+// Discord threads: a forum thread the bot tracks, and the games it is linked
+// to (`thread_game_links`; a thread can link to several games).
+export interface Thread {
+  thread_id: string;
+  forum_channel_id: string;
+  thread_name: string;
+  // The lowest linked game_id, derived by the API.
+  gamedb_game_id: number | null;
+  // Stored as a string ("true" / "false").
+  is_archived: string;
+  created_at: string;
+  last_seen_at: string | null;
+  skip_linking: string;
+  jump_url: string | null;
+}
+
+// A row of the thread link picker (`GET /threads?q=`).
+export interface ThreadSearchResult {
+  thread_id: string;
+  thread_name: string;
+  games: { game_id: number; title: string }[];
+}
