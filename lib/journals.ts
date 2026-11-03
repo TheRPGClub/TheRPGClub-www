@@ -1,4 +1,3 @@
-import { RING_COLORS } from "@/lib/achievements/game-page";
 import type { JournaledGame } from "@/lib/api/types";
 
 // Pure helpers for the Game Journal surfaces (the profile's Journal tab, the
@@ -136,11 +135,22 @@ function hash(value: string): number {
   return h;
 }
 
-// A member's ink on the chronology plate and their spine on the shelf: the
-// same muted member colours the game page's Achievement rings use, picked by
-// id so a member keeps theirs everywhere. Off the track inks and yellow.
+// The journal member inks (DESIGN.md, "Journal member inks"): bright marks
+// for ink grounds, each over 6:1 on ink-2 and ink-3, kept off the track
+// inks, the highlighter yellow and the destructive orange.
+export const JOURNAL_INKS: readonly string[] = [
+  "#6dd17f", // fern
+  "#43d3cc", // lagoon
+  "#f077c0", // orchid
+  "#86d3f6", // sky
+  "#fab6ba", // peony
+  "#719def", // cornflower
+];
+
+// A member's ink on the chronology plate and their spine on the shelf,
+// picked by id so a member keeps theirs on every journal surface.
 export function memberInk(userId: string): string {
-  return RING_COLORS[hash(userId) % RING_COLORS.length];
+  return JOURNAL_INKS[hash(userId) % JOURNAL_INKS.length];
 }
 
 // A spine's height on the /journals shelf: uneven but stable, so the shelf
