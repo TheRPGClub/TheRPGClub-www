@@ -225,12 +225,7 @@ function MessageProof({
               </span>
             </p>
             {text ? (
-              <p
-                className={cn(
-                  "mt-1 text-[0.95rem] leading-[1.45] break-words whitespace-pre-wrap",
-                  replyingTo && "rounded-sm border-l-2 border-rule-strong bg-ink-3/60 px-3 py-2",
-                )}
-              >
+              <p className="mt-1 text-[0.95rem] leading-[1.45] break-words whitespace-pre-wrap">
                 {text}
               </p>
             ) : (
