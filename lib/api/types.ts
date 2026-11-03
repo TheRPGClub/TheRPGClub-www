@@ -540,6 +540,20 @@ export interface ImportIgdbCandidate {
   already_imported: boolean;
 }
 
+// A candidate from `GET /igdb/search`, for adding a game the GameDB is
+// missing (`POST /games {igdb_id}`). The same fields as an import candidate,
+// plus the searched title it matched in a multi-title search.
+export interface IgdbSearchCandidate extends ImportIgdbCandidate {
+  matched_query?: string | null;
+}
+
+// `meta` of `POST /games/:id/refresh-releases`: how many releases the refresh
+// added (never negative) and the new total.
+export interface ReleaseRefreshMeta {
+  added: number;
+  total: number;
+}
+
 // What `advance` and `remap` return. `item: null` with an active import means
 // the server stopped after its per-call auto-apply cap: call advance again.
 export interface ImportReview<
