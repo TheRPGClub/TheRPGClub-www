@@ -4,10 +4,9 @@ import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { getSession } from "@/lib/session";
-import type { BotJob, Nomination, VotingCategory } from "@/lib/api/types";
-import { findQueuedJob, REMOVAL_REASON_MAX, summaryNamesRound } from "@/lib/rounds";
+import type { Nomination, NominationDeletedResponse, VotingCategory } from "@/lib/api/types";
+import { REMOVAL_REASON_MAX } from "@/lib/rounds";
 import { isAdminOrAbove } from "@/lib/staff";
-import { listBotJobsAction } from "@/app/actions/bot-jobs";
 
 export interface ActionResult<T> {
   ok: boolean;
@@ -100,10 +99,9 @@ export async function deleteNominationAction(
 
 export interface StaffNominationDeleteResult {
   ok: boolean;
-  // The nomination_deleted job the API queued, when the wire shows it.
-  // Null for the viewer's own nomination (no announcement) or when the
-  // wire doesn't show it yet.
-  job?: BotJob | null;
+  // The nomination_deleted job the API queued (meta.announce_job_id).
+  // Null for the viewer's own nomination, which posts no announcement.
+  jobId?: number | null;
   error?: string;
 }
 
@@ -134,7 +132,6 @@ export async function staffDeleteNominationAction(
   if (trimmed.length > REMOVAL_REASON_MAX) return { ok: false, error: REMOVAL_ERRORS.reason_too_long };
 
   const query = !own ? `?reason=${encodeURIComponent(trimmed)}` : "";
-  const since = new Date();
   let res: Response;
   try {
     res = await apiFetch(
@@ -152,17 +149,7 @@ export async function staffDeleteNominationAction(
 
   revalidatePath("/voting");
   revalidatePath("/admin/nominations");
-  if (own) return { ok: true, job: null };
-
-  const wire = await listBotJobsAction(1);
-  const job =
-    wire.ok && wire.data
-      ? findQueuedJob(wire.data, {
-          kind: "nomination_deleted",
-          requesterId: session.principal.id,
-          since,
-          matches: (summary) => summaryNamesRound(summary, category, round),
-        })
-      : null;
-  return { ok: true, job };
+  if (own) return { ok: true, jobId: null };
+  const body = (await res.json().catch(() => null)) as NominationDeletedResponse | null;
+  return { ok: true, jobId: body?.meta?.announce_job_id ?? null };
 }

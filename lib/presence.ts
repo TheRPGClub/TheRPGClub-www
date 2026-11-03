@@ -1,4 +1,4 @@
-import type { BotJob, BotPresence } from "@/lib/api/types";
+import type { BotPresence } from "@/lib/api/types";
 
 // Pure helpers for the /admin/presence tool.
 
@@ -24,24 +24,4 @@ export function validatePresenceName(
 // re-assert and old rows carry no setter).
 export function presenceSetter(p: Pick<BotPresence, "set_by_user_id" | "set_by_username">): string {
   return p.set_by_username?.trim() || p.set_by_user_id || "The bot";
-}
-
-// The presence POST returns the row, not its job, so the job is the newest
-// `presence_set` the setter queued at about the same time (the list is newest
-// first, and a Moderator only sees their own).
-export function findPresenceJob(
-  jobs: readonly BotJob[],
-  userId: string,
-  setAt: string,
-  slackMs = 60_000,
-): BotJob | null {
-  const since = Date.parse(setAt) - slackMs;
-  return (
-    jobs.find(
-      (j) =>
-        j.kind === "presence_set" &&
-        j.requested_by_user_id === userId &&
-        Date.parse(j.created_at) >= since,
-    ) ?? null
-  );
 }

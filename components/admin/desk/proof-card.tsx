@@ -18,6 +18,8 @@ export interface ProofCardProps {
   // Set once the form was sent: stamps the proof and follows the job.
   jobId?: number | null;
   initialJob?: BotJob | null;
+  // The re-read gaps (ms), for a job that runs longer than most (a scan).
+  refreshDelays?: readonly number[];
   // With no job to follow: stamp the proof with this phase anyway, for a
   // tool that tracks its own record's progress (a live event's status).
   phase?: BotJobPhase | null;
@@ -53,13 +55,13 @@ export function ProofCard(props: ProofCardProps) {
 }
 
 function SentProof(props: ProofCardProps & { jobId: number }) {
-  const state = useBotJob(props.jobId, props.initialJob);
+  const state = useBotJob(props.jobId, props.initialJob, props.refreshDelays);
   const phase = botJobPhase(state.job?.status ?? "queued");
   return (
     <ProofFrame
       {...props}
       stamp={<Stamp key={phase} phase={phase} size="lg" />}
-      status={<BotJobStatusView state={state} what={props.what} className="mt-3" />}
+      status={<BotJobStatusView state={state} what={props.what} showResult className="mt-3" />}
     >
       {typeof props.children === "function" ? props.children(state.job) : props.children}
     </ProofFrame>

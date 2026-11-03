@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Play } from "lucide-react";
 import { startMemberscanAction } from "@/app/actions/superadmin-tools";
 import type { BotJob } from "@/lib/api/types";
-import { agoText, isBotJobSettled } from "@/lib/bot-jobs";
+import { agoText, BOT_JOB_LONG_REFRESH_DELAYS_MS, isBotJobSettled } from "@/lib/bot-jobs";
 import { parseMemberScanCounts } from "@/lib/memberscan";
 import { useIsClient } from "@/hooks/use-is-client";
 import { ProofCard } from "@/components/admin/desk/proof-card";
@@ -66,7 +66,13 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
 
       <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
         {started ? (
-          <ProofCard jobId={started.id} initialJob={started} what="The scan" overhang>
+          <ProofCard
+            jobId={started.id}
+            initialJob={started}
+            refreshDelays={BOT_JOB_LONG_REFRESH_DELAYS_MS}
+            what="The scan"
+            overhang
+          >
             {(job) => <CountSheet job={job} heading={`Scan #${started.id}`} />}
           </ProofCard>
         ) : (

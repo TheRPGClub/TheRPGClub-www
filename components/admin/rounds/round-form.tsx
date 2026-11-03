@@ -4,7 +4,7 @@ import { useId, useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowUp, Loader2, Pencil, Plus, X } from "lucide-react";
 import { createRoundAction } from "@/app/actions/rounds";
-import type { BotJob, Game, VotingCategory } from "@/lib/api/types";
+import type { Game, VotingCategory } from "@/lib/api/types";
 import { moveItem, roundEditHref, TRACK_NAME, TRACKS, type RoundDefaults } from "@/lib/rounds";
 import { GamePicker } from "@/components/member/game-picker";
 import { GameCover } from "@/components/issue/game-cover";
@@ -20,7 +20,7 @@ interface SentRound {
   roundNumber: number;
   monthYear: string;
   games: Game[];
-  job: BotJob | null;
+  jobId: number | null;
 }
 
 export interface RoundFormProps {
@@ -93,7 +93,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
         setError(result.error ?? "Couldn't add the round.");
         return;
       }
-      setSent({ category, roundNumber, monthYear: monthYear.trim(), games, job: result.job ?? null });
+      setSent({ category, roundNumber, monthYear: monthYear.trim(), games, jobId: result.jobId ?? null });
     });
   };
 
@@ -106,7 +106,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
     setPickerKey((k) => k + 1);
   };
 
-  const shown = sent ?? { category, roundNumber, monthYear, games, job: null };
+  const shown = sent ?? { category, roundNumber, monthYear, games, jobId: null };
   const locked = pending || !!sent;
 
   return (
@@ -275,12 +275,11 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
       </form>
 
       <ProofCard
-        jobId={sent ? (sent.job?.id ?? null) : null}
-        initialJob={sent?.job ?? null}
+        jobId={sent?.jobId ?? null}
         what="The bot's round reload"
         caption={
-          sent && !sent.job
-            ? "Saved. The reload job isn't on the wire yet; the desk lists it."
+          sent && sent.jobId == null
+            ? "Saved. The API queued no reload job for it."
             : "The round as the GOTM history and the bot will carry it."
         }
       >

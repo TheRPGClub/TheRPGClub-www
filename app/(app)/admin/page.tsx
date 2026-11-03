@@ -32,14 +32,17 @@ const PHASE_NOTE: Record<VotingPhase, string> = {
   decided: "decided",
 };
 
-// Upcoming live events among the newest, for the desk's note; null when the
-// list can't be read.
-async function upcomingLiveEvents(): Promise<number | null> {
+// Upcoming live events among the newest few, for the desk's note ("20+"
+// when every one read is still upcoming); null when the list can't be read.
+const LIVE_EVENT_LOOKBACK = 20;
+
+async function upcomingLiveEvents(): Promise<string | null> {
   try {
-    const res = await apiFetch("/api/v1/live_events?page=1&per=50", { cache: "no-store" });
+    const res = await apiFetch(`/api/v1/live_events?page=1&per=${LIVE_EVENT_LOOKBACK}`, { cache: "no-store" });
     if (!res.ok) return null;
     const body = (await res.json()) as ApiCollection<LiveEvent>;
-    return upcomingCount(body.data);
+    const count = upcomingCount(body.data);
+    return count >= LIVE_EVENT_LOOKBACK ? `${LIVE_EVENT_LOOKBACK}+` : String(count);
   } catch {
     return null;
   }
@@ -67,7 +70,7 @@ export default async function StaffDeskPage() {
     listBotJobsAction(1),
     isAdminOrAbove(m) ? fetchVotingRound() : null,
     isSuperadmin(m) ? fetchSuggestions(["pending"], 1) : null,
-    listPresenceAction(1),
+    listPresenceAction(1, 1),
     upcomingLiveEvents(),
   ]);
   const jobs = wire.ok ? (wire.data ?? []) : [];

@@ -8,7 +8,10 @@ import { CLUB_TIME_ZONE } from "@/lib/public-reminders";
 
 export const TOPIC_MAX = 100;
 export const IMAGE_URL_MAX = 1000;
-export const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+// The image goes through a server action, and Vercel refuses a function
+// request body over about 4.5 MB before Next sees it, so the cap is 4 MB
+// (the API would take 10).
+export const IMAGE_MAX_BYTES = 4 * 1024 * 1024;
 export const IMAGE_TYPES: readonly string[] = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 // For the file picker's `accept`.
 export const IMAGE_ACCEPT = IMAGE_TYPES.join(",");
@@ -22,7 +25,7 @@ export function squishTopic(topic: string): string {
 export function imageFileProblem(file: { type: string; size: number }): string | null {
   if (file.size === 0) return "That file is empty.";
   if (!IMAGE_TYPES.includes(file.type)) return "Use a JPEG, PNG, WebP or GIF image.";
-  if (file.size > IMAGE_MAX_BYTES) return "The image is larger than 10 MB.";
+  if (file.size > IMAGE_MAX_BYTES) return "The image is larger than 4 MB. Use a smaller one, or link it by URL.";
   return null;
 }
 

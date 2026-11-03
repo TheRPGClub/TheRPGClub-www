@@ -17,6 +17,8 @@ colors:
   highlight: "#ffd400"
   highlight-ink: "#3a3200"
   destructive: "oklch(0.74 0.17 52)"
+  destructive-ink: "#2a1300"
+  ok: "#5fd08a"
   rarity-common: "#f4f4f0"
   rarity-uncommon: "#5fd08a"
   rarity-rare: "#4aa8ff"
@@ -123,6 +125,20 @@ components:
     textColor: "{colors.paper}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
+    height: "36px"
+  button-destructive-solid:
+    backgroundColor: "{colors.destructive}"
+    textColor: "{colors.destructive-ink}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
+    height: "36px"
+  button-destructive-outline:
+    backgroundColor: "transparent"
+    textColor: "{colors.destructive}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px"
     height: "36px"
   chip-neutral:
     backgroundColor: "rgb(244 244 240 / 0.08)"
@@ -291,6 +307,8 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 - **Dim Paper** (paper-dim): body copy, blurbs, inactive nav and secondary labels.
 - **Mute Paper** (paper-mute): meta, counts, parent crumbs, placeholders and the cover-fallback title.
 - **Signal Orange** (destructive): destructive actions only. It is chosen to sit off both red and yellow, so a destructive action never reads as a track or a call to action.
+- **Orange Ink** (destructive-ink): type on a solid signal-orange fill (the confirmed destructive button). Paper type on orange misses AA; this near-black brown clears it.
+- **Done Green** (ok): the Done stamp, dot and check on the staff production desk only. A mark, never a fill behind type, and never on member surfaces. See the Production desk section for why it shares the uncommon Rarity ink's hex.
 
 ### Named Rules
 **The One Ink Per Track Rule.** Red means GOTM, violet means NR-GOTM, and nothing decorative borrows either. A GOTM element never wears violet and an NR element never wears red. A game that won both tracks reads as GOTM first.
@@ -300,7 +318,7 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 **The Red Is Also Here Rule.** Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else.
 
 ### Achievement roles (achievement surfaces only)
-The Achievement Hub adds four roles to the palette. They live on achievement surfaces only (the member achievements page, set pages, the hub, the profile's Achievements section and the game page's achievements) and never leave them. On these surfaces, red appears only as "you are here" in the shell, violet never appears, and yellow stays with calls to action and interaction states.
+The Achievement Hub adds four roles to the palette. They live on achievement surfaces only (the member achievements page, set pages, the hub, the profile's Achievements section and the game page's achievements) and never leave them. (The staff desk's done green `ok` shares the uncommon ink's hex as a token of its own; see the Desk Green Rule.) On these surfaces, red appears only as "you are here" in the shell, violet never appears, and yellow stays with calls to action and interaction states.
 - **Game tint** (sampled, not a token): each Achievement Set's colour, taken from the vivid dominant hue of its cover (or its set icon), clamped to a vivid-but-not-neon, mid-lightness range, and darkened until ink or paper type on it clears 4.5:1. A set without usable art gets a hashed tint from a curated list kept away from the GOTM red and the NR violet. It is a set's spine, its title band, its view and index tabs, its slot numbers and slot dots, its progress bar, and the seal across a hidden tile.
 - **Rarity inks** (rarity-common, rarity-uncommon, rarity-rare, rarity-ultra): the 3px die-cut edge of an unlocked icon, the Rarity chip fills, and the Rarity tally bars, by the Provider's overall Rarity: common at 50% and above (paper), uncommon 15-50% (green), rare 5-15% (blue), ultra rare under 5% (hot pink). Ultra rare is the Highlight line, so hot pink also prints an ultra-rare Unlock's odds tag.
 - **Provider colours** (provider-retroachievements, provider-steam, provider-psn): solid Provider chips and Linked Account chips, Provider filter tabs, and a 3px top rule on Provider pages and cards, always with ink type. A deselected Provider chip drops to a 1.5px inset outline in its colour. PlayStation is lifted from #3b6fe0 so ink type on it clears AA.
@@ -394,6 +412,8 @@ Blunt, label-voiced and loud.
 - **On a yellow panel:** ink with paper type for the main action, and an ink-outlined transparent button beside it.
 - **Outline:** a 1px paper-mute/60 stroke, transparent, paper type; on hover the stroke goes paper and the fill ink-3.
 - **Link:** paper type with a 2px red underline offset 4px; it turns yellow on hover.
+- **Destructive outline:** a signal-orange stroke with orange type on transparent; on hover a 10% orange wash. It is the button that opens a destructive action's confirm (Delete, Reset votes, Close now).
+- **Destructive solid:** signal orange with orange-ink type; on hover it drops to 85%. It is the confirmed destructive action, after the typed-word confirm. Destructive never uses masthead red.
 - **Focus / Active:** a yellow focus ring (3px at 50%); pressing nudges the button down 1px. Outbound text links ("Reddit ↗") are small label-voice links in paper-dim that turn yellow on hover.
 
 ### Chips
@@ -461,6 +481,19 @@ Both are solid chips at the chip scale with ink type (20px tall at the small siz
 ### Club Set Page (game page)
 One composite page per Provider behind Provider tabs. A tab carries a 3px top rule in its Provider colour and fills solid when active, so it joins the page's Provider-coloured top rule. The page has a tint spine. Each Achievement is faded by how few members hold it and ringed by a dot per member (filled in that member's ring colour when they hold it), opening on hover, focus or tap to the members who unlocked it. The members who completed the set sign the margin on foil, oldest first. The viewer's own earned / total links to their set page.
 
+### Production desk (staff surfaces)
+The /admin area is a production desk: the club's staff put the next issue together. It is a staff surface only; members never see it. Every desk page opens with the desk header and keeps the Two-Line Headline and paper-rule habits of the rest of the site.
+- **Desk header:** the page name big in Anton on the 2px paper rule, with a short label-voice note on the right (who is at the desk, a count, the viewer's time zone) that wraps under the title on a phone.
+- **Contents page:** the /admin landing. The viewer's tools grouped by area, each a link, a dot leader and a live note where a magazine prints the page number ("Round 143 open", or "Failed 1 h ago" in signal orange). Each role sees only its own groups.
+- **The wire:** bot jobs newest first, each a slip with its clock and day, what it did, who asked (Admins and up) and a stamp. A failed slip quotes the bot's error under a dashed rule in signal orange; a done one quotes what the bot reported. No retry buttons: a failed job stays failed.
+- **Stamps:** Queued in highlighter yellow, Done in done green, Failed in signal orange, as a 2px (wire) or 3px (proof) inset outline in Anton, tilted 4 degrees. The proof's stamp presses in with the starburst's stamp motion when its phase changes, behind `motion-safe`.
+- **Proof card:** a form's preview of what the bot will post (a poster, a message, a round), set beside the form. Once sent it is stamped Queued in its corner, the stamp follows the bot job to Done or Failed, and the job's status line sits under it.
+- **Typed confirm:** a destructive action confirms by typing the words shown, in a dashed signal-orange box with its label cut into the border. The solid orange button stays off until the words match.
+- **Dictionary list and Undo bar:** lists and editors file entries under big letters in two columns with an A to Z jump bar. Delete strikes the entry through and holds it behind an Undo bar, a signal-orange bar that drains over the hold; the request is sent only when the bar runs out.
+- **Date ruler (voting console):** the round as a ruler of dates: nominations opening, the vote, any runoff, today in red, and the yellow Next vote pin. The pin drags in whole days and steps with the keyboard, and a plain date field beside it sets it too. Below md the ruler is left out (as in the chosen mock) and the console leads on the round numeral; the date field still sets the pin.
+
+**The Desk Green Rule.** Done green (`ok`) shares the hex of the uncommon Rarity ink because the two never meet: Rarity inks stay on achievement surfaces and done green stays on the staff desk, which shows no achievements. It is its own token so neither role borrows the other, and it is still a mark (type, a stamp outline, a dot), never a fill behind type.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -487,3 +520,4 @@ One composite page per Provider behind Provider tabs. A tab carries a 3px top ru
 - **Don't** put violet or GOTM red on an achievement surface; a game tint that happens to be red or violet is content, not a track.
 - **Don't** say sticker, album, pack or pull in the UI. The binder is a visual metaphor; the copy keeps the glossary terms.
 - **Don't** call the GOTM history "Back issues".
+- **Don't** use done green or the desk stamps outside the staff desk, or red for a destructive action.

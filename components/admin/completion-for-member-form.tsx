@@ -7,7 +7,7 @@ import {
   logCompletionForMemberAction,
   memberYearCompletionCountAction,
 } from "@/app/actions/admin-completions";
-import type { BotJob, Game, Platform, User } from "@/lib/api/types";
+import type { Game, Platform, User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
 import { completionAnnouncement, completionYear, COMPLETION_NOTE_MAX } from "@/lib/completions";
 import { COMPLETION_TYPES, parsePlaytime, todayDate } from "@/lib/imports/completionator";
@@ -35,7 +35,6 @@ interface Sent {
   completionId: number;
   announced: boolean;
   jobId: number | null;
-  job: BotJob | null;
 }
 
 export interface CompletionForMemberFormProps {
@@ -166,7 +165,6 @@ function CompletionForm({
         completionId: result.completionId,
         announced: announce,
         jobId: result.jobId ?? null,
-        job: result.job ?? null,
       });
     });
   };
@@ -369,7 +367,7 @@ function CompletionForm({
 
       <div className="min-w-0 lg:sticky lg:top-6">
         {sent?.announced && sent.jobId ? (
-          <ProofCard jobId={sent.jobId} initialJob={sent.job} what="The completion post" overhang>
+          <ProofCard jobId={sent.jobId} what="The completion post" overhang>
             {proof}
           </ProofCard>
         ) : (

@@ -245,7 +245,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                 </>
               )}
             </div>
-            <p className="mt-1.5 text-[0.82rem] text-paper-mute">At most 10 MB. The bot puts it on the thread and the event.</p>
+            <p className="mt-1.5 text-[0.82rem] text-paper-mute">At most 4 MB; for a larger image, link it by URL. The bot puts it on the thread and the event.</p>
           </fieldset>
 
           {error && (

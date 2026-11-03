@@ -4,8 +4,8 @@ import { useState, useTransition } from "react";
 import { Check, Loader2, Replace, Undo2 } from "lucide-react";
 import { updateRoundEntriesAction, type RoundEntryEdit } from "@/app/actions/rounds";
 import type { AdminRoundEntry } from "@/lib/api/admin-rounds";
-import type { BotJob, Game, VotingCategory } from "@/lib/api/types";
-import { roundEntryId, TRACK_NAME } from "@/lib/rounds";
+import type { Game, VotingCategory } from "@/lib/api/types";
+import { duplicateGames, roundEntryId, TRACK_NAME } from "@/lib/rounds";
 import { GamePicker } from "@/components/member/game-picker";
 import { GameCover } from "@/components/issue/game-cover";
 import { ProofCard } from "@/components/admin/desk/proof-card";
@@ -43,9 +43,20 @@ function editOf(slot: Slot, saved: Slot): RoundEntryEdit | null {
 
 const SLOT_TAG = "ABCDEFGHIJ";
 
+function slotName(i: number, count: number): string {
+  return count > 1 ? `Game ${SLOT_TAG[i] ?? i + 1}` : "Game";
+}
+
+function listNames(names: string[]): string {
+  if (names.length <= 1) return names.join("");
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
 // Edit one track's round: swap any slot's game and set its Reddit URL.
 // Only changed slots are sent, one PATCH each; every staff edit has the bot
-// reload the round, and the proof follows the newest reload job.
+// reload the round, and the proof follows the last reload job. The round
+// is checked as a whole before sending, so games can be swapped between
+// slots; a refusal partway names the slots that saved and reloads the round.
 export function RoundEditor({
   category,
   roundNumber,
@@ -61,7 +72,7 @@ export function RoundEditor({
   const [slots, setSlots] = useState<Slot[]>(() => entries.map(slotOf));
   const [picking, setPicking] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [job, setJob] = useState<BotJob | null>(null);
+  const [jobId, setJobId] = useState<number | null>(null);
   const [savedOnce, setSavedOnce] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -69,28 +80,76 @@ export function RoundEditor({
     .map((slot, i) => editOf(slot, saved[i]))
     .filter((e): e is RoundEntryEdit => e !== null);
 
+  // Slot position -> the other slots holding the same game.
+  const dupes = duplicateGames(slots.map((s) => s.gameId));
+  const twinOf = new Map<number, number[]>();
+  for (const at of dupes.values()) for (const i of at) twinOf.set(i, at.filter((j) => j !== i));
+
   const update = (i: number, patch: Partial<Slot>) =>
     setSlots((list) => list.map((s, j) => (j === i ? { ...s, ...patch } : s)));
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     if (edits.length === 0) return;
+    if (dupes.size > 0) {
+      const [first] = dupes.values();
+      const title = slots[first[0]].game?.title ?? `GameDB game ${slots[first[0]].gameId}`;
+      setError(
+        `${title} would be in the round twice (${listNames(first.map((i) => slotName(i, slots.length)))}). Change one of them before saving.`,
+      );
+      return;
+    }
     setError(null);
+    const sent = slots;
     startTransition(async () => {
       const result = await updateRoundEntriesAction(category, roundNumber, edits);
-      const updated = new Map((result.entries ?? []).map((entry) => [roundEntryId(entry), entry]));
-      if (updated.size > 0) {
+      const savedIds = new Set(result.savedIds ?? []);
+      if (result.jobId != null) setJobId(result.jobId);
+      if (savedIds.size > 0) setSavedOnce(true);
+
+      if (!result.ok && result.round) {
+        // Start again from what the server holds; slots that didn't save
+        // keep their draft so they still read as Changed.
+        const fresh = result.round.map(slotOf);
+        setSaved(fresh);
+        setSlots(
+          fresh.map((slot) => {
+            const draft = sent.find((s) => s.id === slot.id);
+            return draft && !savedIds.has(slot.id) ? draft : slot;
+          }),
+        );
+      } else {
+        const updated = new Map((result.entries ?? []).map((entry) => [roundEntryId(entry), entry]));
         // Keep the picked Game for the proof; the PATCH answers without it.
         setSaved((list) =>
           list.map((s, i) => {
             const entry = updated.get(s.id);
-            return entry ? { ...slotOf(entry), game: slots[i].game } : s;
+            return entry ? { ...slotOf(entry), game: sent[i].game } : s;
           }),
         );
-        setSavedOnce(true);
-        if (result.job) setJob(result.job);
       }
-      if (!result.ok) setError(result.error ?? "Couldn't save the round.");
+
+      if (!result.ok) {
+        const names = (ids: (id: number) => boolean) =>
+          listNames(
+            sent.flatMap((s, i) => (ids(s.id) ? [slotName(i, sent.length)] : [])),
+          );
+        const tried = new Set(edits.map((e) => e.id));
+        const savedNames = names((id) => savedIds.has(id));
+        const unsavedNames = names((id) => tried.has(id) && !savedIds.has(id));
+        const outcome = savedNames
+          ? `Saved ${savedNames}; ${unsavedNames} not saved.`
+          : edits.length > 1
+            ? "Nothing was saved."
+            : "";
+        const reload =
+          result.round === undefined
+            ? ""
+            : result.round
+              ? " The round below is reloaded from the server."
+              : " Refresh the page to see what the server holds.";
+        setError([result.error ?? "Couldn't save the round.", outcome].filter(Boolean).join(" ") + reload);
+      }
     });
   };
 
@@ -101,18 +160,24 @@ export function RoundEditor({
           {slots.map((slot, i) => {
             const title = slot.game?.title ?? `GameDB game ${slot.gameId ?? "?"}`;
             const changed = editOf(slot, saved[i]) !== null;
+            const twins = twinOf.get(i);
             return (
               <li
                 key={slot.id}
                 className={cn(
                   "rounded-md bg-ink-2 p-3.5 ring-inset",
-                  changed ? "ring-1 ring-highlight" : "ring-1 ring-rule",
+                  twins ? "ring-1 ring-destructive" : changed ? "ring-1 ring-highlight" : "ring-1 ring-rule",
                 )}
               >
                 <div className="flex items-center justify-between gap-3">
                   <span className={fieldLabel}>
-                    {slots.length > 1 ? `Game ${SLOT_TAG[i] ?? i + 1}` : "Game"}
+                    {slotName(i, slots.length)}
                     {changed && <span className="ml-2 text-highlight">Changed</span>}
+                    {twins && (
+                      <span className="ml-2 text-destructive">
+                        Also in {listNames(twins.map((j) => slotName(j, slots.length)))}
+                      </span>
+                    )}
                   </span>
                   {changed && (
                     <Button
@@ -163,10 +228,6 @@ export function RoundEditor({
                       placeholder="Search for the new game…"
                       onPick={(game) => {
                         setPicking(null);
-                        if (slots.some((s, j) => j !== i && s.gameId === game.game_id)) {
-                          setError(`${game.title} is already in this round.`);
-                          return;
-                        }
                         setError(null);
                         update(i, { game, gameId: game.game_id });
                       }}
@@ -208,18 +269,19 @@ export function RoundEditor({
               ? savedOnce
                 ? "Saved. Each change has the bot reload the round."
                 : "Change a game or a Reddit URL to save."
-              : `The bot reloads ${TRACK_NAME[category]} round ${roundNumber} after each change.`}
+              : dupes.size > 0
+                ? "A game can be in the round once. Swap games by changing both slots, then save."
+                : `The bot reloads ${TRACK_NAME[category]} round ${roundNumber} after each change.`}
           </span>
         </div>
       </form>
 
       <ProofCard
-        jobId={job?.id ?? null}
-        initialJob={job}
+        jobId={jobId}
         what="The bot's round reload"
         caption={
-          savedOnce && !job
-            ? "Saved. The reload job isn't on the wire yet; the desk lists it."
+          savedOnce && jobId == null
+            ? "Saved. The API queued no reload job for it."
             : "The round as the GOTM history and the bot will carry it."
         }
       >

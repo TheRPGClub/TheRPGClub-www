@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from "react";
 import { Scissors, Trash2 } from "lucide-react";
 import { staffDeleteNominationAction } from "@/app/actions/nominations";
-import type { BotJob, Nomination, VotingCategory } from "@/lib/api/types";
+import type { Nomination, VotingCategory } from "@/lib/api/types";
 import { UNDO_DELAY_MS } from "@/lib/desk";
 import { REMOVAL_REASON_MAX, TRACK_NAME } from "@/lib/rounds";
 import { useUndoDelete } from "@/hooks/use-undo-delete";
@@ -23,7 +23,7 @@ interface Deleted {
   nomination: Nomination;
   reason: string;
   own: boolean;
-  job: BotJob | null;
+  jobId: number | null;
 }
 
 const keyOf = (category: VotingCategory, n: Nomination) => `${category}:${n.user_id}`;
@@ -69,7 +69,7 @@ export function NominationDesk({
       const own = item.nomination.user_id === viewerId;
       const result = await staffDeleteNominationAction(item.category, round, item.nomination.user_id, item.reason);
       if (!result.ok) return { error: result.error ?? "Couldn't delete it." };
-      setDeleted((prev) => ({ ...prev, [key]: { ...item, own, job: result.job ?? null } }));
+      setDeleted((prev) => ({ ...prev, [key]: { ...item, own, jobId: result.jobId ?? null } }));
     },
   });
 
@@ -349,14 +349,9 @@ function DeletedProof({ deleted, round, viewerName }: { deleted: Deleted; round:
   return (
     <ProofCard
       bare
-      jobId={deleted.job?.id ?? null}
-      initialJob={deleted.job}
+      jobId={deleted.jobId}
       what="The announcement"
-      caption={
-        deleted.job
-          ? null
-          : "Deleted. The announcement job isn't on the wire yet; the desk lists it."
-      }
+      caption={deleted.jobId != null ? null : "Deleted. The API queued no announcement for it."}
     >
       <div className="rounded-sm bg-ink-2 py-3 pr-36 pl-3">
         <p className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-paper-mute">

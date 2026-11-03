@@ -20,6 +20,29 @@ export function isBotJobSettled(job: Pick<BotJob, "status">): boolean {
 // settle inside the first two or three reads; the whole run is under a minute.
 export const BOT_JOB_REFRESH_DELAYS_MS: readonly number[] = [3_000, 6_000, 10_000, 15_000, 20_000];
 
+// A schedule as gaps (ms): each step's gap repeated until that step's
+// running total (from the first read) is reached.
+function backoffDelays(steps: readonly { every: number; until: number }[]): number[] {
+  const delays: number[] = [];
+  let total = 0;
+  for (const { every, until } of steps) {
+    while (total + every <= until) {
+      delays.push(every);
+      total += every;
+    }
+  }
+  return delays;
+}
+
+// For a job that runs for minutes (a memberscan has a 30 minute lease):
+// every 10 s for the first 2 minutes, every 30 s to 10 minutes, then every
+// minute to 35 minutes, a little past the lease.
+export const BOT_JOB_LONG_REFRESH_DELAYS_MS: readonly number[] = backoffDelays([
+  { every: 10_000, until: 120_000 },
+  { every: 30_000, until: 600_000 },
+  { every: 60_000, until: 2_100_000 },
+]);
+
 // Jobs per page on the /admin wire.
 export const WIRE_PAGE_SIZE = 25;
 
@@ -29,8 +52,14 @@ export interface BotJobStatusCopy {
 }
 
 // The status line. `what` names the Discord side of the action in the
-// member's words ("Your DM"), defaulting to a generic phrase.
-export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJobStatusCopy {
+// member's words ("Your DM"), defaulting to a generic phrase. `showResult`
+// (staff surfaces only) puts what the bot reported on Done in place of the
+// worded line; members never see the bot's raw result text.
+export function botJobStatusCopy(
+  job: BotJob,
+  what = "The Discord update",
+  { showResult = false }: { showResult?: boolean } = {},
+): BotJobStatusCopy {
   switch (job.status) {
     case "queued":
       return { label: "Queued", detail: `${what} is waiting for the bot.` };
@@ -39,7 +68,7 @@ export function botJobStatusCopy(job: BotJob, what = "The Discord update"): BotJ
     case "done":
       return {
         label: "Done",
-        detail: job.result_text?.trim() || `${what} went out on Discord.`,
+        detail: (showResult && job.result_text?.trim()) || `${what} went out on Discord.`,
       };
     case "failed":
       return {
@@ -162,22 +191,4 @@ export function latestFailure(
 ): BotJob | null {
   const latest = jobs.find((j) => kinds.includes(j.kind));
   return latest && latest.status === "failed" ? latest : null;
-}
-
-// The job an action just queued, picked from the newest wire page when the
-// API's response does not name it: the oldest job of that kind the viewer
-// requested at or after `since` (less a few seconds of clock drift), so a
-// second job queued right after is not taken for this one. Null if none.
-export function findQueuedJob(
-  jobs: readonly BotJob[],
-  match: { kind: BotJob["kind"]; requesterId: string; since: Date },
-): BotJob | null {
-  const from = match.since.getTime() - 5_000;
-  const found = jobs.filter(
-    (job) =>
-      job.kind === match.kind &&
-      job.requested_by_user_id === match.requesterId &&
-      new Date(job.created_at).getTime() >= from,
-  );
-  return found.length ? found[found.length - 1] : null;
 }

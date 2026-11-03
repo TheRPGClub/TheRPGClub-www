@@ -1478,6 +1478,26 @@ export interface BotPresence {
   set_by_username: string | null;
 }
 
+// The `meta` of the job-queuing staff writes: the id of the bot job each
+// one queued, for polling GET /api/v1/bot_jobs/{id}. Null when none was
+// queued (service writes, owner deletes, completions not announced).
+export interface BotPresenceCreateMeta {
+  presence_job_id: number | null;
+}
+
+export interface GotmReloadMeta {
+  reload_job_id: number | null;
+}
+
+export interface CompletionCreateMeta {
+  announce_job_id: number | null;
+}
+
+export interface NominationDeletedResponse {
+  deleted: boolean;
+  meta?: { announce_job_id: number | null };
+}
+
 // Live events (GET/POST /api/v1/live_events, GET /live_events/:id)
 //
 // A forum thread in the Live Events forum and a Discord scheduled event, made

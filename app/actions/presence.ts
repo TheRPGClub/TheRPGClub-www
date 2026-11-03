@@ -3,9 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { ApiCollection, BotJob, BotPresence, CollectionMeta } from "@/lib/api/types";
-import { getSession } from "@/lib/session";
-import { findPresenceJob, PRESENCE_PAGE_SIZE, validatePresenceName } from "@/lib/presence";
+import type { ApiCollection, BotPresence, BotPresenceCreateMeta, CollectionMeta } from "@/lib/api/types";
+import { PRESENCE_PAGE_SIZE, validatePresenceName } from "@/lib/presence";
 
 const PAGE = "/admin/presence";
 const UNREACHABLE = "Couldn't reach the club's server. Try again.";
@@ -13,14 +12,13 @@ const UNREACHABLE = "Couldn't reach the club's server. Try again.";
 export interface SetPresenceResult {
   ok: boolean;
   data?: BotPresence;
-  // The `presence_set` job it queued, when it could be found on the wire.
-  job?: BotJob | null;
+  // The `presence_set` job it queued (meta.presence_job_id).
+  jobId?: number | null;
   error?: string;
 }
 
 // Set the bot's presence. The API records the setter from the session and
-// queues `presence_set`; its reply carries no job, so the job is looked up
-// on the wire right after.
+// queues `presence_set`, whose id comes back as meta.presence_job_id.
 export async function setPresenceAction(activityName: string): Promise<SetPresenceResult> {
   const checked = validatePresenceName(activityName);
   if (!checked.ok) return { ok: false, error: checked.error };
@@ -41,29 +39,10 @@ export async function setPresenceAction(activityName: string): Promise<SetPresen
     }
     return { ok: false, error: apiErrorMessage(await readApiError(res)) };
   }
-  const { data } = (await res.json()) as { data: BotPresence };
+  const { data, meta } = (await res.json()) as { data: BotPresence; meta?: BotPresenceCreateMeta };
   revalidatePath(PAGE);
   revalidatePath("/admin");
-  return { ok: true, data, job: await presenceJob(data) };
-}
-
-async function presenceJob(presence: BotPresence): Promise<BotJob | null> {
-  const session = await getSession();
-  const ids = [session?.principal.discord_id, session?.principal.id, presence.set_by_user_id].filter(
-    (id): id is string => Boolean(id),
-  );
-  try {
-    const res = await apiFetch("/api/v1/bot_jobs?page=1&per=10", { cache: "no-store" });
-    if (!res.ok) return null;
-    const { data } = (await res.json()) as ApiCollection<BotJob>;
-    for (const id of ids) {
-      const job = findPresenceJob(data, id, presence.set_at);
-      if (job) return job;
-    }
-    return null;
-  } catch {
-    return null;
-  }
+  return { ok: true, data, jobId: meta?.presence_job_id ?? null };
 }
 
 export interface PresenceHistoryResult {
@@ -73,12 +52,14 @@ export interface PresenceHistoryResult {
   error?: string;
 }
 
-// One page of the presence history, newest first.
-export async function listPresenceAction(page = 1): Promise<PresenceHistoryResult> {
+// One page of the presence history, newest first. `per` (1 to 50) lets
+// the desk read just the newest row and the count.
+export async function listPresenceAction(page = 1, per = PRESENCE_PAGE_SIZE): Promise<PresenceHistoryResult> {
   const p = Number.isInteger(page) && page > 0 ? page : 1;
+  const size = Number.isInteger(per) && per > 0 ? Math.min(per, PRESENCE_PAGE_SIZE) : PRESENCE_PAGE_SIZE;
   let res: Response;
   try {
-    res = await apiFetch(`/api/v1/bot_presence?page=${p}&per=${PRESENCE_PAGE_SIZE}`, { cache: "no-store" });
+    res = await apiFetch(`/api/v1/bot_presence?page=${p}&per=${size}`, { cache: "no-store" });
   } catch {
     return { ok: false, error: UNREACHABLE };
   }

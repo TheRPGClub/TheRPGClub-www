@@ -3,22 +3,30 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { AdminRoundEntry } from "@/lib/api/admin-rounds";
-import type { BotJob, VotingCategory } from "@/lib/api/types";
+import { fetchRoundEntries, type AdminRoundEntry } from "@/lib/api/admin-rounds";
+import type { GotmReloadMeta, VotingCategory } from "@/lib/api/types";
 import { VOTING_CATEGORY_PATH } from "@/lib/api/voting-round";
 import { getSession } from "@/lib/session";
 import { isAdminOrAbove } from "@/lib/staff";
-import { findQueuedJob, normalizeRedditUrl, summaryNamesRound } from "@/lib/rounds";
-import { listBotJobsAction } from "@/app/actions/bot-jobs";
+import { normalizeRedditUrl } from "@/lib/rounds";
 
 type RoundEntry = AdminRoundEntry;
 
 export interface RoundActionResult {
   ok: boolean;
   entries?: RoundEntry[];
-  // The gotm_cache_reload job the write queued, when the wire shows it.
-  job?: BotJob | null;
+  // The gotm_cache_reload job the (last successful) write queued, from
+  // meta.reload_job_id.
+  jobId?: number | null;
   error?: string;
+}
+
+export interface RoundEditResult extends RoundActionResult {
+  // The entry ids that were saved, in the order they were sent.
+  savedIds?: number[];
+  // The whole round re-read after a refusal, so the editor shows what the
+  // server now holds. Null when that read failed too.
+  round?: RoundEntry[] | null;
 }
 
 const UNREACHABLE = "Couldn't reach the club's server. Try again.";
@@ -28,23 +36,6 @@ async function errorMessage(res: Response): Promise<string> {
   if (res.status === 403) return "Only Admins and Superadmins can change rounds.";
   if (res.status === 404) return "That round entry no longer exists.";
   return apiErrorMessage(await readApiError(res));
-}
-
-// The reload job a round write queued, read back off the wire.
-async function queuedReload(
-  requesterId: string,
-  category: VotingCategory,
-  round: number,
-  since: Date,
-): Promise<BotJob | null> {
-  const wire = await listBotJobsAction(1);
-  if (!wire.ok || !wire.data) return null;
-  return findQueuedJob(wire.data, {
-    kind: "gotm_cache_reload",
-    requesterId,
-    since,
-    matches: (summary) => summaryNamesRound(summary, category, round),
-  });
 }
 
 function revalidateRounds() {
@@ -73,7 +64,6 @@ export async function createRoundAction(
   if (!monthYear) return { ok: false, error: "Give the round its month, e.g. December 2026." };
   if (input.gameIds.length === 0) return { ok: false, error: "Add at least one game." };
 
-  const since = new Date();
   let res: Response;
   try {
     res = await apiFetch(`/api/v1/${VOTING_CATEGORY_PATH[category]}/rounds`, {
@@ -91,10 +81,9 @@ export async function createRoundAction(
   }
   if (!res.ok) return { ok: false, error: await errorMessage(res) };
 
-  const body = (await res.json()) as { data: RoundEntry[] };
+  const body = (await res.json()) as { data: RoundEntry[]; meta?: GotmReloadMeta };
   revalidateRounds();
-  const job = await queuedReload(session.principal.id, category, input.roundNumber, since);
-  return { ok: true, entries: body.data, job };
+  return { ok: true, entries: body.data, jobId: body.meta?.reload_job_id ?? null };
 }
 
 export interface RoundEntryEdit {
@@ -105,13 +94,15 @@ export interface RoundEntryEdit {
 }
 
 // Save the changed slots of one round, one PATCH each (the API has no
-// round-level edit). Each staff PATCH queues a cache reload; the result
-// carries the newest. Stops at the first refusal, keeping what was saved.
+// round-level edit). The editor checks the final round has no game twice
+// before sending, so a swap goes out as two PATCHes. Each staff PATCH
+// queues a cache reload; the result carries the last one. Stops at the
+// first refusal, then re-reads the round so the editor shows what saved.
 export async function updateRoundEntriesAction(
   category: VotingCategory,
   round: number,
   edits: RoundEntryEdit[],
-): Promise<RoundActionResult> {
+): Promise<RoundEditResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "Sign in again to edit the round." };
   if (!isAdminOrAbove(session.membership)) {
@@ -131,8 +122,8 @@ export async function updateRoundEntriesAction(
     bodies.push(data);
   }
 
-  const since = new Date();
   const saved: RoundEntry[] = [];
+  let jobId: number | null = null;
   let failure: string | null = null;
   for (const [i, edit] of edits.entries()) {
     let res: Response;
@@ -149,14 +140,16 @@ export async function updateRoundEntriesAction(
       failure = await errorMessage(res);
       break;
     }
-    saved.push(((await res.json()) as { data: RoundEntry }).data);
+    const body = (await res.json()) as { data: RoundEntry; meta?: GotmReloadMeta };
+    saved.push(body.data);
+    jobId = body.meta?.reload_job_id ?? jobId;
   }
 
   if (saved.length > 0) revalidateRounds();
-  const job = saved.length > 0 ? await queuedReload(session.principal.id, category, round, since) : null;
+  const savedIds = edits.slice(0, saved.length).map((e) => e.id);
   if (failure) {
-    const kept = saved.length > 0 ? ` ${saved.length} of ${edits.length} changes were saved.` : "";
-    return { ok: false, entries: saved, job, error: `${failure}${kept}` };
+    const fresh = await fetchRoundEntries(category, round);
+    return { ok: false, entries: saved, savedIds, jobId, round: fresh, error: failure };
   }
-  return { ok: true, entries: saved, job };
+  return { ok: true, entries: saved, savedIds, jobId };
 }
