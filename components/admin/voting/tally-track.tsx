@@ -179,7 +179,7 @@ function Lines({
     <ol>
       {lines.map((line, i) => {
         const lead = showCounts && top > 0 && line.count === top;
-        const dim = showCounts && !lead && i >= 2;
+        const dim = showCounts && !lead && (i >= 2 || line.count === 0);
         return (
           <li
             key={line.gameId}

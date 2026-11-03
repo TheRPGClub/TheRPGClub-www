@@ -176,14 +176,24 @@ export interface RulerScale {
 }
 
 // The ruler spans the round from nominations opening to the end of its
-// vote, plus room on the right to drag the next vote out (six weeks past
-// today while it can still move).
-export function rulerScale(points: readonly number[], now: number, movable: boolean): RulerScale {
-  const known = points.filter((p) => Number.isFinite(p));
+// vote, plus room on the right for the Next vote pin: six weeks past today
+// to drag it while it can move, or a stretch for the hollow marker once it
+// can't. `first` (nominations opening) is held to four weeks before the
+// vote so a long nomination window doesn't squeeze the vote into a corner;
+// its tick then sits at the left edge.
+export const RULER_LEAD_MS = 28 * DAY_MS;
+
+export function rulerScale(
+  points: readonly number[],
+  now: number,
+  movable: boolean,
+  opensAt: number,
+): RulerScale {
+  const known = points.filter((p) => Number.isFinite(p)).map((p) => Math.max(p, opensAt - RULER_LEAD_MS));
   const first = Math.min(now, ...known);
   const last = Math.max(now, ...known, movable ? now + 42 * DAY_MS : now);
   const span = Math.max(last - first, 7 * DAY_MS);
-  return { start: first - span * 0.03, end: first + span * 1.06 };
+  return { start: first - span * 0.03, end: last + span * (movable ? 0.06 : 0.2) };
 }
 
 // Where an instant sits on the ruler, 0 to 100.

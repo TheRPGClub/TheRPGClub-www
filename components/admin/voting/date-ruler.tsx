@@ -66,17 +66,22 @@ export function DateRuler({
   const rows = rulerRows(all, scale);
   const lower = [...rows.values()].includes(1);
 
-  const clamp = (at: number) => (pin ? Math.min(pin.max, Math.max(pin.min, at)) : at);
+  // A move past either limit leaves the pin where it is, so it never lands
+  // on an odd clock time at the edge.
+  const move = (at: number) => {
+    if (pin && at >= pin.min && at <= pin.max) pin.onChange(at);
+  };
 
   // A drag lands on the day under the pointer, at the pin's clock time; a
-  // day that would put it before `min` rolls forward a day.
+  // day that would put it before `min` rolls forward a day; past `max` it
+  // stays put.
   const moveTo = (clientX: number) => {
     if (!pin || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const pct = ((clientX - rect.left) / rect.width) * 100;
     let at = snapToDay(rulerTime(pct, scale), pin.at);
     if (at < pin.min) at = shiftDays(at, 1);
-    pin.onChange(clamp(at));
+    move(at);
   };
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
@@ -102,8 +107,7 @@ export function DateRuler({
     const days = step[e.key];
     if (days === undefined) return;
     e.preventDefault();
-    const at = shiftDays(pin.at, days);
-    pin.onChange(clamp(at < pin.min ? pin.min : at));
+    move(shiftDays(pin.at, days));
   };
 
   const todayPct = rulerPct(now, scale);
@@ -119,6 +123,7 @@ export function DateRuler({
 
       {all.map((tick) => {
         if (tick.tone === "pin") return null;
+        // Clamped to the ruler: a tick before its start sits at the edge.
         const pct = rulerPct(tick.at, scale);
         const row = rows.get(tick.key) ?? 0;
         return (

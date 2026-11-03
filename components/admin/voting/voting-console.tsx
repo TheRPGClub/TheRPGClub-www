@@ -16,7 +16,6 @@ import {
   latestJobFor,
   nextVoteRefusal,
   roundStatusLine,
-  rulerPct,
   rulerScale,
   rulerTime,
   shortDay,
@@ -59,18 +58,18 @@ export function VotingConsole({
   const votes = tracks.every((t) => t.readable) ? tracks.reduce((s, t) => s + totalVotes(t.lines), 0) : null;
   const tieJob = latestJobFor(jobs, "voting_tie_broken", n);
 
-  // The ruler: every known point of the round, and room to drag the pin.
+  // The ruler: every known point of the round as saved, and room to drag
+  // the pin. It doesn't follow the draft, so the pin's limits hold still.
   const points = [
     nominationsOpenedAt ? Date.parse(nominationsOpenedAt) : NaN,
     saved,
     Date.parse(round.closed_at ?? round.voting_closes_at),
     round.runoff_closes_at ? Date.parse(round.runoff_closes_at) : NaN,
     round.decided_at ? Date.parse(round.decided_at) : NaN,
-    movable ? draft : NaN,
   ];
-  const scale = rulerScale(points, now, movable);
+  const scale = rulerScale(points, now, movable, saved);
   const ticks = isClient ? rulerTicks(round, nominationsOpenedAt, now, movable && draft === saved) : [];
-  const pinMax = rulerTime(rulerPct(scale.end, scale) - 4, scale);
+  const pinMax = Math.max(saved, rulerTime(96, scale));
 
   return (
     <div>
@@ -162,7 +161,15 @@ function rulerTicks(
     ticks.push(t("runoff", round.runoff_closes_at, round.runoff_ended ? "Runoff closed" : "Runoff closes"));
   }
   if (round.decided_at) ticks.push(t("decided", round.decided_at, "Decided"));
-  ticks.push({ key: "now", at: now, label: "Today", caption: shortDay(now), tone: "now" });
+  // A point that falls today (an early close) becomes the red Today tick
+  // instead of printing over it.
+  const today = ticks.find((tick) => Math.abs(tick.at - now) < 12 * 3_600_000);
+  if (today) {
+    today.label = "Today";
+    today.tone = "now";
+  } else {
+    ticks.push({ key: "now", at: now, label: "Today", caption: shortDay(now), tone: "now" });
+  }
   return ticks;
 }
 
@@ -280,9 +287,9 @@ function RepostOp({ round, job }: { round: VotingRound; job: BotJob | null }) {
           {pending ? "Queueing..." : "Repost"}
         </Button>
         {!round.voting_open && <OpNote>While voting is open</OpNote>}
-        {!fresh && <JobLine job={job} what="The voting panels" />}
+        {!fresh && <JobLine job={job} what="The repost" />}
       </div>
-      {fresh && <JobLine job={null} fresh={fresh} what="The voting panels" />}
+      {fresh && <JobLine job={null} fresh={fresh} what="The repost" />}
       {error && (
         <p role="alert" className="mt-2 text-sm text-destructive">
           {error}
