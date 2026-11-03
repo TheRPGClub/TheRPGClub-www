@@ -180,7 +180,6 @@ function SynonymEditor({
         pending={pending}
         onPendingChange={setPending}
         id={`${fieldId}-also`}
-        label="Also searched as"
         disabled={saving}
         autoFocus={!isNew && !!headword}
       />

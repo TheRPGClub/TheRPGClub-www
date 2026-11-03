@@ -15,7 +15,6 @@ export function TermInput({
   onTermsChange,
   pending,
   onPendingChange,
-  label,
   disabled,
   autoFocus,
   id,
@@ -24,7 +23,6 @@ export function TermInput({
   onTermsChange: (terms: string[]) => void;
   pending: string;
   onPendingChange: (text: string) => void;
-  label: string;
   disabled?: boolean;
   autoFocus?: boolean;
   id?: string;
