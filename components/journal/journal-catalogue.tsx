@@ -59,7 +59,7 @@ export function JournalCatalogue({
               <td className="py-2.5 pr-3.5 whitespace-nowrap md:w-[150px] max-md:p-0">
                 <Link
                   href={`/members/${entry.user_id}/journal`}
-                  className="font-label inline-flex max-w-full items-center gap-2 tracking-[0.06em] hover:text-highlight"
+                  className="font-label flex w-fit max-w-full items-center gap-2 tracking-[0.06em] hover:text-highlight"
                 >
                   <MemberAvatar userId={entry.user_id} name={name} className="size-6" fallbackClassName="text-xs" />
                   <span className="truncate">{name}</span>
@@ -68,7 +68,7 @@ export function JournalCatalogue({
               <td className="py-2.5 pr-3.5 md:w-[230px] max-md:col-span-2 max-md:p-0">
                 <Link
                   href={`/games/${entry.gamedb_game_id}`}
-                  className="inline-flex max-w-full items-center gap-2 hover:text-highlight"
+                  className="flex w-fit max-w-full items-center gap-2 hover:text-highlight"
                 >
                   <GameCover
                     title={title}

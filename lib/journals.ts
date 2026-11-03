@@ -259,6 +259,10 @@ export function buildChronology(
       const label = multiYear && d.getUTCMonth() === 0 ? `${m} ${d.getUTCFullYear()}` : m;
       return { label, at: pos(t) };
     });
+  // The opening month labels the left edge when its first tick is far in.
+  if (step === 1 && (ticks[0]?.at ?? 100) > 12) {
+    ticks.unshift({ label: MONTHS[start.getUTCMonth()], at: INSET });
+  }
 
   const firstEntry = new Date(Math.min(...dated.map((e) => e.t)));
   const lastEntry = new Date(Math.max(...dated.map((e) => e.t)));
