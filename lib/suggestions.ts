@@ -1,6 +1,6 @@
 import type { SessionMembership } from "@/lib/auth-types";
 import type { Suggestion } from "@/lib/api/types";
-import { hasMemberRole, isModeratorOrAbove } from "@/lib/staff";
+import { isMemberOrStaff } from "@/lib/staff";
 
 // Pure helpers for the Suggestion form and the Suggestion Board. The API
 // decides every write; these keep the form honest and the cards readable.
@@ -75,7 +75,7 @@ export function validateSuggestionInput(raw: {
 // Who may suggest and upvote: Members role holders and staff, as the API's
 // `member_or_staff?` gate.
 export function canSuggest(m: SessionMembership | null | undefined): boolean {
-  return hasMemberRole(m) || isModeratorOrAbove(m);
+  return isMemberOrStaff(m);
 }
 
 // Only the author, and only while it is Pending.
