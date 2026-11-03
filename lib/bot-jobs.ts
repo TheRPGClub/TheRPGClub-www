@@ -163,21 +163,3 @@ export function latestFailure(
   const latest = jobs.find((j) => kinds.includes(j.kind));
   return latest && latest.status === "failed" ? latest : null;
 }
-
-// The job an action just queued, picked from the newest wire page when the
-// API's response does not name it: the oldest job of that kind the viewer
-// requested at or after `since` (less a few seconds of clock drift), so a
-// second job queued right after is not taken for this one. Null if none.
-export function findQueuedJob(
-  jobs: readonly BotJob[],
-  match: { kind: BotJob["kind"]; requesterId: string; since: Date },
-): BotJob | null {
-  const from = match.since.getTime() - 5_000;
-  const found = jobs.filter(
-    (job) =>
-      job.kind === match.kind &&
-      job.requested_by_user_id === match.requesterId &&
-      new Date(job.created_at).getTime() >= from,
-  );
-  return found.length ? found[found.length - 1] : null;
-}

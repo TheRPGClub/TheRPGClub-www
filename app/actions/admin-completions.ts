@@ -2,13 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
-import type { ApiCollection, BotJob, GameCompletion } from "@/lib/api/types";
-import { findQueuedJob } from "@/lib/bot-jobs";
+import type { ApiCollection, CompletionCreateMeta, GameCompletion } from "@/lib/api/types";
 import { COMPLETION_NOTE_MAX } from "@/lib/completions";
 import { COMPLETION_TYPES } from "@/lib/imports/completionator";
 import { getSession } from "@/lib/session";
 import { isSuperadmin } from "@/lib/staff";
-import { listBotJobsAction } from "./bot-jobs";
 
 export interface LogCompletionInput {
   userId: string;
@@ -26,9 +24,8 @@ export interface LogCompletionResult {
   ok: boolean;
   error?: string;
   completionId?: number;
-  // The completion_announce job, when announced and found.
+  // The completion_announce job (meta.announce_job_id), when announced.
   jobId?: number | null;
-  job?: BotJob | null;
 }
 
 async function errorMessage(res: Response): Promise<string> {
@@ -45,9 +42,8 @@ async function errorMessage(res: Response): Promise<string> {
 
 // A Superadmin logs a Game Completion for another member, optionally queuing
 // the bot's announcement (completion_announce). The API also drops the game
-// from that member's Now Playing. The API's create response does not carry
-// the job, so the job is found on the wire: the viewer's newest
-// completion_announce queued since the request started.
+// from that member's Now Playing. The announcement's job id comes back as
+// meta.announce_job_id.
 export async function logCompletionForMemberAction(
   input: LogCompletionInput,
 ): Promise<LogCompletionResult> {
@@ -74,7 +70,6 @@ export async function logCompletionForMemberAction(
     return { ok: false, error: `The note must be ${COMPLETION_NOTE_MAX} characters or fewer.` };
   }
 
-  const since = new Date();
   let res: Response;
   try {
     res = await apiFetch(`/api/v1/users/${input.userId}/completions`, {
@@ -98,27 +93,18 @@ export async function logCompletionForMemberAction(
 
   const body = (await res.json()) as {
     data: GameCompletion;
-    meta?: { announce_job_id?: number | null };
+    meta?: CompletionCreateMeta;
   };
   revalidatePath(`/members/${input.userId}`);
   revalidatePath(`/members/${input.userId}/completed-games`);
   revalidatePath(`/members/${input.userId}/now-playing-games`);
   revalidatePath("/admin");
 
-  if (!input.announce) return { ok: true, completionId: body.data.completion_id, jobId: null };
-
-  const named = body.meta?.announce_job_id;
-  if (named) return { ok: true, completionId: body.data.completion_id, jobId: named };
-
-  const wire = await listBotJobsAction(1);
-  const job = wire.ok
-    ? findQueuedJob(wire.data ?? [], {
-        kind: "completion_announce",
-        requesterId: session.principal.discord_id,
-        since,
-      })
-    : null;
-  return { ok: true, completionId: body.data.completion_id, jobId: job?.id ?? null, job };
+  return {
+    ok: true,
+    completionId: body.data.completion_id,
+    jobId: input.announce ? (body.meta?.announce_job_id ?? null) : null,
+  };
 }
 
 // How many completions a member has logged for a year, for the proof's

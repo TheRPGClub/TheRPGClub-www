@@ -1,4 +1,4 @@
-import type { BotJob, BotJobKind, GotmEntry, GotmRound, NrGotmEntry, VotingCategory } from "@/lib/api/types";
+import type { GotmEntry, GotmRound, NrGotmEntry, VotingCategory } from "@/lib/api/types";
 
 // Pure helpers behind the rounds and nominations admin pages
 // (/admin/rounds, /admin/nominations).
@@ -109,50 +109,20 @@ export function normalizeRedditUrl(raw: string): { url: string | null; error?: s
 // bot's modal limit, which the API enforces too.
 export const REMOVAL_REASON_MAX = 250;
 
-// The write endpoints answer with the job's id nowhere, so after a write the
-// page finds the job it queued on the wire: the newest job of that kind the
-// viewer requested since just before the write, whose summary passes
-// `matches` (e.g. names the round). Null when it isn't there (yet).
-export function findQueuedJob(
-  jobs: readonly BotJob[],
-  {
-    kind,
-    requesterId,
-    since,
-    matches,
-  }: {
-    kind: BotJobKind;
-    requesterId: string;
-    since: Date;
-    matches?: (summary: string) => boolean;
-  },
-): BotJob | null {
-  // The API's clock and this server's may differ by a little.
-  const floor = since.getTime() - 60_000;
-  const match = jobs
-    .filter(
-      (job) =>
-        job.kind === kind &&
-        job.requested_by_user_id === requesterId &&
-        Date.parse(job.created_at) >= floor &&
-        (!matches || matches(job.summary)),
-    )
-    .sort((a, b) => b.id - a.id);
-  return match[0] ?? null;
-}
-
-// Whether a job summary names this track's round: "Reload GOTM round 143
-// (November 2026) ..." names GOTM round 143, not NR-GOTM's and not round 14.
-export function summaryNamesRound(
-  summary: string,
-  category: VotingCategory,
-  round: number,
-): boolean {
-  const pattern = new RegExp(`(^|[^-A-Za-z])${TRACK_NAME[category]} round ${round}(?!\\d)`, "i");
-  return pattern.test(summary);
-}
-
 // A round entry's id, whichever track's table it is in.
 export function roundEntryId(entry: GotmEntry | NrGotmEntry): number {
   return "gotm_id" in entry ? entry.gotm_id : entry.nr_gotm_id;
+}
+
+// The games a round would hold more than once, each with the slot
+// positions holding it (in slot order). The editor checks the whole round
+// as it would be saved, so a swap (A takes B's game, B takes A's) passes
+// while a slot left holding a game another slot took does not.
+export function duplicateGames(gameIds: readonly (number | null)[]): Map<number, number[]> {
+  const at = new Map<number, number[]>();
+  gameIds.forEach((id, i) => {
+    if (id === null) return;
+    at.set(id, [...(at.get(id) ?? []), i]);
+  });
+  return new Map([...at].filter(([, slots]) => slots.length > 1));
 }

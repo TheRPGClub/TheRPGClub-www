@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Bot, Plus, Send } from "lucide-react";
 import { setPresenceAction } from "@/app/actions/presence";
-import type { BotJob, BotPresence } from "@/lib/api/types";
+import type { BotPresence } from "@/lib/api/types";
 import { PRESENCE_MAX, validatePresenceName } from "@/lib/presence";
 import { ProofCard } from "@/components/admin/desk/proof-card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ const LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-paper-mute
 export function PresenceForm({ current }: { current: BotPresence | null }) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [sent, setSent] = useState<{ presence: BotPresence; job: BotJob | null } | null>(null);
+  const [sent, setSent] = useState<{ presence: BotPresence; jobId: number | null } | null>(null);
   const [pending, startTransition] = useTransition();
 
   const submit = (e: React.FormEvent) => {
@@ -32,7 +32,7 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
         setError(result?.error ?? "Couldn't reach the club's server. Try again.");
         return;
       }
-      setSent({ presence: result.data, job: result.job ?? null });
+      setSent({ presence: result.data, jobId: result.jobId ?? null });
     });
   };
 
@@ -82,7 +82,9 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
                 Set another
               </Button>
               <span className="text-[0.86rem] text-paper-mute">
-                {sent.job ? "Saved. The bot applies it when it picks the job up." : "Saved. Its bot job is on the wire."}
+                {sent.jobId != null
+                  ? "Saved. The bot applies it when it picks the job up."
+                  : "Saved. No bot job was queued for it."}
               </span>
             </>
           ) : (
@@ -101,8 +103,7 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
 
       <div className="min-w-0">
         <ProofCard
-          jobId={sent?.job?.id ?? null}
-          initialJob={sent?.job ?? null}
+          jobId={sent?.jobId ?? null}
           what="The presence"
           overhang
           caption="A proof of the member list and profile line."
