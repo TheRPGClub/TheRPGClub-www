@@ -885,11 +885,21 @@ export interface StarboardEntry {
 // it, Admins and Superadmins. The payload is not exposed.
 
 export type BotJobKind =
+  | "completion_announce"
   | "giveaway_claim_notice"
   | "giveaway_hub_refresh"
+  | "nomination_deleted"
   | "suggestion_submitted"
   | "suggestion_outcome"
-  | "voting_poll_wakeup";
+  | "voting_poll_wakeup"
+  | "voting_results_publish"
+  | "voting_panels_repost"
+  | "voting_tie_broken"
+  | "gotm_cache_reload"
+  | "live_event_create"
+  | "say"
+  | "memberscan"
+  | "presence_set";
 
 export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
 

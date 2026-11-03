@@ -70,11 +70,21 @@ export function botJobReadError(status: number): { message: string; final: boole
 // words. A ticket that adds a kind adds its label here; an unlisted kind
 // reads as its humanised name ("member_scan" -> "Member scan").
 const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
+  completion_announce: "Completion announcement",
   giveaway_claim_notice: "Giveaway claim",
   giveaway_hub_refresh: "Giveaway hub",
+  nomination_deleted: "Nomination change",
   suggestion_submitted: "New Suggestion",
   suggestion_outcome: "Suggestion outcome",
   voting_poll_wakeup: "Voting wake-up",
+  voting_results_publish: "Publish results",
+  voting_panels_repost: "Repost voting panels",
+  voting_tie_broken: "Tie break",
+  gotm_cache_reload: "GOTM cache reload",
+  live_event_create: "Live event",
+  say: "Say as the bot",
+  memberscan: "Memberscan",
+  presence_set: "Bot presence",
 };
 
 export function humanizeKind(kind: string): string {

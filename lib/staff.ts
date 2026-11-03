@@ -1,3 +1,4 @@
+import type { BotJobKind } from "@/lib/api/types";
 import type { SessionMembership } from "@/lib/auth-types";
 
 // Role gates read from the session's `membership` flags, which the API keeps
@@ -143,7 +144,7 @@ export interface StaffSection {
   // Bot job kinds the tool queues. When the newest of them on the wire
   // failed, the desk shows "Failed 1 h ago" in place of the hint. A ticket
   // that adds a kind for its tool lists it here.
-  jobKinds?: readonly string[];
+  jobKinds?: readonly BotJobKind[];
 }
 
 export const STAFF_SECTIONS: readonly StaffSection[] = [
@@ -166,6 +167,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     blurb: "Run the current round: dates, the private tally, results and resets.",
     hint: "This round",
     nav: true,
+    jobKinds: ["voting_results_publish", "voting_panels_repost", "voting_tie_broken"],
   },
   {
     key: "rounds",
@@ -175,6 +177,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "voting",
     blurb: "Add a GOTM or NR-GOTM round, or edit a round's games and Reddit URL.",
     hint: "Add or edit",
+    jobKinds: ["gotm_cache_reload"],
   },
   {
     key: "nominations",
@@ -184,6 +187,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "nominations",
     blurb: "Remove a nomination with a reason; the bot posts the change.",
     hint: "With a reason",
+    jobKinds: ["nomination_deleted"],
   },
   {
     key: "synonyms",
@@ -214,6 +218,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "mod",
     blurb: "Set what the bot is playing, and see who set it before.",
     hint: "Set it",
+    jobKinds: ["presence_set"],
   },
   {
     key: "presence-history",
@@ -233,6 +238,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     blurb: "A forum thread and a Discord event for a stream or a play session.",
     hint: "Thread + event",
     nav: true,
+    jobKinds: ["live_event_create"],
   },
   {
     key: "reminders",
@@ -252,6 +258,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "superadmin",
     blurb: "Post a message as the bot in any text channel, or reply to one.",
     hint: "Any channel",
+    jobKinds: ["say"],
   },
   {
     key: "memberscan",
@@ -261,6 +268,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "superadmin",
     blurb: "Re-read the guild's members and their roles.",
     hint: "Counts when done",
+    jobKinds: ["memberscan"],
   },
   {
     key: "images",
@@ -270,6 +278,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     area: "superadmin",
     blurb: "Fetch cover art for GameDB games that have none.",
     hint: "With progress",
+    wide: true,
   },
   {
     key: "suggestions",
@@ -291,6 +300,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     blurb: "Log a Game Completion on another member's behalf, and announce it.",
     hint: "With announce",
     wide: true,
+    jobKinds: ["completion_announce"],
   },
 ];
 
