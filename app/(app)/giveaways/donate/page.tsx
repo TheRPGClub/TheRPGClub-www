@@ -1,7 +1,6 @@
 import { requireAuth } from "@/lib/session";
 import { fetchDonatedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
-import { igdbAddBlockedReason } from "@/lib/igdb";
 import { PageHeader, SectionHeading } from "@/components/issue/page-header";
 import { DonateForm } from "@/components/giveaways/donate-form";
 import { DonationList } from "@/components/giveaways/donation-list";
@@ -22,7 +21,7 @@ export default async function DonatePage() {
       <PageHeader title="Giveaways" count="Donate and manage" />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,28.75rem)_minmax(0,1fr)] lg:gap-9">
         <div>
-          <DonateForm igdbBlockedReason={igdbAddBlockedReason(true, session.membership)} />
+          <DonateForm />
         </div>
         <section aria-labelledby="your-donations">
           <SectionHeading

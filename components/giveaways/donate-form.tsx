@@ -18,9 +18,10 @@ const OTHER = "Other";
 const IGDB_PANEL = "rounded-sm border border-ink bg-ink p-2.5 text-paper";
 
 // "Wrap a key": the donate form, on the yellow call-to-action panel. The game
-// must come from the GameDB; one that isn't there can be added from IGDB.
-// `igdbBlockedReason` says why the donor can't add one, or is null when they can.
-export function DonateForm({ igdbBlockedReason }: { igdbBlockedReason: string | null }) {
+// must come from the GameDB; one that isn't there can be added from IGDB by
+// anyone who can donate (the API opens IGDB search and import to any signed-in
+// user, TheRPGClub-api#342), so there is no Members blocked reason here.
+export function DonateForm() {
   const [game, setGame] = useState<Game | null>(null);
   const [pickerKey, setPickerKey] = useState(0);
   const [platform, setPlatform] = useState<string>("");
@@ -98,7 +99,7 @@ export function DonateForm({ igdbBlockedReason }: { igdbBlockedReason: string | 
               compact
               onPick={setGame}
               placeholder="Search the GameDB…"
-              igdbFallback={{ purpose: "donation", blockedReason: igdbBlockedReason, className: IGDB_PANEL, offerWithMatches: true }}
+              igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
             />
           </div>
         )}

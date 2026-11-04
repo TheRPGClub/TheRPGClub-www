@@ -1,6 +1,8 @@
 // Client-safe helpers for adding a game from IGDB and refreshing a game's
-// release info. The API's gate for both is `member_or_staff?` (see
-// `isMemberOrStaff` in lib/staff.ts).
+// release info. The API lets any signed-in user search IGDB and add a game
+// from it (TheRPGClub-api#342); refreshing release info stays
+// `member_or_staff?` (see `isMemberOrStaff` in lib/staff.ts). The pickers
+// other than the donate form still keep adding to Members and staff in the UI.
 
 import type { SessionMembership } from "@/lib/auth-types";
 import { isMemberOrStaff } from "@/lib/staff";
@@ -10,7 +12,8 @@ export type IgdbAction = "search" | "add" | "refresh";
 const ADD_NEEDS_MEMBERS = "Adding games from IGDB needs the Members role.";
 
 // Why a viewer can't add a game from IGDB, or null when they can. Shapes the
-// UI only: the API makes the final call.
+// UI only, for the pickers that keep the Members gate: the API makes the
+// final call, and since api#342 it lets any signed-in user add.
 export function igdbAddBlockedReason(
   signedIn: boolean,
   membership: SessionMembership | null | undefined,
