@@ -19,10 +19,17 @@ export interface GamePickerProps {
   placeholder?: string;
   autoFocus?: boolean;
   className?: string;
-  // Offer "add it from IGDB" when the GameDB has no match (the list picker).
-  // The added game is picked like any other. `blockedReason` explains why the
-  // viewer can't add one, or is null when they can.
-  igdbFallback?: { listLabel: string; blockedReason: string | null };
+  // Offer "add it from IGDB" when the GameDB has no match. The added game is
+  // picked like any other. `blockedReason` explains why the viewer can't add
+  // one, or is null when they can. A list picker names its list; the donate
+  // form passes `purpose: "donation"` instead. `className` styles a box around
+  // the fallback, for a picker on a light surface (its copy is light on dark).
+  // `offerWithMatches` also offers IGDB under a list of GameDB matches, for a
+  // picker with no other way out when the right game isn't among them.
+  igdbFallback?: (
+    | { listLabel: string; purpose?: "list" }
+    | { purpose: "donation" }
+  ) & { blockedReason: string | null; className?: string; offerWithMatches?: boolean };
 }
 
 export function GamePicker({
@@ -42,6 +49,8 @@ export function GamePicker({
   // The query `results` answer, so the IGDB fallback waits for this query's
   // GameDB search rather than showing on a stale or pending one.
   const [searchedQuery, setSearchedQuery] = useState<string | null>(null);
+  // The query the member asked to search IGDB for despite GameDB matches.
+  const [igdbAskedFor, setIgdbAskedFor] = useState<string | null>(null);
 
   const trimmedQuery = query.trim();
   const hasQuery = trimmedQuery.length >= 2;
@@ -88,7 +97,26 @@ export function GamePicker({
     !loading &&
     !error &&
     searchedQuery === trimmedQuery &&
-    results.length === 0;
+    (results.length === 0 || igdbAskedFor === trimmedQuery);
+  const offerIgdb =
+    !!igdbFallback?.offerWithMatches &&
+    !showIgdb &&
+    !loading &&
+    searchedQuery === trimmedQuery &&
+    results.length > 0;
+
+  const igdbBox =
+    showIgdb && igdbFallback ? (
+      <IgdbFallback
+        key={trimmedQuery}
+        query={trimmedQuery}
+        variant="picker"
+        listLabel={"listLabel" in igdbFallback ? igdbFallback.listLabel : undefined}
+        purpose={igdbFallback.purpose}
+        blockedReason={igdbFallback.blockedReason}
+        onAdded={pick}
+      />
+    ) : null;
 
   if (selected) {
     return (
@@ -133,15 +161,10 @@ export function GamePicker({
 
       {error && <p className="text-xs text-destructive">{error}</p>}
 
-      {showIgdb && (
-        <IgdbFallback
-          key={trimmedQuery}
-          query={trimmedQuery}
-          variant="picker"
-          listLabel={igdbFallback.listLabel}
-          blockedReason={igdbFallback.blockedReason}
-          onAdded={pick}
-        />
+      {igdbBox && igdbFallback?.className ? (
+        <div className={igdbFallback.className}>{igdbBox}</div>
+      ) : (
+        igdbBox
       )}
 
       {hasQuery && !showIgdb && (
@@ -200,6 +223,16 @@ export function GamePicker({
             );
           })}
         </div>
+      )}
+
+      {offerIgdb && (
+        <button
+          type="button"
+          onClick={() => setIgdbAskedFor(trimmedQuery)}
+          className="w-full rounded-sm border border-dashed border-rule-strong bg-ink-3 px-3 py-2 text-left text-xs text-paper-dim transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/50 focus-visible:outline-none"
+        >
+          Not listed? Search IGDB for &ldquo;{trimmedQuery}&rdquo;
+        </button>
       )}
     </div>
   );

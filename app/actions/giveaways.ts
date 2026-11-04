@@ -7,6 +7,7 @@ import type { GameKey, GameKeyClaimMeta } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
 import {
   CLAIM_REFUSAL_COPY,
+  DONATION_GAME_ERRORS,
   claimRefusal,
   validateDonation,
   type ClaimRefusal,
@@ -38,10 +39,7 @@ export async function donateKeyAction(input: DonationInput): Promise<GiveawayAct
   const session = await getSession();
   if (!session) return { ok: false, error: "Sign in again to donate a key." };
 
-  const { gamedb_game_id, game_title, ...rest } = checked.data;
-  const data: Record<string, unknown> = { ...rest, donor_user_id: session.principal.discord_id };
-  if (gamedb_game_id) data.gamedb_game_id = gamedb_game_id;
-  if (game_title) data.game_title = game_title;
+  const data = { ...checked.data, donor_user_id: session.principal.discord_id };
 
   let res: Response;
   try {
@@ -53,7 +51,10 @@ export async function donateKeyAction(input: DonationInput): Promise<GiveawayAct
     const err = await readApiError(res);
     return {
       ok: false,
-      error: apiErrorMessage(err, { forbidden: "You can only donate keys as yourself." }),
+      error: apiErrorMessage(err, {
+        ...DONATION_GAME_ERRORS,
+        forbidden: "You can only donate keys as yourself.",
+      }),
     };
   }
   revalidate();

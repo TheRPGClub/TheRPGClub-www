@@ -141,29 +141,29 @@ export const GAME_KEY_REGIONS: readonly GameKeyRegion[] = ["Global", "NA", "EU",
 export const DONATE_PLATFORMS: readonly string[] = ["Steam", "GOG", "Epic", "PlayStation", "Xbox", "Switch"];
 
 // Column limits in the API (and the bot's modal).
-export const MAX_TITLE = 200;
 export const MAX_PLATFORM = 50;
 export const MAX_KEY = 200;
 
+// A donation names its game by GameDB id only: the API fills the title from
+// the game.
 export interface DonationInput {
   gamedb_game_id: number | null;
-  game_title: string;
   platform: string;
   region: string;
   key_value: string;
 }
 
 export type DonationCheck =
-  | { ok: true; data: { gamedb_game_id: number | null; game_title: string; platform: string; region: GameKeyRegion; key_value: string } }
+  | { ok: true; data: { gamedb_game_id: number; platform: string; region: GameKeyRegion; key_value: string } }
   | { ok: false; error: string };
 
 export function validateDonation(input: DonationInput): DonationCheck {
-  const title = input.game_title.trim();
   const platform = input.platform.trim();
   const key = input.key_value.trim();
-  const gameId = Number.isInteger(input.gamedb_game_id) && (input.gamedb_game_id ?? 0) > 0 ? input.gamedb_game_id : null;
-  if (!gameId && !title) return { ok: false, error: "Pick the game, or type its title." };
-  if (title.length > MAX_TITLE) return { ok: false, error: `The title must be ${MAX_TITLE} characters or fewer.` };
+  const gameId = input.gamedb_game_id;
+  if (gameId === null || !Number.isInteger(gameId) || gameId <= 0) {
+    return { ok: false, error: "Pick the game from the GameDB." };
+  }
   if (!platform) return { ok: false, error: "Say which platform the key is for." };
   if (platform.length > MAX_PLATFORM) return { ok: false, error: `The platform must be ${MAX_PLATFORM} characters or fewer.` };
   if (!key) return { ok: false, error: "Paste the key." };
@@ -171,8 +171,14 @@ export function validateDonation(input: DonationInput): DonationCheck {
   const region = (GAME_KEY_REGIONS as readonly string[]).includes(input.region)
     ? (input.region as GameKeyRegion)
     : "Global";
-  return { ok: true, data: { gamedb_game_id: gameId, game_title: title, platform, region, key_value: key } };
+  return { ok: true, data: { gamedb_game_id: gameId, platform, region, key_value: key } };
 }
+
+// The API's refusals of a donation's game, in words.
+export const DONATION_GAME_ERRORS: Readonly<Record<string, string>> = {
+  game_not_in_gamedb: "That game isn't in the GameDB. Search for it again, or add it from IGDB.",
+  game_not_found: "That game is no longer in the GameDB. Change the game and pick it again.",
+};
 
 // The claim's refusals, by the API's status and code.
 export type ClaimRefusal = "already_claimed" | "not_member" | "gone" | "signed_out" | "other";
