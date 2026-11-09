@@ -19,7 +19,7 @@ export function GameStrip({ game }: { game: Game }) {
   return (
     <section
       aria-label={game.title}
-      className="relative isolate -mx-4 -mt-6 h-[140px] overflow-hidden bg-ink-2 sm:-mx-7 md:h-[180px]"
+      className="relative isolate bleed -mt-6 h-[140px] overflow-hidden bg-ink-2 md:h-[180px]"
     >
       {art && (
         // eslint-disable-next-line @next/next/no-img-element

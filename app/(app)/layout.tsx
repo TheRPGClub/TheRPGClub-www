@@ -38,8 +38,9 @@ export default async function AppLayout({
           votingPhase={votingPhase}
         />
         {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
-            not widen the column past the window. */}
-        <SidebarInset className="min-w-0">
+            not widen the column past the window. @container: the bleed
+            utility measures this inset to break banners out of the frame. */}
+        <SidebarInset className="@container min-w-0">
           <TopBar trail={crumbs} />
           {/* The content frame owns page width: it spans beside the sidebar up
               to max-w-page and centers past it. */}

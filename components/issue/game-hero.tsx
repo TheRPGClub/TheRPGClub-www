@@ -36,7 +36,7 @@ export function GameHero({
     <section
       aria-label={game.title}
       className={cn(
-        "relative isolate -mx-4 -mt-6 overflow-hidden bg-black sm:-mx-7",
+        "relative isolate bleed -mt-6 overflow-hidden bg-black",
         art ? "md:min-h-[430px]" : "md:min-h-[360px]",
       )}
     >

@@ -71,7 +71,7 @@ export function ReviewBanner({
   return (
     <section
       aria-label="Review"
-      className="relative isolate -mx-4 -mt-6 overflow-hidden bg-black sm:-mx-7 md:min-h-[420px]"
+      className="relative isolate bleed -mt-6 overflow-hidden bg-black md:min-h-[420px]"
     >
       {art && (
         // eslint-disable-next-line @next/next/no-img-element

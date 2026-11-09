@@ -19,14 +19,12 @@ export function ImportShell({
 }) {
   return (
     <div className="space-y-7">
-      <div className="space-y-2.5">
-        <PageHeader
-          title={title}
-          count={count}
-          description={description}
-          actions={actions}
-        />
-      </div>
+      <PageHeader
+        title={title}
+        count={count}
+        description={description}
+        actions={actions}
+      />
       {children}
     </div>
   );
