@@ -99,7 +99,7 @@ export default async function JournalsPage({
   const found = results?.meta.count ?? 0;
 
   return (
-    <div className="w-full space-y-6.5">
+    <div className="space-y-6.5">
       <PageHeader
         title="Game Journals"
         count={

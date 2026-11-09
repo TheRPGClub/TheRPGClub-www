@@ -40,7 +40,7 @@ export function MemberListShell({
   children,
 }: MemberListShellProps) {
   return (
-    <div className="w-full space-y-6">
+    <div className="space-y-6">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link

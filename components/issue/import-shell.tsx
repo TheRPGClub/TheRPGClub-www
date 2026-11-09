@@ -18,7 +18,7 @@ export function ImportShell({
   children: ReactNode;
 }) {
   return (
-    <div className="w-full space-y-7">
+    <div className="space-y-7">
       <div className="space-y-2.5">
         <PageHeader
           title={title}
