@@ -205,7 +205,7 @@ export default async function MemberEditPage({
   ];
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-7">
+    <div className="space-y-7">
       <PageHeader
         title="Edit profile"
         count={displayName}

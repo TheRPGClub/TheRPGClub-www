@@ -142,7 +142,7 @@ export default async function MemberPage({
   });
 
   return (
-    <div className="mx-auto w-full max-w-[90rem] space-y-10">
+    <div className="space-y-10">
       <MemberBanner
         userId={user.user_id}
         displayName={displayName}

@@ -66,7 +66,7 @@ export default async function MemberAchievementSetPage({
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-[90rem] flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <SetHeader set={set} tint={tint} userId={id} displayName={displayName} />
 
       {items.length > 0 ? (

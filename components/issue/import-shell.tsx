@@ -9,26 +9,22 @@ export function ImportShell({
   count,
   description,
   actions,
-  width = "max-w-6xl",
   children,
 }: {
   title: string;
   count?: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
-  width?: string;
   children: ReactNode;
 }) {
   return (
-    <div className={`mx-auto w-full ${width} space-y-7`}>
-      <div className="space-y-2.5">
-        <PageHeader
-          title={title}
-          count={count}
-          description={description}
-          actions={actions}
-        />
-      </div>
+    <div className="space-y-7">
+      <PageHeader
+        title={title}
+        count={count}
+        description={description}
+        actions={actions}
+      />
       {children}
     </div>
   );

@@ -611,7 +611,7 @@ function RailDetailsSkeleton() {
 function GameContentSkeleton() {
   return (
     <div className="pb-8">
-      <Skeleton className="-mx-4 -mt-6 h-[420px] rounded-none sm:-mx-7" />
+      <Skeleton className="bleed -mt-6 h-[420px] rounded-none" />
       <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
         <div className="space-y-4">
           <Skeleton className="h-10 w-56 rounded-sm" />

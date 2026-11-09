@@ -159,7 +159,7 @@ export default async function MemberAchievementsPage({
   const rows = setsPage?.items.length ?? 0;
 
   return (
-    <div className="mx-auto w-full max-w-[90rem] pt-2 pb-6">
+    <div className="pt-2 pb-6">
       {sets && (
         <FilterTabs
           query={query}

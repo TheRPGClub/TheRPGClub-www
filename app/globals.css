@@ -106,6 +106,11 @@
     --color-tier-bronze: #c8814a;
     --color-tier-silver: #c0c6cc;
     --color-tier-gold: #e0b84a;
+    /* Page width: the signed-in app's content frame spans the area beside
+       the sidebar up to this and centers past it (max-w-page). Pages don't
+       set their own outer width. 120rem keeps 1080p full width with the
+       sidebar open or collapsed. */
+    --container-page: 120rem;
 }
 
 /* Foil: the system's one sanctioned gradient. A holographic conic edge under
@@ -114,6 +119,13 @@
 :root {
     --foil-conic: conic-gradient(from 210deg, #b9f3ff, #ffd6f5, #fff3b0, #c7ffd9, #b9f3ff);
     --foil-sheen: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.55) 44%, transparent 58%);
+}
+
+/* Bleed: a banner breaks out of the content frame to the full width beside
+   the sidebar, wherever the frame sits. 50cqi is half the sidebar inset (the
+   app's query container); 50% is half the frame's content box. */
+@utility bleed {
+    margin-inline: calc(50% - 50cqi);
 }
 
 @utility foil {
