@@ -48,7 +48,7 @@ export function PresenceHistory({
   };
 
   return (
-    <section id="history" aria-labelledby="presence-history-heading" className="mt-12 max-w-4xl scroll-mt-20">
+    <section id="history" aria-labelledby="presence-history-heading" className="mt-12 scroll-mt-20">
       <div className="flex items-baseline gap-3 border-b-2 border-paper pb-2">
         <h2 id="presence-history-heading" className="font-headline text-[1.9rem]">
           Presence history

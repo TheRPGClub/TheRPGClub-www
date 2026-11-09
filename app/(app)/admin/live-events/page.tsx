@@ -60,7 +60,7 @@ export default async function LiveEventsPage() {
         </Link>
         <p className="text-sm text-paper-dim">{SECTION.blurb}</p>
       </div>
-      <div className="mt-6 max-w-4xl">
+      <div className="mt-6">
         {list === null ? (
           <p role="alert" className="text-destructive">
             {"Couldn't load the live events. Refresh to try again."}

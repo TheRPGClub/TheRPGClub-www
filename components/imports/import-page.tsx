@@ -61,7 +61,6 @@ export async function ImportPage<J extends ImportJob>({
   return (
     <ImportShell
       title={IMPORT_KINDS[kind].label}
-      width={active ? "max-w-[84rem]" : "max-w-4xl"}
       actions={
         <Link href={importsHubHref(userId)} className={buttonVariants({ variant: "outline" })}>
           <ChevronLeft data-icon="inline-start" />
