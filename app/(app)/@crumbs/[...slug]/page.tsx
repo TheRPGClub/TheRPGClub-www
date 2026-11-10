@@ -22,6 +22,7 @@ const SECTIONS: Record<string, string> = {
   admin: "Staff desk",
   suggestions: "Suggestion Board",
   journals: "Game Journals",
+  settings: "Settings",
 };
 
 // /admin tool pages, labelled as the desk names them. Sections that live
