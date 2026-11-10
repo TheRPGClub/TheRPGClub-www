@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 import type {
@@ -75,13 +75,16 @@ import { cn } from "@/lib/utils";
 const REVIEWS_READ = 5;
 const REVIEWS_SHOWN = 3;
 
-export default function GamePage({
+export default async function GamePage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Gate before the Suspense boundary: once the page streams, a not-found
+  // can no longer answer 404.
+  await requireFeature("game_index");
   return (
     <Suspense fallback={<GameContentSkeleton />}>
       {Promise.all([params, searchParams]).then(([{ id }, query]) => {
@@ -125,7 +128,7 @@ async function GameContent({
   ach?: string;
   achSet?: string;
 }) {
-  const features = await requireFeature("game_index");
+  const features = await getFeatures();
   // The page's sections from other Features, each left out when this viewer
   // isn't shown it (flag or preference).
   const show = {
