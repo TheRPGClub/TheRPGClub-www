@@ -29,6 +29,13 @@ colors:
   tier-bronze: "#c8814a"
   tier-silver: "#c0c6cc"
   tier-gold: "#e0b84a"
+  news-announcements: "#ff5ca8"
+  news-releases: "#b4e05a"
+  news-emulation: "#2fd3c0"
+  news-industry: "#6c9bff"
+  news-hardware: "#d4a373"
+  news-rumours: "#c0c4d6"
+  news-general: "#8d8d87"
 typography:
   numeral:
     fontFamily: "Anton, Impact, sans-serif"
@@ -256,6 +263,17 @@ components:
     textColor: "{colors.ink}"
     typography: "{typography.label}"
     padding: "4px 16px 3px"
+  news-card:
+    backgroundColor: "{colors.ink-2}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.md}"
+  news-tag:
+    backgroundColor: "{colors.news-announcements}"
+    textColor: "{colors.ink}"
+    typography: "{typography.chip}"
+    rounded: "{rounded.xs}"
+    padding: "0 8px"
+    height: "22px"
 ---
 
 # Design System: The RPG Club
@@ -272,6 +290,8 @@ The world refuses the default dark game-tracker: gradient-faded key-art cards, g
 
 **The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.
 
+**The News Hub department.** The club's news is the magazine's contact sheet. Every News Item is a frame of its art marked in its News Category's ink, and the frames are laid out by UTC day under Anton day headings. The department keeps the ink ground, Anton and Barlow, and the 2px rules, and it brings one colour role of its own (the News inks) that appears on news surfaces only. It refuses the news-site headline list and the dashboard default of stats over a wall of cards.
+
 **Key Characteristics:**
 - Ink-black ground with three spot inks: masthead red for GOTM, violet for NR-GOTM, highlighter yellow for the member's own business.
 - Anton in caps for every headline and numeral, Barlow Condensed tracked caps for every label, Barlow for reading.
@@ -280,6 +300,7 @@ The world refuses the default dark game-tracker: gradient-faded key-art cards, g
 - Two-line game headlines, with the second line in the track's accent.
 - Hard rectangles (2-4px corners) and 2px paper rules under headings.
 - In the Achievement Hub: game-tint spines, bands and tabs; die-cut icons edged in their Rarity ink; foil stamps only for Platinum, Mastery and Completion.
+- In the News Hub: frames of art with a foot bar and a corner tag in the News Category's ink.
 
 ## Colors
 
@@ -337,6 +358,18 @@ The Game Journal gives each member a colour of their own, so their run reads at 
 
 **The Journal Ink Is a Person Rule.** A journal ink means one member and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a journal line never reads as a track, a call to action or a destructive action, and the yellow ring on a selected dot stays the only interaction mark. They do not borrow the Achievement roles (the member ring colours stay on achievement surfaces), and they never leave journal surfaces.
 
+### News inks (news surfaces only)
+The News Hub gives each News Category an ink of its own, so a card's category reads before its headline. The inks live on news surfaces only: the News page, its cards and its filter, and the category switches on /settings. They are marks, chips and bars (a card's 4px foot bar and corner tag, the 16px square beside a category's name), never a panel. Type on an ink is ink, and each ink clears 5:1 against ink, ink-2 and ink-3. Only five hues fit between the reserved inks (masthead red, feature violet, highlighter yellow and signal orange), so Hardware is a tan and the last two are neutrals told apart by stroke.
+- **Announcements** (news-announcements): magenta, for Announcements & Trailers.
+- **Releases** (news-releases): lime, for Releases & Updates.
+- **Emulation** (news-emulation): teal, for Emulation & Preservation.
+- **Industry** (news-industry): blue.
+- **Hardware** (news-hardware): tan, for Hardware & Platforms.
+- **Rumours** (news-rumours): cool grey, for Rumours & Leaks, always drawn dashed because the news is unconfirmed (a dashed foot bar, a dashed inner outline on its tag and square).
+- **General** (news-general): paper-mute's grey, for General and for any item whose category the page does not know.
+
+**The News Inks Stay on News Surfaces Rule.** A News ink means one News Category and nothing else, and it never leaves news surfaces. The inks do not borrow or lend to the Achievement roles or the Journal member inks: magenta sits near rarity-ultra and teal near the RetroAchievements Provider colour, but they never share a surface, so neither can be misread. Read them through `newsInk()` in lib/news.ts, which also says when to dash.
+
 ## Typography
 
 **Display Font:** Anton (with Impact, sans-serif), loaded at weight 400 only
@@ -376,6 +409,8 @@ The dashboard is a two-column issue from `lg`: the cover story fills the flexibl
 **The Spread Rule.** A set page is a two-page spread: from `xl` the left page (1.7fr) holds the view (Checklist, Rarity or Timeline) and the right page (at least 20rem) holds the picked Achievement's details over the Rarity tally, sticky under the top bar. The pages meet at a shadowed gutter. Game-tint view tabs sit on the spread's top edge. On phones the spread closes to one page and the details open under the picked item.
 
 **The Day Band Rule.** The hub runs newest first in UTC day bands, each headed by a paper-tape label with a rule running out to its tally. From `xl` the Latest wall takes 62% beside a 38% rail of this week's Highlights. The wall is two columns from `sm`, and a card holding a Highlight spans both, as does a day's odd card out, so the wall never ends on a hole. The Highlights wall alone runs 2 to 6 columns without day bands, each tag carrying its own date.
+
+**The Contact Sheet Rule.** The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a "Filter" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title ("Today", "Yesterday", or a date like "Sun 8 Nov", with the year added when it is not this year), a label-type date and item count in paper-mute, and a 2px rule-strong line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type "Days and times in UTC" note.
 
 ## Elevation & Depth
 
@@ -432,7 +467,7 @@ Blunt, label-voiced and loud.
 - **Focus:** the stroke shifts to paper-mute (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
 
 ### Navigation
-- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
+- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. News carries the Newspaper icon and shows only while the News Hub Feature is on for the viewer. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
 - **Running head (top bar):** the current route as a trail (e.g. GAMES / <TITLE> / REVIEWS), in label type at 0.95rem with 0.08em tracking. Parent crumbs are paper-mute links that go paper on hover, separators are red slashes, and the current page is paper. Middle crumbs truncate first, at 14rem. On phones, only the page and its parent show. The trail is resolved on the server through the `@crumbs` parallel slot and replaces every in-page breadcrumb. The search field sits at the right (w-80, w-36 on phones) and lands on /games.
 
 ### Cover Story (signature)
@@ -482,6 +517,18 @@ Both are solid chips at the chip scale with ink type (20px tall at the small siz
 ### Club Set Page (game page)
 One composite page per Provider behind Provider tabs. A tab carries a 3px top rule in its Provider colour and fills solid when active, so it joins the page's Provider-coloured top rule. The page has a tint spine. Each Achievement is faded by how few members hold it and ringed by a dot per member (filled in that member's ring colour when they hold it), opening on hover, focus or tap to the members who unlocked it. The members who completed the set sign the margin on foil, oldest first. The viewer's own earned / total links to their set page.
 
+### News card
+One News Item as a frame on the contact sheet: an ink-2 card at rounded.md.
+- **Art:** a 16:9 box with a 4px foot bar in the News Category's ink (dashed for Rumours) and the category tag in its top-left corner: a 22px chip in chip type, ink on the ink, reading the category's short name (the part before " & ", so "Announcements"), with a dashed inner ink outline for Rumours. The art scales to 1.03 on hover over 700ms, behind `motion-safe`.
+- **Body:** the headline in Barlow 600 (about 1.02rem) links straight to the outside page in a new tab, with a small paper-mute up-right arrow; it goes yellow on hover. The site's description follows in two lines of paper-dim, then the member's comment in italic paper-dim inside quotes.
+- **Meta line:** label type at 0.76rem in paper-mute, the site on the left, and the poster and UTC clock on the right. The poster links to their profile when they are a member.
+- **No art:** the box is ink-3 with the headline in Anton paper-mute, centred and set clear of the tag, keeping its foot bar and tag (as with the Game Cover fallback). An outside image that fails to load is dropped to this fallback, so a broken image never leaves a hole. A frame the API marks unavailable reads "Image loading" in the same box.
+- **Image-only News Item:** the member's comment takes the headline slot (with no comment there is no headline), and its images are a contact sheet of up to four frames with 2px gaps: two side by side, three as one tall frame beside two, four as a 2x2 grid, with an Anton "+N" on the last frame when there are more. Each frame opens its image full size in a new tab.
+- **Images:** outside images load straight from their own address with no referrer, never through the image optimiser.
+
+### News category rail
+The key to the cards' inks, and the News page's filter. A label-type section label, "News Categories", in paper-mute over 38px rows on rule hairlines, each a 16px ink square (dashed for Rumours) beside the category's name in label type. www#77 makes it the filter: a search field on top, a count on each row (or "hidden by you" for a category the member switched off in settings), and a "Show all categories" link at the foot. A chosen category's square is filled; the others are outlined in their ink.
+
 ### Production desk (staff surfaces)
 The /admin area is a production desk: the club's staff put the next issue together. It is a staff surface only; members never see it. Every desk page opens with the desk header and keeps the Two-Line Headline and paper-rule habits of the rest of the site.
 - **Desk header:** the page name big in Anton on the 2px paper rule, with a short label-voice note on the right (who is at the desk, a count, the viewer's time zone) that wraps under the title on a phone.
@@ -510,6 +557,7 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.
 - **Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.
 - **Do** keep foil for Platinum, Mastery and Completion.
+- **Do** keep the News inks on news surfaces (the News page, its cards and filter, the category switches on /settings), as foot bars, tags and squares with ink type, and always draw Rumours dashed.
 - **Do** use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account.
 
 ### Don't:
@@ -525,3 +573,4 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Don't** say sticker, album, pack or pull in the UI. The binder is a visual metaphor; the copy keeps the glossary terms.
 - **Don't** call the GOTM history "Back issues".
 - **Don't** use done green or the desk stamps outside the staff desk, or red for a destructive action.
+- **Don't** fill a panel with a News ink, or use one on a surface that is not about news.
