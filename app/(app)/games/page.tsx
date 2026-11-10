@@ -5,7 +5,8 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Game } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { fetchGotmRounds } from "@/lib/api/gotm-rounds";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { BrowseGameCard } from "@/components/issue/browse-game-card";
 import { BrowseLead, latestWinners } from "@/components/issue/browse-lead";
@@ -83,20 +84,28 @@ export default async function GamesPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string; winner?: string }>;
 }) {
-  const { q: rawQ = "", page = "1", winner } = await searchParams;
+  // The whole GameDB's size for the masthead; a one-row read, cached.
+  const [features, { q: rawQ = "", page = "1", winner }, club] = await Promise.all([
+    requireFeature("game_index"),
+    searchParams,
+    fetchGames({ per: 1 }),
+  ]);
+  // The GOTM lead and winner filter belong to Voting & GOTM.
+  const gotm = features.shown("voting_gotm");
   const q = rawQ.trim();
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const winnerFilter = parseWinner(winner);
+  // Without Voting & GOTM there's no winner filter to show, so a winner in
+  // the URL is ignored rather than narrowing the grid out of sight.
+  const winnerFilter = gotm ? parseWinner(winner) : null;
   const browsing = !q && !winnerFilter;
 
-  // The whole GameDB's size for the masthead; a one-row read, cached.
-  const club = await fetchGames({ per: 1 });
   const clubTotal = club ? numberFormat.format(club.total) : null;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Games"
+        badge={features.preview("game_index") && <PreviewBadge />}
         count={clubTotal ? `${clubTotal} in the club's GameDB` : undefined}
       />
 
@@ -106,14 +115,16 @@ export default async function GamesPage({
           winner={winnerFilter}
           placeholder={clubTotal ? `Search ${clubTotal} games…` : "Search games…"}
         />
-        <WinnerFilter current={winnerFilter} q={q} />
+        {gotm && <WinnerFilter current={winnerFilter} q={q} />}
       </div>
 
       {browsing && currentPage === 1 && (
         <>
-          <Suspense fallback={<LeadSkeleton />}>
-            <Lead />
-          </Suspense>
+          {gotm && (
+            <Suspense fallback={<LeadSkeleton />}>
+              <Lead />
+            </Suspense>
+          )}
           <Suspense fallback={<NewestSkeleton />}>
             <Newest />
           </Suspense>

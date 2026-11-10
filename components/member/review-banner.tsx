@@ -1,5 +1,6 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { Chip } from "@/components/issue/chip";
 import { trackChips } from "@/components/issue/game-track";
@@ -40,6 +41,8 @@ export interface ReviewBannerProps {
   // monumental line and the game steps down to the line above it; absent,
   // the game's name takes the headline.
   title?: string | null;
+  // Leads the chip line, e.g. the staff "Preview" badge.
+  badge?: ReactNode;
 }
 
 /**
@@ -56,6 +59,7 @@ export function ReviewBanner({
   createdAt,
   canEdit,
   title,
+  badge,
 }: ReviewBannerProps) {
   const art = game.art_url ?? game.cover_url;
   const scored = typeof rating === "number";
@@ -97,8 +101,9 @@ export function ReviewBanner({
             {headline}
           </h1>
           {/* What the game is to the club follows the headline, never above it. */}
-          {(chips.length > 0 || title) && (
+          {(badge || chips.length > 0 || title) && (
             <p className="mt-4 flex flex-wrap items-center gap-2">
+              {badge}
               {chips.map((chip) => (
                 <Chip key={chip.tone} tone={chip.tone}>
                   {chip.label}

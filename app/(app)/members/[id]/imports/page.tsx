@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowRight, ChevronLeft, Link2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import type { ImportJob, ImportSummary } from "@/lib/api/types";
 import {
   loadActiveImport,
@@ -11,13 +11,13 @@ import {
 } from "@/lib/imports/active";
 import {
   IMPORT_KINDS,
-  IMPORT_KIND_ORDER,
   IMPORT_STATUS_LABELS,
   importItemCount,
   importKindHref,
   importProgress,
   resultReasonLabel,
   resultReasonRows,
+  shownImportKinds,
   type ImportKind,
 } from "@/lib/imports/kinds";
 import {
@@ -57,15 +57,18 @@ export default async function ImportsHubPage({
   if (!session) redirect("/");
   if (session.principal.discord_id !== id) redirect(`/members/${id}`);
 
+  // Only the imports whose Feature (the list they write to) is shown.
+  const order = shownImportKinds(await getFeatures());
+
   const [userRes, socials, ...active] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     loadSocials(id),
-    ...IMPORT_KIND_ORDER.map((kind) => loadActiveImport(kind, id)),
+    ...order.map((kind) => loadActiveImport(kind, id)),
   ]);
 
   if (!userRes.ok) notFound();
 
-  const kinds = IMPORT_KIND_ORDER.map((kind, i) => ({
+  const kinds = order.map((kind, i) => ({
     kind,
     active: active[i] as ImportJob | null,
   }));
@@ -99,22 +102,30 @@ export default async function ImportsHubPage({
         />
       ))}
 
-      <ul className="border-t-2 border-paper">
-        {kinds.map(({ kind, active: job }) => {
-          const account = requiredAccount(kind);
-          const blocked = !job && account !== null && !hasRequiredAccount(kind, socials);
-          return (
-            <ImportKindRow
-              key={kind}
-              kind={kind}
-              href={importKindHref(id, kind)}
-              active={job}
-              blockedBy={blocked ? account : null}
-              linkHref={linkAccountsHref(id)}
-            />
-          );
-        })}
-      </ul>
+      {kinds.length === 0 ? (
+        // Every list an import writes to is hidden (flag or preference).
+        <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-dim">
+          Nothing to import right now. Imports add to your Collection and Completed lists, and
+          neither is shown to you.
+        </p>
+      ) : (
+        <ul className="border-t-2 border-paper">
+          {kinds.map(({ kind, active: job }) => {
+            const account = requiredAccount(kind);
+            const blocked = !job && account !== null && !hasRequiredAccount(kind, socials);
+            return (
+              <ImportKindRow
+                key={kind}
+                kind={kind}
+                href={importKindHref(id, kind)}
+                active={job}
+                blockedBy={blocked ? account : null}
+                linkHref={linkAccountsHref(id)}
+              />
+            );
+          })}
+        </ul>
+      )}
     </ImportShell>
   );
 }

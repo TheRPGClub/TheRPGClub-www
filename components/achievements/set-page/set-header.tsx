@@ -26,11 +26,14 @@ export function SetHeader({
   tint,
   userId,
   displayName,
+  badge,
 }: {
   set: AchievementSetDetail;
   tint: SetTint;
   userId: string;
   displayName: string;
+  // Leads the Provider line, e.g. the staff "Preview" badge.
+  badge?: React.ReactNode;
 }) {
   const title = setTitle(set);
   const progress = set.progress;
@@ -66,6 +69,7 @@ export function SetHeader({
             )}
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            {badge}
             <ProviderBadge provider={set.provider} />
             {set.platform_label && <Chip>{set.platform_label}</Chip>}
             <Link

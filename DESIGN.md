@@ -315,7 +315,7 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 
 **The Yellow Is Yours Rule.** Highlighter yellow is filled only for calls to action and the GOTM starburst. As type it marks the GOTM headline's second line and interaction states (hover, focus, selection, caret). It never fills a decorative panel.
 
-**The Red Is Also Here Rule.** Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else.
+**The Red Is Also Here Rule.** Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else, with one sanctioned exception on the staff desk: the Off state of a Feature Flag (see the Off Red Rule).
 
 ### Achievement roles (achievement surfaces only)
 The Achievement Hub adds four roles to the palette. They live on achievement surfaces only (the member achievements page, set pages, the hub, the profile's Achievements section and the game page's achievements) and never leave them. (The staff desk's done green `ok` shares the uncommon ink's hex as a token of its own; see the Desk Green Rule.) On these surfaces, red appears only as "you are here" in the shell, violet never appears, and yellow stays with calls to action and interaction states.
@@ -419,6 +419,7 @@ Blunt, label-voiced and loud.
 ### Chips
 - **Style:** 24px tall, 2px corners, 8px padding, chip type. The neutral chip (year, platform, studio, role) is paper at 8% with paper-dim text.
 - **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink.
+- **Preview badge (staff only):** a Preview Feature's pages carry the highlight chip reading "Preview" beside the page title (or leading the header's chip row on a banner), so staff never mistake a Preview page for a Live one. Members never see a Preview Feature, so never the badge.
 
 ### Cards / Containers
 - **Corner Style:** rounded.md.
@@ -431,7 +432,7 @@ Blunt, label-voiced and loud.
 - **Focus:** the stroke shifts to paper-mute (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
 
 ### Navigation
-- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open.
+- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
 - **Running head (top bar):** the current route as a trail (e.g. GAMES / <TITLE> / REVIEWS), in label type at 0.95rem with 0.08em tracking. Parent crumbs are paper-mute links that go paper on hover, separators are red slashes, and the current page is paper. Middle crumbs truncate first, at 14rem. On phones, only the page and its parent show. The trail is resolved on the server through the `@crumbs` parallel slot and replaces every in-page breadcrumb. The search field sits at the right (w-80, w-36 on phones) and lands on /games.
 
 ### Cover Story (signature)
@@ -491,13 +492,16 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Typed confirm:** a destructive action confirms by typing the words shown, in a dashed signal-orange box with its label cut into the border. The solid orange button stays off until the words match.
 - **Dictionary list and Undo bar:** lists and editors file entries under big letters in two columns with an A to Z jump bar. Delete strikes the entry through and holds it behind an Undo bar, a signal-orange bar that drains over the hold; the request is sent only when the bar runs out.
 - **Date ruler (voting console):** the round as a ruler of dates: nominations opening, the vote, any runoff, today in red, and the yellow Next vote pin. The pin drags in whole days and steps with the keyboard, and a plain date field beside it sets it too. Below md the ruler is left out (as in the chosen mock) and the console leads on the round numeral; the date field still sets the pin.
+- **Feature Flags (/admin/features):** the desk header ("Features", with the Live / Preview / Off counts and a note that changes reach the site at once and the bot within a minute), then two departments, Core Features and Hideable Features, each a section heading with no subtitle over one table whose columns line up across both: the Feature's name in Anton, what it covers (Website, Bot, Posts as neutral chips on a faint well, bot commands in their own case), the last change (state, who, when, and the reason quoted in italic) and an Off / Preview / Live segmented control. The selected segment and the state in the last change wear the state's ink: Live in done green, Preview in highlighter yellow, Off in masthead red, as type and a 2px inset stroke on ink, never as a fill. A Preview Feature's name carries a yellow "Staff only" outline tag, and an Off Feature's name drops to paper-mute. Preview and Live save on click; Off opens a dashed signal-orange confirm under the row, its question cut into the border (no typed words, since Off is undone with one click). A speech-bubble button beside the control opens a yellow-edged reason field whose text goes with the next state picked. In the table the three segments are equal and fixed in width, so the control never shifts when a state is picked; stacked, they size to their labels so the name keeps its room. Below 85rem (1360px) each row stacks: name and control, then the coverage lines, then the last change.
 
 **The Desk Green Rule.** Done green (`ok`) shares the hex of the uncommon Rarity ink because the two never meet: Rarity inks stay on achievement surfaces and done green stays on the staff desk, which shows no achievements. It is its own token so neither role borrows the other, and it is still a mark (type, a stamp outline, a dot), never a fill behind type.
+
+**The Off Red Rule.** On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not ink-3, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** colour a thing red only if it is GOTM or "you are here", violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.
+- **Do** colour a thing red only if it is GOTM, "you are here" or (on the staff desk) an Off Feature Flag, violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.
 - **Do** open every page with one monumental object (a numeral or a two-line Anton headline) and rule every heading with 2px paper.
 - **Do** set every game headline with the Two-Line Headline Rule.
 - **Do** give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.

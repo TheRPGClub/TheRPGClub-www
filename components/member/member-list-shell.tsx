@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/issue/page-header";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import {
@@ -8,6 +9,9 @@ import {
   type MemberCounts,
   type MemberListKey,
 } from "@/components/member/member-lists";
+import { getFeatures } from "@/lib/session";
+import type { FeatureKey } from "@/lib/features";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { cn } from "@/lib/utils";
 
 export interface MemberListShellProps {
@@ -22,13 +26,18 @@ export interface MemberListShellProps {
   // the profile payload. Pages outside the lists (imports) leave it off.
   current?: MemberListKey;
   counts?: MemberCounts;
+  // The Feature this page belongs to, for the staff Preview badge; defaults
+  // to the current list's.
+  feature?: FeatureKey;
   children: ReactNode;
 }
 
 // The frame every member sub-page shares (the top bar carries the trail): the
 // member's name with a switcher across their lists, then the page title on the paper rule
-// with its actions.
-export function MemberListShell({
+// with its actions. The switcher leaves out lists whose Feature this viewer
+// isn't shown, except the one being read (a list hidden by preference still
+// opens from a link). Not-found when the page's Feature flag hides it.
+export async function MemberListShell({
   userId,
   displayName,
   title,
@@ -37,8 +46,18 @@ export function MemberListShell({
   action,
   current,
   counts,
+  feature,
   children,
 }: MemberListShellProps) {
+  const features = await getFeatures();
+  const lists = MEMBER_LISTS.filter(
+    (l) => l.key === current || !l.feature || features.shown(l.feature),
+  );
+  const pageFeature =
+    feature ?? MEMBER_LISTS.find((l) => l.key === current)?.feature;
+  // The page's own Feature check (see requireFeature): its segment layout
+  // doesn't re-run on a soft navigation inside the member's pages.
+  if (pageFeature && !features.canOpen(pageFeature)) notFound();
   return (
     <div className="space-y-6">
       <div className="space-y-3">
@@ -57,7 +76,7 @@ export function MemberListShell({
           </Link>
           {counts && (
             <ul aria-label="Lists" className="flex flex-wrap gap-0.5">
-              {MEMBER_LISTS.map((list) => {
+              {lists.map((list) => {
                 const on = list.key === current;
                 const n = counts[list.key];
                 return (
@@ -88,6 +107,7 @@ export function MemberListShell({
 
         <PageHeader
           title={title}
+          badge={pageFeature && features.preview(pageFeature) && <PreviewBadge />}
           count={
             count != null
               ? `${count} ${count === 1 ? countNoun[0] : countNoun[1]}`

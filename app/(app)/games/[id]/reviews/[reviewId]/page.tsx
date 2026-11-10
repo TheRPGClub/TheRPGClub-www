@@ -17,7 +17,8 @@ import type {
   User,
 } from "@/lib/api/types";
 import { accentForGame } from "@/lib/reviews/accent";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 
 // A review's own page, read top to bottom like a magazine piece: the cover
 // banner with the headline and the score, the review as an article column,
@@ -41,7 +42,8 @@ export default async function GameReviewDetailPage({
   const numericReviewId = parseInt(reviewId, 10);
   if (isNaN(gameId) || isNaN(numericReviewId)) notFound();
 
-  const [reviewRes, gameRes, session, othersRes] = await Promise.all([
+  const [features, reviewRes, gameRes, session, othersRes] = await Promise.all([
+    requireFeature("reviews"),
     apiFetch(`/api/v1/reviews/${numericReviewId}`, { cache: "no-store" }),
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     getSession(),
@@ -97,6 +99,7 @@ export default async function GameReviewDetailPage({
         createdAt={review.created_at}
         canEdit={isMine}
         title={review.title}
+        badge={features.preview("reviews") && <PreviewBadge />}
       />
 
       {/* Reading and editing share the column. The editor has its own

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Game } from "@/lib/api/types";
 import { Chip } from "@/components/issue/chip";
 import { splitGameTitle } from "@/components/issue/game-cover";
@@ -8,7 +9,14 @@ import { cn } from "@/lib/utils";
 // The short key-art banner over a game's departments (its reviews): the
 // game's name on one line, its second half in the track's accent, and the
 // win chips. Bleeds to the content column's edges like the game's own hero.
-export function GameStrip({ game }: { game: Game }) {
+export function GameStrip({
+  game,
+  badge,
+}: {
+  game: Game;
+  // Leads the chip row, e.g. the staff "Preview" badge.
+  badge?: ReactNode;
+}) {
   const track = gameTrack(game);
   const [first, second] = splitGameTitle(game.title);
   const art = game.art_url;
@@ -50,6 +58,7 @@ export function GameStrip({ game }: { game: Game }) {
             </Link>
           </p>
           <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {badge}
             {trackChips(game, { short: true }).map((chip) => (
               <Chip key={chip.tone} tone={chip.tone}>
                 {chip.label}

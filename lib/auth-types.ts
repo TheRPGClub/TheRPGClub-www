@@ -1,3 +1,5 @@
+import type { SessionFeature } from "@/lib/features";
+
 export interface SessionPrincipal {
   kind: string;
   id: string;
@@ -22,6 +24,9 @@ export interface SessionMembership {
 export interface AppSession {
   principal: SessionPrincipal;
   membership: SessionMembership | null;
+  // What this viewer may see (lib/features.ts). Optional only so a session
+  // from an API without Feature Flags still reads as "everything shown".
+  features?: SessionFeature[];
 }
 
 export function discordAvatarUrl(

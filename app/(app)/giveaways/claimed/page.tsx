@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchClaimedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
 import { platformFamily, shortDate } from "@/lib/giveaways";
@@ -16,6 +17,7 @@ export const metadata = { title: "Your claimed keys" };
 // (masked until asked), so a claimed key is never lost.
 export default async function ClaimedKeysPage() {
   const session = await requireAuth();
+  const features = await requireFeature("giveaways");
   const [keys, names] = await Promise.all([
     fetchClaimedKeys(session.principal.discord_id),
     fetchMemberNames(),
@@ -25,6 +27,7 @@ export default async function ClaimedKeysPage() {
     <div className="space-y-6">
       <PageHeader
         title="Your claimed keys"
+        badge={features.preview("giveaways") && <PreviewBadge />}
         count={keys ? `${keys.length} ${keys.length === 1 ? "key" : "keys"}` : undefined}
         description="Each key you claim stays here. The bot also sent each one to your Discord DMs when you claimed it."
         actions={

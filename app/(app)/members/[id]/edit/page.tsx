@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import type {
   AchievementProviderTotals,
@@ -18,26 +18,26 @@ import type {
   UserFavorite,
   UserNowPlaying,
 } from "@/lib/api/types";
-import { paginationOf } from "@/lib/api/pagination";
+import { NO_ROWS, paginationOf, type ListPage } from "@/lib/api/pagination";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
-import { importsHubHref } from "@/lib/imports/kinds";
+import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { PageHeader } from "@/components/issue/page-header";
 import { EditSections, type EditSection } from "@/components/issue/edit-sections";
 import { buttonVariants } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;
 
-async function loadCollection<T>(path: string): Promise<{ data: T[]; total: number }> {
+async function loadCollection<T>(path: string): Promise<ListPage<T>> {
   try {
     const res = await apiFetch(path, { cache: "no-store" });
-    if (!res.ok) return { data: [], total: 0 };
+    if (!res.ok) return NO_ROWS;
     const body: ApiCollection<T> = await res.json();
     return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
-    return { data: [], total: 0 };
+    return NO_ROWS;
   }
 }
 
@@ -79,6 +79,17 @@ export default async function MemberEditPage({
   if (session.principal.discord_id !== id) {
     redirect(`/members/${id}`);
   }
+  // Lists belong to Features; the editor leaves out (and doesn't read) the
+  // ones this member isn't shown. Linked Accounts follow the flag only, like
+  // the Achievements pages whose "link an account" button lands here.
+  const features = await getFeatures();
+  const listShown = {
+    now_playing: features.shown("now_playing"),
+    completed: features.shown("game_completions"),
+    backlog: features.shown("backlog"),
+    collection: features.shown("collection"),
+  };
+  const linkedShown = features.canOpen("achievement_hub");
 
   // Fan-out: profile + socials reference data + every game list. Each list
   // request is independent, so we issue them in parallel.
@@ -100,20 +111,28 @@ export default async function MemberEditPage({
     loadCollection<UserFavorite>(
       `/api/v1/users/${id}/favorites?per=${EDITOR_LIMIT}`,
     ),
-    loadCollection<UserNowPlaying>(
-      `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<GameCompletion>(
-      `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<UserBacklog>(
-      `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<GameCollection>(
-      `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
-    ),
-    loadLinkedAccounts(id),
-    loadProviderTotals(id),
+    listShown.now_playing
+      ? loadCollection<UserNowPlaying>(
+          `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
+        )
+      : NO_ROWS,
+    listShown.completed
+      ? loadCollection<GameCompletion>(
+          `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
+        )
+      : NO_ROWS,
+    listShown.backlog
+      ? loadCollection<UserBacklog>(
+          `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
+        )
+      : NO_ROWS,
+    listShown.collection
+      ? loadCollection<GameCollection>(
+          `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
+        )
+      : NO_ROWS,
+    linkedShown ? loadLinkedAccounts(id) : null,
+    linkedShown ? loadProviderTotals(id) : null,
   ]);
 
   if (!userRes.ok) notFound();
@@ -127,6 +146,7 @@ export default async function MemberEditPage({
       title: "Now playing",
       description: "Games you're actively playing.",
       list: nowPlaying,
+      shown: listShown.now_playing,
     },
     {
       id: "favorites",
@@ -134,6 +154,7 @@ export default async function MemberEditPage({
       title: "Favorites",
       description: "Your all-time picks.",
       list: favorites,
+      shown: true,
     },
     {
       id: "completed",
@@ -141,6 +162,7 @@ export default async function MemberEditPage({
       title: "Completed",
       description: "Games you've finished.",
       list: completed,
+      shown: listShown.completed,
     },
     {
       id: "backlog",
@@ -148,6 +170,7 @@ export default async function MemberEditPage({
       title: "Backlog",
       description: "Games you'd like to play.",
       list: backlog,
+      shown: listShown.backlog,
     },
     {
       id: "collection",
@@ -155,27 +178,30 @@ export default async function MemberEditPage({
       title: "Collection",
       description: "Games you own.",
       list: collection,
+      shown: listShown.collection,
     },
   ] as const;
 
   const sections: EditSection[] = [
-    ...lists.map(({ id: sectionId, kind, title, description, list }) => ({
-      id: sectionId,
-      label: title,
-      count: list.total,
-      content: (
-        <GameListEditor
-          userId={user.user_id}
-          kind={kind}
-          title={title}
-          description={description}
-          entries={list.data}
-          total={list.total}
-          platforms={platforms.data}
-          igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
-        />
-      ),
-    })),
+    ...lists
+      .filter(({ shown }) => shown)
+      .map(({ id: sectionId, kind, title, description, list }) => ({
+        id: sectionId,
+        label: title,
+        count: list.total,
+        content: (
+          <GameListEditor
+            userId={user.user_id}
+            kind={kind}
+            title={title}
+            description={description}
+            entries={list.data}
+            total={list.total}
+            platforms={platforms.data}
+            igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
+          />
+        ),
+      })),
     {
       id: "socials",
       label: "Socials",
@@ -188,7 +214,9 @@ export default async function MemberEditPage({
         />
       ),
     },
-    {
+  ];
+  if (linkedShown) {
+    sections.push({
       // www-03's "link an account" CTA lands on /edit#linked-accounts.
       id: "linked-accounts",
       label: "Linked Accounts",
@@ -201,8 +229,8 @@ export default async function MemberEditPage({
           totals={providerTotals}
         />
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <div className="space-y-7">
@@ -221,7 +249,9 @@ export default async function MemberEditPage({
       />
       <EditSections
         sections={sections}
-        importsHref={importsHubHref(user.user_id)}
+        importsHref={
+          shownImportKinds(features).length > 0 ? importsHubHref(user.user_id) : null
+        }
       />
     </div>
   );

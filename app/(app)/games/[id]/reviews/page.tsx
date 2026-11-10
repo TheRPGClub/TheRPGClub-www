@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { accentForGame } from "@/lib/reviews/accent";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type {
   ApiCollection,
   ApiSingle,
@@ -51,7 +52,8 @@ export default async function GameReviewsPage({
   const selectedId = query.review ? parseInt(query.review, 10) : NaN;
   const composing = query.compose !== undefined;
 
-  const [gameRes, session, listRes] = await Promise.all([
+  const [features, gameRes, session, listRes] = await Promise.all([
+    requireFeature("reviews"),
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     getSession(),
     apiFetch(
@@ -120,7 +122,12 @@ export default async function GameReviewsPage({
     />
   );
 
-  const strip = <GameStrip game={game} />;
+  const strip = (
+    <GameStrip
+      game={game}
+      badge={features.preview("reviews") && <PreviewBadge />}
+    />
+  );
 
   // ---- Reader --------------------------------------------------------------
   if (selected) {

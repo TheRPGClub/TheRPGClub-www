@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ImportJob } from "@/lib/api/types";
 import { loadActiveImport, loadImportSummary, loadSocials } from "@/lib/imports/active";
 import {
@@ -44,6 +45,8 @@ export async function ImportPage<J extends ImportJob>({
   const session = await getSession();
   if (!session) redirect("/");
   if (session.principal.discord_id !== userId) redirect(`/members/${userId}`);
+  const feature = IMPORT_KINDS[kind].feature;
+  const features = await requireFeature(feature);
 
   const [userRes, active] = await Promise.all([
     apiFetch(`/api/v1/users/${userId}`, { cache: "no-store" }),
@@ -61,6 +64,7 @@ export async function ImportPage<J extends ImportJob>({
   return (
     <ImportShell
       title={IMPORT_KINDS[kind].label}
+      badge={features.preview(feature) && <PreviewBadge />}
       actions={
         <Link href={importsHubHref(userId)} className={buttonVariants({ variant: "outline" })}>
           <ChevronLeft data-icon="inline-start" />

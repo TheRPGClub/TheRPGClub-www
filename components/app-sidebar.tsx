@@ -26,6 +26,12 @@ import { signOut } from "@/app/actions/auth";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import { staffSectionsFor, type StaffSection } from "@/lib/staff";
 import {
+  featureView,
+  type FeatureKey,
+  type SessionFeature,
+} from "@/lib/features";
+import { NAV_BADGE_CLASS } from "@/components/feature/preview-badge";
+import {
   Award,
   BellRing,
   ClipboardCheck,
@@ -39,27 +45,42 @@ import {
   PanelLeftOpen,
   Radio,
   Replace,
+  Settings,
   ShieldCheck,
   Trophy,
   Users,
   Vote,
 } from "lucide-react";
 
-const navMain = [
+// Each item names the Feature it belongs to (lib/features.ts); the session
+// says whether this viewer is shown it. Dashboard and Members are never
+// flagged.
+const navMain: {
+  href: string;
+  icon: typeof LayoutDashboard;
+  label: string;
+  feature?: FeatureKey;
+}[] = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/games", icon: Library, label: "Games" },
-  { href: "/gotm", icon: Trophy, label: "GOTM history" },
+  { href: "/games", icon: Library, label: "Games", feature: "game_index" },
+  { href: "/gotm", icon: Trophy, label: "GOTM history", feature: "voting_gotm" },
   { href: "/members", icon: Users, label: "Members" },
-  { href: "/journals", icon: NotebookPen, label: "Game Journals" },
-  { href: "/achievements", icon: Award, label: "Achievements" },
-  { href: "/voting", icon: Vote, label: "Voting" },
-  { href: "/giveaways", icon: Gift, label: "Giveaways" },
+  { href: "/journals", icon: NotebookPen, label: "Game Journals", feature: "journals" },
+  { href: "/achievements", icon: Award, label: "Achievements", feature: "achievement_hub" },
+  { href: "/voting", icon: Vote, label: "Voting", feature: "voting_gotm" },
+  { href: "/giveaways", icon: Gift, label: "Giveaways", feature: "giveaways" },
   // The board, open to every signed-in member; its "Suggest something"
   // button leads Members role holders and staff on to the form.
-  { href: "/suggestions", icon: Lightbulb, label: "Suggestion Board" },
+  {
+    href: "/suggestions",
+    icon: Lightbulb,
+    label: "Suggestion Board",
+    feature: "suggestions",
+  },
 ];
 
 const VOTING_HREF = "/voting";
+const SETTINGS_HREF = "/settings";
 
 // Icons for the sections marked `nav` in lib/staff.ts.
 const STAFF_ICON: Partial<Record<StaffSection["key"], typeof ShieldCheck>> = {
@@ -93,14 +114,20 @@ interface AppSidebarProps {
   // null when no round is scheduled or the read failed — the item keeps its
   // plain name rather than the nav breaking.
   votingPhase?: VotingPhase | null;
+  // The session's `features`: items for Features this viewer isn't shown are
+  // left out, and staff see a Preview badge on Preview ones.
+  features?: SessionFeature[];
 }
 
 export function AppSidebar({
   principal,
   membership,
   votingPhase,
+  features,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const view = featureView(features);
+  const items = navMain.filter((item) => !item.feature || view.shown(item.feature));
   // Nominations or the vote are live: the club has open business, flagged
   // in the call-to-action yellow on the nav item itself.
   const votingOpen = votingPhase === "nominating" || votingPhase === "voting";
@@ -179,11 +206,12 @@ export function AppSidebar({
         <SidebarGroup className="pt-3">
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {navMain.map(({ href, icon: Icon, label: navLabel }) => {
+              {items.map(({ href, icon: Icon, label: navLabel, feature }) => {
                 const label =
                   href === VOTING_HREF && votingPhase
                     ? PHASE_LABEL[votingPhase]
                     : navLabel;
+                const preview = feature ? view.preview(feature) : false;
 
                 return (
                   <SidebarMenuItem key={href}>
@@ -194,14 +222,19 @@ export function AppSidebar({
                       }
                       // Collapsed to the icon rail the label is the tooltip,
                       // so the phase reaches the reader there too.
-                      tooltip={label}
+                      tooltip={preview ? `${label} (Preview)` : label}
                       className={NAV_BUTTON_CLASS}
                     >
                       <Icon />
                       <span>{label}</span>
-                      {href === VOTING_HREF && votingOpen && (
-                        <span className="font-label ml-auto rounded-xs bg-highlight px-1.5 py-px text-[0.7rem] font-extrabold text-ink group-data-[collapsible=icon]:hidden">
-                          Open
+                      {(preview || (href === VOTING_HREF && votingOpen)) && (
+                        <span className="ml-auto flex gap-1">
+                          {preview && (
+                            <span className={NAV_BADGE_CLASS}>Preview</span>
+                          )}
+                          {href === VOTING_HREF && votingOpen && (
+                            <span className={NAV_BADGE_CLASS}>Open</span>
+                          )}
                         </span>
                       )}
                     </SidebarMenuButton>
@@ -249,6 +282,22 @@ export function AppSidebar({
 
       <SidebarFooter className="border-t border-rule">
         <SidebarMenu>
+          {/* The member's own settings (what they see on the site). Never
+              flagged, so every signed-in member has it. */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              render={<Link href={SETTINGS_HREF} />}
+              isActive={
+                pathname === SETTINGS_HREF ||
+                pathname.startsWith(SETTINGS_HREF + "/")
+              }
+              tooltip="Settings"
+              className={NAV_BUTTON_CLASS}
+            >
+              <Settings />
+              <span>Settings</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-1 py-1.5">
               {/* The avatar and name open the viewer's own member page, where

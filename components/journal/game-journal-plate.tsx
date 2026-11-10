@@ -39,6 +39,7 @@ export function GameJournalPlate({
   ticks,
   span,
   numbered,
+  completionKey,
 }: {
   gameId: number;
   lines: PlateLine[];
@@ -46,6 +47,9 @@ export function GameJournalPlate({
   span: string;
   // Entry numbers are exact only when the whole journal was read.
   numbered: boolean;
+  // The legend's Game Completion diamond; off while Game Completions isn't
+  // shown (no diamonds then).
+  completionKey: boolean;
 }) {
   const [pick, setPick] = useState<{ userId: string; entryId: number }>(() => ({
     userId: lines[0].userId,
@@ -176,10 +180,12 @@ export function GameJournalPlate({
             <i aria-hidden className="size-2 rounded-full bg-paper-dim" />
             Journal entry
           </span>
-          <span className="flex items-center gap-1.5">
-            <i aria-hidden className="size-2 rotate-45 rounded-[1px] bg-paper-dim" />
-            Game Completion logged that day
-          </span>
+          {completionKey && (
+            <span className="flex items-center gap-1.5">
+              <i aria-hidden className="size-2 rotate-45 rounded-[1px] bg-paper-dim" />
+              Game Completion logged that day
+            </span>
+          )}
           <span className="sm:ml-auto">Pick a line or a mark to read</span>
         </div>
       </JournalPage>

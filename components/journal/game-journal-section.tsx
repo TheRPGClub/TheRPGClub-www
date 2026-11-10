@@ -21,12 +21,14 @@ export async function GameJournalSection({
 }: {
   gameId: number;
   // The game's Game Completions (from the game read), for the diamonds.
-  completions: GameCompletion[];
+  // Null while Game Completions isn't shown to the viewer: no diamonds and
+  // no diamond in the legend.
+  completions: GameCompletion[] | null;
   viewerId: string | null;
 }) {
   const journal = await fetchGameJournal(gameId);
   const entries = journal?.data ?? [];
-  const chronology = buildChronology(entries, completions);
+  const chronology = buildChronology(entries, completions ?? []);
   const members = chronology?.lines.length ?? 0;
   const total = journal?.meta.count ?? 0;
 
@@ -98,6 +100,7 @@ export async function GameJournalSection({
             ticks={chronology.ticks}
             span={chronology.span}
             numbered={entries.length >= total}
+            completionKey={completions !== null}
           />
         </JournalVolume>
       )}

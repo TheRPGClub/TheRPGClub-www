@@ -31,7 +31,8 @@ export function EditSections({
   importsHref,
 }: {
   sections: EditSection[];
-  importsHref: string;
+  // Null when there's nothing to import: no link.
+  importsHref: string | null;
 }) {
   const hash = useSyncExternalStore(subscribe, readHash, serverHash);
   const current = sections.find((s) => s.id === hash) ?? sections[0];
@@ -80,15 +81,17 @@ export function EditSections({
               </li>
             );
           })}
-          <li className="shrink-0 md:mt-2.5 md:border-t md:border-rule md:pt-2.5">
-            <Link
-              href={importsHref}
-              className="font-label flex h-9 items-center justify-between gap-3 rounded-sm bg-ink-2 px-3 text-[0.95rem] font-extrabold tracking-[0.04em] text-paper transition-colors hover:bg-ink-3 hover:text-highlight md:h-11 md:bg-transparent md:text-[1.05rem]"
-            >
-              Import games
-              <FileUp aria-hidden className="size-4" />
-            </Link>
-          </li>
+          {importsHref && (
+            <li className="shrink-0 md:mt-2.5 md:border-t md:border-rule md:pt-2.5">
+              <Link
+                href={importsHref}
+                className="font-label flex h-9 items-center justify-between gap-3 rounded-sm bg-ink-2 px-3 text-[0.95rem] font-extrabold tracking-[0.04em] text-paper transition-colors hover:bg-ink-3 hover:text-highlight md:h-11 md:bg-transparent md:text-[1.05rem]"
+              >
+                Import games
+                <FileUp aria-hidden className="size-4" />
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
