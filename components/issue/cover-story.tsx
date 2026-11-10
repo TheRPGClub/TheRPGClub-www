@@ -6,7 +6,11 @@ import { PlatformPills } from "@/components/platform-pills";
 import { Starburst } from "@/components/issue/starburst";
 import { buttonVariants } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
-import type { GameCounts } from "@/lib/api/game-counts";
+import {
+  countStats,
+  coverStatLabel,
+  type GameCounts,
+} from "@/lib/api/game-counts";
 import { cn } from "@/lib/utils";
 
 // The issue's cover story: a round's winners for one track, full-bleed key art
@@ -359,7 +363,7 @@ function CoverPanel({
 }
 
 // The club's numbers in the masthead voice: Anton numerals over condensed
-// caps, the first in the track's accent. Narrow panels keep two.
+// caps, Playing in the track's accent. Narrow panels keep two.
 function CoverStats({
   counts,
   accent,
@@ -374,14 +378,9 @@ function CoverStats({
   // A co-winner's narrower panel.
   narrow: boolean;
 }) {
-  const stats = [
-    { label: "playing", value: counts.playing },
-    { label: "cleared", value: counts.completed },
-    {
-      label: counts.reviews === 1 ? "review" : "reviews",
-      value: compact ? null : counts.reviews,
-    },
-  ].filter((stat) => stat.value != null);
+  // Compact covers leave Reviews out to keep their two-number line.
+  const stats = countStats(compact ? { ...counts, reviews: null } : counts);
+  if (stats.length === 0) return null;
   return (
     <dl
       className={cn(
@@ -392,16 +391,16 @@ function CoverStats({
         small ? "mt-2.5" : "mt-3.5",
       )}
     >
-      {stats.map((stat, i) => (
-        <div key={stat.label} className="flex items-baseline gap-1.5">
+      {stats.map((stat) => (
+        <div key={stat.key} className="flex items-baseline gap-1.5">
           <dt className="font-label order-2 text-[0.82rem] font-extrabold text-paper-dim">
-            {stat.label}
+            {coverStatLabel(stat)}
           </dt>
           <dd
             className={cn(
               "font-headline leading-none",
               small ? "text-[1.4rem]" : narrow ? "text-[1.55rem]" : "text-[1.75rem]",
-              i === 0 && accent,
+              stat.key === "playing" && accent,
             )}
           >
             {stat.value}

@@ -5,7 +5,11 @@ import { gotmCardProps } from "@/components/gotm-card";
 import { PlatformPills } from "@/components/platform-pills";
 import { buttonVariants } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
-import type { GameCounts } from "@/lib/api/game-counts";
+import {
+  countStats,
+  coverStatLabel,
+  type GameCounts,
+} from "@/lib/api/game-counts";
 import { cn } from "@/lib/utils";
 
 // The issue's NR-GOTM feature beside the GOTM cover story: one winner is a
@@ -150,6 +154,7 @@ function FeatureCard({
     threadId: entry.thread_id,
     votingResultsMessageId,
   }).slice(0, 2);
+  const stats = counts ? countStats(counts) : [];
 
   return (
     <section
@@ -198,32 +203,23 @@ function FeatureCard({
             {game.description}
           </p>
         )}
-        {counts && (
+        {stats.length > 0 && (
           <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-            {[
-              { label: "playing", value: counts.playing },
-              { label: "cleared", value: counts.completed },
-              {
-                label: counts.reviews === 1 ? "review" : "reviews",
-                value: counts.reviews,
-              },
-            ]
-              .filter((stat) => stat.value != null)
-              .map((stat, i) => (
-                <div key={stat.label} className="flex items-baseline gap-1.5">
-                  <dt className="font-label order-2 text-[0.8rem] font-extrabold text-paper-dim">
-                    {stat.label}
-                  </dt>
-                  <dd
-                    className={cn(
-                      "font-headline text-[1.5rem] leading-none",
-                      i === 0 && "text-nr-soft",
-                    )}
-                  >
-                    {stat.value}
-                  </dd>
-                </div>
-              ))}
+            {stats.map((stat) => (
+              <div key={stat.key} className="flex items-baseline gap-1.5">
+                <dt className="font-label order-2 text-[0.8rem] font-extrabold text-paper-dim">
+                  {coverStatLabel(stat)}
+                </dt>
+                <dd
+                  className={cn(
+                    "font-headline text-[1.5rem] leading-none",
+                    stat.key === "playing" && "text-nr-soft",
+                  )}
+                >
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
           </dl>
         )}
         <div className="flex flex-wrap items-center gap-x-1 gap-y-2 pt-3.5">
