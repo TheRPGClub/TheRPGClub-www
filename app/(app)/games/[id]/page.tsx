@@ -325,7 +325,7 @@ async function GameContent({
           <GameJournalSection
             gameId={gameId}
             // Completions join the timeline only when Game Completions shows.
-            completions={show.completed ? (game.completions ?? []) : []}
+            completions={show.completed ? (game.completions ?? []) : null}
             viewerId={ownerId}
           />
         </Suspense>
