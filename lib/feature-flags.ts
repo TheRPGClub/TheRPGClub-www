@@ -1,5 +1,5 @@
 import { agoText } from "@/lib/bot-jobs";
-import type { FeatureKey, FeatureState } from "@/lib/features";
+import type { FeatureState } from "@/lib/features";
 
 // The staff desk's view of the Feature Flags (spec api#347, /admin/features):
 // `GET /api/v1/features` lists every Feature with its state, what it covers
@@ -26,7 +26,8 @@ export interface FeatureFlagChange {
 }
 
 export interface FeatureFlagEntry {
-  key: FeatureKey;
+  // The API's key: may be one www doesn't know yet (shown by `name`).
+  key: string;
   name: string;
   state: FeatureState;
   core: boolean;

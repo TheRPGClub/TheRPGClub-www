@@ -56,6 +56,14 @@ export function FeatureFlagDesk({ entries, now }: { entries: FeatureFlagEntry[];
     if (changed) setLanded(entry.key);
   };
 
+  if (rows.length === 0) {
+    return (
+      <p className="mt-6.5 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-dim">
+        The club&apos;s server lists no Features.
+      </p>
+    );
+  }
+
   return (
     <div className="mt-6.5 space-y-10">
       <FlagDepartment
@@ -168,15 +176,27 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
   const shown = saving ?? entry.state;
   const busy = saving !== null;
 
-  // `reason` defaults to the row's draft; picking Preview or Live from an
-  // open Off confirm sends none, since that draft was written for the Off.
-  const save = (next: FeatureState, reason: string = draft) => {
+  // Every panel change goes through here. Leaving the Off confirm any way but
+  // turning Off (Cancel, the reason button, picking Preview or Live) drops the
+  // reason typed there: it was written for the Off, so it never rides along
+  // with another change.
+  const showPanel = (next: Panel) => {
+    if (panel === "confirm" && next !== "confirm") setDraft("");
+    setPanel(next);
+  };
+
+  // The reason that goes with `next`: the same rule for a save started while
+  // the confirm is open (this render's draft is still the Off's).
+  const reasonFor = (next: FeatureState) => (panel === "confirm" && next !== "off" ? "" : draft);
+
+  const save = (next: FeatureState) => {
     // One change at a time: a second Enter or click while saving is dropped.
     if (busy) return;
+    const reason = reasonFor(next);
     const { error: reasonError } = normalizeReason(reason);
     if (reasonError) {
       setError(reasonError);
-      setPanel((p) => p ?? "reason");
+      if (!panel) showPanel("reason");
       return;
     }
     setError(null);
@@ -203,17 +223,11 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
     if (busy) return;
     if (needsOffConfirm(entry.state, next)) {
       setError(null);
-      setPanel("confirm");
+      showPanel("confirm");
       return;
     }
-    // Picking Preview or Live drops an open Off confirm and the reason typed
-    // for it, so that reason never rides along with another change.
-    const confirming = panel === "confirm";
-    if (confirming) {
-      setPanel(null);
-      setDraft("");
-    }
-    if (next !== entry.state) save(next, confirming ? "" : draft);
+    if (panel === "confirm") showPanel(null);
+    if (next !== entry.state) save(next);
   };
 
   const panelId = `${id}-panel`;
@@ -267,7 +281,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
               aria-expanded={panel === "reason"}
               aria-controls={panelId}
               disabled={busy}
-              onClick={() => setPanel((p) => (p === "reason" ? null : "reason"))}
+              onClick={() => showPanel(panel === "reason" ? null : "reason")}
               className={cn(
                 "grid size-9 place-items-center rounded-sm text-paper-mute transition-colors outline-none hover:bg-ink-3 hover:text-paper focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 min-[85rem]:size-8",
                 draft.trim() && "text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)] hover:text-highlight",
@@ -323,7 +337,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
                   busy={busy}
                   onConfirm={() => save("off")}
                   onCancel={() => {
-                    setPanel(null);
+                    showPanel(null);
                     setError(null);
                   }}
                 />
@@ -333,7 +347,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
                   reasonId={reasonId}
                   draft={draft}
                   onDraft={setDraft}
-                  onClose={() => setPanel(null)}
+                  onClose={() => showPanel(null)}
                 />
               ) : null}
               {error && (
