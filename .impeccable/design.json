@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-10T13:27:50.037898+00:00",
+  "generatedAt": "2026-11-10T21:57:56.637212+00:00",
   "title": "Design System: The RPG Club",
   "extensions": {
     "colorMeta": {
@@ -198,6 +198,111 @@
           "#93e2b1",
           "#c9f2d8"
         ]
+      },
+      "news-announcements": {
+        "role": "tertiary",
+        "displayName": "News Magenta (Announcements)",
+        "canonical": "#ff5ca8",
+        "tonalRamp": [
+          "#34091d",
+          "#660030",
+          "#990047",
+          "#d60064",
+          "#ff1482",
+          "#ff5ca8",
+          "#ff8fc3",
+          "#f7d4e4"
+        ]
+      },
+      "news-releases": {
+        "role": "tertiary",
+        "displayName": "News Lime (Releases)",
+        "canonical": "#b4e05a",
+        "tonalRamp": [
+          "#242d10",
+          "#3f5610",
+          "#5e8118",
+          "#84b422",
+          "#a5da3a",
+          "#b4e05a",
+          "#d4eda1",
+          "#eaf2d9"
+        ]
+      },
+      "news-emulation": {
+        "role": "tertiary",
+        "displayName": "News Teal (Emulation)",
+        "canonical": "#2fd3c0",
+        "tonalRamp": [
+          "#112d29",
+          "#12544d",
+          "#1b7e73",
+          "#25b1a1",
+          "#3dd6c4",
+          "#2fd3c0",
+          "#a2ebe3",
+          "#daf1ee"
+        ]
+      },
+      "news-industry": {
+        "role": "tertiary",
+        "displayName": "News Blue (Industry)",
+        "canonical": "#6c9bff",
+        "tonalRamp": [
+          "#091734",
+          "#002166",
+          "#003199",
+          "#0044d6",
+          "#145fff",
+          "#6c9bff",
+          "#8fb3ff",
+          "#d4dff7"
+        ]
+      },
+      "news-hardware": {
+        "role": "tertiary",
+        "displayName": "News Tan (Hardware)",
+        "canonical": "#d4a373",
+        "tonalRamp": [
+          "#2a1e13",
+          "#4e3318",
+          "#754c24",
+          "#a46b32",
+          "#c8894c",
+          "#d4a373",
+          "#e5c7a9",
+          "#efe5dc"
+        ]
+      },
+      "news-rumours": {
+        "role": "tertiary",
+        "displayName": "News Cool Grey (Rumours, dashed)",
+        "canonical": "#c0c4d6",
+        "tonalRamp": [
+          "#1a1c23",
+          "#282c3e",
+          "#3c425d",
+          "#545d82",
+          "#717aa3",
+          "#c0c4d6",
+          "#d3d6e2",
+          "#e2e3e9"
+        ]
+      },
+      "news-general": {
+        "role": "tertiary",
+        "displayName": "News Paper-Mute (General)",
+        "canonical": "#8d8d87",
+        "tonalRamp": [
+          "#1f1f1e",
+          "#343432",
+          "#4e4e4b",
+          "#6e6e68",
+          "#8d8d87",
+          "#8d8d87",
+          "#c8c8c5",
+          "#e6e6e5"
+        ]
       }
     },
     "typographyMeta": {
@@ -354,7 +459,17 @@
       "gutterPhone": "16px",
       "gutter": "28px",
       "topbar": "60px",
-      "rail": "23rem"
+      "rail": "23rem",
+      "newsRail": "15.5rem"
+    },
+    "newsInks": {
+      "surfaces": "News page, its cards and filter, category switches on /settings",
+      "typeOnInk": "#0b0b0d",
+      "dashed": [
+        "rumours"
+      ],
+      "fallback": "general",
+      "source": "newsInk() in lib/news.ts"
     }
   },
   "components": [
@@ -522,11 +637,19 @@
       "description": "Staff desk only (/admin/features): Off / Preview / Live segments; the selected one wears its state ink (Live done green, Preview yellow, Off masthead red) as type and a 2px inset stroke on ink, never a fill.",
       "html": "<div class=\"ds-flags\"><div class=\"ds-seg\"><button>Off</button><button>Preview</button><button class=\"on live\">Live</button></div><div class=\"ds-seg\"><button>Off</button><button class=\"on preview\">Preview</button><button>Live</button></div><div class=\"ds-seg\"><button class=\"on off\">Off</button><button>Preview</button><button>Live</button></div></div>",
       "css": ".ds-flags { display: grid; gap: 12px; padding: 16px; background: #0b0b0d; justify-items: start; } .ds-seg { display: grid; grid-template-columns: repeat(3, 4.25rem); background: #141417; border-radius: 2.4px; box-shadow: inset 0 0 0 1px #3a3a43; } .ds-seg button { height: 32px; border: 0; background: transparent; color: #8d8d87; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 2.4px; cursor: pointer; transition: color 150ms, background-color 150ms; } .ds-seg button:hover { background: #1d1d22; color: #f4f4f0; } .ds-seg button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); } .ds-seg button.on { background: #0b0b0d; font-weight: 800; box-shadow: inset 0 0 0 2px currentColor; } .ds-seg button.live { color: #5fd08a; } .ds-seg button.preview { color: #ffd400; } .ds-seg button.off { color: #ff0000; }"
+    },
+    {
+      "name": "News card",
+      "kind": "card",
+      "refersTo": "news-card",
+      "description": "One News Item as a frame on the contact sheet: 16:9 art with a 4px foot bar and a corner tag in its News Category ink (dashed for Rumours), a Barlow 600 headline to the outside page, dim description, italic comment, label-type meta.",
+      "html": "<div class=\"ds-news\"><article class=\"ds-news-card\"><div class=\"ds-news-art\" style=\"--news-ink: var(--color-news-emulation, #2fd3c0)\"><div class=\"ds-news-fallback\">Saturn core lands in the main build</div><span class=\"ds-news-tag\">Emulation</span></div><div class=\"ds-news-body\"><h3><a href=\"#\">Saturn core lands in the main build <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 7h10v10\"/><path d=\"M7 17 17 7\"/></svg></a></h3><p class=\"ds-news-desc\">The long-running branch is merged, with save states and the first pass at the VDP2.</p><p class=\"ds-news-comment\">&ldquo;Finally.&rdquo;</p><p class=\"ds-news-meta\"><span>libretro.com</span><span><a href=\"#\">Mara</a> &middot; 14:02</span></p></div></article><article class=\"ds-news-card\"><div class=\"ds-news-art dashed\" style=\"--news-ink: var(--color-news-rumours, #c0c4d6)\"><div class=\"ds-news-fallback\">Remaster rumoured for spring</div><span class=\"ds-news-tag\">Rumours</span></div><div class=\"ds-news-body\"><h3><a href=\"#\">Remaster rumoured for spring</a></h3><p class=\"ds-news-meta\"><span>example.com</span><span>Joss &middot; 09:40</span></p></div></article></div>",
+      "css": ".ds-news { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 16px; background: #0b0b0d; } .ds-news-card { display: flex; flex-direction: column; overflow: hidden; border-radius: 3.2px; background: var(--color-ink-2, #141417); } .ds-news-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-ink-3, #1d1d22); border-bottom: 4px solid var(--news-ink); } .ds-news-art.dashed { border-bottom-style: dashed; } .ds-news-fallback { display: flex; height: 100%; align-items: center; justify-content: center; padding: 36px 24px 16px; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.45rem; line-height: 0.95; color: var(--color-paper-mute, #8d8d87); } .ds-news-tag { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 2px; background: var(--news-ink); color: #0b0b0d; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; } .ds-news-art.dashed .ds-news-tag { outline: 1.5px dashed rgb(11 11 13 / 0.7); outline-offset: -3px; } .ds-news-body { display: flex; flex: 1; flex-direction: column; padding: 12px 14px 14px; } .ds-news-body h3 { margin: 0; font-family: Barlow, system-ui, sans-serif; font-weight: 600; font-size: 1.02rem; line-height: 1.3; } .ds-news-body h3 a { color: #f4f4f0; text-decoration: none; transition: color 0.15s; } .ds-news-body h3 a svg { color: #8d8d87; vertical-align: baseline; } .ds-news-body h3 a:hover { color: #ffd400; } .ds-news-body h3 a:focus-visible { outline: 2px solid #ffd400; outline-offset: 2px; } .ds-news-desc, .ds-news-comment { margin: 6px 0 0; font-family: Barlow, system-ui, sans-serif; font-size: 0.875rem; color: #b9b9b2; } .ds-news-comment { font-style: italic; } .ds-news-meta { display: flex; justify-content: space-between; gap: 12px; margin: auto 0 0; padding-top: 10px; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8d87; } .ds-news-meta a { color: inherit; text-decoration: none; } .ds-news-meta a:hover { color: #ffd400; }"
     }
   ],
   "narrative": {
     "northStar": "The Monthly Issue",
-    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).\n\n**The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.",
+    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).\n\n**The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.\n\n**The News Hub department.** The club's news is the magazine's contact sheet. Every News Item is a frame of its art marked in its News Category's ink, and the frames are laid out by UTC day under Anton day headings. The department keeps the ink ground, Anton and Barlow, and the 2px rules, and it brings one colour role of its own (the News inks) that appears on news surfaces only. It refuses the news-site headline list and the dashboard default of stats over a wall of cards.",
     "keyCharacteristics": [
       "Ink-black ground with three spot inks: masthead red for GOTM, violet for NR-GOTM, highlighter yellow for the member's own business.",
       "Anton in caps for every headline and numeral, Barlow Condensed tracked caps for every label, Barlow for reading.",
@@ -534,7 +657,8 @@
       "The winner starburst, stamped once, only on winners.",
       "Two-line game headlines, with the second line in the track's accent.",
       "Hard rectangles (2-4px corners) and 2px paper rules under headings.",
-      "In the Achievement Hub: game-tint spines, bands and tabs; die-cut icons edged in their Rarity ink; foil stamps only for Platinum, Mastery and Completion."
+      "In the Achievement Hub: game-tint spines, bands and tabs; die-cut icons edged in their Rarity ink; foil stamps only for Platinum, Mastery and Completion.",
+      "In the News Hub: frames of art with a foot bar and a corner tag in the News Category's ink."
     ],
     "rules": [
       {
@@ -570,6 +694,11 @@
       {
         "name": "The Journal Ink Is a Person Rule",
         "body": "A journal ink means one member and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a journal line never reads as a track, a call to action or a destructive action, and the yellow ring on a selected dot stays the only interaction mark. They do not borrow the Achievement roles (the member ring colours stay on achievement surfaces), and they never leave journal surfaces.",
+        "section": "colors"
+      },
+      {
+        "name": "The News Inks Stay on News Surfaces Rule",
+        "body": "A News ink means one News Category and nothing else, and it never leaves news surfaces. The inks do not borrow or lend to the Achievement roles or the Journal member inks: magenta sits near rarity-ultra and teal near the RetroAchievements Provider colour, but they never share a surface, so neither can be misread. Read them through `newsInk()` in lib/news.ts, which also says when to dash.",
         "section": "colors"
       },
       {
@@ -613,6 +742,11 @@
         "section": "layout"
       },
       {
+        "name": "The Contact Sheet Rule",
+        "body": "The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a \"Filter\" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title (\"Today\", \"Yesterday\", or a date like \"Sun 8 Nov\", with the year added when it is not this year), a label-type date and item count in paper-mute, and a 2px rule-strong line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type \"Days and times in UTC\" note.",
+        "section": "layout"
+      },
+      {
         "name": "The Scrim Not Glow Rule",
         "body": "Key art is darkened from where the type sits (from the left for a single cover, from the foot for split panels) with ink gradients (`rgb(11 11 13 / 0.96 to 0.15)`). Art is never faded into a coloured gradient, and nothing glows.",
         "section": "elevation"
@@ -648,7 +782,8 @@
       "**Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.",
       "**Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.",
       "**Do** keep foil for Platinum, Mastery and Completion.",
-      "**Do** use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account."
+      "**Do** use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account.",
+      "**Do** keep the News inks on news surfaces (the News page, its cards and filter, the category switches on /settings), as foot bars, tags and squares with ink type, and always draw Rumours dashed."
     ],
     "donts": [
       "**Don't** fade key art into coloured gradients, add glow accents, or use gradient text. Foil is the single sanctioned gradient, and it never sets text.",
@@ -662,7 +797,8 @@
       "**Don't** put violet or GOTM red on an achievement surface; a game tint that happens to be red or violet is content, not a track.",
       "**Don't** say sticker, album, pack or pull in the UI. The binder is a visual metaphor; the copy keeps the glossary terms.",
       "**Don't** call the GOTM history \"Back issues\".",
-      "**Don't** use done green or the desk stamps outside the staff desk, or red for a destructive action."
+      "**Don't** use done green or the desk stamps outside the staff desk, or red for a destructive action.",
+      "**Don't** fill a panel with a News ink, or use one on a surface that is not about news."
     ]
   }
 }
