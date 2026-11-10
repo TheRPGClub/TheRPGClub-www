@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Download, FileUp, GitCompareArrows, Search } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -51,7 +51,6 @@ export default async function CompletedGamesPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requireFeature("game_completions");
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(firstParam(raw.page) ?? "1", 10) || 1);
   const q = firstParam(raw.q)?.trim() ?? "";

@@ -1,9 +1,9 @@
 "use server";
 
-import { revalidatePath, updateTag } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import { FEATURE_KEYS, type FeatureKey, type FeatureState } from "@/lib/features";
+import { isFeatureKey, type FeatureKey, type FeatureState } from "@/lib/features";
 import { FEATURE_STATES, normalizeReason, type FeatureFlagEntry } from "@/lib/feature-flags";
 import { getSession } from "@/lib/session";
 import { isAdminOrAbove } from "@/lib/staff";
@@ -27,11 +27,11 @@ async function errorMessage(res: Response): Promise<string> {
 }
 
 // Set one Feature Off, Preview or Live, with an optional reason. The API logs
-// the change and queues its admin-channel announcement. The site reads the
-// session's `features` on every load, so revalidating the layout is enough
-// for the sidebar and pages to follow. The one cached read a flag gates is
-// the logged-out landing's winners (tag `gotm`), so a Voting & GOTM change
-// expires it here (api#351 hand-off).
+// the change and queues its admin-channel announcement. Every render reads
+// the session's `features` fresh (no-store), so other members follow the
+// change on their next load and this admin's router only needs a refresh.
+// The one cached read a flag gates is the logged-out landing's winners (tag
+// `gotm`), so a Voting & GOTM change expires it here (api#351 hand-off).
 export async function setFeatureFlagAction(
   key: FeatureKey,
   state: FeatureState,
@@ -42,7 +42,7 @@ export async function setFeatureFlagAction(
   if (!isAdminOrAbove(session.membership)) {
     return { ok: false, error: "Only Admins and Superadmins can change Feature Flags." };
   }
-  if (!FEATURE_KEYS.includes(key)) return { ok: false, error: "That isn't a Feature." };
+  if (!isFeatureKey(key)) return { ok: false, error: "That isn't a Feature." };
   if (!FEATURE_STATES.includes(state)) return { ok: false, error: "Pick Off, Preview or Live." };
   const { reason, error } = normalizeReason(rawReason);
   if (error) return { ok: false, error };
@@ -62,7 +62,7 @@ export async function setFeatureFlagAction(
   const changed = body.meta?.changed !== false;
   if (changed) {
     if (key === "voting_gotm") updateTag("gotm");
-    revalidatePath("/", "layout");
+    refresh();
   }
   return { ok: true, entry: body.data, changed };
 }

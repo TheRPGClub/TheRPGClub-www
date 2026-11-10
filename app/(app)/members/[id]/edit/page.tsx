@@ -30,6 +30,9 @@ import { buttonVariants } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;
 
+// A hidden list's stand-in: its section isn't rendered, so it isn't read.
+const NOT_READ = { data: [], total: 0 };
+
 async function loadCollection<T>(path: string): Promise<{ data: T[]; total: number }> {
   try {
     const res = await apiFetch(path, { cache: "no-store" });
@@ -79,10 +82,17 @@ export default async function MemberEditPage({
   if (session.principal.discord_id !== id) {
     redirect(`/members/${id}`);
   }
-  // Lists and Linked Accounts belong to Features; the editor leaves out the
-  // ones this member isn't shown.
+  // Lists belong to Features; the editor leaves out (and doesn't read) the
+  // ones this member isn't shown. Linked Accounts follow the flag only, like
+  // the Achievements pages whose "link an account" button lands here.
   const features = await getFeatures();
-  const linkedShown = features.shown("achievement_hub");
+  const listShown = {
+    now_playing: features.shown("now_playing"),
+    completed: features.shown("game_completions"),
+    backlog: features.shown("backlog"),
+    collection: features.shown("collection"),
+  };
+  const linkedShown = features.canOpen("achievement_hub");
 
   // Fan-out: profile + socials reference data + every game list. Each list
   // request is independent, so we issue them in parallel.
@@ -104,18 +114,26 @@ export default async function MemberEditPage({
     loadCollection<UserFavorite>(
       `/api/v1/users/${id}/favorites?per=${EDITOR_LIMIT}`,
     ),
-    loadCollection<UserNowPlaying>(
-      `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<GameCompletion>(
-      `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<UserBacklog>(
-      `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
-    ),
-    loadCollection<GameCollection>(
-      `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
-    ),
+    listShown.now_playing
+      ? loadCollection<UserNowPlaying>(
+          `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
+        )
+      : NOT_READ,
+    listShown.completed
+      ? loadCollection<GameCompletion>(
+          `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
+        )
+      : NOT_READ,
+    listShown.backlog
+      ? loadCollection<UserBacklog>(
+          `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
+        )
+      : NOT_READ,
+    listShown.collection
+      ? loadCollection<GameCollection>(
+          `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
+        )
+      : NOT_READ,
     linkedShown ? loadLinkedAccounts(id) : null,
     linkedShown ? loadProviderTotals(id) : null,
   ]);
@@ -131,7 +149,7 @@ export default async function MemberEditPage({
       title: "Now playing",
       description: "Games you're actively playing.",
       list: nowPlaying,
-      feature: "now_playing",
+      shown: listShown.now_playing,
     },
     {
       id: "favorites",
@@ -139,7 +157,7 @@ export default async function MemberEditPage({
       title: "Favorites",
       description: "Your all-time picks.",
       list: favorites,
-      feature: null,
+      shown: true,
     },
     {
       id: "completed",
@@ -147,7 +165,7 @@ export default async function MemberEditPage({
       title: "Completed",
       description: "Games you've finished.",
       list: completed,
-      feature: "game_completions",
+      shown: listShown.completed,
     },
     {
       id: "backlog",
@@ -155,7 +173,7 @@ export default async function MemberEditPage({
       title: "Backlog",
       description: "Games you'd like to play.",
       list: backlog,
-      feature: "backlog",
+      shown: listShown.backlog,
     },
     {
       id: "collection",
@@ -163,13 +181,13 @@ export default async function MemberEditPage({
       title: "Collection",
       description: "Games you own.",
       list: collection,
-      feature: "collection",
+      shown: listShown.collection,
     },
   ] as const;
 
   const sections: EditSection[] = [
     ...lists
-      .filter(({ feature }) => feature === null || features.shown(feature))
+      .filter(({ shown }) => shown)
       .map(({ id: sectionId, kind, title, description, list }) => ({
         id: sectionId,
         label: title,

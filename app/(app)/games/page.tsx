@@ -5,7 +5,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Game } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { fetchGotmRounds } from "@/lib/api/gotm-rounds";
-import { getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { BrowseGameCard } from "@/components/issue/browse-game-card";
@@ -84,13 +84,15 @@ export default async function GamesPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string; winner?: string }>;
 }) {
-  const features = await requireFeature("game_index");
+  const features = await getFeatures();
   // The GOTM lead and winner filter belong to Voting & GOTM.
   const gotm = features.shown("voting_gotm");
   const { q: rawQ = "", page = "1", winner } = await searchParams;
   const q = rawQ.trim();
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
-  const winnerFilter = parseWinner(winner);
+  // Without Voting & GOTM there's no winner filter to show, so a winner in
+  // the URL is ignored rather than narrowing the grid out of sight.
+  const winnerFilter = gotm ? parseWinner(winner) : null;
   const browsing = !q && !winnerFilter;
 
   // The whole GameDB's size for the masthead; a one-row read, cached.

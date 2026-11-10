@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Link2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type {
   AchievementProvider,
@@ -91,7 +91,7 @@ export default async function MemberAchievementsPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<RawSearchParams>;
 }) {
-  const features = await requireFeature("achievement_hub");
+  const features = await getFeatures();
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const query = parseMemberAchievementsQuery(raw);
   // The same read as the running head, so the request is shared.

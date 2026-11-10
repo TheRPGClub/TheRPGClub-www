@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { requireAuth, requireFeature } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchClaimedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
@@ -17,7 +17,7 @@ export const metadata = { title: "Your claimed keys" };
 // (masked until asked), so a claimed key is never lost.
 export default async function ClaimedKeysPage() {
   const session = await requireAuth();
-  const features = await requireFeature("giveaways");
+  const features = await getFeatures();
   const [keys, names] = await Promise.all([
     fetchClaimedKeys(session.principal.discord_id),
     fetchMemberNames(),

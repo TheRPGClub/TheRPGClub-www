@@ -4,7 +4,7 @@
 // hidden Features, so everything is shown by default, and it never lets a
 // preference reveal what a Feature Flag hides. Client-safe: no server imports.
 
-import { FEATURE_KEYS, type FeatureKey } from "@/lib/features";
+import type { FeatureKey } from "@/lib/features";
 
 // One switchable row (`GET /users/:id/feature_preferences` -> data.features[]).
 export interface FeaturePreference {
@@ -34,10 +34,6 @@ export interface FeaturePreferences {
 export type PreferenceChange =
   | { kind: "feature"; key: FeatureKey; shown: boolean }
   | { kind: "show_preview"; shown: boolean };
-
-export function isFeatureKey(key: unknown): key is FeatureKey {
-  return typeof key === "string" && (FEATURE_KEYS as readonly string[]).includes(key);
-}
 
 // The PATCH body for one change. A switch reads "shown"; the API stores
 // "hidden", so a feature switch sends the opposite.

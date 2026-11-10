@@ -7,12 +7,8 @@ import {
 } from "@/lib/api/gotm-rounds";
 import { fetchNominations, fetchVotingRound } from "@/lib/api/voting-round";
 import type { GotmRoundBlock, VotingRound } from "@/lib/api/types";
-import {
-  fetchGameCounts,
-  shownCounts,
-  type GameCounts,
-} from "@/lib/api/game-counts";
-import type { FeatureKey, FeatureView } from "@/lib/features";
+import { fetchGameCounts, type GameCounts } from "@/lib/api/game-counts";
+import type { FeatureView } from "@/lib/features";
 import { CoverStory } from "@/components/issue/cover-story";
 import { NrFeature } from "@/components/issue/nr-feature";
 import { PreviousRounds } from "@/components/issue/previous-rounds";
@@ -151,12 +147,6 @@ async function DashboardContent() {
   );
 }
 
-const COUNT_FEATURES: FeatureKey[] = [
-  "now_playing",
-  "game_completions",
-  "reviews",
-];
-
 // The club's Playing / Completed / Reviews numbers for each of the round's
 // winners, keyed by GameDB id, each kept only when its Feature is shown. A
 // failed read leaves its game out.
@@ -173,14 +163,11 @@ async function fetchWinnerCounts(
       ),
     ),
   ];
-  // None of the numbers' Features shown: skip the reads.
-  if (!COUNT_FEATURES.some((key) => features.shown(key))) return {};
-  const results = await Promise.all(ids.map((id) => fetchGameCounts(id)));
+  const results = await Promise.all(
+    ids.map((id) => fetchGameCounts(id, features)),
+  );
   return Object.fromEntries(
-    ids.flatMap((id, i) => {
-      const counts = results[i];
-      return counts ? [[id, shownCounts(counts, features)]] : [];
-    }),
+    ids.flatMap((id, i) => (results[i] ? [[id, results[i]]] : [])),
   );
 }
 

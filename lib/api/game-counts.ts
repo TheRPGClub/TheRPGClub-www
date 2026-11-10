@@ -25,6 +25,28 @@ export function shownCounts(counts: GameCounts, features: FeatureView): GameCoun
   };
 }
 
+// One known number, for a surface to label in its own voice.
+export interface CountStat {
+  key: keyof GameCounts;
+  value: number;
+}
+
+// The known numbers in the order every surface shows them (Playing,
+// Completed, Reviews). Empty when none is known: show no stats at all.
+export function countStats(counts: GameCounts): CountStat[] {
+  return (["playing", "completed", "reviews"] as const).flatMap((key) => {
+    const value = counts[key];
+    return value == null ? [] : [{ key, value }];
+  });
+}
+
+// A stat's label in the dashboard covers' lowercase caption voice.
+export function coverStatLabel({ key, value }: CountStat): string {
+  if (key === "playing") return "playing";
+  if (key === "completed") return "cleared";
+  return value === 1 ? "review" : "reviews";
+}
+
 export function uniqueUsers(
   entries: { user_id: string; user?: User | null }[],
 ): User[] {
@@ -46,23 +68,37 @@ export function countsOf(game: Game, reviewTotal: number | null): GameCounts {
 
 const COUNTS_FETCH: RequestInit = { next: { revalidate: 300 } };
 
-// For surfaces that only need the numbers. null when the game read failed.
+// For surfaces that only need the numbers: reads only what the viewer is
+// shown (the game for Playing / Completed, its reviews for Reviews) and
+// returns just those. null when the game read failed or nothing is shown.
 export async function fetchGameCounts(
   gameId: number,
+  features: FeatureView,
 ): Promise<GameCounts | null> {
+  const wantGame =
+    features.shown("now_playing") || features.shown("game_completions");
+  const wantReviews = features.shown("reviews");
+  if (!wantGame && !wantReviews) return null;
   try {
     const [gameRes, reviewsRes] = await Promise.all([
-      apiFetch(`/api/v1/games/${gameId}`, COUNTS_FETCH),
-      apiFetch(`/api/v1/games/${gameId}/reviews?per=1`, COUNTS_FETCH),
+      wantGame ? apiFetch(`/api/v1/games/${gameId}`, COUNTS_FETCH) : null,
+      wantReviews
+        ? apiFetch(`/api/v1/games/${gameId}/reviews?per=1`, COUNTS_FETCH)
+        : null,
     ]);
-    if (!gameRes.ok) return null;
-    const { data: game }: ApiSingle<Game> = await gameRes.json();
+    if (gameRes && !gameRes.ok) return null;
+    const game: Game | null = gameRes
+      ? ((await gameRes.json()) as ApiSingle<Game>).data
+      : null;
     let reviewTotal: number | null = null;
-    if (reviewsRes.ok) {
+    if (reviewsRes?.ok) {
       const body: ApiCollection<Review> = await reviewsRes.json();
       reviewTotal = paginationOf(body.meta, body.data.length).total;
     }
-    return countsOf(game, reviewTotal);
+    const counts = game
+      ? countsOf(game, reviewTotal)
+      : { playing: null, completed: null, reviews: reviewTotal };
+    return shownCounts(counts, features);
   } catch {
     return null;
   }

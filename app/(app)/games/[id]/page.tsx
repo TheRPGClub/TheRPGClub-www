@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getFeatures, getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 import type {
@@ -18,7 +18,13 @@ import type {
   VotingRound,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { uniqueUsers } from "@/lib/api/game-counts";
+import {
+  countStats,
+  countsOf,
+  shownCounts,
+  uniqueUsers,
+  type GameCounts,
+} from "@/lib/api/game-counts";
 import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
@@ -70,21 +76,24 @@ import { cn } from "@/lib/utils";
 // round it's on the ballot for, then the reviews beside a rail of who's
 // playing it, who finished it and the facts, and its other versions last.
 
+const HERO_STAT_LABEL: Record<keyof GameCounts, string> = {
+  playing: "Playing",
+  completed: "Completed",
+  reviews: "Reviews",
+};
+
 // The page reads enough reviews to know whether the viewer already wrote one,
 // and shows the first few as the crew strip.
 const REVIEWS_READ = 5;
 const REVIEWS_SHOWN = 3;
 
-export default async function GamePage({
+export default function GamePage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Gate before the Suspense boundary: once the page streams, a not-found
-  // can no longer answer 404.
-  await requireFeature("game_index");
   return (
     <Suspense fallback={<GameContentSkeleton />}>
       {Promise.all([params, searchParams]).then(([{ id }, query]) => {
@@ -187,13 +196,9 @@ async function GameContent({
       })
     : null;
 
-  const stats = [
-    ...(show.playing ? [{ label: "Playing", value: players.length }] : []),
-    ...(show.completed
-      ? [{ label: "Completed", value: completers.length }]
-      : []),
-    ...(reviewTotal !== null ? [{ label: "Reviews", value: reviewTotal }] : []),
-  ];
+  const stats = countStats(
+    shownCounts(countsOf(game, reviewTotal), features),
+  ).map((stat) => ({ label: HERO_STAT_LABEL[stat.key], value: stat.value }));
 
   return (
     <div className="pb-8">
