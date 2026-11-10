@@ -32,6 +32,10 @@ export const FEATURE_KEYS = [
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
 
+export function isFeatureKey(key: unknown): key is FeatureKey {
+  return typeof key === "string" && (FEATURE_KEYS as readonly string[]).includes(key);
+}
+
 export type FeatureState = "off" | "preview" | "live";
 
 // One entry of the session's `features` list, in registry order.

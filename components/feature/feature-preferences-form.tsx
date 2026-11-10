@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { savePreferenceAction } from "@/app/actions/feature-preferences";
+import { isFeatureKey } from "@/lib/features";
 import {
   applyPreferenceChange,
-  isFeatureKey,
   whereItShows,
   type FeaturePreferences,
   type PreferenceChange,

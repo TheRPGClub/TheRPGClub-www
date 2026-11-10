@@ -1,11 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { getSession } from "@/lib/session";
+import { isFeatureKey } from "@/lib/features";
 import {
-  isFeatureKey,
   preferencePatchBody,
   type FeaturePreferences,
   type PreferenceChange,
@@ -50,7 +50,8 @@ export async function savePreferenceAction(change: PreferenceChange): Promise<Pr
   }
   const body = (await res.json()) as { data: FeaturePreferences };
   // The sidebar, dashboard and sections read `shown` from the session, which
-  // the app layout loads: refresh every page so they follow the switch.
-  revalidatePath("/", "layout");
+  // every render reads fresh (no-store). A preference is this member's alone,
+  // so refreshing their router is enough: no cached data changed.
+  refresh();
   return { ok: true, data: body.data };
 }
