@@ -40,6 +40,7 @@ import {
   Library,
   Lightbulb,
   LogOut,
+  Newspaper,
   NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
@@ -67,6 +68,7 @@ const navMain: {
   { href: "/members", icon: Users, label: "Members" },
   { href: "/journals", icon: NotebookPen, label: "Game Journals", feature: "journals" },
   { href: "/achievements", icon: Award, label: "Achievements", feature: "achievement_hub" },
+  { href: "/news", icon: Newspaper, label: "News", feature: "news_hub" },
   { href: "/voting", icon: Vote, label: "Voting", feature: "voting_gotm" },
   { href: "/giveaways", icon: Gift, label: "Giveaways", feature: "giveaways" },
   // The board, open to every signed-in member; its "Suggest something"

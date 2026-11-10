@@ -16,6 +16,7 @@ const SECTIONS: Record<string, string> = {
   games: "Games",
   gotm: "GOTM history",
   achievements: "Achievements",
+  news: "News",
   members: "Members",
   voting: "Voting",
   giveaways: "Giveaways",
@@ -43,6 +44,7 @@ const MEMBER_PAGES: Record<string, string> = {
   reviews: "Reviews",
   journal: "Journal",
   achievements: "Achievements",
+  news: "News",
   edit: "Edit profile",
   imports: "Imports",
 };

@@ -106,6 +106,20 @@
     --color-tier-bronze: #c8814a;
     --color-tier-silver: #c0c6cc;
     --color-tier-gold: #e0b84a;
+
+    /* News inks: one per News Category, on news surfaces only (the News
+       page, its cards and filter, the category switches on /settings). Marks,
+       chips and bars, never a panel; type on an ink is ink (each clears
+       5:1). They sit off the four reserved inks, so the last two are
+       neutrals: Rumours is always drawn dashed (unconfirmed). Read them
+       through newsInk() in lib/news.ts. */
+    --color-news-announcements: #ff5ca8;
+    --color-news-releases: #b4e05a;
+    --color-news-emulation: #2fd3c0;
+    --color-news-industry: #6c9bff;
+    --color-news-hardware: #d4a373;
+    --color-news-rumours: #c0c4d6;
+    --color-news-general: #8d8d87;
     /* Page width: the signed-in app's content frame spans the area beside
        the sidebar up to this and centers past it (max-w-page). Pages don't
        set their own outer width. 120rem keeps 1080p full width with the
