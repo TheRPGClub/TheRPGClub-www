@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-01T22:32:31.216697+00:00",
+  "generatedAt": "2026-11-10T12:00:15.828122+00:00",
   "title": "Design System: The RPG Club",
   "extensions": {
     "colorMeta": {
@@ -168,6 +168,36 @@
         "role": "achievement",
         "displayName": "PSN Gold",
         "canonical": "#e0b84a"
+      },
+      "destructive-ink": {
+        "role": "neutral",
+        "displayName": "Orange Ink",
+        "canonical": "#2a1300",
+        "tonalRamp": [
+          "#1a0c00",
+          "#2a1300",
+          "#4a2306",
+          "#6e3a12",
+          "#94561f",
+          "#bb7531",
+          "#dd9b55",
+          "#f3c697"
+        ]
+      },
+      "ok": {
+        "role": "neutral",
+        "displayName": "Done Green",
+        "canonical": "#5fd08a",
+        "tonalRamp": [
+          "#0f2a19",
+          "#1a4429",
+          "#28613c",
+          "#3a8251",
+          "#4ea56a",
+          "#5fd08a",
+          "#93e2b1",
+          "#c9f2d8"
+        ]
       }
     },
     "typographyMeta": {
@@ -310,7 +340,22 @@
       "#4f9fae",
       "#a68a6d",
       "#9aa6b2"
-    ]
+    ],
+    "journalInks": {
+      "fern": "#6dd17f",
+      "lagoon": "#43d3cc",
+      "orchid": "#f077c0",
+      "sky": "#86d3f6",
+      "peony": "#fab6ba",
+      "cornflower": "#719def"
+    },
+    "layout": {
+      "containerPage": "120rem",
+      "gutterPhone": "16px",
+      "gutter": "28px",
+      "topbar": "60px",
+      "rail": "23rem"
+    }
   },
   "components": [
     {
@@ -440,11 +485,41 @@
       "description": "The hub's day label: torn paper tape, slightly tilted, a hairline running to the tally.",
       "html": "<div class=\"ds-day\"><span class=\"ds-tape\">Today</span><i></i><small>12 Unlocks · 4 members</small></div>",
       "css": ".ds-day { display: flex; align-items: center; gap: 14px; } .ds-tape { background: rgb(244 244 240 / 0.9); color: #0b0b0d; padding: 4px 16px 3px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; letter-spacing: 0.1em; text-transform: uppercase; rotate: -1.2deg; clip-path: polygon(0 8%, 3% 0, 97% 6%, 100% 0, 99% 92%, 96% 100%, 2% 94%, 0 100%); } .ds-day i { flex: 1; height: 1px; background: #2a2a31; } .ds-day small { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8d87; }"
+    },
+    {
+      "name": "Destructive Outline Button",
+      "kind": "button",
+      "refersTo": "button-destructive-outline",
+      "description": "Opens a destructive action's confirm (Delete, Reset votes, Close now).",
+      "html": "<button class=\"ds-btn-destr-outline\">Reset votes</button>",
+      "css": ".ds-btn-destr-outline { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid oklch(0.74 0.17 52); border-radius: 2.4px; background: transparent; color: oklch(0.74 0.17 52); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 150ms; } .ds-btn-destr-outline:hover { background: oklch(0.74 0.17 52 / 0.1); } .ds-btn-destr-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); }"
+    },
+    {
+      "name": "Destructive Solid Button",
+      "kind": "button",
+      "refersTo": "button-destructive-solid",
+      "description": "The confirmed destructive action, enabled once the typed confirm matches.",
+      "html": "<button class=\"ds-btn-destr\">Delete for good</button>",
+      "css": ".ds-btn-destr { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 2.4px; background: oklch(0.74 0.17 52); color: #2a1300; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 150ms; } .ds-btn-destr:hover { opacity: 0.85; } .ds-btn-destr:active { transform: translateY(1px); } .ds-btn-destr:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); }"
+    },
+    {
+      "name": "Desk Header",
+      "kind": "custom",
+      "description": "Staff desk page title in Anton on the 2px paper rule, with a label-voice note on the right.",
+      "html": "<header class=\"ds-desk-head\"><h1>Live events</h1><span>3 upcoming · times in Europe/Lisbon</span></header>",
+      "css": ".ds-desk-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 24px; border-bottom: 2px solid #f4f4f0; padding-bottom: 8px; background: #0b0b0d; } .ds-desk-head h1 { margin: 0; font-family: 'Anton', Impact, sans-serif; font-weight: 400; font-size: 3.5rem; line-height: 0.9; text-transform: uppercase; color: #f4f4f0; } .ds-desk-head span { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8d87; }"
+    },
+    {
+      "name": "Desk Stamps",
+      "kind": "custom",
+      "description": "Queued, Done and Failed stamps on the staff wire and proof cards: Anton in an inset outline, tilted 4deg.",
+      "html": "<div class=\"ds-stamps\"><span class=\"ds-stamp q\">Queued</span><span class=\"ds-stamp d\">Done</span><span class=\"ds-stamp f\">Failed</span></div>",
+      "css": ".ds-stamps { display: flex; gap: 16px; padding: 16px; background: #141417; } .ds-stamp { display: inline-block; padding: 4px 10px 2px; font-family: 'Anton', Impact, sans-serif; font-size: 1.1rem; text-transform: uppercase; transform: rotate(-4deg); border-radius: 2px; } .ds-stamp.q { color: #ffd400; box-shadow: inset 0 0 0 2px #ffd400; } .ds-stamp.d { color: #5fd08a; box-shadow: inset 0 0 0 2px #5fd08a; } .ds-stamp.f { color: oklch(0.74 0.17 52); box-shadow: inset 0 0 0 2px oklch(0.74 0.17 52); }"
     }
   ],
   "narrative": {
     "northStar": "The Monthly Issue",
-    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).\n\nThe Achievement Hub department: a member's achievements are a binder opened on its gutter, each Achievement Set is a page or two-page spread inside it, and the community hub is a wall of Unlocks under paper-tape day labels. It keeps the ink ground, Anton and Barlow and the 2px paper rules, and adds colour roles (game tint, Rarity inks, Provider colours, foil) used on achievement surfaces only.",
+    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).\n\n**The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.",
     "keyCharacteristics": [
       "Ink-black ground with three spot inks: masthead red for GOTM, violet for NR-GOTM, highlighter yellow for the member's own business.",
       "Anton in caps for every headline and numeral, Barlow Condensed tracked caps for every label, Barlow for reading.",
@@ -471,6 +546,26 @@
         "section": "colors"
       },
       {
+        "name": "The Game Art Is Content Rule",
+        "body": "A game tint is sampled from the game's own art, so, like key art, it is exempt from the One Ink Per Track Rule: a red or violet tint never means GOTM or NR-GOTM. The system's own tints (the hashed fallbacks) stay off red and violet so a game without art never reads as a track.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tint Carries Its Type Rule",
+        "body": "A tint never travels without its contrast colour. Type on a tint is ink or paper, whichever clears AA, and a tint band is always solid, never a gradient.",
+        "section": "colors"
+      },
+      {
+        "name": "The Foil Is Earned Rule",
+        "body": "Foil is the system's single sanctioned gradient. It marks only Platinum, Mastery and Completion: the foil stamp, the foil die-cut edge on the Unlock behind one, the Platinum tier dot, the foil frame behind a Platinum on a game's club page, and a Completion signed in the margin. It never sets text, and it never decorates.",
+        "section": "colors"
+      },
+      {
+        "name": "The Journal Ink Is a Person Rule",
+        "body": "A journal ink means one member and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a journal line never reads as a track, a call to action or a destructive action, and the yellow ring on a selected dot stays the only interaction mark. They do not borrow the Achievement roles (the member ring colours stay on achievement surfaces), and they never leave journal surfaces.",
+        "section": "colors"
+      },
+      {
         "name": "The Two-Line Headline Rule",
         "body": "A game's title breaks at its subtitle colon (\"Metaphor:\" / \"ReFantazio\"). Without a colon it breaks before the last word, and a one-word title is all second line. The second line takes the track's accent: yellow for a GOTM winner, soft violet for an NR-GOTM winner, paper for everything else. Every page that sets a game's name as a headline uses this one rule.",
         "section": "typography"
@@ -478,6 +573,11 @@
       {
         "name": "The Caps Are the Face Rule",
         "body": "Anton and Barlow Condensed are always set in caps through the `font-headline` and `font-label` utilities. Anton never sets mixed case, and it never sets body text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Earned Over Total Rule",
+        "body": "In the Achievement Hub a count reads as an Anton numeral with its total beside it in paper-mute (\"23 / 41\"): a set header sets it at numeral scale, the binder index and club pages at 1.25-1.5rem. A member's Unlocks are the binder's monumental numeral (4.5rem to 5.25rem), with Completions, Masteries, Platinums and RA points as 2rem Anton over label captions. Slot numbers are two-digit Anton (\"07\").",
         "section": "typography"
       },
       {
@@ -491,80 +591,66 @@
         "section": "layout"
       },
       {
+        "name": "The Open Binder Rule",
+        "body": "A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift, holding two ink-2 pages. From `xl` it is a 25rem left page (the member, their totals, Linked Accounts and four rarest Unlocks), a 30px gutter of rings, and the index page. Filter tabs (status, then one per Linked Account's Provider) sit on the binder's top edge, and each index row's game-tint tab sticks out past the binder's right edge. Below `xl` the binder closes to one page with the member first and the index below.",
+        "section": "layout"
+      },
+      {
+        "name": "The Spread Rule",
+        "body": "A set page is a two-page spread: from `xl` the left page (1.7fr) holds the view (Checklist, Rarity or Timeline) and the right page (at least 20rem) holds the picked Achievement's details over the Rarity tally, sticky under the top bar. The pages meet at a shadowed gutter. Game-tint view tabs sit on the spread's top edge. On phones the spread closes to one page and the details open under the picked item.",
+        "section": "layout"
+      },
+      {
+        "name": "The Day Band Rule",
+        "body": "The hub runs newest first in UTC day bands, each headed by a paper-tape label with a rule running out to its tally. From `xl` the Latest wall takes 62% beside a 38% rail of this week's Highlights. The wall is two columns from `sm`, and a card holding a Highlight spans both, as does a day's odd card out, so the wall never ends on a hole. The Highlights wall alone runs 2 to 6 columns without day bands, each tag carrying its own date.",
+        "section": "layout"
+      },
+      {
         "name": "The Scrim Not Glow Rule",
         "body": "Key art is darkened from where the type sits (from the left for a single cover, from the foot for split panels) with ink gradients (`rgb(11 11 13 / 0.96 to 0.15)`). Art is never faded into a coloured gradient, and nothing glows.",
         "section": "elevation"
       },
       {
-        "name": "The Game Art Is Content Rule",
-        "section": "colors",
-        "body": "A game tint is sampled from the game's own art, so, like key art, it is exempt from the One Ink Per Track Rule: a red or violet tint never means GOTM or NR-GOTM. The system's own tints (the hashed fallbacks) stay off red and violet so a game without art never reads as a track."
-      },
-      {
-        "name": "The Tint Carries Its Type Rule",
-        "section": "colors",
-        "body": "A tint never travels without its contrast colour. Type on a tint is ink or paper, whichever clears AA, and a tint band is always solid, never a gradient."
-      },
-      {
-        "name": "The Foil Is Earned Rule",
-        "section": "colors",
-        "body": "Foil is the system's single sanctioned gradient. It marks only Platinum, Mastery and Completion: the foil stamp, the foil die-cut edge on the Unlock behind one, the Platinum tier dot, the foil frame behind a Platinum on a game's club page, and a Completion signed in the margin. It never sets text, and it never decorates."
-      },
-      {
-        "name": "The Earned Over Total Rule",
-        "section": "typography",
-        "body": "In the Achievement Hub a count reads as an Anton numeral with its total beside it in paper-mute (\"23 / 41\"). A member's Unlocks are the binder's monumental numeral; slot numbers are two-digit Anton (\"07\")."
-      },
-      {
-        "name": "The Open Binder Rule",
-        "section": "layout",
-        "body": "A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift holding two ink-2 pages. From xl, a 25rem member page, a 30px gutter of rings, and the index page; filter tabs on the top edge; game-tint tabs past the right edge. Below xl, one page."
-      },
-      {
-        "name": "The Spread Rule",
-        "section": "layout",
-        "body": "A set page is a two-page spread: from xl the view (1.7fr) beside the picked Achievement's details over the Rarity tally (min 20rem), meeting at a shadowed gutter, with game-tint view tabs on the top edge. On phones, one page."
-      },
-      {
-        "name": "The Day Band Rule",
-        "section": "layout",
-        "body": "The hub runs newest first in UTC day bands under paper-tape labels; from xl the Latest wall (62%) sits beside a rail of this week's Highlights (38%). Highlight cards and a day's odd card out span the wall so it never ends on a hole."
-      },
-      {
         "name": "The Die-Cut Rule",
-        "section": "shapes",
-        "body": "Achievement icons are die-cut objects, so they alone round to 6px; the ring frame around a club-page tile follows at 7-8px. Everything else keeps the hard rectangle."
+        "body": "Achievement icons are die-cut objects, so they alone round to 6px (`rounded.die-cut`). The ring frame around a tile on a game's club page follows the cut at 7-8px. Everything else in the Achievement Hub keeps the hard rectangle: chips and stamps at 2px, tabs and tint bands at about 3.2px, the binder cover at 4px. Its round forms are the slot dots, the member ring dots, the PSN tier dot and avatars.",
+        "section": "shapes"
       },
       {
         "name": "The Hand-Placed Rule",
-        "section": "shapes",
-        "body": "Objects on the page rest at a tilt, pages stay square: icons at a stable tilt within 1.5deg (straight on hover), foil stamps at -8deg, odds tags at 6deg, day tapes about 1deg alternating, fanned icons by position."
+        "body": "Objects that sit on the page rest at a tilt and pages stay square. An unlocked icon takes a stable tilt from its id (within ±1.5deg) and straightens on hover. A foil stamp is pressed at -8deg, an odds tag at 6deg, a day tape at about 1deg alternating, and a hand of fanned icons leans by position. A hidden tile is sealed by a diagonal band in the game tint, and a day tape has torn edges.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Desk Green Rule",
+        "body": "Done green (`ok`) shares the hex of the uncommon Rarity ink because the two never meet: Rarity inks stay on achievement surfaces and done green stays on the staff desk, which shows no achievements. It is its own token so neither role borrows the other, and it is still a mark (type, a stamp outline, a dot), never a fill behind type.",
+        "section": "components"
       }
     ],
     "dos": [
-      "Do colour a thing red only if it is GOTM or \"you are here\", violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.",
-      "Do open every page with one monumental object (a numeral or a two-line Anton headline) and rule every heading with 2px paper.",
-      "Do set every game headline with the Two-Line Headline Rule.",
-      "Do give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.",
-      "Do split one cover between co-winners and letter them A, B, C in the track's ink.",
-      "Do fall back to the title in Anton on ink-3 when art is missing.",
-      "Do keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.",
-      "Do keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.",
-      "Do keep foil for Platinum, Mastery and Completion.",
-      "Do use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account."
+      "**Do** colour a thing red only if it is GOTM or \"you are here\", violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.",
+      "**Do** open every page with one monumental object (a numeral or a two-line Anton headline) and rule every heading with 2px paper.",
+      "**Do** set every game headline with the Two-Line Headline Rule.",
+      "**Do** give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.",
+      "**Do** split one cover between co-winners and letter them A, B, C in the track's ink.",
+      "**Do** fall back to the title in Anton on ink-3 when art is missing.",
+      "**Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.",
+      "**Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.",
+      "**Do** keep foil for Platinum, Mastery and Completion.",
+      "**Do** use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account."
     ],
     "donts": [
-      "Don't fade key art into coloured gradients, add glow accents, or use gradient text. Foil is the single sanctioned gradient, and it never sets text.",
-      "Don't put a starburst on anything but a GOTM or NR-GOTM winner.",
-      "Don't put a breadcrumb inside a page; the running head is the only trail.",
-      "Don't add a small tracked-caps kicker or eyebrow above a headline. Track labels sit with a pick's art as data, not above titles as decoration.",
-      "Don't use hard offset shadows; shadows here are soft, black and directional.",
-      "Don't use emoji or text glyphs as icons; icons are line SVGs (Lucide) at 16-18px.",
-      "Don't set Anton in mixed case or at body sizes, or set body copy in Barlow Condensed.",
-      "Don't round corners past 4px except avatars, status dots and die-cut achievement icons (6px).",
-      "Don't call the GOTM history \"Back issues\".",
-      "Don't put violet or GOTM red on an achievement surface; a game tint that happens to be red or violet is content, not a track.",
-      "Don't say sticker, album, pack or pull in the UI. The binder is a visual metaphor; the copy keeps the glossary terms."
+      "**Don't** fade key art into coloured gradients, add glow accents, or use gradient text. Foil is the single sanctioned gradient, and it never sets text.",
+      "**Don't** put a starburst on anything but a GOTM or NR-GOTM winner.",
+      "**Don't** put a breadcrumb inside a page; the running head is the only trail.",
+      "**Don't** add a small tracked-caps kicker or eyebrow above a headline. Track labels sit with a pick's art as data, not above titles as decoration.",
+      "**Don't** use hard offset shadows; shadows here are soft, black and directional.",
+      "**Don't** use emoji or text glyphs as icons; icons are line SVGs (Lucide) at 16-18px.",
+      "**Don't** set Anton in mixed case or at body sizes, or set body copy in Barlow Condensed.",
+      "**Don't** round corners past 4px except avatars, status dots and die-cut achievement icons (6px).",
+      "**Don't** put violet or GOTM red on an achievement surface; a game tint that happens to be red or violet is content, not a track.",
+      "**Don't** say sticker, album, pack or pull in the UI. The binder is a visual metaphor; the copy keeps the glossary terms.",
+      "**Don't** call the GOTM history \"Back issues\".",
+      "**Don't** use done green or the desk stamps outside the staff desk, or red for a destructive action."
     ]
   }
 }
