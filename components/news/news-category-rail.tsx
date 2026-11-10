@@ -4,7 +4,7 @@ import { newsInk, type NewsCategory } from "@/lib/news";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// The News page's category rail: a 250px column beside the grid from `lg`,
+// The News page's category rail: a 15.5rem column beside the grid from `lg`,
 // and a "Filter" disclosure above the grid below it, both holding the same
 // list. Today it lists the News Categories with their inks (the key to the
 // cards' tags). www#77 makes it the filter: a search field on top, each row a
@@ -93,7 +93,7 @@ export function InkSquare({
         filled ? "bg-(--news-ink)" : "shadow-[inset_0_0_0_1.5px_var(--news-ink)]",
         dashed &&
           (filled
-            ? "outline-[1.5px] -outline-offset-[4px] outline-ink/70 outline-dashed"
+            ? "outline-[1.5px] -outline-offset-[2px] outline-ink/70 outline-dashed"
             : "border-[1.5px] border-dashed border-(--news-ink) shadow-none"),
       )}
     />

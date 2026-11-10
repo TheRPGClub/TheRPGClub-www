@@ -124,21 +124,23 @@ const DAY_DATE_YEAR = new Intl.DateTimeFormat("en-GB", {
 
 // A day band's Anton title and the label beside it. Today and yesterday are
 // named and dated in the label; older days are dated in the title (with the
-// year once it isn't this one) and the label keeps the count.
+// year once it isn't this one) and the label keeps the count. `count` is null
+// for a day that runs over a page break, whose tally would be partial.
 export function dayHeading(
   day: string,
-  count: number,
+  count: number | null,
   now: Date,
-): { title: string; note: string } {
+): { title: string; note: string | null } {
   const date = new Date(`${day}T00:00:00Z`);
   const today = now.toISOString().slice(0, 10);
   const yesterday = new Date(Date.parse(`${today}T00:00:00Z`) - 86_400_000)
     .toISOString()
     .slice(0, 10);
-  const tally = `${count} ${count === 1 ? "item" : "items"}`;
+  const tally = count == null ? null : `${count} ${count === 1 ? "item" : "items"}`;
   const dated = (format: Intl.DateTimeFormat) => format.format(date).replace(",", "");
-  if (day === today) return { title: "Today", note: `${dated(DAY_DATE)} · ${tally}` };
-  if (day === yesterday) return { title: "Yesterday", note: `${dated(DAY_DATE)} · ${tally}` };
+  const withTally = (date: string) => (tally ? `${date} · ${tally}` : date);
+  if (day === today) return { title: "Today", note: withTally(dated(DAY_DATE)) };
+  if (day === yesterday) return { title: "Yesterday", note: withTally(dated(DAY_DATE)) };
   const sameYear = day.slice(0, 4) === today.slice(0, 4);
   return { title: dated(sameYear ? DAY_DATE : DAY_DATE_YEAR), note: tally };
 }
@@ -155,6 +157,9 @@ const CLOCK = new Intl.DateTimeFormat("en-GB", {
 // page, its cards and filter, and the category switches on /settings).
 // Rumours is the one drawn dashed, because it is unconfirmed. Type on an ink
 // is ink. Unknown keys read as General.
+//
+// Tailwind v4 emits a theme colour only when the source names it, so each
+// variable below stays spelled out in full (never built from the key).
 
 const NEWS_INK: Record<NewsCategoryKey, string> = {
   announcements: "var(--color-news-announcements)",
@@ -203,7 +208,8 @@ export interface NewsCardView {
   frames: NewsFrame[];
   // True when each frame opens its own image full size (image-only items).
   framesOpen: boolean;
-  // Set in Anton on the art box when there is no art to show.
+  // Set in Anton on the art box when there is no art to show: the title,
+  // else the site, never a whole address.
   fallback: string;
   // The poster's clock, "14:20" (UTC).
   time: string;
@@ -249,7 +255,7 @@ export function newsCardView(item: NewsItem): NewsCardView {
       site: present(link.site_name) ?? hostOf(link.url),
       frames: link.image_url ? [{ url: link.image_url, unavailable: false }] : images,
       framesOpen: false,
-      fallback: headline,
+      fallback: present(link.title) ?? present(link.site_name) ?? hostOf(link.url),
       time,
     };
   }
@@ -265,4 +271,11 @@ export function newsCardView(item: NewsItem): NewsCardView {
     fallback: "Image unavailable",
     time,
   };
+}
+
+// Splits a headline before its last word, so an icon set after it can stay
+// on that word's line.
+export function splitLastWord(text: string): [string, string] {
+  const at = text.lastIndexOf(" ");
+  return at < 0 ? ["", text] : [text.slice(0, at + 1), text.slice(at + 1)];
 }

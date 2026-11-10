@@ -82,8 +82,19 @@ async function NewsBody({
           ) : items.length === 0 ? (
             <NewsEmpty filters={filters} />
           ) : (
-            groupNewsByDay(items).map((day) => (
-              <NewsDayBand key={day.day} day={day} now={now} nameOf={nameOf} />
+            groupNewsByDay(items).map((day, i, days) => (
+              <NewsDayBand
+                key={day.day}
+                day={day}
+                // A day running over a page break shows no tally: this page
+                // holds only part of it.
+                partial={
+                  (i === 0 && filters.page > 1) ||
+                  (i === days.length - 1 && filters.page < totalPages)
+                }
+                now={now}
+                nameOf={nameOf}
+              />
             ))
           )}
           <ListPagination
@@ -113,23 +124,27 @@ function categoryNames(categories: NewsCategory[]): (key: string | null) => stri
 
 function NewsDayBand({
   day,
+  partial,
   now,
   nameOf,
 }: {
   day: NewsDay;
+  partial: boolean;
   now: Date;
   nameOf: (key: string | null) => string;
 }) {
-  const heading = dayHeading(day.day, day.items.length, now);
+  const heading = dayHeading(day.day, partial ? null : day.items.length, now);
   return (
     <section aria-label={heading.title}>
       <h2 className="mb-3 flex items-baseline gap-3">
         <time dateTime={day.day} className="font-headline shrink-0 text-3xl">
           {heading.title}
         </time>
-        <span className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-paper-mute">
-          {heading.note}
-        </span>
+        {heading.note && (
+          <span className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-paper-mute">
+            {heading.note}
+          </span>
+        )}
         <span aria-hidden className="h-0.5 min-w-6 flex-1 self-center bg-rule-strong" />
       </h2>
       <ul className="grid gap-5 @xl:grid-cols-2 @3xl:grid-cols-3">

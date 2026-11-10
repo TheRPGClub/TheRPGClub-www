@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { categoryTag, newsCardView, newsInk, type NewsItem } from "@/lib/news";
+import { categoryTag, newsCardView, newsInk, splitLastWord, type NewsItem } from "@/lib/news";
 import { NewsArt } from "./news-art";
 
 // One News Item as a frame on the contact sheet: its art in the News
@@ -45,11 +45,7 @@ export function NewsCard({
                 rel="noopener noreferrer"
                 className="rounded-xs text-paper transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
               >
-                {view.headline}
-                <ArrowUpRight
-                  aria-hidden
-                  className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-paper-mute"
-                />
+                <OutboundHeadline text={view.headline} />
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
             ) : (
@@ -81,5 +77,34 @@ export function NewsCard({
         </p>
       </div>
     </article>
+  );
+}
+
+// The headline with its outbound arrow kept on the last word's line. A
+// long last word (a bare address) stays free to wrap instead.
+function OutboundHeadline({ text }: { text: string }) {
+  const [head, last] = splitLastWord(text);
+  if (last.length > 24) {
+    return (
+      <>
+        {text}
+        <ArrowUpRight
+          aria-hidden
+          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-paper-mute"
+        />
+      </>
+    );
+  }
+  return (
+    <>
+      {head}
+      <span className="whitespace-nowrap">
+        {last}
+        <ArrowUpRight
+          aria-hidden
+          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-paper-mute"
+        />
+      </span>
+    </>
   );
 }

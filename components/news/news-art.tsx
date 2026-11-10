@@ -170,7 +170,7 @@ function ArtFallback({ text, small = false }: { text: string; small?: boolean })
     >
       <span
         className={cn(
-          "font-headline line-clamp-3 leading-[0.95] text-paper-mute [overflow-wrap:anywhere]",
+          "font-headline line-clamp-3 leading-none text-paper-mute [overflow-wrap:anywhere]",
           small ? "text-base" : "text-[1.45rem]",
         )}
       >
