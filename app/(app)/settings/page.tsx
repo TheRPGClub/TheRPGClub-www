@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { requireAuth } from "@/lib/session";
 import type { FeaturePreferences } from "@/lib/feature-preferences";
+import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import { PageHeader, SectionHeading } from "@/components/issue/page-header";
 import { FeaturePreferencesForm } from "@/components/feature/feature-preferences-form";
 
@@ -21,12 +22,35 @@ async function fetchPreferences(userId: string): Promise<FeaturePreferences | nu
   }
 }
 
+// The member's News Category Preferences, read fresh like the above. The
+// endpoint is gated on the News Hub, so it answers 404 (null here) for a
+// member who can't use it; the form only shows the block when they can.
+async function fetchNewsCategories(userId: string): Promise<NewsCategoryPreferences | null> {
+  try {
+    const res = await apiFetch(
+      `/api/v1/users/${encodeURIComponent(userId)}/news_category_preferences`,
+      { cache: "no-store" },
+    );
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: NewsCategoryPreferences };
+    return body.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // /settings: what this member sees on the website. Open to every signed-in
 // member and never flagged; the switches only shape the member's own view
 // (nav, dashboard, sections), never what they may open from a link.
 export default async function SettingsPage() {
   const session = await requireAuth();
-  const prefs = await fetchPreferences(session.principal.discord_id);
+  const userId = session.principal.discord_id;
+  // Both at once: the News Category read costs a 404 for members without the
+  // News Hub, cheaper than waiting on the first read to decide.
+  const [prefs, newsCategories] = await Promise.all([
+    fetchPreferences(userId),
+    fetchNewsCategories(userId),
+  ]);
 
   return (
     <div className="flex max-w-2xl flex-col gap-7">
@@ -39,7 +63,7 @@ export default async function SettingsPage() {
           pages. Direct links still work.
         </p>
         {prefs ? (
-          <FeaturePreferencesForm initial={prefs} />
+          <FeaturePreferencesForm initial={prefs} newsCategories={newsCategories} />
         ) : (
           <p
             role="alert"
