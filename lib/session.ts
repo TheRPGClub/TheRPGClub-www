@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { cache, type ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { AppSession } from "@/lib/auth-types";
@@ -29,11 +29,19 @@ export async function getFeatures(): Promise<FeatureView> {
   return featureView((await getSession())?.features);
 }
 
-// For a Feature's own pages: not-found when the Feature's flag hides it from
-// this viewer. A Feature the member hid by preference still renders, so a
-// shared link keeps working. Returns the view for the page's Preview badge.
-export async function requireFeature(key: FeatureKey): Promise<FeatureView> {
-  const features = await getFeatures();
-  if (!features.canOpen(key)) notFound();
-  return features;
+// A Feature's own pages are gated once, by their route segment's layout:
+//
+//   // app/(app)/giveaways/layout.tsx
+//   export default featureLayout("giveaways");
+//
+// The whole subtree is not-found when the Feature's flag hides it from this
+// viewer. A Feature the member hid by preference still renders, so a shared
+// link keeps working. The layout sits outside every page's Suspense boundary,
+// so a not-found there still answers 404. Pages read `getFeatures()` for
+// their Preview badge.
+export function featureLayout(key: FeatureKey) {
+  return async function FeatureLayout({ children }: { children: ReactNode }) {
+    if (!(await getFeatures()).canOpen(key)) notFound();
+    return children;
+  };
 }

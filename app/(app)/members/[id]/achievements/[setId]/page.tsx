@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { AchievementSetDetail, ApiSingle } from "@/lib/api/types";
 import {
@@ -36,7 +36,7 @@ export default async function MemberAchievementSetPage({
   params: Promise<{ id: string; setId: string }>;
   searchParams: Promise<{ view?: string | string[] }>;
 }) {
-  const features = await requireFeature("achievement_hub");
+  const features = await getFeatures();
   const [{ id, setId }, query] = await Promise.all([params, searchParams]);
   if (!/^\d+$/.test(setId)) notFound();
   const view = parseSetPageView(query.view);

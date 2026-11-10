@@ -3,7 +3,7 @@ import Link from "next/link";
 import { MessageSquarePlus, Pin } from "lucide-react";
 import { fetchMemberNames } from "@/lib/api/members";
 import { fetchSuggestions } from "@/lib/api/suggestions";
-import { requireAuth, requireFeature } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { PHASE_INK, byReviewedDesc, canSuggest } from "@/lib/suggestions";
 import { PageHeader } from "@/components/issue/page-header";
@@ -33,7 +33,7 @@ export default async function SuggestionBoardPage({
   searchParams: Promise<{ tab?: string; pinned?: string }>;
 }) {
   const session = await requireAuth();
-  const features = await requireFeature("suggestions");
+  const features = await getFeatures();
   const { tab: rawTab, pinned: rawPinned } = await searchParams;
   const tab: Tab = rawTab === "rejected" ? "rejected" : "open";
   const pinned = Number(rawPinned);

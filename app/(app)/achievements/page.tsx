@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { getFeatures, getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import {
   fetchAchievementFeed,
@@ -49,9 +49,6 @@ export default async function AchievementsHubPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Gate before the Suspense boundary: once the page streams, a not-found
-  // can no longer answer 404.
-  await requireFeature("achievement_hub");
   const filters = parseFeedFilters(await searchParams);
 
   return (

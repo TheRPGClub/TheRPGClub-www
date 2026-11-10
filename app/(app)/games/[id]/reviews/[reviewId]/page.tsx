@@ -17,7 +17,7 @@ import type {
   User,
 } from "@/lib/api/types";
 import { accentForGame } from "@/lib/reviews/accent";
-import { getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 
 // A review's own page, read top to bottom like a magazine piece: the cover
@@ -41,7 +41,7 @@ export default async function GameReviewDetailPage({
   const gameId = parseInt(id, 10);
   const numericReviewId = parseInt(reviewId, 10);
   if (isNaN(gameId) || isNaN(numericReviewId)) notFound();
-  const features = await requireFeature("reviews");
+  const features = await getFeatures();
 
   const [reviewRes, gameRes, session, othersRes] = await Promise.all([
     apiFetch(`/api/v1/reviews/${numericReviewId}`, { cache: "no-store" }),

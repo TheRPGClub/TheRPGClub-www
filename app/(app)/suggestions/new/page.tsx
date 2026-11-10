@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireAuth, requireFeature } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { canSuggest } from "@/lib/suggestions";
 import { PageHeader } from "@/components/issue/page-header";
@@ -11,7 +11,7 @@ import { buttonVariants } from "@/components/ui/button";
 // the API's create gate.
 export default async function SuggestSomethingPage() {
   const session = await requireAuth();
-  const features = await requireFeature("suggestions");
+  const features = await getFeatures();
   const badge = features.preview("suggestions") && <PreviewBadge />;
   const { principal } = session;
 

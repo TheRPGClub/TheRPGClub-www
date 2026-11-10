@@ -25,7 +25,7 @@ import {
 } from "@/components/issue/voting-strip";
 import { PageHeader } from "@/components/issue/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFeatures, getSession, requireFeature } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 
 // One round at a time, as the backend reports it on voting_rounds/current:
@@ -51,10 +51,7 @@ const TRACK_NAME: Record<VotingCategory, string> = {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export default async function VotingPage() {
-  // Gate before the Suspense boundary: once the page streams, a not-found
-  // can no longer answer 404.
-  await requireFeature("voting_gotm");
+export default function VotingPage() {
   return (
     <Suspense fallback={<VotingSkeleton />}>
       <VotingContent />

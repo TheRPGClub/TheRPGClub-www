@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { requireAuth, requireFeature } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ApiSingle, GameSummary } from "@/lib/api/types";
 import {
@@ -42,7 +42,7 @@ export default async function JournalsPage({
   searchParams: Promise<RawSearchParams>;
 }) {
   await requireAuth();
-  const features = await requireFeature("journals");
+  const features = await getFeatures();
   const query = await searchParams;
   const q = (firstParam(query.q) ?? "").trim();
   const by = firstParam(query.by) || null;
