@@ -45,6 +45,7 @@ import {
   PanelLeftOpen,
   Radio,
   Replace,
+  Settings,
   ShieldCheck,
   Trophy,
   Users,
@@ -79,6 +80,7 @@ const navMain: {
 ];
 
 const VOTING_HREF = "/voting";
+const SETTINGS_HREF = "/settings";
 
 // Icons for the sections marked `nav` in lib/staff.ts.
 const STAFF_ICON: Partial<Record<StaffSection["key"], typeof ShieldCheck>> = {
@@ -280,6 +282,22 @@ export function AppSidebar({
 
       <SidebarFooter className="border-t border-rule">
         <SidebarMenu>
+          {/* The member's own settings (what they see on the site). Never
+              flagged, so every signed-in member has it. */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              render={<Link href={SETTINGS_HREF} />}
+              isActive={
+                pathname === SETTINGS_HREF ||
+                pathname.startsWith(SETTINGS_HREF + "/")
+              }
+              tooltip="Settings"
+              className={NAV_BUTTON_CLASS}
+            >
+              <Settings />
+              <span>Settings</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-1 py-1.5">
               {/* The avatar and name open the viewer's own member page, where
