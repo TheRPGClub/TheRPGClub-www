@@ -269,7 +269,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
   {
     key: "features",
     href: "/admin/features",
-    label: "Feature Flags",
+    label: "Features",
     tier: "admin",
     area: "features",
     blurb: "Set each Feature Off, Preview or Live for the site and the bot.",

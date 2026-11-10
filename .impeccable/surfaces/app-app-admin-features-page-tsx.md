@@ -19,7 +19,7 @@ STORY: Staff see every Feature's state and last change, know what a flag switche
 
 FIRST VIEWPORT: DeskHeader "FEATURES" with counts and the "site at once, bot within a minute" note at right; CORE FEATURES with its table (group head "One flag switches all three at once" over the coverage columns), state controls right-aligned in the last column.
 
-FORM: locked decision sketch "flags-grouped" (code-led; user picks in specs design/picks.md); seed: none (unavailable). Signature interaction: the Off / Preview / Live segmented control that wears the state's ink, with Off arming a dashed red outline while its orange confirm opens under the row; the last-change line slides in once after a save (motion-safe).
+FORM: locked decision sketch "flags-grouped" (code-led; user picks in specs design/picks.md); seed:5f00113a4f72cfd6 (roll recorded for provenance; composition locked by the user). Signature interaction: the Off / Preview / Live segmented control that wears the state's ink, with Off arming a dashed red outline while its orange confirm opens under the row; the last-change line slides in once after a save (motion-safe).
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 

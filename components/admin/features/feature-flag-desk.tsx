@@ -43,7 +43,7 @@ const TH_COVER = "border-l border-rule-strong pl-3 text-paper-dim";
 // The desk's two departments, Core Features and Hideable Features, as one
 // table split in two: the same columns, so a Feature's coverage, last change
 // and state line up down the page. Each row's Off / Preview / Live control
-// saves on click; Off asks first. Below xl a row stacks into a block.
+// saves on click; Off asks first. Below 85rem (1360px) a row stacks into a block.
 export function FeatureFlagDesk({ entries, now }: { entries: FeatureFlagEntry[]; now: string }) {
   const [rows, setRows] = useState(entries);
   const [clock, setClock] = useState(() => new Date(now));
@@ -88,16 +88,16 @@ function FlagDepartment({
   return (
     <section aria-labelledby={headingId}>
       <SectionHeading title={<span id={headingId}>{title}</span>} />
-      <table className="w-full border-collapse max-xl:block xl:table-fixed">
-        <colgroup className="max-xl:hidden">
+      <table className="w-full border-collapse max-[85rem]:block min-[85rem]:table-fixed">
+        <colgroup className="max-[85rem]:hidden">
+          <col className="w-[10.5rem]" />
+          <col />
+          <col />
+          <col />
           <col className="w-[11.5rem]" />
-          <col />
-          <col />
-          <col />
-          <col className="w-[12.5rem]" />
-          <col className="w-[14.25rem]" />
+          <col className="w-[15.25rem]" />
         </colgroup>
-        <thead className="max-xl:sr-only">
+        <thead className="max-[85rem]:sr-only">
           {groupHead ? (
             <>
               <tr>
@@ -146,7 +146,7 @@ function FlagDepartment({
             </tr>
           )}
         </thead>
-        <tbody className="max-xl:block">
+        <tbody className="max-[85rem]:block">
           {entries.map((entry) => (
             <FlagRow key={entry.key} entry={entry} {...row} />
           ))}
@@ -216,11 +216,11 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
     <>
       <tr
         className={cn(
-          "align-middle max-xl:grid max-xl:grid-cols-[minmax(0,1fr)_auto] max-xl:items-center max-xl:gap-x-3 max-xl:gap-y-2 max-xl:py-3.5",
-          panel || error ? "max-xl:pb-2" : "border-b border-rule",
+          "align-middle max-[85rem]:grid max-[85rem]:grid-cols-[minmax(0,1fr)_auto] max-[85rem]:items-center max-[85rem]:gap-x-3 max-[85rem]:gap-y-2 max-[85rem]:py-3.5",
+          panel || error ? "max-[85rem]:pb-2" : "border-b border-rule",
         )}
       >
-        <th scope="row" className="py-2.5 pr-3 text-left font-normal max-xl:p-0">
+        <th scope="row" className="py-2.5 pr-3 text-left font-normal max-[85rem]:p-0">
           <span
             className={cn(
               "font-headline flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[1.4rem] leading-[1.05]",
@@ -238,20 +238,20 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
         {COVERAGE.map((c) => (
           <td
             key={c.key}
-            className="bg-paper/[0.018] py-2.5 pr-3 align-middle max-xl:col-span-2 max-xl:grid max-xl:grid-cols-[4.5rem_minmax(0,1fr)] max-xl:items-baseline max-xl:bg-transparent max-xl:p-0 xl:border-l xl:border-rule xl:pl-3"
+            className="bg-paper/[0.018] py-2.5 pr-3 align-middle max-[85rem]:col-span-2 max-[85rem]:grid max-[85rem]:grid-cols-[4.5rem_minmax(0,1fr)] max-[85rem]:items-baseline max-[85rem]:bg-transparent max-[85rem]:p-0 min-[85rem]:border-l min-[85rem]:border-rule min-[85rem]:pl-3"
           >
-            <span className="font-label text-[0.72rem] tracking-[0.08em] text-paper-mute xl:hidden">{c.label}</span>
+            <span className="font-label text-[0.72rem] tracking-[0.08em] text-paper-mute min-[85rem]:hidden">{c.label}</span>
             <CoverageChips items={entry.coverage[c.key]} />
           </td>
         ))}
-        <td className="py-2.5 pr-3 max-xl:col-span-2 max-xl:p-0" aria-live="polite">
+        <td className="py-2.5 pr-3 max-[85rem]:col-span-2 max-[85rem]:p-0" aria-live="polite">
           {busy ? (
             <span className="font-label text-[0.72rem] tracking-[0.06em] text-paper-mute">Saving...</span>
           ) : (
             <LastChange entry={entry} clock={clock} landed={landed === entry.key} />
           )}
         </td>
-        <td className="py-2.5 max-xl:col-start-2 max-xl:row-start-1 max-xl:p-0">
+        <td className="py-2.5 max-[85rem]:col-start-2 max-[85rem]:row-start-1 max-[85rem]:p-0">
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
@@ -261,7 +261,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
               disabled={busy}
               onClick={() => setPanel((p) => (p === "reason" ? null : "reason"))}
               className={cn(
-                "grid size-9 place-items-center rounded-sm text-paper-mute transition-colors outline-none hover:bg-ink-3 hover:text-paper focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 xl:size-8",
+                "grid size-9 place-items-center rounded-sm text-paper-mute transition-colors outline-none hover:bg-ink-3 hover:text-paper focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 min-[85rem]:size-8",
                 draft.trim() && "text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)] hover:text-highlight",
                 panel === "reason" && "bg-ink-3 text-paper",
               )}
@@ -272,7 +272,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
               role="group"
               aria-label={`${entry.name} state`}
               aria-busy={busy}
-              className="inline-flex shrink-0 rounded-sm bg-ink-2 shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+              className="grid shrink-0 grid-cols-[repeat(3,auto)] min-[85rem]:grid-cols-[repeat(3,4.25rem)] rounded-sm bg-ink-2 shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
             >
               {FEATURE_STATES.map((state) => {
                 const selected = shown === state;
@@ -287,7 +287,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
                     disabled={busy && !selected}
                     onClick={() => pick(state)}
                     className={cn(
-                      "font-label inline-flex h-9 min-w-[3.6rem] items-center justify-center rounded-sm px-2 text-[0.82rem] tracking-[0.07em] transition-[color,background-color,box-shadow] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 xl:h-8",
+                      "font-label inline-flex h-9 items-center justify-center rounded-sm px-2 text-[0.82rem] tracking-[0.06em] min-[85rem]:px-1 transition-[color,background-color,box-shadow] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 min-[85rem]:h-8",
                       selected
                         ? cn("bg-ink font-extrabold shadow-[inset_0_0_0_2px_currentColor]", STATE_INK[state])
                         : "text-paper-mute hover:bg-ink-3 hover:text-paper disabled:opacity-50",
@@ -303,8 +303,8 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
         </td>
       </tr>
       {(panel || error) && (
-        <tr className="border-b border-rule max-xl:block">
-          <td colSpan={6} id={panelId} className="pt-0.5 pb-3.5 max-xl:block">
+        <tr className="border-b border-rule max-[85rem]:block">
+          <td colSpan={6} id={panelId} className="pt-0.5 pb-3.5 max-[85rem]:block">
             <div className="ml-auto max-w-[42rem]">
               {panel === "confirm" ? (
                 <OffConfirm
@@ -355,8 +355,8 @@ function CoverageChips({ items }: { items: string[] }) {
         <li
           key={item}
           className={cn(
-            "font-label inline-flex min-h-[22px] max-w-full items-center rounded-xs bg-paper/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-paper-dim",
-            isCommand(item) && "tracking-[0.02em] normal-case",
+            "font-label inline-flex min-h-[22px] max-w-full min-w-0 items-center rounded-xs bg-paper/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-paper-dim",
+            isCommand(item) ? "tracking-[0.02em] whitespace-nowrap normal-case" : "[overflow-wrap:anywhere]",
           )}
         >
           {item}
@@ -382,7 +382,7 @@ function LastChange({ entry, clock, landed }: { entry: FeatureFlagEntry; clock: 
         landed && "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-left-1 motion-safe:duration-300",
       )}
     >
-      <span className="font-label block text-[0.72rem] leading-[1.3] tracking-[0.06em] text-paper-mute">
+      <span className="font-label block text-[0.72rem] leading-[1.3] tracking-[0.06em] text-paper-mute tabular-nums">
         <b className={cn("font-extrabold", STATE_INK[change.to_state])}>{STATE_LABEL[change.to_state]}</b>
         {" · "}
         <span className="text-paper-dim">{changerName(change)}</span>
@@ -492,10 +492,9 @@ function OffConfirm({
     <fieldset className="min-w-0 rounded-md border-[1.5px] border-dashed border-destructive bg-destructive/[0.04] px-3.5 pt-1 pb-3.5">
       <legend className="font-label flex items-center gap-1.5 px-1.5 text-[0.72rem] tracking-[0.08em] text-destructive">
         <Power aria-hidden className="size-[13px]" />
-        Turn Off
+        Turn {name} Off?
       </legend>
-      <p className="font-semibold text-paper">Turn {name} Off?</p>
-      <p className="mt-1 mb-2.5 text-[0.84rem] text-paper-dim">
+      <p className="mt-0.5 mb-2.5 text-[0.84rem] text-paper-dim">
         Nobody can use it, staff included. Its pages go not-found, its bot commands answer that it isn&apos;t
         available yet, and its automated posts and jobs pause until it&apos;s back on.
       </p>

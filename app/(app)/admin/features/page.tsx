@@ -35,12 +35,12 @@ export default async function FeaturesDeskPage() {
   return (
     <div>
       <DeskHeader
-        title="Features"
+        title={SECTION.label}
         side={
           <>
             {counts && (
               <>
-                <b>{counts.live} Live</b> · {counts.preview} Preview · {counts.off} Off
+                <span className="tabular-nums"><b>{counts.live} Live</b> · {counts.preview} Preview · {counts.off} Off</span>
                 <br />
               </>
             )}
