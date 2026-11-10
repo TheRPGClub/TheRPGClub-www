@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-10T12:00:15.828122+00:00",
+  "generatedAt": "2026-11-10T13:27:50.037898+00:00",
   "title": "Design System: The RPG Club",
   "extensions": {
     "colorMeta": {
@@ -394,7 +394,7 @@
       "name": "Chips",
       "kind": "chip",
       "refersTo": "chip-neutral",
-      "description": "Fact chips in paper on ink; tracks colour only their own chips.",
+      "description": "Fact chips in paper on ink; tracks colour only their own chips. Staff see a highlight \"Preview\" chip beside a Preview Feature's page title.",
       "html": "<div class=\"ds-chips\"><span class=\"ds-chip\">2025</span><span class=\"ds-chip\">PC</span><span class=\"ds-chip ds-chip-gotm\">GOTM</span><span class=\"ds-chip ds-chip-nr\">NR-GOTM</span><span class=\"ds-chip ds-chip-hl\">Your pick</span></div>",
       "css": ".ds-chips { display: flex; gap: 6px; flex-wrap: wrap; } .ds-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 2px; background: rgb(244 244 240 / 0.08); color: #b9b9b2; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; } .ds-chip-gotm { background: #ff0000; color: #fff; } .ds-chip-nr { background: #8a4dff; color: #fff; } .ds-chip-hl { background: #ffd400; color: #0b0b0d; }"
     },
@@ -410,7 +410,7 @@
       "name": "Sidebar nav item",
       "kind": "nav",
       "refersTo": "nav-item-active",
-      "description": "Label-voice items; the active one is solid masthead red.",
+      "description": "Label-voice items; the active one is solid masthead red. Voting carries a yellow phase badge, and for staff a Preview Feature's item a \"Preview\" badge in the same slot.",
       "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item is-active\" href=\"#\">Dashboard</a><a class=\"ds-nav-item\" href=\"#\">Games</a><a class=\"ds-nav-item\" href=\"#\">GOTM history</a><a class=\"ds-nav-item\" href=\"#\">Voting <i class=\"ds-badge\">Vote</i></a></nav>",
       "css": ".ds-nav { display: grid; gap: 2px; width: 240px; padding: 8px; background: #141417; } .ds-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 10px; border-radius: 2.4px; color: #b9b9b2; text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.06em; transition: background 150ms, color 150ms; } .ds-nav-item:hover { background: #1d1d22; color: #f4f4f0; } .ds-nav-item:focus-visible { outline: 2px solid #ffd400; } .ds-nav-item.is-active { background: #ff0000; color: #fff; } .ds-badge { margin-left: auto; padding: 1px 6px; border-radius: 2px; background: #ffd400; color: #0b0b0d; font-style: normal; font-weight: 800; font-size: 0.7rem; }"
     },
@@ -515,6 +515,13 @@
       "description": "Queued, Done and Failed stamps on the staff wire and proof cards: Anton in an inset outline, tilted 4deg.",
       "html": "<div class=\"ds-stamps\"><span class=\"ds-stamp q\">Queued</span><span class=\"ds-stamp d\">Done</span><span class=\"ds-stamp f\">Failed</span></div>",
       "css": ".ds-stamps { display: flex; gap: 16px; padding: 16px; background: #141417; } .ds-stamp { display: inline-block; padding: 4px 10px 2px; font-family: 'Anton', Impact, sans-serif; font-size: 1.1rem; text-transform: uppercase; transform: rotate(-4deg); border-radius: 2px; } .ds-stamp.q { color: #ffd400; box-shadow: inset 0 0 0 2px #ffd400; } .ds-stamp.d { color: #5fd08a; box-shadow: inset 0 0 0 2px #5fd08a; } .ds-stamp.f { color: oklch(0.74 0.17 52); box-shadow: inset 0 0 0 2px oklch(0.74 0.17 52); }"
+    },
+    {
+      "name": "Feature Flag state control",
+      "kind": "custom",
+      "description": "Staff desk only (/admin/features): Off / Preview / Live segments; the selected one wears its state ink (Live done green, Preview yellow, Off masthead red) as type and a 2px inset stroke on ink, never a fill.",
+      "html": "<div class=\"ds-flags\"><div class=\"ds-seg\"><button>Off</button><button>Preview</button><button class=\"on live\">Live</button></div><div class=\"ds-seg\"><button>Off</button><button class=\"on preview\">Preview</button><button>Live</button></div><div class=\"ds-seg\"><button class=\"on off\">Off</button><button>Preview</button><button>Live</button></div></div>",
+      "css": ".ds-flags { display: grid; gap: 12px; padding: 16px; background: #0b0b0d; justify-items: start; } .ds-seg { display: grid; grid-template-columns: repeat(3, 4.25rem); background: #141417; border-radius: 2.4px; box-shadow: inset 0 0 0 1px #3a3a43; } .ds-seg button { height: 32px; border: 0; background: transparent; color: #8d8d87; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 2.4px; cursor: pointer; transition: color 150ms, background-color 150ms; } .ds-seg button:hover { background: #1d1d22; color: #f4f4f0; } .ds-seg button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(255 212 0 / 0.5); } .ds-seg button.on { background: #0b0b0d; font-weight: 800; box-shadow: inset 0 0 0 2px currentColor; } .ds-seg button.live { color: #5fd08a; } .ds-seg button.preview { color: #ffd400; } .ds-seg button.off { color: #ff0000; }"
     }
   ],
   "narrative": {
@@ -542,7 +549,7 @@
       },
       {
         "name": "The Red Is Also Here Rule",
-        "body": "Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else.",
+        "body": "Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else, with one sanctioned exception on the staff desk: the Off state of a Feature Flag (see the Off Red Rule).",
         "section": "colors"
       },
       {
@@ -624,10 +631,15 @@
         "name": "The Desk Green Rule",
         "body": "Done green (`ok`) shares the hex of the uncommon Rarity ink because the two never meet: Rarity inks stay on achievement surfaces and done green stays on the staff desk, which shows no achievements. It is its own token so neither role borrows the other, and it is still a mark (type, a stamp outline, a dot), never a fill behind type.",
         "section": "components"
+      },
+      {
+        "name": "The Off Red Rule",
+        "body": "On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not ink-3, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.",
+        "section": "components"
       }
     ],
     "dos": [
-      "**Do** colour a thing red only if it is GOTM or \"you are here\", violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.",
+      "**Do** colour a thing red only if it is GOTM, \"you are here\" or (on the staff desk) an Off Feature Flag, violet only if it is NR-GOTM, and fill it yellow only if it is a call to action or the GOTM starburst.",
       "**Do** open every page with one monumental object (a numeral or a two-line Anton headline) and rule every heading with 2px paper.",
       "**Do** set every game headline with the Two-Line Headline Rule.",
       "**Do** give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.",

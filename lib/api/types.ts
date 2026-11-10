@@ -899,7 +899,8 @@ export type BotJobKind =
   | "live_event_create"
   | "say"
   | "memberscan"
-  | "presence_set";
+  | "presence_set"
+  | "feature_flag_changed";
 
 export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
 

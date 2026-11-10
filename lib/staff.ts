@@ -100,7 +100,14 @@ export function staffTierOf(m: Flags): StaffTier | null {
 // The desk's areas, in the order its contents page lists them. Each area's
 // tier is the lowest tier of its tools; an area shows when the viewer can use
 // any tool in it.
-export type StaffArea = "voting" | "nominations" | "gamedb" | "mod" | "posts" | "superadmin";
+export type StaffArea =
+  | "voting"
+  | "nominations"
+  | "gamedb"
+  | "mod"
+  | "posts"
+  | "features"
+  | "superadmin";
 
 export const STAFF_AREAS: readonly { key: StaffArea; label: string; tier: StaffTier }[] = [
   { key: "voting", label: "Voting", tier: "admin" },
@@ -108,6 +115,7 @@ export const STAFF_AREAS: readonly { key: StaffArea; label: string; tier: StaffT
   { key: "gamedb", label: "GameDB", tier: "admin" },
   { key: "mod", label: "Mod", tier: "moderator" },
   { key: "posts", label: "Posts", tier: "admin" },
+  { key: "features", label: "Features", tier: "admin" },
   { key: "superadmin", label: "Superadmin", tier: "superadmin" },
 ];
 
@@ -126,7 +134,8 @@ export type StaffSectionKey =
   | "memberscan"
   | "images"
   | "suggestions"
-  | "completions";
+  | "completions"
+  | "features";
 
 // The `/admin` sections, each with the lowest tier that can use it. The desk
 // (`/admin`) lists the ones the viewer passes, grouped by area; the sidebar's
@@ -256,6 +265,16 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     blurb: "Schedule announcements in a club channel.",
     hint: "Scheduled posts",
     nav: true,
+  },
+  {
+    key: "features",
+    href: "/admin/features",
+    label: "Features",
+    tier: "admin",
+    area: "features",
+    blurb: "Set each Feature Off, Preview or Live for the site and the bot.",
+    hint: "Off, Preview, Live",
+    jobKinds: ["feature_flag_changed"],
   },
   {
     key: "say",

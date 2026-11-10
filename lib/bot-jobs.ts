@@ -114,6 +114,7 @@ const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
   say: "Say as the bot",
   memberscan: "Memberscan",
   presence_set: "Bot presence",
+  feature_flag_changed: "Feature Flag change",
 };
 
 export function humanizeKind(kind: string): string {
