@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -25,7 +25,7 @@ import {
   parsePlatformFilter,
 } from "@/components/member/collection-platform-strip";
 import { buttonVariants } from "@/components/ui/button";
-import { importsHubHref } from "@/lib/imports/kinds";
+import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
 
@@ -66,6 +66,8 @@ export default async function CollectedGamesPage({
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = memberName(user);
   const isSelf = session?.principal.discord_id === id;
+  // The hub lists only the imports whose list this member is shown.
+  const canImport = isSelf && shownImportKinds(await getFeatures()).length > 0;
 
   let entries: GameCollection[] = [];
   let total = 0;
@@ -95,7 +97,7 @@ export default async function CollectedGamesPage({
       current="collection"
       counts={memberCounts(user)}
       action={
-        isSelf && (
+        canImport && (
           <Link
             href={importsHubHref(id)}
             className={buttonVariants({ variant: "outline" })}

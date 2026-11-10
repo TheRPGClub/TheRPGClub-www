@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { accentForGame } from "@/lib/reviews/accent";
-import { getFeatures, getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type {
   ApiCollection,
@@ -48,12 +48,12 @@ export default async function GameReviewsPage({
   const gameId = parseInt(id, 10);
   if (isNaN(gameId)) notFound();
 
-  const features = await getFeatures();
   const currentPage = Math.max(1, parseInt(query.page ?? "1", 10) || 1);
   const selectedId = query.review ? parseInt(query.review, 10) : NaN;
   const composing = query.compose !== undefined;
 
-  const [gameRes, session, listRes] = await Promise.all([
+  const [features, gameRes, session, listRes] = await Promise.all([
+    requireFeature("reviews"),
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     getSession(),
     apiFetch(

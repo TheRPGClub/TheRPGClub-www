@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Download, FileUp, GitCompareArrows, Search } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -28,7 +28,7 @@ import {
 import { fetchAllCompletions } from "@/components/member/member-lists-server";
 import { ListPagination } from "@/components/list-pagination";
 import { buttonVariants } from "@/components/ui/button";
-import { importsHubHref } from "@/lib/imports/kinds";
+import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { firstParam } from "@/lib/search-params";
 
 const PAGE_SIZE = 48;
@@ -66,6 +66,8 @@ export default async function CompletedGamesPage({
   const { data: user }: ApiSingle<User> = await userRes.json();
   const displayName = memberName(user);
   const isSelf = session?.principal.discord_id === id;
+  // The hub lists only the imports whose list this member is shown.
+  const canImport = isSelf && shownImportKinds(await getFeatures()).length > 0;
 
   // Year → count, and month → its completions in the API's order (newest
   // completion first, then newest entry), for the dial and its month jumps.
@@ -185,7 +187,7 @@ export default async function CompletedGamesPage({
               <Download data-icon="inline-start" /> Export CSV
             </a>
           )}
-          {isSelf && (
+          {canImport && (
             <Link
               href={importsHubHref(id)}
               className={buttonVariants({ variant: "outline" })}

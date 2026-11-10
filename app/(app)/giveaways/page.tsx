@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { getFeatures, requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { hasMemberRole, isAdminOrAbove } from "@/lib/staff";
 import { fetchClaimedKeys, fetchDonatedKeys, fetchShelfKeys } from "@/lib/api/game-keys";
@@ -19,7 +19,7 @@ export default async function GiveawaysPage({
   searchParams: Promise<{ platform?: string }>;
 }) {
   const session = await requireAuth();
-  const features = await getFeatures();
+  const features = await requireFeature("giveaways");
   const badge = features.preview("giveaways") && <PreviewBadge />;
   const { platform } = await searchParams;
   const viewerId = session.principal.discord_id;

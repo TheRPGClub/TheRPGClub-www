@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { savePreferenceAction } from "@/app/actions/feature-preferences";
-import { isFeatureKey } from "@/lib/features";
 import {
   applyPreferenceChange,
   whereItShows,
@@ -21,19 +20,19 @@ function changeId(change: PreferenceChange): string {
 }
 
 // The member's switches. Each saves the moment it is flipped: the switch
-// moves at once, holds while the API answers, and springs back with the
-// reason if the save fails. Rows save independently (one row at a time each),
-// and a returning save only settles its own row, so two quick flips on
-// different rows can't undo each other.
+// moves at once (an optimistic change over the page's own read), holds while
+// the API answers, and springs back with the reason if the save fails. The
+// action refreshes the page, so `initial` is the API's fresh document once a
+// save lands and the form follows it. Rows save independently, and a pending
+// row keeps its optimistic position over a refresh another row brought in.
 export function FeaturePreferencesForm({ initial }: { initial: FeaturePreferences }) {
-  const [prefs, setPrefs] = useState(initial);
+  const [prefs, applyOptimistic] = useOptimistic(initial, applyPreferenceChange);
   const [pending, setPending] = useState<ReadonlySet<string>>(new Set());
   const [errors, setErrors] = useState<Readonly<Record<string, string>>>({});
+  const [, startTransition] = useTransition();
 
-  async function save(change: PreferenceChange) {
+  function save(change: PreferenceChange) {
     const id = changeId(change);
-    const revert: PreferenceChange = { ...change, shown: !change.shown };
-    setPrefs((p) => applyPreferenceChange(p, change));
     setPending((s) => new Set(s).add(id));
     setErrors((e) => {
       if (!(id in e)) return e;
@@ -42,23 +41,22 @@ export function FeaturePreferencesForm({ initial }: { initial: FeaturePreference
       return next;
     });
 
-    let result: Awaited<ReturnType<typeof savePreferenceAction>>;
-    try {
-      result = await savePreferenceAction(change);
-    } catch {
-      result = { ok: false, error: "Couldn't save that switch. Try again." };
-    }
-
-    if (result.ok && result.data) {
-      setPrefs((p) => applyPreferenceChange(p, settled(change, result.data!)));
-    } else {
-      setPrefs((p) => applyPreferenceChange(p, revert));
-      setErrors((e) => ({ ...e, [id]: result.error ?? "Couldn't save that switch. Try again." }));
-    }
-    setPending((s) => {
-      const next = new Set(s);
-      next.delete(id);
-      return next;
+    startTransition(async () => {
+      applyOptimistic(change);
+      let result: Awaited<ReturnType<typeof savePreferenceAction>>;
+      try {
+        result = await savePreferenceAction(change);
+      } catch {
+        result = { ok: false, error: "Couldn't save that switch. Try again." };
+      }
+      if (!result.ok) {
+        setErrors((e) => ({ ...e, [id]: result.error ?? "Couldn't save that switch. Try again." }));
+      }
+      setPending((s) => {
+        const next = new Set(s);
+        next.delete(id);
+        return next;
+      });
     });
   }
 
@@ -69,7 +67,7 @@ export function FeaturePreferencesForm({ initial }: { initial: FeaturePreference
       {prefs.features.length > 0 ? (
         <ul className="mt-4 border-t border-rule">
           {prefs.features.map((f) => {
-            if (!isFeatureKey(f.key)) return null;
+            // Any key the API lists, including one www doesn't know yet.
             const key = f.key;
             const shown = !f.hidden;
             return (
@@ -128,14 +126,6 @@ export function FeaturePreferencesForm({ initial }: { initial: FeaturePreference
       )}
     </>
   );
-}
-
-// The API's answer for the row that was saved.
-function settled(change: PreferenceChange, data: FeaturePreferences): PreferenceChange {
-  if (change.kind === "show_preview") {
-    return { ...change, shown: data.show_preview_features ?? change.shown };
-  }
-  return { ...change, shown: !data.hidden.includes(change.key) };
 }
 
 function PreferenceRow({

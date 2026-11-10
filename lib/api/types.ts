@@ -84,25 +84,28 @@ export interface User {
 // `counts` covers every list so we can render the section headers and the
 // reference rows (backlog / collection) without extra round-trips.
 // Keys as the API sends them (`completions`, `collections`), not the list
-// names the UI uses.
+// names the UI uses. Each list but Favorites belongs to a Feature, and its
+// key is left out when the viewer can't use that Feature.
 export interface UserProfileCounts {
   favorites: number;
-  now_playing: number;
-  completions: number;
-  backlog: number;
-  collections: number;
-  reviews: number;
+  now_playing?: number;
+  completions?: number;
+  backlog?: number;
+  collections?: number;
+  reviews?: number;
   // Distinct games the member has journaled (chapters), not entries.
   journal?: number;
 }
 
+// Like the counts, a Feature's preview is left out when the viewer can't
+// use it.
 export interface UserProfilePreviews {
   favorites: UserFavorite[];
-  now_playing: UserNowPlaying[];
-  completed: GameCompletion[];
-  backlog: UserBacklog[];
-  collection: GameCollection[];
-  reviews: Review[];
+  now_playing?: UserNowPlaying[];
+  completed?: GameCompletion[];
+  backlog?: UserBacklog[];
+  collection?: GameCollection[];
+  reviews?: Review[];
 }
 
 export interface UserProfile extends User {

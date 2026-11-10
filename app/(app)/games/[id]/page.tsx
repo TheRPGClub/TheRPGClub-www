@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getFeatures, getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 import type {
@@ -22,8 +22,8 @@ import {
   countStats,
   countsOf,
   shownCounts,
+  statLabel,
   uniqueUsers,
-  type GameCounts,
 } from "@/lib/api/game-counts";
 import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -75,12 +75,6 @@ import { cn } from "@/lib/utils";
 // A game's page is its cover story: the hero with the club's numbers, the
 // round it's on the ballot for, then the reviews beside a rail of who's
 // playing it, who finished it and the facts, and its other versions last.
-
-const HERO_STAT_LABEL: Record<keyof GameCounts, string> = {
-  playing: "Playing",
-  completed: "Completed",
-  reviews: "Reviews",
-};
 
 // The page reads enough reviews to know whether the viewer already wrote one,
 // and shows the first few as the crew strip.
@@ -137,7 +131,21 @@ async function GameContent({
   ach?: string;
   achSet?: string;
 }) {
-  const features = await getFeatures();
+  // The game and the session don't wait on the viewer's Features; only the
+  // Reviews read does.
+  const featuresRead = requireFeature("game_index");
+  const [gameRes, session, features, reviewsRes] = await Promise.all([
+    apiFetch(`/api/v1/games/${gameId}`),
+    getSession(),
+    featuresRead,
+    featuresRead.then((f) =>
+      f.shown("reviews")
+        ? apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
+            cache: "no-store",
+          })
+        : null,
+    ),
+  ]);
   // The page's sections from other Features, each left out when this viewer
   // isn't shown it (flag or preference).
   const show = {
@@ -148,15 +156,6 @@ async function GameContent({
     journals: features.shown("journals"),
     achievements: features.shown("achievement_hub"),
   };
-  const [gameRes, session, reviewsRes] = await Promise.all([
-    apiFetch(`/api/v1/games/${gameId}`),
-    getSession(),
-    show.reviews
-      ? apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
-          cache: "no-store",
-        })
-      : null,
-  ]);
 
   if (!gameRes.ok) notFound();
 
@@ -198,7 +197,7 @@ async function GameContent({
 
   const stats = countStats(
     shownCounts(countsOf(game, reviewTotal), features),
-  ).map((stat) => ({ label: HERO_STAT_LABEL[stat.key], value: stat.value }));
+  ).map((stat) => ({ label: statLabel(stat, "hero"), value: stat.value }));
 
   return (
     <div className="pb-8">
@@ -325,7 +324,8 @@ async function GameContent({
         <Suspense fallback={null}>
           <GameJournalSection
             gameId={gameId}
-            completions={game.completions ?? []}
+            // Completions join the timeline only when Game Completions shows.
+            completions={show.completed ? (game.completions ?? []) : null}
             viewerId={ownerId}
           />
         </Suspense>

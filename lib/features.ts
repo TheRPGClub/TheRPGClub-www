@@ -32,8 +32,11 @@ export const FEATURE_KEYS = [
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
 
-export function isFeatureKey(key: unknown): key is FeatureKey {
-  return typeof key === "string" && (FEATURE_KEYS as readonly string[]).includes(key);
+// A Feature key as the API spells one (a lowercase slug). The API owns the
+// list and 404s an unknown key, so actions check only the shape: a Feature
+// added in the API can be switched before www knows its name.
+export function isFeatureSlug(key: unknown): key is string {
+  return typeof key === "string" && /^[a-z0-9_]{1,64}$/.test(key);
 }
 
 export type FeatureState = "off" | "preview" | "live";

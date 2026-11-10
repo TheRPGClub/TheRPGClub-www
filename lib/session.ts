@@ -29,7 +29,7 @@ export async function getFeatures(): Promise<FeatureView> {
   return featureView((await getSession())?.features);
 }
 
-// A Feature's own pages are gated once, by their route segment's layout:
+// A Feature's own pages are gated by their route segment's layout:
 //
 //   // app/(app)/giveaways/layout.tsx
 //   export default featureLayout("giveaways");
@@ -37,11 +37,24 @@ export async function getFeatures(): Promise<FeatureView> {
 // The whole subtree is not-found when the Feature's flag hides it from this
 // viewer. A Feature the member hid by preference still renders, so a shared
 // link keeps working. The layout sits outside every page's Suspense boundary,
-// so a not-found there still answers 404. Pages read `getFeatures()` for
-// their Preview badge.
+// so a not-found there still answers 404 on a full load.
 export function featureLayout(key: FeatureKey) {
   return async function FeatureLayout({ children }: { children: ReactNode }) {
-    if (!(await getFeatures()).canOpen(key)) notFound();
+    await requireFeature(key);
     return children;
   };
+}
+
+// The same check for the page itself, which is what a soft navigation
+// renders: Next keeps a shared layout (and its search-param-only changes)
+// without re-running it, so a flag turned off since the layout last ran
+// would otherwise reach the page. Every page under a `featureLayout` runs
+// it: directly (reading its Features through this, not `getFeatures()`), or
+// through the frame it renders in (MemberListShell for its Feature,
+// ImportPage for its kind's). Not-found when the flag hides the Feature;
+// else the viewer's Features (for the Preview badge).
+export async function requireFeature(key: FeatureKey): Promise<FeatureView> {
+  const features = await getFeatures();
+  if (!features.canOpen(key)) notFound();
+  return features;
 }

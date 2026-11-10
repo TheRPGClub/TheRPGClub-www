@@ -17,8 +17,8 @@ import type {
   UserProfile,
   UserSocial,
 } from "@/lib/api/types";
-import { paginationOf } from "@/lib/api/pagination";
-import { importsHubHref } from "@/lib/imports/kinds";
+import { NO_ROWS, paginationOf, type ListPage } from "@/lib/api/pagination";
+import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { chapterHref, journalDate } from "@/lib/journals";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { MemberAchievementsSection } from "@/components/achievements/member-achievements-section";
@@ -52,24 +52,22 @@ const SHELF_LIMIT = 12;
 // Phones show this many spines per shelf; the rest are a tap on the list.
 const MOBILE_SPINES = 6;
 
-const NO_PREVIEW = { data: [], total: 0 };
-
 async function fetchPreview<T>(
   path: string,
   // False when the list's Feature isn't shown: skip the read.
   shown = true,
-): Promise<{ data: T[]; total: number }> {
-  if (!shown) return NO_PREVIEW;
+): Promise<ListPage<T>> {
+  if (!shown) return NO_ROWS;
   try {
     const res = await apiFetch(path, { cache: "no-store" });
-    if (!res.ok) return { data: [], total: 0 };
+    if (!res.ok) return NO_ROWS;
     const body: ApiCollection<T> = await res.json();
     return {
       data: body.data,
       total: paginationOf(body.meta, body.data.length).total,
     };
   } catch {
-    return { data: [], total: 0 };
+    return NO_ROWS;
   }
 }
 
@@ -81,9 +79,8 @@ export default async function MemberPage({
   const { id } = await params;
   // Each department below belongs to a Feature; one this viewer isn't shown
   // (flag or preference) is left out, and so is its read. Favorites belongs
-  // to none.
-  const features = await getFeatures();
-  const show = {
+  // to none, so it, the profile and the session don't wait on the Features.
+  const showRead = getFeatures().then((features) => ({
     nowPlaying: features.shown("now_playing"),
     completed: features.shown("game_completions"),
     backlog: features.shown("backlog"),
@@ -91,30 +88,39 @@ export default async function MemberPage({
     achievements: features.shown("achievement_hub"),
     reviews: features.shown("reviews"),
     journal: features.shown("journals"),
-  };
+    imports: shownImportKinds(features).length > 0,
+  }));
 
   // Each list is read on its own rather than from the profile's `previews`
   // slice, which doesn't always carry the joined game (and so the art).
   const [
     userRes,
     session,
-    nowPlayingPreview,
     favoritesPreview,
-    completedPreview,
-    backlogPreview,
-    collectionPreview,
-    reviewsPreview,
-    achievements,
+    show,
+    [
+      nowPlayingPreview,
+      completedPreview,
+      backlogPreview,
+      collectionPreview,
+      reviewsPreview,
+      achievements,
+    ],
   ] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     getSession(),
-    fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/now_playing?per=6`, show.nowPlaying),
     fetchPreview<UserFavorite>(`/api/v1/users/${id}/favorites?per=${SHELF_LIMIT}`),
-    fetchPreview<GameCompletion>(`/api/v1/users/${id}/completions?per=${SHELF_LIMIT}`, show.completed),
-    fetchPreview<UserBacklog>(`/api/v1/users/${id}/backlog?per=${SHELF_LIMIT}`, show.backlog),
-    fetchPreview<GameCollection>(`/api/v1/users/${id}/collections?per=${SHELF_LIMIT}`, show.collection),
-    fetchPreview<Review>(`/api/v1/users/${id}/reviews?per=3`, show.reviews),
-    show.achievements ? fetchAchievementSummary(id) : null,
+    showRead,
+    showRead.then((show) =>
+      Promise.all([
+        fetchPreview<UserNowPlaying>(`/api/v1/users/${id}/now_playing?per=6`, show.nowPlaying),
+        fetchPreview<GameCompletion>(`/api/v1/users/${id}/completions?per=${SHELF_LIMIT}`, show.completed),
+        fetchPreview<UserBacklog>(`/api/v1/users/${id}/backlog?per=${SHELF_LIMIT}`, show.backlog),
+        fetchPreview<GameCollection>(`/api/v1/users/${id}/collections?per=${SHELF_LIMIT}`, show.collection),
+        fetchPreview<Review>(`/api/v1/users/${id}/reviews?per=3`, show.reviews),
+        show.achievements ? fetchAchievementSummary(id) : null,
+      ]),
+    ),
   ]);
 
   if (!userRes.ok) notFound();
@@ -173,7 +179,7 @@ export default async function MemberPage({
           isSelf
             ? {
                 editHref: `${memberHref}/edit`,
-                importsHref: importsHubHref(user.user_id),
+                importsHref: show.imports ? importsHubHref(user.user_id) : null,
               }
             : null
         }

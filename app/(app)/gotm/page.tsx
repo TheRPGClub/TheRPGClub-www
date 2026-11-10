@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getFeatures, getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import {
   fetchGotmRounds,
@@ -42,7 +42,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
   // getSession is memoised per request.
   if (!(await getSession())) redirect("/");
-  const features = await getFeatures();
+  const features = await requireFeature("voting_gotm");
 
   const result = await fetchGotmRounds(filters);
   const rounds = result?.rounds ?? [];

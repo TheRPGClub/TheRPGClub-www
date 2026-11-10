@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/issue/page-header";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import {
@@ -35,7 +36,7 @@ export interface MemberListShellProps {
 // member's name with a switcher across their lists, then the page title on the paper rule
 // with its actions. The switcher leaves out lists whose Feature this viewer
 // isn't shown, except the one being read (a list hidden by preference still
-// opens from a link).
+// opens from a link). Not-found when the page's Feature flag hides it.
 export async function MemberListShell({
   userId,
   displayName,
@@ -54,6 +55,9 @@ export async function MemberListShell({
   );
   const pageFeature =
     feature ?? MEMBER_LISTS.find((l) => l.key === current)?.feature;
+  // The page's own Feature check (see requireFeature): its segment layout
+  // doesn't re-run on a soft navigation inside the member's pages.
+  if (pageFeature && !features.canOpen(pageFeature)) notFound();
   return (
     <div className="space-y-6">
       <div className="space-y-3">

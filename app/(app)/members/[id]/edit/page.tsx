@@ -18,29 +18,26 @@ import type {
   UserFavorite,
   UserNowPlaying,
 } from "@/lib/api/types";
-import { paginationOf } from "@/lib/api/pagination";
+import { NO_ROWS, paginationOf, type ListPage } from "@/lib/api/pagination";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
-import { importsHubHref } from "@/lib/imports/kinds";
+import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { PageHeader } from "@/components/issue/page-header";
 import { EditSections, type EditSection } from "@/components/issue/edit-sections";
 import { buttonVariants } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;
 
-// A hidden list's stand-in: its section isn't rendered, so it isn't read.
-const NOT_READ = { data: [], total: 0 };
-
-async function loadCollection<T>(path: string): Promise<{ data: T[]; total: number }> {
+async function loadCollection<T>(path: string): Promise<ListPage<T>> {
   try {
     const res = await apiFetch(path, { cache: "no-store" });
-    if (!res.ok) return { data: [], total: 0 };
+    if (!res.ok) return NO_ROWS;
     const body: ApiCollection<T> = await res.json();
     return { data: body.data, total: paginationOf(body.meta, body.data.length).total };
   } catch {
-    return { data: [], total: 0 };
+    return NO_ROWS;
   }
 }
 
@@ -118,22 +115,22 @@ export default async function MemberEditPage({
       ? loadCollection<UserNowPlaying>(
           `/api/v1/users/${id}/now_playing?per=${EDITOR_LIMIT}`,
         )
-      : NOT_READ,
+      : NO_ROWS,
     listShown.completed
       ? loadCollection<GameCompletion>(
           `/api/v1/users/${id}/completions?per=${EDITOR_LIMIT}`,
         )
-      : NOT_READ,
+      : NO_ROWS,
     listShown.backlog
       ? loadCollection<UserBacklog>(
           `/api/v1/users/${id}/backlog?per=${EDITOR_LIMIT}`,
         )
-      : NOT_READ,
+      : NO_ROWS,
     listShown.collection
       ? loadCollection<GameCollection>(
           `/api/v1/users/${id}/collections?per=${EDITOR_LIMIT}`,
         )
-      : NOT_READ,
+      : NO_ROWS,
     linkedShown ? loadLinkedAccounts(id) : null,
     linkedShown ? loadProviderTotals(id) : null,
   ]);
@@ -252,7 +249,9 @@ export default async function MemberEditPage({
       />
       <EditSections
         sections={sections}
-        importsHref={importsHubHref(user.user_id)}
+        importsHref={
+          shownImportKinds(features).length > 0 ? importsHubHref(user.user_id) : null
+        }
       />
     </div>
   );

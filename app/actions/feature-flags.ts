@@ -3,7 +3,7 @@
 import { refresh, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import { isFeatureKey, type FeatureKey, type FeatureState } from "@/lib/features";
+import { isFeatureSlug, type FeatureState } from "@/lib/features";
 import { FEATURE_STATES, normalizeReason, type FeatureFlagEntry } from "@/lib/feature-flags";
 import { getSession } from "@/lib/session";
 import { isAdminOrAbove } from "@/lib/staff";
@@ -33,7 +33,7 @@ async function errorMessage(res: Response): Promise<string> {
 // The one cached read a flag gates is the logged-out landing's winners (tag
 // `gotm`), so a Voting & GOTM change expires it here (api#351 hand-off).
 export async function setFeatureFlagAction(
-  key: FeatureKey,
+  key: string,
   state: FeatureState,
   rawReason?: string | null,
 ): Promise<FeatureFlagResult> {
@@ -42,7 +42,7 @@ export async function setFeatureFlagAction(
   if (!isAdminOrAbove(session.membership)) {
     return { ok: false, error: "Only Admins and Superadmins can change Feature Flags." };
   }
-  if (!isFeatureKey(key)) return { ok: false, error: "That isn't a Feature." };
+  if (!isFeatureSlug(key)) return { ok: false, error: "That isn't a Feature." };
   if (!FEATURE_STATES.includes(state)) return { ok: false, error: "Pick Off, Preview or Live." };
   const { reason, error } = normalizeReason(rawReason);
   if (error) return { ok: false, error };

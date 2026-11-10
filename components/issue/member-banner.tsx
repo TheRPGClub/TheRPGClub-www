@@ -55,7 +55,9 @@ export function MemberBanner({
   socials: UserSocial[];
   art: string | null;
   // The viewer's own profile: edit and imports.
-  owner?: { editHref: string; importsHref: string } | null;
+  // importsHref: null when the viewer has nothing to import (no import
+  // kind's Feature is shown).
+  owner?: { editHref: string; importsHref: string | null } | null;
 }) {
   const roles = roleList(membership);
   const joined = joinedLabel(joinedAt);
@@ -91,16 +93,18 @@ export function MemberBanner({
 
       {owner && (
         <div className="absolute top-3 right-3 z-10 flex gap-2 sm:top-5 sm:right-5">
-          <Link
-            href={owner.importsHref}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "bg-ink/70",
-            )}
-          >
-            <FileUp data-icon="inline-start" />
-            Imports
-          </Link>
+          {owner.importsHref && (
+            <Link
+              href={owner.importsHref}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "bg-ink/70",
+              )}
+            >
+              <FileUp data-icon="inline-start" />
+              Imports
+            </Link>
+          )}
           <Link
             href={owner.editHref}
             className={cn(

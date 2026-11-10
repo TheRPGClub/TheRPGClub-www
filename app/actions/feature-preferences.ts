@@ -4,7 +4,7 @@ import { refresh } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { getSession } from "@/lib/session";
-import { isFeatureKey } from "@/lib/features";
+import { isFeatureSlug } from "@/lib/features";
 import {
   preferencePatchBody,
   type FeaturePreferences,
@@ -23,7 +23,7 @@ export interface PreferenceResult {
 // the whole document, which the page takes as the truth.
 export async function savePreferenceAction(change: PreferenceChange): Promise<PreferenceResult> {
   if (typeof change?.shown !== "boolean") return { ok: false, error: "That switch can't be saved." };
-  if (change.kind === "feature" && !isFeatureKey(change.key)) {
+  if (change.kind === "feature" && !isFeatureSlug(change.key)) {
     return { ok: false, error: "That Feature isn't one you can hide." };
   }
   if (change.kind !== "feature" && change.kind !== "show_preview") {
@@ -51,7 +51,8 @@ export async function savePreferenceAction(change: PreferenceChange): Promise<Pr
   const body = (await res.json()) as { data: FeaturePreferences };
   // The sidebar, dashboard and sections read `shown` from the session, which
   // every render reads fresh (no-store). A preference is this member's alone,
-  // so refreshing their router is enough: no cached data changed.
+  // so refreshing their router is enough: no cached data changed. The same
+  // refresh re-reads /settings, and the form follows that read.
   refresh();
   return { ok: true, data: body.data };
 }

@@ -7,7 +7,7 @@ import type {
   ImportStatus,
   ImportSummary,
 } from "@/lib/api/types";
-import type { FeatureKey } from "@/lib/features";
+import type { FeatureKey, FeatureView } from "@/lib/features";
 
 // The import kinds a member can run from the website. Each kind's API
 // endpoints share one shape, so the review loop, the actions and the IGDB
@@ -92,6 +92,12 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
 };
 
 export const IMPORT_KIND_ORDER: ImportKind[] = ["csv", "steam", "completionator"];
+
+// The kinds whose Feature (the list each writes to) the viewer is shown, in
+// hub order. Empty: there's nothing to import, so no link leads to the hub.
+export function shownImportKinds(features: FeatureView): ImportKind[] {
+  return IMPORT_KIND_ORDER.filter((kind) => features.shown(IMPORT_KINDS[kind].feature));
+}
 
 export function isImportKind(value: unknown): value is ImportKind {
   return typeof value === "string" && Object.hasOwn(IMPORT_KINDS, value);
