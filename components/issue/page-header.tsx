@@ -8,12 +8,15 @@ import { cn } from "@/lib/utils";
 
 export function PageHeader({
   title,
+  badge,
   count,
   description,
   actions,
   className,
 }: {
   title: ReactNode;
+  // A chip set beside the title, e.g. the staff "Preview" badge.
+  badge?: ReactNode;
   // A tally beside the title, e.g. "312 games".
   count?: ReactNode;
   description?: ReactNode;
@@ -26,6 +29,7 @@ export function PageHeader({
         <h1 className="font-headline text-5xl text-balance sm:text-6xl">
           {title}
         </h1>
+        {badge && <div className="pb-2">{badge}</div>}
         {count != null && (
           <p className="font-label pb-1 text-sm text-paper-mute">{count}</p>
         )}
