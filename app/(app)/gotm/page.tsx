@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import {
   fetchGotmRounds,
   gotmHistoryHref,
@@ -27,6 +28,9 @@ export default async function GotmHistoryPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Gate before the Suspense boundary: once the page streams, a not-found
+  // can no longer answer 404.
+  await requireFeature("voting_gotm");
   const filters = parseGotmHistoryFilters(await searchParams);
 
   return (
@@ -41,6 +45,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
   // getSession is memoised per request.
   if (!(await getSession())) redirect("/");
+  const features = await getFeatures();
 
   const result = await fetchGotmRounds(filters);
   const rounds = result?.rounds ?? [];
@@ -53,6 +58,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
     <div className="space-y-6">
       <PageHeader
         title="GOTM history"
+        badge={features.preview("voting_gotm") && <PreviewBadge />}
         count={
           result && total > 0
             ? `${total} ${total === 1 ? "round" : "rounds"}`

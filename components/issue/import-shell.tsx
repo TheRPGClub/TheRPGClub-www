@@ -6,12 +6,14 @@ import { PageHeader } from "@/components/issue/page-header";
 
 export function ImportShell({
   title,
+  badge,
   count,
   description,
   actions,
   children,
 }: {
   title: string;
+  badge?: ReactNode;
   count?: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
@@ -21,6 +23,7 @@ export function ImportShell({
     <div className="space-y-7">
       <PageHeader
         title={title}
+        badge={badge}
         count={count}
         description={description}
         actions={actions}

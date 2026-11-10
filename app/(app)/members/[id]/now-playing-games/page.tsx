@@ -12,6 +12,7 @@ import { MemberListShell } from "@/components/member/member-list-shell";
 import { MemberListEmpty } from "@/components/member/member-game-card";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
+import { requireFeature } from "@/lib/session";
 
 const PAGE_SIZE = 24;
 
@@ -24,6 +25,7 @@ export default async function NowPlayingGamesPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ page?: string }>;
 }) {
+  await requireFeature("now_playing");
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 

@@ -7,6 +7,7 @@ import type {
   ImportStatus,
   ImportSummary,
 } from "@/lib/api/types";
+import type { FeatureKey } from "@/lib/features";
 
 // The import kinds a member can run from the website. Each kind's API
 // endpoints share one shape, so the review loop, the actions and the IGDB
@@ -41,6 +42,8 @@ export interface ImportKindConfig {
   summary: string;
   // Member list subpaths the import writes to (for revalidation and links).
   affects: string[];
+  // The Feature the import belongs to: the list it writes to.
+  feature: FeatureKey;
   // The social platform (by label) the member must have linked on their
   // profile before this import can start. Unset when anyone can start it.
   linkedAccount?: string;
@@ -55,6 +58,7 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "collection_csv_import_items",
     summary: "summary",
     affects: ["collected-games"],
+    feature: "collection",
     titleField: "raw_title",
     itemNoun: { one: "row", other: "rows" },
   },
@@ -67,6 +71,7 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     // Steam has no `summary`; `items/counts` returns the same ImportSummary.
     summary: "items/counts",
     affects: ["collected-games"],
+    feature: "collection",
     titleField: "steam_app_name",
     itemNoun: { one: "game", other: "games" },
     linkedAccount: "Steam",
@@ -79,6 +84,7 @@ export const IMPORT_KINDS: Record<ImportKind, ImportKindConfig> = {
     items: "completionator_import_items",
     summary: "summary",
     affects: ["completed-games"],
+    feature: "game_completions",
     titleField: "game_title",
     itemNoun: { one: "entry", other: "entries" },
     linkedAccount: "Completionator",

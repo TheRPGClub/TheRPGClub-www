@@ -1,4 +1,5 @@
 import type { User, UserProfileCounts } from "@/lib/api/types";
+import type { FeatureKey } from "@/lib/features";
 
 // The member's lists as the profile and the list pages name them, in the
 // order the list switcher shows them.
@@ -11,18 +12,20 @@ export type MemberListKey =
   | "collection"
   | "journal";
 
+// Each list but Favorites belongs to a Feature (lib/features.ts).
 export const MEMBER_LISTS: {
   key: MemberListKey;
   label: string;
   path: string;
+  feature?: FeatureKey;
 }[] = [
-  { key: "now_playing", label: "Playing", path: "now-playing-games" },
+  { key: "now_playing", label: "Playing", path: "now-playing-games", feature: "now_playing" },
   { key: "favorites", label: "Favorites", path: "favorite-games" },
-  { key: "completed", label: "Completed", path: "completed-games" },
-  { key: "reviews", label: "Reviews", path: "reviews" },
-  { key: "backlog", label: "Backlog", path: "backlogged-games" },
-  { key: "collection", label: "Collection", path: "collected-games" },
-  { key: "journal", label: "Journal", path: "journal" },
+  { key: "completed", label: "Completed", path: "completed-games", feature: "game_completions" },
+  { key: "reviews", label: "Reviews", path: "reviews", feature: "reviews" },
+  { key: "backlog", label: "Backlog", path: "backlogged-games", feature: "backlog" },
+  { key: "collection", label: "Collection", path: "collected-games", feature: "collection" },
+  { key: "journal", label: "Journal", path: "journal", feature: "journals" },
 ];
 
 export type MemberCounts = Partial<Record<MemberListKey, number>>;

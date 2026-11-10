@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { AchievementSetDetail, ApiSingle } from "@/lib/api/types";
 import {
   PROVIDER_LABEL,
@@ -35,6 +36,7 @@ export default async function MemberAchievementSetPage({
   params: Promise<{ id: string; setId: string }>;
   searchParams: Promise<{ view?: string | string[] }>;
 }) {
+  const features = await requireFeature("achievement_hub");
   const [{ id, setId }, query] = await Promise.all([params, searchParams]);
   if (!/^\d+$/.test(setId)) notFound();
   const view = parseSetPageView(query.view);
@@ -67,7 +69,13 @@ export default async function MemberAchievementSetPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <SetHeader set={set} tint={tint} userId={id} displayName={displayName} />
+      <SetHeader
+        set={set}
+        tint={tint}
+        userId={id}
+        displayName={displayName}
+        badge={features.preview("achievement_hub") && <PreviewBadge />}
+      />
 
       {items.length > 0 ? (
         <SetSpread

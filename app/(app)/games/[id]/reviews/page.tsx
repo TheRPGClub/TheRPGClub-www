@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { accentForGame } from "@/lib/reviews/accent";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type {
   ApiCollection,
   ApiSingle,
@@ -47,6 +48,7 @@ export default async function GameReviewsPage({
   const gameId = parseInt(id, 10);
   if (isNaN(gameId)) notFound();
 
+  const features = await requireFeature("reviews");
   const currentPage = Math.max(1, parseInt(query.page ?? "1", 10) || 1);
   const selectedId = query.review ? parseInt(query.review, 10) : NaN;
   const composing = query.compose !== undefined;
@@ -120,7 +122,12 @@ export default async function GameReviewsPage({
     />
   );
 
-  const strip = <GameStrip game={game} />;
+  const strip = (
+    <GameStrip
+      game={game}
+      badge={features.preview("reviews") && <PreviewBadge />}
+    />
+  );
 
   // ---- Reader --------------------------------------------------------------
   if (selected) {

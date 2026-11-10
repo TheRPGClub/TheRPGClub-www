@@ -377,10 +377,11 @@ function CoverStats({
   const stats = [
     { label: "playing", value: counts.playing },
     { label: "cleared", value: counts.completed },
-    ...(!compact && counts.reviews != null
-      ? [{ label: counts.reviews === 1 ? "review" : "reviews", value: counts.reviews }]
-      : []),
-  ];
+    {
+      label: counts.reviews === 1 ? "review" : "reviews",
+      value: compact ? null : counts.reviews,
+    },
+  ].filter((stat) => stat.value != null);
   return (
     <dl
       className={cn(

@@ -1,4 +1,5 @@
-import { requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchDonatedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
 import { PageHeader, SectionHeading } from "@/components/issue/page-header";
@@ -10,6 +11,7 @@ export const metadata = { title: "Donate a key" };
 // Donate a key, and manage the keys you've donated.
 export default async function DonatePage() {
   const session = await requireAuth();
+  const features = await requireFeature("giveaways");
   const [keys, names] = await Promise.all([
     fetchDonatedKeys(session.principal.discord_id),
     fetchMemberNames(),
@@ -18,7 +20,11 @@ export default async function DonatePage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Giveaways" count="Donate and manage" />
+      <PageHeader
+        title="Giveaways"
+        badge={features.preview("giveaways") && <PreviewBadge />}
+        count="Donate and manage"
+      />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,28.75rem)_minmax(0,1fr)] lg:gap-9">
         <div>
           <DonateForm />

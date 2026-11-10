@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { hasMemberRole, isAdminOrAbove } from "@/lib/staff";
 import { fetchClaimedKeys, fetchDonatedKeys, fetchShelfKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
@@ -18,6 +19,8 @@ export default async function GiveawaysPage({
   searchParams: Promise<{ platform?: string }>;
 }) {
   const session = await requireAuth();
+  const features = await requireFeature("giveaways");
+  const badge = features.preview("giveaways") && <PreviewBadge />;
   const { platform } = await searchParams;
   const viewerId = session.principal.discord_id;
 
@@ -39,6 +42,7 @@ export default async function GiveawaysPage({
     <>
       <PageHeader
         title="Giveaways"
+        badge={badge}
         count={keys === null ? undefined : `${total} ${total === 1 ? "key" : "keys"} on the shelf`}
       />
       {!canClaim && (
@@ -66,7 +70,7 @@ export default async function GiveawaysPage({
   if (keys === null) {
     return (
       <div className="space-y-5">
-        <PageHeader title="Giveaways" />
+        <PageHeader title="Giveaways" badge={badge} />
         <p role="alert" className="text-destructive">
           {"Couldn't load the shelf. Refresh to try again."}
         </p>

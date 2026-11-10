@@ -7,7 +7,12 @@ import {
 } from "@/lib/api/gotm-rounds";
 import { fetchNominations, fetchVotingRound } from "@/lib/api/voting-round";
 import type { GotmRoundBlock, VotingRound } from "@/lib/api/types";
-import { fetchGameCounts, type GameCounts } from "@/lib/api/game-counts";
+import {
+  fetchGameCounts,
+  shownCounts,
+  type GameCounts,
+} from "@/lib/api/game-counts";
+import type { FeatureKey, FeatureView } from "@/lib/features";
 import { CoverStory } from "@/components/issue/cover-story";
 import { NrFeature } from "@/components/issue/nr-feature";
 import { PreviousRounds } from "@/components/issue/previous-rounds";
@@ -17,7 +22,7 @@ import {
 } from "@/components/issue/round-panel";
 import { headingLinkClass } from "@/components/issue/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 // The dashboard is the current issue: the round's GOTM as the cover story,
@@ -27,6 +32,9 @@ import { cn } from "@/lib/utils";
 // A round missing one track gives its column away: with no NR-GOTM the
 // nominations panel takes the whole right column; with no GOTM the NR-GOTM is
 // promoted to the cover.
+//
+// It is all Voting & GOTM's: with that Feature hidden from the viewer the
+// page says so instead. Each winner's numbers follow their own Features.
 
 export default function DashboardPage() {
   return (
@@ -43,6 +51,8 @@ async function DashboardContent() {
   // them instead of wasting fetches that can only 401.
   const session = await getSession();
   if (!session) return null;
+  const features = await getFeatures();
+  if (!features.shown("voting_gotm")) return <NoVoting />;
 
   const [round, history, voting] = await Promise.all([
     fetchCurrentGotmRound(),
@@ -57,7 +67,7 @@ async function DashboardContent() {
   ]);
   const [{ nominations, now }, counts] = await Promise.all([
     fetchRoundNominations(voting),
-    fetchWinnerCounts([round?.gotm, round?.nr_gotm]),
+    fetchWinnerCounts([round?.gotm, round?.nr_gotm], features),
   ]);
 
   // `gotm_rounds/current` is the GOTM round with the same round's NR-GOTM,
@@ -141,10 +151,18 @@ async function DashboardContent() {
   );
 }
 
+const COUNT_FEATURES: FeatureKey[] = [
+  "now_playing",
+  "game_completions",
+  "reviews",
+];
+
 // The club's Playing / Completed / Reviews numbers for each of the round's
-// winners, keyed by GameDB id. A failed read leaves its game out.
+// winners, keyed by GameDB id, each kept only when its Feature is shown. A
+// failed read leaves its game out.
 async function fetchWinnerCounts(
   blocks: (GotmRoundBlock | null | undefined)[],
+  features: FeatureView,
 ): Promise<Record<number, GameCounts>> {
   const ids = [
     ...new Set(
@@ -155,9 +173,14 @@ async function fetchWinnerCounts(
       ),
     ),
   ];
+  // None of the numbers' Features shown: skip the reads.
+  if (!COUNT_FEATURES.some((key) => features.shown(key))) return {};
   const results = await Promise.all(ids.map((id) => fetchGameCounts(id)));
   return Object.fromEntries(
-    ids.flatMap((id, i) => (results[i] ? [[id, results[i]]] : [])),
+    ids.flatMap((id, i) => {
+      const counts = results[i];
+      return counts ? [[id, shownCounts(counts, features)]] : [];
+    }),
   );
 }
 
@@ -196,6 +219,19 @@ function NoRound() {
         Full history
         <ArrowRight aria-hidden />
       </Link>
+    </section>
+  );
+}
+
+// Voting & GOTM is hidden from this viewer: nothing to put on the cover.
+function NoVoting() {
+  return (
+    <section className="flex min-h-64 flex-col justify-end gap-3 rounded-md border border-dashed border-rule-strong p-7">
+      <h2 className="font-headline text-4xl">Nothing on the cover</h2>
+      <p className="max-w-[48ch] text-paper-dim">
+        Game of the Month is taking a break. The rounds and their winners will
+        be back here when it returns.
+      </p>
     </section>
   );
 }

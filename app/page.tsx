@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { fetchPublicWinners } from "@/lib/api/public-winners";
 import type { PublicWinner, VotingCategory } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
+import { featureView } from "@/lib/features";
 import { firstParam } from "@/lib/search-params";
 import { buttonVariants } from "@/components/ui/button";
 import { LandingCover, LandingPitch } from "@/components/issue/landing-cover";
@@ -35,10 +36,17 @@ export default async function Home({ searchParams }: HomeProps) {
     redirect(`/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
-  const [session, winners] = await Promise.all([
+  const [session, allWinners] = await Promise.all([
     getSession(),
     fetchPublicWinners(),
   ]);
+  // The winners follow Voting & GOTM. A signed-in viewer's session says
+  // whether they're shown it; for a visitor the API's public read decides
+  // (it comes back empty or fails, and the page falls back as below).
+  const winners =
+    session && !featureView(session.features).shown("voting_gotm")
+      ? []
+      : allWinners;
   const signInHref = `${process.env.API_URL ?? "http://localhost:3000"}/auth/discord`;
   const profileHref = session
     ? `/members/${session.principal.discord_id}`

@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { ArrowRight } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 import type {
   ApiCollection,
@@ -74,13 +75,16 @@ import { cn } from "@/lib/utils";
 const REVIEWS_READ = 5;
 const REVIEWS_SHOWN = 3;
 
-export default function GamePage({
+export default async function GamePage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Gate before the Suspense boundary: once the page streams, a not-found
+  // can no longer answer 404.
+  await requireFeature("game_index");
   return (
     <Suspense fallback={<GameContentSkeleton />}>
       {Promise.all([params, searchParams]).then(([{ id }, query]) => {
@@ -124,12 +128,25 @@ async function GameContent({
   ach?: string;
   achSet?: string;
 }) {
+  const features = await getFeatures();
+  // The page's sections from other Features, each left out when this viewer
+  // isn't shown it (flag or preference).
+  const show = {
+    ballot: features.shown("voting_gotm"),
+    playing: features.shown("now_playing"),
+    completed: features.shown("game_completions"),
+    reviews: features.shown("reviews"),
+    journals: features.shown("journals"),
+    achievements: features.shown("achievement_hub"),
+  };
   const [gameRes, session, reviewsRes] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`),
     getSession(),
-    apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
-      cache: "no-store",
-    }),
+    show.reviews
+      ? apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
+          cache: "no-store",
+        })
+      : null,
   ]);
 
   if (!gameRes.ok) notFound();
@@ -138,7 +155,7 @@ async function GameContent({
 
   let reviews: Review[] = [];
   let reviewTotal: number | null = null;
-  if (reviewsRes.ok) {
+  if (reviewsRes?.ok) {
     const body: ApiCollection<Review> = await reviewsRes.json();
     reviews = body.data;
     reviewTotal = paginationOf(body.meta, reviews.length).total;
@@ -171,64 +188,89 @@ async function GameContent({
     : null;
 
   const stats = [
-    { label: "Playing", value: players.length },
-    { label: "Completed", value: completers.length },
+    ...(show.playing ? [{ label: "Playing", value: players.length }] : []),
+    ...(show.completed
+      ? [{ label: "Completed", value: completers.length }]
+      : []),
     ...(reviewTotal !== null ? [{ label: "Reviews", value: reviewTotal }] : []),
   ];
 
   return (
     <div className="pb-8">
-      <GameHero game={game} stats={stats} releaseDate={releaseDate} />
+      <GameHero
+        game={game}
+        stats={stats}
+        releaseDate={releaseDate}
+        badge={features.preview("game_index") && <PreviewBadge />}
+      />
 
       {/* The current round's ballot, when this game is on it. Streams in
           separately — it is a live read and must not hold up the hero. */}
-      <Suspense fallback={null}>
-        <BallotSection gameId={gameId} />
-      </Suspense>
+      {show.ballot && (
+        <Suspense fallback={null}>
+          <BallotSection gameId={gameId} />
+        </Suspense>
+      )}
 
-      <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
-        <section aria-labelledby="game-reviews" className="min-w-0">
-          <SectionHeading
-            title={<span id="game-reviews">Reviews</span>}
-            count={
-              reviewTotal
-                ? `${reviewTotal} ${reviewTotal === 1 ? "review" : "reviews"}`
-                : undefined
-            }
-            action={
-              reviewTotal ? (
-                <Link
-                  href={`/games/${gameId}/reviews`}
-                  className={headingLinkClass}
-                >
-                  {reviewTotal === 1 ? "The review" : `All ${reviewTotal} reviews`}
-                  <ArrowRight aria-hidden />
-                </Link>
-              ) : undefined
-            }
-            className="mb-4"
-          />
-          {reviewTotal === null ? (
-            <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
-              Reviews couldn&apos;t be loaded right now.
-            </p>
-          ) : (
-            <GameReviewsList
-              gameId={gameId}
-              reviews={reviews}
-              limit={REVIEWS_SHOWN}
-              ownerId={ownerId}
-              canWriteReview={canWriteReview}
-              viewerStatus={
-                isPlaying ? "playing" : hasCompleted ? "completed" : null
+      <div
+        className={cn(
+          "mt-7.5 grid gap-8",
+          show.reviews && "lg:grid-cols-[minmax(0,1fr)_21.25rem]",
+        )}
+      >
+        {show.reviews && (
+          <section aria-labelledby="game-reviews" className="min-w-0">
+            <SectionHeading
+              title={<span id="game-reviews">Reviews</span>}
+              count={
+                reviewTotal
+                  ? `${reviewTotal} ${reviewTotal === 1 ? "review" : "reviews"}`
+                  : undefined
               }
-              layout="crew"
-              accent={accentForGame(game)}
+              action={
+                reviewTotal ? (
+                  <Link
+                    href={`/games/${gameId}/reviews`}
+                    className={headingLinkClass}
+                  >
+                    {reviewTotal === 1 ? "The review" : `All ${reviewTotal} reviews`}
+                    <ArrowRight aria-hidden />
+                  </Link>
+                ) : undefined
+              }
+              className="mb-4"
             />
-          )}
-        </section>
+            {reviewTotal === null ? (
+              <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+                Reviews couldn&apos;t be loaded right now.
+              </p>
+            ) : (
+              <GameReviewsList
+                gameId={gameId}
+                reviews={reviews}
+                limit={REVIEWS_SHOWN}
+                ownerId={ownerId}
+                canWriteReview={canWriteReview}
+                viewerStatus={
+                  isPlaying ? "playing" : hasCompleted ? "completed" : null
+                }
+                layout="crew"
+                accent={accentForGame(game)}
+              />
+            )}
+          </section>
+        )}
 
-        <aside aria-label="About this game" className="space-y-6.5">
+        <aside
+          aria-label="About this game"
+          className={cn(
+            show.reviews
+              ? "space-y-6.5"
+              : // No Reviews column: the rail's sections lay out across the
+                // page instead of hugging one edge.
+                "grid items-start gap-x-8 gap-y-6.5 sm:grid-cols-2 xl:grid-cols-3",
+          )}
+        >
           {/* Saved HowLongToBeat times, or the lookup. Never scrapes on view. */}
           <Suspense fallback={<GameHltbSkeleton />}>
             <GameHltb
@@ -237,16 +279,20 @@ async function GameContent({
               releaseDate={game.initial_release_date}
             />
           </Suspense>
-          <RailMembers
-            title="Playing now"
-            users={players}
-            empty="No one is playing this right now."
-          />
-          <RailMembers
-            title="Completed by"
-            users={completers}
-            empty="No one has finished it yet."
-          />
+          {show.playing && (
+            <RailMembers
+              title="Playing now"
+              users={players}
+              empty="No one is playing this right now."
+            />
+          )}
+          {show.completed && (
+            <RailMembers
+              title="Completed by"
+              users={completers}
+              empty="No one has finished it yet."
+            />
+          )}
           <Suspense fallback={<RailDetailsSkeleton />}>
             <GameDetails
               gameId={gameId}
@@ -270,24 +316,28 @@ async function GameContent({
       </div>
 
       {/* Members' Game Journals on this game: one chapter line per member. */}
-      <Suspense fallback={null}>
-        <GameJournalSection
-          gameId={gameId}
-          completions={game.completions ?? []}
-          viewerId={ownerId}
-        />
-      </Suspense>
+      {show.journals && (
+        <Suspense fallback={null}>
+          <GameJournalSection
+            gameId={gameId}
+            completions={game.completions ?? []}
+            viewerId={ownerId}
+          />
+        </Suspense>
+      )}
 
       {/* The game's Achievement Sets, only when it has any. */}
-      <Suspense fallback={null}>
-        <GameAchievements
-          gameId={gameId}
-          coverUrl={game.cover_url}
-          viewerId={ownerId}
-          ach={ach}
-          achSet={achSet}
-        />
-      </Suspense>
+      {show.achievements && (
+        <Suspense fallback={null}>
+          <GameAchievements
+            gameId={gameId}
+            coverUrl={game.cover_url}
+            viewerId={ownerId}
+            ach={ach}
+            achSet={achSet}
+          />
+        </Suspense>
+      )}
 
       <Suspense fallback={null}>
         <AlternateVersions gameId={gameId} canLink={isAdmin} />

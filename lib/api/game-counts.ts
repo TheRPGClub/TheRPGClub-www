@@ -1,16 +1,28 @@
 import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle, Game, Review, User } from "@/lib/api/types";
+import type { FeatureView } from "@/lib/features";
 
 // The club's Playing / Completed / Reviews numbers for a game: the game page
 // shows them in its hero, the dashboard on each winner's cover. Players and
 // completers are counted once per member, however many entries they have.
 
 export interface GameCounts {
-  playing: number;
-  completed: number;
-  // null when the reviews read failed: unknown, not zero.
+  // Each is null when its Feature (Now Playing, Game Completions, Reviews)
+  // isn't shown to the viewer, or, for reviews, when the read failed:
+  // unknown, not zero.
+  playing: number | null;
+  completed: number | null;
   reviews: number | null;
+}
+
+// Leaves out the numbers whose Feature the viewer isn't shown.
+export function shownCounts(counts: GameCounts, features: FeatureView): GameCounts {
+  return {
+    playing: features.shown("now_playing") ? counts.playing : null,
+    completed: features.shown("game_completions") ? counts.completed : null,
+    reviews: features.shown("reviews") ? counts.reviews : null,
+  };
 }
 
 export function uniqueUsers(

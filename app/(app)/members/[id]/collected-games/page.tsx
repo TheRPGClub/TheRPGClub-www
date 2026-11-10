@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -38,6 +38,7 @@ export default async function CollectedGamesPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ page?: string; platform_id?: string }>;
 }) {
+  await requireFeature("collection");
   const [{ id }, { page = "1", platform_id }] = await Promise.all([
     params,
     searchParams,

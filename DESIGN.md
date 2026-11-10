@@ -419,6 +419,7 @@ Blunt, label-voiced and loud.
 ### Chips
 - **Style:** 24px tall, 2px corners, 8px padding, chip type. The neutral chip (year, platform, studio, role) is paper at 8% with paper-dim text.
 - **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink.
+- **Preview badge (staff only):** a Preview Feature's pages carry the highlight chip reading "Preview" beside the page title (or leading the header's chip row on a banner), so staff never mistake a Preview page for a Live one. Members never see a Preview Feature, so never the badge.
 
 ### Cards / Containers
 - **Corner Style:** rounded.md.
@@ -431,7 +432,7 @@ Blunt, label-voiced and loud.
 - **Focus:** the stroke shifts to paper-mute (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
 
 ### Navigation
-- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open.
+- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
 - **Running head (top bar):** the current route as a trail (e.g. GAMES / <TITLE> / REVIEWS), in label type at 0.95rem with 0.08em tracking. Parent crumbs are paper-mute links that go paper on hover, separators are red slashes, and the current page is paper. Middle crumbs truncate first, at 14rem. On phones, only the page and its parent show. The trail is resolved on the server through the `@crumbs` parallel slot and replaces every in-page breadcrumb. The search field sits at the right (w-80, w-36 on phones) and lands on /games.
 
 ### Cover Story (signature)

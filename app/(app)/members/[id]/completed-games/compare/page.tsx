@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -60,6 +60,7 @@ export default async function CompareCompletionsPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireFeature("game_completions");
   const [{ id }, raw, session] = await Promise.all([
     params,
     searchParams,
