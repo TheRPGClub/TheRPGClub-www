@@ -20,6 +20,6 @@ STORY: The member reads one line (hidden parts leave nav, dashboard and other pa
 
 FIRST VIEWPORT: SETTINGS headline, FEATURES title, the explanatory line, then one row per Live hideable Feature (name, where it shows up, Shown/Hidden switch on the right), capped at 42rem. Staff: Preview rows carry the highlight Preview chip; a "Show Preview features" switch sits below on a raised ink-2 panel with a Staff chip. No Live hideable Feature: a dashed rule-strong box with one short line replaces the list. No preview column, no Core list (user's changes to the locked pick).
 
-FORM: Locked pick "Switches" (`.impeccable/mocks/decision/settings-preview.html`) minus its preview column and Always shown list; seed: none (unavailable). Signature interaction: save on flip; the block slides 200ms (motion-safe), the label reads Saving while the API answers, and a failed save springs back with the reason under the row.
+FORM: Locked pick "Switches" (`.impeccable/mocks/decision/settings-preview.html`) minus its preview column and Always shown list; seed: none (no roll: the structure was hand-sketched and locked by the user in the feature-flags decision round, and this build was told to skip option rounds). Signature interaction: save on flip; the block slides 200ms (motion-safe), the label reads Saving while the API answers, and a failed save springs back with the reason under the row.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

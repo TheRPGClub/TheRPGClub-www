@@ -33,9 +33,13 @@ export function FeatureSwitch({
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
       aria-busy={pending || undefined}
-      disabled={pending}
-      onClick={() => onChange(!checked)}
-      className="group/switch -my-2 -mr-2 flex shrink-0 items-center gap-3 rounded-sm py-2 pr-2 pl-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-progress"
+      // aria-disabled, not disabled: a disabled button drops the focus it
+      // just took, so a keyboard member would lose their place on each save.
+      aria-disabled={pending || undefined}
+      onClick={() => {
+        if (!pending) onChange(!checked);
+      }}
+      className="group/switch -my-2 -mr-2 flex shrink-0 items-center gap-3 rounded-sm py-2 pr-2 pl-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 aria-disabled:cursor-progress"
     >
       <span
         aria-hidden
