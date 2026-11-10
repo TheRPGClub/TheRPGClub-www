@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getSession, requireFeature } from "@/lib/session";
-import { fetchNews, fetchNewsCategories } from "@/lib/api/news";
+import { fetchNews, fetchNewsCategories, fetchNewsNeighbours } from "@/lib/api/news";
 import { paginationOf } from "@/lib/api/pagination";
 import {
   countNote,
   dayHeading,
+  dayRunsOver,
   groupNewsByDay,
   hasNewsFilters,
   newsCategoryRows,
@@ -59,24 +60,29 @@ async function NewsBody({
   userId: string;
   badge: React.ReactNode;
 }) {
-  const [result, categories] = await Promise.all([
+  const [result, categories, neighbours] = await Promise.all([
     fetchNews(filters, userId),
     fetchNewsCategories(),
+    fetchNewsNeighbours(filters, userId),
   ]);
   // The flag changed after the gate above ran.
   if (result === "not_found") notFound();
 
   const items = result?.items ?? [];
   const { total, totalPages } = paginationOf(result?.meta ?? undefined, items.length);
+  // An old or hand-edited address past the last page.
+  const pastEnd = result !== null && filters.page > totalPages;
   const note = result ? countNote(total, filters.page, totalPages) : null;
   const nameOf = categoryNames(categories);
   const now = new Date();
   const meta = result?.meta;
+  // Without the feed the member's switched-off categories are unknown, so
+  // the rail shows no counts and claims nothing about them.
   const rows = newsCategoryRows(
     categories,
     filters,
     meta?.category_counts ?? null,
-    meta?.hidden_categories ?? [],
+    result ? (meta?.hidden_categories ?? []) : null,
   );
 
   return (
@@ -98,6 +104,7 @@ async function NewsBody({
           ) : items.length === 0 ? (
             <NewsEmpty
               filters={filters}
+              lastPage={pastEnd ? totalPages : null}
               nameOf={nameOf}
               // Items the member's default view leaves out (their
               // switched-off categories), for the empty default view.
@@ -111,19 +118,22 @@ async function NewsBody({
                 // A day running over a page break shows no tally: this page
                 // holds only part of it.
                 partial={
-                  (i === 0 && filters.page > 1) ||
-                  (i === days.length - 1 && filters.page < totalPages)
+                  (i === 0 && dayRunsOver(day.day, neighbours.before)) ||
+                  (i === days.length - 1 && dayRunsOver(day.day, neighbours.after))
                 }
                 now={now}
                 nameOf={nameOf}
               />
             ))
           )}
-          <ListPagination
-            currentPage={filters.page}
-            totalPages={totalPages}
-            buildHref={(page) => newsHref(filters, { page })}
-          />
+          {/* Past the end, the empty state leads back instead. */}
+          {!pastEnd && (
+            <ListPagination
+              currentPage={filters.page}
+              totalPages={totalPages}
+              buildHref={(page) => newsHref(filters, { page })}
+            />
+          )}
           {items.length > 0 && (
             <p className="font-label text-[0.8rem] tracking-[0.08em] text-paper-mute">
               Days and times in UTC
@@ -182,19 +192,23 @@ function NewsDayBand({
 
 function NewsEmpty({
   filters,
+  lastPage,
   nameOf,
   elsewhere,
 }: {
   filters: NewsFilters;
+  // The real last page when the address is past it.
+  lastPage: number | null;
   nameOf: (key: string | null) => string;
   elsewhere: boolean;
 }) {
   if (filters.page > 1) {
+    const back = lastPage ?? 1;
     return (
       <EmptyState>
         Nothing on this page.{" "}
-        <Link href={newsHref(filters, { page: 1 })} className={INLINE_LINK}>
-          Back to the first page
+        <Link href={newsHref(filters, { page: back })} className={INLINE_LINK}>
+          {back > 1 ? "Back to the last page" : "Back to the first page"}
         </Link>
       </EmptyState>
     );

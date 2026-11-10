@@ -15,7 +15,8 @@ import { cn } from "@/lib/utils";
 import { InkSquare } from "./ink-square";
 
 // The rail's filter: the search field, the News Categories as toggles, and
-// "Show all categories". Both are plain GET forms on /news, so they work
+// "Show all categories". The search stays when the category list couldn't
+// load; a short note takes the list's place. Both are plain GET forms on /news, so they work
 // before hydration; once hydrated they push the canonical address
 // (newsHref) instead, without scrolling, and dim while the page loads.
 
@@ -49,26 +50,32 @@ export function NewsFilter({
         >
           News Categories
         </h2>
-        <form
-          action={NEWS_PATH}
-          method="get"
-          onSubmit={(event) => {
-            const submitter = (event.nativeEvent as SubmitEvent).submitter;
-            const href = submitter?.dataset.href;
-            if (!href) return;
-            event.preventDefault();
-            go(href);
-          }}
-        >
-          {filters.q && <input type="hidden" name="q" value={filters.q} />}
-          <ul>
-            {rows.map((row) => (
-              <li key={row.key} className="border-b border-rule">
-                <CategoryToggle row={row} />
-              </li>
-            ))}
-          </ul>
-        </form>
+        {rows.length === 0 ? (
+          <p className="text-sm text-paper-dim">
+            Couldn&apos;t load the News Categories. Search still works.
+          </p>
+        ) : (
+          <form
+            action={NEWS_PATH}
+            method="get"
+            onSubmit={(event) => {
+              const submitter = (event.nativeEvent as SubmitEvent).submitter;
+              const href = submitter?.dataset.href;
+              if (!href) return;
+              event.preventDefault();
+              go(href);
+            }}
+          >
+            {filters.q && <input type="hidden" name="q" value={filters.q} />}
+            <ul>
+              {rows.map((row) => (
+                <li key={row.key} className="border-b border-rule">
+                  <CategoryToggle row={row} />
+                </li>
+              ))}
+            </ul>
+          </form>
+        )}
         {filters.categories.length > 0 && (
           <Link
             href={newsHref(filters, { categories: [] })}

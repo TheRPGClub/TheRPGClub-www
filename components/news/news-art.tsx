@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 
 // A card's 16:9 art box: its frames (the outside page's image, or up to four
 // attachments laid out as a contact sheet), a 4px foot bar and the corner tag
-// in the News Category's ink.
+// in the News Category's ink. With a `cover`, the first frame (the outside
+// page's image) shows alone; if it fails the attachments take its place.
 //
 // Outside images load straight from their own address (not through the
 // image optimiser) and send no referrer. A frame that fails to load is
@@ -25,6 +26,7 @@ const FRAME_LINK =
 
 export function NewsArt({
   frames,
+  cover,
   href,
   framesOpen,
   fallback,
@@ -34,6 +36,7 @@ export function NewsArt({
   dashed,
 }: {
   frames: NewsFrame[];
+  cover: boolean;
   // The outside page, for a link News Item: the art leads there too (out of
   // the tab order; the headline is the link).
   href: string | null;
@@ -49,9 +52,10 @@ export function NewsArt({
   const fail = (i: number) =>
     setFailed((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
 
-  const shown = frames
+  const working = frames
     .map((frame, i) => ({ frame, i }))
     .filter(({ i }) => !failed.has(i));
+  const shown = cover && working[0]?.i === 0 ? working.slice(0, 1) : working;
   const visible = shown.slice(0, MAX_FRAMES);
   const extra = shown.length - visible.length;
 
@@ -94,8 +98,8 @@ export function NewsArt({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={
-                      frames.length > 1
-                        ? `Image ${n + 1} of ${frames.length}, full size (opens in a new tab)`
+                      shown.length > 1
+                        ? `Image ${n + 1} of ${shown.length}, full size (opens in a new tab)`
                         : "Image, full size (opens in a new tab)"
                     }
                     className={FRAME_LINK}

@@ -44,7 +44,6 @@ const MEMBER_PAGES: Record<string, string> = {
   reviews: "Reviews",
   journal: "Journal",
   achievements: "Achievements",
-  news: "News",
   edit: "Edit profile",
   imports: "Imports",
 };

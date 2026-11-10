@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { hasNewsFilters, type NewsCategoryRow, type NewsFilters } from "@/lib/news";
 import { cn } from "@/lib/utils";
@@ -8,7 +11,9 @@ import { NewsFilter } from "./news-filter";
 // and a "Filter" disclosure above the grid below it, both holding the same
 // filter (the search field, the News Categories as toggles with their counts
 // or "hidden by you", and "Show all categories"). The disclosure starts open
-// while a filter or search is on, so a phone shows what narrowed the page.
+// while a filter or search is on, so a phone shows what narrowed the page;
+// after that it stays as the member leaves it, also when a choice inside it
+// clears the filter.
 
 export function NewsCategoryRail({
   rows,
@@ -17,13 +22,18 @@ export function NewsCategoryRail({
   rows: NewsCategoryRow[];
   filters: NewsFilters;
 }) {
-  if (rows.length === 0) return null;
+  // Seeded once: the rail stays mounted across the filter's soft navigations.
+  const [open, setOpen] = useState(() => hasNewsFilters(filters));
   return (
     <>
       <aside className="hidden lg:sticky lg:top-[84px] lg:block lg:self-start">
         <NewsFilter rows={rows} filters={filters} headingId="news-categories-rail" />
       </aside>
-      <details open={hasNewsFilters(filters)} className="group/filter mb-1 lg:hidden">
+      <details
+        open={open}
+        onToggle={(event) => setOpen(event.currentTarget.open)}
+        className="group/filter mb-1 lg:hidden"
+      >
         <summary
           className={cn(
             buttonVariants({ variant: "outline" }),

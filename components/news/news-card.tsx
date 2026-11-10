@@ -27,6 +27,7 @@ export function NewsCard({
     <article className="group/card flex h-full flex-col overflow-hidden rounded-md bg-ink-2">
       <NewsArt
         frames={view.frames}
+        cover={view.cover}
         href={view.href}
         framesOpen={view.framesOpen}
         fallback={view.fallback}
