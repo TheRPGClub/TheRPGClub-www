@@ -203,29 +203,27 @@ function FeatureCard({
             {[
               { label: "playing", value: counts.playing },
               { label: "cleared", value: counts.completed },
-              ...(counts.reviews != null
-                ? [
-                    {
-                      label: counts.reviews === 1 ? "review" : "reviews",
-                      value: counts.reviews,
-                    },
-                  ]
-                : []),
-            ].map((stat, i) => (
-              <div key={stat.label} className="flex items-baseline gap-1.5">
-                <dt className="font-label order-2 text-[0.8rem] font-extrabold text-paper-dim">
-                  {stat.label}
-                </dt>
-                <dd
-                  className={cn(
-                    "font-headline text-[1.5rem] leading-none",
-                    i === 0 && "text-nr-soft",
-                  )}
-                >
-                  {stat.value}
-                </dd>
-              </div>
-            ))}
+              {
+                label: counts.reviews === 1 ? "review" : "reviews",
+                value: counts.reviews,
+              },
+            ]
+              .filter((stat) => stat.value != null)
+              .map((stat, i) => (
+                <div key={stat.label} className="flex items-baseline gap-1.5">
+                  <dt className="font-label order-2 text-[0.8rem] font-extrabold text-paper-dim">
+                    {stat.label}
+                  </dt>
+                  <dd
+                    className={cn(
+                      "font-headline text-[1.5rem] leading-none",
+                      i === 0 && "text-nr-soft",
+                    )}
+                  >
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
           </dl>
         )}
         <div className="flex flex-wrap items-center gap-x-1 gap-y-2 pt-3.5">

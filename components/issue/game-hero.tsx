@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import type { Game } from "@/lib/api/types";
 import { Chip } from "@/components/issue/chip";
@@ -23,10 +24,13 @@ export function GameHero({
   game,
   stats,
   releaseDate,
+  badge,
 }: {
   game: Game;
   stats: GameHeroStat[];
   releaseDate: string | null;
+  // Leads the chip row, e.g. the staff "Preview" badge.
+  badge?: ReactNode;
 }) {
   const track = gameTrack(game);
   const art = game.art_url;
@@ -94,8 +98,9 @@ export function GameHero({
             accentClassName={trackAccentText(track)}
             className="text-[3.1rem] leading-[0.88] md:text-[5.5rem]"
           />
-          {(chips.length > 0 || (game.platforms?.length ?? 0) > 0) && (
+          {(badge || chips.length > 0 || (game.platforms?.length ?? 0) > 0) && (
             <div className="mt-4 flex flex-wrap gap-1.5">
+              {badge}
               {chips.map((chip) => (
                 <Chip key={chip.tone} tone={chip.tone}>
                   {chip.label}

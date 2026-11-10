@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -65,6 +65,7 @@ export default async function MemberJournalPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireFeature("journals");
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const gameParam = positiveInt(query.game);
   const pageParam = positiveInt(query.page) ?? 1;

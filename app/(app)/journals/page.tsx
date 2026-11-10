@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
-import { requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ApiSingle, GameSummary } from "@/lib/api/types";
 import {
   fetchJournalContributors,
@@ -41,6 +42,7 @@ export default async function JournalsPage({
   searchParams: Promise<RawSearchParams>;
 }) {
   await requireAuth();
+  const features = await requireFeature("journals");
   const query = await searchParams;
   const q = (firstParam(query.q) ?? "").trim();
   const by = firstParam(query.by) || null;
@@ -102,6 +104,7 @@ export default async function JournalsPage({
     <div className="space-y-6.5">
       <PageHeader
         title="Game Journals"
+        badge={features.preview("journals") && <PreviewBadge />}
         count={
           entryTotal != null
             ? `${entryTotal} ${entryTotal === 1 ? "entry" : "entries"} · ${contributorTotal} ${contributorTotal === 1 ? "contributor" : "contributors"}`

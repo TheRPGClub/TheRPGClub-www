@@ -25,7 +25,8 @@ import {
 } from "@/components/issue/voting-strip";
 import { PageHeader } from "@/components/issue/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 
 // One round at a time, as the backend reports it on voting_rounds/current:
 // members nominate for it, then vote on those same nominations, then it is
@@ -98,6 +99,8 @@ async function loadRound(
 }
 
 async function VotingContent() {
+  const features = await requireFeature("voting_gotm");
+  const badge = features.preview("voting_gotm") && <PreviewBadge />;
   const [round, session] = await Promise.all([
     fetchVotingRound(),
     getSession(),
@@ -106,7 +109,7 @@ async function VotingContent() {
   if (!round) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Nominations & voting" />
+        <PageHeader title="Nominations & voting" badge={badge} />
         <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
           No voting round is scheduled right now. Check back soon!
         </p>
@@ -158,6 +161,7 @@ async function VotingContent() {
     <div className="space-y-7">
       <PageHeader
         title={phase.title}
+        badge={badge}
         count={`Round ${round.round_number} · ${round.month_year}`}
       />
 

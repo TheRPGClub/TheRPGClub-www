@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { featureView } from "@/lib/features";
 import { fetchCurrentPhase } from "@/lib/api/voting-round";
 import {
   SidebarInset,
@@ -27,7 +28,11 @@ export default async function AppLayout({
   // Authorization), so cached reads are per member and a 401 is never shared;
   // waiting for the session only keeps a logged-out render from wasting a
   // fetch that can only fail.
-  const votingPhase = await fetchCurrentPhase();
+  //
+  // Voting & GOTM hidden from this viewer: no round to name the nav item by.
+  const votingPhase = featureView(session.features).shown("voting_gotm")
+    ? await fetchCurrentPhase()
+    : null;
 
   return (
     <TooltipProvider>
@@ -36,6 +41,7 @@ export default async function AppLayout({
           principal={session.principal}
           membership={session.membership}
           votingPhase={votingPhase}
+          features={session.features}
         />
         {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
             not widen the column past the window. @container: the bleed

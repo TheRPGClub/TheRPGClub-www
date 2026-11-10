@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowRight, ChevronLeft, Link2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getFeatures, getSession } from "@/lib/session";
 import type { ImportJob, ImportSummary } from "@/lib/api/types";
 import {
   loadActiveImport,
@@ -57,15 +57,21 @@ export default async function ImportsHubPage({
   if (!session) redirect("/");
   if (session.principal.discord_id !== id) redirect(`/members/${id}`);
 
+  // Only the imports whose Feature (the list they write to) is shown.
+  const features = await getFeatures();
+  const order = IMPORT_KIND_ORDER.filter((kind) =>
+    features.shown(IMPORT_KINDS[kind].feature),
+  );
+
   const [userRes, socials, ...active] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
     loadSocials(id),
-    ...IMPORT_KIND_ORDER.map((kind) => loadActiveImport(kind, id)),
+    ...order.map((kind) => loadActiveImport(kind, id)),
   ]);
 
   if (!userRes.ok) notFound();
 
-  const kinds = IMPORT_KIND_ORDER.map((kind, i) => ({
+  const kinds = order.map((kind, i) => ({
     kind,
     active: active[i] as ImportJob | null,
   }));

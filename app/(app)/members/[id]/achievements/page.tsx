@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Link2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
 import type {
   AchievementProvider,
   AchievementSetProgress,
@@ -90,6 +91,7 @@ export default async function MemberAchievementsPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<RawSearchParams>;
 }) {
+  const features = await requireFeature("achievement_hub");
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const query = parseMemberAchievementsQuery(raw);
   // The same read as the running head, so the request is shared.
@@ -113,6 +115,7 @@ export default async function MemberAchievementsPage({
         userId={id}
         displayName={displayName}
         title="Achievements"
+        feature="achievement_hub"
       >
         {result.status === "none" ? (
           <LinkAccountCta userId={id} />
@@ -194,6 +197,7 @@ export default async function MemberAchievementsPage({
             href={href}
             setCount={setsPage?.failed ? null : (setsPage?.total ?? null)}
             unlockCount={summary.totals.unlocks}
+            badge={features.preview("achievement_hub") && <PreviewBadge />}
           />
 
           {setsPage ? (
@@ -361,11 +365,14 @@ function IndexHeader({
   href,
   setCount,
   unlockCount,
+  badge,
 }: {
   query: MemberAchievementsQuery;
   href: HrefFor;
   setCount: number | null;
   unlockCount: number;
+  // The staff "Preview" badge, beside the views.
+  badge?: React.ReactNode;
 }) {
   const views = [
     { key: "sets" as const, label: "Index", count: setCount, noun: ["set", "sets"] },
@@ -373,36 +380,39 @@ function IndexHeader({
   ];
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-2 border-paper pb-2">
-      <nav aria-label="Achievement views" id="binder-view">
-        <ul className="flex items-end gap-5">
-          {views.map((v) => {
-            const on = v.key === query.tab;
-            return (
-              <li key={v.key} className="flex items-end gap-2">
-                <Link
-                  href={href({ tab: v.key })}
-                  aria-current={on ? "page" : undefined}
-                  scroll={false}
-                  className={cn(
-                    "font-headline leading-[0.85] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight",
-                    on
-                      ? "text-[2rem] text-paper sm:text-[2.2rem]"
-                      : "text-[1.35rem] text-paper-mute hover:text-highlight",
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
+        <nav aria-label="Achievement views" id="binder-view">
+          <ul className="flex items-end gap-5">
+            {views.map((v) => {
+              const on = v.key === query.tab;
+              return (
+                <li key={v.key} className="flex items-end gap-2">
+                  <Link
+                    href={href({ tab: v.key })}
+                    aria-current={on ? "page" : undefined}
+                    scroll={false}
+                    className={cn(
+                      "font-headline leading-[0.85] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight",
+                      on
+                        ? "text-[2rem] text-paper sm:text-[2.2rem]"
+                        : "text-[1.35rem] text-paper-mute hover:text-highlight",
+                    )}
+                  >
+                    {v.label}
+                  </Link>
+                  {on && v.count != null && (
+                    <span className="font-label pb-0.5 text-[0.8rem] text-paper-mute">
+                      {v.count.toLocaleString("en-US")}{" "}
+                      {v.count === 1 ? v.noun[0] : v.noun[1]}
+                    </span>
                   )}
-                >
-                  {v.label}
-                </Link>
-                {on && v.count != null && (
-                  <span className="font-label pb-0.5 text-[0.8rem] text-paper-mute">
-                    {v.count.toLocaleString("en-US")}{" "}
-                    {v.count === 1 ? v.noun[0] : v.noun[1]}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        {badge && <div className="pb-0.5">{badge}</div>}
+      </div>
       {query.tab === "sets" && (
         <nav aria-label="Sort" className="flex items-center gap-2.5 pb-0.5">
           <span className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute">Sort</span>

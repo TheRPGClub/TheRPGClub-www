@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import type {
   ApiCollection,
   ApiSingle,
@@ -100,6 +100,7 @@ export default async function BacklogPickPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<BacklogPickSearchParams>;
 }) {
+  await requireFeature("backlog");
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const session = await getSession();
 
