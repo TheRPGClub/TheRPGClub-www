@@ -151,25 +151,28 @@ export interface NewsCategoryRow {
   href: string;
 }
 
+// `hidden` is null when the feed couldn't be read, so the member's
+// switched-off categories are unknown: the rows then claim nothing about the
+// default view (only the chosen ones, which the address names, are in view).
 export function newsCategoryRows(
   categories: readonly NewsCategory[],
   filters: NewsFilters,
   counts: Partial<Record<string, number>> | null,
-  hidden: readonly string[],
+  hidden: readonly string[] | null,
 ): NewsCategoryRow[] {
   const anyChosen = filters.categories.length > 0;
   return categories
     .filter((category) => isNewsCategoryKey(category.key))
     .map(({ key, name }) => {
       const chosen = filters.categories.includes(key);
-      const isHidden = hidden.includes(key);
+      const isHidden = hidden?.includes(key) ?? false;
       const count = counts?.[key];
       const next = toggleNewsCategory(filters.categories, key);
       return {
         key,
         name,
         chosen,
-        inView: anyChosen ? chosen : !isHidden,
+        inView: anyChosen || !hidden ? chosen : !isHidden,
         hidden: isHidden,
         note: isHidden && !chosen ? "hidden by you" : count == null ? null : String(count),
         next,
@@ -202,10 +205,11 @@ export function newsEmptyNote(
 }
 
 // "212 items · page 1 of 18" beside the page title; null with nothing to count.
+// A page past the last one (an old or hand-edited address) names no page.
 export function countNote(total: number, page: number, pages: number): string | null {
   if (total <= 0) return null;
   const items = `${total} ${total === 1 ? "item" : "items"}`;
-  return pages > 1 ? `${items} · page ${page} of ${pages}` : items;
+  return pages > 1 && page <= pages ? `${items} · page ${page} of ${pages}` : items;
 }
 
 // ---------------------------------------------------------------------------
@@ -249,6 +253,16 @@ const DAY_DATE_YEAR = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   timeZone: "UTC",
 });
+
+// Whether a day band at a page edge runs over the break: the neighbouring
+// item just past that edge (the last one of the page before, or the first
+// one of the page after) falls on the same UTC day. `neighbour` is null when
+// there is none and undefined when it couldn't be read, which counts as
+// running over, so a tally is never short.
+export function dayRunsOver(day: string, neighbour: NewsItem | null | undefined): boolean {
+  if (neighbour === null) return false;
+  return neighbour === undefined || utcDay(neighbour.posted_at) === day;
+}
 
 // A day band's Anton title and the label beside it. Today and yesterday are
 // named and dated in the label; older days are dated in the title (with the
@@ -332,8 +346,11 @@ export interface NewsCardView {
   comment: string | null;
   // The meta line's left: the site, or "Image" / "3 images".
   site: string;
-  // The art: the outside page's image, else the attachments.
+  // The art: the outside page's image (if any), then the attachments.
   frames: NewsFrame[];
+  // The first frame is the outside page's image, shown alone while it
+  // loads; if it fails the attachments take its place.
+  cover: boolean;
   // True when each frame opens its own image full size (image-only items).
   framesOpen: boolean;
   // Set in Anton on the art box when there is no art to show: the title,
@@ -381,7 +398,8 @@ export function newsCardView(item: NewsItem): NewsCardView {
       description: present(link.description),
       comment,
       site: present(link.site_name) ?? hostOf(link.url),
-      frames: link.image_url ? [{ url: link.image_url, unavailable: false }] : images,
+      frames: link.image_url ? [{ url: link.image_url, unavailable: false }, ...images] : images,
+      cover: Boolean(link.image_url),
       framesOpen: false,
       fallback: present(link.title) ?? present(link.site_name) ?? hostOf(link.url),
       time,
@@ -395,6 +413,7 @@ export function newsCardView(item: NewsItem): NewsCardView {
     comment: null,
     site: images.length > 1 ? `${images.length} images` : "Image",
     frames: images,
+    cover: false,
     framesOpen: true,
     fallback: "Image unavailable",
     time,
