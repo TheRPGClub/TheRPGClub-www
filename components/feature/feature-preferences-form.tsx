@@ -11,9 +11,12 @@ import {
 import { Chip } from "@/components/issue/chip";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
+import { NewsCategorySwitches } from "@/components/feature/news-category-switches";
+import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import { cn } from "@/lib/utils";
 
 const SHOW_PREVIEW = "show_preview";
+const NEWS_HUB = "news_hub";
 
 function changeId(change: PreferenceChange): string {
   return change.kind === "feature" ? change.key : SHOW_PREVIEW;
@@ -25,7 +28,18 @@ function changeId(change: PreferenceChange): string {
 // action refreshes the page, so `initial` is the API's fresh document once a
 // save lands and the form follows it. Rows save independently, and a pending
 // row keeps its optimistic position over a refresh another row brought in.
-export function FeaturePreferencesForm({ initial }: { initial: FeaturePreferences }) {
+//
+// The News Hub row carries its News Category switches nested under it. They
+// render only when the API lists the News Hub (the member can use it), and
+// go unavailable while the row's own switch, optimistic included, is Hidden.
+export function FeaturePreferencesForm({
+  initial,
+  newsCategories,
+}: {
+  initial: FeaturePreferences;
+  // The member's News Category Preferences; null when the read failed.
+  newsCategories: NewsCategoryPreferences | null;
+}) {
   const [prefs, applyOptimistic] = useOptimistic(initial, applyPreferenceChange);
   const [pending, setPending] = useState<ReadonlySet<string>>(new Set());
   const [errors, setErrors] = useState<Readonly<Record<string, string>>>({});
@@ -79,6 +93,11 @@ export function FeaturePreferencesForm({ initial }: { initial: FeaturePreference
                 where={whereItShows(f.website)}
                 dim={!shown}
                 error={errors[key]}
+                nested={
+                  key === NEWS_HUB ? (
+                    <NewsCategorySwitches initial={newsCategories} unavailable={!shown} />
+                  ) : null
+                }
               >
                 <FeatureSwitch
                   checked={shown}
@@ -136,6 +155,7 @@ function PreferenceRow({
   dim,
   error,
   className,
+  nested,
   children,
 }: {
   id: string;
@@ -145,6 +165,8 @@ function PreferenceRow({
   dim: boolean;
   error?: string;
   className?: string;
+  // Sub-settings that belong to this row, under its error line.
+  nested?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -174,6 +196,7 @@ function PreferenceRow({
           {error}
         </p>
       )}
+      {nested}
     </li>
   );
 }
