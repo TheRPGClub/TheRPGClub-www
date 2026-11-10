@@ -168,8 +168,12 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
   const shown = saving ?? entry.state;
   const busy = saving !== null;
 
-  const save = (next: FeatureState) => {
-    const { error: reasonError } = normalizeReason(draft);
+  // `reason` defaults to the row's draft; picking Preview or Live from an
+  // open Off confirm sends none, since that draft was written for the Off.
+  const save = (next: FeatureState, reason: string = draft) => {
+    // One change at a time: a second Enter or click while saving is dropped.
+    if (busy) return;
+    const { error: reasonError } = normalizeReason(reason);
     if (reasonError) {
       setError(reasonError);
       setPanel((p) => p ?? "reason");
@@ -180,7 +184,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
     startTransition(async () => {
       let result: Awaited<ReturnType<typeof setFeatureFlagAction>>;
       try {
-        result = await setFeatureFlagAction(entry.key, next, draft);
+        result = await setFeatureFlagAction(entry.key, next, reason);
       } catch {
         result = { ok: false, error: "Couldn't reach the club's server. Try again." };
       }
@@ -196,16 +200,20 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
   };
 
   const pick = (next: FeatureState) => {
-    if (busy || next === entry.state) {
-      if (next === entry.state && panel === "confirm") setPanel(null);
-      return;
-    }
+    if (busy) return;
     if (needsOffConfirm(entry.state, next)) {
       setError(null);
       setPanel("confirm");
       return;
     }
-    save(next);
+    // Picking Preview or Live drops an open Off confirm and the reason typed
+    // for it, so that reason never rides along with another change.
+    const confirming = panel === "confirm";
+    if (confirming) {
+      setPanel(null);
+      setDraft("");
+    }
+    if (next !== entry.state) save(next, confirming ? "" : draft);
   };
 
   const panelId = `${id}-panel`;
