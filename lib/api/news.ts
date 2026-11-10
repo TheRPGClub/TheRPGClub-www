@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { NewsCategory, NewsFilters, NewsItem } from "@/lib/news";
+import { newsFeedTag } from "@/lib/news-category-preferences";
 import type { CollectionMeta } from "./types";
 
 // The News Hub's reads (spec api#355): the feed (`GET /news_items`) and the
@@ -7,11 +8,11 @@ import type { CollectionMeta } from "./types";
 // Feature and 404 for a member who can't use it.
 //
 // Next's Data Cache key includes the request headers (the member's
-// Authorization), so a short revalidate is still per member; the feed will
-// carry each member's own default view once News Category Preferences land.
+// Authorization), so a short revalidate is still per member. The default
+// view leaves out the member's switched-off News Categories, so the feed is
+// tagged per member and a settings save expires it at once (newsFeedTag).
 
 const NEWS_PER = 30;
-const NEWS_FETCH: RequestInit = { next: { revalidate: 60 } };
 // The list is fixed in code on the API; it changes with an API release.
 const CATEGORIES_FETCH: RequestInit = { next: { revalidate: 3600 } };
 
@@ -25,10 +26,14 @@ export interface NewsPage {
 // page can tell both from an empty feed.
 export async function fetchNews(
   filters: NewsFilters,
+  // The viewer's Discord id, for the feed's cache tag.
+  userId: string,
 ): Promise<NewsPage | "not_found" | null> {
   const ps = new URLSearchParams({ page: String(filters.page), per: String(NEWS_PER) });
   try {
-    const res = await apiFetch(`/api/v1/news_items?${ps}`, NEWS_FETCH);
+    const res = await apiFetch(`/api/v1/news_items?${ps}`, {
+      next: { revalidate: 60, tags: [newsFeedTag(userId)] },
+    });
     if (res.status === 404) return "not_found";
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: NewsItem[]; meta?: CollectionMeta };

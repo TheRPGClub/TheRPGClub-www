@@ -41,19 +41,24 @@ export default async function NewsPage({
 
   return (
     <Suspense fallback={<NewsSkeleton badge={badge} />}>
-      <NewsBody filters={filters} badge={badge} />
+      <NewsBody filters={filters} userId={session.principal.discord_id} badge={badge} />
     </Suspense>
   );
 }
 
 async function NewsBody({
   filters,
+  userId,
   badge,
 }: {
   filters: NewsFilters;
+  userId: string;
   badge: React.ReactNode;
 }) {
-  const [result, categories] = await Promise.all([fetchNews(filters), fetchNewsCategories()]);
+  const [result, categories] = await Promise.all([
+    fetchNews(filters, userId),
+    fetchNewsCategories(),
+  ]);
   // The flag changed after the gate above ran.
   if (result === "not_found") notFound();
 

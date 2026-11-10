@@ -1,8 +1,8 @@
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
-import type { CSSProperties } from "react";
 import { newsInk, type NewsCategory } from "@/lib/news";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { InkSquare } from "./ink-square";
 
 // The News page's category rail: a 15.5rem column beside the grid from `lg`,
 // and a "Filter" disclosure above the grid below it, both holding the same
@@ -63,39 +63,12 @@ function CategoryList({
               key={category.key}
               className="font-label flex h-[38px] items-center gap-2.5 border-b border-rule text-[0.95rem] text-paper"
             >
-              <InkSquare color={ink.color} dashed={ink.dashed} />
+              <InkSquare {...ink} />
               <span className="min-w-0 truncate">{category.name}</span>
             </li>
           );
         })}
       </ul>
     </section>
-  );
-}
-
-// A category's ink as a 16px square: filled when it is in the view. Rumours
-// carries a dashed edge, since it is unconfirmed news.
-export function InkSquare({
-  color,
-  dashed,
-  filled = true,
-}: {
-  color: string;
-  dashed: boolean;
-  filled?: boolean;
-}) {
-  return (
-    <i
-      aria-hidden
-      style={{ "--news-ink": color } as CSSProperties}
-      className={cn(
-        "size-4 shrink-0 rounded-xs",
-        filled ? "bg-(--news-ink)" : "shadow-[inset_0_0_0_1.5px_var(--news-ink)]",
-        dashed &&
-          (filled
-            ? "outline-[1.5px] -outline-offset-[2px] outline-ink/70 outline-dashed"
-            : "border-[1.5px] border-dashed border-(--news-ink) shadow-none"),
-      )}
-    />
   );
 }

@@ -7,7 +7,9 @@ import {
   type NewsCategoryChange,
   type NewsCategoryPreferences,
 } from "@/lib/news-category-preferences";
+import { newsInk } from "@/lib/news";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
+import { InkSquare } from "@/components/news/ink-square";
 import { cn } from "@/lib/utils";
 
 const SAVE_FAILED = "Couldn't save that switch. Try again.";
@@ -110,7 +112,10 @@ function CategoryList({
           <li key={c.key} className="border-b border-rule py-2.5 last:border-b-0">
             <div className="flex items-center justify-between gap-5">
               <div className="flex min-w-0 items-center gap-2.5">
-                <InkSquare categoryKey={c.key} dim={unavailable} />
+                <InkSquare
+                  {...newsInk(c.key)}
+                  className={cn("transition-opacity", unavailable && "opacity-45")}
+                />
                 <span
                   id={nameId}
                   className={cn(
@@ -141,34 +146,5 @@ function CategoryList({
         );
       })}
     </ul>
-  );
-}
-
-// A News Category's ink as a 16px square (globals.css `--color-news-<key>`;
-// a key www has no ink for reads as General). Rumours carries a dashed inner
-// edge, since it is unconfirmed news. It names the category; the switch, not
-// the square, carries on and off. Whole class names, so Tailwind emits the
-// news inks (it drops theme colours no class uses).
-const INK_FILL: Readonly<Record<string, string>> = {
-  announcements: "bg-news-announcements",
-  releases: "bg-news-releases",
-  emulation: "bg-news-emulation",
-  industry: "bg-news-industry",
-  hardware: "bg-news-hardware",
-  rumours: "bg-news-rumours",
-  general: "bg-news-general",
-};
-
-function InkSquare({ categoryKey, dim }: { categoryKey: string; dim: boolean }) {
-  return (
-    <i
-      aria-hidden
-      className={cn(
-        "size-4 shrink-0 rounded-xs transition-opacity",
-        Object.hasOwn(INK_FILL, categoryKey) ? INK_FILL[categoryKey] : INK_FILL.general,
-        categoryKey === "rumours" && "outline-[1.5px] -outline-offset-[4px] outline-ink/70 outline-dashed",
-        dim && "opacity-45",
-      )}
-    />
   );
 }
