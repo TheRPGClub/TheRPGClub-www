@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import type { NewsCategory, NewsFilters, NewsItem } from "@/lib/news";
+import type { NewsCategory, NewsCategoryKey, NewsFilters, NewsItem } from "@/lib/news";
 import { newsFeedTag } from "@/lib/news-category-preferences";
 import type { CollectionMeta } from "./types";
 
@@ -16,9 +16,19 @@ const NEWS_PER = 30;
 // The list is fixed in code on the API; it changes with an API release.
 const CATEGORIES_FETCH: RequestInit = { next: { revalidate: 3600 } };
 
+// The feed's meta (schema NewsFeedMeta): the page's counts for the filtered
+// result, plus what the category rail needs.
+export interface NewsFeedMeta extends CollectionMeta {
+  // Every News Category's count for the current search, ignoring the
+  // category filter and the member's preferences.
+  category_counts?: Partial<Record<NewsCategoryKey, number>>;
+  // The member's switched-off categories, whatever the request filters by.
+  hidden_categories?: NewsCategoryKey[];
+}
+
 export interface NewsPage {
   items: NewsItem[];
-  meta: CollectionMeta | null;
+  meta: NewsFeedMeta | null;
 }
 
 // "not_found" when the API says the viewer can't use the News Hub (its flag
@@ -30,13 +40,16 @@ export async function fetchNews(
   userId: string,
 ): Promise<NewsPage | "not_found" | null> {
   const ps = new URLSearchParams({ page: String(filters.page), per: String(NEWS_PER) });
+  // No category = the member's default view, which the API works out.
+  if (filters.categories.length) ps.set("category", filters.categories.join(","));
+  if (filters.q) ps.set("q", filters.q);
   try {
     const res = await apiFetch(`/api/v1/news_items?${ps}`, {
       next: { revalidate: 60, tags: [newsFeedTag(userId)] },
     });
     if (res.status === 404) return "not_found";
     if (!res.ok) return null;
-    const body = (await res.json()) as { data?: NewsItem[]; meta?: CollectionMeta };
+    const body = (await res.json()) as { data?: NewsItem[]; meta?: NewsFeedMeta };
     return { items: body.data ?? [], meta: body.meta ?? null };
   } catch {
     return null;

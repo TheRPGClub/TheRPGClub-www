@@ -50,27 +50,155 @@ export interface NewsItem {
   author: { user_id: string; name: string; member: boolean };
 }
 
+// The News Category keys in the API's order (positions 1-7). Names come from
+// `GET /news_categories`; the keys are what the address may carry, so a key
+// the API would refuse never reaches it.
+export const NEWS_CATEGORY_KEYS: readonly NewsCategoryKey[] = [
+  "announcements",
+  "releases",
+  "emulation",
+  "industry",
+  "hardware",
+  "rumours",
+  "general",
+];
+
+function isNewsCategoryKey(value: string): value is NewsCategoryKey {
+  return (NEWS_CATEGORY_KEYS as readonly string[]).includes(value);
+}
+
 // ---------------------------------------------------------------------------
-// URL state. `?page=` only for now; the category filter and search join it
-// in www#77, and changing either passes `page: 1`.
+// URL state: the chosen News Categories (`?category=releases,industry`, in
+// category order), the search (`?q=`) and the page. Both filters are applied
+// by the API. Changing either returns to page one; paging keeps both.
 
 export const NEWS_PATH = "/news";
 
 export interface NewsFilters {
   page: number;
+  // Chosen News Categories in category order; empty = the member's default
+  // view (every category but the ones they switched off).
+  categories: NewsCategoryKey[];
+  // Search text, trimmed; "" = no search.
+  q: string;
+}
+
+// Keeps known keys in category order, once each. Takes the comma list this
+// page writes and repeated `category=` params alike (a GET form without JS
+// sends the comma list too).
+function parseCategories(raw: string | string[] | undefined): NewsCategoryKey[] {
+  const values = (Array.isArray(raw) ? raw : raw ? [raw] : [])
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim().toLowerCase());
+  return NEWS_CATEGORY_KEYS.filter((key) => values.includes(key));
 }
 
 export function parseNewsFilters(raw: RawSearchParams): NewsFilters {
   const page = parseInt(firstParam(raw.page) ?? "", 10);
-  return { page: Number.isFinite(page) && page > 1 ? page : 1 };
+  return {
+    page: Number.isFinite(page) && page > 1 ? page : 1,
+    categories: parseCategories(raw.category),
+    q: (firstParam(raw.q) ?? "").trim(),
+  };
+}
+
+export function hasNewsFilters(filters: NewsFilters): boolean {
+  return filters.categories.length > 0 || filters.q !== "";
 }
 
 // Defaults stay off the query string, so the canonical URL is the bare path.
+// A change to the categories or the search goes back to page one unless the
+// change names a page.
 export function newsHref(filters: NewsFilters, change: Partial<NewsFilters> = {}): string {
-  const next = { ...filters, ...change };
+  const refilters = "categories" in change || "q" in change;
+  const next = { ...filters, ...(refilters ? { page: 1 } : {}), ...change };
   const ps = new URLSearchParams();
+  if (next.categories.length) ps.set("category", next.categories.join(","));
+  const q = next.q.trim();
+  if (q) ps.set("q", q);
   if (next.page > 1) ps.set("page", String(next.page));
-  return `${NEWS_PATH}${ps.size ? `?${ps}` : ""}`;
+  // Keys never hold a comma of their own, and a literal comma is valid in a
+  // query, so the list reads "releases,industry" rather than "%2C".
+  const query = ps.toString().replaceAll("%2C", ",");
+  return `${NEWS_PATH}${query ? `?${query}` : ""}`;
+}
+
+// The chosen categories with `key` added or taken away, in category order.
+export function toggleNewsCategory(
+  chosen: readonly NewsCategoryKey[],
+  key: NewsCategoryKey,
+): NewsCategoryKey[] {
+  const on = !chosen.includes(key);
+  return NEWS_CATEGORY_KEYS.filter((k) => (k === key ? on : chosen.includes(k)));
+}
+
+// One row of the category rail.
+export interface NewsCategoryRow {
+  key: NewsCategoryKey;
+  name: string;
+  // In the chosen set (the toggle's pressed state).
+  chosen: boolean;
+  // Shown by the current view: chosen, or, with nothing chosen, not switched
+  // off by the member. Fills the ink square; otherwise it is outlined.
+  inView: boolean;
+  // Switched off by the member in settings.
+  hidden: boolean;
+  // The count for the current search, or "hidden by you" for a switched-off
+  // category until it is chosen; null when the feed sent no counts.
+  note: string | null;
+  // The chosen set after toggling this row, and its address.
+  next: NewsCategoryKey[];
+  href: string;
+}
+
+export function newsCategoryRows(
+  categories: readonly NewsCategory[],
+  filters: NewsFilters,
+  counts: Partial<Record<string, number>> | null,
+  hidden: readonly string[],
+): NewsCategoryRow[] {
+  const anyChosen = filters.categories.length > 0;
+  return categories
+    .filter((category) => isNewsCategoryKey(category.key))
+    .map(({ key, name }) => {
+      const chosen = filters.categories.includes(key);
+      const isHidden = hidden.includes(key);
+      const count = counts?.[key];
+      const next = toggleNewsCategory(filters.categories, key);
+      return {
+        key,
+        name,
+        chosen,
+        inView: anyChosen ? chosen : !isHidden,
+        hidden: isHidden,
+        note: isHidden && !chosen ? "hidden by you" : count == null ? null : String(count),
+        next,
+        href: newsHref(filters, { categories: next }),
+      };
+    });
+}
+
+// The empty state's line when a filter or search finds nothing. Category
+// names come in category order; past two they are counted instead.
+// `elsewhere`: the search does match items in categories the member's
+// default view leaves out (their switched-off ones).
+export function newsEmptyNote(
+  filters: NewsFilters,
+  nameOf: (key: NewsCategoryKey) => string,
+  elsewhere = false,
+): string {
+  const { categories, q } = filters;
+  const quoted = `“${q}”`;
+  if (categories.length === 0) {
+    return elsewhere
+      ? `Nothing in the News Categories you follow matches ${quoted}.`
+      : `Nothing matches ${quoted}.`;
+  }
+  const where =
+    categories.length > 2
+      ? `the ${categories.length} chosen categories`
+      : categories.map(nameOf).join(" or ");
+  return q ? `Nothing in ${where} matches ${quoted}.` : `Nothing in ${where} yet.`;
 }
 
 // "212 items · page 1 of 18" beside the page title; null with nothing to count.

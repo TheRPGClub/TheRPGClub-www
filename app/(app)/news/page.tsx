@@ -8,6 +8,9 @@ import {
   countNote,
   dayHeading,
   groupNewsByDay,
+  hasNewsFilters,
+  newsCategoryRows,
+  newsEmptyNote,
   newsHref,
   parseNewsFilters,
   type NewsCategory,
@@ -24,7 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 // The News Hub (spec api#355): the game news members post in the News
 // Category threads on Discord, as a contact sheet. Newest first in UTC day
 // bands, each a grid of cards marked in their News Category's ink, beside the
-// category rail (a "Filter" disclosure below lg). The URL holds the page.
+// category rail (a "Filter" disclosure below lg). The URL holds the chosen
+// News Categories, the search and the page; the API applies them.
 
 export default async function NewsPage({
   searchParams,
@@ -67,6 +71,13 @@ async function NewsBody({
   const note = result ? countNote(total, filters.page, totalPages) : null;
   const nameOf = categoryNames(categories);
   const now = new Date();
+  const meta = result?.meta;
+  const rows = newsCategoryRows(
+    categories,
+    filters,
+    meta?.category_counts ?? null,
+    meta?.hidden_categories ?? [],
+  );
 
   return (
     <div className="space-y-6">
@@ -80,12 +91,18 @@ async function NewsBody({
         }
       />
       <div className="gap-x-7 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <NewsCategoryRail categories={categories} />
+        <NewsCategoryRail rows={rows} filters={filters} />
         <div className="@container min-w-0 space-y-8 max-lg:mt-5">
           {!result ? (
             <EmptyState>Couldn&apos;t load the news. Try again in a moment.</EmptyState>
           ) : items.length === 0 ? (
-            <NewsEmpty filters={filters} />
+            <NewsEmpty
+              filters={filters}
+              nameOf={nameOf}
+              // Items the member's default view leaves out (their
+              // switched-off categories), for the empty default view.
+              elsewhere={Object.values(meta?.category_counts ?? {}).some((n) => n > 0)}
+            />
           ) : (
             groupNewsByDay(items).map((day, i, days) => (
               <NewsDayBand
@@ -163,7 +180,15 @@ function NewsDayBand({
   );
 }
 
-function NewsEmpty({ filters }: { filters: NewsFilters }) {
+function NewsEmpty({
+  filters,
+  nameOf,
+  elsewhere,
+}: {
+  filters: NewsFilters;
+  nameOf: (key: string | null) => string;
+  elsewhere: boolean;
+}) {
   if (filters.page > 1) {
     return (
       <EmptyState>
@@ -171,6 +196,28 @@ function NewsEmpty({ filters }: { filters: NewsFilters }) {
         <Link href={newsHref(filters, { page: 1 })} className={INLINE_LINK}>
           Back to the first page
         </Link>
+      </EmptyState>
+    );
+  }
+  if (hasNewsFilters(filters)) {
+    return (
+      <EmptyState>
+        {newsEmptyNote(filters, nameOf, elsewhere)}{" "}
+        <Link href={newsHref(filters, { categories: [], q: "" })} className={INLINE_LINK}>
+          Clear filters
+        </Link>
+      </EmptyState>
+    );
+  }
+  if (elsewhere) {
+    return (
+      <EmptyState>
+        Nothing in the News Categories you follow. Choose one in the filter, or turn them
+        back on in{" "}
+        <Link href="/settings" className={INLINE_LINK}>
+          Settings
+        </Link>
+        .
       </EmptyState>
     );
   }
