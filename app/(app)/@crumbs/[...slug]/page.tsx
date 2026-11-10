@@ -16,6 +16,7 @@ const SECTIONS: Record<string, string> = {
   games: "Games",
   gotm: "GOTM history",
   achievements: "Achievements",
+  news: "News",
   members: "Members",
   voting: "Voting",
   giveaways: "Giveaways",

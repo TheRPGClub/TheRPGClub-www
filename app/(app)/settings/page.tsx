@@ -1,4 +1,6 @@
 import { apiFetch } from "@/lib/api";
+import { fetchNewsCategoryPreferences } from "@/lib/api/news";
+import { featureView } from "@/lib/features";
 import { requireAuth } from "@/lib/session";
 import type { FeaturePreferences } from "@/lib/feature-preferences";
 import { PageHeader, SectionHeading } from "@/components/issue/page-header";
@@ -26,7 +28,14 @@ async function fetchPreferences(userId: string): Promise<FeaturePreferences | nu
 // (nav, dashboard, sections), never what they may open from a link.
 export default async function SettingsPage() {
   const session = await requireAuth();
-  const prefs = await fetchPreferences(session.principal.discord_id);
+  const userId = session.principal.discord_id;
+  // The News Category Preferences only for a member who can open the News
+  // Hub (the session says so); the form shows their block only then.
+  const newsHub = featureView(session.features).canOpen("news_hub");
+  const [prefs, newsCategories] = await Promise.all([
+    fetchPreferences(userId),
+    newsHub ? fetchNewsCategoryPreferences(userId) : null,
+  ]);
 
   return (
     <div className="flex max-w-2xl flex-col gap-7">
@@ -39,7 +48,7 @@ export default async function SettingsPage() {
           pages. Direct links still work.
         </p>
         {prefs ? (
-          <FeaturePreferencesForm initial={prefs} />
+          <FeaturePreferencesForm initial={prefs} newsCategories={newsCategories} />
         ) : (
           <p
             role="alert"
