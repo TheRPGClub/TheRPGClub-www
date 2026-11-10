@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { getFeatures, requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ApiSingle, GameSummary } from "@/lib/api/types";
 import {
@@ -42,7 +42,7 @@ export default async function JournalsPage({
   searchParams: Promise<RawSearchParams>;
 }) {
   await requireAuth();
-  const features = await getFeatures();
+  const features = await requireFeature("journals");
   const query = await searchParams;
   const q = (firstParam(query.q) ?? "").trim();
   const by = firstParam(query.by) || null;
@@ -99,6 +99,10 @@ export default async function JournalsPage({
   const entryTotal = (filtered ? everything : results)?.meta.count ?? null;
   const contributorTotal = contributors?.meta.count ?? people.length;
   const found = results?.meta.count ?? 0;
+  // The filtered game's title: the game read (404 while Game Index isn't
+  // open to this viewer), else any matching entry's game, else its id.
+  const filterGameTitle =
+    gameTitle ?? results?.data.find((e) => e.game)?.game?.title ?? `Game ${gameId}`;
 
   return (
     <div className="space-y-6.5">
@@ -150,7 +154,7 @@ export default async function JournalsPage({
         <JournalCatalogueFilters
           q={q}
           by={by}
-          game={gameId ? { id: gameId, title: gameTitle ?? `Game ${gameId}` } : null}
+          game={gameId ? { id: gameId, title: filterGameTitle } : null}
           members={people.map((c) => ({ id: c.user_id, name: memberName(c) }))}
           resultLabel={results ? `${found} ${found === 1 ? "entry" : "entries"}` : ""}
           current={kept}

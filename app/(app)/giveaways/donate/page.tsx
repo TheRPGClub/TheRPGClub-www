@@ -1,4 +1,4 @@
-import { getFeatures, requireAuth } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchDonatedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
@@ -11,7 +11,7 @@ export const metadata = { title: "Donate a key" };
 // Donate a key, and manage the keys you've donated.
 export default async function DonatePage() {
   const session = await requireAuth();
-  const features = await getFeatures();
+  const features = await requireFeature("giveaways");
   const [keys, names] = await Promise.all([
     fetchDonatedKeys(session.principal.discord_id),
     fetchMemberNames(),

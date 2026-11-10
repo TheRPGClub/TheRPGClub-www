@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
 import {
   countStats,
-  coverStatLabel,
+  statLabel,
   type GameCounts,
 } from "@/lib/api/game-counts";
 import { cn } from "@/lib/utils";
@@ -394,7 +394,7 @@ function CoverStats({
       {stats.map((stat) => (
         <div key={stat.key} className="flex items-baseline gap-1.5">
           <dt className="font-label order-2 text-[0.82rem] font-extrabold text-paper-dim">
-            {coverStatLabel(stat)}
+            {statLabel(stat, "cover")}
           </dt>
           <dd
             className={cn(

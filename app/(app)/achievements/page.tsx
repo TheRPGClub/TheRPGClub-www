@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { getFeatures, getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import {
   fetchAchievementFeed,
@@ -62,7 +62,7 @@ async function AchievementsHub({ filters }: { filters: Filters }) {
   // The feed needs auth; confirm a session before a fetch that can only 401.
   const session = await getSession();
   if (!session) redirect("/");
-  const features = await getFeatures();
+  const features = await requireFeature("achievement_hub");
 
   const latest = filters.view === "latest";
   // The rail reads the Highlights view's first page under the same Provider.

@@ -25,7 +25,7 @@ import {
 } from "@/components/issue/voting-strip";
 import { PageHeader } from "@/components/issue/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFeatures, getSession } from "@/lib/session";
+import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 
 // One round at a time, as the backend reports it on voting_rounds/current:
@@ -99,12 +99,12 @@ async function loadRound(
 }
 
 async function VotingContent() {
-  const features = await getFeatures();
-  const badge = features.preview("voting_gotm") && <PreviewBadge />;
-  const [round, session] = await Promise.all([
+  const [features, round, session] = await Promise.all([
+    requireFeature("voting_gotm"),
     fetchVotingRound(),
     getSession(),
   ]);
+  const badge = features.preview("voting_gotm") && <PreviewBadge />;
 
   if (!round) {
     return (

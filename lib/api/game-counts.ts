@@ -40,8 +40,14 @@ export function countStats(counts: GameCounts): CountStat[] {
   });
 }
 
-// A stat's label in the dashboard covers' lowercase caption voice.
-export function coverStatLabel({ key, value }: CountStat): string {
+// A stat's label: the game page's hero in title case ("Completed"), the
+// dashboard covers in their lowercase caption voice ("cleared").
+export function statLabel({ key, value }: CountStat, voice: "hero" | "cover"): string {
+  if (voice === "hero") {
+    if (key === "playing") return "Playing";
+    if (key === "completed") return "Completed";
+    return "Reviews";
+  }
   if (key === "playing") return "playing";
   if (key === "completed") return "cleared";
   return value === 1 ? "review" : "reviews";

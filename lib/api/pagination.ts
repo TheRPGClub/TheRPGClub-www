@@ -28,3 +28,12 @@ export function paginationOf(
 
   return { total, totalPages };
 }
+
+// One page of a list as the member pages read it, and the stand-in for a list
+// that wasn't read (its Feature isn't shown) or couldn't be: no rows.
+export interface ListPage<T> {
+  data: T[];
+  total: number;
+}
+
+export const NO_ROWS: ListPage<never> = { data: [], total: 0 };
