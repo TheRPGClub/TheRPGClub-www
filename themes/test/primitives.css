@@ -126,6 +126,25 @@
                 border-radius: 0;
             }
         }
+        /* www#89: the app shell's and the root components' Button variants. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                background-color: var(--sidebar-accent);
+                color: var(--sidebar-accent-foreground);
+                border-color: var(--sidebar-ring);
+            }
+            &[data-variant="sidebar-action"] {
+                background-color: var(--muted);
+                color: var(--destructive);
+                border-color: var(--destructive);
+            }
+            &[data-variant="add"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--foreground);
+                border-style: dotted;
+            }
+        }
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
             background-color: var(--card);
             color: var(--card-foreground);
