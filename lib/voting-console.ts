@@ -285,3 +285,42 @@ export function shiftDays(at: number, days: number): number {
     d.getMinutes(),
   ).getTime();
 }
+
+// The ruler's ticks for a round: nominations opening, the vote's open and
+// close (the close only once voting opened, or while the pin is where it was
+// saved), any runoff, the decision, and today in red.
+export function rulerTicks(
+  round: VotingRound,
+  nominationsOpenedAt: string | null,
+  now: number,
+  showClose: boolean,
+): RulerTick[] {
+  const t = (key: string, iso: string, caption: string): RulerTick => {
+    const at = Date.parse(iso);
+    return { key, at, label: shortDay(at), caption, tone: "plain" };
+  };
+  const ticks: RulerTick[] = [];
+  if (nominationsOpenedAt) ticks.push(t("noms", nominationsOpenedAt, "Noms open"));
+  if (round.phase !== "nominating") {
+    ticks.push(t("opens", round.voting_opens_at, "Vote opens"));
+  }
+  if (round.phase !== "nominating" || showClose) {
+    ticks.push(
+      t("closes", round.closed_at ?? round.voting_closes_at, round.voting_ended ? "Vote closed" : "Vote closes"),
+    );
+  }
+  if (round.runoff_closes_at) {
+    ticks.push(t("runoff", round.runoff_closes_at, round.runoff_ended ? "Runoff closed" : "Runoff closes"));
+  }
+  if (round.decided_at) ticks.push(t("decided", round.decided_at, "Decided"));
+  // A point that falls today (an early close) becomes the red Today tick
+  // instead of printing over it.
+  const today = ticks.find((tick) => Math.abs(tick.at - now) < 12 * 3_600_000);
+  if (today) {
+    today.label = "Today";
+    today.tone = "now";
+  } else {
+    ticks.push({ key: "now", at: now, label: "Today", caption: shortDay(now), tone: "now" });
+  }
+  return ticks;
+}

@@ -103,3 +103,20 @@ export function changeWhen(iso: string, now: Date): string {
 export function isCommand(item: string): boolean {
   return item.startsWith("/");
 }
+
+// What opens under a Feature Flag's row: the reason note or the Off confirm.
+export type FlagPanel = "reason" | "confirm" | null;
+
+// The draft once the row's panel goes from `current` to `next`. A reason
+// typed in the Off confirm was written for the Off, so leaving the confirm
+// any way but turning Off (Cancel, the reason note, picking Preview or Live)
+// drops it; it never rides along with another change.
+export function draftAfterPanel(current: FlagPanel, next: FlagPanel, draft: string): string {
+  return current === "confirm" && next !== "confirm" ? "" : draft;
+}
+
+// The reason that goes with a change to `next`: the same rule for a save
+// started while the confirm is open (the draft is still the Off's).
+export function reasonForChange(panel: FlagPanel, next: FeatureState, draft: string): string {
+  return panel === "confirm" && next !== "off" ? "" : draft;
+}
