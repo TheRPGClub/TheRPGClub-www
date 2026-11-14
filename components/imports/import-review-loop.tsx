@@ -188,7 +188,7 @@ export function ImportReviewLoop({
           {busy && (
             <span
               role="status"
-              className="inline-flex items-center gap-1.5 text-[0.82rem] text-paper-dim"
+              className="inline-flex items-center gap-1.5 text-[0.82rem] text-dim-foreground"
             >
               <Loader2 aria-hidden className="size-3.5 animate-spin" /> {busy}
             </span>
@@ -227,7 +227,7 @@ export function ImportReviewLoop({
             </div>
             {confirmCancel && (
               <div className="space-y-2.5 rounded-sm border border-destructive/40 p-3">
-                <p className="text-[0.85rem] text-paper-dim">
+                <p className="text-[0.85rem] text-dim-foreground">
                   Canceling stops the import. Games already added stay in
                   your list.
                 </p>
@@ -277,8 +277,8 @@ export function ImportReviewLoop({
         )}
 
         {job.status === "active" && !item && busy && (
-          <div className="grid min-h-60 place-items-center rounded-md border border-dashed border-rule-strong px-6 text-center">
-            <p className="font-label inline-flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em] text-paper-dim">
+          <div className="grid min-h-60 place-items-center rounded-md border border-dashed border-border-strong px-6 text-center">
+            <p className="font-label inline-flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em] text-dim-foreground">
               <Loader2 aria-hidden className="size-4 animate-spin" />
               {busy}
             </p>
@@ -286,9 +286,9 @@ export function ImportReviewLoop({
         )}
 
         {job.status === "paused" && (
-          <div className="rounded-md border border-dashed border-rule-strong px-6 py-12 text-center">
+          <div className="rounded-md border border-dashed border-border-strong px-6 py-12 text-center">
             <h2 className="font-headline text-4xl">Paused</h2>
-            <p className="mx-auto mt-2 max-w-[48ch] text-sm text-paper-dim">
+            <p className="mx-auto mt-2 max-w-[48ch] text-sm text-dim-foreground">
               Resume it whenever you like; it picks up at the next{" "}
               {IMPORT_KINDS[kind].itemNoun.one}.
             </p>
@@ -296,11 +296,11 @@ export function ImportReviewLoop({
         )}
 
         {finished && (
-          <section className="space-y-4 rounded-md border border-rule bg-ink-2 p-5 sm:p-6">
+          <section className="space-y-4 rounded-md border border-border bg-card p-5 sm:p-6">
             <h2 className="font-headline text-[2.6rem] leading-[0.9]">
               {job.status === "completed" ? "Import finished" : "Import canceled"}
             </h2>
-            <p className="text-sm text-paper-dim">
+            <p className="text-sm text-dim-foreground">
               {job.status === "completed"
                 ? "Everything in the file has been dealt with. The tally on the left is how it went."
                 : "The import stopped. Anything added before you canceled stays in your list."}

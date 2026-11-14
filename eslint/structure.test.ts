@@ -181,11 +181,14 @@ describe("palette-name ban (structure/no-palette-colors)", () => {
     ["rule-strong", '<hr className="divide-rule-strong" />'],
     ["paper-dim", '<p style={{ color: "var(--color-paper-dim)" }} />'],
     ["ink", "<p className={`px-2 ${\"ring-ink\"}`} />"],
-  ])("warns on the palette name %s outside the themes", async (name, jsx) => {
+    ["highlight-ink", '<p className="text-highlight-ink" />'],
+    ["destructive-ink", '<p className="text-destructive-ink" />'],
+    ["highlight-ink", '<p style={{ color: "var(--color-highlight-ink)" }} />'],
+  ])("errors on the palette name %s outside the themes", async (name, jsx) => {
     const code = `export function Bad() {\n  return ${jsx};\n}\n`;
     const found = await warningsFor(rule, code, "components/games/bad.tsx");
     expect(found).toHaveLength(1);
-    expect(found[0].severity).toBe(1);
+    expect(found[0].severity).toBe(2);
     expect(found[0].message).toContain(name);
   });
 
@@ -198,7 +201,8 @@ describe("palette-name ban (structure/no-palette-colors)", () => {
   it("leaves role tokens, club colours and prose alone", async () => {
     const code = [
       'export const a = "bg-background text-foreground border-border";',
-      'export const b = "bg-highlight text-highlight-ink bg-destructive text-destructive-ink";',
+      'export const b = "bg-highlight text-highlight-foreground bg-destructive text-destructive-foreground";',
+      'export const d = "text-highlight-muted-foreground bg-gotm text-gotm-foreground";',
       'export const c = "The ink is dry, paper is cheap, rule of thumb.";',
     ].join("\n");
     expect(await warningsFor(rule, code, "components/games/ok.tsx")).toEqual([]);

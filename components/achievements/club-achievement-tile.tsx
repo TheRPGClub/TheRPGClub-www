@@ -105,7 +105,7 @@ export function ClubAchievementTile({
             key={dot.spot}
             aria-hidden
             className={cn("absolute rounded-full", SPOT_CLASS[dot.spot], ring.dot)}
-            style={{ background: dot.on ? dot.color : "var(--color-rule)" }}
+            style={{ background: dot.on ? dot.color : "var(--color-border)" }}
           />
         ))}
         <span
@@ -123,7 +123,7 @@ export function ClubAchievementTile({
             size={size}
             slot={slot}
             tint={tint}
-            className={cn(foil && "rounded-[5px] bg-ink-2")}
+            className={cn(foil && "rounded-[5px] bg-card")}
           />
         </span>
       </Popover.Trigger>
@@ -139,7 +139,7 @@ export function ClubAchievementTile({
         >
           <Popover.Popup
             className={cn(
-              "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-rule-strong bg-ink-2 p-3.5 text-paper shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",
+              "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-border-strong bg-card p-3.5 text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",
               "duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             )}
           >
@@ -180,7 +180,7 @@ function TileDetails({
           </SpoilerText>
         </p>
         {view.description && (
-          <p className="text-[0.85rem] leading-snug text-paper-dim">
+          <p className="text-[0.85rem] leading-snug text-dim-foreground">
             <SpoilerText spoiler={spoiler}>{view.description}</SpoilerText>
           </p>
         )}
@@ -188,7 +188,7 @@ function TileDetails({
       <div className="flex flex-wrap items-center gap-1.5">
         <RarityChip rarity={view.rarity} size="sm" />
         {tier && (
-          <span className="font-label inline-flex h-5 items-center gap-1.5 text-[0.74rem] text-paper-dim">
+          <span className="font-label inline-flex h-5 items-center gap-1.5 text-[0.74rem] text-dim-foreground">
             <span
               aria-hidden
               className={cn("size-2 rounded-full", tier === "platinum" && "foil")}
@@ -198,13 +198,13 @@ function TileDetails({
           </span>
         )}
         {view.points != null && view.points > 0 && (
-          <span className="font-label text-[0.74rem] text-paper-dim">
+          <span className="font-label text-[0.74rem] text-dim-foreground">
             {view.points} pts
           </span>
         )}
       </div>
-      <div className="border-t border-rule pt-2.5">
-        <p className="font-label mb-2 text-[0.78rem] tracking-[0.08em] text-paper-mute">
+      <div className="border-t border-border pt-2.5">
+        <p className="font-label mb-2 text-[0.78rem] tracking-[0.08em] text-faint-foreground">
           {holders.length === 0
             ? "No member has unlocked it yet"
             : `Unlocked by ${holders.length} of ${memberCount}`}
@@ -216,7 +216,7 @@ function TileDetails({
                 <ReviewerAvatar userId={holder.userId} name={holder.name} size="sm" />
                 <span className="truncate">{holder.name}</span>
                 {holder.userId === viewerId && (
-                  <span className="font-label text-[0.72rem] text-paper-mute">You</span>
+                  <span className="font-label text-[0.72rem] text-faint-foreground">You</span>
                 )}
               </li>
             ))}

@@ -38,9 +38,9 @@ export function VotingStrip({
   return (
     <section
       aria-label={label}
-      className="grid overflow-hidden rounded-md bg-highlight text-ink md:grid-cols-[12.5rem_1fr_1fr] xl:grid-cols-[16.25rem_1fr_1fr]"
+      className="grid overflow-hidden rounded-md bg-highlight text-highlight-foreground md:grid-cols-[12.5rem_1fr_1fr] xl:grid-cols-[16.25rem_1fr_1fr]"
     >
-      <div className="flex items-center gap-4 border-b-2 border-ink px-5 py-4 md:flex-col md:items-start md:justify-between md:border-r-2 md:border-b-0 md:py-5 xl:px-5.5">
+      <div className="flex items-center gap-4 border-b-2 border-background px-5 py-4 md:flex-col md:items-start md:justify-between md:border-r-2 md:border-b-0 md:py-5 xl:px-5.5">
         <p
           className={cn(
             "font-headline shrink-0 leading-[0.78]",
@@ -53,7 +53,7 @@ export function VotingStrip({
         </p>
         <p className="font-label text-[0.95rem] leading-[1.15] font-extrabold tracking-[0.08em]">
           {clock.label}
-          <span className="mt-1.5 block font-sans text-[0.82rem] leading-snug font-medium tracking-normal text-highlight-ink normal-case">
+          <span className="mt-1.5 block font-sans text-[0.82rem] leading-snug font-medium tracking-normal text-highlight-muted-foreground normal-case">
             {clock.detail}
           </span>
         </p>
@@ -63,7 +63,7 @@ export function VotingStrip({
           key={slot.category}
           className={cn(
             "flex min-w-0 flex-col gap-2.5 px-5 py-4.5",
-            i > 0 && "border-t-2 border-ink md:border-t-0 md:border-l-2",
+            i > 0 && "border-t-2 border-background md:border-t-0 md:border-l-2",
           )}
         >
           <h2 className="font-label flex items-center gap-2 text-[0.85rem] font-extrabold tracking-[0.08em]">

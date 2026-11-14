@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const OWN_BUTTON =
-  "h-[26px] px-2 text-[0.8rem] text-paper-mute hover:bg-ink-3 hover:text-paper";
+  "h-[26px] px-2 text-[0.8rem] text-faint-foreground hover:bg-muted hover:text-foreground";
 
 // An entry its author is reading: Edit opens the editor in place, Delete
 // asks first, inline.
@@ -97,9 +97,9 @@ export function JournalOwnerEntry({
         <div
           role="group"
           aria-label="Confirm delete"
-          className="mt-2 flex flex-wrap items-center gap-2.5 rounded-md bg-ink px-3 py-2 shadow-[inset_0_0_0_1px_var(--color-destructive)]"
+          className="mt-2 flex flex-wrap items-center gap-2.5 rounded-md bg-background px-3 py-2 shadow-[inset_0_0_0_1px_var(--color-destructive)]"
         >
-          <span className="mr-auto text-[0.9rem] text-paper">
+          <span className="mr-auto text-[0.9rem] text-foreground">
             Delete {name}? It can&apos;t be brought back.
           </span>
           <Button variant="destructive" size="sm" onClick={remove} disabled={pending}>

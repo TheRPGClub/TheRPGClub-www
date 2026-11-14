@@ -25,14 +25,14 @@ export function RarityLabel({
   return (
     <span
       className={cn(
-        "font-label inline-flex items-center gap-1.5 text-[0.78rem] whitespace-nowrap text-paper-mute",
+        "font-label inline-flex items-center gap-1.5 text-[0.78rem] whitespace-nowrap text-faint-foreground",
         className,
       )}
     >
       {ultraRare && chip && (
         <span
           className={cn(
-            "inline-flex h-5 items-center rounded-xs px-1.5 text-[0.72rem] text-ink",
+            "inline-flex h-5 items-center rounded-xs px-1.5 text-[0.72rem] text-rarity-foreground",
             RARITY_FILL.ultra,
           )}
         >

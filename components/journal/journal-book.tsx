@@ -17,7 +17,7 @@ export function JournalVolume({
   return (
     <div
       className={cn(
-        "rounded-[4px] bg-rule p-1.5 shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:p-2.5",
+        "rounded-[4px] bg-border p-1.5 shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:p-2.5",
         className,
       )}
     >
@@ -46,7 +46,7 @@ export function JournalPage({
     <Tag
       {...rest}
       className={cn(
-        "relative flex min-w-0 flex-col rounded-md bg-ink-2",
+        "relative flex min-w-0 flex-col rounded-md bg-card",
         side === "left" && "lg:shadow-[inset_-22px_0_26px_-18px_rgb(0_0_0/0.7)]",
         side === "right" && "lg:shadow-[inset_22px_0_26px_-18px_rgb(0_0_0/0.7)]",
         className,
@@ -71,7 +71,7 @@ export function JournalRunningHead({
   return (
     <div
       className={cn(
-        "font-label flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-rule pt-2.5 pb-2 text-[0.78rem] tracking-[0.08em] text-paper-mute",
+        "font-label flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border pt-2.5 pb-2 text-[0.78rem] tracking-[0.08em] text-faint-foreground",
         className,
       )}
     >
@@ -105,12 +105,12 @@ export function JournalFolio({
   return (
     <div
       className={cn(
-        "font-label mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-2 pt-2.5 text-[0.8rem] tracking-[0.08em] text-paper-mute",
+        "font-label mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-2 pt-2.5 text-[0.8rem] tracking-[0.08em] text-faint-foreground",
         className,
       )}
     >
       {page != null && (
-        <span className="font-headline text-[1.1rem] tracking-normal text-paper-dim">
+        <span className="font-headline text-[1.1rem] tracking-normal text-dim-foreground">
           {page}
         </span>
       )}
@@ -135,7 +135,7 @@ export function ChapterMarks({
     <>
       {nowPlaying && <Chip className={className}>Now Playing</Chip>}
       {completed && (
-        <Chip className={cn("bg-rarity-uncommon text-ink", className)}>Game Completion</Chip>
+        <Chip className={cn("bg-rarity-uncommon text-rarity-foreground", className)}>Game Completion</Chip>
       )}
     </>
   );

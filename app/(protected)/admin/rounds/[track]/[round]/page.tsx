@@ -63,11 +63,11 @@ export default async function RoundEditPage({
             {"Couldn't load the round. Refresh to try again."}
           </p>
         ) : entries.length === 0 ? (
-          <p className="text-paper-dim">
+          <p className="text-dim-foreground">
             {label} round {roundNumber} has no games yet.{" "}
             <Link
               href={`/admin/rounds?track=${track}&round=${roundNumber}#add`}
-              className="text-paper underline decoration-highlight underline-offset-4 hover:text-highlight"
+              className="text-foreground underline decoration-highlight underline-offset-4 hover:text-highlight"
             >
               Add it
             </Link>

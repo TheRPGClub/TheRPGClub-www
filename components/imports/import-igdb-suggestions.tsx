@@ -76,7 +76,7 @@ export function ImportIgdbSuggestions({
       )}
 
       {results && results.length === 0 && (
-        <p className="text-sm text-paper-mute">IGDB has nothing for that title.</p>
+        <p className="text-sm text-faint-foreground">IGDB has nothing for that title.</p>
       )}
 
       {results && results.length > 0 && (
@@ -88,9 +88,9 @@ export function ImportIgdbSuggestions({
             return (
               <li
                 key={hit.igdb_id}
-                className="grid grid-cols-[2.1rem_1fr_auto] items-center gap-2.5 border-t border-rule py-2 text-[0.85rem]"
+                className="grid grid-cols-[2.1rem_1fr_auto] items-center gap-2.5 border-t border-border py-2 text-[0.85rem]"
               >
-                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-ink-3">
+                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-muted">
                   {hit.cover_url && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -102,7 +102,7 @@ export function ImportIgdbSuggestions({
                 </span>
                 <span className="min-w-0">
                   <span className="block font-semibold break-words">{hit.name}</span>
-                  <span className="block text-xs text-paper-mute">
+                  <span className="block text-xs text-faint-foreground">
                     {year && <>{year} · </>}
                     {hit.already_imported ? "already in GameDB" : "new to GameDB"}
                     {" · "}

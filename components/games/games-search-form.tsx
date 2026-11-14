@@ -59,7 +59,7 @@ export function GamesSearchForm({
     <form
       onSubmit={handleSubmit}
       role="search"
-      className="flex h-11.5 min-w-0 flex-1 basis-72 items-center gap-2.5 rounded-sm border border-rule-strong bg-ink-2 px-3.5 text-paper-mute transition-colors focus-within:border-paper-mute"
+      className="flex h-11.5 min-w-0 flex-1 basis-72 items-center gap-2.5 rounded-sm border border-border-strong bg-card px-3.5 text-faint-foreground transition-colors focus-within:border-faint-foreground"
     >
       <Search aria-hidden className="size-4 shrink-0" />
       <label htmlFor="games-search" className="sr-only">
@@ -72,7 +72,7 @@ export function GamesSearchForm({
         placeholder={placeholder}
         value={query}
         onChange={handleChange}
-        className="h-full min-w-0 flex-1 bg-transparent text-[0.95rem] text-paper outline-none placeholder:text-paper-mute"
+        className="h-full min-w-0 flex-1 bg-transparent text-[0.95rem] text-foreground outline-none placeholder:text-faint-foreground"
       />
     </form>
   );

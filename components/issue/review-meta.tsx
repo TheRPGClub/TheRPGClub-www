@@ -64,7 +64,7 @@ export function ReviewerAvatar({
         src={`${API_BASE}/api/v1/users/${userId}/avatar`}
         alt=""
       />
-      <AvatarFallback className="font-label bg-ink-3 font-extrabold text-[length:inherit] text-paper">
+      <AvatarFallback className="font-label bg-muted font-extrabold text-[length:inherit] text-foreground">
         {name.slice(0, 1).toUpperCase()}
       </AvatarFallback>
     </Avatar>
@@ -86,7 +86,7 @@ export function ScoreBox({
       role="img"
       aria-label={`Rated ${rating} out of ${MAX_RATING}`}
       className={cn(
-        "font-headline grid shrink-0 place-items-center rounded-sm bg-paper leading-none text-ink",
+        "font-headline grid shrink-0 place-items-center rounded-sm bg-foreground leading-none text-background",
         className,
       )}
     >
@@ -159,12 +159,12 @@ export function FacetBars({
           style={{ "--fill": facetFill(facet.score) } as React.CSSProperties}
           className={cn(
             "relative grid grid-cols-[1fr_auto] items-baseline gap-x-2.5 pb-2.5",
-            "before:absolute before:inset-x-0 before:bottom-0 before:h-1 before:rounded-[2px] before:bg-ink-3",
+            "before:absolute before:inset-x-0 before:bottom-0 before:h-1 before:rounded-[2px] before:bg-muted",
             "after:absolute after:bottom-0 after:left-0 after:h-1 after:w-(--fill) after:rounded-[2px]",
-            facet.score === best ? "after:bg-paper" : "after:bg-paper-mute/60",
+            facet.score === best ? "after:bg-foreground" : "after:bg-faint-foreground/60",
           )}
         >
-          <dt className="font-label truncate text-[0.84rem] tracking-[0.05em] text-paper-dim">
+          <dt className="font-label truncate text-[0.84rem] tracking-[0.05em] text-dim-foreground">
             {facet.label}
           </dt>
           <dd className={cn("font-headline leading-none", valueClassName)}>

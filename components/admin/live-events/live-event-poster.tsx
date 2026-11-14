@@ -24,19 +24,19 @@ export function LiveEventPoster({
   const hasLinks = Boolean(links?.thread || links?.event);
 
   return (
-    <div className="relative aspect-[4/5] overflow-hidden bg-ink-3">
+    <div className="relative aspect-[4/5] overflow-hidden bg-muted">
       {imageSrc && (
         // eslint-disable-next-line @next/next/no-img-element -- a member's upload or any URL
         <img src={imageSrc} alt="" className="absolute inset-0 size-full object-cover" />
       )}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(0deg,rgb(11_11_13/0.96)_0%,rgb(11_11_13/0.6)_40%,rgb(11_11_13/0.1)_75%)]"
+        className="absolute inset-0 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_60%,transparent)_40%,color-mix(in_oklab,var(--color-background)_10%,transparent)_75%)]"
       />
       <div className="absolute inset-x-5.5 bottom-5.5">
-        <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">Live event · Live Events forum</p>
+        <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">Live event · Live Events forum</p>
         <h3 className="font-headline mt-1.5 text-[2.3rem] leading-[0.9] break-words sm:text-[3.1rem]">
-          {topic || <span className="text-paper-mute">Topic</span>}
+          {topic || <span className="text-faint-foreground">Topic</span>}
         </h3>
         <p className="font-label mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[0.95rem] tracking-[0.06em]">
           {start ? (
@@ -44,10 +44,10 @@ export function LiveEventPoster({
               <span>
                 {start.day} · {start.time}
               </span>
-              <span className="text-paper-mute">{start.club}</span>
+              <span className="text-faint-foreground">{start.club}</span>
             </>
           ) : (
-            <span className="text-paper-mute">Pick a start</span>
+            <span className="text-faint-foreground">Pick a start</span>
           )}
         </p>
         {hasLinks && (
@@ -67,7 +67,7 @@ function PosterLink({ href, children }: { href: string; children: string }) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="font-label inline-flex h-8 items-center gap-1 rounded-sm bg-paper px-3 text-[0.9rem] font-extrabold text-ink hover:bg-highlight"
+      className="font-label inline-flex h-8 items-center gap-1 rounded-sm bg-foreground px-3 text-[0.9rem] font-extrabold text-background hover:bg-highlight"
     >
       {children}
       <ArrowUpRight aria-hidden className="size-4" />

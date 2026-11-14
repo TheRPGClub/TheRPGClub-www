@@ -28,7 +28,7 @@ function Blank({
         name={name}
         aria-label={label}
         defaultValue={defaultValue}
-        className="font-headline max-w-full cursor-pointer appearance-none border-b-4 border-highlight bg-transparent pr-[0.8em] pl-1 leading-[1] text-highlight [color-scheme:dark] [field-sizing:content] transition-colors outline-none hover:border-paper hover:text-paper focus-visible:border-paper focus-visible:text-paper [&>option]:bg-ink-2 [&>option]:font-sans [&>option]:text-base [&>option]:text-paper [&>option]:normal-case"
+        className="font-headline max-w-full cursor-pointer appearance-none border-b-4 border-highlight bg-transparent pr-[0.8em] pl-1 leading-[1] text-highlight [color-scheme:dark] [field-sizing:content] transition-colors outline-none hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground [&>option]:bg-card [&>option]:font-sans [&>option]:text-base [&>option]:text-foreground [&>option]:normal-case"
       >
         {children}
       </select>
@@ -64,7 +64,7 @@ export function PickSentence({
         : "backlogged and collected";
 
   return (
-    <form method="get" className="border-b-2 border-paper pb-6.5">
+    <form method="get" className="border-b-2 border-foreground pb-6.5">
       <p className="font-headline max-w-[22ch] text-[2.4rem] leading-[1.15] text-balance sm:text-5xl lg:text-[4rem]">
         I&apos;ve got{" "}
         <Blank
@@ -118,7 +118,7 @@ export function PickSentence({
           Deal three
         </Button>
         {meta && (
-          <p className="font-label text-sm font-extrabold tracking-[0.08em] text-paper-mute">
+          <p className="font-label text-sm font-extrabold tracking-[0.08em] text-faint-foreground">
             From {meta.total} {sourceNoun} game{meta.total === 1 ? "" : "s"}
           </p>
         )}

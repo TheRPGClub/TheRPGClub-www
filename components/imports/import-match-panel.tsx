@@ -46,7 +46,7 @@ export function ImportMatchPanel({
   return (
     <ImportItemLayout
       label={`${importItemLabel(kind)} ${item.row_index}`}
-      title={title || <span className="text-paper-mute">Untitled {noun}</span>}
+      title={title || <span className="text-faint-foreground">Untitled {noun}</span>}
       art={
         steam ? (
           <SteamHeaderImage

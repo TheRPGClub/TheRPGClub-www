@@ -93,18 +93,18 @@ export function Wire({
 
   return (
     <aside aria-labelledby="wire-heading" className={className}>
-      <div className="flex items-baseline gap-3 border-b-2 border-paper pb-2">
+      <div className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
         <h2 id="wire-heading" className="font-headline text-[1.9rem]">
           The wire
         </h2>
-        <span className="font-label text-[0.85rem] tracking-[0.08em] text-paper-mute">
+        <span className="font-label text-[0.85rem] tracking-[0.08em] text-faint-foreground">
           {scope === "all" ? "Every bot job" : "Your bot jobs"}
         </span>
         <Button
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="ml-auto self-center text-paper-dim"
+          className="ml-auto self-center text-dim-foreground"
           onClick={() => refresh(true)}
           disabled={refreshing}
           aria-label="Refresh the wire"
@@ -121,7 +121,7 @@ export function Wire({
       )}
 
       {jobs.length === 0 && !error ? (
-        <p className="py-4 text-sm text-paper-dim">
+        <p className="py-4 text-sm text-dim-foreground">
           {scope === "all"
             ? "Nothing on the wire yet. A job lands here when a tool asks the bot to do something in Discord."
             : "None of your bot jobs yet. A job lands here when a tool you use asks the bot to do something in Discord."}
@@ -164,16 +164,16 @@ export function WireSlip({ job, showRequester }: { job: BotJob; showRequester: b
   ].filter(Boolean);
 
   return (
-    <article className="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-3.5 border-b border-rule py-3">
+    <article className="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-3.5 border-b border-border py-3">
       <time
         dateTime={job.created_at}
         className={cn(
-          "font-headline text-[1.6rem] text-paper-dim",
+          "font-headline text-[1.6rem] text-dim-foreground",
           phase === "queued" && "text-highlight",
         )}
       >
         {stamp?.clock ?? "--:--"}
-        <small className="font-label mt-1 block text-[0.7rem] tracking-[0.08em] text-paper-mute">
+        <small className="font-label mt-1 block text-[0.7rem] tracking-[0.08em] text-faint-foreground">
           {stamp?.day ?? " "}
         </small>
       </time>
@@ -184,7 +184,7 @@ export function WireSlip({ job, showRequester }: { job: BotJob; showRequester: b
         </div>
         {summary && <p className="break-words">{summary}</p>}
         {byLine.length > 0 && (
-          <p className="text-[0.82rem] text-paper-mute">{byLine.join(" · ")}</p>
+          <p className="text-[0.82rem] text-faint-foreground">{byLine.join(" · ")}</p>
         )}
         {reason && <BotSaid tone="bad">{reason}</BotSaid>}
         {result && <BotSaid tone="plain">{result}</BotSaid>}
@@ -200,10 +200,10 @@ function BotSaid({ tone, children }: { tone: "bad" | "plain"; children: string }
     <blockquote
       className={cn(
         "mt-2 border-t border-dashed pt-2 text-[0.92rem] leading-[1.4] break-words italic",
-        tone === "bad" ? "border-destructive/50 text-destructive" : "border-rule-strong text-paper-dim",
+        tone === "bad" ? "border-destructive/50 text-destructive" : "border-border-strong text-dim-foreground",
       )}
     >
-      <cite className="font-label mb-0.5 block text-[0.7rem] tracking-[0.08em] text-paper-mute not-italic">
+      <cite className="font-label mb-0.5 block text-[0.7rem] tracking-[0.08em] text-faint-foreground not-italic">
         The bot said
       </cite>
       &ldquo;{children}&rdquo;

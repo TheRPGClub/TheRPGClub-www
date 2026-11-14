@@ -27,7 +27,7 @@ export function LinkAccountDialog({ account, linkHref, backHref }: LinkAccountDi
     <Dialog open disablePointerDismissal>
       <DialogContent showCloseButton={false} className="max-w-md">
         <DialogHeader>
-          <div className="mb-2 flex size-10 items-center justify-center rounded-sm bg-highlight text-ink">
+          <div className="mb-2 flex size-10 items-center justify-center rounded-sm bg-highlight text-highlight-foreground">
             <Link2 aria-hidden className="size-5" />
           </div>
           <DialogTitle>

@@ -176,7 +176,7 @@ async function Newest() {
           </a>
         }
       />
-      <ul className="-mx-4 flex snap-x overflow-x-auto scroll-px-4 px-4 pt-2.5 pb-3 [scrollbar-color:var(--color-rule-strong)_transparent] sm:-mx-0.5 sm:scroll-px-0.5 sm:px-0.5 xl:gap-4.5">
+      <ul className="-mx-4 flex snap-x overflow-x-auto scroll-px-4 px-4 pt-2.5 pb-3 [scrollbar-color:var(--color-border-strong)_transparent] sm:-mx-0.5 sm:scroll-px-0.5 sm:px-0.5 xl:gap-4.5">
         {result.games.map((game) => (
           <li
             key={game.game_id}
@@ -281,7 +281,7 @@ async function GamesGrid({
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );
@@ -306,7 +306,7 @@ function WinnerFilter({ current, q }: { current: WinnerFilter; q: string }) {
   return (
     <nav
       aria-label="Filter by winners"
-      className="flex w-full overflow-hidden rounded-sm border border-rule-strong sm:w-auto"
+      className="flex w-full overflow-hidden rounded-sm border border-border-strong sm:w-auto"
     >
       {options.map((option) => {
         const active = option.value === current;
@@ -316,10 +316,10 @@ function WinnerFilter({ current, q }: { current: WinnerFilter; q: string }) {
             href={href(option.value)}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "font-label inline-flex h-11 flex-1 items-center justify-center gap-2 border-l border-rule-strong px-2.5 text-[0.82rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-colors first:border-l-0 sm:flex-none sm:px-3.5 sm:text-[0.92rem]",
+              "font-label inline-flex h-11 flex-1 items-center justify-center gap-2 border-l border-border-strong px-2.5 text-[0.82rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-colors first:border-l-0 sm:flex-none sm:px-3.5 sm:text-[0.92rem]",
               active
-                ? "bg-paper text-ink"
-                : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                ? "bg-foreground text-background"
+                : "text-dim-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {option.dot && (

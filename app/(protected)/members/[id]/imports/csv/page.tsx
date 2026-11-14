@@ -41,13 +41,13 @@ export default async function CollectionCsvImportPage({
             >
               <Download data-icon="inline-start" /> Download the template
             </a>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-5 border-t border-rule text-sm">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 border-t border-border text-sm">
               {COLUMNS.map(([column, help]) => (
                 <div key={column} className="contents">
-                  <dt className="border-b border-rule py-2 font-mono text-xs leading-5 text-paper">
+                  <dt className="border-b border-border py-2 font-mono text-xs leading-5 text-foreground">
                     {column}
                   </dt>
-                  <dd className="border-b border-rule py-2 text-paper-dim">{help}</dd>
+                  <dd className="border-b border-border py-2 text-dim-foreground">{help}</dd>
                 </div>
               ))}
             </dl>

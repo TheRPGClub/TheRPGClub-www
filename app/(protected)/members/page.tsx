@@ -144,7 +144,7 @@ function ShowSwitch({
   return (
     <nav
       aria-label="Show members"
-      className="flex w-full overflow-hidden rounded-sm border border-rule-strong sm:inline-flex sm:w-auto"
+      className="flex w-full overflow-hidden rounded-sm border border-border-strong sm:inline-flex sm:w-auto"
     >
       {SHOW_OPTIONS.map((option) => {
         const active = option.value === current;
@@ -154,17 +154,17 @@ function ShowSwitch({
             href={option.value === "everyone" ? "/members" : `/members?show=${option.value}`}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "font-label inline-flex h-9.5 flex-1 items-center justify-center gap-2 border-l border-rule-strong px-3.5 text-[0.92rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-colors first:border-l-0 sm:flex-none",
+              "font-label inline-flex h-9.5 flex-1 items-center justify-center gap-2 border-l border-border-strong px-3.5 text-[0.92rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-colors first:border-l-0 sm:flex-none",
               active
-                ? "bg-paper text-ink"
-                : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                ? "bg-foreground text-background"
+                : "text-dim-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {option.label}
             <span
               className={cn(
                 "text-[0.78rem] tabular-nums",
-                active ? "text-ink/60" : "text-paper-mute",
+                active ? "text-background/60" : "text-faint-foreground",
               )}
             >
               {counts[option.value]}
@@ -184,7 +184,7 @@ function MemberTile({ member }: { member: Member }) {
   return (
     <Link
       href={`/members/${user.user_id}`}
-      className="group/tile flex flex-col overflow-hidden rounded-md border border-rule bg-ink-2 transition-colors hover:border-paper-mute"
+      className="group/tile flex flex-col overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-faint-foreground"
     >
       <span className="relative block aspect-square overflow-hidden">
         <Avatar className="size-full rounded-none after:hidden">
@@ -195,15 +195,15 @@ function MemberTile({ member }: { member: Member }) {
           />
           {/* No avatar on file: the member's initial, set like a cover
               line on an ink block. */}
-          <AvatarFallback className="font-headline rounded-none bg-ink-3 text-[4.5rem] text-paper-mute sm:text-[6rem]">
+          <AvatarFallback className="font-headline rounded-none bg-muted text-[4.5rem] text-faint-foreground sm:text-[6rem]">
             {name.slice(0, 1).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         {band && (
           <span
             className={cn(
-              "font-label absolute inset-x-0 bottom-0 py-1.25 text-center text-[0.78rem] font-extrabold tracking-[0.12em] text-paper",
-              role === "admin" ? "bg-ink" : "bg-ink/75",
+              "font-label absolute inset-x-0 bottom-0 py-1.25 text-center text-[0.78rem] font-extrabold tracking-[0.12em] text-foreground",
+              role === "admin" ? "bg-background" : "bg-background/75",
             )}
           >
             {band}
@@ -215,7 +215,7 @@ function MemberTile({ member }: { member: Member }) {
           {name}
         </span>
         {user.username && (
-          <span className="mt-1 block truncate text-[0.8rem] text-paper-mute">
+          <span className="mt-1 block truncate text-[0.8rem] text-faint-foreground">
             @{user.username}
           </span>
         )}
@@ -226,7 +226,7 @@ function MemberTile({ member }: { member: Member }) {
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );
@@ -239,7 +239,7 @@ function MembersSkeleton() {
       <Skeleton className="h-9.5 w-80 rounded-sm" />
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-md border border-rule">
+          <div key={i} className="overflow-hidden rounded-md border border-border">
             <Skeleton className="aspect-square w-full rounded-none" />
             <div className="space-y-2 p-3">
               <Skeleton className="h-5 w-2/3" />

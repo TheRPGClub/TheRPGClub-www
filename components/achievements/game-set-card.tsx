@@ -44,31 +44,31 @@ export function GameSetCard({
   return (
     <article
       className={cn(
-        "flex flex-col gap-4 rounded-md border border-rule bg-ink-2 p-4",
+        "flex flex-col gap-4 rounded-md border border-border bg-card p-4",
         className,
       )}
     >
       <div className="flex gap-4">
-        <span className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-ink-3 sm:size-16">
+        <span className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-muted sm:size-16">
           {set.icon_url ? (
             // eslint-disable-next-line @next/next/no-img-element -- remote Provider icons
             <img src={set.icon_url} alt="" loading="lazy" className="size-full object-cover" />
           ) : (
-            <span aria-hidden className="flex size-full items-center justify-center text-paper-mute">
+            <span aria-hidden className="flex size-full items-center justify-center text-faint-foreground">
               <Trophy className="size-6" />
             </span>
           )}
-          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-sm shadow-[inset_0_0_0_1px_rgb(244_244_240/0.12)]" />
+          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-sm shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_12%,transparent)]" />
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <h3 className="font-headline line-clamp-2 text-[1.3rem] leading-[0.95] text-paper">
+          <h3 className="font-headline line-clamp-2 text-[1.3rem] leading-[0.95] text-foreground">
             {title}
           </h3>
           <div className="flex flex-wrap items-center gap-1.5">
             <ProviderBadge provider={set.provider} />
             {set.platform_label && <Chip>{set.platform_label}</Chip>}
           </div>
-          <p className="font-label text-[0.8rem] text-paper-mute">
+          <p className="font-label text-[0.8rem] text-faint-foreground">
             {set.achievements_count}{" "}
             {set.achievements_count === 1 ? "achievement" : "achievements"}
             {ra && set.points_total > 0 ? ` · ${set.points_total} pts` : ""}
@@ -77,7 +77,7 @@ export function GameSetCard({
       </div>
 
       <div>
-        <p className="font-label mb-2 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute">
+        <p className="font-label mb-2 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground">
           {completions.length > 0
             ? `Completed by ${completions.length} ${completions.length === 1 ? "member" : "members"}`
             : "No member has completed it yet"}
@@ -94,7 +94,7 @@ export function GameSetCard({
                         <Link
                           href={`/members/${completion.user.user_id}`}
                           aria-label={label}
-                          className="relative block rounded-full ring-3 ring-ink-2 transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:z-10"
+                          className="relative block rounded-full ring-3 ring-card transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:z-10"
                         />
                       }
                     >
@@ -110,7 +110,7 @@ export function GameSetCard({
               );
             })}
             {rest > 0 && (
-              <li className="font-label ml-2 text-sm font-extrabold tracking-[0.04em] text-paper-dim">
+              <li className="font-label ml-2 text-sm font-extrabold tracking-[0.04em] text-dim-foreground">
                 +{rest}
               </li>
             )}
@@ -141,14 +141,14 @@ function ViewerProgress({
   return (
     <Link
       href={memberSetHref(progress.user_id, set.id)}
-      className="group/progress -mx-1 -mb-1 flex flex-col gap-1.5 rounded-sm px-1 pb-1 pt-3 border-t border-rule"
+      className="group/progress -mx-1 -mb-1 flex flex-col gap-1.5 rounded-sm px-1 pb-1 pt-3 border-t border-border"
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="font-label inline-flex items-center gap-1 text-[0.8rem] font-extrabold tracking-[0.08em] text-paper transition-colors group-hover/progress:text-highlight [&_svg]:size-3.5">
+        <span className="font-label inline-flex items-center gap-1 text-[0.8rem] font-extrabold tracking-[0.08em] text-foreground transition-colors group-hover/progress:text-highlight [&_svg]:size-3.5">
           Your progress
           <ArrowRight aria-hidden />
         </span>
-        <span className="font-label text-[0.8rem] text-paper-dim">
+        <span className="font-label text-[0.8rem] text-dim-foreground">
           {progress.earned_count} / {progress.total_count} · {percent}%
         </span>
       </div>
@@ -159,9 +159,9 @@ function ViewerProgress({
         aria-valuemax={progress.total_count}
         aria-valuenow={progress.earned_count}
         aria-valuetext={`${progress.earned_count} of ${progress.total_count} unlocked`}
-        className="h-1 w-full overflow-hidden bg-ink-3"
+        className="h-1 w-full overflow-hidden bg-muted"
       >
-        <div className="h-full bg-paper" style={{ width: `${fill}%` }} />
+        <div className="h-full bg-foreground" style={{ width: `${fill}%` }} />
       </div>
       {badges.length > 0 && (
         <div className="flex flex-wrap gap-1.5 pt-1">

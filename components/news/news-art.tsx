@@ -63,7 +63,7 @@ export function NewsArt({
     <div
       style={{ "--news-ink": ink } as CSSProperties}
       className={cn(
-        "relative aspect-video overflow-hidden border-b-4 border-(--news-ink) bg-ink-3",
+        "relative aspect-video overflow-hidden border-b-4 border-(--news-ink) bg-muted",
         dashed && "border-dashed",
       )}
     >
@@ -121,7 +121,7 @@ export function NewsArt({
                   body
                 )}
                 {last && extra > 0 && (
-                  <span className="font-headline pointer-events-none absolute right-2 bottom-2 rounded-xs bg-ink/85 px-1.5 pt-1 pb-0.5 text-lg leading-none text-paper">
+                  <span className="font-headline pointer-events-none absolute right-2 bottom-2 rounded-xs bg-background/85 px-1.5 pt-1 pb-0.5 text-lg leading-none text-foreground">
                     +{extra}
                   </span>
                 )}
@@ -133,8 +133,8 @@ export function NewsArt({
       <span
         title={tagTitle}
         className={cn(
-          "font-label pointer-events-none absolute top-2.5 left-2.5 inline-flex h-[22px] items-center rounded-xs bg-(--news-ink) px-2 text-[0.78rem] text-ink",
-          dashed && "outline-[1.5px] -outline-offset-[3px] outline-ink/70 outline-dashed",
+          "font-label pointer-events-none absolute top-2.5 left-2.5 inline-flex h-[22px] items-center rounded-xs bg-(--news-ink) px-2 text-[0.78rem] text-background",
+          dashed && "outline-[1.5px] -outline-offset-[3px] outline-background/70 outline-dashed",
         )}
       >
         {tag}
@@ -167,14 +167,14 @@ function ArtFallback({ text, small = false }: { text: string; small?: boolean })
   return (
     <div
       className={cn(
-        "flex size-full items-center justify-center bg-ink-3 text-center",
+        "flex size-full items-center justify-center bg-muted text-center",
         // Clear of the corner tag.
         small ? "px-2 pt-8 pb-2" : "px-6 pt-9 pb-4",
       )}
     >
       <span
         className={cn(
-          "font-headline line-clamp-3 leading-none text-paper-mute [overflow-wrap:anywhere]",
+          "font-headline line-clamp-3 leading-none text-faint-foreground [overflow-wrap:anywhere]",
           small ? "text-base" : "text-[1.45rem]",
         )}
       >

@@ -20,7 +20,7 @@ export function ReviewSpoiler({ children }: { children: React.ReactNode }) {
 
   if (revealed) {
     return (
-      <span className="rounded-[2px] bg-ink-3 px-[3px] outline-1 outline-offset-1 outline-rule-strong">
+      <span className="rounded-[2px] bg-muted px-[3px] outline-1 outline-offset-1 outline-border-strong">
         {children}
       </span>
     );
@@ -40,7 +40,7 @@ export function ReviewSpoiler({ children }: { children: React.ReactNode }) {
         }
       }}
       className={cn(
-        "cursor-pointer rounded-[2px] bg-paper-dim px-[3px] text-transparent [box-decoration-break:clone] transition-colors hover:bg-paper",
+        "cursor-pointer rounded-[2px] bg-dim-foreground px-[3px] text-transparent [box-decoration-break:clone] transition-colors hover:bg-foreground",
         "select-none [&_*]:text-transparent",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight",
       )}

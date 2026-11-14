@@ -145,11 +145,11 @@ export default async function MemberJournalPage({
       counts={memberCounts(user)}
     >
       {journaled === null ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           The journal couldn&apos;t be loaded right now.
         </p>
       ) : chapters.length === 0 && !isOwner ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           {displayName} hasn&apos;t journaled any games yet.
         </p>
       ) : (
@@ -184,12 +184,12 @@ export default async function MemberJournalPage({
             ) : (
               <JournalPage as="section" side="right" aria-label="New chapter" className="px-4 pb-4 sm:px-7.5">
                 <JournalRunningHead parts={["New chapter"]} />
-                <h2 className="font-headline mt-4 mb-3.5 border-b-2 border-paper pb-3 text-[2.4rem] leading-[0.9]">
+                <h2 className="font-headline mt-4 mb-3.5 border-b-2 border-foreground pb-3 text-[2.4rem] leading-[0.9]">
                   {openGameId && !openGame ? "Game not found" : "A new chapter"}
                 </h2>
                 {isOwner ? (
                   <>
-                    <p className="mb-3.5 max-w-[60ch] text-[0.95rem] text-paper-dim">
+                    <p className="mb-3.5 max-w-[60ch] text-[0.95rem] text-dim-foreground">
                       Pick the game, then write its first entry. The chapter goes in
                       your Contents once it&apos;s saved.
                     </p>
@@ -201,7 +201,7 @@ export default async function MemberJournalPage({
                     />
                   </>
                 ) : (
-                  <p className="text-sm text-paper-mute">Pick a chapter from the Contents.</p>
+                  <p className="text-sm text-faint-foreground">Pick a chapter from the Contents.</p>
                 )}
               </JournalPage>
             )}

@@ -22,7 +22,7 @@ function labelPct(pct: number): number {
 }
 
 const TONE: Record<RulerTick["tone"], string> = {
-  plain: "text-paper-mute [&_b]:text-paper",
+  plain: "text-faint-foreground [&_b]:text-foreground",
   now: "text-gotm-soft [&_b]:text-gotm-soft",
   pin: "text-highlight [&_b]:text-highlight",
 };
@@ -118,8 +118,8 @@ export function DateRuler({
       ref={ref}
       className={cn("relative select-none", lower || pin ? "h-[92px]" : "h-[64px]", className)}
     >
-      <div aria-hidden className="absolute inset-x-0 top-10 h-0.5 bg-rule-strong" />
-      <div aria-hidden className="absolute left-0 top-10 h-0.5 bg-paper" style={{ width: `${todayPct}%` }} />
+      <div aria-hidden className="absolute inset-x-0 top-10 h-0.5 bg-border-strong" />
+      <div aria-hidden className="absolute left-0 top-10 h-0.5 bg-foreground" style={{ width: `${todayPct}%` }} />
 
       {all.map((tick) => {
         if (tick.tone === "pin") return null;
@@ -176,11 +176,11 @@ export function DateRuler({
             className="absolute top-[26px] -ml-[15px] grid size-[30px] cursor-ew-resize touch-none place-items-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-highlight/60"
             style={{ left: `${pinPct}%` }}
           >
-            <span className="size-3.5 rounded-full bg-highlight shadow-[0_0_0_4px_rgb(255_212_0/0.2)]" />
+            <span className="size-3.5 rounded-full bg-highlight shadow-[0_0_0_4px_color-mix(in_oklab,var(--color-highlight)_20%,transparent)]" />
           </div>
           <p
             id="next-vote-help"
-            className="absolute top-[60px] -translate-x-1/2 text-[0.8rem] whitespace-nowrap text-paper-dim"
+            className="absolute top-[60px] -translate-x-1/2 text-[0.8rem] whitespace-nowrap text-dim-foreground"
             style={{ left: `${labelPct(pinPct)}%` }}
           >
             Drag, or{" "}
@@ -198,15 +198,15 @@ export function DateRuler({
       {!pin && ghost && (
         <>
           <p
-            className="font-label absolute top-0 -translate-x-1/2 text-center text-[0.76rem] leading-tight tracking-[0.06em] whitespace-nowrap text-paper-mute"
+            className="font-label absolute top-0 -translate-x-1/2 text-center text-[0.76rem] leading-tight tracking-[0.06em] whitespace-nowrap text-faint-foreground"
             style={{ left: `${100 - EDGE_PCT}%` }}
           >
-            <b className="block text-[0.84rem] text-paper-dim">{ghost.label}</b>
+            <b className="block text-[0.84rem] text-dim-foreground">{ghost.label}</b>
             {ghost.caption}
           </p>
           <span
             aria-hidden
-            className="absolute top-[34px] -ml-[7px] size-3.5 rounded-full border-2 border-dashed border-paper-mute bg-ink"
+            className="absolute top-[34px] -ml-[7px] size-3.5 rounded-full border-2 border-dashed border-faint-foreground bg-background"
             style={{ left: `${100 - EDGE_PCT}%` }}
           />
         </>

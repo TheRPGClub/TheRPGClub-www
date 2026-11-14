@@ -27,7 +27,7 @@ export function GameStrip({
   return (
     <section
       aria-label={game.title}
-      className="relative isolate bleed -mt-6 h-[140px] overflow-hidden bg-ink-2 md:h-[180px]"
+      className="relative isolate bleed -mt-6 h-[140px] overflow-hidden bg-card md:h-[180px]"
     >
       {art && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -42,8 +42,8 @@ export function GameStrip({
         className={cn(
           "absolute inset-0 -z-10",
           art
-            ? "bg-[linear-gradient(90deg,rgb(11_11_13/0.96)_0%,rgb(11_11_13/0.72)_45%,rgb(11_11_13/0.2)_100%),linear-gradient(0deg,var(--color-ink)_0%,transparent_60%)]"
-            : "bg-[linear-gradient(0deg,var(--color-ink)_0%,transparent_100%)]",
+            ? "bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_72%,transparent)_45%,color-mix(in_oklab,var(--color-background)_20%,transparent)_100%),linear-gradient(0deg,var(--color-background)_0%,transparent_60%)]"
+            : "bg-[linear-gradient(0deg,var(--color-background)_0%,transparent_100%)]",
         )}
       />
       <div className="flex h-full flex-col justify-between px-4 py-3.5 sm:px-7 md:px-8 md:py-5.5">

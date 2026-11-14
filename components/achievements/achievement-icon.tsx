@@ -120,7 +120,7 @@ export function AchievementIcon({
     <span
       className={cn(
         "relative block shrink-0 rounded-[6px]",
-        view.unlocked && "shadow-[inset_0_0_0_1px_var(--color-rule)]",
+        view.unlocked && "shadow-[inset_0_0_0_1px_var(--color-border)]",
         s.box,
         className,
       )}
@@ -143,7 +143,7 @@ type SizeSpec = (typeof SIZE)[AchievementIconSize];
 const FOIL_EDGE: React.CSSProperties = {
   borderColor: "transparent",
   background:
-    "linear-gradient(var(--color-ink-3), var(--color-ink-3)) padding-box, var(--foil-sheen) border-box, var(--foil-conic) border-box",
+    "linear-gradient(var(--color-muted), var(--color-muted)) padding-box, var(--foil-sheen) border-box, var(--foil-conic) border-box",
 };
 
 function UnlockedTile({
@@ -167,11 +167,11 @@ function UnlockedTile({
   return (
     <span
       className={cn(
-        "absolute overflow-hidden rounded-[6px] bg-ink-3 shadow-[0_3px_6px_rgb(0_0_0/0.45)]",
+        "absolute overflow-hidden rounded-[6px] bg-muted shadow-[0_3px_6px_rgb(0_0_0/0.45)]",
         "rotate-(--tilt) motion-safe:transition-[rotate] motion-safe:duration-200 hover:rotate-0",
         s.inset,
         s.edge,
-        tier ? RARITY_EDGE[tier] : "border-paper-mute",
+        tier ? RARITY_EDGE[tier] : "border-faint-foreground",
       )}
       style={
         {
@@ -198,7 +198,7 @@ function UnlockedTile({
       ) : (
         <span
           aria-hidden
-          className="flex size-full items-center justify-center text-paper-dim"
+          className="flex size-full items-center justify-center text-dim-foreground"
           style={ink ? { color: ink } : undefined}
         >
           {fill && slot != null ? (
@@ -214,7 +214,7 @@ function UnlockedTile({
         <span
           aria-hidden
           className={cn(
-            "absolute right-0.5 bottom-0.5 rounded-full shadow-[0_0_0_2px_var(--color-ink)]",
+            "absolute right-0.5 bottom-0.5 rounded-full shadow-[0_0_0_2px_var(--color-background)]",
             s.dot,
             psnTier === "platinum" && "foil",
           )}
@@ -226,7 +226,7 @@ function UnlockedTile({
       {view.provider === "retroachievements" && view.hardcore && (
         <span
           aria-hidden
-          className="font-label absolute bottom-0.5 left-0.5 rounded-[2px] bg-paper px-[3px] py-px text-[11px] leading-none font-extrabold text-ink"
+          className="font-label absolute bottom-0.5 left-0.5 rounded-[2px] bg-foreground px-[3px] py-px text-[11px] leading-none font-extrabold text-background"
         >
           HC
         </span>
@@ -247,24 +247,24 @@ function SealedTile({
   return (
     <span
       className={cn(
-        "absolute grid place-items-center overflow-hidden rounded-[6px] border border-rule-strong bg-ink-3 rotate-(--tilt)",
+        "absolute grid place-items-center overflow-hidden rounded-[6px] border border-border-strong bg-muted rotate-(--tilt)",
         s.inset,
       )}
       style={{ "--tilt": `${stableTilt(id)}deg` } as React.CSSProperties}
     >
       <span
         aria-hidden
-        className="absolute h-[22%] w-[200%] -rotate-45 bg-rule-strong"
+        className="absolute h-[22%] w-[200%] -rotate-45 bg-border-strong"
         style={tint ? { background: tint } : undefined}
       />
       <span
         aria-hidden
-        className={cn("font-headline relative leading-none text-paper", s.mark)}
+        className={cn("font-headline relative leading-none text-foreground", s.mark)}
       >
         ?
       </span>
       {s.label && (
-        <span className="font-label absolute bottom-1.5 text-[0.7rem] tracking-[0.14em] text-paper-dim">
+        <span className="font-label absolute bottom-1.5 text-[0.7rem] tracking-[0.14em] text-dim-foreground">
           Hidden
         </span>
       )}
@@ -284,7 +284,7 @@ function LockedSlot({
   return (
     <span
       className={cn(
-        "absolute grid place-items-center rounded-[6px] border-[1.5px] border-dashed border-rule-strong",
+        "absolute grid place-items-center rounded-[6px] border-[1.5px] border-dashed border-border-strong",
         s.inset,
       )}
     >
@@ -292,7 +292,7 @@ function LockedSlot({
         <span
           aria-hidden
           className={cn(
-            "font-headline leading-none text-paper-mute opacity-60",
+            "font-headline leading-none text-faint-foreground opacity-60",
             s.mark,
           )}
           style={tint ? { color: tint } : undefined}
@@ -300,7 +300,7 @@ function LockedSlot({
           {String(slot).padStart(2, "0")}
         </span>
       ) : (
-        <Lock aria-hidden className={cn("text-paper-mute", s.glyph)} />
+        <Lock aria-hidden className={cn("text-faint-foreground", s.glyph)} />
       )}
     </span>
   );

@@ -24,14 +24,14 @@ const TRACK = {
     label: "Game of the Month",
     number: "text-gotm",
     accent: "text-highlight",
-    tag: "bg-gotm text-white",
+    tag: "bg-gotm text-gotm-foreground",
     button: "default",
   },
   nr_gotm: {
     label: "Non-RPG Game of the Month",
     number: "text-nr",
     accent: "text-nr-soft",
-    tag: "bg-nr text-white",
+    tag: "bg-nr text-nr-foreground",
     button: "nr",
   },
 } as const;
@@ -97,7 +97,7 @@ export function CoverStory({
     <section
       aria-label={`${track.label}, round ${roundNumber}${count > 1 ? `: ${count} winners` : ""}`}
       className={cn(
-        "relative grid min-h-[30rem] gap-1 overflow-hidden rounded-md bg-ink lg:min-h-[32rem]",
+        "relative grid min-h-[30rem] gap-1 overflow-hidden rounded-md bg-background lg:min-h-[32rem]",
         count === 2 && "sm:grid-cols-[1.42fr_1fr]",
         count === 3 && "sm:grid-cols-[1.3fr_1fr] sm:grid-rows-2",
       )}
@@ -207,8 +207,8 @@ function CoverPanel({
         className={cn(
           "absolute inset-0 -z-10",
           single
-            ? "bg-[linear-gradient(90deg,rgb(11_11_13/0.96)_0%,rgb(11_11_13/0.82)_34%,rgb(11_11_13/0.15)_66%,rgb(11_11_13/0.35)_100%),linear-gradient(0deg,rgb(11_11_13/0.7)_0%,transparent_40%)]"
-            : "bg-[linear-gradient(0deg,rgb(11_11_13/0.97)_0%,rgb(11_11_13/0.86)_30%,rgb(11_11_13/0.2)_62%,rgb(11_11_13/0.55)_100%)]",
+            ? "bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_82%,transparent)_34%,color-mix(in_oklab,var(--color-background)_15%,transparent)_66%,color-mix(in_oklab,var(--color-background)_35%,transparent)_100%),linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_70%,transparent)_0%,transparent_40%)]"
+            : "bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_86%,transparent)_30%,color-mix(in_oklab,var(--color-background)_20%,transparent)_62%,color-mix(in_oklab,var(--color-background)_55%,transparent)_100%)]",
         )}
       />
 
@@ -239,18 +239,18 @@ function CoverPanel({
               </p>
               <p className="font-label pb-0.5 text-[0.95rem] leading-tight font-extrabold tracking-[0.08em] [text-shadow:0_1px_8px_rgb(0_0_0/0.85)]">
                 Round {roundNumber}
-                <span className="block font-bold text-paper-mute">
+                <span className="block font-bold text-faint-foreground">
                   {monthYear}
                 </span>
               </p>
             </div>
             {count > 1 && (
-              <p className="font-label inline-flex rounded-xs bg-paper px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.08em] text-ink">
+              <p className="font-label inline-flex rounded-xs bg-foreground px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.08em] text-background">
                 {count} winners
               </p>
             )}
             {absentNote && (
-              <p className="font-label flex items-center gap-2 text-[0.82rem] tracking-[0.08em] text-paper-mute [text-shadow:0_1px_8px_rgb(0_0_0/0.85)]">
+              <p className="font-label flex items-center gap-2 text-[0.82rem] tracking-[0.08em] text-faint-foreground [text-shadow:0_1px_8px_rgb(0_0_0/0.85)]">
                 <span
                   aria-hidden
                   className="size-2.5 rounded-full ring-2 ring-gotm ring-inset"
@@ -293,7 +293,7 @@ function CoverPanel({
 
           <div className={cn("flex flex-wrap gap-1.5", small ? "mt-2.5" : "mt-3.5")}>
             {game.year && (
-              <span className="font-label inline-flex h-6 items-center rounded-xs bg-paper/8 px-2 text-[0.78rem] text-paper-dim">
+              <span className="font-label inline-flex h-6 items-center rounded-xs bg-foreground/8 px-2 text-[0.78rem] text-dim-foreground">
                 {game.year}
               </span>
             )}
@@ -303,7 +303,7 @@ function CoverPanel({
           {!small && game.description && (
             <p
               className={cn(
-                "mt-3 line-clamp-3 text-paper-dim",
+                "mt-3 line-clamp-3 text-dim-foreground",
                 single ? "max-w-[52ch] text-[0.97rem]" : "max-w-[46ch] text-sm",
                 // Side-by-side co-winners reserve the clamp's three lines,
                 // so the story blocks end level and the stats and actions
@@ -349,7 +349,7 @@ function CoverPanel({
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-label inline-flex items-center gap-1 px-1.5 py-1 text-[0.85rem] text-paper-dim transition-colors hover:text-highlight"
+                className="font-label inline-flex items-center gap-1 px-1.5 py-1 text-[0.85rem] text-dim-foreground transition-colors hover:text-highlight"
               >
                 {link.label}
                 <ExternalLink aria-hidden className="size-3.5" />
@@ -393,7 +393,7 @@ function CoverStats({
     >
       {stats.map((stat) => (
         <div key={stat.key} className="flex items-baseline gap-1.5">
-          <dt className="font-label order-2 text-[0.82rem] font-extrabold text-paper-dim">
+          <dt className="font-label order-2 text-[0.82rem] font-extrabold text-dim-foreground">
             {statLabel(stat, "cover")}
           </dt>
           <dd

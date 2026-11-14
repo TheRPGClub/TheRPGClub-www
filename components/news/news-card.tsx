@@ -24,7 +24,7 @@ export function NewsCard({
   const ink = newsInk(item.category_key);
 
   return (
-    <article className="group/card flex h-full flex-col overflow-hidden rounded-md bg-ink-2">
+    <article className="group/card flex h-full flex-col overflow-hidden rounded-md bg-card">
       <NewsArt
         frames={view.frames}
         cover={view.cover}
@@ -44,25 +44,25 @@ export function NewsCard({
                 href={view.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xs text-paper transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+                className="rounded-xs text-foreground transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
               >
                 <OutboundHeadline text={view.headline} />
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
             ) : (
-              <span className="text-paper">{view.headline}</span>
+              <span className="text-foreground">{view.headline}</span>
             )}
           </h3>
         )}
         {view.description && (
-          <p className="mt-1.5 line-clamp-2 text-sm text-paper-dim">{view.description}</p>
+          <p className="mt-1.5 line-clamp-2 text-sm text-dim-foreground">{view.description}</p>
         )}
         {view.comment && (
-          <p className="mt-1.5 line-clamp-3 text-sm text-paper-dim italic">
+          <p className="mt-1.5 line-clamp-3 text-sm text-dim-foreground italic">
             &ldquo;{view.comment}&rdquo;
           </p>
         )}
-        <p className="font-label mt-auto flex items-baseline justify-between gap-3 pt-2.5 text-[0.76rem] tracking-[0.08em] text-paper-mute">
+        <p className="font-label mt-auto flex items-baseline justify-between gap-3 pt-2.5 text-[0.76rem] tracking-[0.08em] text-faint-foreground">
           <span className="min-w-0 truncate">{view.site}</span>
           <span className="flex shrink-0 items-baseline gap-1.5">
             {item.author.member ? (
@@ -91,7 +91,7 @@ function OutboundHeadline({ text }: { text: string }) {
         {text}
         <ArrowUpRight
           aria-hidden
-          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-paper-mute"
+          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-faint-foreground"
         />
       </>
     );
@@ -103,7 +103,7 @@ function OutboundHeadline({ text }: { text: string }) {
         {last}
         <ArrowUpRight
           aria-hidden
-          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-paper-mute"
+          className="ml-0.5 inline size-3.5 -translate-y-px align-baseline text-faint-foreground"
         />
       </span>
     </>

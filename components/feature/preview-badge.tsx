@@ -15,4 +15,4 @@ export function PreviewBadge({ className }: { className?: string }) {
 // (it shares the voting "Open" badge's slot and size). Hidden on the icon
 // rail, where the tooltip says it instead.
 export const NAV_BADGE_CLASS =
-  "font-label rounded-xs bg-highlight px-1.5 py-px text-[0.7rem] font-extrabold text-ink group-data-[collapsible=icon]:hidden";
+  "font-label rounded-xs bg-highlight px-1.5 py-px text-[0.7rem] font-extrabold text-highlight-foreground group-data-[collapsible=icon]:hidden";

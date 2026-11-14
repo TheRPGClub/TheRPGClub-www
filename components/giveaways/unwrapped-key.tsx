@@ -34,9 +34,9 @@ export function UnwrappedKey({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b-2 border-paper pb-3">
+      <header className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b-2 border-foreground pb-3">
         <h1 className="font-headline text-5xl sm:text-6xl">Unwrapped</h1>
-        <p className="font-label pb-1 text-sm text-paper-mute">
+        <p className="font-label pb-1 text-sm text-faint-foreground">
           {justClaimed ? "Claimed just now" : `Claimed ${shortDate(gameKey.claimed_at)}`}
         </p>
         <div className="ml-auto pb-1">
@@ -56,12 +56,12 @@ export function UnwrappedKey({
 
       <section
         aria-label={`Your key for ${title}`}
-        className="grid gap-8 rounded-md border-t-4 bg-ink-2 px-5 py-7 sm:px-9 md:grid-cols-[18rem_minmax(0,1fr)] md:gap-10"
+        className="grid gap-8 rounded-md border-t-4 bg-card px-5 py-7 sm:px-9 md:grid-cols-[18rem_minmax(0,1fr)] md:gap-10"
         style={{ borderTopColor: family.ink }}
       >
         <div aria-hidden className="relative mx-auto h-[300px] w-[18rem] max-w-full">
           <i
-            className="absolute top-1 left-1 h-[46px] w-[15.5rem] -rotate-[14deg] rounded-[3px] shadow-[0_10px_22px_rgb(0_0_0/0.5)] after:absolute after:inset-y-0 after:left-[70%] after:w-3.5 after:bg-ink/25"
+            className="absolute top-1 left-1 h-[46px] w-[15.5rem] -rotate-[14deg] rounded-[3px] shadow-[0_10px_22px_rgb(0_0_0/0.5)] after:absolute after:inset-y-0 after:left-[70%] after:w-3.5 after:bg-background/25"
             style={{ background: family.ink }}
           />
           <GameCover
@@ -85,10 +85,10 @@ export function UnwrappedKey({
             {gameKey.claimed_at && <Chip>Claimed {shortDate(gameKey.claimed_at)}</Chip>}
           </div>
 
-          <p className="font-label mb-1.5 text-sm text-paper-mute">Your key</p>
+          <p className="font-label mb-1.5 text-sm text-faint-foreground">Your key</p>
           {value ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-md border-[1.5px] border-dashed border-rule-strong bg-ink px-5 py-4">
-              <code className="font-label mr-auto text-2xl leading-none tracking-[0.1em] break-all text-paper normal-case sm:text-[2.1rem]">
+            <div className="flex flex-wrap items-center gap-3 rounded-md border-[1.5px] border-dashed border-border-strong bg-background px-5 py-4">
+              <code className="font-label mr-auto text-2xl leading-none tracking-[0.1em] break-all text-foreground normal-case sm:text-[2.1rem]">
                 {value}
               </code>
               <CopyKeyButton value={value} />
@@ -105,7 +105,7 @@ export function UnwrappedKey({
               )}
             </div>
           ) : (
-            <p className="rounded-md border-[1.5px] border-dashed border-rule-strong px-5 py-4 text-paper-dim">
+            <p className="rounded-md border-[1.5px] border-dashed border-border-strong px-5 py-4 text-dim-foreground">
               {"Couldn't read the key just now. It is still yours: find it under Your claimed keys."}
             </p>
           )}
@@ -113,9 +113,9 @@ export function UnwrappedKey({
           {jobId != null && (
             <BotJobStatus jobId={jobId} what="The DM with your key" className="mt-4" />
           )}
-          <p className="mt-3 text-sm text-paper-mute">
+          <p className="mt-3 text-sm text-faint-foreground">
             The bot also sends this key to your Discord DMs. It stays under{" "}
-            <Link href="/giveaways/claimed" className="text-paper underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight">
+            <Link href="/giveaways/claimed" className="text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight">
               Your claimed keys
             </Link>
             , so you can come back for it.

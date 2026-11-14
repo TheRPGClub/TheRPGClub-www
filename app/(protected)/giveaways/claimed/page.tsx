@@ -42,9 +42,9 @@ export default async function ClaimedKeysPage() {
           {"Couldn't load your claimed keys. Refresh to try again."}
         </p>
       ) : keys.length === 0 ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-5 py-8 text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">
           {"You haven't claimed a key yet. "}
-          <Link href="/giveaways" className="text-paper underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight">
+          <Link href="/giveaways" className="text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight">
             See the shelf
           </Link>
           .
@@ -53,7 +53,7 @@ export default async function ClaimedKeysPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[40rem] border-collapse text-[0.93rem]">
             <thead>
-              <tr className="font-label text-left text-[0.78rem] text-paper-mute">
+              <tr className="font-label text-left text-[0.78rem] text-faint-foreground">
                 <th className="px-2 py-1"><span className="sr-only">Cover</span></th>
                 <th className="px-2 py-1">Game</th>
                 <th className="px-2 py-1">Platform</th>
@@ -66,7 +66,7 @@ export default async function ClaimedKeysPage() {
               {keys.map((k) => {
                 const title = k.game?.title ?? k.game_title;
                 return (
-                  <tr key={k.key_id} className="border-b border-rule align-middle">
+                  <tr key={k.key_id} className="border-b border-border align-middle">
                     <td className="px-2 py-2.5">
                       <GameCover title="" coverUrl={k.game?.cover_url} className="w-[34px]" />
                     </td>
@@ -78,7 +78,7 @@ export default async function ClaimedKeysPage() {
                       ) : (
                         title
                       )}
-                      {k.region !== "Global" && <span className="ml-2 text-xs text-paper-mute">{k.region}</span>}
+                      {k.region !== "Global" && <span className="ml-2 text-xs text-faint-foreground">{k.region}</span>}
                     </td>
                     <td className="px-2 py-2.5">
                       <PlatformChip ink={platformFamily(k.platform).ink}>{k.platform}</PlatformChip>
@@ -86,8 +86,8 @@ export default async function ClaimedKeysPage() {
                     <td className="px-2 py-2.5">
                       <ClaimedKeyCell value={k.key_value} title={title} />
                     </td>
-                    <td className="px-2 py-2.5 text-paper-dim">{names.get(k.donor_user_id) ?? "A member"}</td>
-                    <td className="px-2 py-2.5 whitespace-nowrap text-paper-dim">{shortDate(k.claimed_at)}</td>
+                    <td className="px-2 py-2.5 text-dim-foreground">{names.get(k.donor_user_id) ?? "A member"}</td>
+                    <td className="px-2 py-2.5 whitespace-nowrap text-dim-foreground">{shortDate(k.claimed_at)}</td>
                   </tr>
                 );
               })}

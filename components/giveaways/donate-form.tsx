@@ -10,12 +10,12 @@ import { GamePicker } from "@/components/member/game-picker";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const FIELD = "border-ink bg-[#fff8cc] text-ink caret-ink placeholder:text-ink/55 focus-visible:border-ink focus-visible:ring-ink/20";
-const LABEL = "font-label mb-1.5 block text-sm text-ink";
+const FIELD = "border-background bg-[#fff8cc] text-background caret-background placeholder:text-background/55 focus-visible:border-background focus-visible:ring-background/20";
+const LABEL = "font-label mb-1.5 block text-sm text-background";
 const OTHER = "Other";
 // The IGDB fallback is drawn for the dark page, so it sits on a dark panel
 // here (bg-ink, so its bg-ink-3 "You stay here" note still stands out).
-const IGDB_PANEL = "rounded-sm border border-ink bg-ink p-2.5 text-paper";
+const IGDB_PANEL = "rounded-sm border border-background bg-background p-2.5 text-foreground";
 
 // "Wrap a key": the donate form, on the yellow call-to-action panel. The game
 // must come from the GameDB; one that isn't there can be added from IGDB by
@@ -64,11 +64,11 @@ export function DonateForm() {
   };
 
   return (
-    <form onSubmit={submit} className="rounded-md bg-highlight p-6 text-ink" aria-labelledby="donate-title">
+    <form onSubmit={submit} className="rounded-md bg-highlight p-6 text-highlight-foreground" aria-labelledby="donate-title">
       <h2 id="donate-title" className="font-headline text-[2.2rem] leading-[0.9]">
         Wrap a key
       </h2>
-      <p className="mt-2 mb-5 text-sm text-highlight-ink">
+      <p className="mt-2 mb-5 text-sm text-highlight-muted-foreground">
         It goes on the shelf straight away, and the bot updates the giveaways channel.
       </p>
 
@@ -77,7 +77,7 @@ export function DonateForm() {
           Game
         </span>
         {game ? (
-          <div className="flex h-9 items-center gap-2 rounded-sm border border-ink bg-ink pr-1 pl-3 text-sm text-paper">
+          <div className="flex h-9 items-center gap-2 rounded-sm border border-background bg-background pr-1 pl-3 text-sm text-foreground">
             <Check aria-hidden className="size-4 text-highlight" />
             <span className="min-w-0 flex-1 truncate font-semibold">{game.title}</span>
             <button
@@ -87,13 +87,13 @@ export function DonateForm() {
                 setGame(null);
                 setPickerKey((k) => k + 1);
               }}
-              className="grid size-7 place-items-center rounded-sm text-paper-dim hover:bg-ink-3 hover:text-paper"
+              className="grid size-7 place-items-center rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground"
             >
               <X className="size-4" />
             </button>
           </div>
         ) : (
-          <div className="[&_input]:border-ink [&_input]:bg-[#fff8cc] [&_input]:text-ink [&_input]:caret-ink [&_input]:placeholder:text-ink/55">
+          <div className="[&_input]:border-background [&_input]:bg-[#fff8cc] [&_input]:text-background [&_input]:caret-background [&_input]:placeholder:text-background/55">
             <GamePicker
               key={pickerKey}
               compact
@@ -117,8 +117,8 @@ export function DonateForm() {
                 aria-pressed={selected}
                 onClick={() => setPlatform(p)}
                 className={cn(
-                  "font-label h-7 rounded-xs px-2.5 text-[0.82rem] font-extrabold transition-colors focus-visible:ring-3 focus-visible:ring-ink/30 focus-visible:outline-none",
-                  selected ? "bg-ink text-highlight" : "text-ink shadow-[inset_0_0_0_1.5px_var(--color-ink)] hover:bg-ink/10",
+                  "font-label h-7 rounded-xs px-2.5 text-[0.82rem] font-extrabold transition-colors focus-visible:ring-3 focus-visible:ring-background/30 focus-visible:outline-none",
+                  selected ? "bg-background text-highlight" : "text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] hover:bg-background/10",
                 )}
               >
                 {p}
@@ -176,21 +176,21 @@ export function DonateForm() {
             type="button"
             onClick={() => setShowKey((s) => !s)}
             aria-label={showKey ? "Hide the key" : "Show the key"}
-            className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center rounded-sm text-ink hover:bg-ink/10"
+            className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center rounded-sm text-background hover:bg-background/10"
           >
             {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
-        <p className="mt-1.5 text-xs text-highlight-ink">Only you, the member who claims it, and Admins ever see the key.</p>
+        <p className="mt-1.5 text-xs text-highlight-muted-foreground">Only you, the member who claims it, and Admins ever see the key.</p>
       </div>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-sm bg-ink px-3 py-2 text-sm text-paper">
+        <p role="alert" className="mt-3 rounded-sm bg-background px-3 py-2 text-sm text-foreground">
           {error}
         </p>
       )}
       {done && (
-        <p role="status" className="mt-3 text-sm font-semibold text-ink">
+        <p role="status" className="mt-3 text-sm font-semibold text-background">
           {done}
         </p>
       )}
@@ -199,14 +199,14 @@ export function DonateForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="font-label inline-flex h-9 items-center gap-2 rounded-sm bg-ink px-3.5 text-[0.95rem] font-extrabold text-paper transition-colors hover:bg-ink-3 focus-visible:ring-3 focus-visible:ring-ink/40 focus-visible:outline-none disabled:opacity-60"
+          className="font-label inline-flex h-9 items-center gap-2 rounded-sm bg-background px-3.5 text-[0.95rem] font-extrabold text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-background/40 focus-visible:outline-none disabled:opacity-60"
         >
           <Gift aria-hidden className="size-4" />
           {isPending ? "Wrapping…" : "Put it on the shelf"}
         </button>
         <Link
           href="/giveaways"
-          className="font-label inline-flex h-9 items-center rounded-sm px-3.5 text-[0.95rem] font-extrabold text-ink shadow-[inset_0_0_0_1.5px_var(--color-ink)] hover:bg-ink/10"
+          className="font-label inline-flex h-9 items-center rounded-sm px-3.5 text-[0.95rem] font-extrabold text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] hover:bg-background/10"
         >
           Cancel
         </Link>

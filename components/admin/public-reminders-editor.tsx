@@ -82,7 +82,7 @@ export function PublicRemindersEditor({
 
   return (
     <section aria-label="Public reminders" className="space-y-4">
-      <p className="text-sm text-paper-mute">
+      <p className="text-sm text-faint-foreground">
         The bot posts each message in its channel when it is due. Times show in
         your time zone{isClient ? ` (${browserZone()})` : ""} and in club time (
         {CLUB_TIME_ZONE}).
@@ -128,9 +128,9 @@ export function PublicRemindersEditor({
         </Button>
       )}
 
-      <ul className="border-t-2 border-paper">
+      <ul className="border-t-2 border-foreground">
         {reminders.length === 0 && (
-          <li className="border-b border-rule py-3 text-paper-dim">
+          <li className="border-b border-border py-3 text-dim-foreground">
             No public reminders scheduled.
           </li>
         )}
@@ -138,7 +138,7 @@ export function PublicRemindersEditor({
           editingId === reminder.reminder_id ? (
             <li
               key={reminder.reminder_id}
-              className="border-b border-rule py-3"
+              className="border-b border-border py-3"
             >
               <ReminderForm
                 reminder={reminder}
@@ -150,26 +150,26 @@ export function PublicRemindersEditor({
           ) : (
             <li
               key={reminder.reminder_id}
-              className="flex flex-col gap-2 border-b border-rule py-3 sm:flex-row sm:items-start"
+              className="flex flex-col gap-2 border-b border-border py-3 sm:flex-row sm:items-start"
             >
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="font-label text-[0.82rem] tracking-[0.06em] text-paper-mute">
+                <p className="font-label text-[0.82rem] tracking-[0.06em] text-faint-foreground">
                   #{reminder.reminder_id} · {channelName(reminder.channel_id)}
                   {recurrenceLabel(reminder)
                     ? ` · ${recurrenceLabel(reminder)}`
                     : ""}
                 </p>
-                <p className="font-semibold text-paper">
+                <p className="font-semibold text-foreground">
                   {isClient ? formatReminderTime(reminder.due_at) : " "}
                 </p>
-                <p className="text-sm text-paper-dim">
+                <p className="text-sm text-dim-foreground">
                   {/* Client-only too: Node's and the browser's Intl can space it differently. */}
                   Club time:{" "}
                   {isClient
                     ? formatReminderTime(reminder.due_at, CLUB_TIME_ZONE)
                     : ""}
                 </p>
-                <p className="text-sm whitespace-pre-wrap text-paper">
+                <p className="text-sm whitespace-pre-wrap text-foreground">
                   {reminder.message}
                 </p>
               </div>
@@ -265,7 +265,7 @@ function ReminderForm({
   };
 
   const fieldLabel =
-    "font-label text-[0.82rem] tracking-[0.06em] text-paper-mute";
+    "font-label text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 
   return (
     <form
@@ -273,7 +273,7 @@ function ReminderForm({
       aria-label={
         reminder ? `Edit reminder #${reminder.reminder_id}` : "New reminder"
       }
-      className="space-y-3 rounded-md border border-highlight bg-ink-2 p-3"
+      className="space-y-3 rounded-md border border-highlight bg-card p-3"
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-1">
@@ -318,7 +318,7 @@ function ReminderForm({
         <textarea
           name="message"
           rows={3}
-          className="w-full min-w-0 rounded-sm border border-rule bg-ink-2 px-3 py-2 text-sm text-paper caret-highlight outline-none focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40"
+          className="w-full min-w-0 rounded-sm border border-border bg-card px-3 py-2 text-sm text-foreground caret-highlight outline-none focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required

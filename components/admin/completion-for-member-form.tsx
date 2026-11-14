@@ -27,7 +27,7 @@ const DATE_CHOICES: readonly [DateChoice, string][] = [
   ["custom", "Pick a date"],
 ];
 
-const LABEL = "font-label block text-[0.82rem] tracking-[0.08em] text-paper-mute";
+const LABEL = "font-label block text-[0.82rem] tracking-[0.08em] text-faint-foreground";
 
 interface Sent {
   member: User;
@@ -200,7 +200,7 @@ function CompletionForm({
         <div className="space-y-1.5">
           <span className={LABEL}>Game</span>
           {locked && game ? (
-            <p className="flex h-9 items-center rounded-sm border border-rule bg-ink-3 px-3 text-sm font-semibold">
+            <p className="flex h-9 items-center rounded-sm border border-border bg-muted px-3 text-sm font-semibold">
               {game.title}
             </p>
           ) : (
@@ -214,7 +214,7 @@ function CompletionForm({
           )}
         </div>
 
-        <fieldset disabled={locked} className="grid gap-x-5 gap-y-5 border-t border-rule pt-5 sm:grid-cols-2">
+        <fieldset disabled={locked} className="grid gap-x-5 gap-y-5 border-t border-border pt-5 sm:grid-cols-2">
           <label className="space-y-1.5">
             <span className={LABEL}>Completion type</span>
             <select
@@ -307,12 +307,12 @@ function CompletionForm({
               maxLength={COMPLETION_NOTE_MAX}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full min-w-0 rounded-sm border border-rule bg-ink-2 px-3 py-2 text-sm text-paper caret-highlight outline-none focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40"
+              className="w-full min-w-0 rounded-sm border border-border bg-card px-3 py-2 text-sm text-foreground caret-highlight outline-none focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40"
             />
-            <span className="block text-xs text-paper-mute">Kept on the profile; the post leaves it out.</span>
+            <span className="block text-xs text-faint-foreground">Kept on the profile; the post leaves it out.</span>
           </label>
 
-          <label className="flex items-start gap-3 border-y border-rule py-3.5 sm:col-span-2">
+          <label className="flex items-start gap-3 border-y border-border py-3.5 sm:col-span-2">
             <input
               type="checkbox"
               className="mt-1 size-4 accent-highlight"
@@ -321,7 +321,7 @@ function CompletionForm({
             />
             <span>
               <span className="block font-semibold">Announce it in Whatcha Playing</span>
-              <span className="block text-sm text-paper-mute">
+              <span className="block text-sm text-faint-foreground">
                 The bot posts it as the proof shows, naming you as the one who logged it.
               </span>
             </span>
@@ -340,12 +340,12 @@ function CompletionForm({
               <Plus aria-hidden />
               Log another
             </Button>
-            <span className="text-sm text-paper-dim">
+            <span className="text-sm text-dim-foreground">
               <CheckCircle2 aria-hidden className="mr-1.5 inline size-4 align-[-3px] text-ok" />
               On{" "}
               <Link
                 href={`/members/${sent.member.user_id}/completed-games`}
-                className="font-semibold text-paper underline decoration-rule-strong underline-offset-3 hover:decoration-highlight"
+                className="font-semibold text-foreground underline decoration-border-strong underline-offset-3 hover:decoration-highlight"
               >
                 {memberName(sent.member)}&apos;s completed games
               </Link>
@@ -359,7 +359,7 @@ function CompletionForm({
               {announce ? "Log and announce" : "Log the completion"}
             </Button>
             {(!member || !game) && (
-              <span className="text-sm text-paper-mute">Pick a member and a game first.</span>
+              <span className="text-sm text-faint-foreground">Pick a member and a game first.</span>
             )}
           </div>
         )}

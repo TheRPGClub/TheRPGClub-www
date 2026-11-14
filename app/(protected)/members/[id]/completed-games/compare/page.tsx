@@ -200,7 +200,7 @@ export default async function CompareCompletionsPage({
                 }}
                 both={venn.both}
               />
-              <p className="text-center text-xs text-paper-mute">
+              <p className="text-center text-xs text-faint-foreground">
                 Distinct games across every completion each has logged
                 {filtered ? "; the filters below narrow the shared list only." : "."}
               </p>

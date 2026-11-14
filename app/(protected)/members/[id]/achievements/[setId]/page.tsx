@@ -89,7 +89,7 @@ export default async function MemberAchievementSetPage({
           headline={headline ? { id: headline.item.view.id, reason: headline.reason } : null}
         />
       ) : (
-        <p className="rounded-md border border-dashed border-rule-strong px-5 py-6 text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-5 py-6 text-faint-foreground">
           The Provider lists no Achievements for this set yet.
         </p>
       )}

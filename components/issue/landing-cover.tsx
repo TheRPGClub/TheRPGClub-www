@@ -37,7 +37,7 @@ export function LandingPitch({
         <span className="text-nr-soft">wildcard</span>, every month.{" "}
         <span className="text-highlight">Played together.</span>
       </h1>
-      <p className="mt-5 max-w-[50ch] text-base text-paper-dim sm:text-[1.05rem]">
+      <p className="mt-5 max-w-[50ch] text-base text-dim-foreground sm:text-[1.05rem]">
         The RPG Club is a Discord community that votes on a Game of the Month
         and plays it together, with a second pick for everything that
         isn&apos;t an RPG. This site is the club&apos;s hub: the current round,
@@ -108,16 +108,16 @@ export function LandingCover({
         // No key art: the winner's name, set huge in the art's place.
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 -z-20 flex h-[32.5rem] items-center justify-end overflow-hidden bg-ink-2 md:inset-y-0 md:left-[40%] md:h-full"
+          className="absolute inset-x-0 top-0 -z-20 flex h-[32.5rem] items-center justify-end overflow-hidden bg-card md:inset-y-0 md:left-[40%] md:h-full"
         >
-          <span className="font-headline -mr-[0.06em] max-w-[9ch] text-right text-[7rem] leading-[0.85] text-balance text-ink-3 md:text-[11rem] xl:text-[14rem]">
+          <span className="font-headline -mr-[0.06em] max-w-[9ch] text-right text-[7rem] leading-[0.85] text-balance text-muted md:text-[11rem] xl:text-[14rem]">
             {lead.title}
           </span>
         </div>
       )}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 -z-10 h-[32.5rem] bg-[linear-gradient(0deg,rgb(11_11_13)_0%,rgb(11_11_13/0.92)_40%,rgb(11_11_13/0.1)_70%,rgb(11_11_13/0.5)_100%)] md:h-full md:bg-[linear-gradient(90deg,rgb(11_11_13/0.97)_0%,rgb(11_11_13/0.86)_36%,rgb(11_11_13/0.12)_70%,rgb(11_11_13/0.3)_100%),linear-gradient(0deg,rgb(11_11_13)_0%,transparent_34%),linear-gradient(180deg,rgb(11_11_13/0.7)_0%,transparent_22%)]"
+        className="absolute inset-x-0 top-0 -z-10 h-[32.5rem] bg-[linear-gradient(0deg,var(--color-background)_0%,color-mix(in_oklab,var(--color-background)_92%,transparent)_40%,color-mix(in_oklab,var(--color-background)_10%,transparent)_70%,color-mix(in_oklab,var(--color-background)_50%,transparent)_100%)] md:h-full md:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_86%,transparent)_36%,color-mix(in_oklab,var(--color-background)_12%,transparent)_70%,color-mix(in_oklab,var(--color-background)_30%,transparent)_100%),linear-gradient(0deg,var(--color-background)_0%,transparent_34%),linear-gradient(180deg,color-mix(in_oklab,var(--color-background)_70%,transparent)_0%,transparent_22%)]"
       />
 
       <Starburst
@@ -126,9 +126,9 @@ export function LandingCover({
         textClassName="text-[1.19rem] md:text-[1.75rem]"
       />
 
-      <p className="font-label absolute top-[16.5rem] left-4 z-10 max-w-[52%] text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-dim [text-shadow:0_1px_8px_rgb(0_0_0)] md:top-30 md:right-10 md:left-auto md:max-w-[22rem] md:text-right md:text-sm">
+      <p className="font-label absolute top-[16.5rem] left-4 z-10 max-w-[52%] text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground [text-shadow:0_1px_8px_rgb(0_0_0)] md:top-30 md:right-10 md:left-auto md:max-w-[22rem] md:text-right md:text-sm">
         This month the club plays
-        <span className="font-headline block pt-0.5 text-[1.6rem] leading-[0.95] tracking-normal text-paper md:text-[2.5rem]">
+        <span className="font-headline block pt-0.5 text-[1.6rem] leading-[0.95] tracking-normal text-foreground md:text-[2.5rem]">
           {lead.title}
         </span>
       </p>
@@ -139,7 +139,7 @@ export function LandingCover({
         className="relative z-[2] flex-1 px-4 pt-21 pb-8 md:px-10 md:pt-26 md:pb-14 [&>h1]:mt-[13rem] md:[&>h1]:mt-auto md:[&>h1]:pt-12"
       />
 
-      <ul className="relative z-[3] mx-4 mb-9 flex flex-col gap-4 rounded-sm bg-ink/82 px-5 py-4.5 md:absolute md:right-10 md:bottom-14 md:m-0 md:w-80">
+      <ul className="relative z-[3] mx-4 mb-9 flex flex-col gap-4 rounded-sm bg-background/82 px-5 py-4.5 md:absolute md:right-10 md:bottom-14 md:m-0 md:w-80">
         {[
           [
             "Nominate, vote, play",
@@ -156,10 +156,10 @@ export function LandingCover({
         ].map(([title, body]) => (
           <li
             key={title}
-            className="font-label text-lg leading-[1.1] font-extrabold tracking-[0.02em] [text-shadow:0_1px_10px_rgb(0_0_0)] before:mb-2 before:block before:h-1 before:w-7 before:bg-paper"
+            className="font-label text-lg leading-[1.1] font-extrabold tracking-[0.02em] [text-shadow:0_1px_10px_rgb(0_0_0)] before:mb-2 before:block before:h-1 before:w-7 before:bg-foreground"
           >
             {title}
-            <span className="mt-0.5 block font-sans text-sm font-medium tracking-normal text-paper-dim normal-case">
+            <span className="mt-0.5 block font-sans text-sm font-medium tracking-normal text-dim-foreground normal-case">
               {body}
             </span>
           </li>

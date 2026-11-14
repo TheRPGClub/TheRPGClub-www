@@ -13,12 +13,12 @@ const POINTS =
 const TRACK = {
   gotm: {
     fill: "fill-highlight",
-    text: "text-ink",
+    text: "text-highlight-foreground",
     lines: ["Game", "of the", "Month"],
   },
   nr_gotm: {
     fill: "fill-nr",
-    text: "text-white",
+    text: "text-nr-foreground",
     lines: ["Non-RPG", "Game of", "the Month"],
   },
 } as const;

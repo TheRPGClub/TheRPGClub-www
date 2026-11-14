@@ -109,8 +109,8 @@ async function AchievementsHub({ filters }: { filters: Filters }) {
         badge={features.preview("achievement_hub") && <PreviewBadge />}
         count={
           result && !latest && total > 0 ? (
-            <span className="text-base text-paper-dim normal-case">
-              <span className="font-headline mr-1.5 text-[1.6rem] leading-none text-paper">
+            <span className="text-base text-dim-foreground normal-case">
+              <span className="font-headline mr-1.5 text-[1.6rem] leading-none text-foreground">
                 {total}
               </span>
               {total === 1 ? "Highlight" : "Highlights"}
@@ -165,7 +165,7 @@ function FilterRow({ filters }: { filters: Filters }) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <HubProviderFilter filters={filters} />
-      <p className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-paper-mute">
+      <p className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
         Days in UTC
       </p>
     </div>
@@ -273,13 +273,13 @@ function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: string }
   // Nobody has linked anything: point the viewer at their own Linked
   // Accounts.
   return (
-    <div className="flex flex-col items-center gap-4 rounded-md border border-dashed border-rule-strong px-4 py-12 text-center">
-      <p className="text-paper-dim">
+    <div className="flex flex-col items-center gap-4 rounded-md border border-dashed border-border-strong px-4 py-12 text-center">
+      <p className="text-dim-foreground">
         No one has linked a RetroAchievements, Steam or PlayStation account yet.
       </p>
       <Link
         href={editHref}
-        className="font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-paper transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5"
+        className="font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5"
       >
         Link your accounts
         <ArrowRight aria-hidden />
@@ -289,11 +289,11 @@ function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: string }
 }
 
 const INLINE_LINK =
-  "font-semibold text-paper underline underline-offset-4 transition-colors hover:text-highlight";
+  "font-semibold text-foreground underline underline-offset-4 transition-colors hover:text-highlight";
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

@@ -10,11 +10,11 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-gotm/85",
         // Calls to action: nominate, vote, the club's open business.
-        highlight: "bg-highlight text-ink hover:bg-highlight/85",
+        highlight: "bg-highlight text-highlight-foreground hover:bg-highlight/85",
         // The NR-GOTM track's own ink.
-        nr: "bg-nr text-white hover:bg-nr/85",
+        nr: "bg-nr text-nr-foreground hover:bg-nr/85",
         outline:
-          "border-paper-mute/60 bg-transparent text-paper hover:border-paper hover:bg-ink-3 aria-expanded:bg-ink-3",
+          "border-faint-foreground/60 bg-transparent text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
@@ -24,11 +24,11 @@ const buttonVariants = cva(
         // The confirmed destructive action (after a typed-word confirm):
         // solid signal orange, never red.
         "destructive-solid":
-          "bg-destructive text-destructive-ink hover:bg-destructive/85 focus-visible:ring-destructive/40",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/85 focus-visible:ring-destructive/40",
         // A destructive action that opens its confirm: orange stroke.
         "destructive-outline":
           "border-destructive bg-transparent text-destructive hover:bg-destructive/10",
-        link: "text-paper underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight",
+        link: "text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight",
       },
       size: {
         default:

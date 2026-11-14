@@ -106,8 +106,8 @@ export async function ImportPage<J extends ImportJob>({
 export function ImportingLine({ prefix = "Importing", name }: { prefix?: string; name: ReactNode }) {
   if (!name) return null;
   return (
-    <p className="text-sm text-paper-mute">
-      {prefix} <span className="font-semibold text-paper">{name}</span>
+    <p className="text-sm text-faint-foreground">
+      {prefix} <span className="font-semibold text-foreground">{name}</span>
     </p>
   );
 }
@@ -126,11 +126,11 @@ export function ImportStep({
   children?: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-md border border-rule bg-ink-2 p-5 sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:p-6">
+    <section className="grid gap-4 rounded-md border border-border bg-card p-5 sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:p-6">
       {step !== undefined && (
         <span
           aria-hidden
-          className="font-headline text-[4.25rem] leading-[0.8] text-ink-3 [-webkit-text-stroke:1.5px_var(--color-paper-mute)]"
+          className="font-headline text-[4.25rem] leading-[0.8] text-muted [-webkit-text-stroke:1.5px_var(--color-faint-foreground)]"
         >
           {step}
         </span>
@@ -142,7 +142,7 @@ export function ImportStep({
             {title}
           </h2>
           {description && (
-            <p className="max-w-[65ch] text-sm text-paper-dim">{description}</p>
+            <p className="max-w-[65ch] text-sm text-dim-foreground">{description}</p>
           )}
         </div>
         {children}

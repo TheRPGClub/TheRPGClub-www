@@ -29,7 +29,7 @@ export function ProviderBadge({
     <span
       title={short ? PROVIDER_LABEL[provider] : undefined}
       className={cn(
-        "font-label inline-flex h-6 items-center rounded-xs px-2 text-[0.78rem] whitespace-nowrap text-ink",
+        "font-label inline-flex h-6 items-center rounded-xs px-2 text-[0.78rem] whitespace-nowrap text-provider-foreground",
         PROVIDER_FILL[provider],
         className,
       )}

@@ -22,7 +22,7 @@ export function FoilStamp({
   return (
     <span
       className={cn(
-        "foil font-headline inline-block -rotate-8 rounded-xs leading-none tracking-[0.04em] outline-solid outline-ink",
+        "foil font-headline inline-block -rotate-8 rounded-xs leading-none tracking-[0.04em] outline-solid outline-background",
         "shadow-[0_6px_14px_rgb(0_0_0/0.45)]",
         SIZE[size],
         className,

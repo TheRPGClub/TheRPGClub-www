@@ -30,12 +30,12 @@ export function AchievementTotalsRow({
     >
       {stats.map((stat, i) => (
         <div key={stat.key} className="flex flex-col-reverse gap-1.5">
-          <dt className="font-label text-[0.85rem] tracking-[0.08em] text-paper-mute">
+          <dt className="font-label text-[0.85rem] tracking-[0.08em] text-faint-foreground">
             {stat.value === 1 ? stat.label[0] : stat.label[1]}
           </dt>
           <dd
             className={cn(
-              "font-headline leading-[0.8] text-paper",
+              "font-headline leading-[0.8] text-foreground",
               i === 0 ? "text-[3.75rem] sm:text-[4.5rem]" : "text-[2.6rem] sm:text-[3rem]",
             )}
           >
@@ -63,7 +63,7 @@ export function LinkedAccountBadges({
           <ProviderBadge provider={account.provider} />
           {account.display_name && (
             <span
-              className="font-label pr-2 text-[0.85rem] text-paper-dim"
+              className="font-label pr-2 text-[0.85rem] text-dim-foreground"
               title={`${PROVIDER_LABEL[account.provider]}: ${account.display_name}`}
             >
               {account.display_name}

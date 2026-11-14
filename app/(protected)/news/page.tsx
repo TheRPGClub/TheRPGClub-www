@@ -92,7 +92,7 @@ async function NewsBody({
         badge={badge}
         actions={
           note && (
-            <p className="font-label text-sm tracking-[0.08em] text-paper-mute">{note}</p>
+            <p className="font-label text-sm tracking-[0.08em] text-faint-foreground">{note}</p>
           )
         }
       />
@@ -135,7 +135,7 @@ async function NewsBody({
             />
           )}
           {items.length > 0 && (
-            <p className="font-label text-[0.8rem] tracking-[0.08em] text-paper-mute">
+            <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
               Days and times in UTC
             </p>
           )}
@@ -173,11 +173,11 @@ function NewsDayBand({
           {heading.title}
         </time>
         {heading.note && (
-          <span className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-paper-mute">
+          <span className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-faint-foreground">
             {heading.note}
           </span>
         )}
-        <span aria-hidden className="h-0.5 min-w-6 flex-1 self-center bg-rule-strong" />
+        <span aria-hidden className="h-0.5 min-w-6 flex-1 self-center bg-border-strong" />
       </h2>
       <ul className="grid gap-5 @xl:grid-cols-2 @3xl:grid-cols-3">
         {day.items.map((item) => (
@@ -243,11 +243,11 @@ function NewsEmpty({
 }
 
 const INLINE_LINK =
-  "font-semibold text-paper underline underline-offset-4 transition-colors hover:text-highlight";
+  "font-semibold text-foreground underline underline-offset-4 transition-colors hover:text-highlight";
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

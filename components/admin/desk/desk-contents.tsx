@@ -25,13 +25,13 @@ export function DeskContents({
         <section
           key={area.key}
           aria-labelledby={`desk-${area.key}`}
-          className="grid gap-2 border-b border-rule py-4 first:pt-0 last:border-b-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
+          className="grid gap-2 border-b border-border py-4 first:pt-0 last:border-b-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
         >
           <div>
             <h2 id={`desk-${area.key}`} className="font-headline text-[1.9rem]">
               {area.label}
             </h2>
-            <span className="font-label mt-1.5 block text-[0.72rem] tracking-[0.08em] text-paper-mute">
+            <span className="font-label mt-1.5 block text-[0.72rem] tracking-[0.08em] text-faint-foreground">
               {TIER_SHORT[area.tier]}
             </span>
           </div>
@@ -48,18 +48,18 @@ export function DeskContents({
                 >
                   <Link
                     href={section.href}
-                    className="min-w-0 font-semibold text-paper transition-colors hover:text-highlight"
+                    className="min-w-0 font-semibold text-foreground transition-colors hover:text-highlight"
                   >
                     {section.label}
                   </Link>
                   <span
                     aria-hidden
-                    className="min-w-4 flex-1 -translate-y-1 border-b-[1.5px] border-dotted border-rule-strong"
+                    className="min-w-4 flex-1 -translate-y-1 border-b-[1.5px] border-dotted border-border-strong"
                   />
                   <span
                     className={cn(
-                      "font-label text-[0.78rem] whitespace-nowrap text-paper-mute",
-                      note?.tone === "live" && "text-paper",
+                      "font-label text-[0.78rem] whitespace-nowrap text-faint-foreground",
+                      note?.tone === "live" && "text-foreground",
                       note?.tone === "bad" && "text-destructive",
                     )}
                   >

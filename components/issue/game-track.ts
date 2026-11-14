@@ -17,7 +17,7 @@ export function gameTrack(
 export function trackAccentText(track: GameTrack | null): string {
   if (track === "gotm") return "text-highlight";
   if (track === "nr_gotm") return "text-nr-soft";
-  return "text-paper";
+  return "text-foreground";
 }
 
 // "Game of the Month · November 2026" chips, one per track the game won.

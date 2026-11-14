@@ -59,7 +59,7 @@ export function HighlightTile({
         <Link
           href={memberAchievementsHref(card.user.user_id)}
           aria-label={name}
-          className="absolute top-3 -right-4 rounded-full shadow-[0_0_0_2px_var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+          className="absolute top-3 -right-4 rounded-full shadow-[0_0_0_2px_var(--color-background)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
         >
           <ReviewerAvatar userId={card.user.user_id} name={name} size="lg" />
         </Link>
@@ -78,7 +78,7 @@ export function HighlightTile({
 
       <div
         className={cn(
-          "relative mt-6 w-full rounded-xs border-t-[3px] bg-paper py-1.5 pr-2 pl-3 text-ink shadow-[0_3px_8px_rgb(0_0_0/0.5)]",
+          "relative mt-6 w-full rounded-xs border-t-[3px] bg-foreground py-1.5 pr-2 pl-3 text-background shadow-[0_3px_8px_rgb(0_0_0/0.5)]",
           PROVIDER_TOP[set.provider],
         )}
       >

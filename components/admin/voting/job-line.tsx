@@ -7,7 +7,7 @@ import { BotJobStatus } from "@/components/bot-job-status";
 import { cn } from "@/lib/utils";
 
 const DOT = {
-  queued: "bg-highlight shadow-[0_0_0_3px_rgb(255_212_0/0.18)]",
+  queued: "bg-highlight shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-highlight)_18%,transparent)]",
   done: "bg-ok",
   failed: "bg-destructive",
 } as const;
@@ -37,7 +37,7 @@ export function JobLine({
   const reason = phase === "failed" ? botJobFailureReason(job.error_message) : "";
   return (
     <div className="min-w-0">
-      <p className="font-label inline-flex items-center gap-[7px] text-[0.8rem] tracking-[0.06em] text-paper-dim">
+      <p className="font-label inline-flex items-center gap-[7px] text-[0.8rem] tracking-[0.06em] text-dim-foreground">
         <i aria-hidden className={cn("size-2 rounded-full", DOT[phase])} />
         {WORD[phase]}
         {stamp && (

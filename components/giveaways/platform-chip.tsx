@@ -6,7 +6,7 @@ export function PlatformChip({ ink, children, className }: { ink: string; childr
   return (
     <span
       className={cn(
-        "font-label inline-flex h-[22px] items-center rounded-xs px-[7px] text-[0.74rem] font-extrabold whitespace-nowrap text-ink",
+        "font-label inline-flex h-[22px] items-center rounded-xs px-[7px] text-[0.74rem] font-extrabold whitespace-nowrap text-background",
         className,
       )}
       style={{ background: ink }}

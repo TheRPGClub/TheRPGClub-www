@@ -99,7 +99,7 @@ export function SetSpread({
               className={cn(
                 "font-label inline-flex items-center rounded-t-md px-3.5 text-[0.95rem] font-extrabold tracking-[0.06em] transition-colors sm:px-5 sm:text-[1rem]",
                 "focus-visible:outline-2 focus-visible:outline-highlight",
-                on ? "h-11" : "h-9 bg-ink-2 text-paper-mute hover:bg-ink-3 hover:text-paper",
+                on ? "h-11" : "h-9 bg-card text-faint-foreground hover:bg-muted hover:text-foreground",
               )}
               style={on ? { background: tint.tint, color: tint.contrast } : undefined}
             >
@@ -113,7 +113,7 @@ export function SetSpread({
         {/* left page */}
         <section
           aria-label={SET_PAGE_VIEWS.find((v) => v.key === view)?.label}
-          className="relative flex min-w-0 flex-col gap-5 rounded-md bg-ink-2 py-5 pr-4 pl-7 sm:py-7 sm:pr-7 sm:pl-11 xl:rounded-r-none xl:shadow-[inset_-22px_0_26px_-20px_rgb(0_0_0/0.7)]"
+          className="relative flex min-w-0 flex-col gap-5 rounded-md bg-card py-5 pr-4 pl-7 sm:py-7 sm:pr-7 sm:pl-11 xl:rounded-r-none xl:shadow-[inset_-22px_0_26px_-20px_rgb(0_0_0/0.7)]"
         >
           <TintSpine tint={tint.tint} width={12} />
           <PageHead
@@ -128,7 +128,7 @@ export function SetSpread({
           )}
           {view === "rarity" && <RarityView {...viewProps} />}
           {view === "timeline" && <TimelineView {...viewProps} />}
-          <span className="font-label mt-auto hidden pt-4 text-[0.75rem] text-paper-mute xl:block">
+          <span className="font-label mt-auto hidden pt-4 text-[0.75rem] text-faint-foreground xl:block">
             Page 1
           </span>
         </section>
@@ -136,14 +136,14 @@ export function SetSpread({
         {/* right page */}
         <aside
           aria-label="Details"
-          className="flex flex-col gap-6 rounded-md bg-ink-2 p-5 sm:p-7 xl:rounded-l-none xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)]"
+          className="flex flex-col gap-6 rounded-md bg-card p-5 sm:p-7 xl:rounded-l-none xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)]"
         >
           <PageHead left={`${memberName}’s Unlocks`} right="By Rarity" className="max-xl:hidden" />
           <div className="hidden xl:sticky xl:top-[84px] xl:flex xl:flex-col xl:gap-6">
             {selected ? (
               detailFor(selected)
             ) : (
-              <p className="rounded-md border border-dashed border-rule-strong px-5 py-6 text-[0.95rem] leading-relaxed text-paper-mute">
+              <p className="rounded-md border border-dashed border-border-strong px-5 py-6 text-[0.95rem] leading-relaxed text-faint-foreground">
                 Pick an Achievement to see its description, Rarity and Unlock.
               </p>
             )}
@@ -152,7 +152,7 @@ export function SetSpread({
           <div className="xl:hidden">
             <RarityTally items={items} />
           </div>
-          <span className="font-label mt-auto hidden pt-4 text-right text-[0.75rem] text-paper-mute xl:block">
+          <span className="font-label mt-auto hidden pt-4 text-right text-[0.75rem] text-faint-foreground xl:block">
             Page 2
           </span>
         </aside>
@@ -166,7 +166,7 @@ function RarityTally({ items }: { items: SlottedAchievement[] }) {
   const bands = rarityBands(items).filter((b) => b.items.length > 0);
   return (
     <section aria-label="Unlocks by Rarity" className="flex flex-col gap-3">
-      <h3 className="font-headline border-b-2 border-paper pb-1.5 text-[1.5rem] leading-[0.95] text-paper">
+      <h3 className="font-headline border-b-2 border-foreground pb-1.5 text-[1.5rem] leading-[0.95] text-foreground">
         By Rarity
       </h3>
       <ul className="flex flex-col gap-3">
@@ -174,18 +174,18 @@ function RarityTally({ items }: { items: SlottedAchievement[] }) {
           const share = band.items.length ? (band.unlocked / band.items.length) * 100 : 0;
           return (
             <li key={band.tier ?? "none"} className="grid grid-cols-[7rem_minmax(0,1fr)_3rem] items-center gap-3">
-              <span className="font-label text-[0.85rem] text-paper-dim">
+              <span className="font-label text-[0.85rem] text-dim-foreground">
                 {band.tier ? RARITY_TIER_LABEL[band.tier] : "No Rarity"}
               </span>
-              <span className="h-2 overflow-hidden rounded-[1px] bg-ink-3">
+              <span className="h-2 overflow-hidden rounded-[1px] bg-muted">
                 <span
-                  className={cn("block h-full", band.tier ? TIER_FILL[band.tier] : "bg-paper-mute")}
+                  className={cn("block h-full", band.tier ? TIER_FILL[band.tier] : "bg-faint-foreground")}
                   style={{ width: `${share}%` }}
                 />
               </span>
-              <span className="font-headline text-right text-[1.05rem] text-paper">
+              <span className="font-headline text-right text-[1.05rem] text-foreground">
                 {band.unlocked}
-                <span className="text-paper-mute">/{band.items.length}</span>
+                <span className="text-faint-foreground">/{band.items.length}</span>
               </span>
             </li>
           );

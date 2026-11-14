@@ -162,7 +162,7 @@ export function ReviewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative overflow-hidden rounded-md border border-rule bg-ink-2"
+      className="relative overflow-hidden rounded-md border border-border bg-card"
     >
       <div className="space-y-4 p-4">
         <Input
@@ -196,7 +196,7 @@ export function ReviewForm({
             // Says the scorecard is still there and where to change it. Without
             // this the categories simply vanish from the form, which reads like
             // the save is about to drop them.
-            <p className="text-xs text-paper-mute">
+            <p className="text-xs text-faint-foreground">
               Scored on {facets.order.length}{" "}
               {facets.order.length === 1 ? "category" : "categories"}, kept as
               they are. Open the full review editor to change them.
@@ -217,7 +217,7 @@ export function ReviewForm({
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-2 border-t border-rule pt-3">
+        <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
           {showDelete && existing ? (
             <Button
               type="button"

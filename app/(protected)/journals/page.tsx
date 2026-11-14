@@ -123,11 +123,11 @@ export default async function JournalsPage({
             count="One volume per member · most games first"
           />
           {contributors === null ? (
-            <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+            <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
               The archive couldn&apos;t be loaded right now.
             </p>
           ) : people.length === 0 ? (
-            <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+            <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
               No one has journaled a game yet. Start yours from your profile&apos;s Journal.
             </p>
           ) : (
@@ -160,11 +160,11 @@ export default async function JournalsPage({
           current={kept}
         />
         {results === null ? (
-          <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+          <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
             The catalogue couldn&apos;t be searched right now.
           </p>
         ) : results.data.length === 0 ? (
-          <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+          <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
             {filtered ? "No entries match that search." : "No entries yet."}
           </p>
         ) : (

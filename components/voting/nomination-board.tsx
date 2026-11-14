@@ -166,7 +166,7 @@ export function NominationBoard({
 
   if (!nominations.length) {
     return (
-      <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+      <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
         {emptyMessage}
       </p>
     );
@@ -175,7 +175,7 @@ export function NominationBoard({
   return (
     <div className="space-y-4">
       {votingOpen && (
-        <p className="font-label text-[0.9rem] font-bold tracking-[0.04em] text-paper-dim">
+        <p className="font-label text-[0.9rem] font-bold tracking-[0.04em] text-dim-foreground">
           You&apos;ve used{" "}
           <span
             className={cn(
@@ -201,7 +201,7 @@ export function NominationBoard({
             type="button"
             aria-label="Dismiss"
             onClick={() => setError(null)}
-            className="mt-0.5 shrink-0 text-paper-mute transition-colors hover:text-paper"
+            className="mt-0.5 shrink-0 text-faint-foreground transition-colors hover:text-foreground"
           >
             <X className="size-3.5" />
           </button>
@@ -245,7 +245,7 @@ export function CountsHiddenNote({ className }: { className?: string }) {
   return (
     <p
       className={cn(
-        "font-label flex items-center gap-2 text-[0.85rem] font-bold tracking-[0.06em] text-paper-mute",
+        "font-label flex items-center gap-2 text-[0.85rem] font-bold tracking-[0.06em] text-faint-foreground",
         className,
       )}
     >

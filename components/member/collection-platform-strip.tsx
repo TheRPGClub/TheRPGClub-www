@@ -56,7 +56,7 @@ export function CollectionPlatformStrip({
   return (
     <nav
       aria-label="Filter by platform"
-      className="border-y border-rule py-2.5"
+      className="border-y border-border py-2.5"
     >
       <ul className="flex flex-wrap gap-1">
         {chips.map((chip) => {
@@ -70,8 +70,8 @@ export function CollectionPlatformStrip({
                 className={cn(
                   "font-label inline-flex h-8 items-center gap-2 rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors",
                   isActive
-                    ? "bg-paper text-ink"
-                    : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                    ? "bg-foreground text-background"
+                    : "text-dim-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {chip.label}
