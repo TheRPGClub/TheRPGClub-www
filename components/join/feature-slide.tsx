@@ -41,7 +41,7 @@ export function FeatureSlide({
                 TILTS[index % TILTS.length],
               )}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for */}
               <img src={cover.url} alt="" className="size-full object-cover" />
             </li>
           ))}

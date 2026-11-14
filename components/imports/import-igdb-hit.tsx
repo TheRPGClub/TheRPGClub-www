@@ -18,7 +18,7 @@ export function ImportIgdbHit({
     <li className="grid grid-cols-[2.1rem_1fr_auto] items-center gap-2.5 border-t border-border py-2 text-[0.85rem]">
       <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-muted">
         {hit.cover_url && (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={hit.cover_url} alt="" className="size-full object-cover" />
         )}
       </span>

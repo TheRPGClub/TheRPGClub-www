@@ -43,7 +43,7 @@ export function NrFeatureCard({
         // The art band takes whatever height the stretched card has spare,
         // so the story and its actions stay together at the foot.
         <div className="relative min-h-32 flex-1">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for */}
           <img
             src={art}
             alt=""

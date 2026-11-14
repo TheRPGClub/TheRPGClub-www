@@ -16,7 +16,7 @@ export function MatchedGame({
     <div className="flex items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_2px_var(--color-highlight)]">
       <span className="block h-[3.8rem] w-[2.9rem] shrink-0 overflow-hidden rounded-[2px] bg-background">
         {game.cover_url && (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={game.cover_url} alt="" className="size-full object-cover" />
         )}
       </span>

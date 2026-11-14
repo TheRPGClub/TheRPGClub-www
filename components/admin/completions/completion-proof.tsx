@@ -48,7 +48,7 @@ export function CompletionProof({
         )}
         <div className="h-[6.5rem] w-[5rem] overflow-hidden rounded-[3px] bg-muted">
           {coverUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
+            // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
             <img src={coverUrl} alt="" className="size-full object-cover" />
           )}
         </div>

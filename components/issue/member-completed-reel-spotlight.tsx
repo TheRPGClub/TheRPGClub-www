@@ -30,7 +30,7 @@ export function ReelSpotlight({
       className="relative isolate grid scroll-mt-20 items-end gap-4 overflow-hidden rounded-md bg-black p-4.5 sm:min-h-[23.75rem] sm:grid-cols-[11rem_1fr] sm:gap-7.5 sm:p-7.5 xl:grid-cols-[14.375rem_1fr_auto]"
     >
       {art && (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
         <img
           key={art}
           src={art}

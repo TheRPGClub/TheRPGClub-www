@@ -70,8 +70,7 @@ export function useLiveEvent(initial: LiveEvent): LiveEventState {
       cancelled = true;
       window.clearTimeout(timer);
     };
-    // `read` only closes over the id, fixed for this component's life.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `read` only closes over the id, fixed for this component's life
   }, [run]);
 
   const checkAgain = () =>

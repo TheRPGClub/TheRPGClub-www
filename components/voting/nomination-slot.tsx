@@ -18,7 +18,7 @@ export function ExistingNomination({
     <div className="grid grid-cols-[3.75rem_minmax(0,1fr)] items-center gap-3.5">
       <span className="block h-20 w-15 overflow-hidden rounded-xs bg-background ring-2 ring-background">
         {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={cover} alt="" className="size-full object-cover" />
         ) : (
           <span className="font-headline grid size-full place-items-center p-1 text-center text-[0.7rem] leading-none text-faint-foreground">
