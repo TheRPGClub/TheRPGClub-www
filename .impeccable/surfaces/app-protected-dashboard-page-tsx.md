@@ -1,8 +1,8 @@
 ---
 version: 1
-slug: "app-app-dashboard-page-tsx"
-primary_target: "app/(app)/dashboard/page.tsx"
-related_targets: ["app/page.tsx","components/app-sidebar.tsx"]
+slug: "app-protected-dashboard-page-tsx"
+primary_target: "app/(protected)/dashboard/page.tsx"
+related_targets: ["app/(public)/page.tsx","components/app-sidebar.tsx"]
 ---
 
 # Surface: The RPG Club web app (all signed-in pages + landing)

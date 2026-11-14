@@ -1,7 +1,7 @@
 ---
 version: 1
-slug: "app-app-admin-features-page-tsx"
-primary_target: "app/(app)/admin/features/page.tsx"
+slug: "app-protected-admin-features-page-tsx"
+primary_target: "app/(protected)/admin/features/page.tsx"
 related_targets: ["components/admin/features/feature-flag-desk.tsx"]
 ---
 

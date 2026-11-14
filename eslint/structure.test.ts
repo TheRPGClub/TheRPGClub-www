@@ -33,7 +33,7 @@ describe("size limit (max-lines)", () => {
   });
 
   it("warns on a route file over 120 lines of code", async () => {
-    const found = await warningsFor(rule, codeLines(121), "app/(app)/games/page.tsx");
+    const found = await warningsFor(rule, codeLines(121), "app/(protected)/games/page.tsx");
     expect(found).toHaveLength(1);
   });
 

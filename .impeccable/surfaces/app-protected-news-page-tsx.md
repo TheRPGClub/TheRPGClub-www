@@ -1,7 +1,7 @@
 ---
 version: 1
-slug: "app-app-news-page-tsx"
-primary_target: "app/(app)/news/page.tsx"
+slug: "app-protected-news-page-tsx"
+primary_target: "app/(protected)/news/page.tsx"
 related_targets: ["components/news/news-card.tsx","components/news/news-category-rail.tsx"]
 ---
 

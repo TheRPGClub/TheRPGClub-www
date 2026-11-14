@@ -1,8 +1,8 @@
 ---
 version: 1
-slug: "app-app-members-id-achievements-page-tsx"
-primary_target: "app/(app)/members/[id]/achievements/page.tsx"
-related_targets: ["app/(app)/members/[id]/achievements/[setId]/page.tsx","app/(app)/achievements/page.tsx","app/(app)/games/[id]/page.tsx"]
+slug: "app-protected-members-id-achievements-page-tsx"
+primary_target: "app/(protected)/members/[id]/achievements/page.tsx"
+related_targets: ["app/(protected)/members/[id]/achievements/[setId]/page.tsx","app/(protected)/achievements/page.tsx","app/(protected)/games/[id]/page.tsx"]
 ---
 
 # Achievement Hub surfaces

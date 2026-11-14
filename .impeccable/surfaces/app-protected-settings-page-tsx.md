@@ -1,7 +1,7 @@
 ---
 version: 1
-slug: "app-app-settings-page-tsx"
-primary_target: "app/(app)/settings/page.tsx"
+slug: "app-protected-settings-page-tsx"
+primary_target: "app/(protected)/settings/page.tsx"
 related_targets: ["components/feature/feature-preferences-form.tsx","components/feature/feature-switch.tsx","components/feature/news-category-switches.tsx"]
 ---
 

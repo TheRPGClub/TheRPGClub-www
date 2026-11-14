@@ -160,7 +160,7 @@ const PHASE_REVALIDATE_SECONDS = 60;
 // is safe to share (global round metadata, nothing per-user), but the
 // *response* is not: this endpoint 401s without a token, and an unauthenticated
 // caller will cache that 401 for the whole revalidate window, blanking the
-// phase for every signed-in reader behind it. app/(app)/layout.tsx therefore
+// phase for every signed-in reader behind it. app/(protected)/layout.tsx therefore
 // calls this after its auth redirect, not alongside it.
 export async function fetchCurrentPhase(): Promise<VotingPhase | null> {
   try {

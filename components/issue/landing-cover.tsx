@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // The landing's opening spread. With this round's Game of the Month in hand
 // it is a magazine cover: the winner's key art full-bleed under the masthead,
 // stamped with the GOTM starburst. LandingPitch is the masthead, headline and
-// calls to action, shared with the flat fallback hero in app/page.tsx.
+// calls to action, shared with the flat fallback hero in app/(public)/page.tsx.
 
 const ctaClass = "h-13 px-6 text-lg max-sm:w-full";
 

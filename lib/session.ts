@@ -31,7 +31,7 @@ export async function getFeatures(): Promise<FeatureView> {
 
 // A Feature's own pages are gated by their route segment's layout:
 //
-//   // app/(app)/giveaways/layout.tsx
+//   // app/(protected)/giveaways/layout.tsx
 //   export default featureLayout("giveaways");
 //
 // The whole subtree is not-found when the Feature's flag hides it from this
