@@ -11,6 +11,9 @@ const toggleVariants = cva(
       variant: {
         default: "",
         outline: "border",
+        // www#96: a segment that rests in the faint ink (the game page's
+        // set switcher).
+        quiet: "",
         // www#97: a tag picked onto something (a Suggestion's types), drawn
         // in its own ink: the caller sets --tag-ink.
         tag: "",

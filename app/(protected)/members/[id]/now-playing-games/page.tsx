@@ -1,12 +1,6 @@
 import { notFound } from "next/navigation";
-import { apiFetch } from "@/lib/api";
-import type {
-  ApiCollection,
-  ApiSingle,
-  User,
-  UserNowPlaying,
-} from "@/lib/api/types";
-import { paginationOf } from "@/lib/api/pagination";
+import type { UserNowPlaying } from "@/lib/api/types";
+import { loadMemberList, pageNumber } from "@/lib/members/member-page";
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
@@ -24,54 +18,32 @@ export default async function NowPlayingGamesPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ page?: string }>;
 }) {
-  const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
-  const currentPage = Math.max(1, parseInt(page, 10) || 1);
+  const [{ id }, { page }] = await Promise.all([params, searchParams]);
+  const currentPage = pageNumber(page);
 
-  const [userRes, listRes] = await Promise.all([
-    apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    apiFetch(
-      `/api/v1/users/${id}/now_playing?per=${PAGE_SIZE}&page=${currentPage}`,
-      { cache: "no-store" },
-    ),
-  ]);
-
-  if (!userRes.ok) notFound();
-  const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = memberName(user);
-
-  let entries: UserNowPlaying[] = [];
-  let total = 0;
-  let totalPages = 1;
-  if (listRes.ok) {
-    const body: ApiCollection<UserNowPlaying> = await listRes.json();
-    entries = body.data;
-    // The server owns the split; PAGE_SIZE is only what we asked for.
-    const pagination = paginationOf(body.meta, entries.length);
-    total = pagination.total;
-    totalPages = pagination.totalPages;
-  }
-  const href = (p: number) =>
-    `/members/${id}/now-playing-games${p > 1 ? `?page=${p}` : ""}`;
+  const data = await loadMemberList<UserNowPlaying>(id, "now_playing", PAGE_SIZE, currentPage);
+  if (!data) notFound();
+  const { user, list } = data;
 
   return (
     <MemberListTemplate
       userId={id}
-      displayName={displayName}
+      displayName={memberName(user)}
       title="Now playing"
-      count={total}
+      count={list.total}
       current="now_playing"
       counts={memberCounts(user)}
     >
-      {entries.length === 0 ? (
+      {list.entries.length === 0 ? (
         <MemberListEmpty>Nothing in progress.</MemberListEmpty>
       ) : (
-        <NowPlayingBooks entries={entries} showSince />
+        <NowPlayingBooks entries={list.entries} showSince />
       )}
 
       <ListPagination
         currentPage={currentPage}
-        totalPages={totalPages}
-        buildHref={href}
+        totalPages={list.totalPages}
+        buildHref={(p) => `/members/${id}/now-playing-games${p > 1 ? `?page=${p}` : ""}`}
       />
     </MemberListTemplate>
   );

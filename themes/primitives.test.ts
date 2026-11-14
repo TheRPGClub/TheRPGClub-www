@@ -135,7 +135,7 @@ describe("Themes style the voting and suggestions variants", () => {
   it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
     const keys = styled(name);
     const voting = [
-      "button/variant=dismiss",
+      "button/variant=dismiss-notice",
       "button/variant=card-action",
       "button/variant=card-action-destructive",
       "button/variant=search",

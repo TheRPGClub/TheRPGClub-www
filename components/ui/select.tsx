@@ -27,12 +27,17 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   )
 }
 
-// What the trigger is, drawn by each Theme by [data-slot="select-trigger"]
+// What the select is, drawn by each Theme by [data-slot="select-trigger"]
 // [data-variant] (api ADR-0008).
 type SelectTriggerVariant =
-  // A field in a form.
+  // A field: an empty value is a prompt ("Platform…").
   | "default"
-  // A sort or filter beside a page's search bar (GOTM history).
+  // A field whose list holds its empty value as a choice ("Any year"), so
+  // the empty value reads like any other.
+  | "clearable"
+  // A blank in a sentence the member completes (the backlog picker).
+  | "blank"
+  // A sort or filter beside a page's search bar (GOTM history; www#97).
   | "search"
 
 function SelectTrigger({

@@ -22,7 +22,7 @@ export function VoteError({
       <p>{message}</p>
       <Button
         type="button"
-        variant="dismiss"
+        variant="dismiss-notice"
         size="icon-xs"
         aria-label="Dismiss"
         onClick={onDismiss}
