@@ -76,6 +76,28 @@
                 color: var(--destructive-foreground);
                 border-color: var(--destructive-foreground);
             }
+            /* The Member editors (www#94). */
+            &[data-variant="subtle"] {
+                background-color: var(--muted);
+                color: var(--highlight);
+                border-color: var(--highlight);
+                border-style: dotted;
+            }
+            &[data-variant="destructive-subtle"] {
+                background-color: var(--muted);
+                color: var(--destructive);
+                border-color: var(--destructive);
+                border-style: dotted;
+            }
+            &[data-variant="help"] {
+                color: var(--highlight);
+                text-decoration: wavy underline;
+            }
+            &[data-variant="cover-remove"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: 0;
+            }
             &[data-variant="destructive"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);
@@ -149,6 +171,27 @@
                 border-color: var(--foreground);
                 border-style: dotted;
             }
+        }
+        /* The Member editors (www#94): an add slot in a shelf. */
+        [data-slot="button"][data-variant="add"][data-size="tile"] {
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="input"][data-variant="bare"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: 0;
+        }
+        [data-slot="toggle"][data-variant="toolbar"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: 0;
+            outline: 2px dotted var(--destructive);
+        }
+        [data-slot="input"][data-variant="readout"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-radius: 0;
         }
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
             background-color: var(--card);

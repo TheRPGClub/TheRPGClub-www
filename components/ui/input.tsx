@@ -22,6 +22,12 @@ type InputVariant =
   | "upload"
   // A field on a page whose work is writing one thing (Suggest something).
   | "compose"
+  // www#94: a field inside something that already draws it (a scorecard
+  // row's rename, the rating's big readout): no rule, no ground of its own.
+  | "bare"
+  // A number set into a row (a scorecard's score and weight): no field until
+  // hover or focus.
+  | "readout"
 
 function Input({
   className,

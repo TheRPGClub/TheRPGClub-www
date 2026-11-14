@@ -66,6 +66,22 @@
             &[data-variant="destructive-ghost"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive;
             }
+            /* The Member editors (www#94): the ghost and its destructive
+               twin resting in the muted ink (a dense editor's small tools);
+               a quiet dotted link that opens an explainer; a round remove
+               on a cover, light ink that inverts on hover. */
+            &[data-variant="subtle"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-muted-foreground;
+            }
+            &[data-variant="destructive-subtle"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-muted-foreground;
+            }
+            &[data-variant="help"] {
+                @apply text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground;
+            }
+            &[data-variant="cover-remove"] {
+                @apply rounded-full bg-background/85 text-foreground transition-colors hover:bg-foreground hover:text-background;
+            }
             &[data-variant="destructive"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 dark:bg-destructive/20 dark:hover:bg-destructive/30;
             }
@@ -123,6 +139,26 @@
             &[data-variant="add"] {
                 @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
             }
+        }
+        /* The Member editors (www#94). An add slot in a shelf of covers is
+           cornered like the covers and set a little wider. The bare field
+           sits inside a frame that already draws it; the readout is a
+           number set into a row, with no field until hover or focus, and
+           it doesn't dim while its form saves. Both take the ink of what
+           holds them. */
+        [data-slot="button"][data-variant="add"][data-size="tile"] {
+            @apply rounded-[3px] tracking-[0.08em];
+        }
+        [data-slot="input"][data-variant="bare"] {
+            @apply bg-transparent placeholder:text-muted-foreground/60 focus-visible:ring-0 disabled:bg-transparent dark:disabled:bg-transparent;
+        }
+        [data-slot="input"][data-variant="readout"] {
+            @apply rounded bg-transparent placeholder:font-normal placeholder:text-muted-foreground/60 hover:bg-muted/60 focus:bg-muted/60 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 dark:disabled:bg-transparent;
+        }
+        /* An editor's formatting toggle: muted until hovered, pressed in
+           the muted ground with full ink; focus is an outline. */
+        [data-slot="toggle"][data-variant="toolbar"] {
+            @apply rounded-md [font-family:inherit] font-normal tracking-normal normal-case text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:bg-muted aria-pressed:text-foreground data-pressed:bg-muted data-pressed:text-foreground;
         }
         /* The carousel's arrows are round. */
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {

@@ -54,6 +54,16 @@ const buttonVariants = cva(
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
+        // www#94: the Member editors.
+        // A small secondary tool in a dense editor (rename, save a name, add
+        // your own row): a ghost resting in the muted ink.
+        subtle: "",
+        // Its counterpart that throws something away (discard a rename).
+        "destructive-subtle": "",
+        // A quiet dotted link that opens an explainer ("What's this?").
+        help: "",
+        // A round action sitting on a cover (remove the game from a list).
+        "cover-remove": "",
         // www#91: the rest of the Monthly Issue editorial components.
         // Previous or next through a set, sitting on art (the completed
         // reel's spotlight).
@@ -94,6 +104,8 @@ const buttonVariants = cva(
         "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-7",
         "icon-lg": "size-9",
+        // www#94: a slot shaped like the covers in a shelf beside it.
+        tile: "flex aspect-[3/4] h-auto w-full flex-col gap-2 text-[0.85rem] whitespace-normal [&_svg:not([class*='size-'])]:size-5",
         // www#96: no box of its own. The caller lays out a whole item (a
         // row, a tile, a card) that is the control: the type, wrapping and
         // alignment it inherits stay as they are, and a press doesn't nudge.
