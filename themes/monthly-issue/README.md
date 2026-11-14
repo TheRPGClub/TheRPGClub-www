@@ -511,7 +511,7 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 
 **The Yellow Is Yours Rule.** Highlighter yellow is filled only for calls to action and the GOTM starburst. As type it marks the GOTM headline's second line and interaction states (hover, focus, selection, caret). It never fills a decorative panel.
 
-**The Red Is Also Here Rule.** Besides GOTM, masthead red marks where you are: the active sidebar item and the running-head separators. It marks nothing else, with one sanctioned exception on the staff desk: the Off state of a Feature Flag (see the Off Red Rule).
+**The Red Is Also Here Rule.** Besides GOTM, masthead red marks where you are: the active sidebar item, the running-head separators and the running tick of the /join slideshow. It marks nothing else, with one sanctioned exception on the staff desk: the Off state of a Feature Flag (see the Off Red Rule).
 
 #### Achievement roles (achievement surfaces only)
 The Achievement Hub adds four roles to the palette. They live on achievement surfaces only (the member achievements page, set pages, the hub, the profile's Achievements section and the game page's achievements) and never leave them. (The staff desk's done green `ok` shares the uncommon ink's hex as a token of its own; see the Desk Green Rule.) On these surfaces, red appears only as "you are here" in the shell, violet never appears, and yellow stays with calls to action and interaction states.
@@ -589,11 +589,11 @@ The dashboard is a two-column issue from `lg`: the cover story fills the flexibl
 
 ### Elevation & Depth
 
-The system is flat with tonal layering: ink, then ink-2 for panels, then ink-3 for wells. Depth on art surfaces comes from black legibility scrims over full-bleed key art, never from glow. Shadows are soft, black and directional, and they appear only on objects that physically sit on the page: the starburst, a dealt pick card, a member avatar, the lifted cover in a filmstrip.
+The system is flat with tonal layering: ink, then ink-2 for panels, then ink-3 for wells. Depth on art surfaces comes from black legibility scrims over full-bleed key art, never from glow. Shadows are soft, black and directional, and they appear only on objects that physically sit on the page: the starburst, a dealt pick card, a member avatar, the lifted cover in a filmstrip, a notice slip, the /join panel.
 
 #### Shadow Vocabulary
 - **Stamp shadow** (`drop-shadow(0 6px 14px rgba(0,0,0,0.45))`): the starburst.
-- **Object lift** (`box-shadow: 0 12px 30px rgb(0 0 0 / 0.5)` up to `0 24px 60px rgb(0 0 0 / 0.6)`): dealt cards, covers lifted in a reel, the banner avatar.
+- **Object lift** (`box-shadow: 0 12px 30px rgb(0 0 0 / 0.5)` up to `0 24px 60px rgb(0 0 0 / 0.6)`): dealt cards, covers lifted in a reel, the banner avatar, the covers dealt on a /join slide and a notice slip; the /join panel takes the top end.
 - **Type-on-art shadow** (`text-shadow: 0 1px 8px rgb(0 0 0 / 0.85)`): small labels sitting directly on key art.
 - **Inset ring** (`box-shadow: inset 0 0 0 1-2px <rule-strong | paper-mute | highlight>`): strokes without layout shift; yellow marks a selection, including the current option in the hub's controls and the picked Achievement in a set view.
 - **Die-cut rest** (`0 3px 6px rgb(0 0 0 / 0.45)`, up to `0 8px 16px rgb(0 0 0 / 0.55)` at larger sizes): an unlocked icon sitting on its slot, fanned icons and pinned Highlights. The foil stamp and an odds tag take the stamp shadow's soft drop.
@@ -609,7 +609,7 @@ The form language is hard rectangles. Chips and tags take 2px (`rounded.xs`). Bu
 
 **The Die-Cut Rule.** Achievement icons are die-cut objects, so they alone round to 6px (`rounded.die-cut`). The ring frame around a tile on a game's club page follows the cut at 7-8px. Everything else in the Achievement Hub keeps the hard rectangle: chips and stamps at 2px, tabs and tint bands at about 3.2px, the binder cover at 4px. Its round forms are the slot dots, the member ring dots, the PSN tier dot and avatars.
 
-**The Hand-Placed Rule.** Objects that sit on the page rest at a tilt and pages stay square. An unlocked icon takes a stable tilt from its id (within ±1.5deg) and straightens on hover. A foil stamp is pressed at -8deg, an odds tag at 6deg, a day tape at about 1deg alternating, and a hand of fanned icons leans by position. A hidden tile is sealed by a diagonal band in the game tint, and a day tape has torn edges.
+**The Hand-Placed Rule.** Objects that sit on the page rest at a tilt and pages stay square. An unlocked icon takes a stable tilt from its id (within ±1.5deg) and straightens on hover. A foil stamp is pressed at -8deg, an odds tag at 6deg, a day tape at about 1deg alternating, and a hand of fanned icons leans by position. A notice slip is pinned at -2deg, and the covers dealt on a /join slide lean at -2deg, 1.5deg, -1deg and 2deg by position. A hidden tile is sealed by a diagonal band in the game tint, and a day tape has torn edges.
 
 ### Components
 
@@ -619,7 +619,9 @@ Blunt, label-voiced and loud.
 - **Primary (default):** masthead red with white type. It is for GOTM actions only; on hover it drops to 85% red.
 - **Highlight:** yellow with ink type, for calls to action (nominate, vote).
 - **NR:** violet with white type, for NR-GOTM actions.
-- **On a yellow panel:** ink with paper type for the main action, and an ink-outlined transparent button beside it.
+- **On a yellow panel:** ink with paper type for the main action, and an ink-outlined transparent button beside it (the Inverse and Inverse outline variants).
+- **Inverse:** the page ground as fill on a light object (the yellow panel, a notice slip): ink with paper type, dropping to 85% on hover, with an ink focus ring.
+- **Inverse outline:** the second action beside it: transparent with a 1.5px inset stroke in the object's own type colour (ink on yellow) and a 10% wash of it on hover.
 - **Outline:** a 1px paper-mute/60 stroke, transparent, paper type; on hover the stroke goes paper and the fill ink-3.
 - **Link:** paper type with a 2px red underline offset 4px; it turns yellow on hover.
 - **Destructive outline:** a signal-orange stroke with orange type on transparent; on hover a 10% orange wash. It is the button that opens a destructive action's confirm (Delete, Reset votes, Close now).
@@ -653,6 +655,17 @@ A 26-point SVG burst set at a tilt (default -9deg, never square), lettered in An
 
 #### Round Panel / Voting Strip
 The club's open business in yellow: the "Round N / Nominations | Voting | Results" headline in Anton, a monumental days-left count, one line of status, and ink-on-yellow actions. When tall, it lists the latest five nominations, each with a 2px-cornered GOTM or NR tag. The /voting strip uses the same yellow, with a clock column and one slot per track for the member's own nomination or votes.
+
+#### Notice Slip
+The one way the site says "that didn't work". A paper slip with ink type at 2px corners, pinned at -2deg with the object lift: one Anton line, one plain sentence in ink at 75% (bold words in full ink), and optionally an Inverse action ("Try again") and a dismiss cross in its top corner that drops the notice from the address. It is an alert when the page opens on a failure, a status otherwise. The caller places it; the slip owns its look.
+- **Front page cover:** over the cover art at `xl` and up; below `xl` it sits between the masthead and the pitch, and the GOTM burst steps aside rather than be cut by it.
+- **Flat hero:** above the two track plates.
+- **/join panel:** on the panel's top edge with the reason, in flow, so it pushes the panel down rather than covering "Pull up a chair.".
+
+#### Join Panel and Cover Slideshow (/join)
+- **Join Panel:** a yellow panel with ink type and the object lift, pinned on the right over the slideshow from `lg` (under it on smaller screens) and never moving with it. The Anton "Pull up a chair.", one line of why, then two numbered steps on a 2px ink rule (monumental Anton numerals): Open the invite (Inverse) and Continue (Inverse outline).
+- **Cover Slideshow:** six full-height slides that crossfade about every 7s under a row of labelled ticks; the running tick fills in masthead red as its "you are here". The pause control comes first in tab order and is drawn last; hovering or focusing the slideshow holds it. Under reduced motion it never advances and has no pause control. On phones the ticks drop their labels and the current label shows above with an "n / 6" neutral chip.
+- **Slides:** the first two are this month's winners as cover stories with their starbursts, or flat track plates (a rounded.md plate in the track's ink with its name in Anton and one line), the same plates as the front page's flat hero. The other four set a feature in Anton on ink over a fan of real recent winners' covers seated on the slide's foot at their hand-placed tilts. No counts, no member data, and /join never uses "issue" or "edition" words.
 
 #### Game Cover (image fallback)
 Box art at 3:4 with rounded.sm and a 1px paper/12 inset outline. When a game has no art, the cover is an ink-3 block with the title set in Anton caps in paper-mute, centred. It is never an empty grey rectangle or a stand-in image. Cover stories without art fall back to their ink scrim on black and keep their full typographic layout. The landing marquee renders only with real winners' art and shows nothing rather than stand-ins.

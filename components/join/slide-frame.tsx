@@ -13,7 +13,7 @@ export function SlideFrame({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col px-4 pt-18 pb-24 sm:px-10 sm:pt-24 lg:pt-36 lg:pr-[41rem] lg:pb-32",
+        "relative flex h-full flex-col px-4 pt-18 pb-30 sm:px-10 sm:pt-24 sm:pb-24 lg:pt-36 lg:pr-[41rem] lg:pb-32",
         className,
       )}
     >
