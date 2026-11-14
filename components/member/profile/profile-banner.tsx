@@ -2,7 +2,7 @@ import type { MemberProfile } from "@/lib/members/profile-page";
 import { bannerArt } from "@/lib/members/profile-page";
 import { importsHubHref } from "@/lib/imports/kinds";
 import { MemberBanner } from "@/components/issue/member-banner";
-import { memberName } from "@/components/member/member-lists";
+import { memberName } from "@/lib/achievements";
 
 // The profile's hero: the member's masthead, wearing their own pick's art,
 // with edit and imports on their own page.

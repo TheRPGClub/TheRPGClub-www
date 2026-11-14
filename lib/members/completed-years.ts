@@ -2,7 +2,7 @@ import type { GameCompletion } from "@/lib/api/types";
 import {
   completionMonth,
   completionYear,
-} from "@/components/member/member-lists";
+} from "@/lib/members/member-lists";
 
 // The completed-games page reads a year at a time. Its year dial is built
 // from the member's whole completion history (read at the API's largest page

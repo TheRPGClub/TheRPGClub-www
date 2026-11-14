@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The structure rules warn for now (www#80); warnings do not fail the run.
+      # The structure rules are errors (eslint/structure.mjs, www#80): one fails the run.
       - name: Lint
         run: npm run lint
 

@@ -1,3 +1,5 @@
+import { readdirSync } from "node:fs";
+import path from "node:path";
 import { NextRequest } from "next/server";
 import {
   getRedirectUrl,
@@ -30,13 +32,7 @@ describe("proxy", () => {
       "/join?return_to=%2Fgames",
       "/join/continue?return_to=%2Fgames",
       "/auth/callback?token=abc",
-      "/favicon.ico",
-      "/icon.svg",
-      "/icon1.png",
-      "/apple-icon.png",
-      "/manifest.webmanifest",
-      "/logo.png",
-      "/web-app-manifest-192x192.png",
+      "/auth/sign-in?return_to=%2Fgames",
     ])("passes %s through", (path) => {
       expect(passesThrough(proxy(request(path)))).toBe(true);
     });
@@ -127,17 +123,47 @@ describe("proxy", () => {
   });
 
   describe("the matcher", () => {
+    // Every file in public/ and the app's metadata files (favicon, icons,
+    // manifest) are public and skip the proxy; nothing else does, whatever
+    // its extension.
+    const publicFiles = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+        entry.isDirectory()
+          ? publicFiles(path.join(dir, entry.name))
+          : [path.join(dir, entry.name)],
+      );
+    const fromPublic = publicFiles(path.join(__dirname, "public")).map(
+      (file) => `/${path.relative(path.join(__dirname, "public"), file).split(path.sep).join("/")}`,
+    );
+    const metadata = readdirSync(path.join(__dirname, "app"))
+      .filter((name) => /^(?:favicon\.ico|icon\d*\.\w+|apple-icon\d*\.\w+|manifest\.webmanifest)$/.test(name))
+      .map((name) => `/${name}`);
+
+    it("knows the public files", () => {
+      expect(fromPublic).toContain("/logo.png");
+      expect(metadata).toContain("/favicon.ico");
+    });
+
     it.each([
       "/_next/static/chunks/main.js",
       "/_next/static/css/app.css",
       "/_next/image?url=%2Flogo.png&w=64&q=75",
-      "/favicon.ico",
-      "/logo.png",
-      "/web-app-manifest-192x192.png",
-      "/manifest.webmanifest",
-      "/templates/collection-import-template.csv",
+      ...fromPublic,
+      ...metadata,
     ])("skips %s", (url) => {
       expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false);
+    });
+
+    it.each([
+      "/members/123/avatar.png",
+      "/games/12/cover.jpg",
+      "/templates/other.csv",
+      "/notes.txt",
+      "/feed.xml",
+      "/fonts/face.woff2",
+      "/logo.png/extra",
+    ])("runs on %s, which is no public file", (url) => {
+      expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
     });
 
     it.each(["/", "/dashboard", "/games/12", "/api/games/search", "/auth/callback", "/join", "/join/continue"])(

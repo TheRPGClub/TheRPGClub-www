@@ -2,13 +2,11 @@ import { notFound } from "next/navigation";
 import { loadCollectionPage } from "@/lib/members/collection-page";
 import { pageNumber } from "@/lib/members/member-page";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { ListPagination } from "@/components/list-pagination";
-import {
-  CollectionPlatformStrip,
-  collectedGamesHref,
-  parsePlatformFilter,
-} from "@/components/member/collection-platform-strip";
+import { CollectionPlatformStrip } from "@/components/member/collection-platform-strip";
+import { collectedGamesHref, parsePlatformFilter } from "@/lib/members/collection-filter";
 import { CollectionGrid } from "@/components/member/lists/collection-grid";
 import { ImportLink } from "@/components/member/lists/import-link";
 

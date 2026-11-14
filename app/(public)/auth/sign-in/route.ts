@@ -6,6 +6,7 @@ import {
   SIGN_IN_AGAIN_COOKIE,
   SIGN_IN_AGAIN_MAX_AGE_SECONDS,
   discordSignInUrl,
+  signInCookie,
 } from "@/lib/sign-in";
 
 // Sign in again after the session lapsed (an expired or revoked token): the
@@ -23,11 +24,6 @@ export async function GET(request: NextRequest) {
   const returnTo = request.nextUrl.searchParams.get(RETURN_TO_PARAM);
   const response = NextResponse.redirect(discordSignInUrl(returnTo));
   response.cookies.delete(SESSION_COOKIE);
-  response.cookies.set(SIGN_IN_AGAIN_COOKIE, "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: SIGN_IN_AGAIN_MAX_AGE_SECONDS,
-  });
+  response.cookies.set(SIGN_IN_AGAIN_COOKIE, "1", signInCookie(SIGN_IN_AGAIN_MAX_AGE_SECONDS));
   return response;
 }

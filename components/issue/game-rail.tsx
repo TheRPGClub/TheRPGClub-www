@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { User } from "@/lib/api/types";
-import { ReviewerAvatar, reviewerName } from "@/components/issue/review-meta";
+import { ReviewerAvatar } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import {
   Tooltip,
   TooltipContent,

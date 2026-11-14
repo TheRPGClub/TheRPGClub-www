@@ -5,8 +5,8 @@ import { SectionHeading } from "@/components/templates/page-header";
 import {
   ScoreBox,
   formatReviewDate,
-  reviewerName,
 } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { ButtonLink } from "@/components/ui/button";
 
 // "More from the club": the game's other reviews as small cards, then the way

@@ -11,7 +11,8 @@ import { paginationOf } from "@/lib/api/pagination";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 
 const PAGE_SIZE = 10;
 

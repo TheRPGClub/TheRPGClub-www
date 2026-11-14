@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
 import type { UserNowPlaying } from "@/lib/api/types";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
-import { shortDate } from "@/components/member/member-lists";
+import { shortDate } from "@/lib/members/member-lists";
 import { cn } from "@/lib/utils";
 
 // Now Playing as open books: each game face-on in its wide key art, the

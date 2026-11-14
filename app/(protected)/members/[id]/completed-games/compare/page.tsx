@@ -6,7 +6,7 @@ import { MemberListTemplate } from "@/components/templates/member-list-template"
 import { CompareMemberForm } from "@/components/member/compare/compare-member-form";
 import { CompareResults } from "@/components/member/compare/compare-results";
 import { MemberListEmpty } from "@/components/member/member-game-card";
-import { memberCounts } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
 
 // Compare completions: the overlap diagram ("only A / both / only B") over a
 // contact sheet of the shared games (see lib/members/compare-page.ts).

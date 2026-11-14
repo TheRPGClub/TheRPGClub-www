@@ -1,7 +1,7 @@
 import type { MemberProfile } from "@/lib/members/profile-page";
 import { DetailSection, SectionLink } from "@/components/templates/detail-template";
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
-import { memberListHref } from "@/components/member/member-lists";
+import { memberListHref } from "@/lib/members/member-lists";
 import { ProfileEmpty } from "@/components/member/profile/profile-empty";
 
 // What the member is playing now, open on the desk (face-on key art).

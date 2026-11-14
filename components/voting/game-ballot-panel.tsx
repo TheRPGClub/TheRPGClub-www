@@ -1,49 +1,20 @@
 "use client";
 
 import { Crown } from "lucide-react";
-import type { VotingCategory } from "@/lib/api/types";
 import { useBallotVote } from "@/hooks/use-ballot-vote";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { BAR_MOTION, type VotingAccent } from "./accents";
+import type { GameBallot } from "@/lib/games/ballot";
+import { BAR_MOTION } from "./accents";
 import { BallotFooter } from "./ballot-footer";
 import { BallotStanding } from "./ballot-standing";
 import { VoteError } from "./vote-error";
 
-export interface GameBallotPanelProps {
-  category: VotingCategory;
-  categoryTitle: string;
-  accent: VotingAccent;
-  round: number;
-  // The nomination the vote targets: the one the viewer already voted on when
-  // there is one, otherwise the game's earliest nomination. The backend
-  // toggles by game rather than by nomination, so any of them takes the vote
-  // back — but reusing the voted-on one keeps the round-trip a plain toggle.
-  nominationId: number;
-  // Totals across every nomination of this game, and of the leading game —
-  // two members can nominate the same game and the tally counts each
-  // nomination separately.
-  count: number;
-  maxCount: number;
-  // The API withholds the counts from this viewer while voting is open
-  // (only Admins see them then); `count` and `maxCount` are 0 and mean
-  // nothing, so say the counts are hidden instead.
-  countsHidden: boolean;
-  voted: boolean;
-  // How many of the viewer's votes are already spent, out of the round's cap.
-  votesUsed: number;
-  cap: number;
-  votingOpen: boolean;
-  isWinner: boolean;
-  nominatedBy: string[];
-  // False for signed-out visitors, who still see the ballot standing.
-  signedIn: boolean;
-}
 
 // Shown on a game's page while the game is sitting on the current round's
 // ballot, so a member who arrived here from a link or a search can vote
 // without going to /voting to find the card again.
-export function GameBallotPanel(props: GameBallotPanelProps) {
+export function GameBallotPanel(props: GameBallot) {
   const { category, categoryTitle, round, maxCount, countsHidden, cap } = props;
   const { votingOpen, isWinner, nominatedBy, signedIn } = props;
   const ballot = useBallotVote(props);

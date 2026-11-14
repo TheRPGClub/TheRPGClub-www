@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { RawSearchParams } from "@/lib/search-params";
 import { loadJournalVolume, parseVolumeQuery } from "@/lib/journals/volume-page";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
-import { memberCounts } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
 import { JournalNotice } from "@/components/journal/journal-notice";
 import { JournalVolumeSpread } from "@/components/journal/journal-volume-spread";
 

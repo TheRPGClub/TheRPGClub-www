@@ -49,6 +49,25 @@ export const structureConfig = [
     },
   },
   {
+    // Library code is what components are built on: it never reaches back
+    // into components/ (the types and helpers it needs live in lib/).
+    name: "structure/lib-below-components",
+    files: ["lib/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/components/**", "**/components/**"],
+              message: "lib/ never imports components/: move the helper or type into lib/.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     name: "structure/palette-names",
     files: ["**/*.{ts,tsx}"],
     ignores: ["**/themes/**", "eslint/**"],

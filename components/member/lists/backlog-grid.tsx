@@ -1,5 +1,5 @@
 import type { UserBacklog } from "@/lib/api/types";
-import { shortDate } from "@/components/member/member-lists";
+import { shortDate } from "@/lib/members/member-lists";
 import {
   MemberGameCard,
   MemberListEmpty,

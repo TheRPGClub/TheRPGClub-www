@@ -1,7 +1,7 @@
 import { getFeatures, getSession } from "@/lib/session";
 import type { GameCompletion } from "@/lib/api/types";
 import { shownImportKinds } from "@/lib/imports/kinds";
-import { fetchAllCompletions } from "@/components/member/member-lists-server";
+import { fetchAllCompletions } from "@/lib/members/completions";
 import { completedYearView } from "@/lib/members/completed-years";
 import { fetchMember, fetchMemberList } from "@/lib/members/member-page";
 

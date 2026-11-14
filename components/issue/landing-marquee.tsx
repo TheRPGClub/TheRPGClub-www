@@ -1,3 +1,4 @@
+import type { LandingMarqueeItem } from "@/lib/front-page";
 import { cn } from "@/lib/utils";
 
 // The landing's foot: the recent Games of the Month (the public winners
@@ -5,13 +6,6 @@ import { cn } from "@/lib/utils";
 // winners: when the public read fails, there is no marquee rather than
 // stand-in art. Hover or focus pauses it; reduced motion gets a still,
 // scrollable row instead.
-
-export interface LandingMarqueeItem {
-  key: string;
-  title: string;
-  coverUrl: string | null;
-  roundNumber: number;
-}
 
 // Keyframes live with the component: the global stylesheet is shared and
 // this is the only thing that scrolls on its own.

@@ -3,8 +3,8 @@ import type { Review } from "@/lib/api/types";
 import {
   ReviewerAvatar,
   formatReviewDate,
-  reviewerName,
 } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 
 // A review card's byline: the reviewer's disc and name (or, on a member's own
 // list, the game), over the date.

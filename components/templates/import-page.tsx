@@ -16,7 +16,7 @@ import {
   linkAccountsHref,
   requiredAccount,
 } from "@/lib/imports/linked-account";
-import { ImportTemplate } from "@/components/templates/import-template";
+import { PageHeader } from "@/components/templates/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
@@ -60,16 +60,17 @@ export async function ImportPage<J extends ImportJob>({
     !active && account !== null && !hasRequiredAccount(kind, await loadSocials(userId));
 
   return (
-    <ImportTemplate
-      title={IMPORT_KINDS[kind].label}
-      badge={features.preview(feature) && <PreviewBadge />}
-      actions={
-        <ButtonLink href={importsHubHref(userId)} variant="outline">
-          <ChevronLeft data-icon="inline-start" />
-          All imports
-        </ButtonLink>
-      }
-    >
+    <div className="space-y-7">
+      <PageHeader
+        title={IMPORT_KINDS[kind].label}
+        badge={features.preview(feature) && <PreviewBadge />}
+        actions={
+          <ButtonLink href={importsHubHref(userId)} variant="outline">
+            <ChevronLeft data-icon="inline-start" />
+            All imports
+          </ButtonLink>
+        }
+      />
       {active ? (
         <div className="space-y-4">
           {intro(active)}
@@ -96,6 +97,6 @@ export async function ImportPage<J extends ImportJob>({
       ) : (
         <div className="grid gap-5">{form}</div>
       )}
-    </ImportTemplate>
+    </div>
   );
 }

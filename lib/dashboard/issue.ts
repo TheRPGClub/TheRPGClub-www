@@ -1,15 +1,17 @@
 import { fetchCurrentGotmRound, fetchGotmRounds } from "@/lib/api/gotm-rounds";
 import { fetchNominations, fetchVotingRound } from "@/lib/api/voting-round";
-import type { GotmRound, GotmRoundBlock, Nomination, VotingRound } from "@/lib/api/types";
+import type { GotmRound, GotmRoundBlock, Nomination, VotingCategory, VotingRound } from "@/lib/api/types";
 import { fetchGameCounts, type GameCounts } from "@/lib/api/game-counts";
 import type { FeatureView } from "@/lib/features";
-import type { TrackedNomination } from "@/components/issue/round-panel";
 
 // The dashboard is the current issue: the round's GOTM as the cover story,
 // its NR-GOTM as the feature beside it, the club's open business (nominations
 // or the vote) in yellow under that, and the previous rounds below.
 
 const PREVIOUS_ROUNDS = 3;
+
+// A nomination with the track it was made in.
+export type TrackedNomination = Nomination & { category: VotingCategory };
 
 // The round's winning tracks (`gotm_rounds/current` is the GOTM round with
 // the same round's NR-GOTM, N/A placeholders already dropped; a track with

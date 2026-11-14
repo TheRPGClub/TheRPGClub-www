@@ -9,7 +9,7 @@ import {
   loadSocials,
 } from "@/lib/imports/active";
 import { importKindHref, shownImportKinds } from "@/lib/imports/kinds";
-import { ImportTemplate } from "@/components/templates/import-template";
+import { PageHeader } from "@/components/templates/page-header";
 import { ImportKindList } from "@/components/imports/import-kind-list";
 import { OpenImportPanel } from "@/components/imports/open-import-panel";
 import { ButtonLink } from "@/components/ui/button";
@@ -48,20 +48,18 @@ export default async function ImportsHubPage({
   );
 
   return (
-    <ImportTemplate
-      title="Imports"
-      count={open.length > 0 ? `${open.length} open` : undefined}
-      description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
-      actions={
-        <ButtonLink
-          href={`/members/${id}/edit`}
-          variant="outline"
-        >
-          <ChevronLeft data-icon="inline-start" />
-          Edit profile
-        </ButtonLink>
-      }
-    >
+    <div className="space-y-7">
+      <PageHeader
+        title="Imports"
+        count={open.length > 0 ? `${open.length} open` : undefined}
+        description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
+        actions={
+          <ButtonLink href={`/members/${id}/edit`} variant="outline">
+            <ChevronLeft data-icon="inline-start" />
+            Edit profile
+          </ButtonLink>
+        }
+      />
       {open.map(({ kind, active: job }, i) => (
         <OpenImportPanel
           key={kind}
@@ -72,6 +70,6 @@ export default async function ImportsHubPage({
         />
       ))}
       <ImportKindList userId={id} kinds={kinds} socials={socials} />
-    </ImportTemplate>
+    </div>
   );
 }

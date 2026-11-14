@@ -6,7 +6,7 @@ import {
   completionMonth,
   memberListHref,
   monthShort,
-} from "@/components/member/member-lists";
+} from "@/lib/members/member-lists";
 import { mobileCut, shelfMore, spineHref } from "@/components/member/profile/shelf-parts";
 
 // The completed shelf, newest on the left, each spine tagged with its month;

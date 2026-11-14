@@ -1,11 +1,18 @@
 import type { PublicWinner, VotingCategory } from "@/lib/api/types";
-import type { LandingMarqueeItem } from "@/components/issue/landing-marquee";
 
 // What the front page reads out of the public winners window
 // (GET /api/v1/public/winners): newest round first, and GOTM before NR-GOTM
 // in `game_index` order within a round.
 
 const SHELF_SIZE = 5;
+
+// One cover in the landing marquee.
+export interface LandingMarqueeItem {
+  key: string;
+  title: string;
+  coverUrl: string | null;
+  roundNumber: number;
+}
 
 // The cover: the first GOTM of the latest round, numbered by that round.
 // Null when there are no winners or the latest round has no GOTM.

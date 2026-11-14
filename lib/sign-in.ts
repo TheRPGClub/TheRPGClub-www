@@ -24,6 +24,13 @@ export const RETURN_TO_HEADER = "x-rpgclub-return-to";
 export const SIGN_IN_AGAIN_COOKIE = "rpgclub_sign_in_again";
 export const SIGN_IN_AGAIN_MAX_AGE_SECONDS = 60;
 
+// How the website sets its sign-in cookies (the session, the join page's
+// second try, the sign-in-again guard): server-only, site-wide, sent on
+// top-level navigations from Discord and the API.
+export function signInCookie(maxAge: number) {
+  return { httpOnly: true, sameSite: "lax", path: "/", maxAge } as const;
+}
+
 export const AUTH_FAILED_PATH = "/?error=auth_failed";
 export const DEFAULT_DESTINATION = "/dashboard";
 

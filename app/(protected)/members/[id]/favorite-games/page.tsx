@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import type { UserFavorite } from "@/lib/api/types";
 import { loadMemberList, pageNumber } from "@/lib/members/member-page";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { ListPagination } from "@/components/list-pagination";
 import { FavoritesRanking } from "@/components/member/lists/favorites-ranking";
 

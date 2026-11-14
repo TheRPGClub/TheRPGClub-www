@@ -8,7 +8,8 @@ import { dealHand, loadPickPlatforms } from "@/lib/members/backlog-deal";
 import { fetchMember } from "@/lib/members/member-page";
 import { PickSentence } from "@/components/issue/member-pick-sentence";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { PickEmpty } from "@/components/member/pick/pick-empty";
 import { PickHand } from "@/components/member/pick/pick-hand";
 

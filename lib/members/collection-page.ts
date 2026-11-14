@@ -7,7 +7,7 @@ import type {
 } from "@/lib/api/types";
 import { shownImportKinds } from "@/lib/imports/kinds";
 import { fetchMember, fetchMemberList } from "@/lib/members/member-page";
-import type { PlatformFilter } from "@/components/member/collection-platform-strip";
+import type { PlatformFilter } from "@/lib/members/collection-filter";
 
 export const COLLECTION_PAGE_SIZE = 24;
 

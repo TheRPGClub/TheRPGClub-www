@@ -1,7 +1,7 @@
 import {
   memberListHref,
   type MemberListKey,
-} from "@/components/member/member-lists";
+} from "@/lib/members/member-lists";
 
 // Phones show this many spines per shelf; the rest are a tap on the list.
 const MOBILE_SPINES = 6;

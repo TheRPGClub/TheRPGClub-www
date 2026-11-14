@@ -1,7 +1,7 @@
 import type { MemberProfile } from "@/lib/members/profile-page";
 import { DetailSection, SectionLink } from "@/components/templates/detail-template";
 import { MemberReviewRows } from "@/components/issue/member-review-rows";
-import { memberListHref } from "@/components/member/member-lists";
+import { memberListHref } from "@/lib/members/member-lists";
 import { ProfileEmpty } from "@/components/member/profile/profile-empty";
 
 // The member's latest reviews.
