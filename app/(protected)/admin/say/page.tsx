@@ -1,7 +1,7 @@
 import { fetchGuildChannels } from "@/lib/api/guild-channels";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { SayForm } from "@/components/admin/say-form";
 import { StaffOnly } from "@/components/staff-only";
 

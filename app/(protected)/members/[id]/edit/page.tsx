@@ -24,8 +24,8 @@ import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
-import { PageHeader } from "@/components/issue/page-header";
-import { EditSections, type EditSection } from "@/components/issue/edit-sections";
+import { PageHeader } from "@/components/templates/page-header";
+import { EditSections, type EditSection } from "@/components/templates/edit-sections";
 import { buttonVariants } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;

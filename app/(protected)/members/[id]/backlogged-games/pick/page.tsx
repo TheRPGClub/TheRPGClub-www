@@ -21,7 +21,7 @@ import {
 } from "@/lib/api/backlog-pick";
 import { PickDeal } from "@/components/issue/member-pick-deal";
 import { PickSentence } from "@/components/issue/member-pick-sentence";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -125,7 +125,7 @@ export default async function BacklogPickPage({
       : undefined;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Pick something to play"
@@ -171,7 +171,7 @@ export default async function BacklogPickPage({
           )}
         </div>
       )}
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }
 

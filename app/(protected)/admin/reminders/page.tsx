@@ -3,7 +3,7 @@ import type { ApiCollection, PublicReminder } from "@/lib/api/types";
 import { fetchGuildChannels } from "@/lib/api/guild-channels";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { StaffOnly } from "@/components/staff-only";
 import { PublicRemindersEditor } from "@/components/admin/public-reminders-editor";
 

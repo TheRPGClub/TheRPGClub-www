@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import {
   MEMBER_LISTS,
@@ -14,7 +14,7 @@ import type { FeatureKey } from "@/lib/features";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { cn } from "@/lib/utils";
 
-export interface MemberListShellProps {
+export interface MemberListTemplateProps {
   userId: string;
   displayName: string;
   title: ReactNode;
@@ -37,7 +37,7 @@ export interface MemberListShellProps {
 // with its actions. The switcher leaves out lists whose Feature this viewer
 // isn't shown, except the one being read (a list hidden by preference still
 // opens from a link). Not-found when the page's Feature flag hides it.
-export async function MemberListShell({
+export async function MemberListTemplate({
   userId,
   displayName,
   title,
@@ -48,7 +48,7 @@ export async function MemberListShell({
   counts,
   feature,
   children,
-}: MemberListShellProps) {
+}: MemberListTemplateProps) {
   const features = await getFeatures();
   const lists = MEMBER_LISTS.filter(
     (l) => l.key === current || !l.feature || features.shown(l.feature),

@@ -6,7 +6,7 @@ import { fetchSuggestions } from "@/lib/api/suggestions";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { PHASE_INK, byReviewedDesc, canSuggest } from "@/lib/suggestions";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { BoardCard } from "@/components/suggestions/board-card";
 import { SuggestionCard } from "@/components/suggestions/suggestion-card";
 import { buttonVariants } from "@/components/ui/button";

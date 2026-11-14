@@ -25,7 +25,7 @@ import {
   linkAccountsHref,
   requiredAccount,
 } from "@/lib/imports/linked-account";
-import { ImportShell } from "@/components/issue/import-shell";
+import { ImportTemplate } from "@/components/templates/import-template";
 import { Chip } from "@/components/issue/chip";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -78,7 +78,7 @@ export default async function ImportsHubPage({
   );
 
   return (
-    <ImportShell
+    <ImportTemplate
       title="Imports"
       count={open.length > 0 ? `${open.length} open` : undefined}
       description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
@@ -126,7 +126,7 @@ export default async function ImportsHubPage({
           })}
         </ul>
       )}
-    </ImportShell>
+    </ImportTemplate>
   );
 }
 

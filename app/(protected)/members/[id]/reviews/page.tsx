@@ -8,7 +8,7 @@ import type {
   User,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
 import { memberCounts, memberName } from "@/components/member/member-lists";
@@ -53,7 +53,7 @@ export default async function MemberReviewsPage({
     `/members/${id}/reviews${p > 1 ? `?page=${p}` : ""}`;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Reviews"
@@ -75,6 +75,6 @@ export default async function MemberReviewsPage({
         totalPages={totalPages}
         buildHref={href}
       />
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

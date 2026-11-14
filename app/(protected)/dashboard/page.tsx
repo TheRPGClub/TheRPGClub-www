@@ -16,7 +16,7 @@ import {
   RoundPanel,
   type TrackedNomination,
 } from "@/components/issue/round-panel";
-import { headingLinkClass } from "@/components/issue/page-header";
+import { headingLinkClass } from "@/components/templates/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getFeatures, getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";

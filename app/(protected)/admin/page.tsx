@@ -19,7 +19,7 @@ import {
   type StaffSectionKey,
 } from "@/lib/staff";
 import { DeskContents, type DeskNote } from "@/components/admin/desk/desk-contents";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { Wire } from "@/components/admin/desk/wire";
 import { StaffOnly } from "@/components/staff-only";
 

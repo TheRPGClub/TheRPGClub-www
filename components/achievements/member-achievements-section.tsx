@@ -5,7 +5,7 @@ import { memberAchievementsHref } from "@/lib/achievements";
 import {
   SectionHeading,
   headingLinkClass,
-} from "@/components/issue/page-header";
+} from "@/components/templates/page-header";
 import { BinderTotals, LinkedAccountChips } from "./member-binder";
 import { RarestUnlocks } from "./rarest-unlocks";
 

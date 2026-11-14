@@ -5,7 +5,7 @@ import { fetchRoundEntries } from "@/lib/api/admin-rounds";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { TRACK_NAME, trackFromSlug } from "@/lib/rounds";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { RoundEditor } from "@/components/admin/rounds/round-editor";
 import { StaffOnly } from "@/components/staff-only";
 import { buttonVariants } from "@/components/ui/button";

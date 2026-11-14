@@ -11,7 +11,7 @@ import {
 } from "@/app/actions/socials";
 import type { SocialPlatform, UserSocial } from "@/lib/api/types";
 import { SocialIcon } from "@/components/social-icon";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { EDIT_SELECT_CLASS } from "@/components/member/game-list-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

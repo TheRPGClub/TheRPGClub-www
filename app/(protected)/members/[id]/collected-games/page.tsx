@@ -16,7 +16,7 @@ import {
   MemberListEmpty,
   memberGridClass,
 } from "@/components/member/member-game-card";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
 import {
@@ -89,7 +89,7 @@ export default async function CollectedGamesPage({
   const href = (p: number) => collectedGamesHref(id, { page: p, platformId });
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Collection"
@@ -141,6 +141,6 @@ export default async function CollectedGamesPage({
         totalPages={totalPages}
         buildHref={href}
       />
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

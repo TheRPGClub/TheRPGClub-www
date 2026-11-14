@@ -1,46 +1,84 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Themes (api ADR-0008): one folder each under themes/, scoped to the
+   <html data-theme> the root layout sets. Their @layer themes sits above
+   Tailwind's utilities. The test Theme only ever turns on in development
+   (themes/registry.ts). */
+@import "../themes/monthly-issue/theme.css";
+@import "../themes/test/theme.css";
 
-@custom-variant dark (&:is(.dark *));
+/* shadcn's dark styles follow the Theme's declared mode (<html data-mode>). */
+@custom-variant dark (&:is([data-mode="dark"] *));
 
-@theme inline {
+/* The token map: every role-based, club-colour, shape and type token a Theme
+   sets, as Tailwind keys. Inline, so utilities read the Theme's value where
+   they are used; static, so var(--color-*) works in arbitrary values too. */
+@theme inline static {
+    /* Surface and text roles. */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --font-sans: var(--font-barlow);
-    /* Monthly Issue type: Anton is the masthead/headline voice (caps only),
-       Barlow Condensed the tracked-caps label voice, Barlow the body. */
-    --font-display: var(--font-anton);
-    --font-cond: var(--font-barlow-condensed);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
+    --color-dim-foreground: var(--dim-foreground);
+    --color-faint-foreground: var(--faint-foreground);
     --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-border-strong: var(--border-strong);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Club colours: changeable by a Theme, kept distinct and readable. */
+    --color-gotm: var(--gotm);
+    --color-gotm-soft: var(--gotm-soft);
+    --color-gotm-foreground: var(--gotm-foreground);
+    --color-nr: var(--nr);
+    --color-nr-soft: var(--nr-soft);
+    --color-nr-foreground: var(--nr-foreground);
+    --color-highlight: var(--highlight);
+    --color-highlight-foreground: var(--highlight-foreground);
+    --color-highlight-muted-foreground: var(--highlight-muted-foreground);
+    --color-rarity-common: var(--rarity-common);
+    --color-rarity-uncommon: var(--rarity-uncommon);
+    --color-rarity-rare: var(--rarity-rare);
+    --color-rarity-ultra: var(--rarity-ultra);
+    --color-rarity-foreground: var(--rarity-foreground);
+    --color-ok: var(--ok);
+    --color-news-announcements: var(--news-announcements);
+    --color-news-releases: var(--news-releases);
+    --color-news-emulation: var(--news-emulation);
+    --color-news-industry: var(--news-industry);
+    --color-news-hardware: var(--news-hardware);
+    --color-news-rumours: var(--news-rumours);
+    --color-news-general: var(--news-general);
+    --color-foil-foreground: var(--foil-foreground);
+
+    /* Shape. */
+    --radius-xs: calc(var(--radius) * 0.5);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -48,12 +86,19 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* Type: body, the display (headline) voice and the label voice. */
+    --font-sans: var(--typeface-body);
+    --font-display: var(--typeface-display);
+    --font-cond: var(--typeface-label);
 }
 
-/* Brand red — sampled from the club logo. brand-500 is exactly #ff0000, the
-   red in the logo; 600-950 cover the darker reds in its ink strokes. The light
-   end is held near the sRGB chroma ceiling so it stays red rather than pink. */
+/* Fixed colours, outside every Theme: other companies' brands and the club
+   logo are never restyled. (The sampled game tint is computed per game.) */
 @theme {
+    /* Brand red, sampled from the club logo. brand-500 is exactly #ff0000,
+       the red in the logo; 600-950 cover the darker reds in its ink strokes.
+       The light end is held near the sRGB chroma ceiling so it stays red. */
     --color-brand-50: oklch(0.86 0.072 29.23);
     --color-brand-100: oklch(0.805 0.1058 29.23);
     --color-brand-200: oklch(0.74 0.1508 29.23);
@@ -65,11 +110,29 @@
     --color-brand-800: oklch(0.444 0.1824 29.23);
     --color-brand-900: oklch(0.396 0.1533 29.23);
     --color-brand-950: oklch(0.258 0.1 29.23);
+    /* Provider colours: solid chip and tab fills under dark type
+       (provider-foreground). PlayStation is lifted from #3b6fe0 so dark type
+       on it clears AA. */
+    --color-provider-retroachievements: #2ec4b6;
+    --color-provider-steam: #66c0f4;
+    --color-provider-psn: #4677e6;
+    --color-provider-foreground: #0b0b0d;
+    /* PSN trophy tiers: the corner dot on a PSN icon. Platinum is foil. */
+    --color-tier-bronze: #c8814a;
+    --color-tier-silver: #c0c6cc;
+    --color-tier-gold: #e0b84a;
+    /* Page width: the signed-in app's content frame spans the area beside
+       the sidebar up to this and centers past it (max-w-page). Pages don't
+       set their own outer width. 120rem keeps 1080p full width with the
+       sidebar open or collapsed. */
+    --container-page: 120rem;
+}
 
-    /* Monthly Issue palette. Each track owns one ink and nothing decorative
-       borrows it: masthead red is GOTM (and the active nav state), violet is
-       NR-GOTM, highlighter yellow is calls to action (nominations, voting,
-       the GOTM starburst). Paper is the off-white type colour on ink. */
+/* Legacy names, kept only until the codemod (www#86) moves every use onto
+   the tokens above (mapping: themes/monthly-issue/README.md). They hold
+   Monthly Issue values on purpose: the test Theme leaves them alone, so a
+   surface still using one stands out. Do not use them in new code. */
+@theme {
     --color-ink: #0b0b0d;
     --color-ink-2: #141417;
     --color-ink-3: #1d1d22;
@@ -78,61 +141,8 @@
     --color-paper: #f4f4f0;
     --color-paper-dim: #b9b9b2;
     --color-paper-mute: #8d8d87;
-    --color-gotm: #ff0000;
-    --color-gotm-soft: #ff5a4f;
-    --color-nr: #8a4dff;
-    --color-nr-soft: #b896ff;
-    --color-highlight: #ffd400;
     --color-highlight-ink: #3a3200;
-    /* Type on a solid signal-orange (destructive) fill. */
     --color-destructive-ink: #2a1300;
-    /* Staff desk only: the Done stamp on a bot job. Never a fill behind type
-       and never on member surfaces (green is the uncommon ring there). */
-    --color-ok: #5fd08a;
-
-    /* Achievement Hub roles, used on achievement surfaces only. Rarity inks
-       are the 3px die-cut edge of an unlocked icon, by the Provider's global
-       Rarity: common >= 50%, uncommon 15-50%, rare 5-15%, ultra under 5%. */
-    --color-rarity-common: #f4f4f0;
-    --color-rarity-uncommon: #5fd08a;
-    --color-rarity-rare: #4aa8ff;
-    --color-rarity-ultra: #ff4fa3;
-    /* Provider colours: solid chip and tab fills under ink type. PlayStation
-       is lifted from the mocks' #3b6fe0 so ink type on it clears AA. */
-    --color-provider-retroachievements: #2ec4b6;
-    --color-provider-steam: #66c0f4;
-    --color-provider-psn: #4677e6;
-    /* PSN trophy tiers: the corner dot on a PSN icon. Platinum is foil. */
-    --color-tier-bronze: #c8814a;
-    --color-tier-silver: #c0c6cc;
-    --color-tier-gold: #e0b84a;
-
-    /* News inks: one per News Category, on news surfaces only (the News
-       page, its cards and filter, the category switches on /settings). Marks,
-       chips and bars, never a panel; type on an ink is ink (each clears
-       5:1). They sit off the four reserved inks, so the last two are
-       neutrals: Rumours is always drawn dashed (unconfirmed). Read them
-       through newsInk() in lib/news.ts. */
-    --color-news-announcements: #ff5ca8;
-    --color-news-releases: #b4e05a;
-    --color-news-emulation: #2fd3c0;
-    --color-news-industry: #6c9bff;
-    --color-news-hardware: #d4a373;
-    --color-news-rumours: #c0c4d6;
-    --color-news-general: #8d8d87;
-    /* Page width: the signed-in app's content frame spans the area beside
-       the sidebar up to this and centers past it (max-w-page). Pages don't
-       set their own outer width. 120rem keeps 1080p full width with the
-       sidebar open or collapsed. */
-    --container-page: 120rem;
-}
-
-/* Foil: the system's one sanctioned gradient. A holographic conic edge under
-   a soft diagonal sheen, only on Platinum, Mastery and Completion, never on
-   text. Pair it with ink type. */
-:root {
-    --foil-conic: conic-gradient(from 210deg, #b9f3ff, #ffd6f5, #fff3b0, #c7ffd9, #b9f3ff);
-    --foil-sheen: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.55) 44%, transparent 58%);
 }
 
 /* Bleed: a banner breaks out of the content frame to the full width beside
@@ -144,83 +154,7 @@
 
 @utility foil {
     background: var(--foil-sheen), var(--foil-conic);
-    color: var(--color-ink);
-}
-
-:root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    /* Honey yellow, toasted for contrast on the light background (4.8:1 on white).
-       Kept off the brand red so destructive UI stays distinguishable. */
-    --destructive: oklch(0.56 0.1123 75);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-    /* Ink-black issue stock. The neutral tokens shadcn reads are mapped onto
-       the Monthly Issue palette so stock primitives land in-world. */
-    --background: #0b0b0d;
-    --foreground: #f4f4f0;
-    --card: #141417;
-    --card-foreground: #f4f4f0;
-    --popover: #141417;
-    --popover-foreground: #f4f4f0;
-    --primary: #ff0000;
-    --primary-foreground: #ffffff;
-    --secondary: #1d1d22;
-    --secondary-foreground: #f4f4f0;
-    --muted: #1d1d22;
-    --muted-foreground: #9a9a93;
-    --accent: #1d1d22;
-    --accent-foreground: #f4f4f0;
-    /* Signal orange: off both the GOTM red and the highlighter yellow, so a
-       destructive action never reads as a track or a call to action. */
-    --destructive: oklch(0.74 0.17 52);
-    --border: #2a2a31;
-    --input: #3a3a43;
-    --ring: #ffd400;
-    --chart-1: #ff0000;
-    --chart-2: #8a4dff;
-    --chart-3: #ffd400;
-    --chart-4: #b9b9b2;
-    --chart-5: #3a3a43;
-    --radius: 0.25rem;
-    --sidebar: #141417;
-    --sidebar-foreground: #f4f4f0;
-    --sidebar-primary: #ff0000;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #1d1d22;
-    --sidebar-accent-foreground: #f4f4f0;
-    --sidebar-border: #2a2a31;
-    --sidebar-ring: #ffd400;
+    color: var(--foil-foreground);
 }
 
 @layer base {
@@ -233,19 +167,24 @@
     }
     html {
         @apply font-sans;
+        scrollbar-color: var(--border-strong) var(--background);
+    }
+    [data-mode="dark"] {
         color-scheme: dark;
-        scrollbar-color: var(--color-rule-strong) var(--color-ink);
+    }
+    [data-mode="light"] {
+        color-scheme: light;
     }
     ::selection {
-        background: var(--color-highlight);
-        color: var(--color-ink);
+        background: var(--highlight);
+        color: var(--highlight-foreground);
     }
     :focus-visible {
-        outline-color: var(--color-highlight);
+        outline-color: var(--ring);
     }
     input,
     textarea {
-        caret-color: var(--color-highlight);
+        caret-color: var(--highlight);
     }
     a {
         text-underline-offset: 3px;
@@ -255,17 +194,17 @@
 /* The masthead voice: Anton is a caps-only display face. */
 @utility font-headline {
     font-family: var(--font-display);
-    font-weight: 400;
-    text-transform: uppercase;
-    line-height: 0.9;
+    font-weight: var(--headline-weight);
+    text-transform: var(--headline-case);
+    line-height: var(--headline-leading);
 }
 
 /* The label voice: tracked condensed caps for nav, chips, buttons, meta. */
 @utility font-label {
     font-family: var(--font-cond);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-weight: var(--label-weight);
+    text-transform: var(--label-case);
+    letter-spacing: var(--label-tracking);
 }
 
 /* The starburst stamps onto the page once: oversized and clear, then pressed

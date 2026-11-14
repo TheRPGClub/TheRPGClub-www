@@ -17,7 +17,7 @@ import {
   linkAccountsHref,
   requiredAccount,
 } from "@/lib/imports/linked-account";
-import { ImportShell } from "@/components/issue/import-shell";
+import { ImportTemplate } from "@/components/templates/import-template";
 import { buttonVariants } from "@/components/ui/button";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
@@ -33,7 +33,7 @@ interface ImportPageProps<J extends ImportJob> {
   form: ReactNode;
 }
 
-// The page every import kind shares: owner-only, the member's shell with a
+// The page every import kind shares: owner-only, the import template with a
 // link back to the hub, then either the open import's review loop or the
 // kind's start screen.
 export async function ImportPage<J extends ImportJob>({
@@ -62,7 +62,7 @@ export async function ImportPage<J extends ImportJob>({
     !active && account !== null && !hasRequiredAccount(kind, await loadSocials(userId));
 
   return (
-    <ImportShell
+    <ImportTemplate
       title={IMPORT_KINDS[kind].label}
       badge={features.preview(feature) && <PreviewBadge />}
       actions={
@@ -98,7 +98,7 @@ export async function ImportPage<J extends ImportJob>({
       ) : (
         <div className="grid gap-5">{form}</div>
       )}
-    </ImportShell>
+    </ImportTemplate>
   );
 }
 

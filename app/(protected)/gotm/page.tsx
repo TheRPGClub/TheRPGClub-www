@@ -13,10 +13,10 @@ import { paginationOf } from "@/lib/api/pagination";
 import { GotmCoverWall } from "@/components/issue/gotm-cover-wall";
 import { GotmLedger } from "@/components/issue/gotm-ledger";
 import { GotmRail } from "@/components/issue/gotm-rail";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GotmHistoryFilters } from "./gotm-history-filters";
+import { GotmHistoryFilters } from "@/components/gotm/gotm-history-filters";
 
 // Every Game of the Month and Non-RPG Game of the Month, round by round.
 // With both tracks it reads as a ledger: each round's number beside its GOTM

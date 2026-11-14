@@ -3,7 +3,7 @@ import type { ApiCollection, Platform } from "@/lib/api/types";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { CompletionForMemberForm } from "@/components/admin/completion-for-member-form";
 import { StaffOnly } from "@/components/staff-only";
 
