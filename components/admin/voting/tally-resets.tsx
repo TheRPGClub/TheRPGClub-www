@@ -39,7 +39,6 @@ export function TallyResets({
       <TypedConfirmButton
         triggerLabel={`Reset ${label} votes`}
         triggerIcon={RotateCcw}
-        label={`Reset ${label} votes`}
         question={`Delete all ${total} ${label} ${total === 1 ? "vote" : "votes"} for Round ${n}?`}
         words={`RESET ${label}`}
         actionLabel="Reset"
@@ -53,7 +52,6 @@ export function TallyResets({
         <TypedConfirmButton
           triggerLabel={`Reset ${label} runoff votes`}
           triggerIcon={RotateCcw}
-          label={`Reset ${label} runoff votes`}
           question={`Delete every ${label} runoff vote for Round ${n}?`}
           words={`RESET ${label} RUNOFF`}
           actionLabel="Reset"

@@ -38,7 +38,6 @@ export function CloseNowOp({ round }: { round: VotingRound }) {
         {round.voting_open ? (
           <TypedConfirmButton
             triggerLabel={`Close Round ${n}`}
-            label="Close voting now"
             question={`Close voting for Round ${n} now?`}
             words={`CLOSE ROUND ${n}`}
             actionLabel="Close voting"

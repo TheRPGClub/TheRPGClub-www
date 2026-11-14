@@ -1,13 +1,7 @@
 import Link from "next/link";
-import { TIER_SHORT, type StaffDeskArea, type StaffSectionKey } from "@/lib/staff";
+import { TIER_SHORT, type StaffDeskArea } from "@/lib/staff";
+import type { DeskNotes } from "@/lib/staff-desk";
 import { cn } from "@/lib/utils";
-
-// A live note that replaces a tool's fixed hint on the contents page, e.g.
-// "Round 143 open", or "Failed 1 h ago" in signal orange.
-export interface DeskNote {
-  text: string;
-  tone?: "live" | "bad";
-}
 
 // The desk's contents page: the viewer's tools grouped by area, each line a
 // link, a dot leader, and the tool's note where a magazine prints the page
@@ -17,7 +11,7 @@ export function DeskContents({
   notes,
 }: {
   areas: StaffDeskArea[];
-  notes?: Partial<Record<StaffSectionKey, DeskNote>>;
+  notes?: DeskNotes;
 }) {
   return (
     <nav aria-label="Staff tools">

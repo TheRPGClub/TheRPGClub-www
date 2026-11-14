@@ -4,36 +4,17 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, LiveEvent } from "@/lib/api/types";
 import { upcomingCount } from "@/lib/live-events";
 import { fetchSuggestions } from "@/lib/api/suggestions";
-import type { VotingPhase, VotingRound } from "@/lib/api/types";
 import { fetchVotingRound } from "@/lib/api/voting-round";
-import { agoText, latestFailure } from "@/lib/bot-jobs";
 import { requireAuth } from "@/lib/session";
-import {
-  canUseTier,
-  isAdminOrAbove,
-  isSuperadmin,
-  staffDeskFor,
-  staffSection,
-  staffTierOf,
-  TIER_NAME,
-  type StaffSectionKey,
-} from "@/lib/staff";
-import { DeskContents, type DeskNote } from "@/components/admin/desk/desk-contents";
+import { canUseTier, isAdminOrAbove, isSuperadmin, staffDeskFor, staffSection, staffTierOf, TIER_NAME } from "@/lib/staff";
+import { deskNotes, deskReach, upcomingNote } from "@/lib/staff-desk";
+import { DeskContents } from "@/components/admin/desk/desk-contents";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { Wire } from "@/components/admin/desk/wire";
 import { StaffOnly } from "@/components/staff-only";
 
-const PHASE_NOTE: Record<VotingPhase, string> = {
-  nominating: "nominations",
-  voting: "open",
-  closed: "closed",
-  runoff: "runoff",
-  tie: "tie break",
-  decided: "decided",
-};
-
-// Upcoming live events among the newest few, for the desk's note ("20+"
-// when every one read is still upcoming); null when the list can't be read.
+// Upcoming live events among the newest few, for the desk's note; null when
+// the list can't be read.
 const LIVE_EVENT_LOOKBACK = 20;
 
 async function upcomingLiveEvents(): Promise<string | null> {
@@ -41,15 +22,10 @@ async function upcomingLiveEvents(): Promise<string | null> {
     const res = await apiFetch(`/api/v1/live_events?page=1&per=${LIVE_EVENT_LOOKBACK}`, { cache: "no-store" });
     if (!res.ok) return null;
     const body = (await res.json()) as ApiCollection<LiveEvent>;
-    const count = upcomingCount(body.data);
-    return count >= LIVE_EVENT_LOOKBACK ? `${LIVE_EVENT_LOOKBACK}+` : String(count);
+    return upcomingNote(upcomingCount(body.data), LIVE_EVENT_LOOKBACK);
   } catch {
     return null;
   }
-}
-
-function roundNote(round: VotingRound): DeskNote {
-  return { text: `Round ${round.round_number} ${PHASE_NOTE[round.phase]}`, tone: "live" };
 }
 
 // /admin, the production desk: a contents page of the tools the viewer's
@@ -74,32 +50,19 @@ export default async function StaffDeskPage() {
     upcomingLiveEvents(),
   ]);
   const jobs = wire.ok ? (wire.data ?? []) : [];
-
-  const notes: Partial<Record<StaffSectionKey, DeskNote>> = {};
-  if (round) notes.voting = roundNote(round);
-  if (pending) notes.suggestions = { text: `${pending.total} pending` };
-  const nowPlaying = presence.ok ? presence.data?.[0]?.activity_name : null;
-  if (nowPlaying) {
-    notes.presence = { text: nowPlaying.length > 16 ? `${nowPlaying.slice(0, 15).trimEnd()}...` : nowPlaying };
-  }
-  if (presence.ok && presence.meta) notes["presence-history"] = { text: `${presence.meta.count} set` };
-  if (upcoming !== null) notes["live-events"] = { text: `${upcoming} upcoming` };
-  const now = new Date();
-  for (const area of areas) {
-    for (const section of area.sections) {
-      const failed = section.jobKinds && latestFailure(jobs, section.jobKinds);
-      if (failed) {
-        notes[section.key] = {
-          text: `Failed ${agoText(failed.finished_at ?? failed.updated_at, now)}`,
-          tone: "bad",
-        };
-      }
-    }
-  }
-
+  const notes = deskNotes(
+    areas,
+    {
+      round,
+      pendingSuggestions: pending ? pending.total : null,
+      nowPlaying: presence.ok ? (presence.data?.[0]?.activity_name ?? null) : null,
+      presenceCount: presence.ok && presence.meta ? presence.meta.count : null,
+      upcomingLiveEvents: upcoming,
+      jobs,
+    },
+    new Date(),
+  );
   const name = session.principal.global_name ?? session.principal.username;
-  const reach =
-    tier === "superadmin" ? " · Admins see all but Superadmin" : tier === "admin" ? " · All but Superadmin" : "";
 
   return (
     <div>
@@ -110,7 +73,7 @@ export default async function StaffDeskPage() {
             <b>{name}</b> · {TIER_NAME[tier]}
             <br />
             {toolCount} {toolCount === 1 ? "tool" : "tools"}
-            {reach}
+            {deskReach(tier)}
           </>
         }
       />

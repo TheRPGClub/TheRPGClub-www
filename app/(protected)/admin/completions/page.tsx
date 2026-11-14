@@ -4,7 +4,7 @@ import { igdbAddBlockedReason } from "@/lib/igdb";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
-import { CompletionForMemberForm } from "@/components/admin/completion-for-member-form";
+import { CompletionForMemberForm } from "@/components/admin/completions/completion-for-member-form";
 import { StaffOnly } from "@/components/staff-only";
 
 const SECTION = staffSection("completions");

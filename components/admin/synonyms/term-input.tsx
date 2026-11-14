@@ -3,6 +3,8 @@
 import { useId, useRef, type ClipboardEvent, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { addSynonymTerms } from "@/lib/synonyms";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // A row of term chips with a text box at the end. Enter or a comma adds what
@@ -68,8 +70,10 @@ export function TermInput({
             className="inline-flex max-w-full items-center gap-1 rounded-xs bg-foreground/12 py-px pr-1 pl-2 break-all"
           >
             {term}
-            <button
+            <Button
               type="button"
+              variant="chip-remove"
+              size="icon-xs"
               disabled={disabled}
               onClick={(e) => {
                 e.stopPropagation();
@@ -77,15 +81,16 @@ export function TermInput({
                 inputRef.current?.focus();
               }}
               aria-label={`Remove ${term}`}
-              className="grid size-5 shrink-0 place-items-center rounded-xs text-dim-foreground hover:bg-foreground/15 hover:text-foreground"
+              className="size-5 disabled:opacity-100"
             >
               <X className="size-3.5" />
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
-      <input
+      <Input
         ref={inputRef}
+        variant="bare"
         id={id}
         value={pending}
         onChange={(e) => onPendingChange(e.target.value)}
@@ -95,7 +100,7 @@ export function TermInput({
         autoFocus={autoFocus}
         aria-describedby={hintId}
         placeholder={terms.length === 0 ? "Type a term, then Enter" : ""}
-        className="h-6 min-w-24 flex-1 bg-transparent caret-highlight outline-none placeholder:text-muted-foreground"
+        className="h-6 w-auto min-w-24 flex-1 border-0 p-0 text-[length:inherit] disabled:opacity-100 md:text-[length:inherit]"
       />
       <span id={hintId} className="sr-only">
         Enter or a comma adds a term. Backspace in an empty box removes the last one.
