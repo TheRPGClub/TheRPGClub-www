@@ -8,10 +8,23 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
-function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
+// What the group is, drawn by each Theme by [data-slot="input-group"]
+// [data-variant] (api ADR-0008).
+type InputGroupVariant =
+  // A field with addons, on the page or in a popup.
+  | "default"
+  // A page's own search bar (the game index).
+  | "search"
+
+function InputGroup({
+  className,
+  variant = "default",
+  ...props
+}: React.ComponentProps<"div"> & { variant?: InputGroupVariant }) {
   return (
     <div
       data-slot="input-group"
+      data-variant={variant}
       role="group"
       className={cn(
         "group/input-group relative flex h-8 w-full min-w-0 items-center border transition-colors outline-none has-disabled:opacity-50 has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>textarea]:h-auto has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5",

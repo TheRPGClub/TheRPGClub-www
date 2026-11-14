@@ -66,6 +66,11 @@
                 color: var(--accent-foreground);
                 border-color: var(--accent-foreground);
             }
+            &[data-variant="tool"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
             &[data-variant="destructive-ghost"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);
@@ -944,6 +949,14 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="input-group"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group"][data-variant="search"] {
             background-color: var(--card);
             color: var(--card-foreground);
             border-color: var(--border-strong);

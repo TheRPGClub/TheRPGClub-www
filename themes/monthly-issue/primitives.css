@@ -58,6 +58,11 @@
             &[data-variant="ghost"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50;
             }
+            /* A tool on content (www#92): the ghost, resting in the faint
+               ink. */
+            &[data-variant="tool"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-faint-foreground;
+            }
             &[data-variant="destructive-ghost"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive;
             }
@@ -516,6 +521,11 @@
         }
         [data-slot="input-group"] {
             @apply rounded-sm border-border bg-card in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-disabled:bg-input/50 has-[[data-slot=input-group-control]:focus-visible]:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/40 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40;
+        }
+        /* A page's search bar (www#92): the strong rule, and focus shows
+           on the rule alone. */
+        [data-slot="input-group"][data-variant="search"] {
+            @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
         [data-slot="input-group-addon"] {
             @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];
