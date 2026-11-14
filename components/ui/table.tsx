@@ -3,7 +3,22 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+// What the table is, drawn by each Theme by [data-slot="table"][data-variant]
+// (api ADR-0008).
+type TableVariant =
+  // A ledger on the page.
+  | "default"
+  // A small table set into a card: a comparison or a short list, its rows
+  // not interactive.
+  | "inset"
+  // The problems inside a destructive notice (a rejected file's rows).
+  | "destructive"
+
+function Table({
+  className,
+  variant = "default",
+  ...props
+}: React.ComponentProps<"table"> & { variant?: TableVariant }) {
   return (
     <div
       data-slot="table-container"
@@ -11,6 +26,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
+        data-variant={variant}
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />

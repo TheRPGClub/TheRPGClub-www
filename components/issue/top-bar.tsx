@@ -1,5 +1,10 @@
 import Form from "next/form";
 import { Search } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 // The app's running head: the current route as a trail (the @crumbs slot),
@@ -14,19 +19,27 @@ export function TopBar({ trail, search }: { trail: React.ReactNode; search: bool
         <Form
           action="/games"
           role="search"
-          className="ml-auto flex h-9 w-36 shrink-0 items-center sm:w-80 gap-2 rounded-sm border border-border bg-card px-3 text-faint-foreground transition-colors focus-within:border-faint-foreground"
+          className="ml-auto flex h-9 w-36 shrink-0 sm:w-80"
         >
-          <Search aria-hidden className="size-4 shrink-0" />
-          <label htmlFor="top-search" className="sr-only">
-            Search games
-          </label>
-          <input
-            id="top-search"
-            name="q"
-            type="search"
-            placeholder="Search…"
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-faint-foreground"
-          />
+          {/* The group pads its field after an addon; here the gap spaces them. */}
+          <InputGroup
+            variant="quick-search"
+            className="h-full gap-2 px-3 has-[>[data-align=inline-start]]:[&>input]:pl-0"
+          >
+            <InputGroupAddon className="p-0">
+              <Search aria-hidden className="size-4 shrink-0" />
+            </InputGroupAddon>
+            <label htmlFor="top-search" className="sr-only">
+              Search games
+            </label>
+            <InputGroupInput
+              id="top-search"
+              name="q"
+              type="search"
+              placeholder="Search…"
+              className="h-full p-0 text-sm"
+            />
+          </InputGroup>
         </Form>
       )}
     </header>

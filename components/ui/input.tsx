@@ -17,6 +17,9 @@ type InputVariant =
   // A field in a bar of filters, beside the member pages' selects (the
   // compare page's search): their strong rule.
   | "filter"
+  // A file field: a dropped-in file on the page's ground, its button a
+  // small control (an import's CSV upload).
+  | "upload"
 
 function Input({
   className,

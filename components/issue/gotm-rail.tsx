@@ -7,6 +7,7 @@ import {
   type GotmHistoryFilters,
   type GotmKind,
 } from "@/lib/api/gotm-rounds";
+import { GotmRailYears, railLabel } from "@/components/issue/gotm-rail-years";
 import { cn } from "@/lib/utils";
 
 // The GOTM history's side rail: which track to show and which year, as
@@ -70,31 +71,11 @@ export function GotmRail({
       </nav>
 
       {yearOptions.length > 0 && (
-        <nav aria-labelledby="gotm-year">
-          <h2 id="gotm-year" className={railLabel}>
-            Year
-          </h2>
-          <ul className="flex flex-wrap gap-1">
-            <li>
-              <YearLink
-                href={href({ year: null })}
-                active={filters.year === null}
-              >
-                All
-              </YearLink>
-            </li>
-            {yearOptions.map((year) => (
-              <li key={year}>
-                <YearLink
-                  href={href({ year })}
-                  active={filters.year === year}
-                >
-                  {year}
-                </YearLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <GotmRailYears
+          years={yearOptions}
+          current={filters.year}
+          href={(year) => href({ year })}
+        />
       )}
 
       {hasActiveGotmFilters(filters) && (
@@ -106,33 +87,5 @@ export function GotmRail({
         </Link>
       )}
     </aside>
-  );
-}
-
-const railLabel =
-  "font-label mb-1.5 text-[0.8rem] font-extrabold tracking-[0.12em] text-faint-foreground";
-
-function YearLink({
-  href,
-  active,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "font-headline block rounded-xs px-2 py-1.25 text-[1.2rem] leading-none transition-colors",
-        active
-          ? "bg-foreground text-background"
-          : "text-dim-foreground hover:bg-muted hover:text-foreground",
-      )}
-    >
-      {children}
-    </Link>
   );
 }

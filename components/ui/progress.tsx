@@ -16,16 +16,21 @@ type ProgressTone =
   | "neutral"
   // Failures or lost items.
   | "destructive"
+  // A bar on a light object (the yellow panel).
+  | "inverse"
 
 function Progress({
   className,
   children,
   value,
   tone = "default",
+  size = "default",
   indicatorClassName,
   ...props
 }: ProgressPrimitive.Root.Props & {
   tone?: ProgressTone
+  // lg: the heavier bar a page leads with (an import's count).
+  size?: "default" | "lg"
   indicatorClassName?: string
 }) {
   return (
@@ -33,11 +38,12 @@ function Progress({
       value={value}
       data-slot="progress"
       data-tone={tone}
+      data-size={size}
       className={cn("flex flex-wrap gap-3", className)}
       {...props}
     >
       {children}
-      <ProgressTrack>
+      <ProgressTrack className={cn(size === "lg" && "h-2")}>
         <ProgressIndicator className={indicatorClassName} />
       </ProgressTrack>
     </ProgressPrimitive.Root>

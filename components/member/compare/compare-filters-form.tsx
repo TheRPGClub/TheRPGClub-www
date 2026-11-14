@@ -39,27 +39,30 @@ export function CompareFiltersForm({
       )}
       {/* eslint-disable-next-line structure/no-raw-controls -- a hidden form value, not a control */}
       {filters.with && <input type="hidden" name="with" value={filters.with} />}
-      <MemberField label="Year" className="min-w-0 flex-[1_1_8.5rem] lg:w-38 lg:flex-none">
-        <MemberSelect name="year" defaultValue={filters.year ?? ""}>
-          <option value="">Any year</option>
-          <option value="unknown">No date</option>
-          {compareYearOptions().map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </MemberSelect>
-      </MemberField>
-      <MemberField label="Platform" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
-        <MemberSelect name="platform" defaultValue={filters.platform ?? ""}>
-          <option value="">Any platform</option>
-          {platforms.map((p) => (
-            <option key={p.platform_id} value={p.platform_id}>
-              {p.platform_name}
-            </option>
-          ))}
-        </MemberSelect>
-      </MemberField>
+      <MemberSelect
+        label="Year"
+        className="min-w-0 flex-[1_1_8.5rem] lg:w-38 lg:flex-none"
+        name="year"
+        defaultValue={filters.year ?? ""}
+        items={[
+          { value: "", label: "Any year" },
+          { value: "unknown", label: "No date" },
+          ...compareYearOptions().map((y) => ({ value: String(y), label: String(y) })),
+        ]}
+      />
+      <MemberSelect
+        label="Platform"
+        className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none"
+        name="platform"
+        defaultValue={filters.platform?.toString() ?? ""}
+        items={[
+          { value: "", label: "Any platform" },
+          ...platforms.map((p) => ({
+            value: String(p.platform_id),
+            label: p.platform_name,
+          })),
+        ]}
+      />
       <MemberField label="Search" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
         <Input
           variant="filter"
@@ -70,15 +73,13 @@ export function CompareFiltersForm({
           className="h-9.5 px-2.5 text-sm md:text-sm"
         />
       </MemberField>
-      <MemberField label="Sort" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
-        <MemberSelect name="sort" defaultValue={filters.sort}>
-          {COMPARE_SORTS.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </MemberSelect>
-      </MemberField>
+      <MemberSelect
+        label="Sort"
+        className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none"
+        name="sort"
+        defaultValue={filters.sort}
+        items={COMPARE_SORTS.map((s) => ({ value: s.value, label: s.label }))}
+      />
       <div className="flex gap-1.5">
         <Button type="submit" variant="outline" className="h-9.5">
           Apply

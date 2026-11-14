@@ -110,3 +110,20 @@ describe("Themes style the primitives", () => {
     expect(semantic.filter((key) => !keys.has(key))).toEqual([]);
   });
 });
+
+// www#95: the imports area's variants (the yellow panel's bar, the candidate
+// pick, the problem and comparison tables, the route cards, the file field).
+describe("Themes style the imports variants", () => {
+  it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
+    const keys = styled(name);
+    const imports = [
+      "progress/tone=inverse",
+      "radio-group-item/variant=choice",
+      "table/variant=inset",
+      "table/variant=destructive",
+      "collapsible/variant=card",
+      "input/variant=upload",
+    ];
+    expect(imports.filter((key) => !keys.has(key))).toEqual([]);
+  });
+});

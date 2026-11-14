@@ -6,6 +6,7 @@ import {
   resultReasonRows,
   type ImportKind,
 } from "@/lib/imports/kinds";
+import { Progress } from "@/components/ui/progress";
 
 interface ImportProgressBarProps {
   kind: ImportKind;
@@ -25,20 +26,15 @@ export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProp
           of {progress.total} {IMPORT_KINDS[kind].itemNoun.other} done
         </span>
       </p>
-      <div
-        role="progressbar"
+      <Progress
         aria-label="Import progress"
-        aria-valuemin={0}
-        aria-valuemax={progress.total}
-        aria-valuenow={progress.resolved}
-        aria-valuetext={`${progress.percent}%`}
-        className="mt-3.5 h-2 w-full overflow-hidden bg-muted"
-      >
-        <div
-          className="h-full bg-highlight transition-[width] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
-          style={{ width: `${progress.percent}%` }}
-        />
-      </div>
+        value={progress.resolved}
+        max={progress.total}
+        tone="highlight"
+        size="lg"
+        className="mt-3.5"
+        indicatorClassName="duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+      />
     </div>
   );
 }

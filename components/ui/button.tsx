@@ -54,6 +54,13 @@ const buttonVariants = cva(
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
+        // www#91: the rest of the Monthly Issue editorial components.
+        // Previous or next through a set, sitting on art (the completed
+        // reel's spotlight).
+        step: "",
+        // A picture that is the button: the look is its content's (a frame
+        // in the completed reel's filmstrip).
+        frame: "",
       },
       size: {
         default:

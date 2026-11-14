@@ -754,5 +754,76 @@
         [data-slot="toggle-group-item"][data-spacing="0"] {
             @apply rounded-none group-data-horizontal/toggle-group:first:rounded-l-sm group-data-vertical/toggle-group:first:rounded-t-sm group-data-horizontal/toggle-group:last:rounded-r-sm group-data-vertical/toggle-group:last:rounded-b-sm;
         }
+
+        /* Imports (www#95). The bar on the yellow panel; the candidate
+           pick's ring; the comparison and problem tables set into a card
+           or a notice; the route cards beside an item; the file field. */
+        [data-slot="progress"][data-tone="inverse"] {
+            [data-slot="progress-track"] {
+                @apply bg-background/18;
+            }
+            [data-slot="progress-indicator"] {
+                @apply bg-background;
+            }
+        }
+        [data-slot="radio-group-item"][data-variant="choice"] {
+            @apply border-0 bg-transparent shadow-[inset_0_0_0_2px_#4a4a55] transition-shadow focus-visible:ring-0 data-checked:bg-transparent data-checked:shadow-[inset_0_0_0_6px_var(--color-highlight)];
+            [data-slot="radio-group-dot"] {
+                @apply bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="inset"],
+        [data-slot="table"][data-variant="destructive"] {
+            [data-slot="table-header"] [data-slot="table-head"] {
+                @apply font-medium;
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                @apply [font-family:inherit] font-normal normal-case [letter-spacing:inherit];
+            }
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="destructive"] [data-slot="table-row"] {
+            @apply border-destructive/20 text-dim-foreground;
+        }
+        [data-slot="collapsible"][data-variant="card"] {
+            @apply rounded-sm border border-border bg-card data-open:border-border-strong;
+            > [data-slot="collapsible-trigger"] {
+                @apply font-label font-extrabold tracking-[0.06em] transition-colors hover:text-highlight;
+            }
+        }
+        [data-slot="input"][data-variant="upload"] {
+            @apply border-dashed border-border-strong bg-background text-dim-foreground file:font-label file:rounded-sm file:border file:border-border-strong file:bg-muted file:font-extrabold file:tracking-[0.06em] file:text-foreground hover:file:border-faint-foreground;
+        }
+
+        /* www#91: the rest of the Monthly Issue editorial components. A
+           clearable select (the member field) shows its empty choice in the
+           field's ink, with the field's focus ring; the
+           sentence blank is a headline-size yellow word on a heavy yellow
+           rule, its chevron centred on word and rule together; the reel's
+           steppers are ink glass on art with a strong hairline; a frame is
+           a picture that is the button, its look its own; the top bar's
+           search is the field with focus on its rule only. */
+        [data-slot="select-trigger"][data-variant="clearable"] {
+            @apply focus-visible:ring-2 focus-visible:ring-ring/40 data-placeholder:text-foreground;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] {
+            @apply font-headline cursor-pointer rounded-none border-0 border-b-4 border-highlight bg-transparent text-[length:inherit] leading-[1] text-highlight transition-colors hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground focus-visible:ring-0 data-placeholder:text-highlight hover:data-placeholder:text-foreground focus-visible:data-placeholder:text-foreground;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] [data-slot="select-trigger-icon"] {
+            @apply mt-1 size-[0.5em] text-highlight [stroke-width:3];
+        }
+        [data-slot="button"] {
+            &[data-variant="step"] {
+                @apply rounded-sm border-0 bg-background/70 text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0;
+            }
+            &[data-variant="frame"] {
+                @apply border-0 bg-transparent focus-visible:ring-0 active:not-aria-[haspopup]:translate-y-0;
+            }
+        }
+        [data-slot="input-group"][data-variant="quick-search"] {
+            @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
+        }
     }
 }

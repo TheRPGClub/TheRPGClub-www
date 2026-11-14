@@ -1369,5 +1369,106 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* Imports (www#95). */
+        [data-slot="progress"][data-tone="inverse"] {
+            [data-slot="progress-track"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="progress-indicator"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+        }
+        [data-slot="radio-group-item"][data-variant="choice"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+            [data-slot="radio-group-dot"] {
+                background-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="inset"],
+        [data-slot="table"][data-variant="destructive"] {
+            [data-slot="table-header"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-row"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="destructive"] [data-slot="table-row"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="collapsible"][data-variant="card"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 3px 3px 0 var(--foreground);
+            > [data-slot="collapsible-trigger"] {
+                font-family: var(--typeface-label);
+                color: var(--accent-foreground);
+            }
+        }
+        [data-slot="input"][data-variant="upload"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+
+        /* www#91: the rest of the Monthly Issue editorial components. */
+        [data-slot="select-trigger"][data-variant="clearable"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-color: var(--foreground);
+            border-style: dashed;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--destructive);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="select-trigger"][data-variant="blank"] [data-slot="select-trigger-icon"] {
+            color: var(--destructive);
+        }
+        [data-slot="button"] {
+            &[data-variant="step"] {
+                background-color: var(--gotm);
+                color: var(--gotm-foreground);
+                border-color: var(--highlight);
+                box-shadow: 3px 3px 0 var(--highlight);
+            }
+            &[data-variant="frame"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                outline: 3px dotted var(--highlight);
+            }
+        }
+        [data-slot="input-group"][data-variant="quick-search"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--destructive);
+            border-style: dotted;
+        }
     }
 }

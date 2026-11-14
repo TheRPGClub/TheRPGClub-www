@@ -9,7 +9,7 @@ import {
 } from "@/app/actions/backlog-pick";
 import type { Platform } from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
-import { MemberField, MemberSelect } from "@/components/issue/member-field";
+import { MemberSelect } from "@/components/issue/member-field";
 
 const initialState: StartPlayingResult = { ok: true, data: null };
 
@@ -39,18 +39,20 @@ export function StartPlayingForm({
   return (
     <form action={formAction} className="flex flex-wrap items-end gap-2.5">
       {needsPlatform && (
-        <MemberField label="Play on" className="w-full max-w-60">
-          <MemberSelect name="platform_id" required defaultValue="">
-            <option value="" disabled>
-              Playing it on…
-            </option>
-            {(platforms ?? []).map((p) => (
-              <option key={p.platform_id} value={p.platform_id}>
-                {p.platform_name}
-              </option>
-            ))}
-          </MemberSelect>
-        </MemberField>
+        <MemberSelect
+          label="Play on"
+          className="w-full max-w-60"
+          name="platform_id"
+          required
+          defaultValue=""
+          items={[
+            { value: "", label: "Playing it on…", disabled: true },
+            ...(platforms ?? []).map((p) => ({
+              value: String(p.platform_id),
+              label: p.platform_name,
+            })),
+          ]}
+        />
       )}
       <Button type="submit" variant="highlight" disabled={pending}>
         <Play data-icon="inline-start" />

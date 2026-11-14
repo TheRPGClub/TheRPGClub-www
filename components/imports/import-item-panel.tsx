@@ -4,7 +4,7 @@ import type { ImportActionResult } from "@/app/actions/imports";
 import type { ImportItem, ImportReview } from "@/lib/api/types";
 import type { ImportKind } from "@/lib/imports/kinds";
 import { ImportMatchPanel } from "@/components/imports/import-match-panel";
-import { CompletionatorItemPanel } from "@/components/imports/completionator-item-panel";
+import { CompletionatorItemPanel } from "@/components/imports/completionator/item-panel";
 
 // Runs one item action for the review loop: shows `label` while it runs,
 // surfaces errors, and recovers from a stale row or a stopped import. On
