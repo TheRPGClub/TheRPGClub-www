@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils";
 
 // The way in, pinned beside the slideshow and never moving with it: two
 // steps (open the invite, then continue) on the highlighter-yellow panel.
-// On a second try a notice slip lands on its top edge; the steps stay.
+// On a second try a notice slip lands on its top edge; the steps stay. The
+// slip sits in flow and pushes the panel down rather than overlapping it as
+// the sketch did, which would cover "Pull up a chair.".
 
 const action = "h-11.5 px-4 text-base max-sm:w-full";
 
@@ -52,7 +54,7 @@ export function JoinPanel({
   return (
     <aside aria-labelledby="join-title" className={className}>
       {secondTry && (
-        <NoticeSlip title="Not in the server yet." className="relative z-10 -mb-5 ml-2 w-[min(22rem,calc(100%-1rem))] sm:-ml-8">
+        <NoticeSlip title="Not in the server yet." className="relative z-10 -mb-5 ml-2 w-[min(22rem,calc(100%-1rem))] sm:-ml-8 lg:-ml-1">
           Open the invite again and press <strong>Accept Invite</strong> in Discord, then continue. It
           can take a moment to show up.
         </NoticeSlip>

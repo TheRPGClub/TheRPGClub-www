@@ -125,7 +125,12 @@ export function LandingCover({
 
       <Starburst
         track="gotm"
-        className="absolute top-[14.375rem] right-3.5 z-10 size-31 md:top-[13.125rem] md:right-[min(23.75rem,30vw)] md:size-[11.875rem]"
+        className={cn(
+          "absolute top-[14.375rem] right-3.5 z-10 size-31 md:top-[13.125rem] md:right-[min(23.75rem,30vw)] md:size-[11.875rem]",
+          // Below xl a notice slip sits where the burst does; the burst steps
+          // aside rather than be cut by it.
+          notice && "max-xl:hidden",
+        )}
         textClassName="text-[1.19rem] md:text-[1.75rem]"
       />
 
