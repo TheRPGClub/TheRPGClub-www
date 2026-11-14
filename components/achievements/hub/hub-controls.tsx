@@ -63,7 +63,7 @@ export function HubProviderFilter({ filters }: { filters: Filters }) {
                 render={<Link href={feedHref(filters, { provider, page: 1 })} scroll={false} />}
                 aria-current={on ? "page" : undefined}
                 tone={`provider-${provider}`}
-                fill={all || on ? "solid" : "outline"}
+                unpicked={!all && !on}
                 size="filter"
                 className="border-0"
               >

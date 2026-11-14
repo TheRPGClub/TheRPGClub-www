@@ -56,10 +56,10 @@ const buttonVariants = cva(
         add: "",
         // www#94: the Member editors.
         // A small secondary tool in a dense editor (rename, save a name, add
-        // your own row): a ghost resting in the muted ink.
-        subtle: "",
+        // your own row), quieter than a tool on content.
+        "editor-tool": "",
         // Its counterpart that throws something away (discard a rename).
-        "destructive-subtle": "",
+        "destructive-editor-tool": "",
         // A quiet dotted link that opens an explainer ("What's this?").
         help: "",
         // A round action sitting on a cover (remove the game from a list).
@@ -85,8 +85,9 @@ const buttonVariants = cva(
         // details).
         dismiss: "",
         // www#97: voting, GOTM history and suggestions.
-        // The small x that clears a notice (a failed vote).
-        "dismiss-notice": "",
+        // The small x that clears something in place: a notice (a failed
+        // vote), a field's text (the journal catalogue's search).
+        clear: "",
         // A quiet action in a card's footer (Keep).
         "card-action": "",
         // A card footer action that withdraws or turns something down.
@@ -127,9 +128,6 @@ const buttonVariants = cva(
         // A filter chip beside a search (the journal catalogue's Any game):
         // the label voice on ink-2 with a strong hairline.
         chip: "",
-        // The x that clears a field (the journal catalogue's search): faint
-        // until hovered, no ground.
-        "field-clear": "",
         // A field's picked value as a chip that reopens its picker (the
         // journal editor's game).
         picked: "disabled:opacity-100",

@@ -70,10 +70,10 @@
                twin resting in the muted ink (a dense editor's small tools);
                a quiet dotted link that opens an explainer; a round remove
                on a cover, light ink that inverts on hover. */
-            &[data-variant="subtle"] {
+            &[data-variant="editor-tool"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-muted-foreground;
             }
-            &[data-variant="destructive-subtle"] {
+            &[data-variant="destructive-editor-tool"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-muted-foreground;
             }
             &[data-variant="help"] {
@@ -224,24 +224,25 @@
         /* Badge, the chip family (www#90): Provider chips in their own
            colour, the giveaway platform chip in its ribbon ink, the hub's
            filter chips (the current one marked, a Provider not picked drawn
-           as a stroke in its colour), the journal catalogue's picked filter,
-           a quiet hairline status and the sidebar's badge scale. */
+           as a stroke in its colour, data-unpicked), the journal catalogue's
+           picked filter, a status drawn as a hairline and the sidebar's
+           badge scale. */
         [data-slot="badge"] {
             &[data-tone="provider-retroachievements"] {
                 @apply bg-provider-retroachievements text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)] hover:brightness-125;
                 }
             }
             &[data-tone="provider-steam"] {
                 @apply bg-provider-steam text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)] hover:brightness-125;
                 }
             }
             &[data-tone="provider-psn"] {
                 @apply bg-provider-psn text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)] hover:brightness-125;
                 }
             }
@@ -260,7 +261,7 @@
             &[data-tone="picked"] {
                 @apply rounded-sm bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)];
             }
-            &[data-tone="quiet"] {
+            &[data-tone="status"] {
                 @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
             }
             &[data-size="nav"] {
@@ -569,14 +570,10 @@
             @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground;
         }
 
-        /* Card: a panel of ink-2 with a rule, 3.2px corners. Paper drops the
-           rule; the active panel (being edited, picked) takes the yellow
+        /* Card: a panel of ink-2 with a rule, 3.2px corners. The active panel (being edited, picked) takes the yellow
            rule; a cover card is art under a legibility scrim. */
         [data-slot="card"] {
             @apply rounded-md border-border bg-card text-card-foreground *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md;
-            &[data-variant="paper"] {
-                @apply border-transparent;
-            }
             &[data-variant="active"] {
                 @apply border-highlight;
             }
@@ -632,11 +629,6 @@
            on the rule alone. */
         [data-slot="input-group"][data-variant="search"] {
             @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
-        }
-        /* A search inside one list (www#93): the plain rule, and focus
-           shows on the rule alone. */
-        [data-slot="input-group"][data-variant="list-search"] {
-            @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
         [data-slot="input-group-addon"] {
             @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];
@@ -858,6 +850,9 @@
                 @apply border-0 bg-transparent focus-visible:ring-0 active:not-aria-[haspopup]:translate-y-0;
             }
         }
+        /* A quick search in place (the top bar's games search, a search
+           inside one list): the plain rule, and focus shows on the rule
+           alone. */
         [data-slot="input-group"][data-variant="quick-search"] {
             @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
@@ -909,9 +904,10 @@
                 @apply bg-(--tab-ink) text-(--tab-ink-foreground) shadow-none;
             }
         }
-        /* Toggle quiet: the segment rests in the faint ink. */
-        [data-slot="toggle"][data-variant="quiet"],
-        [data-slot="toggle-group-item"][data-variant="quiet"] {
+        /* Toggle switcher: a switch between alternatives in place; the
+           segment rests in the faint ink. */
+        [data-slot="toggle"][data-variant="switcher"],
+        [data-slot="toggle-group-item"][data-variant="switcher"] {
             @apply text-faint-foreground transition-colors hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight aria-pressed:text-background data-pressed:text-background;
         }
         /* Progress: the tint tone fills with --progress-ink; its lg bar
@@ -940,7 +936,9 @@
            fields (a yellow rule and a soft yellow ring on focus); a
            Suggestion's type tags, each in its own ink. */
         [data-slot="button"] {
-            &[data-variant="dismiss-notice"] {
+            /* The x that clears something in place (a notice, a field's
+               text): faint until hovered, no ground. */
+            &[data-variant="clear"] {
                 @apply border-0 text-faint-foreground transition-colors hover:text-foreground;
             }
             &[data-variant="card-action"] {
@@ -1137,17 +1135,10 @@
             @apply border-b;
         }
         /* The journal catalogue's filters: chips in the label voice on ink-2
-           with a strong hairline (Any member, Any game), dim until hovered;
-           its search field on the strong rule with the yellow focus, and
-           the x that clears it, faint until hovered. */
+           with a strong hairline (Any member, Any game), dim until hovered.
+           Its search field is an Input compose, its x a Button clear. */
         :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"] {
             @apply font-label rounded-sm border-0 bg-card text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground;
-        }
-        [data-slot="input"][data-variant="catalogue"] {
-            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25;
-        }
-        [data-slot="button"][data-variant="field-clear"] {
-            @apply rounded-sm border-0 text-faint-foreground hover:text-foreground;
         }
         /* The journal entry editor (the yellow edge): its fields on the
            page's ink with the strong rule and the yellow focus, its game as

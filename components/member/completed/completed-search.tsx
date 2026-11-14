@@ -22,7 +22,7 @@ export function CompletedSearch({
     <Form action={action} role="search" className="w-full max-w-80">
       {/* The group pads its field after an addon; here the gap spaces them. */}
       <InputGroup
-        variant="list-search"
+        variant="quick-search"
         className="h-10 gap-2 px-3 has-[>[data-align=inline-start]]:[&>input]:pl-0"
       >
         <InputGroupAddon className="p-0">

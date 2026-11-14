@@ -71,7 +71,7 @@ export function GameHltbCard({
           Time to beat
         </h2>
         {notSaved ? (
-          <Badge tone="quiet" className="border-0">
+          <Badge tone="status" className="border-0">
             Not saved
           </Badge>
         ) : (

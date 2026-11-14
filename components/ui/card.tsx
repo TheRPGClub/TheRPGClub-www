@@ -6,8 +6,6 @@ import { cn } from "@/lib/utils"
 type CardVariant =
   // A panel on the page, with its rule.
   | "default"
-  // A panel with no rule: paper laid on the page.
-  | "paper"
   // The panel being edited or picked right now.
   | "active"
   // A panel over art: put a CardCover (and a CardScrim over it) inside.

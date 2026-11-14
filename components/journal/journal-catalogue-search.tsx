@@ -24,7 +24,7 @@ export function CatalogueSearch({ q, onSearch }: { q: string; onSearch: (text: s
       />
       <Input
         type="search"
-        variant="catalogue"
+        variant="compose"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Search every entry…"
@@ -33,7 +33,7 @@ export function CatalogueSearch({ q, onSearch }: { q: string; onSearch: (text: s
       />
       {text && (
         <Button
-          variant="field-clear"
+          variant="clear"
           size="icon-xs"
           aria-label="Clear the search"
           onClick={() => {

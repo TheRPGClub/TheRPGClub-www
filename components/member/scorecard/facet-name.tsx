@@ -62,7 +62,7 @@ export function FacetName({
             dismissing, say. */}
         <Button
           type="button"
-          variant="subtle"
+          variant="editor-tool"
           size="icon-xs"
           aria-label={`Save the name for ${named}`}
           disabled={disabled}
@@ -73,7 +73,7 @@ export function FacetName({
         </Button>
         <Button
           type="button"
-          variant="destructive-subtle"
+          variant="destructive-editor-tool"
           size="icon-xs"
           aria-label={`Discard the name change for ${named}`}
           disabled={disabled}
@@ -109,7 +109,7 @@ export function FacetName({
       </span>
       <Button
         type="button"
-        variant="subtle"
+        variant="editor-tool"
         size="icon-xs"
         ref={pencilRef}
         aria-label={`Rename ${named}`}

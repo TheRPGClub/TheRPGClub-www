@@ -25,10 +25,15 @@ Every Theme meets all four, on every surface, in its declared mode. A Theme that
 - **Mode.** Each Theme declares light or dark in `themes/registry.ts`. The root layout puts `data-theme` and `data-mode` on `<html>` on the server; `data-mode` sets `color-scheme` and drives shadcn's `dark:` variant.
 - **Fonts.** A Theme's fonts load through `next/font` in its own `fonts.ts`, with `preload: false` unless it is the default Theme, so a Member pays only for the Theme they see.
 - **Primitives.** A Theme restyles a shadcn primitive by its `data-slot` and `data-variant` attributes. Variants name what a thing is (`tone="gotm"`, `variant="inverse"`), never how it looks.
-- **The test Theme.** `DEV_THEME=test npm run dev` swaps every token for a loud colour (development only). Any surface that still looks like the Monthly Issue names a palette colour or a hex instead of a token.
+- **The test Theme.** `DEV_THEME=test npm run dev` swaps every token for a loud colour (development only). Any surface that still looks like the Monthly Issue names a palette colour or a hex instead of a token. It is `devOnly` in the registry: the root layout loads its stylesheet in development alone, so production builds never ship it.
 
 ### Adding a Theme
 
-1. Create `themes/<name>/` with `theme.css` (every token the Monthly Issue Theme sets, scoped to `[data-theme="<name>"]` in `@layer themes`), `fonts.ts` if it needs its own faces (`preload: false`), any assets, and a `README.md` with its rules.
-2. Import `theme.css` from `app/globals.css` and add the Theme to `themes/registry.ts` (and its font classes to `themes/index.ts`).
-3. `npm test` checks that it sets every token. Check it against the floor above.
+The minimal set, each step checked by `npm test` (`themes/wiring.test.ts`, `themes/tokens.test.ts`, `themes/primitives.test.ts`), which names the step that is missing:
+
+1. **Its folder**, `themes/<name>/`: `theme.css` (every token the token map reads, scoped to `[data-theme="<name>"]` in `@layer themes`), which imports its `primitives.css` (a look for every slot, variant, size and tone the default Theme styles), plus `fonts.ts` if it needs its own faces (`preload: false`), any assets, and a `README.md` with its rules.
+2. **Its registry entry** in `themes/registry.ts` (name, mode, theme colour; `devOnly` for a Theme that must never ship).
+3. **Its stylesheet loaded**: `@import` from `app/globals.css` for a shipped Theme (CSS imports are static, so this stays a second place); for a `devOnly` one, a `themes/<name>/styles.ts` importing its `theme.css`, imported in the root layout's development-only branch.
+4. **Its fonts' classes** in `themes/index.ts`, when it has a `fonts.ts`.
+
+Then check it against the floor above.

@@ -77,13 +77,13 @@
                 border-color: var(--destructive-foreground);
             }
             /* The Member editors (www#94). */
-            &[data-variant="subtle"] {
+            &[data-variant="editor-tool"] {
                 background-color: var(--muted);
                 color: var(--highlight);
                 border-color: var(--highlight);
                 border-style: dotted;
             }
-            &[data-variant="destructive-subtle"] {
+            &[data-variant="destructive-editor-tool"] {
                 background-color: var(--muted);
                 color: var(--destructive);
                 border-color: var(--destructive);
@@ -305,7 +305,7 @@
                 color: var(--foreground);
                 border-color: var(--foreground);
             }
-            &[data-fill="outline"] {
+            &[data-unpicked] {
                 background-color: var(--background);
                 color: var(--chart-5);
                 outline: 2px dashed var(--chart-5);
@@ -328,7 +328,7 @@
                 color: var(--background);
                 border-color: var(--background);
             }
-            &[data-tone="quiet"] {
+            &[data-tone="status"] {
                 background-color: var(--chart-4);
                 color: var(--background);
                 border-color: var(--background);
@@ -957,11 +957,6 @@
             border-radius: calc(var(--radius) * 2);
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
-            &[data-variant="paper"] {
-                background-color: var(--accent);
-                color: var(--accent-foreground);
-                border-color: var(--accent-foreground);
-            }
             &[data-variant="active"] {
                 background-color: var(--accent);
                 color: var(--accent-foreground);
@@ -1078,14 +1073,6 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="input-group"][data-variant="search"] {
-            background-color: var(--card);
-            color: var(--card-foreground);
-            border-color: var(--border-strong);
-            border-radius: calc(var(--radius) * 2);
-            font-family: var(--typeface-label);
-            box-shadow: 3px 3px 0 var(--foreground);
-        }
-        [data-slot="input-group"][data-variant="list-search"] {
             background-color: var(--card);
             color: var(--card-foreground);
             border-color: var(--border-strong);
@@ -1557,8 +1544,8 @@
             color: var(--foreground);
             box-shadow: inset 0 6px 0 var(--tab-ink);
         }
-        [data-slot="toggle"][data-variant="quiet"],
-        [data-slot="toggle-group-item"][data-variant="quiet"] {
+        [data-slot="toggle"][data-variant="switcher"],
+        [data-slot="toggle-group-item"][data-variant="switcher"] {
             background-color: var(--chart-5);
             color: var(--foreground);
             font-family: var(--typeface-label);
@@ -1587,7 +1574,7 @@
 
         /* www#97: voting, GOTM history and suggestions. */
         [data-slot="button"] {
-            &[data-variant="dismiss-notice"] {
+            &[data-variant="clear"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);
                 border-radius: calc(var(--radius) * 2);
@@ -1829,12 +1816,12 @@
             }
         }
         :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"],
-        [data-slot="button"]:is([data-variant="field-clear"], [data-variant="picked"], [data-variant="quiet-link"], [data-variant="row-label"]) {
+        [data-slot="button"]:is([data-variant="picked"], [data-variant="quiet-link"], [data-variant="row-label"]) {
             background-color: var(--gotm);
             color: var(--gotm-foreground);
             outline: 3px dotted var(--highlight);
         }
-        [data-slot="input"]:is([data-variant="catalogue"], [data-variant="entry"]),
+        [data-slot="input"][data-variant="entry"],
         [data-slot="textarea"][data-variant="entry"] {
             background-color: var(--nr);
             color: var(--nr-foreground);

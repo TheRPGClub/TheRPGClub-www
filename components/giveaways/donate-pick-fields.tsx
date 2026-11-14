@@ -44,15 +44,14 @@ export function DonateGameField({
           </Button>
         </div>
       ) : (
-        <div className="[&_input]:border-background [&_input]:bg-[#fff8cc] [&_input]:text-background [&_input]:caret-background [&_input]:placeholder:text-background/55">
-          <GamePicker
-            key={pickerKey}
-            compact
-            onPick={onPick}
-            placeholder="Search the GameDB…"
-            igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
-          />
-        </div>
+        <GamePicker
+          key={pickerKey}
+          compact
+          variant="inverse"
+          onPick={onPick}
+          placeholder="Search the GameDB…"
+          igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
+        />
       )}
     </div>
   );

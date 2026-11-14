@@ -14,9 +14,9 @@ const toggleVariants = cva(
         // www#94: a formatting button in an editor's toolbar (bold, a
         // heading): quiet until hovered or pressed.
         toolbar: "",
-        // www#96: a segment that rests in the faint ink (the game page's
-        // set switcher).
-        quiet: "",
+        // www#96: a switch between alternatives in place (the game page's
+        // set switcher): each segment rests quiet until hovered or pressed.
+        switcher: "",
         // www#97: a tag picked onto something (a Suggestion's types), drawn
         // in its own ink: the caller sets --tag-ink.
         tag: "",
