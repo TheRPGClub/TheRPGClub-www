@@ -8,16 +8,39 @@ import {
 } from "@/app/actions/game-images";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const initialState: UploadGameImageState = {
   status: "idle",
   message: null,
 };
 
+const KINDS = { cover: "Cover", artwork: "Artwork", logo: "Logo" };
+const ROLES = { true: "Primary", false: "Extra" };
+
+function SelectOptions({ items }: { items: Record<string, string> }) {
+  return (
+    <SelectContent>
+      {Object.entries(items).map(([value, label]) => (
+        <SelectItem key={value} value={value}>
+          {label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  );
+}
+
 interface GameImageUploadFormProps {
   gameId: number;
 }
 
+// Admin-only: the API refuses uploads from anyone else.
 export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
   const [state, formAction, pending] = useActionState(
     uploadGameImage.bind(null, gameId),
@@ -26,26 +49,18 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
 
   return (
     <form action={formAction} className="flex flex-wrap items-center gap-2">
-      {/* Admin-only: the API refuses uploads from anyone else. */}
-      <select
-        name="kind"
-        aria-label="Image kind"
-        className="h-9 rounded-sm border border-border-strong bg-card px-2 text-sm text-foreground outline-none focus-visible:border-faint-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-        defaultValue="cover"
-      >
-        <option value="cover">Cover</option>
-        <option value="artwork">Artwork</option>
-        <option value="logo">Logo</option>
-      </select>
-      <select
-        name="is_primary"
-        aria-label="Primary or extra image"
-        className="h-9 rounded-sm border border-border-strong bg-card px-2 text-sm text-foreground outline-none focus-visible:border-faint-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-        defaultValue="true"
-      >
-        <option value="true">Primary</option>
-        <option value="false">Extra</option>
-      </select>
+      <Select name="kind" items={KINDS} defaultValue="cover">
+        <SelectTrigger aria-label="Image kind" className="data-[size=default]:h-9">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectOptions items={KINDS} />
+      </Select>
+      <Select name="is_primary" items={ROLES} defaultValue="true">
+        <SelectTrigger aria-label="Primary or extra image" className="data-[size=default]:h-9">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectOptions items={ROLES} />
+      </Select>
       <Input
         type="file"
         name="file"

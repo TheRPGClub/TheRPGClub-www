@@ -43,6 +43,14 @@ const buttonVariants = cva(
         // The second action beside it, on the same light object.
         "inverse-outline": "focus-visible:ring-current/35",
         link: "underline decoration-2 underline-offset-4",
+        // www#89: the app shell and the root components.
+        // The sidebar's own collapse and expand controls.
+        "sidebar-toggle": "",
+        // A small icon action in the sidebar's footer (sign out).
+        "sidebar-action": "",
+        // An empty slot at the end of a list that adds one more to it
+        // (Link another account).
+        add: "",
       },
       size: {
         default:

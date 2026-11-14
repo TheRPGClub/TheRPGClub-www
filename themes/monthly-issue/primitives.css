@@ -104,6 +104,21 @@
                 @apply rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg;
             }
         }
+        /* www#89: the app shell's and the root components' Button variants.
+           The sidebar's own toggles light in the sidebar accent; its footer
+           action is faint ink that lights on hover; an add slot is a dashed
+           strong rule that turns yellow on hover. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                @apply rounded-md border-0 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
+            &[data-variant="sidebar-action"] {
+                @apply rounded-sm border-0 text-faint-foreground transition-colors hover:bg-muted hover:text-foreground;
+            }
+            &[data-variant="add"] {
+                @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
+            }
+        }
         /* The carousel's arrows are round. */
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
             @apply rounded-full;

@@ -8,8 +8,7 @@ import { cn } from "@/lib/utils";
 // it is a magazine cover: the winner's key art full-bleed under the masthead,
 // stamped with the GOTM starburst. LandingPitch (landing-pitch.tsx) is the
 // masthead, headline and calls to action, shared with the flat fallback hero
-// in app/(public)/page.tsx, which still imports it from here.
-export { LandingPitch };
+// (components/landing).
 
 export function LandingCover({
   lead,
@@ -72,7 +71,7 @@ export function LandingCover({
             "Every month the club picks its next games on the ballot.",
           ],
           [
-            `${issueNumber} ${issueNumber === 1 ? "issue" : "issues"} and counting`,
+            `${issueNumber} ${issueNumber === 1 ? "round" : "rounds"} and counting`,
             "Every past winner, with its Reddit post and Discord thread.",
           ],
           [

@@ -3,7 +3,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The landing's masthead, headline and calls to action: the cover's pitch,
-// shared with the flat fallback hero in app/(public)/page.tsx.
+// shared with the flat fallback hero (components/landing).
 
 const ctaClass = "h-13 px-6 text-lg max-sm:w-full";
 
