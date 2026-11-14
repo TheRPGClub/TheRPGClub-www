@@ -1,5 +1,5 @@
 import { ArrowRight, ExternalLink } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { cn } from "@/lib/utils";
 
@@ -69,11 +69,11 @@ export function JoinPanel({
         </p>
         <ol className="mt-5.5 grid border-t-2 border-highlight-foreground sm:grid-cols-2">
           <Step n={1} title="Join the server" body="The invite opens Discord. Press Accept Invite there." className="sm:pr-4.5">
-            <a href={invite} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "inverse" }), action)}>
+            <ButtonLink render={<a />} href={invite} target="_blank" rel="noopener noreferrer" variant="inverse" className={action}>
               Open the invite
               <ExternalLink data-icon="inline-end" />
               <span className="sr-only">(opens Discord in a new tab)</span>
-            </a>
+            </ButtonLink>
           </Step>
           <Step
             n={2}
@@ -81,10 +81,10 @@ export function JoinPanel({
             body="We'll check the server and take you where you were going."
             className="max-sm:mt-4 max-sm:border-t max-sm:border-highlight-foreground/25 sm:border-l sm:border-highlight-foreground/25 sm:pl-4.5"
           >
-            <a href={continueHref} className={cn(buttonVariants({ variant: "inverse-outline" }), action)}>
+            <ButtonLink render={<a />} href={continueHref} variant="inverse-outline" className={action}>
               Continue
               <ArrowRight data-icon="inline-end" />
-            </a>
+            </ButtonLink>
           </Step>
         </ol>
         <p className="mt-4.5 text-[0.82rem] text-highlight-muted-foreground">

@@ -175,7 +175,8 @@ function SynonymEditor({
         autoFocus={isNew || !headword}
         placeholder="final fantasy"
         maxLength={255}
-        className="mt-1 h-10 bg-background text-[1.05rem] font-bold md:text-[1.05rem]"
+        variant="inset"
+        className="mt-1 h-10 text-[1.05rem] font-bold md:text-[1.05rem]"
       />
 
       <label htmlFor={`${fieldId}-also`} className="font-label mt-3 mb-1 block text-[0.72rem] font-bold tracking-[0.08em] text-faint-foreground uppercase">

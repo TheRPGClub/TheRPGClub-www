@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
@@ -23,7 +22,7 @@ import { PickDeal } from "@/components/issue/member-pick-deal";
 import { PickSentence } from "@/components/issue/member-pick-sentence";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { memberCounts, memberName } from "@/components/member/member-lists";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 // The backlog picker deals a hand of three. The API draws one game per call
 // from a seeded shuffle walked by `position`, so the hand is the same seed
@@ -198,7 +197,7 @@ function EmptyState({
     <div className="space-y-3 rounded-sm border border-dashed border-border-strong px-4 py-10 text-center">
       <p className="text-sm text-faint-foreground">{message}</p>
       {(filters.platformId !== null || filters.maxHours !== null) && (
-        <Link
+        <ButtonLink
           href={backlogPickHref(userId, {
             source: filters.source,
             platformId: null,
@@ -206,10 +205,11 @@ function EmptyState({
             seed: null,
             position: 0,
           })}
-          className={buttonVariants({ variant: "ghost", size: "sm" })}
+          variant="ghost"
+          size="sm"
         >
           Clear filters
-        </Link>
+        </ButtonLink>
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Dices } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -22,7 +21,7 @@ import {
   shortDate,
 } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const PAGE_SIZE = 24;
 
@@ -75,13 +74,13 @@ export default async function BackloggedGamesPage({
       counts={memberCounts(user)}
       action={
         isSelf ? (
-          <Link
+          <ButtonLink
             href={`/members/${id}/backlogged-games/pick`}
-            className={buttonVariants({ variant: "highlight" })}
+            variant="highlight"
           >
             <Dices data-icon="inline-start" />
             Pick something to play
-          </Link>
+          </ButtonLink>
         ) : undefined
       }
     >

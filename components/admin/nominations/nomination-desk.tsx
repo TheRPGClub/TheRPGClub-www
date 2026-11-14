@@ -193,9 +193,9 @@ function Entry({
         <span className="col-start-2 row-span-3 row-start-1 self-center">
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive-ghost"
             size="icon-sm"
-            className="text-dim-foreground hover:text-destructive"
+            className="text-dim-foreground"
             onClick={onDelete}
             aria-label={`Delete the nomination of ${title} by ${nominatorName(nomination)}`}
             title="Delete with a reason"

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -18,7 +17,7 @@ import {
   requiredAccount,
 } from "@/lib/imports/linked-account";
 import { ImportTemplate } from "@/components/templates/import-template";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
 
@@ -66,10 +65,10 @@ export async function ImportPage<J extends ImportJob>({
       title={IMPORT_KINDS[kind].label}
       badge={features.preview(feature) && <PreviewBadge />}
       actions={
-        <Link href={importsHubHref(userId)} className={buttonVariants({ variant: "outline" })}>
+        <ButtonLink href={importsHubHref(userId)} variant="outline">
           <ChevronLeft data-icon="inline-start" />
           All imports
-        </Link>
+        </ButtonLink>
       }
     >
       {active ? (

@@ -143,7 +143,7 @@ export function NominationCard({
       </h3>
 
       <p className="font-label flex min-w-0 items-center gap-1.75 text-[0.82rem] font-bold tracking-[0.06em] text-faint-foreground">
-        <Avatar className="size-5 after:hidden">
+        <Avatar variant="credit" className="size-5 after:hidden">
           <AvatarImage
             src={
               nominator
@@ -156,7 +156,7 @@ export function NominationCard({
             }
             alt=""
           />
-          <AvatarFallback className="font-label bg-muted text-[0.65rem] text-dim-foreground">
+          <AvatarFallback className="font-label text-[0.65rem]">
             {nominatorName[0]?.toUpperCase() ?? "?"}
           </AvatarFallback>
         </Avatar>

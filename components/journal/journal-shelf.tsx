@@ -6,7 +6,7 @@ import { chapterHref, journalDate, memberInk, spineHeight } from "@/lib/journals
 import { memberName } from "@/lib/achievements";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberAvatar } from "@/components/issue/member-cover";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // /journals' archive: one volume per member standing on a shelf, most games
@@ -147,13 +147,15 @@ export function JournalVolumePreview({
             +{rest} more {rest === 1 ? "game" : "games"}
           </span>
         )}
-        <Link
+        <ButtonLink
           href={`/members/${contributor.user_id}/journal`}
-          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "ml-auto")}
+          variant="outline"
+          size="sm"
+          className="ml-auto"
         >
           Open {name}&apos;s journal
           <ArrowRight aria-hidden />
-        </Link>
+        </ButtonLink>
       </div>
     </aside>
   );

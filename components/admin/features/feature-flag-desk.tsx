@@ -450,7 +450,8 @@ function ReasonField({
       autoFocus={autoFocus}
       aria-invalid={over || undefined}
       aria-describedby={`${reasonId}-hint`}
-      className="min-w-48 flex-1 bg-background"
+      variant="inset"
+      className="min-w-48 flex-1"
     />
   );
 }

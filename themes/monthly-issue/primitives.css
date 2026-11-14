@@ -1,0 +1,673 @@
+/* The Monthly Issue Theme's primitives: how every shadcn primitive looks in
+   this Theme, by its data-slot and its variant, size or tone attribute (api
+   ADR-0008). The primitives keep only their shared base (layout, the focus
+   ring, the disabled state); everything that makes them look like the
+   Monthly Issue lives here. @layer themes sits above Tailwind's utilities.
+
+   Each rule carries the whole look of one slot (and variant), as one @apply,
+   so the order between its states is Tailwind's own. Split a rule only where
+   the parts cannot meet (a size rule touches only the corners). */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Button. A Button keeps its variant when another primitive renders
+           it under its own slot (a dialog's close, the sidebar trigger, a
+           trigger rendered as a Button). Only an element with a variant
+           takes the look. A link that looks like a Button is a ButtonLink,
+           slot "button". */
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="input-group-button"],
+                [data-slot="combobox-clear"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &[data-variant="default"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-primary text-primary-foreground hover:bg-gotm/85;
+            }
+            &[data-variant="highlight"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-highlight text-highlight-foreground hover:bg-highlight/85;
+            }
+            &[data-variant="nr"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
+            }
+            &[data-variant="outline"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-faint-foreground/60 bg-transparent text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted;
+            }
+            &[data-variant="overlay"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-faint-foreground/60 text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted bg-background/70;
+            }
+            &[data-variant="selected"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:border-foreground aria-expanded:bg-muted border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background;
+            }
+            &[data-variant="secondary"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground;
+            }
+            &[data-variant="ghost"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50;
+            }
+            &[data-variant="destructive-ghost"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive;
+            }
+            &[data-variant="destructive"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 dark:bg-destructive/20 dark:hover:bg-destructive/30;
+            }
+            &[data-variant="destructive-solid"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive text-destructive-foreground hover:bg-destructive/85;
+            }
+            &[data-variant="destructive-outline"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-destructive bg-transparent text-destructive hover:bg-destructive/10;
+            }
+            &[data-variant="inverse"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-background text-foreground hover:bg-background/85 focus-visible:border-background;
+            }
+            &[data-variant="inverse-outline"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-transparent inset-ring-[1.5px] inset-ring-current hover:bg-current/10 focus-visible:border-current;
+            }
+            &[data-variant="link"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 text-foreground decoration-gotm hover:text-highlight;
+            }
+        }
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                @apply rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg;
+            }
+            &:is([data-size="sm"], [data-size="icon-sm"]) {
+                @apply rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg;
+            }
+        }
+        /* The carousel's arrows are round. */
+        :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
+            @apply rounded-full;
+        }
+        /* The combobox's open trigger stays clear. */
+        [data-slot="input-group-button"][data-variant][data-pressed] {
+            @apply bg-transparent;
+        }
+        /* An input group's own buttons sit inside its corners. */
+        [data-slot="input-group-button"],
+        [data-slot="combobox-clear"] {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                @apply rounded-[calc(var(--radius)-3px)];
+            }
+        }
+
+        /* Badge: a chip in the label voice, 2px corners. Tracks colour their
+           own chips; everything else stays paper on ink. */
+        [data-slot="badge"] {
+            @apply font-label rounded-xs border-transparent font-bold focus-visible:border-ring aria-invalid:border-destructive;
+            &[data-tone="neutral"] {
+                @apply bg-foreground/8 text-dim-foreground;
+            }
+            &[data-tone="secondary"] {
+                @apply bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80;
+            }
+            &[data-tone="gotm"] {
+                @apply bg-gotm text-gotm-foreground;
+            }
+            &[data-tone="nr"] {
+                @apply bg-nr text-nr-foreground;
+            }
+            &[data-tone="highlight"] {
+                @apply bg-highlight text-highlight-foreground;
+            }
+            &[data-tone="inverse"] {
+                @apply bg-foreground text-background;
+            }
+            &[data-tone="outline"] {
+                @apply text-foreground inset-ring-[1.5px] inset-ring-dim-foreground;
+            }
+            &[data-tone="destructive"] {
+                @apply bg-destructive text-destructive-foreground;
+            }
+            &[data-tone="rarity-common"] {
+                @apply bg-rarity-common text-rarity-foreground;
+            }
+            &[data-tone="rarity-uncommon"] {
+                @apply bg-rarity-uncommon text-rarity-foreground;
+            }
+            &[data-tone="rarity-rare"] {
+                @apply bg-rarity-rare text-rarity-foreground;
+            }
+            &[data-tone="rarity-ultra"] {
+                @apply bg-rarity-ultra text-rarity-foreground;
+            }
+            &[data-tone="foil"] {
+                @apply foil;
+            }
+        }
+
+        /* Input: an ink-2 field with a rule, paper-mute on focus and the
+           yellow caret. */
+        [data-slot="input"] {
+            @apply rounded-sm border-border bg-card caret-highlight file:bg-transparent file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50;
+            &[data-variant="inset"] {
+                @apply bg-background;
+            }
+            &[data-variant="inverse"] {
+                @apply border-background bg-[#fff8cc] text-background caret-background placeholder:text-background/55 focus-visible:border-background focus-visible:ring-background/20;
+            }
+            &[data-variant="destructive"] {
+                @apply border-destructive bg-background text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-ring/40 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
+            }
+        }
+
+        /* Skeleton: an ink-3 block that pulses, cornered like what it stands
+           in for. */
+        [data-slot="skeleton"] {
+            @apply rounded-md bg-accent;
+            &:is([data-variant="card"], [data-variant="control"]) {
+                @apply rounded-sm;
+            }
+            &[data-variant="text"] {
+                @apply rounded-xs;
+            }
+            &[data-variant="plate"] {
+                @apply rounded-none;
+            }
+        }
+
+        /* Separator: a rule. */
+        [data-slot="separator"] {
+            @apply bg-border;
+        }
+
+        /* Progress: a hairline bar on ink-3, filled in the bar's own ink. */
+        [data-slot="progress-track"] {
+            @apply bg-muted;
+        }
+        [data-slot="progress-indicator"] {
+            @apply bg-primary;
+        }
+        [data-slot="progress"] {
+            &[data-tone="gotm"] [data-slot="progress-indicator"] {
+                @apply bg-gotm;
+            }
+            &[data-tone="nr"] [data-slot="progress-indicator"] {
+                @apply bg-nr;
+            }
+            &[data-tone="highlight"] [data-slot="progress-indicator"] {
+                @apply bg-highlight;
+            }
+            &[data-tone="neutral"] [data-slot="progress-indicator"] {
+                @apply bg-foreground;
+            }
+            &[data-tone="destructive"] [data-slot="progress-indicator"] {
+                @apply bg-destructive;
+            }
+        }
+        [data-slot="progress-label"] {
+            @apply font-medium;
+        }
+        [data-slot="progress-value"] {
+            @apply text-muted-foreground;
+        }
+
+        /* Slider: a hairline track, a white thumb ringed in yellow. */
+        [data-slot="slider-track"] {
+            @apply bg-muted;
+        }
+        [data-slot="slider-range"] {
+            @apply bg-primary;
+        }
+        [data-slot="slider-thumb"] {
+            @apply rounded-full border-ring bg-white ring-ring/50 hover:ring-3 active:ring-3;
+        }
+        /* A rating: the track and fill are a ramp within the track's ink, and
+           the thumb wears that ink with a halo in the page colour, so it reads
+           against the ramp it sits on. */
+        [data-slot="slider"]:is([data-tone="gotm"], [data-tone="nr"], [data-tone="neutral"]) {
+            [data-slot="slider-track"],
+            [data-slot="slider-range"] {
+                @apply bg-transparent bg-linear-to-r;
+            }
+            [data-slot="slider-thumb"] {
+                @apply border-foreground shadow-[0_0_0_3px_var(--background)];
+            }
+            &[data-size="sm"] [data-slot="slider-thumb"] {
+                @apply shadow-[0_0_0_2px_var(--background)];
+            }
+        }
+        [data-slot="slider"][data-tone="gotm"] {
+            [data-slot="slider-track"] {
+                @apply from-gotm/25 to-gotm/10;
+            }
+            [data-slot="slider-range"] {
+                @apply from-gotm-soft to-gotm;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-gotm ring-gotm/40;
+            }
+        }
+        [data-slot="slider"][data-tone="nr"] {
+            [data-slot="slider-track"] {
+                @apply from-nr/25 to-nr/10;
+            }
+            [data-slot="slider-range"] {
+                @apply from-nr-soft to-nr;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-nr ring-nr/40;
+            }
+        }
+        [data-slot="slider"][data-tone="neutral"] {
+            [data-slot="slider-track"] {
+                @apply from-foreground/20 to-foreground/[0.06];
+            }
+            [data-slot="slider-range"] {
+                @apply from-foreground to-dim-foreground;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-foreground ring-foreground/30;
+            }
+        }
+
+        /* Avatar: round, with a hairline ring blended into the picture. */
+        [data-slot="avatar"] {
+            @apply rounded-full after:rounded-full after:border-border after:mix-blend-darken dark:after:mix-blend-lighten;
+        }
+        [data-slot="avatar-image"] {
+            @apply rounded-full;
+        }
+        [data-slot="avatar-fallback"] {
+            @apply rounded-full bg-muted text-muted-foreground;
+        }
+        [data-slot="avatar-badge"] {
+            @apply rounded-full bg-primary text-primary-foreground bg-blend-color ring-2 ring-background;
+        }
+        [data-slot="avatar-group"] {
+            @apply *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background;
+        }
+        [data-slot="avatar-group-count"] {
+            @apply rounded-full bg-muted text-muted-foreground ring-2 ring-background;
+        }
+        [data-slot="avatar"][data-variant="tile"] {
+            @apply rounded-none;
+            [data-slot="avatar-image"] {
+                @apply rounded-none;
+            }
+            [data-slot="avatar-fallback"] {
+                @apply rounded-none text-faint-foreground;
+            }
+        }
+        [data-slot="avatar"][data-variant="inverse"] [data-slot="avatar-fallback"] {
+            @apply bg-foreground text-background;
+        }
+        [data-slot="avatar"][data-variant="byline"] [data-slot="avatar-fallback"] {
+            @apply text-foreground;
+        }
+        [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
+            @apply text-dim-foreground;
+        }
+
+        /* Tooltip: a small paper label with ink type. */
+        [data-slot="tooltip-content"] {
+            @apply rounded-md bg-foreground text-background **:data-[slot=kbd]:rounded-sm;
+        }
+        [data-slot="tooltip-arrow"] {
+            @apply rounded-[2px] bg-foreground fill-foreground;
+        }
+
+        /* Dialog: an ink-2 sheet on a dimmed, softly blurred page, with the
+           object lift; the title in the headline voice. */
+        [data-slot="dialog-overlay"] {
+            @apply bg-black/70 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="dialog-content"] {
+            @apply rounded-md border-border-strong bg-card bg-clip-padding text-foreground shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        [data-slot="dialog-title"] {
+            @apply font-headline leading-[0.95] text-foreground;
+            &[data-variant="help"] {
+                @apply leading-7 font-semibold tracking-tight;
+            }
+        }
+        [data-slot="dialog-description"] {
+            @apply text-dim-foreground;
+        }
+
+        /* Sheet: a popover panel from the edge. */
+        [data-slot="sheet-overlay"] {
+            @apply bg-black/60 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="sheet-content"] {
+            @apply bg-popover bg-clip-padding text-popover-foreground shadow-lg;
+        }
+        [data-slot="sheet-title"] {
+            @apply font-medium text-foreground;
+        }
+        [data-slot="sheet-description"] {
+            @apply text-muted-foreground;
+        }
+
+        /* Dropdown menu: an ink-2 card with the object lift; items light up
+           in ink-3; the label in the tracked label voice. */
+        [data-slot="dropdown-menu-label"] {
+            @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="dropdown-menu-content"] {
+            @apply rounded-sm border-border-strong bg-card bg-clip-padding text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="dropdown-menu-item"],
+        [data-slot="dropdown-menu-radio-item"] {
+            @apply rounded-xs data-highlighted:bg-muted data-highlighted:text-foreground;
+        }
+        [data-slot="dropdown-menu-separator"] {
+            @apply bg-border;
+        }
+
+        /* Pagination: ghost page numbers in paper-dim; the current page is a
+           paper block with ink type. */
+        [data-slot="pagination-link"] {
+            @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-dim-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background;
+        }
+
+        /* Sidebar: the ink-2 rail beside the page. */
+        [data-slot="sidebar-wrapper"] {
+            @apply has-data-[variant=inset]:bg-sidebar;
+        }
+        [data-slot="sidebar"] {
+            @apply text-sidebar-foreground;
+            &:not([data-variant]) {
+                @apply bg-sidebar;
+            }
+            /* On phones the sidebar is a sheet. */
+            &[data-mobile="true"] {
+                @apply bg-clip-padding shadow-lg;
+            }
+        }
+        [data-slot="sidebar-gap"] {
+            @apply bg-transparent;
+        }
+        [data-slot="sidebar-inner"] {
+            @apply bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border;
+        }
+        [data-slot="sidebar-rail"] {
+            @apply hover:after:bg-sidebar-border hover:group-data-[collapsible=offcanvas]:bg-sidebar;
+        }
+        [data-slot="sidebar-inset"] {
+            @apply bg-background md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm;
+        }
+        [data-slot="sidebar-input"] {
+            @apply rounded-sm border-border caret-highlight file:bg-transparent file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 bg-background shadow-none;
+        }
+        [data-slot="sidebar-separator"] {
+            @apply bg-sidebar-border;
+        }
+        /* A group's label is set in the tracked caps label voice. */
+        [data-slot="sidebar-group-label"] {
+            @apply rounded-md font-label font-medium tracking-[0.08em] text-faint-foreground uppercase ring-sidebar-ring;
+        }
+        [data-slot="sidebar-group-action"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+        }
+        [data-slot="sidebar-menu-button"] {
+            /* The club's nav: label voice in paper-dim; you are here in
+               masthead red. */
+            &[data-variant="default"] {
+                @apply ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground font-label rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground data-active:bg-gotm data-active:font-bold data-active:text-gotm-foreground;
+            }
+            &[data-variant="outline"] {
+                @apply rounded-md ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))];
+            }
+        }
+        [data-slot="sidebar-menu-action"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+            &[data-show-on-hover] {
+                @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+            }
+        }
+        [data-slot="sidebar-menu-badge"] {
+            @apply rounded-md font-medium text-sidebar-foreground peer-hover/menu-button:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+        }
+        [data-slot="sidebar-menu-skeleton"] {
+            @apply rounded-md;
+        }
+        [data-slot="sidebar-menu-sub"] {
+            @apply border-sidebar-border;
+        }
+        [data-slot="sidebar-menu-sub-button"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground;
+        }
+
+        /* Card: a panel of ink-2 with a rule, 3.2px corners. Paper drops the
+           rule; the active panel (being edited, picked) takes the yellow
+           rule; a cover card is art under a legibility scrim. */
+        [data-slot="card"] {
+            @apply rounded-md border-border bg-card text-card-foreground *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md;
+            &[data-variant="paper"] {
+                @apply border-transparent;
+            }
+            &[data-variant="active"] {
+                @apply border-highlight;
+            }
+            &[data-variant="cover"] {
+                @apply border-transparent bg-muted text-foreground;
+            }
+        }
+        [data-slot="card-header"] {
+            @apply rounded-t-md;
+        }
+        [data-slot="card-title"] {
+            @apply font-headline text-foreground;
+        }
+        [data-slot="card-description"] {
+            @apply text-dim-foreground;
+        }
+        [data-slot="card-footer"] {
+            @apply rounded-b-md border-border bg-muted/50;
+        }
+        [data-slot="card-scrim"] {
+            @apply bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_92%,transparent),color-mix(in_oklab,var(--color-background)_45%,transparent)_55%,transparent)];
+        }
+
+        /* Alert dialog: the Dialog's sheet, for a confirm. */
+        [data-slot="alert-dialog-overlay"] {
+            @apply bg-black/70 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="alert-dialog-content"] {
+            @apply rounded-md border border-border-strong bg-card text-foreground shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        [data-slot="alert-dialog-footer"] {
+            @apply rounded-b-md border-border bg-background/40;
+        }
+        [data-slot="alert-dialog-media"] {
+            @apply rounded-sm bg-muted;
+        }
+        [data-slot="alert-dialog-title"] {
+            @apply font-headline text-[1.6rem] leading-[0.95] text-foreground;
+        }
+        [data-slot="alert-dialog-description"] {
+            @apply text-dim-foreground *:[a]:hover:text-highlight;
+        }
+
+        /* Fields: an ink-2 well with a rule (the Input's look), paper-mute
+           on focus and the yellow caret. */
+        [data-slot="textarea"] {
+            @apply rounded-sm border-border bg-card text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50;
+        }
+        [data-slot="input-group"] {
+            @apply rounded-sm border-border bg-card in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-disabled:bg-input/50 has-[[data-slot=input-group-control]:focus-visible]:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/40 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40;
+        }
+        [data-slot="input-group-addon"] {
+            @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];
+        }
+        [data-slot="input-group-control"] {
+            @apply rounded-none bg-transparent caret-highlight shadow-none ring-0 placeholder:text-faint-foreground disabled:bg-transparent;
+        }
+        [data-slot="input-group-text"] {
+            @apply text-faint-foreground;
+        }
+
+        /* Checkbox and radio: an ink-2 box with a strong rule, filled
+           highlighter yellow when checked. */
+        [data-slot="checkbox"],
+        [data-slot="radio-group-item"] {
+            @apply border-border-strong bg-card group-has-[:focus-visible]/field-label:ring-0 focus-visible:border-ring aria-invalid:border-destructive data-checked:border-highlight data-checked:bg-highlight data-checked:text-highlight-foreground;
+        }
+        [data-slot="checkbox"] {
+            @apply rounded-xs;
+        }
+        [data-slot="radio-group-item"] {
+            @apply rounded-full;
+        }
+        [data-slot="radio-group-dot"] {
+            @apply rounded-full bg-highlight-foreground;
+        }
+
+        /* Switch: a hard-cornered ink-3 track with a strong rule and a
+           paper-mute thumb; on, the track is highlighter yellow and the
+           thumb ink. */
+        [data-slot="switch"] {
+            @apply rounded-[3px] border-transparent focus-visible:border-ring aria-invalid:border-destructive data-unchecked:bg-muted data-unchecked:inset-ring-1 data-unchecked:inset-ring-border-strong data-unchecked:hover:inset-ring-faint-foreground data-checked:bg-highlight data-checked:hover:bg-highlight/85;
+        }
+        [data-slot="switch-thumb"] {
+            @apply rounded-xs data-unchecked:bg-faint-foreground data-checked:bg-background;
+        }
+
+        /* Label: the tracked label voice in paper-mute. */
+        [data-slot="label"],
+        [data-slot="field-label"] {
+            @apply font-label tracking-[0.06em] text-faint-foreground;
+        }
+        [data-slot="field"] {
+            @apply data-[invalid=true]:text-destructive;
+        }
+        [data-slot="field-legend"] {
+            @apply font-label tracking-[0.06em] text-dim-foreground;
+        }
+        [data-slot="field-description"] {
+            @apply font-normal text-faint-foreground [&>a:hover]:text-highlight;
+        }
+        [data-slot="field-separator-content"] {
+            @apply bg-background text-faint-foreground;
+        }
+        [data-slot="field-error"] {
+            @apply font-normal text-destructive;
+        }
+        /* A choice card: a field inside its label. */
+        [data-slot="field-label"] {
+            @apply has-[>[data-slot=field]]:rounded-sm has-[>[data-slot=field]]:border-border has-[>[data-slot=field]]:normal-case has-[>[data-slot=field]]:tracking-normal has-[>[data-slot=field]]:text-foreground has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted has-data-checked:border-highlight has-data-checked:bg-muted has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-2 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/40;
+        }
+
+        /* Select: the member field's look, a strong rule on ink-2; the list
+           is an ink-2 card with the object lift. */
+        [data-slot="select-trigger"] {
+            @apply rounded-sm border-border-strong bg-card text-foreground hover:border-faint-foreground focus-visible:border-faint-foreground aria-invalid:border-destructive data-placeholder:text-faint-foreground;
+        }
+        [data-slot="select-trigger-icon"],
+        [data-slot="combobox-trigger-icon"] {
+            @apply text-faint-foreground;
+        }
+        [data-slot="select-content"],
+        [data-slot="combobox-content"] {
+            @apply rounded-sm border border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="combobox-content"] {
+            @apply *:data-[slot=input-group]:border-border *:data-[slot=input-group]:bg-background *:data-[slot=input-group]:shadow-none;
+        }
+        [data-slot="select-label"],
+        [data-slot="combobox-label"] {
+            @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="select-item"] {
+            @apply rounded-xs focus:bg-muted focus:text-foreground;
+        }
+        [data-slot="combobox-item"] {
+            @apply rounded-xs data-highlighted:bg-muted data-highlighted:text-foreground;
+        }
+        [data-slot="select-separator"],
+        [data-slot="combobox-separator"] {
+            @apply bg-border;
+        }
+        [data-slot="select-scroll-up-button"],
+        [data-slot="select-scroll-down-button"] {
+            @apply bg-card;
+        }
+        [data-slot="combobox-empty"] {
+            @apply text-faint-foreground;
+        }
+        [data-slot="combobox-chips"] {
+            @apply rounded-sm border-border bg-card bg-clip-padding focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-ring/40 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20;
+        }
+        [data-slot="combobox-chip"] {
+            @apply font-label rounded-xs bg-foreground/8 text-dim-foreground;
+        }
+
+        /* Table: a ruled ledger; heads in the tracked label voice. */
+        [data-slot="table-head"] {
+            @apply font-label font-bold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="table-row"] {
+            @apply border-border hover:bg-card has-aria-expanded:bg-card data-[state=selected]:bg-muted;
+        }
+        [data-slot="table-footer"] {
+            @apply border-border bg-card font-medium;
+        }
+        [data-slot="table-caption"] {
+            @apply text-faint-foreground;
+        }
+
+        /* Tabs: folder tabs. The current tab is ink-2 with a paper rule on
+           its top edge, the others ink-3 in paper-mute. The line list is the
+           voting board's: headline tabs on a heavy paper rule, the current
+           one a paper block with ink type. */
+        [data-slot="tabs-list"] {
+            @apply bg-transparent text-faint-foreground;
+            &[data-variant="line"] {
+                @apply border-b-2 border-foreground;
+            }
+        }
+        [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-sm border-transparent bg-muted font-extrabold tracking-[0.06em] text-faint-foreground hover:text-foreground data-active:bg-card data-active:text-foreground data-active:shadow-[inset_0_2px_0_var(--color-foreground)] after:bg-foreground;
+        }
+        [data-slot="tabs-list"][data-variant="line"] [data-slot="tabs-trigger"] {
+            @apply font-headline bg-transparent tracking-normal data-active:bg-foreground data-active:text-background data-active:shadow-none;
+        }
+
+        /* Toggle and toggle group: the ink pill. Pressed, it is a paper block
+           with ink type. The outline bar joins its items under a strong
+           rule. */
+        [data-slot="toggle"],
+        [data-slot="toggle-group-item"] {
+            @apply font-label rounded-[3px] font-extrabold tracking-[0.06em] text-dim-foreground hover:bg-muted hover:text-foreground focus-visible:border-ring aria-invalid:border-destructive aria-pressed:bg-foreground aria-pressed:text-background data-pressed:bg-foreground data-pressed:text-background;
+            &[data-variant="outline"] {
+                @apply border-border-strong;
+            }
+        }
+        [data-slot="toggle-group"] {
+            @apply rounded-sm;
+        }
+        [data-slot="toggle-group-item"][data-spacing="0"] {
+            @apply rounded-none group-data-horizontal/toggle-group:first:rounded-l-sm group-data-vertical/toggle-group:first:rounded-t-sm group-data-horizontal/toggle-group:last:rounded-r-sm group-data-vertical/toggle-group:last:rounded-b-sm;
+        }
+    }
+}

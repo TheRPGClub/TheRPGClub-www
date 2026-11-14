@@ -52,9 +52,7 @@ export function ScorecardExplainer({
 
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle
-            className={cn("text-lg font-semibold tracking-tight", style.readout)}
-          >
+          <DialogTitle variant="help" className="text-lg">
             About the scorecard
           </DialogTitle>
           {/* Brightest at the leading edge and fading out to the right, so it

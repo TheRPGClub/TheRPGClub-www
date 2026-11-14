@@ -1,5 +1,4 @@
 import Form from "next/form";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Platform } from "@/lib/api/types";
 import {
@@ -12,7 +11,7 @@ import {
   MemberSelect,
   memberControlClass,
 } from "@/components/issue/member-field";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 
 export interface CompareMemberOption {
   user_id: string;
@@ -125,16 +124,17 @@ export function CompareFiltersForm({
         <Button type="submit" variant="outline" className="h-9.5">
           Apply
         </Button>
-        <Link
+        <ButtonLink
           href={
             filters.with
               ? `${action}?with=${encodeURIComponent(filters.with)}`
               : action
           }
-          className={buttonVariants({ variant: "ghost", className: "h-9.5" })}
+          variant="ghost"
+          className="h-9.5"
         >
           Clear
-        </Link>
+        </ButtonLink>
       </div>
     </Form>
   );

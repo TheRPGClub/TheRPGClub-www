@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import type { GameSummary } from "@/lib/api/types";
 import { chapterHref, journalDate, romanNumeral } from "@/lib/journals";
 import { ChapterMarks, JournalPage, JournalRunningHead } from "@/components/journal/journal-book";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export interface JournalChapterRow {
@@ -97,13 +97,14 @@ export function JournalContents({
       )}
       {newChapterHref && (
         <div className="mt-auto pt-4">
-          <Link
+          <ButtonLink
             href={newChapterHref}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            variant="outline"
+            size="sm"
           >
             <Plus aria-hidden />
             Start a chapter for another game
-          </Link>
+          </ButtonLink>
         </div>
       )}
     </JournalPage>

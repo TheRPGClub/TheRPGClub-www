@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { Plus, Vote } from "lucide-react";
 import type { Nomination, VotingCategory, VotingRound } from "@/lib/api/types";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The club's open business, in the call-to-action yellow: nominations or the
@@ -150,12 +149,9 @@ export function RoundPanel({
 
       <div className="mt-3 flex flex-wrap gap-2">
         {(nominating || voting) && (
-          <Link
+          <ButtonLink
             href="/voting"
-            className={cn(
-              buttonVariants(),
-              "bg-background text-foreground hover:bg-background/85",
-            )}
+            variant="inverse"
           >
             {nominating ? <Plus data-icon="inline-start" /> : <Vote data-icon="inline-start" />}
             {nominating
@@ -163,19 +159,16 @@ export function RoundPanel({
                 ? "Your nomination"
                 : "Nominate a game"
               : "Cast your votes"}
-          </Link>
+          </ButtonLink>
         )}
-        <Link
+        <ButtonLink
           href="/voting"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "border-background text-background hover:border-background hover:bg-background/10",
-          )}
+          variant="inverse-outline"
         >
           {nominating || voting
             ? `See all ${nominations.length}`
             : "See results"}
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );

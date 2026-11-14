@@ -3,7 +3,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import type { GotmRoundGame } from "@/lib/api/types";
 import { gotmCardProps } from "@/components/gotm-card";
 import { PlatformPills } from "@/components/platform-pills";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
 import {
   countStats,
@@ -224,13 +224,14 @@ function FeatureCard({
         )}
         <div className="flex flex-wrap items-center gap-x-1 gap-y-2 pt-3.5">
           {href && (
-            <Link
+            <ButtonLink
               href={href}
-              className={cn(buttonVariants({ variant: "nr" }), "mr-1.5")}
+              variant="nr"
+              className="mr-1.5"
             >
               View game
               <ArrowRight data-icon="inline-end" />
-            </Link>
+            </ButtonLink>
           )}
           {links.map((link) => (
             <a

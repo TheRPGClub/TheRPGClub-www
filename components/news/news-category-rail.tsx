@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { hasNewsFilters, type NewsCategoryRow, type NewsFilters } from "@/lib/news";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { NewsFilter } from "./news-filter";
 
 // The News page's category rail: a 15.5rem column beside the grid from `lg`,
@@ -34,11 +33,11 @@ export function NewsCategoryRail({
         onToggle={(event) => setOpen(event.currentTarget.open)}
         className="group/filter mb-1 lg:hidden"
       >
-        <summary
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "cursor-pointer list-none group-open/filter:bg-muted [&::-webkit-details-marker]:hidden",
-          )}
+        <ButtonLink
+          render={<summary />}
+          variant="outline"
+          aria-expanded={open}
+          className="cursor-pointer list-none [&::-webkit-details-marker]:hidden"
         >
           <SlidersHorizontal aria-hidden className="size-4" />
           Filter
@@ -46,7 +45,7 @@ export function NewsCategoryRail({
             aria-hidden
             className="size-4 text-faint-foreground transition-transform group-open/filter:rotate-180"
           />
-        </summary>
+        </ButtonLink>
         <div className="mt-3 max-w-md">
           <NewsFilter rows={rows} filters={filters} headingId="news-categories-filter" />
         </div>

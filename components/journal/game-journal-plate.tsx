@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { JournalEntry } from "@/lib/api/types";
 import { chapterHref, journalDate, journalDateRange, romanNumeral } from "@/lib/journals";
@@ -9,7 +8,7 @@ import type { ChronologyMark } from "@/lib/journals";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import { JournalFolio, JournalPage, JournalRunningHead } from "@/components/journal/journal-book";
 import { JournalEntryView } from "@/components/journal/journal-entry";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export interface PlateLine {
@@ -221,13 +220,14 @@ export function GameJournalPlate({
         </div>
         <JournalFolio
           action={
-            <Link
+            <ButtonLink
               href={chapterHref(line.userId, gameId)}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              variant="outline"
+              size="sm"
             >
               Read {line.name}&apos;s chapter
               <ArrowRight aria-hidden />
-            </Link>
+            </ButtonLink>
           }
         >
           <span>

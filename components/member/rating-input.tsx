@@ -179,25 +179,13 @@ export function RatingInput({
         getAriaValueText={() =>
           unset ? "Not rated" : `${value} out of ${MAX_RATING}`
         }
-        trackClassName={cn(
-          "bg-transparent bg-linear-to-r data-horizontal:h-2",
-          style.track,
-        )}
-        // `bg-transparent` clears the primitive's solid fill; the ramp is a
-        // background-image over it.
-        indicatorClassName={cn(
-          "bg-transparent bg-linear-to-r",
-          style.fill,
-          live ? "transition-none" : FILL_SLIDING,
-        )}
+        tone={style.sliderTone}
+        trackClassName="data-horizontal:h-2"
+        indicatorClassName={live ? "transition-none" : FILL_SLIDING}
         thumbClassName={cn(
           "size-4 border-2",
-          // A halo in the page colour, so the thumb reads against the ramp it
-          // sits on — a red thumb on a red fill needs the separation.
-          "shadow-[0_0_0_3px_var(--background)]",
           live ? THUMB_TRACKING : THUMB_SLIDING,
           "hover:scale-110 active:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100",
-          style.thumb,
         )}
       />
     </div>

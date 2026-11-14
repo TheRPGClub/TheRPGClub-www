@@ -8,7 +8,7 @@ import { TRACK_NAME, trackFromSlug } from "@/lib/rounds";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { RoundEditor } from "@/components/admin/rounds/round-editor";
 import { StaffOnly } from "@/components/staff-only";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const SECTION = staffSection("rounds");
 
@@ -52,10 +52,10 @@ export default async function RoundEditPage({
         }
       />
       <div className="mt-4">
-        <Link href="/admin/rounds" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        <ButtonLink href="/admin/rounds" variant="ghost" size="sm">
           <ArrowLeft data-icon="inline-start" />
           All rounds
-        </Link>
+        </ButtonLink>
       </div>
       <div className="mt-4">
         {entries === null ? (

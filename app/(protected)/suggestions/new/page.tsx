@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { canSuggest } from "@/lib/suggestions";
 import { PageHeader } from "@/components/templates/page-header";
 import { SuggestionForm } from "@/components/suggestions/suggestion-form";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 // Suggest something: a change to the club's bot or this website, pinned to
 // the Suggestion Board as Pending. Members role holders and staff only, as
@@ -23,9 +22,9 @@ export default async function SuggestSomethingPage() {
           badge={badge}
           description="Only Members role holders and staff can suggest something. If you think your role is out of date, sign out and back in to refresh it from Discord."
         />
-        <Link href="/suggestions" className={buttonVariants({ variant: "outline" })}>
+        <ButtonLink href="/suggestions" variant="outline">
           See the Suggestion Board
-        </Link>
+        </ButtonLink>
       </div>
     );
   }

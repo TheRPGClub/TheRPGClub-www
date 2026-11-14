@@ -27,7 +27,7 @@ import {
 } from "@/lib/api/game-counts";
 import { accentForGame } from "@/lib/reviews/accent";
 import { Skeleton } from "@/components/ui/skeleton";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
 import { ClubSetPage } from "@/components/achievements/club-set-page";
 import { GameAchievementTabs } from "@/components/achievements/game-achievement-tabs";
@@ -630,15 +630,13 @@ async function AlternateVersions({
       <ul className="flex flex-wrap gap-2 empty:hidden">
         {alternates.map((alt) => (
           <li key={alt.game_id}>
-            <Link
+            <ButtonLink
               href={`/games/${alt.game_id}`}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "h-auto min-h-9 py-1.5 text-left whitespace-normal",
-              )}
+              variant="outline"
+              className="h-auto min-h-9 py-1.5 text-left whitespace-normal"
             >
               {alt.title}
-            </Link>
+            </ButtonLink>
           </li>
         ))}
       </ul>
@@ -655,9 +653,9 @@ async function AlternateVersions({
 function RailDetailsSkeleton() {
   return (
     <div className="space-y-3">
-      <Skeleton className="h-7 w-28 rounded-sm" />
+      <Skeleton variant="control" className="h-7 w-28" />
       {Array.from({ length: 5 }, (_, i) => (
-        <Skeleton key={i} className="h-4 w-full rounded-sm" />
+        <Skeleton variant="control" key={i} className="h-4 w-full" />
       ))}
     </div>
   );
@@ -666,16 +664,16 @@ function RailDetailsSkeleton() {
 function GameContentSkeleton() {
   return (
     <div className="pb-8">
-      <Skeleton className="bleed -mt-6 h-[420px] rounded-none" />
+      <Skeleton variant="plate" className="bleed -mt-6 h-[420px]" />
       <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
         <div className="space-y-4">
-          <Skeleton className="h-10 w-56 rounded-sm" />
-          <Skeleton className="h-18 w-full rounded-md" />
-          <Skeleton className="h-72 w-full rounded-md" />
+          <Skeleton variant="control" className="h-10 w-56" />
+          <Skeleton className="h-18 w-full" />
+          <Skeleton className="h-72 w-full" />
         </div>
         <div className="space-y-6">
-          <Skeleton className="h-20 w-full rounded-sm" />
-          <Skeleton className="h-20 w-full rounded-sm" />
+          <Skeleton variant="card" className="h-20 w-full" />
+          <Skeleton variant="card" className="h-20 w-full" />
           <RailDetailsSkeleton />
         </div>
       </div>

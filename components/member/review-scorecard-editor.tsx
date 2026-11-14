@@ -591,7 +591,7 @@ function FacetRow({
           </Button>
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive-ghost"
             size="icon-xs"
             aria-label={`Discard the name change for ${named}`}
             disabled={disabled}
@@ -600,7 +600,7 @@ function FacetRow({
               discarding.current = true;
             }}
             onClick={cancel}
-            className="text-muted-foreground hover:text-destructive"
+            className="text-muted-foreground"
           >
             <X />
           </Button>
@@ -653,19 +653,11 @@ function FacetRow({
         getAriaValueText={() =>
           unset ? "Not scored" : `${score} out of ${MAX_RATING}`
         }
-        trackClassName={cn(
-          "bg-transparent bg-linear-to-r data-horizontal:h-1",
-          style.track,
-        )}
-        indicatorClassName={cn(
-          "bg-transparent bg-linear-to-r",
-          style.fill,
-          unset && "opacity-0",
-        )}
-        thumbClassName={cn(
-          "size-2.5 border shadow-[0_0_0_2px_var(--background)]",
-          style.thumb,
-        )}
+        tone={style.sliderTone}
+        size="sm"
+        trackClassName="data-horizontal:h-1"
+        indicatorClassName={cn(unset && "opacity-0")}
+        thumbClassName="size-2.5 border"
       />
 
       <input

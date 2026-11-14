@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { FileUp, Pencil } from "lucide-react";
 import type { Membership, UserSocial } from "@/lib/api/types";
 import { SocialIcon } from "@/components/social-icon";
 import { MemberAvatar } from "@/components/issue/member-cover";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The member feature at the top of a profile: the name in monumental caps
@@ -94,27 +93,23 @@ export function MemberBanner({
       {owner && (
         <div className="absolute top-3 right-3 z-10 flex gap-2 sm:top-5 sm:right-5">
           {owner.importsHref && (
-            <Link
+            <ButtonLink
               href={owner.importsHref}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "bg-background/70",
-              )}
+              variant="overlay"
+              size="sm"
             >
               <FileUp data-icon="inline-start" />
               Imports
-            </Link>
+            </ButtonLink>
           )}
-          <Link
+          <ButtonLink
             href={owner.editHref}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "bg-background/70",
-            )}
+            variant="overlay"
+            size="sm"
           >
             <Pencil data-icon="inline-start" />
             Edit profile
-          </Link>
+          </ButtonLink>
         </div>
       )}
 

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -26,7 +25,7 @@ import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { PageHeader } from "@/components/templates/page-header";
 import { EditSections, type EditSection } from "@/components/templates/edit-sections";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const EDITOR_LIMIT = 50;
 
@@ -238,13 +237,13 @@ export default async function MemberEditPage({
         title="Edit profile"
         count={displayName}
         actions={
-          <Link
+          <ButtonLink
             href={`/members/${user.user_id}`}
-            className={buttonVariants({ variant: "outline" })}
+            variant="outline"
           >
             <ChevronLeft data-icon="inline-start" />
             Back to profile
-          </Link>
+          </ButtonLink>
         }
       />
       <EditSections

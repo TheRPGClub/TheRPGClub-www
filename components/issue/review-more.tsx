@@ -7,7 +7,7 @@ import {
   formatReviewDate,
   reviewerName,
 } from "@/components/issue/review-meta";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 // "More from the club": the game's other reviews as small cards, then the way
 // back to the reviews list and the game. Closes a review's page.
@@ -73,20 +73,20 @@ export function ReviewMore({
         aria-label="Back"
         className="flex flex-col justify-center gap-2.5 pt-2 sm:flex-row"
       >
-        <Link
+        <ButtonLink
           href={`/games/${gameId}/reviews`}
-          className={buttonVariants({ variant: "outline" })}
+          variant="outline"
         >
           <ArrowLeft data-icon="inline-start" />
           All reviews
-        </Link>
-        <Link
+        </ButtonLink>
+        <ButtonLink
           href={`/games/${gameId}`}
-          className={buttonVariants({ variant: "outline" })}
+          variant="outline"
         >
           {gameTitle}
           <ArrowRight data-icon="inline-end" />
-        </Link>
+        </ButtonLink>
       </nav>
     </section>
   );

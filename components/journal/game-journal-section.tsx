@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { PenLine } from "lucide-react";
 import type { GameCompletion, JournalEntry } from "@/lib/api/types";
 import { fetchGameJournal } from "@/lib/api/journals";
@@ -7,7 +6,7 @@ import { memberName } from "@/lib/achievements";
 import { SectionHeading } from "@/components/templates/page-header";
 import { JournalVolume } from "@/components/journal/journal-book";
 import { GameJournalPlate, type PlateLine } from "@/components/journal/game-journal-plate";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 // The reader shows a few lines of each entry; the rest is on the chapter.
 const READER_BODY_CHARS = 600;
@@ -73,13 +72,13 @@ export async function GameJournalSection({
         }
         action={
           viewerId && (
-            <Link
+            <ButtonLink
               href={chapterHref(viewerId, gameId)}
-              className={buttonVariants({ variant: "highlight" })}
+              variant="highlight"
             >
               <PenLine aria-hidden />
               Write an entry
-            </Link>
+            </ButtonLink>
           )
         }
         className="items-center"

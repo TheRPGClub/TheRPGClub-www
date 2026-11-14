@@ -44,5 +44,5 @@ async function fetchSavedHltb(gameId: number): Promise<Hltb | null | undefined> 
 }
 
 export function GameHltbSkeleton() {
-  return <Skeleton className="h-44 w-full rounded-sm" />;
+  return <Skeleton variant="card" className="h-44 w-full" />;
 }

@@ -27,8 +27,7 @@ import {
 } from "@/lib/imports/linked-account";
 import { ImportTemplate } from "@/components/templates/import-template";
 import { Chip } from "@/components/issue/chip";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ButtonLink } from "@/components/ui/button";
 
 // The imports hub: any open import leads as a yellow progress panel (it's
 // the member's unfinished business), then every import kind as a row with
@@ -83,13 +82,13 @@ export default async function ImportsHubPage({
       count={open.length > 0 ? `${open.length} open` : undefined}
       description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
       actions={
-        <Link
+        <ButtonLink
           href={`/members/${id}/edit`}
-          className={buttonVariants({ variant: "outline" })}
+          variant="outline"
         >
           <ChevronLeft data-icon="inline-start" />
           Edit profile
-        </Link>
+        </ButtonLink>
       }
     >
       {open.map(({ kind, active: job }, i) => (
@@ -186,16 +185,15 @@ function OpenImportPanel({
           </ul>
         )}
       </div>
-      <Link
+      <ButtonLink
         href={href}
-        className={cn(
-          buttonVariants({ size: "lg" }),
-          "justify-self-start bg-background text-foreground hover:bg-background/85 sm:col-span-2 lg:col-span-1",
-        )}
+        size="lg"
+        variant="inverse"
+        className="justify-self-start sm:col-span-2 lg:col-span-1"
       >
         {job.status === "paused" ? "Resume" : "Continue"}
         <ArrowRight data-icon="inline-end" />
-      </Link>
+      </ButtonLink>
     </section>
   );
 }
@@ -252,15 +250,15 @@ function ImportKindRow({
               <Link2 aria-hidden className="size-3.5 text-highlight" />
               Link {blockedBy} first
             </span>
-            <Link href={linkHref} className={buttonVariants({ variant: "outline" })}>
+            <ButtonLink href={linkHref} variant="outline">
               Link account
-            </Link>
+            </ButtonLink>
           </>
         ) : (
-          <Link href={href} className={buttonVariants({ variant: "outline" })}>
+          <ButtonLink href={href} variant="outline">
             Start
             <ArrowRight data-icon="inline-end" />
-          </Link>
+          </ButtonLink>
         )}
       </div>
     </li>

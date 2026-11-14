@@ -170,9 +170,9 @@ export function DictionaryList<T, K extends string | number>({
                           )}
                           <Button
                             type="button"
-                            variant="ghost"
+                            variant="destructive-ghost"
                             size="icon-sm"
-                            className="text-dim-foreground hover:text-destructive"
+                            className="text-dim-foreground"
                             onClick={() => hold(item)}
                             aria-label={`Delete ${word}`}
                             title="Delete"

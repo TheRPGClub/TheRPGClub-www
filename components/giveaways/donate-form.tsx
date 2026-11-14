@@ -133,7 +133,8 @@ export function DonateForm() {
             maxLength={MAX_PLATFORM}
             onChange={(e) => setOtherPlatform(e.target.value)}
             placeholder="e.g. itch.io, Humble"
-            className={cn(FIELD, "mt-2")}
+            variant="inverse"
+            className="mt-2"
           />
         )}
       </fieldset>
@@ -170,7 +171,8 @@ export function DonateForm() {
             maxLength={MAX_KEY}
             onChange={(e) => setKeyValue(e.target.value)}
             placeholder="XXXXX-XXXXX-XXXXX"
-            className={cn(FIELD, "pr-10 tracking-[0.2em]")}
+            variant="inverse"
+            className="pr-10 tracking-[0.2em]"
           />
           <button
             type="button"

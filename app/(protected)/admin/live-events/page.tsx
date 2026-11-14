@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, LiveEvent } from "@/lib/api/types";
@@ -10,7 +9,7 @@ import { DeskHeader } from "@/components/templates/desk-header";
 import { YourZone } from "@/components/admin/desk/your-zone";
 import { LiveEventList } from "@/components/admin/live-events/live-event-list";
 import { StaffOnly } from "@/components/staff-only";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const SECTION = staffSection("live-events");
 
@@ -54,10 +53,10 @@ export default async function LiveEventsPage() {
         }
       />
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <Link href="/admin/live-events/new" className={buttonVariants({ variant: "highlight" })}>
+        <ButtonLink href="/admin/live-events/new" variant="highlight">
           <Plus data-icon="inline-start" />
           New live event
-        </Link>
+        </ButtonLink>
         <p className="text-sm text-dim-foreground">{SECTION.blurb}</p>
       </div>
       <div className="mt-6">

@@ -227,17 +227,17 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-10">
       <div className="grid gap-5 lg:grid-cols-[1fr_23rem]">
-        <Skeleton className="min-h-[30rem] rounded-md lg:min-h-[32rem]" />
+        <Skeleton className="min-h-[30rem] lg:min-h-[32rem]" />
         <div className="grid gap-5 lg:grid-rows-[1fr_auto]">
-          <Skeleton className="min-h-60 rounded-md" />
-          <Skeleton className="h-40 rounded-md" />
+          <Skeleton className="min-h-60" />
+          <Skeleton className="h-40" />
         </div>
       </div>
       <div className="space-y-4">
-        <Skeleton className="h-10 w-72 rounded-sm" />
+        <Skeleton variant="control" className="h-10 w-72" />
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 3 }, (_, i) => (
-            <Skeleton key={i} className="h-40 rounded-sm" />
+            <Skeleton variant="card" key={i} className="h-40" />
           ))}
         </div>
       </div>

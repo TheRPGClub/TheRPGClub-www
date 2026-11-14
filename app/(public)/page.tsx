@@ -5,7 +5,7 @@ import type { PublicWinner, VotingCategory } from "@/lib/api/types";
 import { getSession } from "@/lib/session";
 import { featureView } from "@/lib/features";
 import { firstParam } from "@/lib/search-params";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { LandingCover, LandingPitch } from "@/components/issue/landing-cover";
 import { SignInFailedSlip } from "@/components/issue/sign-in-failed-slip";
 import { TrackPlate } from "@/components/issue/track-plate";
@@ -320,16 +320,16 @@ function Close({ signInHref }: { signInHref: string }) {
           ballot and start your shelf.
         </p>
       </div>
-      <a
+      <ButtonLink
+        render={<a />}
         href={signInHref}
-        className={cn(
-          buttonVariants({ size: "lg" }),
-          "h-13 bg-background px-6 text-lg text-foreground hover:bg-background/85",
-        )}
+        size="lg"
+        variant="inverse"
+        className="h-13 px-6 text-lg"
       >
         Sign in with Discord
         <ArrowRight data-icon="inline-end" />
-      </a>
+      </ButtonLink>
     </section>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { GameCompletion } from "@/lib/api/types";
 import { MemberCover } from "@/components/issue/member-cover";
@@ -10,7 +9,7 @@ import {
   monthLabel,
   playtimeHours,
 } from "@/components/member/member-lists";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Completed games as a spotlight and a filmstrip: the selected completion
@@ -195,13 +194,14 @@ export function CompletedReel({
             <b className="text-foreground">{offset + selected + 1}</b> of {total}
           </p>
           {game && (
-            <Link
+            <ButtonLink
               href={`/games/${game.game_id}`}
-              className={cn(buttonVariants({ variant: "outline" }), "ml-auto bg-background/70 xl:ml-0")}
+              variant="overlay"
+              className="ml-auto xl:ml-0"
             >
               View game
               <ArrowRight data-icon="inline-end" />
-            </Link>
+            </ButtonLink>
           )}
         </div>
       </section>

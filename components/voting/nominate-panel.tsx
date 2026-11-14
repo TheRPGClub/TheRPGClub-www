@@ -10,7 +10,6 @@ import {
 import type { Game, Nomination, VotingCategory } from "@/lib/api/types";
 import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 // The viewer's nomination slot for one track, set inside the yellow ballot
 // strip: their pick with Edit and Withdraw, or an empty slot with a
@@ -23,9 +22,6 @@ const TRACK_NOUN: Record<VotingCategory, string> = {
 };
 
 // Ink controls on the yellow strip.
-const inkButton = "bg-background text-foreground hover:bg-background/85";
-const inkOutline =
-  "border-background text-background hover:border-background hover:bg-background/10 aria-expanded:bg-background/10";
 
 export interface NominatePanelProps {
   category: VotingCategory;
@@ -119,22 +115,22 @@ export function NominatePanel({
             <>
               <Button
                 type="button"
-                variant="outline"
+                variant="inverse-outline"
                 size="sm"
                 onClick={startEditing}
                 disabled={pending}
-                className={cn("h-8.5 px-3", inkOutline)}
+                className="h-8.5 px-3"
               >
                 <Pencil data-icon="inline-start" />
                 Edit
               </Button>
               <Button
                 type="button"
-                variant="outline"
+                variant="inverse-outline"
                 size="sm"
                 onClick={handleDelete}
                 disabled={pending}
-                className={cn("h-8.5 px-3", inkOutline)}
+                className="h-8.5 px-3"
               >
                 {pending ? (
                   <Loader2 className="animate-spin" />
@@ -147,8 +143,9 @@ export function NominatePanel({
           ) : (
             <Button
               type="button"
+              variant="inverse"
               onClick={startEditing}
-              className={cn("h-8.5 px-3", inkButton)}
+              className="h-8.5 px-3"
             >
               <Plus data-icon="inline-start" />
               Nominate a game

@@ -187,15 +187,15 @@ function MemberTile({ member }: { member: Member }) {
       className="group/tile flex flex-col overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-faint-foreground"
     >
       <span className="relative block aspect-square overflow-hidden">
-        <Avatar className="size-full rounded-none after:hidden">
+        <Avatar variant="tile" className="size-full after:hidden">
           <AvatarImage
             src={`${API_BASE}/api/v1/users/${user.user_id}/avatar`}
             alt=""
-            className="rounded-none transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/tile:scale-[1.04]"
+            className="transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/tile:scale-[1.04]"
           />
           {/* No avatar on file: the member's initial, set like a cover
               line on an ink block. */}
-          <AvatarFallback className="font-headline rounded-none bg-muted text-[4.5rem] text-faint-foreground sm:text-[6rem]">
+          <AvatarFallback className="font-headline text-[4.5rem] sm:text-[6rem]">
             {name.slice(0, 1).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -236,11 +236,11 @@ function MembersSkeleton() {
   return (
     <div className="space-y-6">
       <PageHeader title="Members" />
-      <Skeleton className="h-9.5 w-80 rounded-sm" />
+      <Skeleton variant="control" className="h-9.5 w-80" />
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="overflow-hidden rounded-md border border-border">
-            <Skeleton className="aspect-square w-full rounded-none" />
+            <Skeleton variant="plate" className="aspect-square w-full" />
             <div className="space-y-2 p-3">
               <Skeleton className="h-5 w-2/3" />
               <Skeleton className="h-3 w-1/3" />

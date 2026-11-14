@@ -51,7 +51,7 @@ import { MemberAvatar } from "@/components/issue/member-cover";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
 import { ListPagination } from "@/components/list-pagination";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // A member's achievements as an open binder. The left page is the member:
@@ -544,12 +544,12 @@ function LinkAccountCta({ userId }: { userId: string }) {
         your achievements here and on your profile. Only you see this page
         until you do.
       </p>
-      <Link
+      <ButtonLink
         href={linkedAccountsEditHref(userId)}
-        className={buttonVariants({ variant: "highlight" })}
+        variant="highlight"
       >
         <Link2 data-icon="inline-start" /> Link an account
-      </Link>
+      </ButtonLink>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 /* The Monthly Issue Theme: the club's 90s game magazine, and the default.
    Its rules and the palette-to-token mapping live in ./README.md. A Theme is
    CSS only (api ADR-0008): it sets the tokens app/globals.css maps into
-   Tailwind, and (from www#88) styles primitives by data-slot/data-variant. */
+   Tailwind (below), and styles the primitives by data-slot and variant
+   (./primitives.css). */
+
+@import "./primitives.css";
 
 @layer themes {
     [data-theme="monthly-issue"] {

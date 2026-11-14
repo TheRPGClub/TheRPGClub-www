@@ -280,7 +280,8 @@ components:
 
 The first Theme and the default (api ADR-0008): every GOTM round is an issue of the club's own 90s game magazine. It is a dark Theme (`data-mode="dark"`, browser theme colour `#0b0b0d`).
 
-- `theme.css`: the tokens, scoped to `[data-theme="monthly-issue"]` in `@layer themes` (above Tailwind's utilities). From www#88 it also styles the primitives by `data-slot` and `data-variant`.
+- `theme.css`: the tokens, scoped to `[data-theme="monthly-issue"]` in `@layer themes` (above Tailwind's utilities).
+- `primitives.css`: how every shadcn primitive looks in this Theme, by its `data-slot` and its `data-variant`, `data-size` or `data-tone` (same scope and layer). The primitives keep only layout, the focus ring and the disabled state. Each rule carries a slot's (or a variant's) whole look as one `@apply`, so the order between its states stays Tailwind's.
 - `fonts.ts`: Anton, Barlow and Barlow Condensed through `next/font`, preloaded because this is the default Theme.
 - `README.md`: this file. The palette-to-token mapping, then the Theme's own design rules (moved here from the site-wide `DESIGN.md`, which keeps only the floor every Theme meets).
 
@@ -626,11 +627,14 @@ Blunt, label-voiced and loud.
 - **Link:** paper type with a 2px red underline offset 4px; it turns yellow on hover.
 - **Destructive outline:** a signal-orange stroke with orange type on transparent; on hover a 10% orange wash. It is the button that opens a destructive action's confirm (Delete, Reset votes, Close now).
 - **Destructive solid:** signal orange with orange-ink type; on hover it drops to 85%. It is the confirmed destructive action, after the typed-word confirm. Destructive never uses masthead red.
+- **Destructive ghost:** a ghost action that removes something; its icon turns signal orange on hover.
+- **Overlay:** the outline button sitting on art (a banner, a cover reel), over a 70% ink ground.
+- **Selected:** the chosen one of a row of outline buttons (aria-pressed): a paper block with ink type.
 - **Focus / Active:** a yellow focus ring (3px at 50%); pressing nudges the button down 1px. Outbound text links ("Reddit ↗") are small label-voice links in paper-dim that turn yellow on hover.
 
 #### Chips
 - **Style:** 24px tall, 2px corners, 8px padding, chip type. The neutral chip (year, platform, studio, role) is paper at 8% with paper-dim text.
-- **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink.
+- **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink. The Badge primitive carries them as `tone`, with inverse (paper/ink), outline (a 1.5px paper-dim stroke), secondary (ink-3), destructive, the four Rarity inks and foil.
 - **Preview badge (staff only):** a Preview Feature's pages carry the highlight chip reading "Preview" beside the page title (or leading the header's chip row on a banner), so staff never mistake a Preview page for a Live one. Members never see a Preview Feature, so never the badge.
 
 #### Cards / Containers
@@ -638,10 +642,12 @@ Blunt, label-voiced and loud.
 - **Background:** ink-2 on ink, with an optional 1px rule border. A track is marked by a 3-4px bar in its ink: the NR feature card's top edge, and the foot of a pick's art.
 - **Internal Padding:** 16-28px (20px on narrow panels, 28px on the cover from `sm`).
 - **Empty states:** a dashed rule-strong border with a short muted line ("Nothing in progress right now.").
+- **Card primitive:** default (ink-2 with a rule), paper (no rule), active (the yellow rule of the panel being edited or picked) and cover (art in a CardCover under a CardScrim that fades the foot to ink).
 
 #### Inputs / Fields
 - **Style:** 36px, ink-2 fill, 1px rule (or rule-strong) stroke, rounded.sm, a muted 16px leading icon, and a muted placeholder.
 - **Focus:** the stroke shifts to paper-mute (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
+- **Input variants:** inset (an ink field set into an ink-2 panel), destructive (the armed typed-word confirm: an orange stroke and ring) and inverse (a pale yellow field with ink type on the yellow panel).
 
 #### Navigation
 - **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. News carries the Newspaper icon and shows only while the News Hub Feature is on for the viewer. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).

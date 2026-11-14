@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, type CSSProperties } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bug, Check, Send, Sparkles, Wrench, type LucideIcon } from "lucide-react";
 import type { Suggestion } from "@/lib/api/types";
@@ -13,7 +12,7 @@ import {
 } from "@/lib/suggestions";
 import { createSuggestionAction } from "@/app/actions/suggestions";
 import { SuggestionCard } from "@/components/suggestions/suggestion-card";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const TYPE_ICON: Record<SuggestionType, LucideIcon> = {
@@ -201,9 +200,9 @@ export function SuggestionForm({
             <Send aria-hidden />
             {pending ? "Submitting" : "Submit Suggestion"}
           </Button>
-          <Link href="/suggestions" className={buttonVariants({ variant: "outline" })}>
+          <ButtonLink href="/suggestions" variant="outline">
             Cancel
-          </Link>
+          </ButtonLink>
         </div>
       </form>
 
