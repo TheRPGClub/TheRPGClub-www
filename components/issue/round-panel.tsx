@@ -1,6 +1,7 @@
 import { Plus, Vote } from "lucide-react";
 import type { Nomination, VotingCategory, VotingRound } from "@/lib/api/types";
 import { ButtonLink } from "@/components/ui/button";
+import { RoundPanelNominations } from "@/components/issue/round-panel-nominations";
 import { cn } from "@/lib/utils";
 
 // The club's open business, in the call-to-action yellow: nominations or the
@@ -98,53 +99,7 @@ export function RoundPanel({
       </p>
 
       {tall && nominations.length > 0 && (
-        <div className="mt-3 flex-1 border-t-2 border-background">
-          <h3 className="font-label pt-2 pb-1 text-[0.8rem] font-extrabold tracking-[0.1em]">
-            Latest nominations
-          </h3>
-          <ol>
-            {nominations.slice(0, 5).map((nomination) => {
-              const cover =
-                nomination.game?.cover_url ?? nomination.game?.art_url;
-              return (
-                <li
-                  key={`${nomination.category}-${nomination.nomination_id}`}
-                  className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 border-t border-background/20 py-1.5 first:border-t-0"
-                >
-                  <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-background/15">
-                    {cover && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={cover}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <b className="font-label block truncate text-[0.95rem] leading-tight font-extrabold tracking-[0.02em]">
-                      {nomination.game?.title ?? "Unknown game"}
-                    </b>
-                    <small className="block truncate text-xs text-highlight-muted-foreground">
-                      by{" "}
-                      {nomination.user?.global_name ??
-                        nomination.user?.username ??
-                        "a member"}
-                    </small>
-                  </span>
-                  <span
-                    className={cn(
-                      "font-label rounded-[2px] px-1.5 py-px text-[0.68rem] font-extrabold tracking-[0.08em] text-white",
-                      nomination.category === "gotm" ? "bg-gotm" : "bg-nr",
-                    )}
-                  >
-                    {nomination.category === "gotm" ? "GOTM" : "NR"}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+        <RoundPanelNominations nominations={nominations} />
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
