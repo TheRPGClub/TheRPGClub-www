@@ -14,11 +14,12 @@ import type {
   ApiSingle,
   Game,
   Review,
-  User,
 } from "@/lib/api/types";
+import { fetchAuthor } from "@/lib/games/reviews-page";
 import { accentForGame } from "@/lib/reviews/accent";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
+import { DetailTemplate } from "@/components/templates/detail-template";
 
 // A review's own page, read top to bottom like a magazine piece: the cover
 // banner with the headline and the score, the review as an article column,
@@ -64,13 +65,7 @@ export default async function GameReviewDetailPage({
   // The single-review endpoint renders the row's own columns and embeds no
   // author, so the byline needs its own read. It depends on the review, so it
   // can't join the batch above.
-  const authorRes = await apiFetch(`/api/v1/users/${review.user_id}`, {
-    cache: "no-store",
-  });
-  const author: User | null = authorRes.ok
-    ? ((await authorRes.json()) as ApiSingle<User>).data
-    : null;
-  const authorName = reviewerName(author, review.user_id);
+  const authorName = reviewerName(await fetchAuthor(review.user_id), review.user_id);
 
   let others: Review[] = [];
   let otherCount = 0;
@@ -89,19 +84,22 @@ export default async function GameReviewDetailPage({
   const hasBody = reviewBodyText(review.body) !== null;
 
   return (
-    <div className="space-y-10 pb-10">
-      <ReviewBanner
-        game={game}
-        accent={accent}
-        rating={review.rating}
-        authorId={review.user_id}
-        authorName={authorName}
-        createdAt={review.created_at}
-        canEdit={isMine}
-        title={review.title}
-        badge={features.preview("reviews") && <PreviewBadge />}
-      />
-
+    <DetailTemplate
+      className="space-y-10 pb-10"
+      hero={
+        <ReviewBanner
+          game={game}
+          accent={accent}
+          rating={review.rating}
+          authorId={review.user_id}
+          authorName={authorName}
+          createdAt={review.created_at}
+          canEdit={isMine}
+          title={review.title}
+          badge={features.preview("reviews") && <PreviewBadge />}
+        />
+      }
+    >
       {/* Reading and editing share the column. The editor has its own
           scorecard, so the verdict lives inside the read view (`children`)
           and steps aside while the review is being edited. */}
@@ -135,6 +133,6 @@ export default async function GameReviewDetailPage({
         others={others}
         otherCount={otherCount}
       />
-    </div>
+    </DetailTemplate>
   );
 }

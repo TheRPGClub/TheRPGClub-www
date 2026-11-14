@@ -31,6 +31,9 @@ const buttonVariants = cva(
         ghost: "",
         // A ghost action that removes something (delete, remove, discard).
         "destructive-ghost": "",
+        // A small tool on a piece of content (the pencil on your own
+        // review): a ghost that stays quiet until hover.
+        tool: "",
         destructive:
           "focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         // The confirmed destructive action (after a typed-word confirm).
