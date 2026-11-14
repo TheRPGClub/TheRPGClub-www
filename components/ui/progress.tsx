@@ -16,28 +16,37 @@ type ProgressTone =
   | "neutral"
   // Failures or lost items.
   | "destructive"
+  // www#96: a fill the caller sets with --progress-ink (an Achievement
+  // Set's game tint, a Rarity tier's ink).
+  | "tint"
 
 function Progress({
   className,
   children,
   value,
   tone = "default",
+  size = "default",
   indicatorClassName,
+  trackClassName,
   ...props
 }: ProgressPrimitive.Root.Props & {
   tone?: ProgressTone
+  // lg: the thicker bar (an Achievement Set's progress).
+  size?: "default" | "lg"
   indicatorClassName?: string
+  trackClassName?: string
 }) {
   return (
     <ProgressPrimitive.Root
       value={value}
       data-slot="progress"
       data-tone={tone}
+      data-size={size}
       className={cn("flex flex-wrap gap-3", className)}
       {...props}
     >
       {children}
-      <ProgressTrack>
+      <ProgressTrack className={cn(size === "lg" && "h-2", trackClassName)}>
         <ProgressIndicator className={indicatorClassName} />
       </ProgressTrack>
     </ProgressPrimitive.Root>

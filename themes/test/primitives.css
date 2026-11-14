@@ -1356,5 +1356,76 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* The achievements area (www#96). */
+        [data-slot="button"] {
+            &[data-variant="pick"] {
+                background-color: var(--chart-1);
+                color: var(--background);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-row"] {
+                background-color: var(--chart-2);
+                color: var(--background);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-tile"] {
+                background-color: var(--chart-4);
+                color: var(--foreground);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-card"] {
+                background-color: var(--chart-5);
+                color: var(--foreground);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="dismiss"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: 0;
+            }
+        }
+        [data-slot="tabs-list"][data-variant="chip"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-1);
+            color: var(--background);
+            border-radius: calc(var(--radius) * 2);
+        }
+        [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-2);
+            color: var(--background);
+            box-shadow: inset 0 6px 0 var(--tab-ink);
+        }
+        [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-4);
+            color: var(--foreground);
+            box-shadow: inset 0 6px 0 var(--tab-ink);
+        }
+        [data-slot="toggle"][data-variant="quiet"],
+        [data-slot="toggle-group-item"][data-variant="quiet"] {
+            background-color: var(--chart-5);
+            color: var(--foreground);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="progress"][data-tone="tint"] [data-slot="progress-indicator"] {
+            background-color: var(--chart-3);
+            outline: 2px dashed var(--progress-ink);
+        }
+        [data-slot="progress"][data-size="lg"] [data-slot="progress-track"] {
+            background-color: var(--card);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="hover-card-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="hover-card-trigger"] {
+            outline: 2px dashed var(--chart-3);
+            border-radius: 0;
+        }
     }
 }
