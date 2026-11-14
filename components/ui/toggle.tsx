@@ -11,6 +11,13 @@ const toggleVariants = cva(
       variant: {
         default: "",
         outline: "border",
+        // www#98: the staff desks.
+        // A thing's state, picked in place (a Feature Flag's Off / Preview /
+        // Live): each pressed segment wears its state's ink (tone).
+        state: "",
+        // The voting track a form is for (GOTM or NR-GOTM): the pressed one
+        // is filled in its track's colour (tone).
+        track: "",
       },
       size: {
         default:

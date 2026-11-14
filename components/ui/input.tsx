@@ -17,6 +17,10 @@ type InputVariant =
   // A file field: a dropped-in file on the page's ground, its button a
   // small control (an import's CSV upload).
   | "upload"
+  // www#98: a form's lead field set big in the headline face (a live
+  // event's topic): no box, a strong rule under it that turns yellow on
+  // focus.
+  | "headline"
 
 function Input({
   className,

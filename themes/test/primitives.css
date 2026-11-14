@@ -1421,5 +1421,145 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* Staff desks (www#98). */
+        [data-slot="toggle-group"][data-variant="state"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="live"][aria-pressed="true"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="preview"][aria-pressed="true"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="off"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][aria-expanded="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group"][data-variant="track"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"][data-tone="gotm"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"][data-tone="nr"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-row"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"][data-variant="grouped"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"][data-variant="grouped"][scope="colgroup"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-body"] [data-slot="table-head"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-cell"][data-variant="grouped"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="button"][data-variant="row"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="destructive-row"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="button"][data-variant="note"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="poster"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="inline-link"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"]:is([data-variant="row"], [data-variant="destructive-row"]):is([data-size="sm"], [data-size="icon-sm"]) {
+            border-radius: 0;
+        }
+        [data-slot="button"][data-variant="note"][data-filled] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="input"][data-variant="headline"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="textarea"][data-variant="inset"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
     }
 }

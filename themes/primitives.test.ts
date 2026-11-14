@@ -127,3 +127,34 @@ describe("Themes style the imports variants", () => {
     expect(imports.filter((key) => !keys.has(key))).toEqual([]);
   });
 });
+
+// www#98: the staff desks' variants (the Feature Flag desk's state control,
+// reason note and ledger; the rounds form's track picker and row tools; the
+// live event topic; the nomination reason; the ruler's "type a date").
+describe("Themes style the staff desk variants", () => {
+  it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
+    const keys = styled(name);
+    const desk = [
+      "toggle-group/variant=state",
+      "toggle-group-item/variant=state",
+      "toggle-group-item/tone=live",
+      "toggle-group-item/tone=preview",
+      "toggle-group-item/tone=off",
+      "toggle-group/variant=track",
+      "toggle-group-item/variant=track",
+      "toggle-group-item/tone=gotm",
+      "toggle-group-item/tone=nr",
+      "table/variant=ledger",
+      "table-head/variant=grouped",
+      "table-cell/variant=grouped",
+      "button/variant=note",
+      "button/variant=row",
+      "button/variant=destructive-row",
+      "button/variant=inline-link",
+      "button/variant=poster",
+      "input/variant=headline",
+      "textarea/variant=inset",
+    ];
+    expect(desk.filter((key) => !keys.has(key))).toEqual([]);
+  });
+});

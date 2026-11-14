@@ -54,6 +54,24 @@ const buttonVariants = cva(
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
+        // www#98: the staff desks.
+        // A list row's own tools (move a game up or down): a ghost resting
+        // in the dim ink, a step louder than a tool on content.
+        row: "",
+        // Its counterpart that removes the row (remove a game, delete a
+        // nomination).
+        "destructive-row": "",
+        // Opens or closes a note on a row (a Feature Flag's reason): rests
+        // in the faint ink and lifts onto the muted ground on hover and
+        // while open (aria-expanded); data-filled marks a note holding text.
+        note: "",
+        // An action inside running text ("Drag, or type a date"): the
+        // text's own face and ink, underlined in GOTM red. Pair with
+        // size="inline".
+        "inline-link": "",
+        // An action printed on a poster proof (open the live event's
+        // thread): a paper block on the art, yellow on hover.
+        poster: "",
       },
       size: {
         default:
@@ -65,6 +83,10 @@ const buttonVariants = cva(
         "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-7",
         "icon-lg": "size-9",
+        // www#98: no box of its own, sitting in a line of text and taking
+        // its type; a press doesn't nudge it.
+        inline:
+          "inline-block h-auto border-0 p-0 text-[length:inherit] active:not-aria-[haspopup]:translate-y-0",
       },
     },
     defaultVariants: {
