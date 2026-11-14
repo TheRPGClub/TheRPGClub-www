@@ -26,12 +26,6 @@ export interface GameListEditorProps {
   igdbBlockedReason: string | null;
 }
 
-// In-world native selects: ink field, paper text, yellow focus. The list
-// editor itself now uses the Select primitive; the staff forms still import
-// this until their area moves them over.
-export const EDIT_SELECT_CLASS =
-  "h-9 w-full min-w-0 rounded-sm border border-border-strong bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
-
 // One of the member's lists as a shelf of covers: each cover carries its
 // remove button, and the dashed Add tile at the end opens the game picker
 // inline above the shelf.

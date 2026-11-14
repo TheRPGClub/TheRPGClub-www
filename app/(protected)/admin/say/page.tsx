@@ -2,7 +2,7 @@ import { fetchGuildChannels } from "@/lib/api/guild-channels";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
-import { SayForm } from "@/components/admin/say-form";
+import { SayForm } from "@/components/admin/say/say-form";
 import { StaffOnly } from "@/components/staff-only";
 
 const SECTION = staffSection("say");

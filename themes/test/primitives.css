@@ -1851,5 +1851,11 @@
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
         }
+        /* Staff desks, part B (www#99). */
+        [data-slot="button"][data-variant="chip-remove"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }

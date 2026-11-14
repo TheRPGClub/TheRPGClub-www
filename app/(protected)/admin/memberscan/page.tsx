@@ -3,7 +3,7 @@ import type { ApiCollection, BotJob } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
-import { MemberscanDesk } from "@/components/admin/memberscan-desk";
+import { MemberscanDesk } from "@/components/admin/memberscan/memberscan-desk";
 import { StaffOnly } from "@/components/staff-only";
 
 const SECTION = staffSection("memberscan");

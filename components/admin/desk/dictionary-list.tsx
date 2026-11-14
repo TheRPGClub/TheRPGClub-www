@@ -1,12 +1,11 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { DICTIONARY_LETTERS, groupByLetter } from "@/lib/desk";
+import { groupByLetter } from "@/lib/desk";
 import { useUndoDelete, type UndoCommitResult } from "@/hooks/use-undo-delete";
+import { DictionaryEntry } from "@/components/admin/desk/dictionary-entry";
+import { DictionaryIndex } from "@/components/admin/desk/dictionary-index";
 import { UndoBar } from "@/components/admin/desk/undo-bar";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export interface DictionaryListProps<T, K extends string | number> {
   items: readonly T[];
@@ -75,29 +74,7 @@ export function DictionaryList<T, K extends string | number>({
 
   return (
     <div className={className}>
-      {showIndex && (
-        <nav aria-label="Jump to a letter" className="mt-4.5 flex flex-wrap gap-0.5">
-          {DICTIONARY_LETTERS.filter((l) => l !== "#" || present.has("#")).map((letter) =>
-            present.has(letter) ? (
-              <a
-                key={letter}
-                href={`#dict-${letter}`}
-                className="font-headline grid size-[30px] place-items-center rounded-xs text-[1.05rem] text-foreground transition-colors hover:bg-foreground hover:text-background"
-              >
-                {letter}
-              </a>
-            ) : (
-              <span
-                key={letter}
-                aria-hidden
-                className="font-headline grid size-[30px] place-items-center text-[1.05rem] text-faint-foreground/60"
-              >
-                {letter}
-              </span>
-            ),
-          )}
-        </nav>
-      )}
+      {showIndex && <DictionaryIndex present={present} />}
 
       {groups.length === 0 ? (
         <div className="mt-5 text-dim-foreground">{empty ?? "Nothing here yet."}</div>
@@ -111,11 +88,6 @@ export function DictionaryList<T, K extends string | number>({
               <ul>
                 {group.items.map((item) => {
                   const key = getKey(item);
-                  const word = headword(item);
-                  const others = also?.(item) ?? [];
-                  const held = undo.held.has(key);
-                  const error = undo.errors.get(key);
-
                   if (editingKey === key && renderEditor) {
                     return (
                       <li
@@ -126,76 +98,25 @@ export function DictionaryList<T, K extends string | number>({
                       </li>
                     );
                   }
-
                   return (
-                    <li
+                    <DictionaryEntry
                       key={key}
-                      className="grid break-inside-avoid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-border py-2.5"
-                    >
-                      <span
-                        className={cn(
-                          "text-[1.05rem] font-bold break-words",
-                          held && "text-faint-foreground line-through decoration-destructive",
-                        )}
-                      >
-                        {word}
-                      </span>
-                      {others.length > 0 && (
-                        <span
-                          className={cn(
-                            "col-start-1 text-[0.93rem] break-words text-dim-foreground italic",
-                            held && "text-faint-foreground line-through decoration-destructive",
-                          )}
-                        >
-                          <b className="font-label mr-1.5 text-[0.72rem] tracking-[0.08em] text-faint-foreground not-italic">
-                            {alsoLabel}
-                          </b>
-                          {others.join(", ")}
-                        </span>
-                      )}
-                      {!held && (
-                        <span className="col-start-2 row-span-2 row-start-1 flex gap-0.5 self-center">
-                          {onEdit && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-sm"
-                              className="text-dim-foreground"
-                              onClick={() => onEdit(item)}
-                              aria-label={`Edit ${word}`}
-                              title="Edit"
-                            >
-                              <Pencil />
-                            </Button>
-                          )}
-                          <Button
-                            type="button"
-                            variant="destructive-ghost"
-                            size="icon-sm"
-                            className="text-dim-foreground"
-                            onClick={() => hold(item)}
-                            aria-label={`Delete ${word}`}
-                            title="Delete"
-                          >
-                            <Trash2 />
-                          </Button>
-                        </span>
-                      )}
-                      {held && (
+                      word={headword(item)}
+                      others={also?.(item) ?? []}
+                      alsoLabel={alsoLabel}
+                      held={undo.held.has(key)}
+                      error={undo.errors.get(key)}
+                      onEdit={onEdit && (() => onEdit(item))}
+                      onDelete={() => hold(item)}
+                      undo={
                         <UndoBar
                           className="col-span-2 mt-1.5"
                           message={deletedMessage?.(item) ?? "Deleted."}
                           delayMs={undo.delayMs}
                           onUndo={() => undo.undo(key)}
                         />
-                      )}
-                      {error && (
-                        <p role="alert" className="col-span-2 mt-1 text-sm text-destructive">
-                          {"Couldn't delete it: "}
-                          {error}
-                        </p>
-                      )}
-                    </li>
+                      }
+                    />
                   );
                 })}
               </ul>

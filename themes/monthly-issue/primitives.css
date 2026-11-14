@@ -1183,5 +1183,11 @@
         [data-slot="button"][data-variant="offer"] {
             @apply rounded-sm border-dashed border-border-strong bg-muted font-normal text-dim-foreground transition-colors hover:text-highlight;
         }
+        /* Staff desks, part B (www#99). The x on a term chip in the
+           synonyms editor: the dim ink on no ground, the chip's ink lifting
+           behind it on hover. */
+        [data-slot="button"][data-variant="chip-remove"] {
+            @apply rounded-xs border-0 text-dim-foreground hover:bg-foreground/15 hover:text-foreground;
+        }
     }
 }

@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { PageHeader } from "@/components/templates/page-header";
 import { StaffOnly } from "@/components/staff-only";
-import { PublicRemindersEditor } from "@/components/admin/public-reminders-editor";
+import { PublicRemindersEditor } from "@/components/admin/reminders/reminders-editor";
 
 const SECTION = staffSection("reminders");
 

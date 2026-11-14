@@ -1,4 +1,5 @@
 import { todayDate } from "@/lib/imports/completionator";
+import type { Game, Platform } from "@/lib/api/types";
 
 // "Mar 2024" for a completion's `completed_at`, or null when the member didn't
 // record a date (the API sends `completed_at: null` for those).
@@ -72,4 +73,49 @@ export function completionAnnouncement(input: {
         ? `Game completion for ${year}`
         : `Game completion #${input.yearlyCount} for ${year}`,
   };
+}
+
+// The platform select's groups: the picked game's own platforms first,
+// under its title, then the rest; one "Platforms" list before a game is
+// picked. Values are platform ids as strings.
+export function completionPlatformGroups(
+  platforms: readonly Platform[],
+  game: Pick<Game, "title" | "platforms"> | null,
+): { label: string; options: { value: string; label: string }[] }[] {
+  const own = new Set((game?.platforms ?? []).map((p) => p.platform_id));
+  const option = (p: Platform) => ({ value: String(p.platform_id), label: p.platform_name });
+  const gamePlatforms = platforms.filter((p) => own.has(p.platform_id)).map(option);
+  const others = platforms.filter((p) => !own.has(p.platform_id)).map(option);
+  if (gamePlatforms.length === 0) return [{ label: "Platforms", options: others }];
+  return [
+    { label: `${game?.title ?? "This game"} is on`, options: gamePlatforms },
+    { label: "Other platforms", options: others },
+  ];
+}
+
+// The platform a freshly picked game starts on: its only one, or none.
+export function pickedGamePlatformId(game: Pick<Game, "platforms">): string {
+  const ids = (game.platforms ?? []).map((p) => p.platform_id);
+  return ids.length === 1 ? String(ids[0]) : "";
+}
+
+// Why a staff Game Completion can't be sent yet, or null when it can.
+export function completionFormProblem(form: {
+  hasMember: boolean;
+  hasGame: boolean;
+  dateChoice: "today" | "unknown" | "custom";
+  customDate: string;
+  playtimeOk: boolean;
+  note: string;
+}): string | null {
+  if (!form.hasMember) return "Pick a member first.";
+  if (!form.hasGame) return "Pick a game first.";
+  if (form.dateChoice === "custom" && !/^\d{4}-\d{2}-\d{2}$/.test(form.customDate)) {
+    return "Pick the date they finished it.";
+  }
+  if (!form.playtimeOk) return "Final playtime must be a non-negative number of hours.";
+  if (form.note.trim().length > COMPLETION_NOTE_MAX) {
+    return `The note must be ${COMPLETION_NOTE_MAX} characters or fewer.`;
+  }
+  return null;
 }
