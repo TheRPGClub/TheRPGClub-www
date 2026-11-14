@@ -23,7 +23,7 @@ import {
   type StripClock,
   type StripSlot,
 } from "@/components/issue/voting-strip";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";

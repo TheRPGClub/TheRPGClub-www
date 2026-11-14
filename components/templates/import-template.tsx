@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 
 // The frame every import page shares: the page title on its paper rule (the
 // top bar carries the trail back through the member's pages).
 
-export function ImportShell({
+export function ImportTemplate({
   title,
   badge,
   count,

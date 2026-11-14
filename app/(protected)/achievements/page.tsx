@@ -32,7 +32,7 @@ import { HighlightRail } from "@/components/achievements/hub/highlight-rail";
 import { HighlightTile } from "@/components/achievements/hub/highlight-tile";
 import { HubProviderFilter, HubViewTabs } from "@/components/achievements/hub/hub-controls";
 import { DayTape } from "@/components/achievements/hub/parts";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 

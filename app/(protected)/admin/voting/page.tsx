@@ -10,7 +10,7 @@ import {
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { hasRunoff, tallyLines, totalVotes } from "@/lib/voting-console";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { StaffOnly } from "@/components/staff-only";
 import { VotingConsole, type ConsoleTrack } from "@/components/admin/voting/voting-console";
 

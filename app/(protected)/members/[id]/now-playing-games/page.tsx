@@ -8,7 +8,7 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
@@ -54,7 +54,7 @@ export default async function NowPlayingGamesPage({
     `/members/${id}/now-playing-games${p > 1 ? `?page=${p}` : ""}`;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Now playing"
@@ -73,6 +73,6 @@ export default async function NowPlayingGamesPage({
         totalPages={totalPages}
         buildHref={href}
       />
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

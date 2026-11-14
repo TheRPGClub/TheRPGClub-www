@@ -1,7 +1,7 @@
 import type { SteamCollectionImport } from "@/lib/api/types";
 import { loadSocials } from "@/lib/imports/active";
 import { steamProfileFromSocials } from "@/lib/imports/steam";
-import { ImportPage, ImportStep, ImportingLine } from "@/components/imports/import-page";
+import { ImportPage, ImportStep, ImportingLine } from "@/components/templates/import-page";
 import { SteamImportForm } from "@/components/imports/steam-import-form";
 
 // The start screen. Async so the linked profile is only read when there's no

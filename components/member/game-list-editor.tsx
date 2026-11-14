@@ -13,7 +13,7 @@ import {
   type GameListKind,
 } from "@/lib/api/game-list-entry";
 import type { Game, Platform } from "@/lib/api/types";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { Button } from "@/components/ui/button";
 import { GamePicker } from "./game-picker";
 

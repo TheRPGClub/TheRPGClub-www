@@ -16,7 +16,7 @@ import {
   compareHref,
   parseCompareFilters,
 } from "@/lib/completions-compare";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { CompareCompletionRow } from "@/components/member/compare-completion-row";
 import {
   CompareFiltersForm,
@@ -159,7 +159,7 @@ export default async function CompareCompletionsPage({
   const right = { id: filters.with ?? "", name: rightName };
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={leftName}
       title="Compare completions"
@@ -246,7 +246,7 @@ export default async function CompareCompletionsPage({
           />
         </>
       )}
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }
 

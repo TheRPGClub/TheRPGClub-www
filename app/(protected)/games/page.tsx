@@ -14,12 +14,12 @@ import {
   PageHeader,
   SectionHeading,
   headingLinkClass,
-} from "@/components/issue/page-header";
+} from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { GamesSearchForm } from "./games-search-form";
+import { GamesSearchForm } from "@/components/games/games-search-form";
 
 // The club's GameDB as a magazine department. Browsing opens on the latest
 // winners as wide key-art cards, then a shelf of the newest additions, over

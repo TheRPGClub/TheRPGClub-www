@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import type { GameKey } from "@/lib/api/types";
 import { shortDate } from "@/lib/giveaways";
 import { GameCover } from "@/components/issue/game-cover";
-import { headingLinkClass } from "@/components/issue/page-header";
+import { headingLinkClass } from "@/components/templates/page-header";
 import { cn } from "@/lib/utils";
 
 // The shelf's right rail: the yellow donate panel over the member's own

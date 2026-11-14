@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { TIER_AUDIENCE, type StaffTier } from "@/lib/staff";
 

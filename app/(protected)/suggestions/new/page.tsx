@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { canSuggest } from "@/lib/suggestions";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { SuggestionForm } from "@/components/suggestions/suggestion-form";
 import { buttonVariants } from "@/components/ui/button";
 

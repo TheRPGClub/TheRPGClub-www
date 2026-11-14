@@ -15,7 +15,7 @@ import {
   MemberListEmpty,
   memberGridClass,
 } from "@/components/member/member-game-card";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import {
   memberCounts,
   memberName,
@@ -66,7 +66,7 @@ export default async function BackloggedGamesPage({
     `/members/${id}/backlogged-games${p > 1 ? `?page=${p}` : ""}`;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Backlog"
@@ -110,6 +110,6 @@ export default async function BackloggedGamesPage({
         totalPages={totalPages}
         buildHref={href}
       />
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

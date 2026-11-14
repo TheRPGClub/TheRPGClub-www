@@ -2,7 +2,7 @@ import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchDonatedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
-import { PageHeader, SectionHeading } from "@/components/issue/page-header";
+import { PageHeader, SectionHeading } from "@/components/templates/page-header";
 import { DonateForm } from "@/components/giveaways/donate-form";
 import { DonationList } from "@/components/giveaways/donation-list";
 

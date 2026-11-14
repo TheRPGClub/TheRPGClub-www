@@ -48,7 +48,7 @@ import { PROVIDER_FILL } from "@/components/achievements/provider-badge";
 import { RarestUnlocks } from "@/components/achievements/rarest-unlocks";
 import { UnlockList } from "@/components/achievements/unlock-list";
 import { MemberAvatar } from "@/components/issue/member-cover";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
 import { ListPagination } from "@/components/list-pagination";
 import { buttonVariants } from "@/components/ui/button";
@@ -111,7 +111,7 @@ export default async function MemberAchievementsPage({
 
   if (result.status !== "ok") {
     return (
-      <MemberListShell
+      <MemberListTemplate
         userId={id}
         displayName={displayName}
         title="Achievements"
@@ -124,7 +124,7 @@ export default async function MemberAchievementsPage({
             Couldn&apos;t load achievements. Try again in a moment.
           </MemberListEmpty>
         )}
-      </MemberListShell>
+      </MemberListTemplate>
     );
   }
 

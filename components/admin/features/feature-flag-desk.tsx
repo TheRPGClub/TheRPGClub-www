@@ -16,7 +16,7 @@ import {
   STATE_LABEL,
   type FeatureFlagEntry,
 } from "@/lib/feature-flags";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";

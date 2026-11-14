@@ -3,7 +3,7 @@ import { fetchNewsCategoryPreferences } from "@/lib/api/news";
 import { featureView } from "@/lib/features";
 import { requireAuth } from "@/lib/session";
 import type { FeaturePreferences } from "@/lib/feature-preferences";
-import { PageHeader, SectionHeading } from "@/components/issue/page-header";
+import { PageHeader, SectionHeading } from "@/components/templates/page-header";
 import { FeaturePreferencesForm } from "@/components/feature/feature-preferences-form";
 
 export const metadata = { title: "Settings" };

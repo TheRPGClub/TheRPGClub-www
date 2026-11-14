@@ -6,7 +6,7 @@ import { hasMemberRole, isAdminOrAbove } from "@/lib/staff";
 import { fetchClaimedKeys, fetchDonatedKeys, fetchShelfKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
 import { buildShelves, platformFamilyByKey, PLATFORM_FAMILIES } from "@/lib/giveaways";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { GiveawayShelf } from "@/components/giveaways/giveaway-shelf";
 import { ClaimedMini, DonatePanel, DonationsMini } from "@/components/giveaways/giveaway-rail";
 import { cn } from "@/lib/utils";

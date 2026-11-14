@@ -54,7 +54,7 @@ import {
 import {
   SectionHeading,
   headingLinkClass,
-} from "@/components/issue/page-header";
+} from "@/components/templates/page-header";
 import {
   GameBallotPanel,
   type GameBallotPanelProps,

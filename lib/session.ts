@@ -50,7 +50,7 @@ export function featureLayout(key: FeatureKey) {
 // without re-running it, so a flag turned off since the layout last ran
 // would otherwise reach the page. Every page under a `featureLayout` runs
 // it: directly (reading its Features through this, not `getFeatures()`), or
-// through the frame it renders in (MemberListShell for its Feature,
+// through the frame it renders in (MemberListTemplate for its Feature,
 // ImportPage for its kind's). Not-found when the flag hides the Feature;
 // else the viewer's Features (for the Preview badge).
 export async function requireFeature(key: FeatureKey): Promise<FeatureView> {
