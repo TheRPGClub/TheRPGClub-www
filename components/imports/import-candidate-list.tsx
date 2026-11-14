@@ -3,8 +3,10 @@
 import { useId, useState, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import type { ImportCandidate, ImportMatchConfidence } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { ImportCandidateOption } from "@/components/imports/import-candidate-option";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RadioGroup } from "@/components/ui/radio-group";
 
 const CONFIDENCE_LABELS: Record<ImportMatchConfidence, string> = {
   exact: "Exact title match",
@@ -34,7 +36,7 @@ export function ImportCandidateList({
   chooseLabel = "Use this match",
   footer,
 }: ImportCandidateListProps) {
-  const name = useId();
+  const legendId = useId();
   const [selectedId, setSelectedId] = useState<number | null>(
     confidence === "exact" && candidates.length > 0 ? candidates[0].game_id : null,
   );
@@ -43,10 +45,13 @@ export function ImportCandidateList({
   return (
     <div>
       <fieldset>
-        <legend className="font-label flex flex-wrap items-center gap-2.5 text-[0.95rem] font-extrabold tracking-[0.08em]">
+        <legend
+          id={legendId}
+          className="font-label flex flex-wrap items-center gap-2.5 text-[0.95rem] font-extrabold tracking-[0.08em]"
+        >
           Matches in GameDB
           {confidence && candidates.length > 0 && (
-            <Chip className="h-5.5 text-[0.72rem]">{CONFIDENCE_LABELS[confidence]}</Chip>
+            <Badge className="h-5.5 border-0 text-[0.72rem]">{CONFIDENCE_LABELS[confidence]}</Badge>
           )}
         </legend>
 
@@ -56,50 +61,21 @@ export function ImportCandidateList({
             game yourself or try IGDB.
           </p>
         ) : (
-          <ul className="mt-2.5 space-y-2">
+          <RadioGroup
+            aria-labelledby={legendId}
+            value={selectedId}
+            onValueChange={(value) => setSelectedId(value as number)}
+            disabled={disabled}
+            className="mt-2.5"
+          >
             {candidates.map((candidate, i) => (
-              <li key={candidate.game_id}>
-                <label className="group/opt grid cursor-pointer grid-cols-[1.25rem_2.9rem_1fr] items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-checked:bg-muted has-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight has-disabled:cursor-default has-disabled:opacity-60 sm:grid-cols-[1.25rem_2.9rem_1fr_auto]">
-                  <input
-                    type="radio"
-                    name={name}
-                    value={candidate.game_id}
-                    checked={selectedId === candidate.game_id}
-                    onChange={() => setSelectedId(candidate.game_id)}
-                    disabled={disabled}
-                    className="peer sr-only"
-                  />
-                  <span
-                    aria-hidden
-                    className="size-5 rounded-full shadow-[inset_0_0_0_2px_#4a4a55] transition-shadow group-has-checked/opt:shadow-[inset_0_0_0_6px_var(--color-highlight)]"
-                  />
-                  <span className="block h-[3.8rem] w-[2.9rem] overflow-hidden rounded-[2px] bg-background">
-                    {candidate.cover_url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={candidate.cover_url}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="font-label block text-[1.1rem] leading-[1.05] font-extrabold tracking-[0.02em] break-words">
-                      {candidate.title}
-                    </span>
-                    <span className="mt-0.5 block text-[0.8rem] text-faint-foreground tabular-nums">
-                      GameDB #{candidate.game_id}
-                    </span>
-                  </span>
-                  {i === 0 && confidence === "exact" && (
-                    <Chip className="hidden h-5.5 text-[0.72rem] sm:inline-flex">
-                      Exact match
-                    </Chip>
-                  )}
-                </label>
-              </li>
+              <ImportCandidateOption
+                key={candidate.game_id}
+                candidate={candidate}
+                exact={i === 0 && confidence === "exact"}
+              />
             ))}
-          </ul>
+          </RadioGroup>
         )}
       </fieldset>
 
