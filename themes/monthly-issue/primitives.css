@@ -786,5 +786,39 @@
         [data-slot="input"][data-variant="upload"] {
             @apply border-dashed border-border-strong bg-background text-dim-foreground file:font-label file:rounded-sm file:border file:border-border-strong file:bg-muted file:font-extrabold file:tracking-[0.06em] file:text-foreground hover:file:border-faint-foreground;
         }
+
+        /* Voting, GOTM history and suggestions (www#97). The x that clears
+           a failed vote; a card footer's quiet and withdrawing actions; the
+           archive's search toolbar (its sort and its submit wear the search
+           bar's strong rule, in the label voice); the reason on a
+           nomination (focus on the rule alone) and the Suggest something
+           fields (a yellow rule and a soft yellow ring on focus); a
+           Suggestion's type tags, each in its own ink. */
+        [data-slot="button"] {
+            &[data-variant="dismiss"] {
+                @apply border-0 text-faint-foreground transition-colors hover:text-foreground;
+            }
+            &[data-variant="card-action"] {
+                @apply font-label rounded-sm border-0 font-extrabold text-dim-foreground transition-colors hover:bg-muted;
+            }
+            &[data-variant="card-action-destructive"] {
+                @apply font-label rounded-sm border-0 font-extrabold text-destructive transition-colors hover:bg-destructive/15;
+            }
+            &[data-variant="search"] {
+                @apply font-label rounded-sm border-border-strong font-extrabold tracking-[0.05em] text-foreground transition-colors hover:border-faint-foreground hover:bg-muted;
+            }
+        }
+        [data-slot="select-trigger"][data-variant="search"] {
+            @apply font-label font-bold tracking-[0.05em] hover:border-border-strong focus-visible:border-faint-foreground focus-visible:[box-shadow:none];
+        }
+        [data-slot="textarea"][data-variant="note"] {
+            @apply border-border-strong focus-visible:border-faint-foreground disabled:bg-card focus-visible:[box-shadow:none];
+        }
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="compose"] {
+            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:bg-card dark:disabled:bg-card;
+        }
+        [data-slot="toggle"][data-variant="tag"] {
+            @apply rounded-xs font-bold text-(--tag-ink) shadow-[inset_0_0_0_1.5px_var(--tag-ink)] transition-colors hover:bg-muted hover:text-(--tag-ink) aria-pressed:bg-(--tag-ink) aria-pressed:text-background aria-pressed:shadow-none data-pressed:bg-(--tag-ink) data-pressed:text-background data-pressed:shadow-none;
+        }
     }
 }

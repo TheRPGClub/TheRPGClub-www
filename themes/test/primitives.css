@@ -1421,5 +1421,62 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* www#97: voting, GOTM history and suggestions. */
+        [data-slot="button"] {
+            &[data-variant="dismiss"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: calc(var(--radius) * 2);
+            }
+            &[data-variant="card-action"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+                border-style: dotted;
+                font-family: var(--typeface-label);
+            }
+            &[data-variant="card-action-destructive"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--foreground);
+                border-style: dotted;
+                font-family: var(--typeface-label);
+            }
+            &[data-variant="search"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--foreground);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="select-trigger"][data-variant="search"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--foreground);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="textarea"][data-variant="note"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-style: dashed;
+        }
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="compose"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--foreground);
+            border-style: double;
+        }
+        [data-slot="toggle"][data-variant="tag"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--tag-ink, var(--foreground));
+            border-radius: calc(var(--radius) * 2);
+            &[data-pressed] {
+                background-color: var(--tag-ink, var(--foreground));
+                color: var(--background);
+            }
+        }
     }
 }

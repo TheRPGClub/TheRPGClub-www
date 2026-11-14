@@ -127,3 +127,24 @@ describe("Themes style the imports variants", () => {
     expect(imports.filter((key) => !keys.has(key))).toEqual([]);
   });
 });
+
+// www#97: the voting, GOTM history and suggestions variants (the notice's x,
+// a card footer's actions, the archive's search toolbar, the compose and note
+// fields, the Suggestion type tags).
+describe("Themes style the voting and suggestions variants", () => {
+  it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
+    const keys = styled(name);
+    const voting = [
+      "button/variant=dismiss",
+      "button/variant=card-action",
+      "button/variant=card-action-destructive",
+      "button/variant=search",
+      "select-trigger/variant=search",
+      "textarea/variant=note",
+      "textarea/variant=compose",
+      "input/variant=compose",
+      "toggle/variant=tag",
+    ];
+    expect(voting.filter((key) => !keys.has(key))).toEqual([]);
+  });
+});

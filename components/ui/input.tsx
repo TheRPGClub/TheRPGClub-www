@@ -17,6 +17,8 @@ type InputVariant =
   // A file field: a dropped-in file on the page's ground, its button a
   // small control (an import's CSV upload).
   | "upload"
+  // A field on a page whose work is writing one thing (Suggest something).
+  | "compose"
 
 function Input({
   className,

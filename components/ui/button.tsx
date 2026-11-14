@@ -54,6 +54,15 @@ const buttonVariants = cva(
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
+        // www#97: voting, GOTM history and suggestions.
+        // The small x that clears a notice (a failed vote).
+        dismiss: "",
+        // A quiet action in a card's footer (Keep).
+        "card-action": "",
+        // A card footer action that withdraws or turns something down.
+        "card-action-destructive": "",
+        // A page search bar's own submit, beside the bar (GOTM history).
+        search: "",
       },
       size: {
         default:
