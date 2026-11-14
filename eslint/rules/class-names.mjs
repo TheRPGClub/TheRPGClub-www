@@ -67,8 +67,31 @@ export function lookKind(cls) {
   const u = utility(cls);
   if (/^bg-/.test(u)) return "background";
   if (/^rounded(?:-|$)/.test(u)) return "radius";
-  if (/^(?:shadow|inset-shadow|drop-shadow|text-shadow)(?:-|$)/.test(u)) return "shadow";
+  if (/^(?:shadow|inset-shadow|drop-shadow|text-shadow|ring|inset-ring)(?:-|$)/.test(u)) return "shadow";
   if (u.startsWith("text-")) return isTextColour(u.slice(5)) ? "text colour" : null;
   if (u.startsWith("border-")) return isBorderColour(u.slice(7)) ? "border colour" : null;
   return null;
+}
+
+// The variant prefix of a class: "md:hover:" for "md:hover:bg-ink".
+export function variantPrefix(cls) {
+  return cls.slice(0, cls.length - utility(cls).length).replace(/!?-?$/, "");
+}
+
+const TYPE = /^(?:font-(?:label|headline|display|cond|sans|serif|mono|thin|extralight|light|normal|medium|semibold|bold|extrabold|black)|uppercase|lowercase|capitalize|normal-case|tracking-.+|italic|not-italic)$/;
+const PAINT = /^(?:fill|stroke|caret|accent|decoration|outline|mix-blend|bg-blend|backdrop)-(.+)$/;
+const NOT_PAINT = /^(?:none|hidden|solid|dashed|dotted|double|wavy|auto|\d.*|offset-.+|\[\d.*)$/;
+
+// A class a primitive must leave to the Theme (api ADR-0008): any look class,
+// plus type (face, weight, case, tracking) and paint (fills, strokes, caret,
+// decoration and outline colours, blends, backdrops). The focus ring and the
+// invalid ring stay on the primitive as its shared base.
+export function primitiveLook(cls) {
+  const u = utility(cls);
+  const prefix = variantPrefix(cls);
+  if (/^(?:ring|outline)(?:-|$)/.test(u) && /(?:^|:)(?:focus-visible|aria-invalid|dark:aria-invalid):$/.test(prefix)) return false;
+  if (lookKind(cls)) return true;
+  if (TYPE.test(u)) return true;
+  const paint = PAINT.exec(u);
+  return Boolean(paint && !NOT_PAINT.test(paint[1]));
 }
