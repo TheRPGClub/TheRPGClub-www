@@ -40,24 +40,24 @@ export function MemberCover({
   return (
     <div
       className={cn(
-        "relative aspect-3/4 overflow-hidden rounded-[3px] bg-ink-3",
+        "relative aspect-3/4 overflow-hidden rounded-[3px] bg-muted",
         className,
       )}
     >
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
         <img
           src={src}
           alt=""
           className={cn(
-            "size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/cover:scale-[1.04]",
+            "size-full object-cover motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/cover:scale-[1.04]",
             imgClassName,
           )}
         />
       ) : (
         <span
           className={cn(
-            "font-headline grid size-full place-items-center p-3 text-center text-xl leading-[0.95] text-balance text-paper-mute",
+            "font-headline grid size-full place-items-center p-3 text-center text-xl leading-[0.95] text-balance text-faint-foreground",
             fallbackClassName,
           )}
         >
@@ -65,7 +65,7 @@ export function MemberCover({
         </span>
       )}
       {tab && (
-        <span className="font-label absolute bottom-1.5 left-1.5 rounded-[2px] bg-ink/85 px-1.5 py-px text-[0.72rem] font-extrabold tracking-[0.06em] text-paper">
+        <span className="font-label absolute bottom-1.5 left-1.5 rounded-[2px] bg-background/85 px-1.5 py-px text-[0.72rem] font-extrabold tracking-[0.06em] text-foreground">
           {tab}
         </span>
       )}
@@ -85,11 +85,11 @@ export function MemberAvatar({
   fallbackClassName?: string;
 }) {
   return (
-    <Avatar className={cn("size-10 after:hidden", className)}>
+    <Avatar variant="inverse" className={cn("size-10 after:hidden", className)}>
       <AvatarImage src={`${API_BASE}/api/v1/users/${userId}/avatar`} alt="" />
       <AvatarFallback
         className={cn(
-          "font-headline bg-paper text-ink",
+          "font-headline",
           fallbackClassName,
         )}
       >

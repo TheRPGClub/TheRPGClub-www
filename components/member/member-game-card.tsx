@@ -33,7 +33,7 @@ export function MemberGameCard({
   const cover = (
     <span className="relative block">
       {numeral != null && (
-        <span className="font-headline absolute -top-3.5 left-1 z-10 text-[3.25rem] leading-none text-paper [-webkit-text-stroke:6px_var(--color-ink)] [paint-order:stroke_fill]">
+        <span className="font-headline absolute -top-3.5 left-1 z-10 text-[3.25rem] leading-none text-foreground [-webkit-text-stroke:6px_var(--color-background)] [paint-order:stroke_fill]">
           {numeral}
         </span>
       )}
@@ -65,12 +65,12 @@ export function MemberGameCard({
             </p>
           )}
           {meta && (
-            <div className="font-label mt-1 flex items-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-mute [&_svg]:size-3.5">
+            <div className="font-label mt-1 flex items-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground [&_svg]:size-3.5">
               {meta}
             </div>
           )}
           {note && (
-            <p className="mt-1.5 line-clamp-3 text-[0.82rem] leading-snug text-paper-dim italic">
+            <p className="mt-1.5 line-clamp-3 text-[0.82rem] leading-snug text-dim-foreground italic">
               &ldquo;{note}&rdquo;
             </p>
           )}
@@ -87,7 +87,7 @@ export const memberGridClass =
 
 export function MemberListEmpty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-sm border border-dashed border-rule-strong px-4 py-10 text-center text-sm text-paper-mute">
+    <p className="rounded-sm border border-dashed border-border-strong px-4 py-10 text-center text-sm text-faint-foreground">
       {children}
     </p>
   );

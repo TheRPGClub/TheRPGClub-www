@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PenLine } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The yellow "You're playing this → Write a review" call to action. It only
@@ -51,18 +51,18 @@ export function ReviewComposePanel({
     return (
       <div
         className={cn(
-          "rounded-md border border-dashed border-rule-strong px-4 py-3.5 text-sm text-paper-dim",
+          "rounded-md border border-dashed border-border-strong px-4 py-3.5 text-sm text-dim-foreground",
           className,
         )}
       >
-        <p className="font-label text-[0.95rem] font-extrabold text-paper">
+        <p className="font-label text-[0.95rem] font-extrabold text-foreground">
           Want to review it?
         </p>
         <p className="mt-1">
           Add it to{" "}
           <Link
             href={`/members/${ownerId}/edit`}
-            className="text-paper underline decoration-paper-mute/60 underline-offset-2 hover:text-highlight"
+            className="text-foreground underline decoration-faint-foreground/60 underline-offset-2 hover:text-highlight"
           >
             Now Playing or Completed
           </Link>{" "}
@@ -73,11 +73,7 @@ export function ReviewComposePanel({
   }
 
   const copy = COPY[status ?? "unknown"];
-  const buttonClass = cn(
-    buttonVariants(),
-    "bg-ink text-paper hover:bg-ink/85",
-    stack ? "mt-3 w-full" : "sm:ml-auto",
-  );
+  const buttonClass = stack ? "mt-3 w-full" : "sm:ml-auto";
   const label = (
     <>
       <PenLine data-icon="inline-start" />
@@ -89,7 +85,7 @@ export function ReviewComposePanel({
     <section
       aria-label="Write a review"
       className={cn(
-        "rounded-md bg-highlight text-ink",
+        "rounded-md bg-highlight text-highlight-foreground",
         stack
           ? "p-4"
           : "flex flex-wrap items-center gap-x-4 gap-y-3 px-[18px] py-4",
@@ -105,16 +101,16 @@ export function ReviewComposePanel({
         >
           {copy.title}
         </h3>
-        <p className="mt-1 text-[0.85rem] text-highlight-ink">{copy.line}</p>
+        <p className="mt-1 text-[0.85rem] text-highlight-muted-foreground">{copy.line}</p>
       </div>
       {href ? (
-        <Link href={href} scroll={false} className={buttonClass}>
+        <ButtonLink render={<Link href={href} scroll={false} />} variant="inverse" className={buttonClass}>
           {label}
-        </Link>
+        </ButtonLink>
       ) : (
-        <button type="button" onClick={onStart} className={buttonClass}>
+        <Button type="button" onClick={onStart} variant="inverse" className={buttonClass}>
           {label}
-        </button>
+        </Button>
       )}
     </section>
   );

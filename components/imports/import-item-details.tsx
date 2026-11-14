@@ -21,7 +21,7 @@ export function ImportItemDetails({ kind, item }: { kind: ImportKind; item: Impo
 }
 
 function CompletionatorItemDetails({ item }: { item: CompletionatorImportItem }) {
-  const none = <span className="text-paper-mute">None</span>;
+  const none = <span className="text-faint-foreground">None</span>;
   const rows: [string, React.ReactNode][] = [
     ["Platform", item.platform_name ? [item.platform_name, item.region_name].filter(Boolean).join(" · ") : none],
     [
@@ -45,11 +45,11 @@ function CsvItemDetails({ item }: { item: CollectionCsvImportItem }) {
         <>
           {item.raw_platform}
           {platformUnresolved && (
-            <span className="text-paper-mute normal-case"> (not recognized: added without a platform)</span>
+            <span className="text-faint-foreground normal-case"> (not recognized: added without a platform)</span>
           )}
         </>
       ) : (
-        <span className="text-paper-mute">None</span>
+        <span className="text-faint-foreground">None</span>
       ),
     ],
     ["Ownership", item.ownership_type ?? item.raw_ownership_type ?? "Digital"],

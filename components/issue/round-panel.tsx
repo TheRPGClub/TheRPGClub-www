@@ -1,15 +1,14 @@
-import Link from "next/link";
 import { Plus, Vote } from "lucide-react";
-import type { Nomination, VotingCategory, VotingRound } from "@/lib/api/types";
-import { buttonVariants } from "@/components/ui/button";
+import type { VotingRound } from "@/lib/api/types";
+import type { TrackedNomination } from "@/lib/dashboard/issue";
+import { ButtonLink } from "@/components/ui/button";
+import { RoundPanelNominations } from "@/components/issue/round-panel-nominations";
 import { cn } from "@/lib/utils";
 
 // The club's open business, in the call-to-action yellow: nominations or the
 // vote for the next round, with a monumental days-left count. `tall` is the
 // panel taking a whole column (a round with only one track's winners), which
 // leaves room to list the latest nominations.
-
-export type TrackedNomination = Nomination & { category: VotingCategory };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -75,7 +74,7 @@ export function RoundPanel({
     <section
       aria-label={`Round ${n} ${title.toLowerCase()}`}
       className={cn(
-        "flex flex-col rounded-md bg-highlight px-4.5 pt-3.5 pb-4 text-ink",
+        "flex flex-col rounded-md bg-highlight px-4.5 pt-3.5 pb-4 text-highlight-foreground",
         tall && "h-full",
       )}
     >
@@ -94,68 +93,19 @@ export function RoundPanel({
           </p>
         )}
       </div>
-      <p className="mt-1.5 text-[0.82rem] font-medium text-highlight-ink">
+      <p className="mt-1.5 text-[0.82rem] font-medium text-highlight-muted-foreground">
         {detail}
       </p>
 
       {tall && nominations.length > 0 && (
-        <div className="mt-3 flex-1 border-t-2 border-ink">
-          <h3 className="font-label pt-2 pb-1 text-[0.8rem] font-extrabold tracking-[0.1em]">
-            Latest nominations
-          </h3>
-          <ol>
-            {nominations.slice(0, 5).map((nomination) => {
-              const cover =
-                nomination.game?.cover_url ?? nomination.game?.art_url;
-              return (
-                <li
-                  key={`${nomination.category}-${nomination.nomination_id}`}
-                  className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 border-t border-ink/20 py-1.5 first:border-t-0"
-                >
-                  <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-ink/15">
-                    {cover && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={cover}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <b className="font-label block truncate text-[0.95rem] leading-tight font-extrabold tracking-[0.02em]">
-                      {nomination.game?.title ?? "Unknown game"}
-                    </b>
-                    <small className="block truncate text-xs text-highlight-ink">
-                      by{" "}
-                      {nomination.user?.global_name ??
-                        nomination.user?.username ??
-                        "a member"}
-                    </small>
-                  </span>
-                  <span
-                    className={cn(
-                      "font-label rounded-[2px] px-1.5 py-px text-[0.68rem] font-extrabold tracking-[0.08em] text-white",
-                      nomination.category === "gotm" ? "bg-gotm" : "bg-nr",
-                    )}
-                  >
-                    {nomination.category === "gotm" ? "GOTM" : "NR"}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+        <RoundPanelNominations nominations={nominations} />
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
         {(nominating || voting) && (
-          <Link
+          <ButtonLink
             href="/voting"
-            className={cn(
-              buttonVariants(),
-              "bg-ink text-paper hover:bg-ink/85",
-            )}
+            variant="inverse"
           >
             {nominating ? <Plus data-icon="inline-start" /> : <Vote data-icon="inline-start" />}
             {nominating
@@ -163,19 +113,16 @@ export function RoundPanel({
                 ? "Your nomination"
                 : "Nominate a game"
               : "Cast your votes"}
-          </Link>
+          </ButtonLink>
         )}
-        <Link
+        <ButtonLink
           href="/voting"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "border-ink text-ink hover:border-ink hover:bg-ink/10",
-          )}
+          variant="inverse-outline"
         >
           {nominating || voting
             ? `See all ${nominations.length}`
             : "See results"}
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );

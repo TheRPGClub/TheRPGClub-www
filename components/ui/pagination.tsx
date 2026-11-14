@@ -53,7 +53,7 @@ function PaginationLink({
       // The current page is set in paper like a selected tab; the rest are
       // quiet condensed numerals.
       className={cn(
-        "size-9 text-base text-paper-dim hover:text-paper data-[active=true]:bg-paper data-[active=true]:text-ink",
+        "size-9 text-base",
         className,
       )}
       // data-slot goes on the Button, not the Link: Button sets its own and

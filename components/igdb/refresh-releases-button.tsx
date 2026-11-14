@@ -46,13 +46,13 @@ export function RefreshReleasesButton({ gameId }: { gameId: number }) {
       <div aria-live="polite">
         {pending ? (
           <Status label="Running">
-            <LoaderCircle aria-hidden className="size-4 shrink-0 animate-spin" />
+            <LoaderCircle aria-hidden className="size-4 shrink-0 motion-safe:animate-spin" />
             Checking IGDB for releases
           </Status>
         ) : outcome?.state === "added" ? (
           <Status label="Added">
             <CircleCheck aria-hidden className="size-4 shrink-0 text-rarity-uncommon" />
-            <b className="font-semibold text-paper">{outcome.text}</b>
+            <b className="font-semibold text-foreground">{outcome.text}</b>
           </Status>
         ) : outcome?.state === "current" ? (
           <Status label="Up to date">
@@ -71,8 +71,8 @@ export function RefreshReleasesButton({ gameId }: { gameId: number }) {
 
 function Status({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <p className="flex items-center gap-2.5 rounded-[2.4px] bg-ink-2 px-3 py-2.5 text-[0.9rem] text-paper-dim">
-      <span className="font-label w-18 shrink-0 text-[0.78rem] tracking-[0.06em] text-paper-mute">
+    <p className="flex items-center gap-2.5 rounded-[2.4px] bg-card px-3 py-2.5 text-[0.9rem] text-dim-foreground">
+      <span className="font-label w-18 shrink-0 text-[0.78rem] tracking-[0.06em] text-faint-foreground">
         {label}
       </span>
       {children}

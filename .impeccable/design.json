@@ -1,10 +1,10 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-10T21:57:56.637212+00:00",
+  "generatedAt": "2026-11-14T18:50:13Z",
   "title": "Design System: The RPG Club",
   "extensions": {
     "colorMeta": {
-      "ink": {
+      "background": {
         "role": "neutral",
         "displayName": "Ink",
         "canonical": "#0b0b0d",
@@ -19,37 +19,37 @@
           "#f4f4f0"
         ]
       },
-      "ink-2": {
+      "card": {
         "role": "neutral",
         "displayName": "Ink 2",
         "canonical": "#141417"
       },
-      "ink-3": {
+      "muted": {
         "role": "neutral",
         "displayName": "Ink 3",
         "canonical": "#1d1d22"
       },
-      "rule": {
+      "border": {
         "role": "neutral",
         "displayName": "Rule",
         "canonical": "#2a2a31"
       },
-      "rule-strong": {
+      "border-strong": {
         "role": "neutral",
         "displayName": "Strong Rule",
         "canonical": "#3a3a43"
       },
-      "paper": {
+      "foreground": {
         "role": "neutral",
         "displayName": "Paper",
         "canonical": "#f4f4f0"
       },
-      "paper-dim": {
+      "dim-foreground": {
         "role": "neutral",
         "displayName": "Dim Paper",
         "canonical": "#b9b9b2"
       },
-      "paper-mute": {
+      "faint-foreground": {
         "role": "neutral",
         "displayName": "Mute Paper",
         "canonical": "#8d8d87"
@@ -74,6 +74,11 @@
         "displayName": "Soft Red",
         "canonical": "#ff5a4f"
       },
+      "gotm-foreground": {
+        "role": "primary",
+        "displayName": "Type on Red",
+        "canonical": "#ffffff"
+      },
       "nr": {
         "role": "secondary",
         "displayName": "Feature Violet",
@@ -94,6 +99,11 @@
         "displayName": "Soft Violet",
         "canonical": "#b896ff"
       },
+      "nr-foreground": {
+        "role": "secondary",
+        "displayName": "Type on Violet",
+        "canonical": "#ffffff"
+      },
       "highlight": {
         "role": "tertiary",
         "displayName": "Highlighter Yellow",
@@ -109,7 +119,12 @@
           "oklch(0.96 0.06 97)"
         ]
       },
-      "highlight-ink": {
+      "highlight-foreground": {
+        "role": "tertiary",
+        "displayName": "Type on Yellow",
+        "canonical": "#0b0b0d"
+      },
+      "highlight-muted-foreground": {
         "role": "tertiary",
         "displayName": "Yellow Ink",
         "canonical": "#3a3200"
@@ -139,6 +154,11 @@
         "displayName": "Ultra Rare (Rarity)",
         "canonical": "#ff4fa3"
       },
+      "rarity-foreground": {
+        "role": "achievement",
+        "displayName": "Type on Rarity",
+        "canonical": "#0b0b0d"
+      },
       "provider-retroachievements": {
         "role": "achievement",
         "displayName": "RetroAchievements",
@@ -153,6 +173,11 @@
         "role": "achievement",
         "displayName": "PlayStation",
         "canonical": "#4677e6"
+      },
+      "provider-foreground": {
+        "role": "achievement",
+        "displayName": "Type on Provider",
+        "canonical": "#0b0b0d"
       },
       "tier-bronze": {
         "role": "achievement",
@@ -169,7 +194,7 @@
         "displayName": "PSN Gold",
         "canonical": "#e0b84a"
       },
-      "destructive-ink": {
+      "destructive-foreground": {
         "role": "neutral",
         "displayName": "Orange Ink",
         "canonical": "#2a1300",
@@ -198,6 +223,31 @@
           "#93e2b1",
           "#c9f2d8"
         ]
+      },
+      "phase-approved": {
+        "role": "tertiary",
+        "displayName": "Approved Teal",
+        "canonical": "#2ec4b6"
+      },
+      "phase-done": {
+        "role": "tertiary",
+        "displayName": "Done Green",
+        "canonical": "#5fd08a"
+      },
+      "phase-rejected": {
+        "role": "tertiary",
+        "displayName": "Rejected Pink",
+        "canonical": "#ff4fa3"
+      },
+      "phase-rejected-deep": {
+        "role": "tertiary",
+        "displayName": "Deep Rejected Pink",
+        "canonical": "#8a1559"
+      },
+      "slip-muted-foreground": {
+        "role": "neutral",
+        "displayName": "Slip Mute",
+        "canonical": "#55554f"
       },
       "news-announcements": {
         "role": "tertiary",
@@ -303,6 +353,11 @@
           "#c8c8c5",
           "#e6e6e5"
         ]
+      },
+      "foil-foreground": {
+        "role": "achievement",
+        "displayName": "Type on Foil",
+        "canonical": "#0b0b0d"
       }
     },
     "typographyMeta": {
@@ -354,7 +409,7 @@
       {
         "name": "inset-ring",
         "value": "inset 0 0 0 2px var(--color-highlight)",
-        "purpose": "Stroke without layout shift; yellow marks a selection, rule-strong or paper-mute for neutral strokes."
+        "purpose": "Stroke without layout shift; yellow marks a selection, `border-strong` or `faint-foreground` for neutral strokes."
       },
       {
         "name": "die-cut-rest",
@@ -557,7 +612,7 @@
       "name": "Game Cover with fallback",
       "kind": "card",
       "refersTo": "game-cover-fallback",
-      "description": "3:4 box art; with no art, the title in Anton on ink-3, never a grey void.",
+      "description": "3:4 box art; with no art, the title in Anton on `muted`, never a grey void.",
       "html": "<div class=\"ds-gcover\"><span>Emberlight Chronicles</span></div>",
       "css": ".ds-gcover { width: 140px; aspect-ratio: 3 / 4; display: grid; place-items: center; overflow: hidden; border-radius: 2.4px; background: #1d1d22; outline: 1px solid rgb(244 244 240 / 0.12); outline-offset: -1px; } .ds-gcover span { padding: 12px; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.5rem; line-height: 0.95; color: #8d8d87; }"
     },
@@ -644,12 +699,12 @@
       "refersTo": "news-card",
       "description": "One News Item as a frame on the contact sheet: 16:9 art with a 4px foot bar and a corner tag in its News Category ink (dashed for Rumours), a Barlow 600 headline to the outside page, dim description, italic comment, label-type meta.",
       "html": "<div class=\"ds-news\"><article class=\"ds-news-card\"><div class=\"ds-news-art\" style=\"--news-ink: var(--color-news-emulation, #2fd3c0)\"><div class=\"ds-news-fallback\">Saturn core lands in the main build</div><span class=\"ds-news-tag\">Emulation</span></div><div class=\"ds-news-body\"><h3><a href=\"#\">Saturn core lands in the main build <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 7h10v10\"/><path d=\"M7 17 17 7\"/></svg></a></h3><p class=\"ds-news-desc\">The long-running branch is merged, with save states and the first pass at the VDP2.</p><p class=\"ds-news-comment\">&ldquo;Finally.&rdquo;</p><p class=\"ds-news-meta\"><span>libretro.com</span><span><a href=\"#\">Mara</a> &middot; 14:02</span></p></div></article><article class=\"ds-news-card\"><div class=\"ds-news-art dashed\" style=\"--news-ink: var(--color-news-rumours, #c0c4d6)\"><div class=\"ds-news-fallback\">Remaster rumoured for spring</div><span class=\"ds-news-tag\">Rumours</span></div><div class=\"ds-news-body\"><h3><a href=\"#\">Remaster rumoured for spring</a></h3><p class=\"ds-news-meta\"><span>example.com</span><span>Joss &middot; 09:40</span></p></div></article></div>",
-      "css": ".ds-news { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 16px; background: #0b0b0d; } .ds-news-card { display: flex; flex-direction: column; overflow: hidden; border-radius: 3.2px; background: var(--color-ink-2, #141417); } .ds-news-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-ink-3, #1d1d22); border-bottom: 4px solid var(--news-ink); } .ds-news-art.dashed { border-bottom-style: dashed; } .ds-news-fallback { display: flex; height: 100%; align-items: center; justify-content: center; padding: 36px 24px 16px; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.45rem; line-height: 0.95; color: var(--color-paper-mute, #8d8d87); } .ds-news-tag { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 2px; background: var(--news-ink); color: #0b0b0d; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; } .ds-news-art.dashed .ds-news-tag { outline: 1.5px dashed rgb(11 11 13 / 0.7); outline-offset: -3px; } .ds-news-body { display: flex; flex: 1; flex-direction: column; padding: 12px 14px 14px; } .ds-news-body h3 { margin: 0; font-family: Barlow, system-ui, sans-serif; font-weight: 600; font-size: 1.02rem; line-height: 1.3; } .ds-news-body h3 a { color: #f4f4f0; text-decoration: none; transition: color 0.15s; } .ds-news-body h3 a svg { color: #8d8d87; vertical-align: baseline; } .ds-news-body h3 a:hover { color: #ffd400; } .ds-news-body h3 a:focus-visible { outline: 2px solid #ffd400; outline-offset: 2px; } .ds-news-desc, .ds-news-comment { margin: 6px 0 0; font-family: Barlow, system-ui, sans-serif; font-size: 0.875rem; color: #b9b9b2; } .ds-news-comment { font-style: italic; } .ds-news-meta { display: flex; justify-content: space-between; gap: 12px; margin: auto 0 0; padding-top: 10px; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8d87; } .ds-news-meta a { color: inherit; text-decoration: none; } .ds-news-meta a:hover { color: #ffd400; }"
+      "css": ".ds-news { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 16px; background: #0b0b0d; } .ds-news-card { display: flex; flex-direction: column; overflow: hidden; border-radius: 3.2px; background: var(--color-card, #141417); } .ds-news-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-muted, #1d1d22); border-bottom: 4px solid var(--news-ink); } .ds-news-art.dashed { border-bottom-style: dashed; } .ds-news-fallback { display: flex; height: 100%; align-items: center; justify-content: center; padding: 36px 24px 16px; text-align: center; font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.45rem; line-height: 0.95; color: var(--color-faint-foreground, #8d8d87); } .ds-news-tag { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 2px; background: var(--news-ink); color: #0b0b0d; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; } .ds-news-art.dashed .ds-news-tag { outline: 1.5px dashed rgb(11 11 13 / 0.7); outline-offset: -3px; } .ds-news-body { display: flex; flex: 1; flex-direction: column; padding: 12px 14px 14px; } .ds-news-body h3 { margin: 0; font-family: Barlow, system-ui, sans-serif; font-weight: 600; font-size: 1.02rem; line-height: 1.3; } .ds-news-body h3 a { color: #f4f4f0; text-decoration: none; transition: color 0.15s; } .ds-news-body h3 a svg { color: #8d8d87; vertical-align: baseline; } .ds-news-body h3 a:hover { color: #ffd400; } .ds-news-body h3 a:focus-visible { outline: 2px solid #ffd400; outline-offset: 2px; } .ds-news-desc, .ds-news-comment { margin: 6px 0 0; font-family: Barlow, system-ui, sans-serif; font-size: 0.875rem; color: #b9b9b2; } .ds-news-comment { font-style: italic; } .ds-news-meta { display: flex; justify-content: space-between; gap: 12px; margin: auto 0 0; padding-top: 10px; font-family: \"Barlow Condensed\", sans-serif; font-weight: 700; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8d87; } .ds-news-meta a { color: inherit; text-decoration: none; } .ds-news-meta a:hover { color: #ffd400; }"
     }
   ],
   "narrative": {
     "northStar": "The Monthly Issue",
-    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The app is dark-only (`<html class=\"dark\">`, theme colour #0b0b0d).\n\n**The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.\n\n**The News Hub department.** The club's news is the magazine's contact sheet. Every News Item is a frame of its art marked in its News Category's ink, and the frames are laid out by UTC day under Anton day headings. The department keeps the ink ground, Anton and Barlow, and the 2px rules, and it brings one colour role of its own (the News inks) that appears on news surfaces only. It refuses the news-site headline list and the dashboard default of stats over a wall of cards.",
+    "overview": "Every Game of the Month round is an issue of the club's own 90s game magazine. The GOTM winner is the cover story, the Non-RPG pick is the feature, the club's open business (nominations, the vote) is a highlighter-yellow insert, and every other page is a department: GOTM history is the archive, a member's profile is their bookcase, a game page is its own cover story. The voice is loud and printed: ink-black stock, condensed caps set big, three spot inks that each mean one thing.\n\nDensity is magazine density, not dashboard density. A page leads with one monumental object (a round number, a game's two-line headline, a member's name in Anton at banner scale), then settles into ruled departments with labels in tracked condensed caps. Surfaces are hard rectangles with barely-there corners. Depth comes from key art under black legibility scrims, not from glowing cards.\n\nThe world refuses the default dark game-tracker: gradient-faded key-art cards, glow accents, gradient text. The Theme is dark (`data-mode=\"dark\"`, theme colour #0b0b0d). Colours are named by their tokens (`background`, `card`, `foreground`...); ink, paper and rule in the prose are this Theme's display names for them (Ink `background`, Ink 2 `card`, Ink 3 `muted`, Paper `foreground`, Dim Paper `dim-foreground`, Mute Paper `faint-foreground`, Rule `border`, Strong Rule `border-strong`).\n\n**The Achievement Hub department.** Achievements are the magazine's collectors' department. A member's achievements are a binder opened on its gutter, each Achievement Set is a page or a two-page spread inside it, and the community hub is a wall of the club's Unlocks pinned up under paper-tape day labels. The department keeps the ink ground, Anton and Barlow, and the 2px paper rules, and it brings its own colour roles (game tint, Rarity inks, Provider colours, foil) that appear on achievement surfaces only. The binder refuses the tracker default of a stats header over a grid of progress cards. Icons are die-cut objects resting in slots, locked Achievements are dashed numbered slots, and hidden ones are sealed tiles.\n\n**The News Hub department.** The club's news is the magazine's contact sheet. Every News Item is a frame of its art marked in its News Category's ink, and the frames are laid out by UTC day under Anton day headings. The department keeps the ink ground, Anton and Barlow, and the 2px rules, and it brings one colour role of its own (the News inks) that appears on news surfaces only. It refuses the news-site headline list and the dashboard default of stats over a wall of cards.",
     "keyCharacteristics": [
       "Ink-black ground with three spot inks: masthead red for GOTM, violet for NR-GOTM, highlighter yellow for the member's own business.",
       "Anton in caps for every headline and numeral, Barlow Condensed tracked caps for every label, Barlow for reading.",
@@ -713,12 +768,12 @@
       },
       {
         "name": "The Earned Over Total Rule",
-        "body": "In the Achievement Hub a count reads as an Anton numeral with its total beside it in paper-mute (\"23 / 41\"): a set header sets it at numeral scale, the binder index and club pages at 1.25-1.5rem. A member's Unlocks are the binder's monumental numeral (4.5rem to 5.25rem), with Completions, Masteries, Platinums and RA points as 2rem Anton over label captions. Slot numbers are two-digit Anton (\"07\").",
+        "body": "In the Achievement Hub a count reads as an Anton numeral with its total beside it in `faint-foreground` (\"23 / 41\"): a set header sets it at numeral scale, the binder index and club pages at 1.25-1.5rem. A member's Unlocks are the binder's monumental numeral (4.5rem to 5.25rem), with Completions, Masteries, Platinums and RA points as 2rem Anton over label captions. Slot numbers are two-digit Anton (\"07\").",
         "section": "typography"
       },
       {
         "name": "The Empty Track Rule",
-        "body": "A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small \"No Game of the Month this round\" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed rule-strong box with a short muted label. Under a title search, that box stays silent, because absence there means \"no match\".",
+        "body": "A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small \"No Game of the Month this round\" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed `border-strong` box with a short muted label. Under a title search, that box stays silent, because absence there means \"no match\".",
         "section": "layout"
       },
       {
@@ -728,7 +783,7 @@
       },
       {
         "name": "The Open Binder Rule",
-        "body": "A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift, holding two ink-2 pages. From `xl` it is a 25rem left page (the member, their totals, Linked Accounts and four rarest Unlocks), a 30px gutter of rings, and the index page. Filter tabs (status, then one per Linked Account's Provider) sit on the binder's top edge, and each index row's game-tint tab sticks out past the binder's right edge. Below `xl` the binder closes to one page with the member first and the index below.",
+        "body": "A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift, holding two `card` pages. From `xl` it is a 25rem left page (the member, their totals, Linked Accounts and four rarest Unlocks), a 30px gutter of rings, and the index page. Filter tabs (status, then one per Linked Account's Provider) sit on the binder's top edge, and each index row's game-tint tab sticks out past the binder's right edge. Below `xl` the binder closes to one page with the member first and the index below.",
         "section": "layout"
       },
       {
@@ -743,7 +798,7 @@
       },
       {
         "name": "The Contact Sheet Rule",
-        "body": "The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a \"Filter\" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title (\"Today\", \"Yesterday\", or a date like \"Sun 8 Nov\", with the year added when it is not this year), a label-type date and item count in paper-mute, and a 2px rule-strong line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type \"Days and times in UTC\" note.",
+        "body": "The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a \"Filter\" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title (\"Today\", \"Yesterday\", or a date like \"Sun 8 Nov\", with the year added when it is not this year), a label-type date and item count in `faint-foreground`, and a 2px `border-strong` line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type \"Days and times in UTC\" note.",
         "section": "layout"
       },
       {
@@ -768,7 +823,7 @@
       },
       {
         "name": "The Off Red Rule",
-        "body": "On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not ink-3, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.",
+        "body": "On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not `muted`, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.",
         "section": "components"
       }
     ],
@@ -778,7 +833,7 @@
       "**Do** set every game headline with the Two-Line Headline Rule.",
       "**Do** give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.",
       "**Do** split one cover between co-winners and letter them A, B, C in the track's ink.",
-      "**Do** fall back to the title in Anton on ink-3 when art is missing.",
+      "**Do** fall back to the title in Anton on `muted` when art is missing.",
       "**Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.",
       "**Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.",
       "**Do** keep foil for Platinum, Mastery and Completion.",

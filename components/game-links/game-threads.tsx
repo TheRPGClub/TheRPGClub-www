@@ -2,10 +2,8 @@ import { MessageSquare } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Thread } from "@/lib/api/types";
 import { RailHeading } from "@/components/issue/game-rail";
-import {
-  LinkThreadPicker,
-  UnlinkThreadButton,
-} from "@/components/game-links/thread-controls";
+import { LinkThreadPicker } from "@/components/game-links/link-thread-picker";
+import { UnlinkThreadButton } from "@/components/game-links/unlink-thread-button";
 
 // The rail's "Discord threads": the club's threads linked to this game, each a
 // jump link into Discord. Regulars and staff (`canEdit`) also get unlink and a
@@ -32,11 +30,11 @@ export async function GameThreads({
         }
       />
       {threads === null ? (
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           Threads couldn&apos;t be loaded right now.
         </p>
       ) : threads.length === 0 ? (
-        <p className="text-sm text-paper-mute">No thread is linked to this game.</p>
+        <p className="text-sm text-faint-foreground">No thread is linked to this game.</p>
       ) : (
         <ul className="space-y-1.5">
           {threads.map((thread) => (
@@ -49,14 +47,14 @@ export async function GameThreads({
                   href={thread.jump_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex min-w-0 items-center gap-2 text-paper hover:text-highlight"
+                  className="flex min-w-0 items-center gap-2 text-foreground hover:text-highlight"
                 >
-                  <MessageSquare aria-hidden className="size-4 shrink-0 text-paper-mute" />
+                  <MessageSquare aria-hidden className="size-4 shrink-0 text-faint-foreground" />
                   <span className="truncate">{thread.thread_name}</span>
                 </a>
               ) : (
-                <span className="flex min-w-0 items-center gap-2 text-paper">
-                  <MessageSquare aria-hidden className="size-4 shrink-0 text-paper-mute" />
+                <span className="flex min-w-0 items-center gap-2 text-foreground">
+                  <MessageSquare aria-hidden className="size-4 shrink-0 text-faint-foreground" />
                   <span className="truncate">{thread.thread_name}</span>
                 </span>
               )}

@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 // The import review's item: the source row as a card (art band when the
 // source has art, the title in the masthead voice, its facts), the matching
@@ -34,14 +39,14 @@ export function ImportItemLayout({
     >
       <section
         aria-label={label}
-        className="overflow-hidden rounded-md border border-rule bg-ink-2"
+        className="overflow-hidden rounded-md border border-border bg-card"
       >
         {art && (
           <div className="relative h-36 sm:h-52">
             {art}
             <div
               aria-hidden
-              className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-ink-2)_2%,transparent_70%)]"
+              className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-card)_2%,transparent_70%)]"
             />
           </div>
         )}
@@ -73,19 +78,20 @@ export function ImportRoute({
   children: ReactNode;
 }) {
   return (
-    <details
-      open={defaultOpen}
-      className="group/route rounded-sm border border-rule bg-ink-2 open:border-rule-strong"
-    >
-      <summary className="font-label flex cursor-pointer list-none items-center gap-2.5 px-4 py-3.5 text-[0.95rem] font-extrabold tracking-[0.06em] transition-colors select-none hover:text-highlight [&::-webkit-details-marker]:hidden">
+    <Collapsible variant="card" defaultOpen={defaultOpen}>
+      <CollapsibleTrigger className="group/route flex w-full cursor-pointer items-center gap-2.5 px-4 py-3.5 text-left text-[0.95rem] select-none">
         {title}
         <ChevronDown
           aria-hidden
-          className="ml-auto size-4 text-paper-mute transition-transform group-open/route:rotate-180"
+          className="ml-auto size-4 text-faint-foreground motion-safe:transition-transform group-data-panel-open/route:rotate-180"
         />
-      </summary>
-      <div className="px-4 pb-4">{children}</div>
-    </details>
+      </CollapsibleTrigger>
+      {/* Kept mounted while closed, so a search typed into a route survives
+          closing it. */}
+      <CollapsibleContent keepMounted className="px-4 pb-4">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 

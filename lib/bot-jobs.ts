@@ -193,3 +193,18 @@ export function latestFailure(
   const latest = jobs.find((j) => kinds.includes(j.kind));
   return latest && latest.status === "failed" ? latest : null;
 }
+
+// The wire's page 1 re-read, with older pages the viewer loaded kept below
+// it. A job newer than the fresh page's oldest that it no longer holds is
+// dropped.
+export function mergeFirstPage(fresh: readonly BotJob[], current: readonly BotJob[]): BotJob[] {
+  const ids = new Set(fresh.map((j) => j.id));
+  const oldest = fresh.at(-1)?.id ?? Infinity;
+  return [...fresh, ...current.filter((j) => !ids.has(j.id) && j.id < oldest)];
+}
+
+// The wire's next page under what it shows, without repeating a job.
+export function appendOlderJobs(current: readonly BotJob[], older: readonly BotJob[]): BotJob[] {
+  const ids = new Set(current.map((j) => j.id));
+  return [...current, ...older.filter((j) => !ids.has(j.id))];
+}

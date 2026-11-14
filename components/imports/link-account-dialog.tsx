@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Link2 } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 
 interface LinkAccountDialogProps {
   // The social platform label, e.g. "Steam".
@@ -27,7 +25,7 @@ export function LinkAccountDialog({ account, linkHref, backHref }: LinkAccountDi
     <Dialog open disablePointerDismissal>
       <DialogContent showCloseButton={false} className="max-w-md">
         <DialogHeader>
-          <div className="mb-2 flex size-10 items-center justify-center rounded-sm bg-highlight text-ink">
+          <div className="mb-2 flex size-10 items-center justify-center rounded-sm bg-highlight text-highlight-foreground">
             <Link2 aria-hidden className="size-5" />
           </div>
           <DialogTitle>
@@ -40,12 +38,12 @@ export function LinkAccountDialog({ account, linkHref, backHref }: LinkAccountDi
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Link href={backHref} className={buttonVariants({ variant: "outline" })}>
+          <ButtonLink href={backHref} variant="outline">
             Back to imports
-          </Link>
-          <Link href={linkHref} className={cn(buttonVariants({ variant: "highlight" }), "gap-1.5")}>
+          </ButtonLink>
+          <ButtonLink href={linkHref} variant="highlight" className="gap-1.5">
             Link {account}
-          </Link>
+          </ButtonLink>
         </div>
       </DialogContent>
     </Dialog>

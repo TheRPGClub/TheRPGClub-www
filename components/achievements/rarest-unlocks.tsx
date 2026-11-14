@@ -68,7 +68,7 @@ export function RarestUnlocks({
               <span className="relative">
                 <span
                   aria-hidden
-                  className="absolute -top-1.5 left-1/2 z-10 h-3 w-8 -translate-x-1/2 -rotate-3 bg-paper/25"
+                  className="absolute -top-1.5 left-1/2 z-10 h-3 w-8 -translate-x-1/2 -rotate-3 bg-foreground/25"
                 />
                 <AchievementIcon
                   view={view}
@@ -77,9 +77,9 @@ export function RarestUnlocks({
                   className="size-[4.25rem] sm:size-[5.375rem]"
                 />
               </span>
-              <span className="font-label flex flex-col items-center text-center text-[0.72rem] leading-[1.1] tracking-[0.05em] text-paper-dim">
+              <span className="font-label flex flex-col items-center text-center text-[0.72rem] leading-[1.1] tracking-[0.05em] text-dim-foreground">
                 {foil && unlock.highlight ? (
-                  <span className="font-extrabold text-paper">
+                  <span className="font-extrabold text-foreground">
                     {HIGHLIGHT_LABEL[unlock.highlight]}
                   </span>
                 ) : view.rarity != null && tier ? (

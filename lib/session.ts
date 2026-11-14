@@ -1,6 +1,8 @@
 import { cache, type ReactNode } from "react";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { RETURN_TO_HEADER, signInAgainPath } from "@/lib/sign-in";
 import type { AppSession } from "@/lib/auth-types";
 import { featureView, type FeatureKey, type FeatureView } from "@/lib/features";
 
@@ -17,9 +19,13 @@ export const getSession = cache(async (): Promise<AppSession | null> => {
   }
 });
 
+// The signed-in Member, for the protected layout and staff pages. A session
+// the API no longer accepts (expired or revoked) goes back through Discord
+// sign-in to the page the Member opened, which the proxy names in a request
+// header (see /auth/sign-in for the loop guard).
 export async function requireAuth(): Promise<AppSession> {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect(signInAgainPath((await headers()).get(RETURN_TO_HEADER)));
   return session;
 }
 
@@ -31,7 +37,7 @@ export async function getFeatures(): Promise<FeatureView> {
 
 // A Feature's own pages are gated by their route segment's layout:
 //
-//   // app/(app)/giveaways/layout.tsx
+//   // app/(protected)/giveaways/layout.tsx
 //   export default featureLayout("giveaways");
 //
 // The whole subtree is not-found when the Feature's flag hides it from this
@@ -50,7 +56,7 @@ export function featureLayout(key: FeatureKey) {
 // without re-running it, so a flag turned off since the layout last ran
 // would otherwise reach the page. Every page under a `featureLayout` runs
 // it: directly (reading its Features through this, not `getFeatures()`), or
-// through the frame it renders in (MemberListShell for its Feature,
+// through the frame it renders in (MemberListTemplate for its Feature,
 // ImportPage for its kind's). Not-found when the flag hides the Feature;
 // else the viewer's Features (for the Preview badge).
 export async function requireFeature(key: FeatureKey): Promise<FeatureView> {

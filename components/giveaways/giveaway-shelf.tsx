@@ -1,27 +1,12 @@
 "use client";
 
-import {
-  useState,
-  useTransition,
-  type ComponentProps,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
-import Link from "next/link";
-import { AlertCircle, Gift, Lock, Undo2 } from "lucide-react";
-import { claimKeyAction, revokeKeyAction } from "@/app/actions/giveaways";
+import { useState, useTransition, type ReactNode } from "react";
+import { claimKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
-import {
-  CLAIM_REFUSAL_COPY,
-  shelfAge,
-  tagTilt,
-  type KeyBox,
-  type PlatformShelf,
-} from "@/lib/giveaways";
-import { GameCover } from "@/components/issue/game-cover";
+import type { KeyBox, PlatformShelf } from "@/lib/giveaways";
 import { UnwrappedKey } from "@/components/giveaways/unwrapped-key";
-import { PlatformChip } from "@/components/giveaways/platform-chip";
-import { cn } from "@/lib/utils";
+import { ShelfNotice, ShelfRow } from "@/components/giveaways/shelf-row";
+import { GiftBox } from "@/components/giveaways/gift-box";
 
 export interface GiveawayShelfProps {
   shelves: PlatformShelf[];
@@ -62,9 +47,7 @@ export function GiveawayShelf({
   const [claimed, setClaimed] = useState<Claimed | null>(null);
   // Keys lost in a race (or gone) since the page loaded.
   const [lost, setLost] = useState<ReadonlySet<number>>(new Set());
-  const [notice, setNotice] = useState<{ title: string; text: string } | null>(
-    null,
-  );
+  const [notice, setNotice] = useState<{ title: string; text: string } | null>(null);
   const [pendingBox, setPendingBox] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -95,19 +78,6 @@ export function GiveawayShelf({
     });
   };
 
-  const revoke = (key: GameKey) => {
-    startTransition(async () => {
-      const result = await revokeKeyAction(key.key_id);
-      if (!result.ok) {
-        setNotice({
-          title: key.game_title,
-          text: result.error ?? "Couldn't take that key off the shelf.",
-        });
-        return;
-      }
-    });
-  };
-
   if (claimed) {
     return (
       <UnwrappedKey
@@ -126,256 +96,37 @@ export function GiveawayShelf({
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem]">
         <div className="min-w-0 space-y-9">
           {shelves.length === 0 && (
-            <p className="rounded-md border border-dashed border-rule-strong px-5 py-8 text-paper-mute">
+            <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">
               {emptyCopy}
             </p>
           )}
           {shelves.map((shelf) => (
-            <section
-              key={shelf.family.key}
-              aria-labelledby={`shelf-${shelf.family.key}`}
-            >
-              <div className="mb-3 flex items-center gap-2.5">
-                <h2
-                  id={`shelf-${shelf.family.key}`}
-                  className="font-headline text-2xl"
-                >
-                  {shelf.family.label}
-                </h2>
-                <PlatformChip ink={shelf.family.ink}>
-                  {shelf.count} {shelf.count === 1 ? "key" : "keys"}
-                </PlatformChip>
-              </div>
-              <ul
-                className="relative flex snap-x gap-[18px] overflow-x-auto border-b-[6px] border-rule-strong px-1.5 pt-2.5 [scrollbar-width:thin]"
-                style={{ "--p": shelf.family.ink } as CSSProperties}
-              >
-                {shelf.boxes.map((box) => {
-                  const open = box.keys.filter((k) => !lost.has(k.key_id));
-                  return (
-                    <GiftBox
-                      key={box.id}
-                      box={box}
-                      open={open}
-                      viewerId={viewerId}
-                      canClaim={canClaim}
-                      canRevokeAny={canRevokeAny}
-                      donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
-                      busy={isPending && pendingBox === box.id}
-                      disabled={isPending}
-                      onClaim={(key) => claim(box, key)}
-                      onRevoke={revoke}
-                    />
-                  );
-                })}
-              </ul>
-              <div aria-hidden className="mt-1 h-2 bg-ink-3" />
-            </section>
+            <ShelfRow key={shelf.family.key} shelf={shelf}>
+              {shelf.boxes.map((box) => {
+                const open = box.keys.filter((k) => !lost.has(k.key_id));
+                return (
+                  <GiftBox
+                    key={box.id}
+                    box={box}
+                    open={open}
+                    viewerId={viewerId}
+                    canClaim={canClaim}
+                    canRevokeAny={canRevokeAny}
+                    donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
+                    busy={isPending && pendingBox === box.id}
+                    disabled={isPending}
+                    onClaim={(key) => claim(box, key)}
+                  />
+                );
+              })}
+            </ShelfRow>
           ))}
         </div>
         <aside className="space-y-6">
-          {notice && (
-            <div
-              role="alert"
-              className="flex items-start gap-2.5 rounded-sm bg-paper/6 px-3 py-2.5 text-sm text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
-            >
-              <AlertCircle
-                aria-hidden
-                className="mt-0.5 size-4 shrink-0 text-highlight"
-              />
-              <p>
-                <b>{notice.title}:</b> {notice.text}
-              </p>
-            </div>
-          )}
+          {notice && <ShelfNotice title={notice.title} text={notice.text} />}
           {rail}
         </aside>
       </div>
     </div>
-  );
-}
-
-function GiftBox({
-  box,
-  open,
-  viewerId,
-  canClaim,
-  canRevokeAny,
-  donorName,
-  busy,
-  disabled,
-  onClaim,
-  onRevoke,
-}: {
-  box: KeyBox;
-  open: GameKey[];
-  viewerId: string;
-  canClaim: boolean;
-  canRevokeAny: boolean;
-  donorName: string;
-  busy: boolean;
-  disabled: boolean;
-  onClaim: (key: GameKey) => void;
-  onRevoke: (key: GameKey) => void;
-}) {
-  // The key the Admin asked to revoke. Keyed by key_id, so once that key is
-  // gone the next one in the box asks again.
-  const [confirmingKey, setConfirmingKey] = useState<number | null>(null);
-  const next = open[0];
-  const confirming = next !== undefined && confirmingKey === next.key_id;
-  const gone = !next;
-  const mine = next?.donor_user_id === viewerId;
-  const tilt = tagTilt(box.keys[0].key_id);
-  const region = box.region !== "Global" ? ` · ${box.region}` : "";
-
-  return (
-    <li className="w-32 shrink-0 snap-start">
-      <div className="relative">
-        <div className={cn("relative", gone && "brightness-50 grayscale")}>
-          <GameCover
-            title={box.title}
-            coverUrl={box.coverUrl}
-            className="w-32"
-            fallbackClassName="text-base"
-          />
-          <i
-            aria-hidden
-            className="absolute inset-y-0 left-[72%] w-3.5 bg-(--p)"
-          />
-          <i
-            aria-hidden
-            className="absolute inset-x-0 top-[62%] h-3.5 bg-(--p)"
-          />
-          <i
-            aria-hidden
-            className="absolute top-[calc(62%+7px)] left-[calc(72%+7px)] -mt-[15px] -ml-[15px] size-[30px] rotate-45 rounded-[3px] bg-(--p) shadow-[0_3px_6px_rgb(0_0_0/0.45)] after:absolute after:inset-[9px] after:rounded-[2px] after:bg-ink/25"
-          />
-        </div>
-        {open.length > 1 && (
-          <span className="font-headline absolute -top-2 -right-1.5 rotate-6 rounded-xs bg-paper px-1.5 py-px text-[0.95rem] text-ink shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
-            ×{open.length}
-          </span>
-        )}
-      </div>
-      <div
-        className={cn(
-          "relative mt-2.5 mb-[22px] rounded-sm px-[9px] pt-2 pb-[9px] shadow-[0_3px_8px_rgb(0_0_0/0.45)] before:absolute before:-top-1.5 before:left-1/2 before:-ml-1 before:size-2 before:rounded-full before:bg-ink before:shadow-[0_0_0_2px_var(--color-paper)]",
-          gone
-            ? "bg-ink-3 text-paper shadow-[inset_0_0_0_1px_var(--color-destructive)]"
-            : "bg-paper text-ink",
-        )}
-        style={{ transform: `rotate(${tilt}deg)` }}
-      >
-        <p className="font-headline text-[0.95rem] leading-[0.95]">
-          {box.gameId ? (
-            <Link href={`/games/${box.gameId}`} className="hover:underline">
-              {box.title}
-            </Link>
-          ) : (
-            box.title
-          )}
-        </p>
-        {gone ? (
-          <p className="mt-[3px] text-[0.74rem] leading-tight text-destructive">
-            Already claimed. Someone got there first.
-          </p>
-        ) : (
-          <p className="mt-[3px] text-[0.74rem] leading-tight text-ink/70">
-            {mine ? "Your donation" : `From ${donorName}`} ·{" "}
-            {shelfAge(next.created_at)}
-            {region}
-          </p>
-        )}
-        {gone ? (
-          <TagButton disabled className="opacity-50">
-            Gone
-          </TagButton>
-        ) : mine ? (
-          <Link
-            href="/giveaways/donate"
-            className="font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-ink text-[0.8rem] font-extrabold text-paper hover:bg-ink-3"
-          >
-            Manage
-          </Link>
-        ) : canClaim ? (
-          <TagButton
-            disabled={disabled}
-            onClick={() => onClaim(next)}
-            aria-label={`Claim ${box.title} (${box.platform})`}
-          >
-            <Gift aria-hidden className="size-3.5" />
-            {busy ? "Unwrapping…" : "Claim"}
-          </TagButton>
-        ) : (
-          <>
-            <TagButton
-              disabled
-              className="bg-[#d6d6cf] text-[#55554f]"
-              aria-describedby={`why-${box.id}`}
-            >
-              <Lock aria-hidden className="size-3.5" />
-              Claim
-            </TagButton>
-            <p
-              id={`why-${box.id}`}
-              className="mt-[7px] text-[0.74rem] leading-tight text-ink/75"
-            >
-              {CLAIM_REFUSAL_COPY.not_member}
-            </p>
-          </>
-        )}
-        {!gone && canRevokeAny && !mine && (
-          <div className="mt-1.5 text-[0.74rem]">
-            {confirming ? (
-              <span className="flex flex-wrap items-center gap-x-2">
-                <button
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => onRevoke(next)}
-                  className="font-label font-extrabold text-[oklch(0.55_0.17_52)] hover:underline"
-                >
-                  Revoke key
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmingKey(null)}
-                  className="font-label text-ink/70 hover:underline"
-                >
-                  Keep it
-                </button>
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setConfirmingKey(next.key_id)}
-                className="font-label inline-flex items-center gap-1 text-ink/70 hover:text-ink hover:underline"
-              >
-                <Undo2 aria-hidden className="size-3" />
-                Revoke (Admin)
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    </li>
-  );
-}
-
-function TagButton({
-  className,
-  children,
-  ...props
-}: ComponentProps<"button">) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-ink text-[0.8rem] font-extrabold text-paper transition-colors hover:bg-ink-3 focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none disabled:cursor-not-allowed",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </button>
   );
 }

@@ -9,10 +9,10 @@ import { CopyKeyButton } from "@/components/giveaways/copy-key-button";
 // A claimed key in the table: masked until the member asks to see it.
 export function ClaimedKeyCell({ value, title }: { value: string | null | undefined; title: string }) {
   const [shown, setShown] = useState(false);
-  if (!value) return <span className="text-sm text-paper-mute">Not readable here</span>;
+  if (!value) return <span className="text-sm text-faint-foreground">Not readable here</span>;
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <code className="font-label mr-1 text-[0.95rem] tracking-[0.14em] break-all text-paper-dim normal-case">
+      <code className="font-label mr-1 text-[0.95rem] tracking-[0.14em] break-all text-dim-foreground normal-case">
         {shown ? value : maskKey(value)}
       </code>
       <Button

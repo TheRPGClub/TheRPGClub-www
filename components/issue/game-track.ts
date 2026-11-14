@@ -17,15 +17,16 @@ export function gameTrack(
 export function trackAccentText(track: GameTrack | null): string {
   if (track === "gotm") return "text-highlight";
   if (track === "nr_gotm") return "text-nr-soft";
-  return "text-paper";
+  return "text-foreground";
 }
 
-// "Game of the Month · November 2026" chips, one per track the game won.
+// "Game of the Month · November 2026" chips, one per track the game won; the
+// tone is the track's Badge tone.
 export function trackChips(
   game: Pick<Game, "gotm_won" | "nr_gotm_won" | "gotm_month_year" | "nr_gotm_month_year">,
   { short = false }: { short?: boolean } = {},
-): { tone: GameTrack; label: string }[] {
-  const chips: { tone: GameTrack; label: string }[] = [];
+): { tone: "gotm" | "nr"; label: string }[] {
+  const chips: { tone: "gotm" | "nr"; label: string }[] = [];
   if (game.gotm_won) {
     const name = short ? "GOTM" : "Game of the Month";
     chips.push({
@@ -36,7 +37,7 @@ export function trackChips(
   if (game.nr_gotm_won) {
     const name = short ? "NR-GOTM" : "Non-RPG Game of the Month";
     chips.push({
-      tone: "nr_gotm",
+      tone: "nr",
       label: game.nr_gotm_month_year
         ? `${name} · ${game.nr_gotm_month_year}`
         : name,

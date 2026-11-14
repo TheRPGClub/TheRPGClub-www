@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import type { GameKey } from "@/lib/api/types";
 import { shortDate } from "@/lib/giveaways";
 import { GameCover } from "@/components/issue/game-cover";
-import { headingLinkClass } from "@/components/issue/page-header";
+import { headingLinkClass } from "@/components/templates/page-header";
 import { cn } from "@/lib/utils";
 
 // The shelf's right rail: the yellow donate panel over the member's own
@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 
 export function DonatePanel({ canClaimCopy }: { canClaimCopy: string }) {
   return (
-    <div className="rounded-md bg-highlight p-5 text-ink">
+    <div className="rounded-md bg-highlight p-5 text-highlight-foreground">
       <h2 className="font-headline text-[1.9rem] leading-[0.9]">Got a spare key?</h2>
-      <p className="mt-2 mb-3.5 text-sm text-highlight-ink">{canClaimCopy}</p>
+      <p className="mt-2 mb-3.5 text-sm text-highlight-muted-foreground">{canClaimCopy}</p>
       <Link
         href="/giveaways/donate"
-        className="font-label inline-flex h-9 items-center gap-2 rounded-sm bg-ink px-3.5 text-[0.95rem] font-extrabold text-paper transition-colors hover:bg-ink-3 focus-visible:ring-3 focus-visible:ring-ink/40 focus-visible:outline-none"
+        className="font-label inline-flex h-9 items-center gap-2 rounded-sm bg-background px-3.5 text-[0.95rem] font-extrabold text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-background/40 focus-visible:outline-none"
       >
         <Plus aria-hidden className="size-4" />
         Donate a key
@@ -43,14 +43,14 @@ function MiniList({
 }) {
   return (
     <section aria-label={title}>
-      <div className="flex items-baseline gap-3 border-b-2 border-paper pb-2">
+      <div className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
         <h2 className="font-headline text-xl">{title}</h2>
-        <span className="font-label text-xs text-paper-mute">{count}</span>
+        <span className="font-label text-xs text-faint-foreground">{count}</span>
         <Link href={href} className={cn(headingLinkClass, "ml-auto text-xs")}>
           {linkLabel}
         </Link>
       </div>
-      {empty ? <p className="py-3 text-sm text-paper-mute">{empty}</p> : <ul>{children}</ul>}
+      {empty ? <p className="py-3 text-sm text-faint-foreground">{empty}</p> : <ul>{children}</ul>}
     </section>
   );
 }
@@ -58,11 +58,11 @@ function MiniList({
 function MiniRow({ gameKey, line }: { gameKey: GameKey; line: string }) {
   const title = gameKey.game?.title ?? gameKey.game_title;
   return (
-    <li className="flex items-center gap-3 border-b border-rule py-2.5">
+    <li className="flex items-center gap-3 border-b border-border py-2.5">
       <GameCover title="" coverUrl={gameKey.game?.cover_url} className="w-[38px]" />
       <div className="min-w-0">
         <p className="truncate text-[0.95rem] leading-tight font-semibold">{title}</p>
-        <p className="text-xs text-paper-mute">{line}</p>
+        <p className="text-xs text-faint-foreground">{line}</p>
       </div>
     </li>
   );

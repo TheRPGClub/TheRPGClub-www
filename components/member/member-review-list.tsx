@@ -21,7 +21,7 @@ export function MemberReviewList({
 }: MemberReviewListProps) {
   if (reviews.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-rule-strong px-4 py-6 text-center text-sm text-paper-mute">
+      <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-faint-foreground">
         {emptyMessage}
       </p>
     );

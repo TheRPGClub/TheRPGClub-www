@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
 import { Slider } from "@/components/ui/slider";
 // The same slide the voting board's tally bars use, imported rather than
 // restated so the two can never drift apart.
 import { BAR_MOTION } from "@/components/voting/accents";
-import {
-  MAX_RATING,
-  MIN_RATING,
-  clampRating,
-  parseRatingInput,
-} from "@/lib/api/rating";
+import { MAX_RATING, MIN_RATING, clampRating } from "@/lib/api/rating";
 import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
+import { useLiveFlag } from "@/hooks/use-live-flag";
+import { RatingReadout } from "./review-composer/rating-readout";
 
 // How long the readout stays "live" after the last slider movement, if the
 // slider never reports a commit (a pointer released off-window, say). Long
@@ -57,12 +52,10 @@ export interface RatingInputProps {
 }
 
 /**
- * The 0..100 rating control.
- *
- * The score readout is itself the text field, so the number you read is the
- * number you type — which is also why there are no spinner arrows to hide.
- * The ramp beneath it runs light to dark across the scale, faint for the part
- * of the scale you haven't given and full strength for the part you have.
+ * The 0..100 rating control: the score readout you can type into, and the
+ * ramp beneath it, which runs light to dark across the scale, faint for the
+ * part of the scale you haven't given and full strength for the part you
+ * have.
  */
 export function RatingInput({
   value,
@@ -72,87 +65,20 @@ export function RatingInput({
 }: RatingInputProps) {
   const style = reviewAccents[accent];
   const unset = value === null;
-
   // True while the slider is being moved, which is the only thing that
   // animates the readout — typing sets the number without the flourish.
-  const [live, setLive] = useState(false);
-  const liveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearLiveTimer = () => {
-    if (liveTimer.current) clearTimeout(liveTimer.current);
-    liveTimer.current = null;
-  };
-
-  const markLive = () => {
-    setLive(true);
-    clearLiveTimer();
-    liveTimer.current = setTimeout(() => setLive(false), LIVE_TIMEOUT_MS);
-  };
-
-  const settle = () => {
-    clearLiveTimer();
-    setLive(false);
-  };
-
-  useEffect(() => clearLiveTimer, []);
+  const { live, mark, settle } = useLiveFlag(LIVE_TIMEOUT_MS);
 
   return (
     <div className="space-y-2.5">
       <div className="flex items-baseline justify-between gap-4">
-        {/* The "/ 100" is the label — a separate "Rating" heading would say
-            nothing the scale and the slider don't already say. */}
-        <div className="flex items-baseline gap-1.5">
-          <span className="relative inline-flex flex-col">
-            <input
-              // A text field rather than a number field: no spinner arrows,
-              // and `parseRatingInput` owns the filtering instead.
-              type="text"
-              inputMode="numeric"
-              autoComplete="off"
-              maxLength={3}
-              disabled={disabled}
-              placeholder="—"
-              aria-label={`Rating out of ${MAX_RATING}`}
-              value={value ?? ""}
-              onChange={(e) => {
-                const next = parseRatingInput(e.target.value);
-                // undefined means the keystroke wasn't a digit — ignore it
-                // rather than letting it clear a score already set.
-                if (next !== undefined) onChange(next);
-              }}
-              className={cn(
-                "peer w-[3ch] border-0 bg-transparent p-0 text-right text-4xl font-semibold tabular-nums tracking-tighter outline-none",
-                "placeholder:font-normal placeholder:text-muted-foreground/60",
-                "transition-[transform,filter] duration-200 ease-out origin-right",
-                "motion-reduce:transition-none",
-                unset ? "text-muted-foreground" : style.readout,
-                // The whole flourish: while the slider drives the value the
-                // readout lifts and picks up the accent's glow, then settles.
-                // `motion-reduce:scale-100` and not just `transition-none`:
-                // without it the readout would still jump to the larger size,
-                // it just wouldn't animate there. The glow stays either way.
-                live &&
-                  !unset &&
-                  cn("scale-[1.12] motion-reduce:scale-100", style.glow),
-                disabled && "opacity-50",
-              )}
-            />
-            {/* Doubles as the focus indicator, since the field carries no
-                border of its own. */}
-            <span
-              aria-hidden
-              className={cn(
-                "mt-0.5 h-px w-full origin-right scale-x-0 rounded-full transition-transform duration-200 ease-out",
-                "peer-hover:scale-x-100 peer-focus:h-0.5 peer-focus:scale-x-100",
-                "motion-reduce:transition-none",
-                style.caret,
-              )}
-            />
-          </span>
-          <span className="text-sm text-muted-foreground tabular-nums">
-            / {MAX_RATING}
-          </span>
-        </div>
+        <RatingReadout
+          value={value}
+          onChange={onChange}
+          accent={accent}
+          live={live}
+          disabled={disabled}
+        />
 
         {style.label && (
           <span className="truncate text-xs text-muted-foreground">
@@ -167,7 +93,7 @@ export function RatingInput({
         // score of 0.
         value={value ?? MIN_RATING}
         onValueChange={(next) => {
-          markLive();
+          mark();
           onChange(clampRating(typeof next === "number" ? next : next[0]));
         }}
         onValueCommitted={settle}
@@ -179,25 +105,13 @@ export function RatingInput({
         getAriaValueText={() =>
           unset ? "Not rated" : `${value} out of ${MAX_RATING}`
         }
-        trackClassName={cn(
-          "bg-transparent bg-linear-to-r data-horizontal:h-2",
-          style.track,
-        )}
-        // `bg-transparent` clears the primitive's solid fill; the ramp is a
-        // background-image over it.
-        indicatorClassName={cn(
-          "bg-transparent bg-linear-to-r",
-          style.fill,
-          live ? "transition-none" : FILL_SLIDING,
-        )}
+        tone={style.sliderTone}
+        trackClassName="data-horizontal:h-2"
+        indicatorClassName={live ? "transition-none" : FILL_SLIDING}
         thumbClassName={cn(
           "size-4 border-2",
-          // A halo in the page colour, so the thumb reads against the ramp it
-          // sits on — a red thumb on a red fill needs the separation.
-          "shadow-[0_0_0_3px_var(--background)]",
           live ? THUMB_TRACKING : THUMB_SLIDING,
           "hover:scale-110 active:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100",
-          style.thumb,
         )}
       />
     </div>

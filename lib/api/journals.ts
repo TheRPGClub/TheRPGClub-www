@@ -1,7 +1,9 @@
 import { apiFetch } from "@/lib/api";
 import type {
   ApiCollection,
+  ApiSingle,
   CollectionMeta,
+  GameSummary,
   JournalContributor,
   JournalEntryGameUser,
   JournalEntryUser,
@@ -109,4 +111,35 @@ export async function fetchFirstEntryAt(
   if (count <= 0) return null;
   const oldest = await fetchGameJournal(gameId, { userId, page: count, per: 1 });
   return oldest?.data[0]?.created_at ?? null;
+}
+
+// The game a journal page names (the catalogue's game filter, a chapter not
+// in the book yet), or null when it can't be read (404 while Game Index isn't
+// open to the viewer).
+export async function fetchJournalGame(gameId: number): Promise<GameSummary | null> {
+  try {
+    const res = await apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiSingle<GameSummary>).data;
+  } catch {
+    return null;
+  }
+}
+
+// The GameDB ids on one of a member's lists (Now Playing, Game Completions),
+// for a chapter's marks. Empty when the read fails.
+export async function fetchListedGameIds(
+  userId: string,
+  list: "now_playing" | "completions",
+): Promise<Set<number>> {
+  try {
+    const res = await apiFetch(`/api/v1/users/${userId}/${list}?per=${JOURNAL_READ_MAX}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return new Set();
+    const body = (await res.json()) as ApiCollection<{ gamedb_game_id: number | null }>;
+    return new Set(body.data.map((row) => row.gamedb_game_id).filter((n): n is number => n != null));
+  } catch {
+    return new Set();
+  }
 }

@@ -31,7 +31,9 @@ export interface ReviewAccentStyle {
   // game page's hero do. Distinct from `glow`, which is a drop-shadow on the
   // score readout — same word, different job.
   wash: string;
-  thumb: string;
+  // The Slider tone for a rating in this accent (its ramp and thumb are
+  // drawn by the Theme).
+  sliderTone: "gotm" | "nr" | "neutral";
   // Underlines the score field on hover and focus, so a borderless number
   // still announces itself as editable.
   caret: string;
@@ -54,47 +56,47 @@ export interface ReviewAccentStyle {
 export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
   brand: {
     label: "Game of the Month",
-    surface: "border-gotm/50 bg-ink-2",
+    surface: "border-gotm/50 bg-card",
     rule: "from-gotm via-gotm/40 to-transparent",
     track: "from-gotm/25 to-gotm/10",
     fill: "from-gotm-soft to-gotm",
-    readout: "text-paper",
+    readout: "text-foreground",
     glow: "",
-    wash: "from-ink to-transparent",
-    thumb: "border-paper bg-gotm ring-gotm/40",
+    wash: "from-background to-transparent",
+    sliderTone: "gotm",
     caret: "bg-gotm",
-    pill: "bg-gotm text-white",
-    quote: "border-gotm text-paper",
+    pill: "bg-gotm text-gotm-foreground",
+    quote: "border-gotm text-foreground",
     ambient: "from-transparent to-transparent",
   },
   purple: {
     label: "Non-RPG Game of the Month",
-    surface: "border-nr/50 bg-ink-2",
+    surface: "border-nr/50 bg-card",
     rule: "from-nr via-nr/40 to-transparent",
     track: "from-nr/25 to-nr/10",
     fill: "from-nr-soft to-nr",
-    readout: "text-paper",
+    readout: "text-foreground",
     glow: "",
-    wash: "from-ink to-transparent",
-    thumb: "border-paper bg-nr ring-nr/40",
+    wash: "from-background to-transparent",
+    sliderTone: "nr",
     caret: "bg-nr",
-    pill: "bg-nr text-white",
-    quote: "border-nr text-paper",
+    pill: "bg-nr text-nr-foreground",
+    quote: "border-nr text-foreground",
     ambient: "from-transparent to-transparent",
   },
   neutral: {
     label: null,
-    surface: "border-rule bg-ink-2",
-    rule: "from-paper/60 via-paper/20 to-transparent",
-    track: "from-paper/20 to-paper/[0.06]",
-    fill: "from-paper to-paper-dim",
-    readout: "text-paper",
+    surface: "border-border bg-card",
+    rule: "from-foreground/60 via-foreground/20 to-transparent",
+    track: "from-foreground/20 to-foreground/[0.06]",
+    fill: "from-foreground to-dim-foreground",
+    readout: "text-foreground",
     glow: "",
-    wash: "from-ink to-transparent",
-    thumb: "border-paper bg-paper ring-paper/30",
-    caret: "bg-paper-dim",
-    pill: "bg-paper/10 text-paper-dim",
-    quote: "border-paper/30 text-paper",
+    wash: "from-background to-transparent",
+    sliderTone: "neutral",
+    caret: "bg-dim-foreground",
+    pill: "bg-foreground/10 text-dim-foreground",
+    quote: "border-foreground/30 text-foreground",
     ambient: "from-transparent to-transparent",
   },
 };

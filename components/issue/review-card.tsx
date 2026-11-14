@@ -1,27 +1,11 @@
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Review } from "@/lib/api/types";
 import { reviewBodyExcerpt, reviewBodyText } from "@/lib/api/review-body";
-import {
-  FacetBars,
-  ReviewerAvatar,
-  ScoreBox,
-  formatReviewDate,
-  reviewerName,
-  scoredFacets,
-} from "@/components/issue/review-meta";
+import { FacetBars, ScoreBox, scoredFacets } from "@/components/issue/review-meta";
+import { ReviewCardBody } from "@/components/issue/review-card-body";
+import { ReviewCardByline } from "@/components/issue/review-card-byline";
 import { cn } from "@/lib/utils";
-
-// Code-split, not client-only: the card is reached through client lists (the
-// game page's composer wraps it), and a static import would put the whole
-// Plate renderer in their bundle. The excerpt stays server-prerendered and
-// keeps its formatting and spoilers.
-const ReviewBodyContent = dynamic(() =>
-  import("@/components/member/review-body").then((m) => ({
-    default: m.ReviewBodyContent,
-  })),
-);
 
 export interface ReviewCardProps {
   review: Review;
@@ -53,51 +37,11 @@ export function ReviewCard({
 }: ReviewCardProps) {
   const target =
     href ?? `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
-  const name = reviewerName(review.user, "A member");
   const hasBody = reviewBodyText(review.body) !== null;
   const excerpt = reviewBodyExcerpt(review.body, variant === "card" ? 280 : 200);
   const facets = scoredFacets(review.facets);
-  const date = (
-    <time dateTime={review.created_at}>{formatReviewDate(review.created_at)}</time>
-  );
-
   const byline = (
-    <div className="flex min-w-0 items-center gap-2.5">
-      {showUser && review.user && (
-        <ReviewerAvatar userId={review.user_id} name={name} />
-      )}
-      <div className="min-w-0 leading-tight">
-        {showUser && review.user ? (
-          <Link
-            href={`/members/${review.user_id}`}
-            className="block truncate text-sm font-semibold hover:text-highlight"
-          >
-            {name}
-          </Link>
-        ) : showGame && review.game ? (
-          <Link
-            href={`/games/${review.gamedb_game_id}`}
-            className="font-label block truncate text-[0.95rem] font-extrabold hover:text-highlight"
-          >
-            {review.game.title}
-          </Link>
-        ) : null}
-        <small className="block text-[0.8rem] text-paper-mute">
-          {showUser && showGame && review.game && (
-            <>
-              <Link
-                href={`/games/${review.gamedb_game_id}`}
-                className="hover:text-paper"
-              >
-                {review.game.title}
-              </Link>
-              {" · "}
-            </>
-          )}
-          {date}
-        </small>
-      </div>
-    </div>
+    <ReviewCardByline review={review} showUser={showUser} showGame={showGame} />
   );
 
   const title = review.title && (
@@ -113,15 +57,7 @@ export function ReviewCard({
     </h3>
   );
 
-  const body = hasBody ? (
-    <div className="text-[0.88rem] leading-[1.6] text-paper-dim [&_h1]:text-paper [&_h2]:text-paper [&_h3]:text-paper">
-      <ReviewBodyContent body={excerpt.value} />
-    </div>
-  ) : (
-    <p className="text-[0.88rem] text-paper-mute italic">
-      Scored without a written review.
-    </p>
-  );
+  const body = <ReviewCardBody hasBody={hasBody} excerpt={excerpt.value} />;
 
   const readLabel = excerpt.truncated ? "Read the rest" : "Open review";
 
@@ -129,11 +65,11 @@ export function ReviewCard({
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-md border border-rule bg-ink-2",
+          "overflow-hidden rounded-md border border-border bg-card",
           className,
         )}
       >
-        <div className="flex items-stretch border-b border-rule">
+        <div className="flex items-stretch border-b border-border">
           <ScoreBox
             rating={review.rating}
             className="h-auto min-h-16 w-[4.9rem] rounded-none text-[2.75rem]"
@@ -161,7 +97,7 @@ export function ReviewCard({
 
   return (
     <article
-      className={cn("flex flex-col gap-3 bg-ink-2 p-[18px]", className)}
+      className={cn("flex flex-col gap-3 bg-card p-[18px]", className)}
     >
       <div className="flex items-center gap-2.5">
         {byline}
@@ -173,11 +109,11 @@ export function ReviewCard({
       {title}
       <FacetBars facets={facets} limit={facetLimit} />
       {body}
-      <div className="font-label mt-auto flex items-center justify-between pt-1 text-[0.82rem] tracking-[0.06em] text-paper-mute">
+      <div className="font-label mt-auto flex items-center justify-between pt-1 text-[0.82rem] tracking-[0.06em] text-faint-foreground">
         <span>{excerpt.truncated ? "Excerpt" : hasBody ? "In full" : "Score only"}</span>
         <Link
           href={target}
-          className="font-extrabold text-paper transition-colors hover:text-highlight"
+          className="font-extrabold text-foreground transition-colors hover:text-highlight"
         >
           {readLabel}
         </Link>

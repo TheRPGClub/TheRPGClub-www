@@ -1,30 +1,7 @@
 import Link from "next/link";
 import type { CollectionPlatformSummary } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
-
-// The `platform_id` filter value: a gamedb platform id, or "none" for entries
-// with no platform. null means unfiltered.
-export type PlatformFilter = string | null;
-
-// Only a numeric id or "none" reaches the API; anything else reads as "All"
-// rather than being passed through into the query string.
-export function parsePlatformFilter(raw: string | undefined): PlatformFilter {
-  if (raw === "none") return "none";
-  if (raw && /^\d+$/.test(raw)) return raw;
-  return null;
-}
-
-// The collected-games URL for a page and filter. Page 1 and "All" stay off the
-// query string so the canonical URL is the bare path.
-export function collectedGamesHref(
-  userId: string,
-  { page = 1, platformId = null }: { page?: number; platformId?: PlatformFilter },
-): string {
-  const ps = new URLSearchParams();
-  if (platformId) ps.set("platform_id", platformId);
-  if (page > 1) ps.set("page", String(page));
-  return `/members/${userId}/collected-games${ps.size ? `?${ps}` : ""}`;
-}
+import { collectedGamesHref, type PlatformFilter } from "@/lib/members/collection-filter";
 
 export interface CollectionPlatformStripProps {
   userId: string;
@@ -56,7 +33,7 @@ export function CollectionPlatformStrip({
   return (
     <nav
       aria-label="Filter by platform"
-      className="border-y border-rule py-2.5"
+      className="border-y border-border py-2.5"
     >
       <ul className="flex flex-wrap gap-1">
         {chips.map((chip) => {
@@ -70,8 +47,8 @@ export function CollectionPlatformStrip({
                 className={cn(
                   "font-label inline-flex h-8 items-center gap-2 rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors",
                   isActive
-                    ? "bg-paper text-ink"
-                    : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                    ? "bg-foreground text-background"
+                    : "text-dim-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {chip.label}

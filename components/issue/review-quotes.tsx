@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { Review } from "@/lib/api/types";
 import { MAX_RATING } from "@/lib/api/rating";
-import { SectionHeading } from "@/components/issue/page-header";
-import { ReviewerAvatar, reviewerName } from "@/components/issue/review-meta";
+import { SectionHeading } from "@/components/templates/page-header";
+import { ReviewerAvatar } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { reviewPullQuote } from "@/components/issue/review-quote";
 
 // "In their words": a line from each of a few reviews, set as pull quotes.
@@ -36,26 +37,26 @@ export function ReviewQuotes({
           return (
             <figure
               key={review.review_id}
-              className="border-t border-rule pt-3.5"
+              className="border-t border-border pt-3.5"
             >
               <blockquote className="font-headline text-[1.5rem] leading-[1.02] md:text-[1.7rem]">
                 <Link
                   href={hrefs[review.review_id]}
                   className="transition-colors hover:text-highlight"
                 >
-                  <span aria-hidden className="text-paper-mute">
+                  <span aria-hidden className="text-faint-foreground">
                     &ldquo;
                   </span>
                   {quote}
-                  <span aria-hidden className="text-paper-mute">
+                  <span aria-hidden className="text-faint-foreground">
                     &rdquo;
                   </span>
                 </Link>
               </blockquote>
-              <figcaption className="mt-3 flex items-center gap-2 text-[0.85rem] text-paper-mute">
+              <figcaption className="mt-3 flex items-center gap-2 text-[0.85rem] text-faint-foreground">
                 <ReviewerAvatar userId={review.user_id} name={name} size="sm" />
                 <span>
-                  <b className="font-semibold text-paper">{name}</b> ·{" "}
+                  <b className="font-semibold text-foreground">{name}</b> ·{" "}
                   {review.rating}/{MAX_RATING}
                 </span>
               </figcaption>

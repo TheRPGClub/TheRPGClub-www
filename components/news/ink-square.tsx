@@ -25,7 +25,7 @@ export function InkSquare({
         filled ? "bg-(--news-ink)" : "shadow-[inset_0_0_0_1.5px_var(--news-ink)]",
         dashed &&
           (filled
-            ? "outline-[1.5px] -outline-offset-[2px] outline-ink/70 outline-dashed"
+            ? "outline-[1.5px] -outline-offset-[2px] outline-background/70 outline-dashed"
             : "border-[1.5px] border-dashed border-(--news-ink) shadow-none"),
         className,
       )}

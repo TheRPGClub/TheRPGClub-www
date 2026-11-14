@@ -16,7 +16,7 @@ export function RunningHead({ trail }: { trail: Crumb[] }) {
 
   return (
     <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
-      <ol className="font-label flex min-w-0 items-center gap-2 text-[0.95rem] font-bold tracking-[0.08em] text-paper-mute">
+      <ol className="font-label flex min-w-0 items-center gap-2 text-[0.95rem] font-bold tracking-[0.08em] text-faint-foreground">
         {trail.map((crumb, i) => (
           <li
             key={crumb.href}
@@ -39,14 +39,14 @@ export function RunningHead({ trail }: { trail: Crumb[] }) {
               </span>
             )}
             {i === last ? (
-              <span aria-current="page" className="truncate text-paper">
+              <span aria-current="page" className="truncate text-foreground">
                 {crumb.label}
               </span>
             ) : (
               <Link
                 href={crumb.href}
                 className={cn(
-                  "min-w-0 truncate transition-colors hover:text-paper",
+                  "min-w-0 truncate transition-colors hover:text-foreground",
                   // Middle crumbs (a long game title) give way first.
                   i > 0 && "sm:max-w-[14rem]",
                 )}

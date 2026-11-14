@@ -1,12 +1,14 @@
 "use client";
 
-import { useId, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { VotingCategory } from "@/lib/api/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 // The board's two tracks as tabs over one rule, each labelled with its count
 // in the track's ink. Both boards stay mounted, so switching keeps a board's
-// optimistic vote state and costs no request.
+// optimistic vote state and costs no request. Arrow keys move between the
+// tabs and select as they go.
 
 export interface VotingTab {
   category: VotingCategory;
@@ -16,81 +18,44 @@ export interface VotingTab {
 }
 
 const COUNT_TONE: Record<VotingCategory, string> = {
-  gotm: "bg-gotm text-white",
-  nr_gotm: "bg-nr text-white",
+  gotm: "bg-gotm text-gotm-foreground",
+  nr_gotm: "bg-nr text-nr-foreground",
 };
 
 export function VotingTabs({ tabs }: { tabs: VotingTab[] }) {
-  const id = useId();
-  const [active, setActive] = useState(tabs[0]?.category);
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-
-  // Arrow keys move between tabs, per the WAI-ARIA tabs pattern.
-  const onKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    e.preventDefault();
-    const next =
-      (index + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
-    setActive(tabs[next].category);
-    buttons.current[next]?.focus();
-  };
-
   return (
-    <div className="space-y-5">
-      <div
-        role="tablist"
+    <Tabs defaultValue={tabs[0]?.category} className="block space-y-5">
+      <TabsList
+        variant="line"
         aria-label="Ballot tracks"
-        className="flex items-end gap-0.5 border-b-2 border-paper"
+        activateOnFocus
+        className="flex w-auto items-end justify-start gap-0.5 p-0 group-data-horizontal/tabs:h-auto"
       >
-        {tabs.map((tab, i) => {
-          const selected = tab.category === active;
-          return (
-            <button
-              key={tab.category}
-              ref={(el) => {
-                buttons.current[i] = el;
-              }}
-              type="button"
-              role="tab"
-              id={`${id}-tab-${tab.category}`}
-              aria-selected={selected}
-              aria-controls={`${id}-panel-${tab.category}`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(tab.category)}
-              onKeyDown={(e) => onKeyDown(e, i)}
+        {tabs.map((tab) => (
+          <TabsTrigger
+            key={tab.category}
+            value={tab.category}
+            className="h-10.5 flex-initial gap-2.5 border-0 px-2.5 py-0 text-[1.2rem] transition-colors after:hidden sm:h-11.5 sm:px-4 sm:text-2xl"
+          >
+            {tab.label}
+            <span
               className={cn(
-                "font-headline inline-flex h-10.5 items-center gap-2.5 rounded-t-sm px-2.5 text-[1.2rem] transition-colors sm:h-11.5 sm:px-4 sm:text-2xl",
-                selected
-                  ? "bg-paper text-ink"
-                  : "text-paper-mute hover:text-paper",
+                "font-label rounded-xs px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.06em] tabular-nums sm:leading-[calc(2/1.5)]",
+                COUNT_TONE[tab.category],
               )}
             >
-              {tab.label}
-              <span
-                className={cn(
-                  "font-label rounded-xs px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.06em] tabular-nums",
-                  COUNT_TONE[tab.category],
-                )}
-              >
-                <span className="sr-only">(</span>
-                {tab.count}
-                <span className="sr-only">)</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              <span className="sr-only">(</span>
+              {tab.count}
+              <span className="sr-only">)</span>
+            </span>
+          </TabsTrigger>
+        ))}
+      </TabsList>
       {tabs.map((tab) => (
-        <div
-          key={tab.category}
-          role="tabpanel"
-          id={`${id}-panel-${tab.category}`}
-          aria-labelledby={`${id}-tab-${tab.category}`}
-          hidden={tab.category !== active}
-        >
+        <TabsContent key={tab.category} value={tab.category} keepMounted className="text-base">
           {tab.panel}
-        </div>
+        </TabsContent>
       ))}
-    </div>
+    </Tabs>
   );
 }

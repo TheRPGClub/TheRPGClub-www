@@ -1,0 +1,1238 @@
+/* The Monthly Issue Theme's primitives: how every shadcn primitive looks in
+   this Theme, by its data-slot and its variant, size or tone attribute (api
+   ADR-0008). The primitives keep only their shared base (layout, the focus
+   ring, the disabled state); everything that makes them look like the
+   Monthly Issue lives here. @layer themes sits above Tailwind's utilities.
+
+   Each rule carries the whole look of one slot (and variant), as one @apply,
+   so the order between its states is Tailwind's own. Split a rule only where
+   the parts cannot meet (a size rule touches only the corners). */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Button. A Button keeps its variant when another primitive renders
+           it under its own slot (a dialog's close, the sidebar trigger, a
+           trigger rendered as a Button). Only an element with a variant
+           takes the look. A link that looks like a Button is a ButtonLink,
+           slot "button". */
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="input-group-button"],
+                [data-slot="combobox-clear"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &[data-variant="default"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-primary text-primary-foreground hover:bg-gotm/85;
+            }
+            &[data-variant="highlight"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-highlight text-highlight-foreground hover:bg-highlight/85;
+            }
+            &[data-variant="nr"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
+            }
+            &[data-variant="outline"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-faint-foreground/60 bg-transparent text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted;
+            }
+            &[data-variant="overlay"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-faint-foreground/60 text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted bg-background/70;
+            }
+            &[data-variant="selected"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:border-foreground aria-expanded:bg-muted border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background;
+            }
+            &[data-variant="secondary"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground;
+            }
+            &[data-variant="ghost"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50;
+            }
+            /* A tool on content (www#92): the ghost, resting in the faint
+               ink. */
+            &[data-variant="tool"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-faint-foreground;
+            }
+            &[data-variant="destructive-ghost"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive;
+            }
+            /* The Member editors (www#94): the ghost and its destructive
+               twin resting in the muted ink (a dense editor's small tools);
+               a quiet dotted link that opens an explainer; a round remove
+               on a cover, light ink that inverts on hover. */
+            &[data-variant="editor-tool"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-muted-foreground;
+            }
+            &[data-variant="destructive-editor-tool"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-muted-foreground;
+            }
+            &[data-variant="help"] {
+                @apply text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground;
+            }
+            &[data-variant="cover-remove"] {
+                @apply rounded-full bg-background/85 text-foreground transition-colors hover:bg-foreground hover:text-background;
+            }
+            &[data-variant="destructive"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 dark:bg-destructive/20 dark:hover:bg-destructive/30;
+            }
+            &[data-variant="destructive-solid"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive text-destructive-foreground hover:bg-destructive/85;
+            }
+            &[data-variant="destructive-outline"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border-destructive bg-transparent text-destructive hover:bg-destructive/10;
+            }
+            &[data-variant="inverse"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-background text-foreground hover:bg-background/85 focus-visible:border-background;
+            }
+            &[data-variant="inverse-outline"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-transparent inset-ring-[1.5px] inset-ring-current hover:bg-current/10 focus-visible:border-current;
+            }
+            &[data-variant="link"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 text-foreground decoration-gotm hover:text-highlight;
+            }
+        }
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                @apply rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg;
+            }
+            &:is([data-size="sm"], [data-size="icon-sm"]) {
+                @apply rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg;
+            }
+        }
+        /* www#89: the app shell's and the root components' Button variants.
+           The sidebar's own toggles light in the sidebar accent; its footer
+           action is faint ink that lights on hover; an add slot is a dashed
+           strong rule that turns yellow on hover. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                @apply rounded-md border-0 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
+            &[data-variant="sidebar-action"] {
+                @apply rounded-sm border-0 text-faint-foreground transition-colors hover:bg-muted hover:text-foreground;
+            }
+            &[data-variant="add"] {
+                @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
+            }
+        }
+        /* The Member editors (www#94). An add slot in a shelf of covers is
+           cornered like the covers and set a little wider. The bare field
+           sits inside a frame that already draws it; the readout is a
+           number set into a row, with no field until hover or focus, and
+           it doesn't dim while its form saves. Both take the ink of what
+           holds them. */
+        [data-slot="button"][data-variant="add"][data-size="tile"] {
+            @apply rounded-[3px] tracking-[0.08em];
+        }
+        [data-slot="input"][data-variant="bare"] {
+            @apply bg-transparent placeholder:text-muted-foreground/60 focus-visible:ring-0 disabled:bg-transparent dark:disabled:bg-transparent;
+        }
+        [data-slot="input"][data-variant="readout"] {
+            @apply rounded bg-transparent placeholder:font-normal placeholder:text-muted-foreground/60 hover:bg-muted/60 focus:bg-muted/60 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 dark:disabled:bg-transparent;
+        }
+        /* An editor's formatting toggle: muted until hovered, pressed in
+           the muted ground with full ink; focus is an outline. */
+        [data-slot="toggle"][data-variant="toolbar"] {
+            @apply rounded-md [font-family:inherit] font-normal tracking-normal normal-case text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:bg-muted aria-pressed:text-foreground data-pressed:bg-muted data-pressed:text-foreground;
+        }
+        /* The carousel's arrows are round. */
+        :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
+            @apply rounded-full;
+        }
+        /* The combobox's open trigger stays clear. */
+        [data-slot="input-group-button"][data-variant][data-pressed] {
+            @apply bg-transparent;
+        }
+        /* An input group's own buttons sit inside its corners. */
+        [data-slot="input-group-button"],
+        [data-slot="combobox-clear"] {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                @apply rounded-[calc(var(--radius)-3px)];
+            }
+        }
+
+        /* Badge: a chip in the label voice, 2px corners. Tracks colour their
+           own chips; everything else stays paper on ink. */
+        [data-slot="badge"] {
+            @apply font-label rounded-xs border-transparent font-bold focus-visible:border-ring aria-invalid:border-destructive;
+            &[data-tone="neutral"] {
+                @apply bg-foreground/8 text-dim-foreground;
+            }
+            &[data-tone="secondary"] {
+                @apply bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80;
+            }
+            &[data-tone="gotm"] {
+                @apply bg-gotm text-gotm-foreground;
+            }
+            &[data-tone="nr"] {
+                @apply bg-nr text-nr-foreground;
+            }
+            &[data-tone="highlight"] {
+                @apply bg-highlight text-highlight-foreground;
+            }
+            &[data-tone="inverse"] {
+                @apply bg-foreground text-background;
+            }
+            &[data-tone="outline"] {
+                @apply text-foreground inset-ring-[1.5px] inset-ring-dim-foreground;
+            }
+            &[data-tone="destructive"] {
+                @apply bg-destructive text-destructive-foreground;
+            }
+            &[data-tone="rarity-common"] {
+                @apply bg-rarity-common text-rarity-foreground;
+            }
+            &[data-tone="rarity-uncommon"] {
+                @apply bg-rarity-uncommon text-rarity-foreground;
+            }
+            &[data-tone="rarity-rare"] {
+                @apply bg-rarity-rare text-rarity-foreground;
+            }
+            &[data-tone="rarity-ultra"] {
+                @apply bg-rarity-ultra text-rarity-foreground;
+            }
+            &[data-tone="foil"] {
+                @apply foil;
+            }
+        }
+
+        /* Badge, the chip family (www#90): Provider chips in their own
+           colour, the giveaway platform chip in its ribbon ink, the hub's
+           filter chips (the current one marked, a Provider not picked drawn
+           as a stroke in its colour, data-unpicked), the journal catalogue's
+           picked filter, a status drawn as a hairline and the sidebar's
+           badge scale. */
+        [data-slot="badge"] {
+            &[data-tone="provider-retroachievements"] {
+                @apply bg-provider-retroachievements text-provider-foreground;
+                &[data-unpicked] {
+                    @apply bg-transparent text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-steam"] {
+                @apply bg-provider-steam text-provider-foreground;
+                &[data-unpicked] {
+                    @apply bg-transparent text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-psn"] {
+                @apply bg-provider-psn text-provider-foreground;
+                &[data-unpicked] {
+                    @apply bg-transparent text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)] hover:brightness-125;
+                }
+            }
+            &:is([data-tone="provider-retroachievements"], [data-tone="provider-steam"], [data-tone="provider-psn"])[aria-current="page"] {
+                @apply outline-2 outline-offset-2 outline-highlight;
+            }
+            &[data-tone="platform"] {
+                @apply bg-(--platform-ink) font-extrabold text-background;
+            }
+            &[data-tone="option"] {
+                @apply bg-foreground/6 text-dim-foreground hover:text-foreground;
+                &[aria-current="page"] {
+                    @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+                }
+            }
+            &[data-tone="picked"] {
+                @apply rounded-sm bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+            }
+            &[data-tone="status"] {
+                @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
+            }
+            &[data-size="nav"] {
+                @apply font-extrabold;
+            }
+            &[data-size="filter"] {
+                @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            }
+        }
+
+        /* Input: an ink-2 field with a rule, paper-mute on focus and the
+           yellow caret. */
+        [data-slot="input"] {
+            @apply rounded-sm border-border bg-card caret-highlight file:bg-transparent file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50;
+            &[data-variant="inset"] {
+                @apply bg-background;
+            }
+            &[data-variant="inverse"] {
+                @apply border-background bg-[#fff8cc] text-background caret-background placeholder:text-background/55 focus-visible:border-background focus-visible:ring-background/20;
+            }
+            &[data-variant="destructive"] {
+                @apply border-destructive bg-background text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-ring/40 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
+            }
+            /* A field in a filter bar (www#93): the strong rule of the
+               member pages' selects, paper-mute on hover. */
+            &[data-variant="filter"] {
+                @apply border-border-strong placeholder:text-faint-foreground hover:border-faint-foreground focus-visible:border-faint-foreground [color-scheme:dark];
+            }
+        }
+
+        /* Skeleton: an ink-3 block that pulses, cornered like what it stands
+           in for. */
+        [data-slot="skeleton"] {
+            @apply rounded-md bg-accent;
+            &:is([data-variant="card"], [data-variant="control"]) {
+                @apply rounded-sm;
+            }
+            &[data-variant="text"] {
+                @apply rounded-xs;
+            }
+            &[data-variant="plate"] {
+                @apply rounded-none;
+            }
+        }
+
+        /* Separator: a rule. */
+        [data-slot="separator"] {
+            @apply bg-border;
+        }
+
+        /* Progress: a hairline bar on ink-3, filled in the bar's own ink. */
+        [data-slot="progress-track"] {
+            @apply bg-muted;
+        }
+        [data-slot="progress-indicator"] {
+            @apply bg-primary;
+        }
+        [data-slot="progress"] {
+            &[data-tone="gotm"] [data-slot="progress-indicator"] {
+                @apply bg-gotm;
+            }
+            &[data-tone="nr"] [data-slot="progress-indicator"] {
+                @apply bg-nr;
+            }
+            &[data-tone="highlight"] [data-slot="progress-indicator"] {
+                @apply bg-highlight;
+            }
+            &[data-tone="neutral"] [data-slot="progress-indicator"] {
+                @apply bg-foreground;
+            }
+            &[data-tone="destructive"] [data-slot="progress-indicator"] {
+                @apply bg-destructive;
+            }
+        }
+        [data-slot="progress-label"] {
+            @apply font-medium;
+        }
+        [data-slot="progress-value"] {
+            @apply text-muted-foreground;
+        }
+
+        /* Slider: a hairline track, a white thumb ringed in yellow. */
+        [data-slot="slider-track"] {
+            @apply bg-muted;
+        }
+        [data-slot="slider-range"] {
+            @apply bg-primary;
+        }
+        [data-slot="slider-thumb"] {
+            @apply rounded-full border-ring bg-white ring-ring/50 hover:ring-3 active:ring-3;
+        }
+        /* A rating: the track and fill are a ramp within the track's ink, and
+           the thumb wears that ink with a halo in the page colour, so it reads
+           against the ramp it sits on. */
+        [data-slot="slider"]:is([data-tone="gotm"], [data-tone="nr"], [data-tone="neutral"]) {
+            [data-slot="slider-track"],
+            [data-slot="slider-range"] {
+                @apply bg-transparent bg-linear-to-r;
+            }
+            [data-slot="slider-thumb"] {
+                @apply border-foreground shadow-[0_0_0_3px_var(--background)];
+            }
+            &[data-size="sm"] [data-slot="slider-thumb"] {
+                @apply shadow-[0_0_0_2px_var(--background)];
+            }
+        }
+        [data-slot="slider"][data-tone="gotm"] {
+            [data-slot="slider-track"] {
+                @apply from-gotm/25 to-gotm/10;
+            }
+            [data-slot="slider-range"] {
+                @apply from-gotm-soft to-gotm;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-gotm ring-gotm/40;
+            }
+        }
+        [data-slot="slider"][data-tone="nr"] {
+            [data-slot="slider-track"] {
+                @apply from-nr/25 to-nr/10;
+            }
+            [data-slot="slider-range"] {
+                @apply from-nr-soft to-nr;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-nr ring-nr/40;
+            }
+        }
+        [data-slot="slider"][data-tone="neutral"] {
+            [data-slot="slider-track"] {
+                @apply from-foreground/20 to-foreground/[0.06];
+            }
+            [data-slot="slider-range"] {
+                @apply from-foreground to-dim-foreground;
+            }
+            [data-slot="slider-thumb"] {
+                @apply bg-foreground ring-foreground/30;
+            }
+        }
+
+        /* Avatar: round, with a hairline ring blended into the picture. */
+        [data-slot="avatar"] {
+            @apply rounded-full after:rounded-full after:border-border after:mix-blend-darken dark:after:mix-blend-lighten;
+        }
+        [data-slot="avatar-image"] {
+            @apply rounded-full;
+        }
+        [data-slot="avatar-fallback"] {
+            @apply rounded-full bg-muted text-muted-foreground;
+        }
+        [data-slot="avatar-badge"] {
+            @apply rounded-full bg-primary text-primary-foreground bg-blend-color ring-2 ring-background;
+        }
+        [data-slot="avatar-group"] {
+            @apply *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background;
+        }
+        [data-slot="avatar-group-count"] {
+            @apply rounded-full bg-muted text-muted-foreground ring-2 ring-background;
+        }
+        [data-slot="avatar"][data-variant="tile"] {
+            @apply rounded-none;
+            [data-slot="avatar-image"] {
+                @apply rounded-none;
+            }
+            [data-slot="avatar-fallback"] {
+                @apply rounded-none text-faint-foreground;
+            }
+        }
+        [data-slot="avatar"][data-variant="inverse"] [data-slot="avatar-fallback"] {
+            @apply bg-foreground text-background;
+        }
+        [data-slot="avatar"][data-variant="byline"] [data-slot="avatar-fallback"] {
+            @apply text-foreground;
+        }
+        [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
+            @apply text-dim-foreground;
+        }
+
+        /* Tooltip: a small paper label with ink type. */
+        [data-slot="tooltip-content"] {
+            @apply rounded-md bg-foreground text-background **:data-[slot=kbd]:rounded-sm;
+        }
+        [data-slot="tooltip-arrow"] {
+            @apply rounded-[2px] bg-foreground fill-foreground;
+        }
+
+        /* Dialog: an ink-2 sheet on a dimmed, softly blurred page, with the
+           object lift; the title in the headline voice. */
+        [data-slot="dialog-overlay"] {
+            @apply bg-black/70 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="dialog-content"] {
+            @apply rounded-md border-border-strong bg-card bg-clip-padding text-foreground shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        [data-slot="dialog-title"] {
+            @apply font-headline leading-[0.95] text-foreground;
+            &[data-variant="help"] {
+                @apply leading-7 font-semibold tracking-tight;
+            }
+        }
+        [data-slot="dialog-description"] {
+            @apply text-dim-foreground;
+        }
+
+        /* Sheet: a popover panel from the edge. */
+        [data-slot="sheet-overlay"] {
+            @apply bg-black/60 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="sheet-content"] {
+            @apply bg-popover bg-clip-padding text-popover-foreground shadow-lg;
+        }
+        [data-slot="sheet-title"] {
+            @apply font-medium text-foreground;
+        }
+        [data-slot="sheet-description"] {
+            @apply text-muted-foreground;
+        }
+
+        /* Dropdown menu: an ink-2 card with the object lift; items light up
+           in ink-3; the label in the tracked label voice. */
+        [data-slot="dropdown-menu-label"] {
+            @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="dropdown-menu-content"] {
+            @apply rounded-sm border-border-strong bg-card bg-clip-padding text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="dropdown-menu-item"],
+        [data-slot="dropdown-menu-radio-item"] {
+            @apply rounded-xs data-highlighted:bg-muted data-highlighted:text-foreground;
+        }
+        [data-slot="dropdown-menu-separator"] {
+            @apply bg-border;
+        }
+
+        /* Pagination: ghost page numbers in paper-dim; the current page is a
+           paper block with ink type. */
+        [data-slot="pagination-link"] {
+            @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-dim-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background;
+        }
+
+        /* Sidebar: the ink-2 rail beside the page. */
+        [data-slot="sidebar-wrapper"] {
+            @apply has-data-[variant=inset]:bg-sidebar;
+        }
+        [data-slot="sidebar"] {
+            @apply text-sidebar-foreground;
+            &:not([data-variant]) {
+                @apply bg-sidebar;
+            }
+            /* On phones the sidebar is a sheet. */
+            &[data-mobile="true"] {
+                @apply bg-clip-padding shadow-lg;
+            }
+        }
+        [data-slot="sidebar-gap"] {
+            @apply bg-transparent;
+        }
+        [data-slot="sidebar-inner"] {
+            @apply bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border;
+        }
+        [data-slot="sidebar-rail"] {
+            @apply hover:after:bg-sidebar-border hover:group-data-[collapsible=offcanvas]:bg-sidebar;
+        }
+        [data-slot="sidebar-inset"] {
+            @apply bg-background md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm;
+        }
+        [data-slot="sidebar-input"] {
+            @apply rounded-sm border-border caret-highlight file:bg-transparent file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 bg-background shadow-none;
+        }
+        [data-slot="sidebar-separator"] {
+            @apply bg-sidebar-border;
+        }
+        /* A group's label is set in the tracked caps label voice. */
+        [data-slot="sidebar-group-label"] {
+            @apply rounded-md font-label font-medium tracking-[0.08em] text-faint-foreground uppercase ring-sidebar-ring;
+        }
+        [data-slot="sidebar-group-action"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+        }
+        [data-slot="sidebar-menu-button"] {
+            /* The club's nav: label voice in paper-dim; you are here in
+               masthead red. */
+            &[data-variant="default"] {
+                @apply ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground font-label rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground data-active:bg-gotm data-active:font-bold data-active:text-gotm-foreground;
+            }
+            &[data-variant="outline"] {
+                @apply rounded-md ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))];
+            }
+        }
+        [data-slot="sidebar-menu-action"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+            &[data-show-on-hover] {
+                @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+            }
+        }
+        [data-slot="sidebar-menu-badge"] {
+            @apply rounded-md font-medium text-sidebar-foreground peer-hover/menu-button:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+        }
+        [data-slot="sidebar-menu-skeleton"] {
+            @apply rounded-md;
+        }
+        [data-slot="sidebar-menu-sub"] {
+            @apply border-sidebar-border;
+        }
+        [data-slot="sidebar-menu-sub-button"] {
+            @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground;
+        }
+
+        /* Card: a panel of ink-2 with a rule, 3.2px corners. The active panel (being edited, picked) takes the yellow
+           rule; a cover card is art under a legibility scrim. */
+        [data-slot="card"] {
+            @apply rounded-md border-border bg-card text-card-foreground *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md;
+            &[data-variant="active"] {
+                @apply border-highlight;
+            }
+            &[data-variant="cover"] {
+                @apply border-transparent bg-muted text-foreground;
+            }
+        }
+        [data-slot="card-header"] {
+            @apply rounded-t-md;
+        }
+        [data-slot="card-title"] {
+            @apply font-headline text-foreground;
+        }
+        [data-slot="card-description"] {
+            @apply text-dim-foreground;
+        }
+        [data-slot="card-footer"] {
+            @apply rounded-b-md border-border bg-muted/50;
+        }
+        [data-slot="card-scrim"] {
+            @apply bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_92%,transparent),color-mix(in_oklab,var(--color-background)_45%,transparent)_55%,transparent)];
+        }
+
+        /* Alert dialog: the Dialog's sheet, for a confirm. */
+        [data-slot="alert-dialog-overlay"] {
+            @apply bg-black/70 supports-backdrop-filter:backdrop-blur-xs;
+        }
+        [data-slot="alert-dialog-content"] {
+            @apply rounded-md border border-border-strong bg-card text-foreground shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        [data-slot="alert-dialog-footer"] {
+            @apply rounded-b-md border-border bg-background/40;
+        }
+        [data-slot="alert-dialog-media"] {
+            @apply rounded-sm bg-muted;
+        }
+        [data-slot="alert-dialog-title"] {
+            @apply font-headline text-[1.6rem] leading-[0.95] text-foreground;
+        }
+        [data-slot="alert-dialog-description"] {
+            @apply text-dim-foreground *:[a]:hover:text-highlight;
+        }
+
+        /* Fields: an ink-2 well with a rule (the Input's look), paper-mute
+           on focus and the yellow caret. */
+        [data-slot="textarea"] {
+            @apply rounded-sm border-border bg-card text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-faint-foreground disabled:bg-input/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50;
+        }
+        [data-slot="input-group"] {
+            @apply rounded-sm border-border bg-card in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-disabled:bg-input/50 has-[[data-slot=input-group-control]:focus-visible]:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/40 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40;
+        }
+        /* A page's search bar (www#92): the strong rule, and focus shows
+           on the rule alone. */
+        [data-slot="input-group"][data-variant="search"] {
+            @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
+        }
+        [data-slot="input-group-addon"] {
+            @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];
+        }
+        [data-slot="input-group-control"] {
+            @apply rounded-none bg-transparent caret-highlight shadow-none ring-0 placeholder:text-faint-foreground disabled:bg-transparent;
+        }
+        [data-slot="input-group-text"] {
+            @apply text-faint-foreground;
+        }
+
+        /* Checkbox and radio: an ink-2 box with a strong rule, filled
+           highlighter yellow when checked. */
+        [data-slot="checkbox"],
+        [data-slot="radio-group-item"] {
+            @apply border-border-strong bg-card group-has-[:focus-visible]/field-label:ring-0 focus-visible:border-ring aria-invalid:border-destructive data-checked:border-highlight data-checked:bg-highlight data-checked:text-highlight-foreground;
+        }
+        [data-slot="checkbox"] {
+            @apply rounded-xs;
+        }
+        [data-slot="radio-group-item"] {
+            @apply rounded-full;
+        }
+        [data-slot="radio-group-dot"] {
+            @apply rounded-full bg-highlight-foreground;
+        }
+
+        /* Switch: a hard-cornered ink-3 track with a strong rule and a
+           paper-mute thumb; on, the track is highlighter yellow and the
+           thumb ink. */
+        [data-slot="switch"] {
+            @apply rounded-[3px] border-transparent focus-visible:border-ring aria-invalid:border-destructive data-unchecked:bg-muted data-unchecked:inset-ring-1 data-unchecked:inset-ring-border-strong data-unchecked:hover:inset-ring-faint-foreground data-checked:bg-highlight data-checked:hover:bg-highlight/85;
+        }
+        [data-slot="switch-thumb"] {
+            @apply rounded-xs data-unchecked:bg-faint-foreground data-checked:bg-background;
+        }
+
+        /* Label: the tracked label voice in paper-mute. */
+        [data-slot="label"][data-variant="default"],
+        [data-slot="field-label"] {
+            @apply font-label tracking-[0.06em] text-faint-foreground;
+        }
+        [data-slot="field"] {
+            @apply data-[invalid=true]:text-destructive;
+        }
+        [data-slot="field-legend"] {
+            @apply font-label tracking-[0.06em] text-dim-foreground;
+        }
+        [data-slot="field-description"] {
+            @apply font-normal text-faint-foreground [&>a:hover]:text-highlight;
+        }
+        [data-slot="field-separator-content"] {
+            @apply bg-background text-faint-foreground;
+        }
+        [data-slot="field-error"] {
+            @apply font-normal text-destructive;
+        }
+        /* A choice card: a field inside its label. */
+        [data-slot="field-label"] {
+            @apply has-[>[data-slot=field]]:rounded-sm has-[>[data-slot=field]]:border-border has-[>[data-slot=field]]:normal-case has-[>[data-slot=field]]:tracking-normal has-[>[data-slot=field]]:text-foreground has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted has-data-checked:border-highlight has-data-checked:bg-muted has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-2 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/40;
+        }
+
+        /* Select: the member field's look, a strong rule on ink-2; the list
+           is an ink-2 card with the object lift. */
+        [data-slot="select-trigger"] {
+            @apply rounded-sm border-border-strong bg-card text-foreground hover:border-faint-foreground focus-visible:border-faint-foreground aria-invalid:border-destructive data-placeholder:text-faint-foreground;
+        }
+        [data-slot="select-trigger-icon"],
+        [data-slot="combobox-trigger-icon"] {
+            @apply text-faint-foreground;
+        }
+        [data-slot="select-content"],
+        [data-slot="combobox-content"] {
+            @apply rounded-sm border border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="combobox-content"] {
+            @apply *:data-[slot=input-group]:border-border *:data-[slot=input-group]:bg-background *:data-[slot=input-group]:shadow-none;
+        }
+        [data-slot="select-label"],
+        [data-slot="combobox-label"] {
+            @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="select-item"] {
+            @apply rounded-xs focus:bg-muted focus:text-foreground;
+        }
+        [data-slot="combobox-item"] {
+            @apply rounded-xs data-highlighted:bg-muted data-highlighted:text-foreground;
+        }
+        [data-slot="select-separator"],
+        [data-slot="combobox-separator"] {
+            @apply bg-border;
+        }
+        [data-slot="select-scroll-up-button"],
+        [data-slot="select-scroll-down-button"] {
+            @apply bg-card;
+        }
+        [data-slot="combobox-empty"] {
+            @apply text-faint-foreground;
+        }
+        [data-slot="combobox-chips"] {
+            @apply rounded-sm border-border bg-card bg-clip-padding focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-ring/40 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20;
+        }
+        [data-slot="combobox-chip"] {
+            @apply font-label rounded-xs bg-foreground/8 text-dim-foreground;
+        }
+
+        /* Table: a ruled ledger; heads in the tracked label voice. */
+        [data-slot="table-head"] {
+            @apply font-label font-bold tracking-[0.08em] text-faint-foreground;
+        }
+        [data-slot="table-row"] {
+            @apply border-border hover:bg-card has-aria-expanded:bg-card data-[state=selected]:bg-muted;
+        }
+        [data-slot="table-footer"] {
+            @apply border-border bg-card font-medium;
+        }
+        [data-slot="table-caption"] {
+            @apply text-faint-foreground;
+        }
+
+        /* Tabs: folder tabs. The current tab is ink-2 with a paper rule on
+           its top edge, the others ink-3 in paper-mute. The line list is the
+           voting board's: headline tabs on a heavy paper rule, the current
+           one a paper block with ink type. */
+        [data-slot="tabs-list"] {
+            @apply bg-transparent text-faint-foreground;
+            &[data-variant="line"] {
+                @apply border-b-2 border-foreground;
+            }
+        }
+        [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-sm border-transparent bg-muted font-extrabold tracking-[0.06em] text-faint-foreground hover:text-foreground data-active:bg-card data-active:text-foreground data-active:shadow-[inset_0_2px_0_var(--color-foreground)] after:bg-foreground;
+        }
+        [data-slot="tabs-list"][data-variant="line"] [data-slot="tabs-trigger"] {
+            @apply font-headline bg-transparent tracking-normal data-active:bg-foreground data-active:text-background data-active:shadow-none;
+        }
+
+        /* Toggle and toggle group: the ink pill. Pressed, it is a paper block
+           with ink type. The outline bar joins its items under a strong
+           rule. */
+        [data-slot="toggle"],
+        [data-slot="toggle-group-item"] {
+            @apply font-label rounded-[3px] font-extrabold tracking-[0.06em] text-dim-foreground hover:bg-muted hover:text-foreground focus-visible:border-ring aria-invalid:border-destructive aria-pressed:bg-foreground aria-pressed:text-background data-pressed:bg-foreground data-pressed:text-background;
+            &[data-variant="outline"] {
+                @apply border-border-strong;
+            }
+        }
+        [data-slot="toggle-group"] {
+            @apply rounded-sm;
+        }
+        [data-slot="toggle-group-item"][data-spacing="0"] {
+            @apply rounded-none group-data-horizontal/toggle-group:first:rounded-l-sm group-data-vertical/toggle-group:first:rounded-t-sm group-data-horizontal/toggle-group:last:rounded-r-sm group-data-vertical/toggle-group:last:rounded-b-sm;
+        }
+
+        /* Imports (www#95). The bar on the yellow panel; the candidate
+           pick's ring; the comparison and problem tables set into a card
+           or a notice; the route cards beside an item; the file field. */
+        [data-slot="progress"][data-tone="inverse"] {
+            [data-slot="progress-track"] {
+                @apply bg-background/18;
+            }
+            [data-slot="progress-indicator"] {
+                @apply bg-background;
+            }
+        }
+        [data-slot="radio-group-item"][data-variant="choice"] {
+            @apply border-0 bg-transparent shadow-[inset_0_0_0_2px_#4a4a55] transition-shadow focus-visible:ring-0 data-checked:bg-transparent data-checked:shadow-[inset_0_0_0_6px_var(--color-highlight)];
+            [data-slot="radio-group-dot"] {
+                @apply bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="inset"],
+        [data-slot="table"][data-variant="destructive"] {
+            [data-slot="table-header"] [data-slot="table-head"] {
+                @apply font-medium;
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                @apply [font-family:inherit] font-normal normal-case [letter-spacing:inherit];
+            }
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="destructive"] [data-slot="table-row"] {
+            @apply border-destructive/20 text-dim-foreground;
+        }
+        [data-slot="collapsible"][data-variant="card"] {
+            @apply rounded-sm border border-border bg-card data-open:border-border-strong;
+            > [data-slot="collapsible-trigger"] {
+                @apply font-label font-extrabold tracking-[0.06em] transition-colors hover:text-highlight;
+            }
+        }
+        [data-slot="input"][data-variant="upload"] {
+            @apply border-dashed border-border-strong bg-background text-dim-foreground file:font-label file:rounded-sm file:border file:border-border-strong file:bg-muted file:font-extrabold file:tracking-[0.06em] file:text-foreground hover:file:border-faint-foreground;
+        }
+
+        /* www#91: the rest of the Monthly Issue editorial components. A
+           clearable select (the member field) shows its empty choice in the
+           field's ink, with the field's focus ring; the
+           sentence blank is a headline-size yellow word on a heavy yellow
+           rule, its chevron centred on word and rule together; the reel's
+           steppers are ink glass on art with a strong hairline; a frame is
+           a picture that is the button, its look its own; the top bar's
+           search is the field with focus on its rule only. */
+        [data-slot="select-trigger"][data-variant="clearable"] {
+            @apply focus-visible:ring-2 focus-visible:ring-ring/40 data-placeholder:text-foreground;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] {
+            @apply font-headline cursor-pointer rounded-none border-0 border-b-4 border-highlight bg-transparent text-[length:inherit] leading-[1] text-highlight transition-colors hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground focus-visible:ring-0 data-placeholder:text-highlight hover:data-placeholder:text-foreground focus-visible:data-placeholder:text-foreground;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] [data-slot="select-trigger-icon"] {
+            @apply mt-1 size-[0.5em] text-highlight [stroke-width:3];
+        }
+        [data-slot="button"] {
+            &[data-variant="step"] {
+                @apply rounded-sm border-0 bg-background/70 text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0;
+            }
+            &[data-variant="frame"] {
+                @apply border-0 bg-transparent focus-visible:ring-0 active:not-aria-[haspopup]:translate-y-0;
+            }
+        }
+        /* A quick search in place (the top bar's games search, a search
+           inside one list): the plain rule, and focus shows on the rule
+           alone. */
+        [data-slot="input-group"][data-variant="quick-search"] {
+            @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
+        }
+
+        /* The achievements area (www#96). */
+        /* Button: an item picked from a set (aria-pressed), size bare. The
+           inset yellow ring marks the pick, as a selection does app-wide;
+           focus is a yellow outline set off from the item, so a focused
+           item never reads as picked. pick-row lights on hover and fills
+           while picked; pick-tile lights on hover; pick-card is a filled
+           card that lights on hover. */
+        [data-slot="button"] {
+            &[data-variant="pick"] {
+                @apply cursor-pointer rounded-md text-left transition-colors focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-row"] {
+                @apply cursor-pointer text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:bg-muted aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-tile"] {
+                @apply cursor-pointer rounded-md text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-card"] {
+                @apply cursor-pointer rounded-md bg-muted/60 text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            /* Closes a card on the muted ground: faint ink, the card ground
+               on hover, a yellow focus outline. */
+            &[data-variant="dismiss"] {
+                @apply rounded-sm text-faint-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight;
+            }
+        }
+        /* Tabs. chip: chips in the label voice, the current one ringed in
+           yellow. provider: folder tabs topped by their Provider's colour
+           (--tab-ink), the current one filled with it. index: folder tabs
+           on a page's top edge, the current one in the game tint
+           (--tab-ink, --tab-ink-foreground). Each shows focus as a yellow
+           outline. */
+        [data-slot="tabs-list"][data-variant="chip"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-sm bg-foreground/6 font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            &[data-active] {
+                @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+            }
+        }
+        [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-[3px] bg-card font-extrabold tracking-[0.06em] text-dim-foreground shadow-[inset_0_3px_0_var(--tab-ink)] transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-highlight data-active:bg-(--tab-ink) data-active:text-provider-foreground data-active:shadow-none;
+        }
+        [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-md bg-card font-extrabold tracking-[0.06em] text-faint-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight;
+            &[data-active] {
+                @apply bg-(--tab-ink) text-(--tab-ink-foreground) shadow-none;
+            }
+        }
+        /* Toggle switcher: a switch between alternatives in place; the
+           segment rests in the faint ink. */
+        [data-slot="toggle"][data-variant="switcher"],
+        [data-slot="toggle-group-item"][data-variant="switcher"] {
+            @apply text-faint-foreground transition-colors hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight aria-pressed:text-background data-pressed:text-background;
+        }
+        /* Progress: the tint tone fills with --progress-ink; its lg bar
+           keeps a hairline corner. */
+        [data-slot="progress"][data-tone="tint"] [data-slot="progress-indicator"] {
+            @apply bg-(--progress-ink);
+        }
+        [data-slot="progress"][data-tone="tint"][data-size="lg"] [data-slot="progress-track"] {
+            @apply rounded-[1px];
+        }
+        /* Hover card: an ink-2 card with the object lift, like the
+           dropdown menu; its trigger's focus outline follows small
+           corners. */
+        [data-slot="hover-card-content"] {
+            @apply rounded-md border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="hover-card-trigger"] {
+            @apply rounded-sm;
+        }
+
+        /* Voting, GOTM history and suggestions (www#97). The x that clears
+           a failed vote; a card footer's quiet and withdrawing actions; the
+           archive's search toolbar (its sort and its submit wear the search
+           bar's strong rule, in the label voice); the reason on a
+           nomination (focus on the rule alone) and the Suggest something
+           fields (a yellow rule and a soft yellow ring on focus); a
+           Suggestion's type tags, each in its own ink. */
+        [data-slot="button"] {
+            /* The x that clears something in place (a notice, a field's
+               text): faint until hovered, no ground. */
+            &[data-variant="clear"] {
+                @apply border-0 text-faint-foreground transition-colors hover:text-foreground;
+            }
+            &[data-variant="card-action"] {
+                @apply font-label rounded-sm border-0 font-extrabold text-dim-foreground transition-colors hover:bg-muted;
+            }
+            &[data-variant="card-action-destructive"] {
+                @apply font-label rounded-sm border-0 font-extrabold text-destructive transition-colors hover:bg-destructive/15;
+            }
+            &[data-variant="search"] {
+                @apply font-label rounded-sm border-border-strong font-extrabold tracking-[0.05em] text-foreground transition-colors hover:border-faint-foreground hover:bg-muted;
+            }
+        }
+        [data-slot="select-trigger"][data-variant="search"] {
+            @apply font-label font-bold tracking-[0.05em] hover:border-border-strong focus-visible:border-faint-foreground focus-visible:[box-shadow:none];
+        }
+        [data-slot="textarea"][data-variant="note"] {
+            @apply border-border-strong focus-visible:border-faint-foreground disabled:bg-card focus-visible:[box-shadow:none];
+        }
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="compose"] {
+            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:bg-card dark:disabled:bg-card;
+        }
+        [data-slot="toggle"][data-variant="tag"] {
+            @apply rounded-xs font-bold text-(--tag-ink) shadow-[inset_0_0_0_1.5px_var(--tag-ink)] transition-colors hover:bg-muted hover:text-(--tag-ink) aria-pressed:bg-(--tag-ink) aria-pressed:text-background aria-pressed:shadow-none data-pressed:bg-(--tag-ink) data-pressed:text-background data-pressed:shadow-none;
+        }
+
+        /* Staff desks (www#98). The Feature Flag state control: segments on
+           an ink-2 well, the pressed one an ink block stroked in its state's
+           ink (Live done green, Preview yellow, Off masthead red), the Off
+           segment dashed red while its confirm is open. The rounds form's
+           track picker fills the pressed track in its colour. The flags
+           ledger: rows never light, the coverage group on a faint well
+           behind a strong rule. A row's tools rest in the dim ink; the
+           reason note rests faint and turns yellow while it holds text. The
+           live event's topic is a headline over a strong rule; the
+           nomination reason sits on the card's ground; "type a date" is an
+           underline in running text. */
+        [data-slot="toggle-group"][data-variant="state"] {
+            @apply rounded-sm bg-card shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+        }
+        [data-slot="toggle-group-item"][data-variant="state"] {
+            @apply font-label rounded-sm text-faint-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-auto;
+            &[aria-pressed="true"] {
+                @apply bg-background font-extrabold shadow-[inset_0_0_0_2px_currentColor] hover:bg-background;
+            }
+            &[data-tone="live"][aria-pressed="true"] {
+                @apply text-ok hover:text-ok;
+            }
+            &[data-tone="preview"][aria-pressed="true"] {
+                @apply text-highlight hover:text-highlight;
+            }
+            &[data-tone="off"][aria-pressed="true"] {
+                @apply text-gotm hover:text-gotm;
+            }
+            &[aria-expanded="true"] {
+                @apply text-gotm outline-[1.5px] -outline-offset-[3px] outline-gotm outline-dashed hover:text-foreground;
+            }
+        }
+        [data-slot="toggle-group"][data-variant="track"] {
+            @apply rounded-sm border-border-strong;
+        }
+        [data-slot="toggle-group-item"][data-variant="track"] {
+            @apply cursor-pointer rounded-xs font-bold text-dim-foreground hover:bg-transparent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/60 disabled:pointer-events-auto disabled:opacity-100;
+            &[data-tone="gotm"][aria-pressed="true"] {
+                @apply bg-gotm text-foreground hover:bg-gotm;
+            }
+            &[data-tone="nr"][aria-pressed="true"] {
+                @apply bg-nr text-foreground hover:bg-nr;
+            }
+        }
+        [data-slot="table"][data-variant="ledger"] {
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent has-aria-expanded:bg-transparent;
+            }
+            [data-slot="table-header"] [data-slot="table-head"] {
+                @apply border-border;
+                &[data-variant="grouped"] {
+                    @apply border-border-strong text-dim-foreground;
+                }
+                &[data-variant="grouped"][scope="colgroup"] {
+                    @apply text-foreground;
+                }
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                @apply [font-family:inherit] font-normal normal-case [letter-spacing:inherit] text-inherit;
+            }
+            [data-slot="table-cell"][data-variant="grouped"] {
+                @apply bg-foreground/[0.018] max-[85rem]:bg-transparent min-[85rem]:border-border;
+            }
+        }
+        [data-slot="button"] {
+            &[data-variant="row"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-dim-foreground;
+            }
+            &[data-variant="destructive-row"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-dim-foreground;
+            }
+            &:is([data-variant="row"], [data-variant="destructive-row"]):is([data-size="sm"], [data-size="icon-sm"]) {
+                @apply rounded-[min(var(--radius-md),12px)];
+            }
+            &[data-variant="note"] {
+                @apply rounded-sm border-0 text-faint-foreground hover:bg-muted hover:text-foreground active:not-aria-[haspopup]:translate-y-0 disabled:pointer-events-auto;
+                &[aria-expanded="true"] {
+                    @apply bg-muted text-foreground;
+                }
+                &[data-filled] {
+                    @apply text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)] hover:text-highlight;
+                }
+                &[data-filled][aria-expanded="true"] {
+                    @apply text-foreground hover:text-highlight;
+                }
+            }
+            &[data-variant="poster"] {
+                @apply font-label rounded-sm border-0 bg-foreground font-extrabold text-background hover:bg-highlight active:not-aria-[haspopup]:translate-y-0 focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
+            }
+            &[data-variant="inline-link"] {
+                @apply underline decoration-gotm underline-offset-3 hover:text-highlight focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
+            }
+        }
+        [data-slot="input"][data-variant="headline"] {
+            @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;
+        }
+        [data-slot="textarea"][data-variant="inset"] {
+            @apply bg-background;
+        }
+
+        /* www#100: journals, giveaways and the Feature switches. */
+        /* The settings switch, its state spelled out in a label beside it:
+           the label draws the focus ring around both and passes its hover
+           to the track; the rule is the track's edge (no border inside
+           it); a switch that is saving or unavailable
+           (aria-disabled) keeps its rest look. */
+        [data-slot="switch"][data-variant="labelled"] {
+            @apply border-0 duration-200 focus-visible:ring-0 aria-disabled:data-unchecked:hover:inset-ring-border-strong aria-disabled:data-checked:hover:bg-highlight;
+            label:hover > &:not([aria-disabled="true"]) {
+                @apply data-unchecked:inset-ring-faint-foreground data-checked:bg-highlight/85;
+            }
+            [data-slot="switch-thumb"] {
+                @apply mx-[3px] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)];
+            }
+        }
+        /* The yellow donate panel: its eye on the key field, its platform
+           choices (ink outlines, the picked one an ink block with yellow
+           type) and its region field (the panel's pale field). */
+        [data-slot="button"][data-variant="inverse-ghost"] {
+            @apply rounded-sm border-0 text-background transition-colors hover:bg-background/10;
+        }
+        [data-slot="toggle-group-item"][data-variant="inverse"] {
+            @apply rounded-xs text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] transition-colors hover:bg-background/10 hover:text-background aria-pressed:bg-background aria-pressed:text-highlight aria-pressed:shadow-none data-pressed:bg-background data-pressed:text-highlight data-pressed:shadow-none;
+        }
+        [data-slot="select-trigger"][data-variant="inverse"] {
+            @apply border-background bg-[#fff8cc] text-background hover:border-background focus-visible:border-background focus-visible:ring-2 focus-visible:ring-background/20 data-placeholder:text-background/55;
+            [data-slot="select-trigger-icon"] {
+                @apply text-background;
+            }
+        }
+        /* A tool inside a field's picked value: dim until hovered. */
+        [data-slot="button"][data-variant="field-tool"] {
+            @apply rounded-sm border-0 text-dim-foreground transition-colors hover:bg-muted hover:text-foreground;
+        }
+        /* The paper gift tag: a Claim the viewer can't take yet, greyed
+           into the paper (it is always disabled, so it keeps full
+           opacity), and the Admin's revoke, the tag's ink softened. */
+        [data-slot="button"][data-variant="inverse-locked"] {
+            @apply font-label rounded-sm border-transparent bg-[#d6d6cf] font-extrabold text-[#55554f];
+        }
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="inverse-link"] {
+            @apply font-label border-0 bg-transparent text-background/70 hover:text-background hover:underline;
+        }
+        /* Tables: a member's records (the claimed keys) keep the label
+           voice's own tracking in their heads, no rule under the heads and
+           no row light; the journal catalogue's index sets its heads on the
+           heavy paper rule (and, stacked on phones, its body). Both keep
+           the last row's rule. */
+        [data-slot="table"][data-variant="records"] {
+            [data-slot="table-header"] [data-slot="table-row"] {
+                @apply border-b-0;
+            }
+            [data-slot="table-head"] {
+                @apply font-label;
+            }
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="index"] {
+            [data-slot="table-head"] {
+                @apply border-b-2 border-foreground;
+            }
+            [data-slot="table-body"] {
+                @apply max-md:border-t-2 max-md:border-foreground;
+            }
+        }
+        :is([data-slot="table"][data-variant="records"], [data-slot="table"][data-variant="index"]) [data-slot="table-body"] [data-slot="table-row"]:last-child {
+            @apply border-b;
+        }
+        /* The journal catalogue's filters: chips in the label voice on ink-2
+           with a strong hairline (Any member, Any game), dim until hovered.
+           Its search field is an Input compose, its x a Button clear. */
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"] {
+            @apply font-label rounded-sm border-0 bg-card text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground;
+        }
+        /* The journal entry editor (the yellow edge): its fields on the
+           page's ink with the strong rule and the yellow focus, its game as
+           an ink chip on a strong hairline, and the quiet Keep under the
+           picker. */
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="entry"] {
+            @apply border-border-strong bg-background text-foreground placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:bg-background dark:disabled:bg-background;
+        }
+        [data-slot="button"][data-variant="picked"] {
+            @apply font-label rounded-sm border-0 bg-background text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)];
+        }
+        [data-slot="button"][data-variant="quiet-link"] {
+            @apply font-label border-0 bg-transparent text-faint-foreground hover:text-highlight;
+        }
+        /* The chronology plate: a line's member name is the button with no
+           look of its own; its marks are dots (a Game Completion's a
+           diamond) in the line's ink, the picked one ringed in yellow over
+           the row's ground. */
+        [data-slot="button"][data-variant="row-label"] {
+            @apply border-0 bg-transparent active:not-aria-[haspopup]:translate-y-0;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            @apply rounded-full border-0 bg-(--ink) transition-none focus-visible:ring-highlight/60 active:not-aria-[haspopup]:translate-y-0 aria-pressed:shadow-[0_0_0_3px_var(--color-muted),0_0_0_5px_var(--color-highlight)];
+        }
+        [data-slot="button"][data-variant="mark-completion"] {
+            @apply rounded-[1.5px];
+        }
+        /* The game picker: its matches ruled from one another on ink-3, the
+           highlighted one lit yellow at a whisper; the dashed offer under
+           them to look further, yellow on hover. */
+        [data-slot="combobox-item"][data-variant="result"] {
+            @apply rounded-none border-t border-border transition-colors first:border-t-0 data-highlighted:bg-highlight/8;
+        }
+        [data-slot="button"][data-variant="offer"] {
+            @apply rounded-sm border-dashed border-border-strong bg-muted font-normal text-dim-foreground transition-colors hover:text-highlight;
+        }
+        /* Staff desks, part B (www#99). The x on a term chip in the
+           synonyms editor: the dim ink on no ground, the chip's ink lifting
+           behind it on hover. */
+        [data-slot="button"][data-variant="chip-remove"] {
+            @apply rounded-xs border-0 text-dim-foreground hover:bg-foreground/15 hover:text-foreground;
+        }
+        /* The News Hub (www#101). A News Category in the rail's filter: the
+           label voice, no ground and no motion of its own; the focus ring
+           follows its small corner, and a press doesn't nudge it. */
+        [data-slot="button"][data-variant="filter-option"] {
+            @apply font-label rounded-xs border-0 bg-transparent transition-none active:not-aria-[haspopup]:translate-y-0;
+        }
+        /* Labels (code review): the hand-made labels on the Label
+           primitive. Each keeps the type its caller sets; the Theme gives
+           the ink. field rests in the faint ink, title in the full ink,
+           lead in the dim ink, inverse on the yellow panel. option lights
+           on hover; ruled sits between rules; choice is the import
+           candidate's card (its radio's ring, yellow when checked, a yellow
+           focus outline); choice-tile is a muted tile, yellow ring when
+           checked; switch draws the settings switch's focus ring; file is a
+           file picker drawn as a field. frame has no look. */
+        [data-slot="label"] {
+            &[data-variant="field"] {
+                @apply text-faint-foreground;
+            }
+            &[data-variant="title"] {
+                @apply text-foreground;
+            }
+            &[data-variant="lead"] {
+                @apply text-dim-foreground;
+            }
+            &[data-variant="inverse"] {
+                @apply text-background;
+            }
+            &[data-variant="option"] {
+                @apply rounded-sm hover:bg-muted;
+            }
+            &[data-variant="ruled"] {
+                @apply border-border;
+            }
+            &[data-variant="choice"] {
+                @apply rounded-sm shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-data-checked:bg-muted has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
+            }
+            &[data-variant="choice-tile"] {
+                @apply rounded-sm bg-muted shadow-[inset_0_0_0_1px_var(--color-border-strong)] has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40;
+            }
+            &[data-variant="switch"] {
+                @apply rounded-sm has-focus-visible:ring-3 has-focus-visible:ring-ring/50;
+            }
+            &[data-variant="file"] {
+                @apply rounded-sm border-border bg-card focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-highlight/40;
+            }
+        }
+        /* Tabs ticks (code review): a slideshow's ticks in the label
+           voice, faint at rest, full ink on hover and for the current
+           slide; no ground, and the browser's own focus ring. */
+        [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-none bg-transparent tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-1 focus-visible:[outline-style:auto] focus-visible:outline-ring data-active:bg-transparent data-active:shadow-none;
+        }
+    }
+}

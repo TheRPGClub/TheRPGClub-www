@@ -7,6 +7,7 @@ import {
   type GotmHistoryFilters,
   type GotmKind,
 } from "@/lib/api/gotm-rounds";
+import { GotmRailYears, railLabel } from "@/components/issue/gotm-rail-years";
 import { cn } from "@/lib/utils";
 
 // The GOTM history's side rail: which track to show and which year, as
@@ -51,8 +52,8 @@ export function GotmRail({
                   className={cn(
                     "font-label flex h-9.5 items-center justify-center gap-2.5 rounded-sm px-2.5 text-[0.82rem] font-extrabold tracking-[0.06em] transition-colors sm:text-[0.95rem] lg:justify-start",
                     active
-                      ? "bg-paper text-ink"
-                      : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                      ? "bg-foreground text-background"
+                      : "text-dim-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {dot && (
@@ -70,69 +71,21 @@ export function GotmRail({
       </nav>
 
       {yearOptions.length > 0 && (
-        <nav aria-labelledby="gotm-year">
-          <h2 id="gotm-year" className={railLabel}>
-            Year
-          </h2>
-          <ul className="flex flex-wrap gap-1">
-            <li>
-              <YearLink
-                href={href({ year: null })}
-                active={filters.year === null}
-              >
-                All
-              </YearLink>
-            </li>
-            {yearOptions.map((year) => (
-              <li key={year}>
-                <YearLink
-                  href={href({ year })}
-                  active={filters.year === year}
-                >
-                  {year}
-                </YearLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <GotmRailYears
+          years={yearOptions}
+          current={filters.year}
+          href={(year) => href({ year })}
+        />
       )}
 
       {hasActiveGotmFilters(filters) && (
         <Link
           href={GOTM_HISTORY_PATH}
-          className="font-label self-start text-sm font-extrabold tracking-[0.06em] text-paper-dim underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight"
+          className="font-label self-start text-sm font-extrabold tracking-[0.06em] text-dim-foreground underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight"
         >
           Clear filters
         </Link>
       )}
     </aside>
-  );
-}
-
-const railLabel =
-  "font-label mb-1.5 text-[0.8rem] font-extrabold tracking-[0.12em] text-paper-mute";
-
-function YearLink({
-  href,
-  active,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "font-headline block rounded-xs px-2 py-1.25 text-[1.2rem] leading-none transition-colors",
-        active
-          ? "bg-paper text-ink"
-          : "text-paper-dim hover:bg-ink-3 hover:text-paper",
-      )}
-    >
-      {children}
-    </Link>
   );
 }

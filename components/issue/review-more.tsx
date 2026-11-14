@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Review } from "@/lib/api/types";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import {
   ScoreBox,
   formatReviewDate,
-  reviewerName,
 } from "@/components/issue/review-meta";
-import { buttonVariants } from "@/components/ui/button";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
+import { ButtonLink } from "@/components/ui/button";
 
 // "More from the club": the game's other reviews as small cards, then the way
 // back to the reviews list and the game. Closes a review's page.
@@ -43,7 +43,7 @@ export function ReviewMore({
                 <li key={review.review_id}>
                   <Link
                     href={`/games/${gameId}/reviews/${review.review_id}`}
-                    className="group/mc flex h-full flex-col gap-2.5 rounded-md bg-ink-2 p-4 ring-1 ring-rule transition-shadow ring-inset hover:ring-paper-mute"
+                    className="group/mc flex h-full flex-col gap-2.5 rounded-md bg-card p-4 ring-1 ring-border transition-shadow ring-inset hover:ring-faint-foreground"
                   >
                     <span className="flex items-center gap-2.5">
                       <ScoreBox
@@ -54,7 +54,7 @@ export function ReviewMore({
                         <b className="block truncate text-sm font-semibold">
                           {name}
                         </b>
-                        <small className="text-[0.8rem] text-paper-mute">
+                        <small className="text-[0.8rem] text-faint-foreground">
                           {formatReviewDate(review.created_at)}
                         </small>
                       </span>
@@ -73,20 +73,20 @@ export function ReviewMore({
         aria-label="Back"
         className="flex flex-col justify-center gap-2.5 pt-2 sm:flex-row"
       >
-        <Link
+        <ButtonLink
           href={`/games/${gameId}/reviews`}
-          className={buttonVariants({ variant: "outline" })}
+          variant="outline"
         >
           <ArrowLeft data-icon="inline-start" />
           All reviews
-        </Link>
-        <Link
+        </ButtonLink>
+        <ButtonLink
           href={`/games/${gameId}`}
-          className={buttonVariants({ variant: "outline" })}
+          variant="outline"
         >
           {gameTitle}
           <ArrowRight data-icon="inline-end" />
-        </Link>
+        </ButtonLink>
       </nav>
     </section>
   );

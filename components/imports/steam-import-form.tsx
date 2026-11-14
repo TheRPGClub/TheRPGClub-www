@@ -5,6 +5,7 @@ import { Download } from "lucide-react";
 import { startSteamImportAction, type SteamImportFormState } from "@/app/actions/imports";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // Start step of the Steam import: the member's Steam profile, prefilled from
 // their linked Steam social. The API reads the library from Steam and maps
@@ -25,12 +26,13 @@ export function SteamImportForm({
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-1.5">
-        <label
+        <Label
           htmlFor="steam-profile"
-          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim"
+          variant="lead"
+          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em]"
         >
           Steam profile
-        </label>
+        </Label>
         <Input
           // Remount after a failed attempt so the input shows what was sent.
           key={state.steamProfile}
@@ -44,7 +46,7 @@ export function SteamImportForm({
           aria-invalid={state.error ? true : undefined}
           aria-describedby="steam-profile-help"
         />
-        <p id="steam-profile-help" className="text-xs text-paper-mute">
+        <p id="steam-profile-help" className="text-xs text-faint-foreground">
           Your profile URL, your 17-digit SteamID64 or your custom URL name.
           Your game details must be public.
         </p>

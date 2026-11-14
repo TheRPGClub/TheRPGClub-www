@@ -33,7 +33,7 @@ export function UnlockList({
   className?: string;
 }) {
   return (
-    <ul aria-label="Unlocks" className={cn("divide-y divide-rule", className)}>
+    <ul aria-label="Unlocks" className={cn("divide-y divide-border", className)}>
       {unlocks.map((unlock) => {
         const view = viewFromUnlock(unlock);
         const spoiler = isSpoiler(view);
@@ -46,20 +46,20 @@ export function UnlockList({
               <AchievementIcon view={view} size={compact ? "sm" : "md"} />
             </AchievementHoverCard>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <p className="text-[0.95rem] leading-tight font-semibold text-paper">
+              <p className="text-[0.95rem] leading-tight font-semibold text-foreground">
                 <SpoilerText spoiler={spoiler}>
                   {view.name ?? "Untitled achievement"}
                 </SpoilerText>
               </p>
               {!compact && view.description && (
-                <p className="line-clamp-2 text-[0.85rem] leading-snug text-paper-dim">
+                <p className="line-clamp-2 text-[0.85rem] leading-snug text-dim-foreground">
                   <SpoilerText spoiler={spoiler}>{view.description}</SpoilerText>
                 </p>
               )}
-              <div className="font-label flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.78rem] text-paper-mute">
+              <div className="font-label flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.78rem] text-faint-foreground">
                 <Link
                   href={memberSetHref(userId, set.id)}
-                  className="max-w-full truncate text-paper-dim transition-colors hover:text-highlight"
+                  className="max-w-full truncate text-dim-foreground transition-colors hover:text-highlight"
                 >
                   {setTitle(set)}
                 </Link>

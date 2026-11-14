@@ -1,3 +1,4 @@
+import type { LandingMarqueeItem } from "@/lib/front-page";
 import { cn } from "@/lib/utils";
 
 // The landing's foot: the recent Games of the Month (the public winners
@@ -5,13 +6,6 @@ import { cn } from "@/lib/utils";
 // winners: when the public read fails, there is no marquee rather than
 // stand-in art. Hover or focus pauses it; reduced motion gets a still,
 // scrollable row instead.
-
-export interface LandingMarqueeItem {
-  key: string;
-  title: string;
-  coverUrl: string | null;
-  roundNumber: number;
-}
 
 // Keyframes live with the component: the global stylesheet is shared and
 // this is the only thing that scrolls on its own.
@@ -36,7 +30,7 @@ export function LandingMarquee({ items: winners }: { items: LandingMarqueeItem[]
   return (
     <section
       aria-label="Recent Games of the Month"
-      className="group/marquee relative overflow-hidden border-t border-rule bg-ink motion-reduce:overflow-x-auto"
+      className="group/marquee relative overflow-hidden border-t border-border bg-background motion-reduce:overflow-x-auto"
     >
       <style href="landing-marquee" precedence="default">
         {KEYFRAMES}
@@ -73,24 +67,24 @@ function MarqueeRow({
           key={item.key}
           aria-hidden={repeatsFrom !== undefined && i >= repeatsFrom ? true : undefined}
           className={cn(
-            "relative h-48 w-36 shrink-0 overflow-hidden bg-ink-3 sm:h-52 sm:w-39",
+            "relative h-48 w-36 shrink-0 overflow-hidden bg-muted sm:h-52 sm:w-39",
             // A still row lists each winner once.
             repeatsFrom !== undefined && i >= repeatsFrom && "motion-reduce:hidden",
           )}
         >
           {item.coverUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
+            // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
             <img
               src={item.coverUrl}
               alt={hidden ? "" : item.title}
               className="size-full object-cover brightness-[0.62] contrast-[1.05] grayscale transition-[filter] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:filter-none"
             />
           ) : (
-            <span className="font-headline grid size-full place-items-center border-r border-rule p-3 text-center text-xl text-paper-mute">
+            <span className="font-headline grid size-full place-items-center border-r border-border p-3 text-center text-xl text-faint-foreground">
               {item.title}
             </span>
           )}
-          <span className="font-label absolute bottom-0 left-0 bg-ink/85 px-1.5 py-0.5 text-[0.72rem] font-extrabold tracking-[0.08em] text-paper-dim">
+          <span className="font-label absolute bottom-0 left-0 bg-background/85 px-1.5 py-0.5 text-[0.72rem] font-extrabold tracking-[0.08em] text-dim-foreground">
             Round {item.roundNumber}
           </span>
         </li>

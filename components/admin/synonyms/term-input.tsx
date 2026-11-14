@@ -3,6 +3,8 @@
 import { useId, useRef, type ClipboardEvent, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { addSynonymTerms } from "@/lib/synonyms";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // A row of term chips with a text box at the end. Enter or a comma adds what
@@ -55,7 +57,7 @@ export function TermInput({
   return (
     <div
       className={cn(
-        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-sm border border-rule-strong bg-ink px-2 py-[5px] text-[0.9rem]",
+        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-sm border border-border-strong bg-background px-2 py-[5px] text-[0.9rem]",
         "focus-within:border-highlight focus-within:ring-2 focus-within:ring-highlight/40",
         disabled && "opacity-50",
       )}
@@ -65,11 +67,13 @@ export function TermInput({
         {terms.map((term, i) => (
           <li
             key={`${term}-${i}`}
-            className="inline-flex max-w-full items-center gap-1 rounded-xs bg-paper/12 py-px pr-1 pl-2 break-all"
+            className="inline-flex max-w-full items-center gap-1 rounded-xs bg-foreground/12 py-px pr-1 pl-2 break-all"
           >
             {term}
-            <button
+            <Button
               type="button"
+              variant="chip-remove"
+              size="icon-xs"
               disabled={disabled}
               onClick={(e) => {
                 e.stopPropagation();
@@ -77,15 +81,16 @@ export function TermInput({
                 inputRef.current?.focus();
               }}
               aria-label={`Remove ${term}`}
-              className="grid size-5 shrink-0 place-items-center rounded-xs text-paper-dim hover:bg-paper/15 hover:text-paper"
+              className="size-5 disabled:opacity-100"
             >
               <X className="size-3.5" />
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
-      <input
+      <Input
         ref={inputRef}
+        variant="bare"
         id={id}
         value={pending}
         onChange={(e) => onPendingChange(e.target.value)}
@@ -95,7 +100,7 @@ export function TermInput({
         autoFocus={autoFocus}
         aria-describedby={hintId}
         placeholder={terms.length === 0 ? "Type a term, then Enter" : ""}
-        className="h-6 min-w-24 flex-1 bg-transparent caret-highlight outline-none placeholder:text-muted-foreground"
+        className="h-6 w-auto min-w-24 flex-1 border-0 p-0 text-[length:inherit] disabled:opacity-100 md:text-[length:inherit]"
       />
       <span id={hintId} className="sr-only">
         Enter or a comma adds a term. Backspace in an empty box removes the last one.

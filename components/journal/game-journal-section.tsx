@@ -1,13 +1,12 @@
-import Link from "next/link";
 import { PenLine } from "lucide-react";
 import type { GameCompletion, JournalEntry } from "@/lib/api/types";
 import { fetchGameJournal } from "@/lib/api/journals";
 import { buildChronology, chapterHref, memberInk } from "@/lib/journals";
 import { memberName } from "@/lib/achievements";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { JournalVolume } from "@/components/journal/journal-book";
 import { GameJournalPlate, type PlateLine } from "@/components/journal/game-journal-plate";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 // The reader shows a few lines of each entry; the rest is on the chapter.
 const READER_BODY_CHARS = 600;
@@ -73,23 +72,23 @@ export async function GameJournalSection({
         }
         action={
           viewerId && (
-            <Link
+            <ButtonLink
               href={chapterHref(viewerId, gameId)}
-              className={buttonVariants({ variant: "highlight" })}
+              variant="highlight"
             >
               <PenLine aria-hidden />
               Write an entry
-            </Link>
+            </ButtonLink>
           )
         }
         className="items-center"
       />
       {journal === null ? (
-        <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           The journal couldn&apos;t be loaded right now.
         </p>
       ) : chronology === null || lines.length === 0 ? (
-        <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
           No one has journaled this game yet.
         </p>
       ) : (

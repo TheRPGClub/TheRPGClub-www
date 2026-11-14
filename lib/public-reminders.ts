@@ -1,4 +1,5 @@
-import type { PublicReminder, PublicReminderRecurUnit } from "@/lib/api/types";
+import type { GuildChannel, PublicReminder, PublicReminderRecurUnit } from "@/lib/api/types";
+import { guildChannelLabel } from "@/lib/api/guild-channel-label";
 
 // Pure helpers for the /admin/reminders tool. The API decides; these keep
 // the form honest and the times readable.
@@ -150,4 +151,23 @@ export function validateReminderInput(
       recur_unit: unit,
     },
   };
+}
+
+// The channel select's options: the synced channels by their picker label,
+// after the reminder's stored channel when the bot hasn't synced it (so an
+// edit that keeps it doesn't have to move the reminder).
+export function reminderChannelOptions(
+  channels: readonly GuildChannel[],
+  storedChannelId: string | null,
+): { value: string; label: string }[] {
+  const options = channels.map((c) => ({ value: c.channel_id, label: guildChannelLabel(c) }));
+  if (storedChannelId && !channels.some((c) => c.channel_id === storedChannelId)) {
+    options.unshift({ value: storedChannelId, label: `Current channel (${storedChannelId}, not synced)` });
+  }
+  return options;
+}
+
+// The viewer's time zone, in the browser.
+export function browserZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }

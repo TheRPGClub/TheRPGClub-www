@@ -18,7 +18,7 @@ export function FavoritesPodium({ entries }: { entries: UserFavorite[] }) {
   return (
     <ol
       aria-label="Top three"
-      className="grid grid-cols-[1fr_1.15fr_1fr] items-end gap-2.5 border-b-2 border-paper sm:mx-auto sm:max-w-[46rem] sm:gap-5"
+      className="grid grid-cols-[1fr_1.15fr_1fr] items-end gap-2.5 border-b-2 border-foreground sm:mx-auto sm:max-w-[46rem] sm:gap-5"
     >
       {SLOTS.filter((slot) => slot.i < entries.length).map((slot) => {
         const entry = entries[slot.i];
@@ -60,13 +60,13 @@ export function FavoritesPodium({ entries }: { entries: UserFavorite[] }) {
               )}
             </p>
             {entry.note && (
-              <p className="mt-1 line-clamp-2 text-center text-xs text-paper-dim italic max-sm:hidden">
+              <p className="mt-1 line-clamp-2 text-center text-xs text-dim-foreground italic max-sm:hidden">
                 &ldquo;{entry.note}&rdquo;
               </p>
             )}
             <span
               className={cn(
-                "font-headline mt-3 grid place-items-center border-t-2 border-paper bg-ink-3 leading-none",
+                "font-headline mt-3 grid place-items-center border-t-2 border-foreground bg-muted leading-none",
                 slot.step,
                 slot.i === 0 ? "text-5xl sm:text-7xl" : "text-4xl sm:text-5xl",
               )}

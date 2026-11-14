@@ -1,0 +1,1869 @@
+/* The test Theme's primitives: throwaway, development only. Every slot,
+   variant, size and tone the Monthly Issue Theme styles is restyled here in
+   loud tokens, so a primitive that still looks like the Monthly Issue under
+   DEV_THEME=test keeps a look class of its own (or a call site passes one).
+   Derived from ../monthly-issue/primitives.css; themes/primitives.test.ts
+   fails when the two drift apart. */
+
+@layer themes {
+    [data-theme="test"] {
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="input-group-button"],
+                [data-slot="combobox-clear"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &[data-variant="default"] {
+                background-color: var(--primary);
+                color: var(--primary-foreground);
+                border-color: var(--primary-foreground);
+            }
+            &[data-variant="highlight"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--highlight-foreground);
+            }
+            &[data-variant="nr"] {
+                background-color: var(--nr);
+                color: var(--nr-foreground);
+                border-color: var(--nr-foreground);
+            }
+            &[data-variant="outline"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="overlay"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="selected"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-variant="secondary"] {
+                background-color: var(--secondary);
+                color: var(--secondary-foreground);
+                border-color: var(--secondary-foreground);
+            }
+            &[data-variant="ghost"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="tool"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="destructive-ghost"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            /* The Member editors (www#94). */
+            &[data-variant="editor-tool"] {
+                background-color: var(--muted);
+                color: var(--highlight);
+                border-color: var(--highlight);
+                border-style: dotted;
+            }
+            &[data-variant="destructive-editor-tool"] {
+                background-color: var(--muted);
+                color: var(--destructive);
+                border-color: var(--destructive);
+                border-style: dotted;
+            }
+            &[data-variant="help"] {
+                color: var(--highlight);
+                text-decoration: wavy underline;
+            }
+            &[data-variant="cover-remove"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: 0;
+            }
+            &[data-variant="destructive"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            &[data-variant="destructive-solid"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            &[data-variant="destructive-outline"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            &[data-variant="inverse"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-variant="inverse-outline"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-variant="link"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        :is(
+                [data-slot="button"],
+                [data-slot="sidebar-trigger"],
+                [data-slot="dialog-close"],
+                [data-slot="sheet-close"],
+                [data-slot="alert-dialog-action"],
+                [data-slot="alert-dialog-cancel"],
+                [data-slot="carousel-previous"],
+                [data-slot="carousel-next"],
+                [data-slot="combobox-chip-remove"],
+                [data-slot="dialog-trigger"],
+                [data-slot="sheet-trigger"],
+                [data-slot="alert-dialog-trigger"],
+                [data-slot="dropdown-menu-trigger"],
+                [data-slot="tooltip-trigger"],
+                [data-slot="collapsible-trigger"]
+            ) {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                border-radius: 0;
+            }
+            &:is([data-size="sm"], [data-size="icon-sm"]) {
+                border-radius: 0;
+            }
+        }
+        /* www#89: the app shell's and the root components' Button variants. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                background-color: var(--sidebar-accent);
+                color: var(--sidebar-accent-foreground);
+                border-color: var(--sidebar-ring);
+            }
+            &[data-variant="sidebar-action"] {
+                background-color: var(--muted);
+                color: var(--destructive);
+                border-color: var(--destructive);
+            }
+            &[data-variant="add"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--foreground);
+                border-style: dotted;
+            }
+        }
+        /* The Member editors (www#94): an add slot in a shelf. */
+        [data-slot="button"][data-variant="add"][data-size="tile"] {
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="input"][data-variant="bare"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: 0;
+        }
+        [data-slot="toggle"][data-variant="toolbar"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: 0;
+            outline: 2px dotted var(--destructive);
+        }
+        [data-slot="input"][data-variant="readout"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-radius: 0;
+        }
+        :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group-button"][data-variant][data-pressed] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group-button"],
+        [data-slot="combobox-clear"] {
+            &:is([data-size="xs"], [data-size="icon-xs"]) {
+                border-radius: 0;
+            }
+        }
+        [data-slot="badge"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-tone="neutral"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="secondary"] {
+                background-color: var(--secondary);
+                color: var(--secondary-foreground);
+                border-color: var(--secondary-foreground);
+            }
+            &[data-tone="gotm"] {
+                background-color: var(--gotm);
+                color: var(--gotm-foreground);
+                border-color: var(--gotm-foreground);
+            }
+            &[data-tone="nr"] {
+                background-color: var(--nr);
+                color: var(--nr-foreground);
+                border-color: var(--nr-foreground);
+            }
+            &[data-tone="highlight"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--highlight-foreground);
+            }
+            &[data-tone="inverse"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="outline"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="destructive"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            &[data-tone="rarity-common"] {
+                background-color: var(--rarity-common);
+                color: var(--rarity-foreground);
+                border-color: var(--rarity-foreground);
+            }
+            &[data-tone="rarity-uncommon"] {
+                background-color: var(--rarity-uncommon);
+                color: var(--rarity-foreground);
+                border-color: var(--rarity-foreground);
+            }
+            &[data-tone="rarity-rare"] {
+                background-color: var(--rarity-rare);
+                color: var(--rarity-foreground);
+                border-color: var(--rarity-foreground);
+            }
+            &[data-tone="rarity-ultra"] {
+                background-color: var(--rarity-ultra);
+                color: var(--rarity-foreground);
+                border-color: var(--rarity-foreground);
+            }
+            &[data-tone="foil"] {
+                background-color: var(--chart-3);
+                color: var(--foil-foreground);
+                border-color: var(--foil-foreground);
+            }
+        }
+        /* Badge, the chip family (www#90). */
+        [data-slot="badge"] {
+            &[data-tone="provider-retroachievements"] {
+                background-color: var(--chart-1);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="provider-steam"] {
+                background-color: var(--chart-2);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="provider-psn"] {
+                background-color: var(--chart-4);
+                color: var(--foreground);
+                border-color: var(--foreground);
+            }
+            &[data-unpicked] {
+                background-color: var(--background);
+                color: var(--chart-5);
+                outline: 2px dashed var(--chart-5);
+            }
+            &[aria-current="page"] {
+                outline: 3px solid var(--chart-3);
+            }
+            &[data-tone="platform"] {
+                background-color: var(--chart-5);
+                color: var(--foreground);
+                border-color: var(--foreground);
+            }
+            &[data-tone="option"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="picked"] {
+                background-color: var(--chart-3);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="status"] {
+                background-color: var(--chart-4);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-size="nav"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline;
+            }
+            &[data-size="filter"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline wavy;
+            }
+        }
+        [data-slot="input"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-variant="inset"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="inverse"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-variant="destructive"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+            &[data-variant="filter"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="skeleton"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &:is([data-variant="card"], [data-variant="control"]) {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="text"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="plate"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="separator"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="progress-track"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="progress-indicator"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="progress"] {
+            &[data-tone="gotm"] [data-slot="progress-indicator"] {
+                background-color: var(--gotm);
+                color: var(--gotm-foreground);
+                border-color: var(--gotm-foreground);
+            }
+            &[data-tone="nr"] [data-slot="progress-indicator"] {
+                background-color: var(--nr);
+                color: var(--nr-foreground);
+                border-color: var(--nr-foreground);
+            }
+            &[data-tone="highlight"] [data-slot="progress-indicator"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--highlight-foreground);
+            }
+            &[data-tone="neutral"] [data-slot="progress-indicator"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="destructive"] [data-slot="progress-indicator"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--destructive-foreground);
+            }
+        }
+        [data-slot="progress-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="progress-value"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="slider-track"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="slider-range"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="slider-thumb"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="slider"]:is([data-tone="gotm"], [data-tone="nr"], [data-tone="neutral"]) {
+            [data-slot="slider-track"],
+            [data-slot="slider-range"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-thumb"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            &[data-size="sm"] [data-slot="slider-thumb"] {
+                border-radius: 0;
+            }
+        }
+        [data-slot="slider"][data-tone="gotm"] {
+            [data-slot="slider-track"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-range"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-thumb"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="slider"][data-tone="nr"] {
+            [data-slot="slider-track"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-range"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-thumb"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="slider"][data-tone="neutral"] {
+            [data-slot="slider-track"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-range"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="slider-thumb"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="avatar"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar-image"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar-fallback"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar-badge"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar-group"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar-group-count"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="avatar"][data-variant="tile"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            [data-slot="avatar-image"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            [data-slot="avatar-fallback"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="avatar"][data-variant="inverse"] [data-slot="avatar-fallback"] {
+            background-color: var(--foreground);
+            color: var(--background);
+            border-color: var(--background);
+        }
+        [data-slot="avatar"][data-variant="byline"] [data-slot="avatar-fallback"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+        }
+        [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+        }
+        [data-slot="tooltip-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="tooltip-arrow"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dialog-overlay"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dialog-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dialog-title"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-variant="help"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="dialog-description"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sheet-overlay"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sheet-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sheet-title"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sheet-description"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dropdown-menu-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dropdown-menu-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dropdown-menu-item"],
+        [data-slot="dropdown-menu-radio-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="dropdown-menu-separator"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="pagination-link"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-wrapper"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &:not([data-variant]) {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+            &[data-mobile="true"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="sidebar-gap"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-inner"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-rail"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-inset"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-input"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-separator"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-group-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-group-action"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-menu-button"] {
+            &[data-variant="default"] {
+                background-color: var(--primary);
+                color: var(--primary-foreground);
+                border-color: var(--primary-foreground);
+            }
+            &[data-variant="outline"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="sidebar-menu-action"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-show-on-hover] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="sidebar-menu-badge"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-menu-skeleton"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-menu-sub"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="sidebar-menu-sub-button"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="card"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-variant="active"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-variant="cover"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="card-header"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="card-title"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="card-description"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="card-footer"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="card-scrim"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-overlay"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-footer"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-media"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-title"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="alert-dialog-description"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="textarea"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group"][data-variant="search"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group-addon"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group-control"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group-text"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="checkbox"],
+        [data-slot="radio-group-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="checkbox"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="radio-group-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="radio-group-dot"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="switch"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="switch-thumb"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="label"][data-variant="default"],
+        [data-slot="field-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field-legend"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field-description"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field-separator-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field-error"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="field-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-trigger"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-trigger-icon"],
+        [data-slot="combobox-trigger-icon"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-content"],
+        [data-slot="combobox-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="combobox-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-label"],
+        [data-slot="combobox-label"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="combobox-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-separator"],
+        [data-slot="combobox-separator"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-scroll-up-button"],
+        [data-slot="select-scroll-down-button"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="combobox-empty"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="combobox-chips"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="combobox-chip"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table-head"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table-row"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table-footer"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table-caption"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="tabs-list"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-variant="line"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="tabs-trigger"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="tabs-list"][data-variant="line"] [data-slot="tabs-trigger"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+        }
+        [data-slot="toggle"],
+        [data-slot="toggle-group-item"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+            &[data-variant="outline"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="toggle-group"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-spacing="0"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+
+        /* Imports (www#95). */
+        [data-slot="progress"][data-tone="inverse"] {
+            [data-slot="progress-track"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="progress-indicator"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+        }
+        [data-slot="radio-group-item"][data-variant="choice"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+            [data-slot="radio-group-dot"] {
+                background-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="inset"],
+        [data-slot="table"][data-variant="destructive"] {
+            [data-slot="table-header"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-row"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="destructive"] [data-slot="table-row"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="collapsible"][data-variant="card"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 3px 3px 0 var(--foreground);
+            > [data-slot="collapsible-trigger"] {
+                font-family: var(--typeface-label);
+                color: var(--accent-foreground);
+            }
+        }
+        [data-slot="input"][data-variant="upload"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+
+        /* www#91: the rest of the Monthly Issue editorial components. */
+        [data-slot="select-trigger"][data-variant="clearable"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-color: var(--foreground);
+            border-style: dashed;
+        }
+        [data-slot="select-trigger"][data-variant="blank"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--destructive);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="select-trigger"][data-variant="blank"] [data-slot="select-trigger-icon"] {
+            color: var(--destructive);
+        }
+        [data-slot="button"] {
+            &[data-variant="step"] {
+                background-color: var(--gotm);
+                color: var(--gotm-foreground);
+                border-color: var(--highlight);
+                box-shadow: 3px 3px 0 var(--highlight);
+            }
+            &[data-variant="frame"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                outline: 3px dotted var(--highlight);
+            }
+        }
+        [data-slot="input-group"][data-variant="quick-search"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--destructive);
+            border-style: dotted;
+        }
+
+        /* The achievements area (www#96). */
+        [data-slot="button"] {
+            &[data-variant="pick"] {
+                background-color: var(--chart-1);
+                color: var(--background);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-row"] {
+                background-color: var(--chart-2);
+                color: var(--background);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-tile"] {
+                background-color: var(--chart-4);
+                color: var(--foreground);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="pick-card"] {
+                background-color: var(--chart-5);
+                color: var(--foreground);
+                box-shadow: 0 0 0 3px var(--chart-3);
+            }
+            &[data-variant="dismiss"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: 0;
+            }
+        }
+        [data-slot="tabs-list"][data-variant="chip"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-1);
+            color: var(--background);
+            border-radius: calc(var(--radius) * 2);
+        }
+        [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-2);
+            color: var(--background);
+            box-shadow: inset 0 6px 0 var(--tab-ink);
+        }
+        [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-4);
+            color: var(--foreground);
+            box-shadow: inset 0 6px 0 var(--tab-ink);
+        }
+        [data-slot="toggle"][data-variant="switcher"],
+        [data-slot="toggle-group-item"][data-variant="switcher"] {
+            background-color: var(--chart-5);
+            color: var(--foreground);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="progress"][data-tone="tint"] [data-slot="progress-indicator"] {
+            background-color: var(--chart-3);
+            outline: 2px dashed var(--progress-ink);
+        }
+        [data-slot="progress"][data-tone="tint"][data-size="lg"] [data-slot="progress-track"] {
+            background-color: var(--card);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="hover-card-content"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="hover-card-trigger"] {
+            outline: 2px dashed var(--chart-3);
+            border-radius: 0;
+        }
+
+        /* www#97: voting, GOTM history and suggestions. */
+        [data-slot="button"] {
+            &[data-variant="clear"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-radius: calc(var(--radius) * 2);
+            }
+            &[data-variant="card-action"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+                border-style: dotted;
+                font-family: var(--typeface-label);
+            }
+            &[data-variant="card-action-destructive"] {
+                background-color: var(--destructive);
+                color: var(--destructive-foreground);
+                border-color: var(--foreground);
+                border-style: dotted;
+                font-family: var(--typeface-label);
+            }
+            &[data-variant="search"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--foreground);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
+        }
+        [data-slot="select-trigger"][data-variant="search"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--foreground);
+            font-family: var(--typeface-label);
+        }
+        [data-slot="textarea"][data-variant="note"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-style: dashed;
+        }
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="compose"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--foreground);
+            border-style: double;
+        }
+        [data-slot="toggle"][data-variant="tag"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--tag-ink, var(--foreground));
+            border-radius: calc(var(--radius) * 2);
+            &[data-pressed] {
+                background-color: var(--tag-ink, var(--foreground));
+                color: var(--background);
+            }
+        }
+
+        /* Staff desks (www#98). */
+        [data-slot="toggle-group"][data-variant="state"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="live"][aria-pressed="true"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="preview"][aria-pressed="true"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][data-tone="off"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="state"][aria-expanded="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group"][data-variant="track"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"][data-tone="gotm"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="toggle-group-item"][data-variant="track"][data-tone="nr"][aria-pressed="true"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-row"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"][data-variant="grouped"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-header"] [data-slot="table-head"][data-variant="grouped"][scope="colgroup"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-body"] [data-slot="table-head"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="table"][data-variant="ledger"] [data-slot="table-cell"][data-variant="grouped"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="button"][data-variant="row"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="destructive-row"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="button"][data-variant="note"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="poster"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"][data-variant="inline-link"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="button"]:is([data-variant="row"], [data-variant="destructive-row"]):is([data-size="sm"], [data-size="icon-sm"]) {
+            border-radius: 0;
+        }
+        [data-slot="button"][data-variant="note"][data-filled] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="input"][data-variant="headline"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="textarea"][data-variant="inset"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+
+        /* www#100: journals, giveaways and the Feature switches. */
+        [data-slot="switch"][data-variant="labelled"] {
+            background-color: var(--gotm);
+            border-color: var(--highlight);
+            border-style: dotted;
+            [data-slot="switch-thumb"] {
+                background-color: var(--destructive);
+            }
+        }
+        [data-slot="button"][data-variant="inverse-ghost"],
+        [data-slot="button"][data-variant="field-tool"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            outline: 3px dashed var(--highlight);
+        }
+        [data-slot="toggle-group-item"][data-variant="inverse"] {
+            background-color: var(--gotm);
+            color: var(--gotm-foreground);
+            border-radius: 9999px;
+        }
+        [data-slot="select-trigger"][data-variant="inverse"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            [data-slot="select-trigger-icon"] {
+                color: var(--highlight);
+            }
+        }
+        [data-slot="button"][data-variant="inverse-locked"],
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="inverse-link"] {
+            background-color: var(--rarity-ultra);
+            color: var(--rarity-foreground);
+            outline: 3px dotted var(--nr);
+        }
+        [data-slot="table"][data-variant="records"],
+        [data-slot="table"][data-variant="index"] {
+            background-color: var(--accent);
+            outline: 3px dashed var(--gotm);
+            [data-slot="table-head"] {
+                color: var(--gotm);
+            }
+            [data-slot="table-header"],
+            [data-slot="table-body"],
+            [data-slot="table-row"] {
+                border-color: var(--nr);
+            }
+        }
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"],
+        [data-slot="button"]:is([data-variant="picked"], [data-variant="quiet-link"], [data-variant="row-label"]) {
+            background-color: var(--gotm);
+            color: var(--gotm-foreground);
+            outline: 3px dotted var(--highlight);
+        }
+        [data-slot="input"][data-variant="entry"],
+        [data-slot="textarea"][data-variant="entry"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-color: var(--highlight);
+            border-style: dashed;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            background-color: var(--highlight);
+            outline: 2px solid var(--destructive);
+        }
+        [data-slot="combobox-item"][data-variant="result"],
+        [data-slot="button"][data-variant="offer"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Staff desks, part B (www#99). */
+        [data-slot="button"][data-variant="chip-remove"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* The News Hub (www#101). */
+        [data-slot="button"][data-variant="filter-option"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Labels (code review). */
+        [data-slot="label"]:is([data-variant="field"], [data-variant="title"], [data-variant="lead"], [data-variant="inverse"]) {
+            color: var(--gotm);
+            text-decoration: underline wavy var(--highlight);
+        }
+        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"]) {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+    }
+}

@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Search, SkipForward } from "lucide-react";
+import { Search, SkipForward } from "lucide-react";
 import {
   applyImportItemAction,
   remapImportItemAction,
   skipImportItemAction,
 } from "@/app/actions/imports";
-import type { Game, SteamCollectionImportItem } from "@/lib/api/types";
+import type { SteamCollectionImportItem } from "@/lib/api/types";
 import { IMPORT_KINDS, importItemLabel, importItemTitle } from "@/lib/imports/kinds";
 import type { ImportItemPanelProps } from "@/components/imports/import-item-panel";
 import { ImportCandidateList } from "@/components/imports/import-candidate-list";
-import { ImportIgdbSuggestions } from "@/components/imports/import-igdb-suggestions";
+import { GameDbPickRoute, IgdbRoute } from "@/components/imports/import-game-routes";
 import { ImportItemDetails } from "@/components/imports/import-item-details";
 import { SteamHeaderImage } from "@/components/imports/steam-item-details";
 import { ImportItemLayout, ImportRoute } from "@/components/issue/import-item-layout";
-import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -34,7 +33,6 @@ export function ImportMatchPanel({
   const { item } = review;
   const title = importItemTitle(kind, item);
   const [remapTitle, setRemapTitle] = useState(title);
-  const [picked, setPicked] = useState<Game | null>(null);
   const noun = IMPORT_KINDS[kind].itemNoun.one;
 
   const apply = (label: string, selection: { game_id: number } | { igdb_id: number }) =>
@@ -46,7 +44,7 @@ export function ImportMatchPanel({
   return (
     <ImportItemLayout
       label={`${importItemLabel(kind)} ${item.row_index}`}
-      title={title || <span className="text-paper-mute">Untitled {noun}</span>}
+      title={title || <span className="text-faint-foreground">Untitled {noun}</span>}
       art={
         steam ? (
           <SteamHeaderImage
@@ -82,30 +80,17 @@ export function ImportMatchPanel({
               </Button>
             </form>
           </ImportRoute>
-          <ImportRoute title="Pick from GameDB">
-            <div className="flex flex-col gap-2">
-              <GamePicker compact placeholder="Search GameDB…" onPick={setPicked} />
-              <Button
-                type="button"
-                variant="highlight"
-                disabled={disabled || !picked}
-                onClick={() =>
-                  picked && apply(`Adding ${picked.title}…`, { game_id: picked.game_id })
-                }
-              >
-                <Check data-icon="inline-start" /> Use this game
-              </Button>
-            </div>
-          </ImportRoute>
-          <ImportRoute title="Not in GameDB? Try IGDB">
-            <ImportIgdbSuggestions
-              kind={kind}
-              itemId={item.item_id}
-              initialQuery={title}
-              disabled={disabled}
-              onChoose={(hit) => apply(`Importing ${hit.name}…`, { igdb_id: hit.igdb_id })}
-            />
-          </ImportRoute>
+          <GameDbPickRoute
+            disabled={disabled}
+            onUse={(game) => apply(`Adding ${game.title}…`, { game_id: game.game_id })}
+          />
+          <IgdbRoute
+            kind={kind}
+            itemId={item.item_id}
+            title={title}
+            disabled={disabled}
+            onChoose={(hit) => apply(`Importing ${hit.name}…`, { igdb_id: hit.igdb_id })}
+          />
         </>
       }
     >
