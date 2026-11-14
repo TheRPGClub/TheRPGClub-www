@@ -248,6 +248,11 @@
             &[data-variant="destructive"] {
                 @apply border-destructive bg-background text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-ring/40 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
             }
+            /* A field in a filter bar (www#93): the strong rule of the
+               member pages' selects, paper-mute on hover. */
+            &[data-variant="filter"] {
+                @apply border-border-strong placeholder:text-faint-foreground hover:border-faint-foreground focus-visible:border-faint-foreground [color-scheme:dark];
+            }
         }
 
         /* Skeleton: an ink-3 block that pulses, cornered like what it stands
@@ -591,6 +596,11 @@
            on the rule alone. */
         [data-slot="input-group"][data-variant="search"] {
             @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
+        }
+        /* A search inside one list (www#93): the plain rule, and focus
+           shows on the rule alone. */
+        [data-slot="input-group"][data-variant="list-search"] {
+            @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
         [data-slot="input-group-addon"] {
             @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];

@@ -11,11 +11,6 @@ import { cn } from "@/lib/utils";
 // Form fields in the member pages' voice: a tracked-caps label over an ink
 // control.
 
-// The member pages' text field. Left for the compare page's search box until
-// it moves to the shadcn Input (www#93).
-export const memberControlClass =
-  "h-9.5 w-full min-w-0 rounded-sm border border-border-strong bg-card px-2.5 text-sm text-foreground caret-highlight [color-scheme:dark] outline-none transition-colors placeholder:text-faint-foreground hover:border-faint-foreground focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40";
-
 const frameClass = "flex min-w-0 flex-col gap-1.5";
 
 function FieldLabel({ id, children }: { id?: string; children: ReactNode }) {
