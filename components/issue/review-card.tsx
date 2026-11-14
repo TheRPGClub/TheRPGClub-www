@@ -1,27 +1,11 @@
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Review } from "@/lib/api/types";
 import { reviewBodyExcerpt, reviewBodyText } from "@/lib/api/review-body";
-import {
-  FacetBars,
-  ReviewerAvatar,
-  ScoreBox,
-  formatReviewDate,
-  reviewerName,
-  scoredFacets,
-} from "@/components/issue/review-meta";
+import { FacetBars, ScoreBox, scoredFacets } from "@/components/issue/review-meta";
+import { ReviewCardBody } from "@/components/issue/review-card-body";
+import { ReviewCardByline } from "@/components/issue/review-card-byline";
 import { cn } from "@/lib/utils";
-
-// Code-split, not client-only: the card is reached through client lists (the
-// game page's composer wraps it), and a static import would put the whole
-// Plate renderer in their bundle. The excerpt stays server-prerendered and
-// keeps its formatting and spoilers.
-const ReviewBodyContent = dynamic(() =>
-  import("@/components/member/review-body").then((m) => ({
-    default: m.ReviewBodyContent,
-  })),
-);
 
 export interface ReviewCardProps {
   review: Review;
@@ -53,51 +37,11 @@ export function ReviewCard({
 }: ReviewCardProps) {
   const target =
     href ?? `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
-  const name = reviewerName(review.user, "A member");
   const hasBody = reviewBodyText(review.body) !== null;
   const excerpt = reviewBodyExcerpt(review.body, variant === "card" ? 280 : 200);
   const facets = scoredFacets(review.facets);
-  const date = (
-    <time dateTime={review.created_at}>{formatReviewDate(review.created_at)}</time>
-  );
-
   const byline = (
-    <div className="flex min-w-0 items-center gap-2.5">
-      {showUser && review.user && (
-        <ReviewerAvatar userId={review.user_id} name={name} />
-      )}
-      <div className="min-w-0 leading-tight">
-        {showUser && review.user ? (
-          <Link
-            href={`/members/${review.user_id}`}
-            className="block truncate text-sm font-semibold hover:text-highlight"
-          >
-            {name}
-          </Link>
-        ) : showGame && review.game ? (
-          <Link
-            href={`/games/${review.gamedb_game_id}`}
-            className="font-label block truncate text-[0.95rem] font-extrabold hover:text-highlight"
-          >
-            {review.game.title}
-          </Link>
-        ) : null}
-        <small className="block text-[0.8rem] text-faint-foreground">
-          {showUser && showGame && review.game && (
-            <>
-              <Link
-                href={`/games/${review.gamedb_game_id}`}
-                className="hover:text-foreground"
-              >
-                {review.game.title}
-              </Link>
-              {" · "}
-            </>
-          )}
-          {date}
-        </small>
-      </div>
-    </div>
+    <ReviewCardByline review={review} showUser={showUser} showGame={showGame} />
   );
 
   const title = review.title && (
@@ -113,15 +57,7 @@ export function ReviewCard({
     </h3>
   );
 
-  const body = hasBody ? (
-    <div className="text-[0.88rem] leading-[1.6] text-dim-foreground [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground">
-      <ReviewBodyContent body={excerpt.value} />
-    </div>
-  ) : (
-    <p className="text-[0.88rem] text-faint-foreground italic">
-      Scored without a written review.
-    </p>
-  );
+  const body = <ReviewCardBody hasBody={hasBody} excerpt={excerpt.value} />;
 
   const readLabel = excerpt.truncated ? "Read the rest" : "Open review";
 

@@ -19,8 +19,9 @@ import { setDetailPath } from "@/lib/member-achievements";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { AchievementList } from "@/components/achievements/achievement-list";
 import { SetHeader } from "@/components/achievements/set-page/set-header";
+import { SetEmpty } from "@/components/achievements/set-page/set-empty";
 import { SetSpread } from "@/components/achievements/set-page/set-spread";
-import { SectionHeading } from "@/components/templates/page-header";
+import { DetailSection, DetailTemplate } from "@/components/templates/detail-template";
 
 // One Achievement Set through a member's eyes, as a two-page spread in the
 // member's binder: the masthead (title on the game tint, the monumental
@@ -68,15 +69,18 @@ export default async function MemberAchievementSetPage({
   });
 
   return (
-    <div className="flex flex-col gap-8">
-      <SetHeader
-        set={set}
-        tint={tint}
-        userId={id}
-        displayName={displayName}
-        badge={features.preview("achievement_hub") && <PreviewBadge />}
-      />
-
+    <DetailTemplate
+      className="flex flex-col gap-8"
+      hero={
+        <SetHeader
+          set={set}
+          tint={tint}
+          userId={id}
+          displayName={displayName}
+          badge={features.preview("achievement_hub") && <PreviewBadge />}
+        />
+      }
+    >
       {items.length > 0 ? (
         <SetSpread
           view={view}
@@ -89,20 +93,19 @@ export default async function MemberAchievementSetPage({
           headline={headline ? { id: headline.item.view.id, reason: headline.reason } : null}
         />
       ) : (
-        <p className="rounded-md border border-dashed border-border-strong px-5 py-6 text-faint-foreground">
-          The Provider lists no Achievements for this set yet.
-        </p>
+        <SetEmpty />
       )}
 
       {removed.length > 0 && (
-        <section aria-labelledby="set-removed" className="space-y-4">
-          <SectionHeading
-            title={<span id="set-removed">Removed</span>}
-            count={`${removed.length} no longer in the set`}
-          />
+        <DetailSection
+          id="set-removed"
+          title="Removed"
+          count={`${removed.length} no longer in the set`}
+          className="space-y-4"
+        >
           <AchievementList items={removed} label="Removed achievements" />
-        </section>
+        </DetailSection>
       )}
-    </div>
+    </DetailTemplate>
   );
 }

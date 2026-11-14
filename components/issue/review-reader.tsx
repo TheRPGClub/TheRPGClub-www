@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Pencil } from "lucide-react";
 import type { Game, Review } from "@/lib/api/types";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { ReviewBodyContent } from "@/components/member/review-body";
@@ -10,16 +9,18 @@ import {
   formatReviewDate,
   scoredFacets,
 } from "@/components/issue/review-meta";
+import {
+  ReviewReaderNeighbours,
+  type ReaderNeighbour,
+} from "@/components/issue/review-reader-neighbours";
+import { ReviewReaderTools } from "@/components/issue/review-reader-tools";
 
 // The reviews list's inline reader: one review open in full beside the list.
 // A slim art banner carrying the byline and the score, the headline, the
 // facet strip, then the whole review. Server-rendered, so opening a review
 // ships no renderer.
 
-export interface ReaderNeighbour {
-  href: string;
-  title: string;
-}
+export type { ReaderNeighbour } from "@/components/issue/review-reader-neighbours";
 
 export function ReviewReader({
   review,
@@ -45,33 +46,7 @@ export function ReviewReader({
 
   return (
     <article aria-labelledby="reader-title" className="min-w-0">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <Link
-          href={backHref}
-          className="font-label inline-flex items-center gap-1.5 text-[0.88rem] font-extrabold tracking-[0.08em] text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:text-gotm"
-        >
-          <ArrowLeft aria-hidden />
-          Back to reviews
-        </Link>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          {isMine && (
-            <Link
-              href={`${fullHref}?edit=1`}
-              className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5"
-            >
-              <Pencil aria-hidden />
-              Edit your review
-            </Link>
-          )}
-          <Link
-            href={fullHref}
-            className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5"
-          >
-            Open as a page
-            <ArrowRight aria-hidden />
-          </Link>
-        </div>
-      </div>
+      <ReviewReaderTools backHref={backHref} fullHref={fullHref} isMine={isMine} />
 
       <div className="relative isolate h-[140px] overflow-hidden rounded-md bg-muted md:h-[170px]">
         {art && (
@@ -137,35 +112,7 @@ export function ReviewReader({
       </div>
 
       {(newer || older) && (
-        <nav
-          aria-label="More reviews"
-          className="mt-8 flex justify-between gap-3.5 border-t border-border pt-4"
-        >
-          {newer ? (
-            <Link
-              href={newer.href}
-              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground"
-            >
-              Previous
-              <b className="text-base leading-tight tracking-[0.01em] text-foreground transition-colors group-hover/nx:text-highlight">
-                {newer.title}
-              </b>
-            </Link>
-          ) : (
-            <span />
-          )}
-          {older && (
-            <Link
-              href={older.href}
-              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-right text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground"
-            >
-              Next review
-              <b className="text-base leading-tight tracking-[0.01em] text-foreground transition-colors group-hover/nx:text-highlight">
-                {older.title}
-              </b>
-            </Link>
-          )}
-        </nav>
+        <ReviewReaderNeighbours newer={newer} older={older} />
       )}
     </article>
   );

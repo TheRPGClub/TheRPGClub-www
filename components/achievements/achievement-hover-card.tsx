@@ -1,8 +1,12 @@
 "use client";
 
-import { PreviewCard } from "@base-ui/react/preview-card";
 import { isSpoiler, type AchievementView } from "@/lib/achievements";
 import { cn } from "@/lib/utils";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { AchievementDetails } from "./achievement-details";
 
 // An Achievement's detail card, opened by hovering or focusing its trigger
@@ -27,41 +31,34 @@ export function AchievementHoverCard({
     : (view.name ?? "Untitled achievement");
 
   return (
-    <PreviewCard.Root>
-      <PreviewCard.Trigger
+    <HoverCard>
+      <HoverCardTrigger
         delay={120}
         closeDelay={80}
+        // eslint-disable-next-line structure/no-raw-controls -- the hover card's own trigger, rendered as a plain focusable element so the icon keeps its face; a Button would restyle it
         render={href ? <a href={href} /> : <button type="button" />}
         aria-label={`${label}, ${view.unlocked ? "unlocked" : "locked"}`}
         className={cn(
-          "block rounded-sm outline-none transition-transform duration-150",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight",
+          "block outline-none transition-transform duration-150",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight",
           "motion-safe:hover:-translate-y-0.5 data-[popup-open]:-translate-y-0.5",
           className,
         )}
       >
         {children}
-      </PreviewCard.Trigger>
-      <PreviewCard.Portal>
-        {/* Beside the tile, top-aligned, so the card never covers the set
-            title or the tiles' names below; it flips left near the edge. */}
-        <PreviewCard.Positioner
-          side="right"
-          align="start"
-          sideOffset={12}
-          collisionPadding={16}
-          className="z-50"
-        >
-          <PreviewCard.Popup
-            className={cn(
-              "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-border-strong bg-card p-3.5 text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",
-              "duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-            )}
-          >
-            <AchievementDetails view={view} />
-          </PreviewCard.Popup>
-        </PreviewCard.Positioner>
-      </PreviewCard.Portal>
-    </PreviewCard.Root>
+      </HoverCardTrigger>
+      {/* Beside the tile, top-aligned, so the card never covers the set
+          title or the tiles' names below; it flips left near the edge. */}
+      <HoverCardContent
+        side="right"
+        align="start"
+        sideOffset={12}
+        alignOffset={0}
+        collisionPadding={16}
+        className="w-72 max-w-[calc(100vw-24px)] p-3.5 text-[length:inherit]"
+      >
+        <AchievementDetails view={view} />
+      </HoverCardContent>
+    </HoverCard>
   );
 }

@@ -14,6 +14,9 @@ const toggleVariants = cva(
         // www#94: a formatting button in an editor's toolbar (bold, a
         // heading): quiet until hovered or pressed.
         toolbar: "",
+        // www#96: a segment that rests in the faint ink (the game page's
+        // set switcher).
+        quiet: "",
       },
       size: {
         default:
