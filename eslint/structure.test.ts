@@ -27,13 +27,13 @@ function codeLines(count: number): string {
 describe("size limit (max-lines)", () => {
   const rule = "max-lines";
 
-  it("warns on a component over 120 lines of code", async () => {
+  it("errors on a component over 120 lines of code", async () => {
     const found = await warningsFor(rule, codeLines(121), "components/games/too-long.tsx");
     expect(found).toHaveLength(1);
-    expect(found[0].severity).toBe(1);
+    expect(found[0].severity).toBe(2);
   });
 
-  it("warns on a route file over 120 lines of code", async () => {
+  it("errors on a route file over 120 lines of code", async () => {
     const found = await warningsFor(rule, codeLines(121), "app/(protected)/games/page.tsx");
     expect(found).toHaveLength(1);
   });
@@ -57,12 +57,12 @@ describe("raw-element ban (structure/no-raw-controls)", () => {
   const rule = "structure/no-raw-controls";
 
   it.each(["button", "input", "select", "textarea", "table"])(
-    "warns on a raw <%s> in feature code",
+    "errors on a raw <%s> in feature code",
     async (tag) => {
       const code = `export function Bad() {\n  return <${tag} className="mt-2" />;\n}\n`;
       const found = await warningsFor(rule, code, "components/games/bad.tsx");
       expect(found).toHaveLength(1);
-      expect(found[0].severity).toBe(1);
+      expect(found[0].severity).toBe(2);
       expect(found[0].line).toBe(2);
     },
   );
@@ -107,6 +107,7 @@ describe("raw-element ban (structure/no-raw-controls)", () => {
       "components/games/unexcused.tsx",
     );
     expect(found).toHaveLength(1);
+    expect(found[0].severity).toBe(2);
     expect(found[0].line).toBe(3);
   });
 });
@@ -137,10 +138,10 @@ describe("look-class ban (structure/no-look-classes-on-primitives)", () => {
     ["state variant", "hover:bg-ink-2"],
     ["responsive variant", "md:rounded-lg"],
     ["arbitrary colour", "text-[#fff]"],
-  ])("warns on a %s class (%s) passed to a primitive", async (_kind, cls) => {
+  ])("errors on a %s class (%s) passed to a primitive", async (_kind, cls) => {
     const found = await warningsFor(rule, sample(`<Button className="mt-2 ${cls}" />`), file);
     expect(found).toHaveLength(1);
-    expect(found[0].severity).toBe(1);
+    expect(found[0].severity).toBe(2);
     expect(found[0].message).toContain(cls);
   });
 
@@ -261,5 +262,31 @@ describe("palette-name ban (structure/no-palette-colors)", () => {
   it("allows palette names inside a Theme", async () => {
     const code = 'export const surface = "bg-ink text-paper";\n';
     expect(await warningsFor(rule, code, "themes/monthly-issue/tokens.ts")).toEqual([]);
+  });
+});
+
+// CI runs `npm run lint`, which exits non-zero on any error: one bad sample
+// per structure rule must fail it on its own.
+describe("a bad sample fails lint for every structure rule", () => {
+  const raw = ["export function Bad() {", '  return <button className="mt-2" />;', "}"];
+  it.each([
+    ["max-lines", codeLines(121), "components/games/too-long.tsx"],
+    ["structure/no-raw-controls", raw.join("\n"), "components/games/raw.tsx"],
+    [
+      "structure/no-look-classes-on-primitives",
+      'import { Button } from "@/components/ui/button";\nexport const S = () => <Button className="bg-gotm" />;',
+      "components/games/look.tsx",
+    ],
+    ["structure/no-palette-colors", 'export const c = "bg-ink";', "components/games/palette.tsx"],
+    [
+      "structure/disable-needs-reason",
+      [raw[0], "  // eslint-disable-next-line structure/no-raw-controls", raw[1], raw[2]].join("\n"),
+      "components/games/excuse.tsx",
+    ],
+  ])("%s", async (ruleId, code, file) => {
+    const [result] = await eslint.lintText(code, { filePath: path.join(root, file) });
+    const errors = result.messages.filter((m) => m.severity === 2).map((m) => m.ruleId);
+    expect(errors).toContain(ruleId);
+    expect(result.warningCount).toBe(0);
   });
 });

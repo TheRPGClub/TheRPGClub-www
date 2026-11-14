@@ -1,6 +1,7 @@
-// Structure rules for spec www#80. They ship as warnings (www#81) and become
-// errors in www#101; the palette-name ban is an error since the codemod
-// (www#86). The agent guide (AGENTS.md) explains them in prose.
+// Structure rules for spec www#80. They shipped as warnings (www#81) and are
+// errors since www#101 (the palette-name ban since the codemod, www#86), so CI
+// fails a pull request that breaks one. An exception is an inline disable
+// comment with a reason. The agent guide (AGENTS.md) explains them in prose.
 import disableNeedsReason from "./rules/disable-needs-reason.mjs";
 import noLookClassesOnPrimitives from "./rules/no-look-classes-on-primitives.mjs";
 import noPaletteColors from "./rules/no-palette-colors.mjs";
@@ -27,7 +28,7 @@ export const structureConfig = [
     name: "structure/plugin",
     plugins: { structure },
     rules: {
-      "structure/disable-needs-reason": "warn",
+      "structure/disable-needs-reason": "error",
     },
   },
   {
@@ -35,7 +36,7 @@ export const structureConfig = [
     files: sizeLimited,
     ignores: sizeExempt,
     rules: {
-      "max-lines": ["warn", { max: 120, skipBlankLines: true, skipComments: true }],
+      "max-lines": ["error", { max: 120, skipBlankLines: true, skipComments: true }],
     },
   },
   {
@@ -43,8 +44,8 @@ export const structureConfig = [
     files: ["**/*.{jsx,tsx}"],
     ignores: primitives,
     rules: {
-      "structure/no-raw-controls": "warn",
-      "structure/no-look-classes-on-primitives": "warn",
+      "structure/no-raw-controls": "error",
+      "structure/no-look-classes-on-primitives": "error",
     },
   },
   {
