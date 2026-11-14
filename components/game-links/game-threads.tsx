@@ -2,10 +2,8 @@ import { MessageSquare } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Thread } from "@/lib/api/types";
 import { RailHeading } from "@/components/issue/game-rail";
-import {
-  LinkThreadPicker,
-  UnlinkThreadButton,
-} from "@/components/game-links/thread-controls";
+import { LinkThreadPicker } from "@/components/game-links/link-thread-picker";
+import { UnlinkThreadButton } from "@/components/game-links/unlink-thread-button";
 
 // The rail's "Discord threads": the club's threads linked to this game, each a
 // jump link into Discord. Regulars and staff (`canEdit`) also get unlink and a

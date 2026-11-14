@@ -66,6 +66,11 @@
                 color: var(--accent-foreground);
                 border-color: var(--accent-foreground);
             }
+            &[data-variant="tool"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
             &[data-variant="destructive-ghost"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);
@@ -124,6 +129,25 @@
             }
             &:is([data-size="sm"], [data-size="icon-sm"]) {
                 border-radius: 0;
+            }
+        }
+        /* www#89: the app shell's and the root components' Button variants. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                background-color: var(--sidebar-accent);
+                color: var(--sidebar-accent-foreground);
+                border-color: var(--sidebar-ring);
+            }
+            &[data-variant="sidebar-action"] {
+                background-color: var(--muted);
+                color: var(--destructive);
+                border-color: var(--destructive);
+            }
+            &[data-variant="add"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--foreground);
+                border-style: dotted;
             }
         }
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
@@ -219,6 +243,60 @@
                 background-color: var(--chart-3);
                 color: var(--foil-foreground);
                 border-color: var(--foil-foreground);
+            }
+        }
+        /* Badge, the chip family (www#90). */
+        [data-slot="badge"] {
+            &[data-tone="provider-retroachievements"] {
+                background-color: var(--chart-1);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="provider-steam"] {
+                background-color: var(--chart-2);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="provider-psn"] {
+                background-color: var(--chart-4);
+                color: var(--foreground);
+                border-color: var(--foreground);
+            }
+            &[data-fill="outline"] {
+                background-color: var(--background);
+                color: var(--chart-5);
+                outline: 2px dashed var(--chart-5);
+            }
+            &[aria-current="page"] {
+                outline: 3px solid var(--chart-3);
+            }
+            &[data-tone="platform"] {
+                background-color: var(--chart-5);
+                color: var(--foreground);
+                border-color: var(--foreground);
+            }
+            &[data-tone="option"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="picked"] {
+                background-color: var(--chart-3);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="quiet"] {
+                background-color: var(--chart-4);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-size="nav"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline;
+            }
+            &[data-size="filter"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline wavy;
             }
         }
         [data-slot="input"] {
@@ -944,6 +1022,14 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="input-group"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group"][data-variant="search"] {
             background-color: var(--card);
             color: var(--card-foreground);
             border-color: var(--border-strong);

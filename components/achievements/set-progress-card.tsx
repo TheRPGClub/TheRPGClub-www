@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Trophy } from "lucide-react";
 import type { AchievementSet, SetProgress } from "@/lib/api/types";
 import { progressFill, progressPercent, setBadges, setTitle } from "@/lib/achievements";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ProviderBadge } from "./provider-badge";
 import { SetBadgeChip } from "./set-badge";
@@ -75,7 +75,7 @@ export function SetProgressCard({
           </h3>
           <div className="flex flex-wrap items-center gap-1.5">
             <ProviderBadge provider={set.provider} short />
-            {set.platform_label && <Chip>{set.platform_label}</Chip>}
+            {set.platform_label && <Badge className="border-0">{set.platform_label}</Badge>}
             {badges.map((badge) => (
               <SetBadgeChip key={badge} badge={badge} />
             ))}

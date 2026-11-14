@@ -23,7 +23,7 @@ import {
   type SetMember,
 } from "@/lib/achievements/game-page";
 import type { SetTint } from "@/lib/achievements/tint-color";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { ReviewerAvatar } from "@/components/issue/review-meta";
 import { cn } from "@/lib/utils";
 import { ClubAchievementTile, type RingDot } from "./club-achievement-tile";
@@ -112,7 +112,7 @@ export function ClubSetPage({
       <div className="grid gap-x-6 pt-6 pr-4 pb-5 pl-[30px] sm:pr-5 lg:grid-cols-[minmax(0,1fr)_12.5rem]">
         <header className="col-span-full flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border pb-3">
           <h3 className="font-headline text-[1.45rem] leading-none text-foreground">{title}</h3>
-          {set.platform_label && <Chip>{set.platform_label}</Chip>}
+          {set.platform_label && <Badge className="border-0">{set.platform_label}</Badge>}
           <span className="font-label text-[0.82rem] tracking-[0.08em] text-faint-foreground">
             {clubUnlocked} of {total} unlocked by the club
             {set.provider === "retroachievements" && set.points_total > 0

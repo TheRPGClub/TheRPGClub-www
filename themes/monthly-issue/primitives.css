@@ -58,6 +58,11 @@
             &[data-variant="ghost"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50;
             }
+            /* A tool on content (www#92): the ghost, resting in the faint
+               ink. */
+            &[data-variant="tool"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-faint-foreground;
+            }
             &[data-variant="destructive-ghost"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive;
             }
@@ -102,6 +107,21 @@
             }
             &:is([data-size="sm"], [data-size="icon-sm"]) {
                 @apply rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg;
+            }
+        }
+        /* www#89: the app shell's and the root components' Button variants.
+           The sidebar's own toggles light in the sidebar accent; its footer
+           action is faint ink that lights on hover; an add slot is a dashed
+           strong rule that turns yellow on hover. */
+        [data-slot="button"] {
+            &[data-variant="sidebar-toggle"] {
+                @apply rounded-md border-0 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
+            &[data-variant="sidebar-action"] {
+                @apply rounded-sm border-0 text-faint-foreground transition-colors hover:bg-muted hover:text-foreground;
+            }
+            &[data-variant="add"] {
+                @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
             }
         }
         /* The carousel's arrows are round. */
@@ -162,6 +182,56 @@
             }
             &[data-tone="foil"] {
                 @apply foil;
+            }
+        }
+
+        /* Badge, the chip family (www#90): Provider chips in their own
+           colour, the giveaway platform chip in its ribbon ink, the hub's
+           filter chips (the current one marked, a Provider not picked drawn
+           as a stroke in its colour), the journal catalogue's picked filter,
+           a quiet hairline status and the sidebar's badge scale. */
+        [data-slot="badge"] {
+            &[data-tone="provider-retroachievements"] {
+                @apply bg-provider-retroachievements text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-steam"] {
+                @apply bg-provider-steam text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-psn"] {
+                @apply bg-provider-psn text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)] hover:brightness-125;
+                }
+            }
+            &:is([data-tone="provider-retroachievements"], [data-tone="provider-steam"], [data-tone="provider-psn"])[aria-current="page"] {
+                @apply outline-2 outline-offset-2 outline-highlight;
+            }
+            &[data-tone="platform"] {
+                @apply bg-(--platform-ink) font-extrabold text-background;
+            }
+            &[data-tone="option"] {
+                @apply bg-foreground/6 text-dim-foreground hover:text-foreground;
+                &[aria-current="page"] {
+                    @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+                }
+            }
+            &[data-tone="picked"] {
+                @apply rounded-sm bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+            }
+            &[data-tone="quiet"] {
+                @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
+            }
+            &[data-size="nav"] {
+                @apply font-extrabold;
+            }
+            &[data-size="filter"] {
+                @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight;
             }
         }
 
@@ -516,6 +586,11 @@
         }
         [data-slot="input-group"] {
             @apply rounded-sm border-border bg-card in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-disabled:bg-input/50 has-[[data-slot=input-group-control]:focus-visible]:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/40 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40;
+        }
+        /* A page's search bar (www#92): the strong rule, and focus shows
+           on the rule alone. */
+        [data-slot="input-group"][data-variant="search"] {
+            @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
         [data-slot="input-group-addon"] {
             @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];

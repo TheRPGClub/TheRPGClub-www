@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // The Game Journal's bound volume: a rule-coloured cover board holding ink-2
@@ -133,9 +133,9 @@ export function ChapterMarks({
   if (!nowPlaying && !completed) return null;
   return (
     <>
-      {nowPlaying && <Chip className={className}>Now Playing</Chip>}
+      {nowPlaying && <Badge className={cn("border-0", className)}>Now Playing</Badge>}
       {completed && (
-        <Chip className={cn("bg-rarity-uncommon text-rarity-foreground", className)}>Game Completion</Chip>
+        <Badge tone="rarity-uncommon" className={cn("border-0", className)}>Game Completion</Badge>
       )}
     </>
   );

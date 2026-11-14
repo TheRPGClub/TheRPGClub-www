@@ -1,41 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { useReviewComposer } from "@/hooks/use-review-composer";
 
-import { ReviewCard } from "@/components/issue/review-card";
 import { ReviewComposePanel } from "@/components/issue/review-compose-panel";
-import { Button } from "@/components/ui/button";
 import type { Review } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
-import { cn } from "@/lib/utils";
-
-// The editor is the heaviest thing a game page can pull in, and most visitors
-// never open it — anonymous ones cannot. It loads on demand.
-const ReviewForm = dynamic(
-  () =>
-    import("@/components/member/review-form").then((m) => ({
-      default: m.ReviewForm,
-    })),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="py-6 text-center text-sm text-faint-foreground">
-        Loading editor…
-      </p>
-    ),
-  },
-);
-
-// The crew strip only splits as far as it has reviews to fill, so a lone
-// review never sits beside two empty cells.
-const CREW_COLUMNS: Record<number, string> = {
-  1: "",
-  2: "md:grid-cols-2",
-  3: "md:grid-cols-3",
-};
+import {
+  GameReviewItem,
+  GameReviewsGrid,
+} from "@/components/games/reviews/game-review-item";
+import { LazyReviewForm } from "@/components/games/reviews/review-form-lazy";
 
 export interface GameReviewsListProps {
   gameId: number;
@@ -94,15 +68,14 @@ export function GameReviewsList({
   reviewHrefs,
   limit,
 }: GameReviewsListProps) {
-  const router = useRouter();
-  const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
-  const [composing, setComposing] = useState(startComposing);
-  // `startComposing` follows the URL, which can change without a remount.
-  const [prevStart, setPrevStart] = useState(startComposing);
-  if (startComposing !== prevStart) {
-    setPrevStart(startComposing);
-    setComposing(startComposing);
-  }
+  const {
+    composing,
+    openComposer,
+    closeComposer,
+    editingReviewId,
+    setEditingReviewId,
+    openFullEditor,
+  } = useReviewComposer({ gameId, startComposing, composeCloseHref });
 
   const ownReview =
     ownerId == null
@@ -111,68 +84,23 @@ export function GameReviewsList({
 
   const showCta = showCompose && ownerId !== null && ownReview === null;
 
-  // Handing over to the full page: the save has already happened, so this only
-  // has to go somewhere.
-  // `?edit` so the full page opens in the editor rather than dropping the
-  // writer back into a read view they then have to click out of.
-  const openFullEditor = (review: Review) =>
-    router.push(`/games/${gameId}/reviews/${review.review_id}?edit=1`);
-
-  const closeComposer = () => {
-    setComposing(false);
-    if (startComposing && composeCloseHref) {
-      router.replace(composeCloseHref, { scroll: false });
-    }
-  };
-
   const crew = layout === "crew";
   const visible = limit ? reviews.slice(0, limit) : reviews;
-  const items = visible.map((review) => {
-    const isOwn = review.user_id === ownerId;
-    if (isOwn && editingReviewId === review.review_id) {
-      return (
-        <div key={review.review_id} className="col-span-full">
-          <ReviewForm
-            userId={ownerId!}
-            gameId={gameId}
-            existing={review}
-            accent={accent}
-            showDelete
-            toolbar="compact"
-            scorecard={false}
-            onCancel={() => setEditingReviewId(null)}
-            onSaved={() => setEditingReviewId(null)}
-            onTransfer={openFullEditor}
-          />
-        </div>
-      );
-    }
-    // The owner's card looks like everyone else's; a pencil in its byline
-    // flips it into the small editor.
-    return (
-      <ReviewCard
-        key={review.review_id}
-        review={review}
-        href={reviewHrefs?.[review.review_id]}
-        variant={crew ? "column" : "card"}
-        facetLimit={crew ? 3 : 4}
-        trailing={
-          isOwn ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Edit your review"
-              className="text-faint-foreground hover:text-foreground"
-              onClick={() => setEditingReviewId(review.review_id)}
-            >
-              <Pencil />
-            </Button>
-          ) : undefined
-        }
-      />
-    );
-  });
+  const items = visible.map((review) => (
+    <GameReviewItem
+      key={review.review_id}
+      review={review}
+      gameId={gameId}
+      ownerId={ownerId}
+      editing={editingReviewId === review.review_id}
+      crew={crew}
+      accent={accent}
+      href={reviewHrefs?.[review.review_id]}
+      onEdit={() => setEditingReviewId(review.review_id)}
+      onDone={() => setEditingReviewId(null)}
+      onTransfer={openFullEditor}
+    />
+  ));
 
   return (
     <div className="space-y-4">
@@ -181,13 +109,13 @@ export function GameReviewsList({
           ownerId={ownerId}
           canWriteReview={canWriteReview}
           status={viewerStatus}
-          onStart={() => setComposing(true)}
+          onStart={openComposer}
         />
       )}
 
       {composing && ownerId !== null && ownReview === null && (
         <div id="compose" className="scroll-mt-20">
-          <ReviewForm
+          <LazyReviewForm
             userId={ownerId}
             gameId={gameId}
             accent={accent}
@@ -209,18 +137,9 @@ export function GameReviewsList({
           </p>
         )
       ) : (
-        <div
-          className={cn(
-            crew
-              ? [
-                  "grid gap-px overflow-hidden rounded-md border border-border bg-border",
-                  CREW_COLUMNS[Math.min(visible.length, 3)],
-                ]
-              : "grid items-start gap-4 lg:grid-cols-2",
-          )}
-        >
+        <GameReviewsGrid crew={crew} count={visible.length}>
           {items}
-        </div>
+        </GameReviewsGrid>
       )}
     </div>
   );

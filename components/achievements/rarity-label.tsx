@@ -1,6 +1,6 @@
 import { RARITY_TIER_LABEL, formatRarity } from "@/lib/achievements";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { RARITY_FILL } from "./rarity-chip";
 
 // The Provider's Rarity in the label voice. An ultra-rare Achievement (under
 // the Highlight line on its overall Rarity, see displayRarity) also wears
@@ -30,14 +30,9 @@ export function RarityLabel({
       )}
     >
       {ultraRare && chip && (
-        <span
-          className={cn(
-            "inline-flex h-5 items-center rounded-xs px-1.5 text-[0.72rem] text-rarity-foreground",
-            RARITY_FILL.ultra,
-          )}
-        >
+        <Badge tone="rarity-ultra" size="sm" className="border-0">
           {RARITY_TIER_LABEL.ultra}
-        </span>
+        </Badge>
       )}
       <span>
         {formatRarity(rarity)} of players{hardcore ? " (hardcore)" : ""}

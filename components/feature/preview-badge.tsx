@@ -1,18 +1,24 @@
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 // Staff-only mark on a Preview Feature's page header: the highlight chip
 // reading "Preview", so a Preview page is never mistaken (or screenshotted)
 // for a Live one. Members never see a Preview Feature, so never this.
 export function PreviewBadge({ className }: { className?: string }) {
   return (
-    <Chip tone="highlight" className={className}>
+    <Badge tone="highlight" className={cn("border-0", className)}>
       Preview
-    </Chip>
+    </Badge>
   );
 }
 
 // The same mark at the sidebar's badge scale, beside the nav item's label
-// (it shares the voting "Open" badge's slot and size). Hidden on the icon
-// rail, where the tooltip says it instead.
-export const NAV_BADGE_CLASS =
-  "font-label rounded-xs bg-highlight px-1.5 py-px text-[0.7rem] font-extrabold text-highlight-foreground group-data-[collapsible=icon]:hidden";
+// (the voting "Open" badge shares it). Hidden on the icon rail, where the
+// tooltip says it instead.
+export function NavBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <Badge tone="highlight" size="nav" className="border-0 group-data-[collapsible=icon]:hidden">
+      {children}
+    </Badge>
+  );
+}

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import type { Game } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { GameCover, GameHeadline } from "@/components/issue/game-cover";
 import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
 import { Starburst } from "@/components/issue/starburst";
@@ -102,9 +102,9 @@ export function GameHero({
             <div className="mt-4 flex flex-wrap gap-1.5">
               {badge}
               {chips.map((chip) => (
-                <Chip key={chip.tone} tone={chip.tone}>
+                <Badge key={chip.tone} tone={chip.tone} className="border-0">
                   {chip.label}
-                </Chip>
+                </Badge>
               ))}
               <PlatformPills platforms={game.platforms} max={5} />
             </div>
