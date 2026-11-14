@@ -1,5 +1,5 @@
 import type { CompletionatorImport } from "@/lib/api/types";
-import { ImportPage, ImportStep, ImportingLine } from "@/components/imports/import-page";
+import { ImportPage, ImportStep, ImportingLine } from "@/components/templates/import-page";
 import { CsvImportForm } from "@/components/imports/csv-import-form";
 
 export default async function CompletionatorImportPage({

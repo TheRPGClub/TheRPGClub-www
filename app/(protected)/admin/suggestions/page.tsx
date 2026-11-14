@@ -2,7 +2,7 @@ import Link from "next/link";
 import { fetchSuggestions } from "@/lib/api/suggestions";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { StaffOnly } from "@/components/staff-only";
 import { ReviewCard } from "@/components/suggestions/review-card";
 

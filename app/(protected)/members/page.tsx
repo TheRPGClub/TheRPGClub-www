@@ -4,7 +4,7 @@ import { apiFetch } from "@/lib/api";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import type { ApiCollection, User } from "@/lib/api/types";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";

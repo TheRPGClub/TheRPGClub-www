@@ -19,7 +19,7 @@ import {
   type NewsFilters,
 } from "@/lib/news";
 import { PreviewBadge } from "@/components/feature/preview-badge";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { NewsCard } from "@/components/news/news-card";
 import { NewsCategoryRail } from "@/components/news/news-category-rail";

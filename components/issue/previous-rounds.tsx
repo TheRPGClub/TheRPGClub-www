@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { GotmRound, GotmRoundGame, VotingCategory } from "@/lib/api/types";
-import { SectionHeading, headingLinkClass } from "@/components/issue/page-header";
+import { SectionHeading, headingLinkClass } from "@/components/templates/page-header";
 import { cn } from "@/lib/utils";
 
 // The dashboard's strip of the rounds before the current one: a monumental

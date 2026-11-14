@@ -16,7 +16,7 @@ import {
   fetchJournaledGames,
 } from "@/lib/api/journals";
 import { journalDate, romanNumeral, sortChapters } from "@/lib/journals";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { JournalPage, JournalRunningHead, JournalVolume } from "@/components/journal/journal-book";
 import { JournalChapter } from "@/components/journal/journal-chapter";
@@ -135,7 +135,7 @@ export default async function MemberJournalPage({
     `${base}?game=${openGame?.game_id}${p > 1 ? `&page=${p}` : ""}`;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={user.user_id}
       displayName={displayName}
       title="Journal"
@@ -208,6 +208,6 @@ export default async function MemberJournalPage({
           </div>
         </JournalVolume>
       )}
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

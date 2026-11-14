@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, SearchSynonymGroup } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { StaffOnly } from "@/components/staff-only";
 import { SynonymsDictionary } from "@/components/admin/synonyms/synonyms-dictionary";
 

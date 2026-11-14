@@ -11,7 +11,7 @@ import { firstParam, type RawSearchParams } from "@/lib/search-params";
 import { memberName } from "@/lib/achievements";
 import { sortChapters } from "@/lib/journals";
 import { ListPagination } from "@/components/list-pagination";
-import { PageHeader, SectionHeading } from "@/components/issue/page-header";
+import { PageHeader, SectionHeading } from "@/components/templates/page-header";
 import { JournalCatalogue } from "@/components/journal/journal-catalogue";
 import { JournalCatalogueFilters } from "@/components/journal/journal-catalogue-filters";
 import { JournalShelf, JournalVolumePreview } from "@/components/journal/journal-shelf";

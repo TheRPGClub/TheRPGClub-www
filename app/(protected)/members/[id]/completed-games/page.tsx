@@ -17,7 +17,7 @@ import {
   dialMonths,
   type DialYear,
 } from "@/components/issue/member-year-dial";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
 import {
   completionMonth,
@@ -159,7 +159,7 @@ export default async function CompletedGamesPage({
         : year;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Completed games"
@@ -304,6 +304,6 @@ export default async function CompletedGamesPage({
           only; use All to reach the rest.
         </p>
       )}
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

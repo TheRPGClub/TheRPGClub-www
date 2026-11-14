@@ -13,7 +13,7 @@ import {
   MemberListEmpty,
   memberGridClass,
 } from "@/components/member/member-game-card";
-import { MemberListShell } from "@/components/member/member-list-shell";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { memberCounts, memberName } from "@/components/member/member-lists";
 import { ListPagination } from "@/components/list-pagination";
 
@@ -67,7 +67,7 @@ export default async function FavoriteGamesPage({
   const rest = currentPage === 1 ? entries.slice(3) : entries;
 
   return (
-    <MemberListShell
+    <MemberListTemplate
       userId={id}
       displayName={displayName}
       title="Favorite games"
@@ -102,6 +102,6 @@ export default async function FavoriteGamesPage({
         totalPages={totalPages}
         buildHref={href}
       />
-    </MemberListShell>
+    </MemberListTemplate>
   );
 }

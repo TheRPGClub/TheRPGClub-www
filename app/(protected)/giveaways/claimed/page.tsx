@@ -5,7 +5,7 @@ import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchClaimedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
 import { platformFamily, shortDate } from "@/lib/giveaways";
-import { PageHeader } from "@/components/issue/page-header";
+import { PageHeader } from "@/components/templates/page-header";
 import { GameCover } from "@/components/issue/game-cover";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
 import { ClaimedKeyCell } from "@/components/giveaways/claimed-key-cell";

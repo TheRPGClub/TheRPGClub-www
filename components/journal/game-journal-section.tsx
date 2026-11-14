@@ -4,7 +4,7 @@ import type { GameCompletion, JournalEntry } from "@/lib/api/types";
 import { fetchGameJournal } from "@/lib/api/journals";
 import { buildChronology, chapterHref, memberInk } from "@/lib/journals";
 import { memberName } from "@/lib/achievements";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { JournalVolume } from "@/components/journal/journal-book";
 import { GameJournalPlate, type PlateLine } from "@/components/journal/game-journal-plate";
 import { buttonVariants } from "@/components/ui/button";

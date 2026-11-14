@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/session";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { nextRoundDefaults, roundEditHref, TRACK_NAME, TRACKS, trackFromSlug } from "@/lib/rounds";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { RoundForm } from "@/components/admin/rounds/round-form";
 import { ListPagination } from "@/components/list-pagination";
 import { StaffOnly } from "@/components/staff-only";

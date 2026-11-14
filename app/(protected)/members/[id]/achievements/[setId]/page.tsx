@@ -20,7 +20,7 @@ import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { AchievementList } from "@/components/achievements/achievement-list";
 import { SetHeader } from "@/components/achievements/set-page/set-header";
 import { SetSpread } from "@/components/achievements/set-page/set-spread";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 
 // One Achievement Set through a member's eyes, as a two-page spread in the
 // member's binder: the masthead (title on the game tint, the monumental

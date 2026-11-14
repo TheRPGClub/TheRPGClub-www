@@ -1,7 +1,7 @@
 import { latestBackfillAction } from "@/app/actions/superadmin-tools";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { ImageBackfillDesk } from "@/components/admin/image-backfill-desk";
 import { StaffOnly } from "@/components/staff-only";
 

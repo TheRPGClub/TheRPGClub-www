@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import { stateCounts, type FeatureFlagEntry } from "@/lib/feature-flags";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
-import { DeskHeader } from "@/components/admin/desk/desk-header";
+import { DeskHeader } from "@/components/templates/desk-header";
 import { FeatureFlagDesk } from "@/components/admin/features/feature-flag-desk";
 import { StaffOnly } from "@/components/staff-only";
 
