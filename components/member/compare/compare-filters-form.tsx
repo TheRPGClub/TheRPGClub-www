@@ -6,52 +6,9 @@ import {
   compareYearOptions,
   type CompareFilters,
 } from "@/lib/completions-compare";
-import {
-  MemberField,
-  MemberSelect,
-  memberControlClass,
-} from "@/components/issue/member-field";
+import { MemberField, MemberSelect } from "@/components/issue/member-field";
 import { Button, ButtonLink } from "@/components/ui/button";
-
-export interface CompareMemberOption {
-  user_id: string;
-  name: string;
-}
-
-// The member picker at the top of the compare page. A GET form: choosing
-// someone new starts a fresh comparison, so the filters drop.
-export function CompareMemberForm({
-  action,
-  ownerName,
-  filters,
-  members,
-}: {
-  action: string;
-  ownerName: string;
-  filters: CompareFilters;
-  members: CompareMemberOption[];
-}) {
-  return (
-    <Form action={action} className="flex flex-wrap items-end gap-2.5">
-      <MemberField
-        label={`Compare ${ownerName} with`}
-        className="w-full max-w-72"
-      >
-        <MemberSelect name="with" defaultValue={filters.with ?? ""}>
-          <option value="">Pick a member…</option>
-          {members.map((m) => (
-            <option key={m.user_id} value={m.user_id}>
-              {m.name}
-            </option>
-          ))}
-        </MemberSelect>
-      </MemberField>
-      <Button type="submit" variant="outline">
-        Compare
-      </Button>
-    </Form>
-  );
-}
+import { Input } from "@/components/ui/input";
 
 export interface CompareFiltersFormProps {
   action: string;
@@ -80,6 +37,7 @@ export function CompareFiltersForm({
           {heading}
         </h2>
       )}
+      {/* eslint-disable-next-line structure/no-raw-controls -- a hidden form value, not a control */}
       {filters.with && <input type="hidden" name="with" value={filters.with} />}
       <MemberField label="Year" className="min-w-0 flex-[1_1_8.5rem] lg:w-38 lg:flex-none">
         <MemberSelect name="year" defaultValue={filters.year ?? ""}>
@@ -103,12 +61,13 @@ export function CompareFiltersForm({
         </MemberSelect>
       </MemberField>
       <MemberField label="Search" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
-        <input
+        <Input
+          variant="filter"
           type="search"
           name="q"
           defaultValue={filters.q}
           placeholder="Game title"
-          className={memberControlClass}
+          className="h-9.5 px-2.5 text-sm md:text-sm"
         />
       </MemberField>
       <MemberField label="Sort" className="min-w-0 flex-[1_1_8.5rem] lg:w-40 lg:flex-none">
@@ -125,11 +84,7 @@ export function CompareFiltersForm({
           Apply
         </Button>
         <ButtonLink
-          href={
-            filters.with
-              ? `${action}?with=${encodeURIComponent(filters.with)}`
-              : action
-          }
+          href={filters.with ? `${action}?with=${encodeURIComponent(filters.with)}` : action}
           variant="ghost"
           className="h-9.5"
         >
