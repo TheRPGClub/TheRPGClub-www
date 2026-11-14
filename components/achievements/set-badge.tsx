@@ -1,5 +1,6 @@
 import { CircleCheck, Crown, Trophy } from "lucide-react";
 import { type SetBadge, HIGHLIGHT_LABEL } from "@/lib/achievements";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // A set's earned badge as a flat foil chip with ink type: Completion,
@@ -20,14 +21,9 @@ export function SetBadgeChip({
 }) {
   const Icon = ICON[badge];
   return (
-    <span
-      className={cn(
-        "foil font-label inline-flex h-6 items-center gap-1 rounded-xs px-2 text-[0.78rem] whitespace-nowrap [&_svg]:size-3",
-        className,
-      )}
-    >
+    <Badge tone="foil" className={cn("border-0", className)}>
       <Icon aria-hidden />
       {HIGHLIGHT_LABEL[badge]}
-    </span>
+    </Badge>
   );
 }

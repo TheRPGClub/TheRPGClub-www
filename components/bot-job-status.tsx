@@ -4,7 +4,7 @@ import { AlertTriangle, Check, Clock, Loader2, RefreshCw } from "lucide-react";
 import type { BotJob } from "@/lib/api/types";
 import { botJobPhase, botJobStatusCopy, isBotJobSettled } from "@/lib/bot-jobs";
 import { useBotJob, type BotJobState } from "@/hooks/use-bot-job";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -58,10 +58,10 @@ export function BotJobStatusView({
   if (!job && stuck) {
     return (
       <div role="status" className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm", className)}>
-        <Chip>
+        <Badge className="border-0">
           <AlertTriangle aria-hidden className="size-3.5 shrink-0" />
           Unavailable
-        </Chip>
+        </Badge>
         <span className="text-dim-foreground">{error}</span>
       </div>
     );
@@ -73,10 +73,10 @@ export function BotJobStatusView({
       aria-live="polite"
       className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm", className)}
     >
-      <Chip tone={phase === "done" ? "highlight" : "neutral"}>
+      <Badge tone={phase === "done" ? "highlight" : "neutral"} className="border-0">
         <PhaseIcon phase={phase} busy={busy} />
         {copy.label}
-      </Chip>
+      </Badge>
       <span className={phase === "failed" ? "text-destructive" : "text-dim-foreground"}>
         {copy.detail}
       </span>

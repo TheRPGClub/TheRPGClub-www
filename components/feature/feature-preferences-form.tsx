@@ -8,7 +8,7 @@ import {
   type FeaturePreferences,
   type PreferenceChange,
 } from "@/lib/feature-preferences";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { NewsCategorySwitches } from "@/components/feature/news-category-switches";
@@ -125,7 +125,7 @@ export function FeaturePreferencesForm({
           <PreferenceRow
             id={SHOW_PREVIEW}
             name="Show Preview features"
-            badge={<Chip>Staff</Chip>}
+            badge={<Badge className="border-0">Staff</Badge>}
             where="Preview Features in your sidebar, dashboard and pages. Turn it off to see the site as members do."
             dim={!prefs.show_preview_features}
             error={errors[SHOW_PREVIEW]}

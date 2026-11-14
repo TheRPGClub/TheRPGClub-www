@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { Game } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { GameCover, GameHeadline } from "@/components/issue/game-cover";
 import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
 
@@ -43,9 +43,9 @@ export function ReviewsGameAside({
           fallbackClassName="text-sm lg:text-[2rem]"
         />
         {winChip && (
-          <Chip tone={winChip.tone} className="absolute bottom-3 left-3 hidden lg:inline-flex">
+          <Badge tone={winChip.tone} className="absolute bottom-3 left-3 hidden lg:inline-flex border-0">
             {winChip.label}
-          </Chip>
+          </Badge>
         )}
       </div>
       <div className="min-w-0">

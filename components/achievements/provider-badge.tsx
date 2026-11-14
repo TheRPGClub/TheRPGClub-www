@@ -1,5 +1,6 @@
 import type { AchievementProvider } from "@/lib/api/types";
 import { PROVIDER_LABEL, PROVIDER_SHORT_LABEL } from "@/lib/achievements";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // A Provider as a solid chip in its own colour with ink type. Provider
@@ -26,13 +27,10 @@ export function ProviderBadge({
   className?: string;
 }) {
   return (
-    <span
+    <Badge
       title={short ? PROVIDER_LABEL[provider] : undefined}
-      className={cn(
-        "font-label inline-flex h-6 items-center rounded-xs px-2 text-[0.78rem] whitespace-nowrap text-provider-foreground",
-        PROVIDER_FILL[provider],
-        className,
-      )}
+      tone={`provider-${provider}`}
+      className={cn("gap-0 border-0", className)}
     >
       {short ? PROVIDER_SHORT_LABEL[provider] : PROVIDER_LABEL[provider]}
       {name && (
@@ -40,6 +38,6 @@ export function ProviderBadge({
           {name}
         </span>
       )}
-    </span>
+    </Badge>
   );
 }
