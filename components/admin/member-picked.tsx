@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export function MemberPicked({ member, disabled, onChange }: { member: User; disabled?: boolean; onChange: () => void }) {
   return (
     <div className="flex items-end gap-3 border-b-2 border-highlight pt-1.5 pb-2.5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- a small Discord avatar, already sized by Discord's CDN */}
       <img
         src={discordAvatarUrl(member.user_id, member.discord_avatar, 64)}
         alt=""

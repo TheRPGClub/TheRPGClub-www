@@ -1857,5 +1857,11 @@
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
         }
+        /* The News Hub (www#101). */
+        [data-slot="button"][data-variant="filter-option"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }

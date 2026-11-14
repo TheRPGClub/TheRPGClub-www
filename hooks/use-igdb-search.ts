@@ -55,8 +55,7 @@ export function useIgdbSearch(query: string, auto: boolean) {
       clearTimeout(timer);
       controller.abort();
     };
-    // run reads only `query`, which keys the caller.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run reads only `query`, which keys the caller
   }, [auto]);
 
   return { search, run: () => void run() };

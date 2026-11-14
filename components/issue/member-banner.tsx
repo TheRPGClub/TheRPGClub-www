@@ -52,7 +52,7 @@ export function MemberBanner({
       className="relative isolate overflow-hidden rounded-md border border-border bg-card"
     >
       {art && (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
         <img
           src={art}
           alt=""

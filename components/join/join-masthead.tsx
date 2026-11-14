@@ -10,7 +10,7 @@ export function JoinMasthead() {
         href="/"
         className="font-headline pointer-events-auto flex items-center gap-3.5 rounded-sm text-[1.35rem] leading-none"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- the small logo at a fixed size; the optimiser adds nothing */}
         <img src="/logo.png" alt="" width={30} height={30} className="size-7.5" />
         <span>
           The <span className="text-gotm">RPG</span> Club

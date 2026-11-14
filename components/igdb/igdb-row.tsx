@@ -41,7 +41,7 @@ export function IgdbRow({
     >
       <span className="row-span-2 block aspect-[3/4] overflow-hidden rounded-[2.4px] bg-muted shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_12%,transparent)] sm:row-span-1">
         {hit.cover_url && (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={hit.cover_url} alt="" className="size-full object-cover" />
         )}
       </span>

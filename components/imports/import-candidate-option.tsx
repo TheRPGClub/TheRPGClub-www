@@ -16,7 +16,7 @@ export function ImportCandidateOption({
       <RadioGroupItem variant="choice" value={candidate.game_id} />
       <span className="block h-[3.8rem] w-[2.9rem] overflow-hidden rounded-[2px] bg-background">
         {candidate.cover_url && (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={candidate.cover_url} alt="" className="size-full object-cover" />
         )}
       </span>

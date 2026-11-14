@@ -12,7 +12,7 @@ export function MemberPickerResult({ user }: { user: User }) {
       variant="result"
       className="group/result grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-3 px-2.5 py-2 text-left"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- a small Discord avatar, already sized by Discord's CDN */}
       <img src={discordAvatarUrl(user.user_id, user.discord_avatar, 64)} alt="" className="size-8 rounded-full bg-card" />
       <span className="min-w-0">
         <span className="block truncate font-semibold">{memberName(user)}</span>

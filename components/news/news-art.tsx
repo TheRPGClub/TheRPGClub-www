@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import type { NewsFrame } from "@/lib/news";
+import { artFrames, type NewsFrame } from "@/lib/news";
 import { cn } from "@/lib/utils";
+import { ArtFallback, ArtFrame } from "./news-art-frame";
 
 // A card's 16:9 art box: its frames (the outside page's image, or up to four
 // attachments laid out as a contact sheet), a 4px foot bar and the corner tag
@@ -15,14 +16,6 @@ import { cn } from "@/lib/utils";
 // ink-3, so a broken image shows nothing and leaves no hole. A frame the API
 // marks unavailable (an expired attachment the bot is renewing) reads "Image
 // loading".
-
-const MAX_FRAMES = 4;
-
-const ART_IMG =
-  "size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/card:scale-[1.03]";
-
-const FRAME_LINK =
-  "block size-full overflow-hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight";
 
 export function NewsArt({
   frames,
@@ -51,13 +44,7 @@ export function NewsArt({
   const [failed, setFailed] = useState<ReadonlySet<number>>(() => new Set());
   const fail = (i: number) =>
     setFailed((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
-
-  const working = frames
-    .map((frame, i) => ({ frame, i }))
-    .filter(({ i }) => !failed.has(i));
-  const shown = cover && working[0]?.i === 0 ? working.slice(0, 1) : working;
-  const visible = shown.slice(0, MAX_FRAMES);
-  const extra = shown.length - visible.length;
+  const { visible, shown, extra } = artFrames(frames, cover, failed);
 
   return (
     <div
@@ -77,57 +64,30 @@ export function NewsArt({
             visible.length > 2 && "grid-rows-2",
           )}
         >
-          {visible.map(({ frame, i }, n) => {
-            const last = n === visible.length - 1;
-            const body = frame.unavailable || !frame.url ? (
-              <ArtFallback text="Image loading" small={visible.length > 1} />
-            ) : (
-              <FrameImage url={frame.url} onFail={() => fail(i)} />
-            );
-            return (
-              <div
-                key={i}
-                className={cn(
-                  "relative min-h-0 overflow-hidden",
-                  visible.length === 3 && n === 0 && "row-span-2",
-                )}
-              >
-                {framesOpen && frame.url && !frame.unavailable ? (
-                  <a
-                    href={frame.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={
-                      shown.length > 1
-                        ? `Image ${n + 1} of ${shown.length}, full size (opens in a new tab)`
-                        : "Image, full size (opens in a new tab)"
-                    }
-                    className={FRAME_LINK}
-                  >
-                    {body}
-                  </a>
-                ) : href && !framesOpen ? (
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    tabIndex={-1}
-                    aria-hidden
-                    className={FRAME_LINK}
-                  >
-                    {body}
-                  </a>
-                ) : (
-                  body
-                )}
-                {last && extra > 0 && (
-                  <span className="font-headline pointer-events-none absolute right-2 bottom-2 rounded-xs bg-background/85 px-1.5 pt-1 pb-0.5 text-lg leading-none text-foreground">
-                    +{extra}
-                  </span>
-                )}
-              </div>
-            );
-          })}
+          {visible.map(({ frame, i }, n) => (
+            <div
+              key={i}
+              className={cn(
+                "relative min-h-0 overflow-hidden",
+                visible.length === 3 && n === 0 && "row-span-2",
+              )}
+            >
+              <ArtFrame
+                frame={frame}
+                n={n}
+                count={shown}
+                small={visible.length > 1}
+                href={href}
+                framesOpen={framesOpen}
+                onFail={() => fail(i)}
+              />
+              {n === visible.length - 1 && extra > 0 && (
+                <span className="font-headline pointer-events-none absolute right-2 bottom-2 rounded-xs bg-background/85 px-1.5 pt-1 pb-0.5 text-lg leading-none text-foreground">
+                  +{extra}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
       )}
       <span
@@ -138,47 +98,6 @@ export function NewsArt({
         )}
       >
         {tag}
-      </span>
-    </div>
-  );
-}
-
-function FrameImage({ url, onFail }: { url: string; onFail: () => void }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- outside-site and Discord images load from their own address, not through the optimiser (spec api#355)
-    <img
-      src={url}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      referrerPolicy="no-referrer"
-      onError={onFail}
-      // An image that failed before hydration never fires onError: check it
-      // once the element is attached.
-      ref={(img) => {
-        if (img && img.complete && img.naturalWidth === 0) onFail();
-      }}
-      className={ART_IMG}
-    />
-  );
-}
-
-function ArtFallback({ text, small = false }: { text: string; small?: boolean }) {
-  return (
-    <div
-      className={cn(
-        "flex size-full items-center justify-center bg-muted text-center",
-        // Clear of the corner tag.
-        small ? "px-2 pt-8 pb-2" : "px-6 pt-9 pb-4",
-      )}
-    >
-      <span
-        className={cn(
-          "font-headline line-clamp-3 leading-none text-faint-foreground [overflow-wrap:anywhere]",
-          small ? "text-base" : "text-[1.45rem]",
-        )}
-      >
-        {text}
       </span>
     </div>
   );

@@ -24,7 +24,7 @@ export function ListEntryTile({
     <>
       <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-muted">
         {entry.game?.cover_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
           <img src={entry.game.cover_url} alt="" className="size-full object-cover" />
         ) : (
           <span className="font-headline grid size-full place-items-center p-2 text-center text-base text-faint-foreground sm:text-lg">

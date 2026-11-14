@@ -326,6 +326,16 @@ export function categoryTag(name: string): string {
   return name.split(" & ")[0];
 }
 
+// Display names by key, from the API's list; a key the list didn't load reads
+// as itself, and an item with no category as "General".
+export function categoryNames(categories: NewsCategory[]): (key: string | null) => string {
+  const byKey = new Map(categories.map((c) => [c.key as string, c.name]));
+  return (key) => {
+    if (!key) return "General";
+    return byKey.get(key) ?? key.charAt(0).toUpperCase() + key.slice(1);
+  };
+}
+
 // ---------------------------------------------------------------------------
 // What a card shows.
 
@@ -418,6 +428,23 @@ export function newsCardView(item: NewsItem): NewsCardView {
     fallback: "Image unavailable",
     time,
   };
+}
+
+// The frames an art box lays out, given those that failed to load: with a
+// cover (the outside page's image) working, it alone; otherwise the working
+// frames, four at most, and how many more there are. `i` is each frame's
+// index in `frames`.
+const MAX_ART_FRAMES = 4;
+
+export function artFrames(
+  frames: NewsFrame[],
+  cover: boolean,
+  failed: ReadonlySet<number>,
+): { visible: { frame: NewsFrame; i: number }[]; shown: number; extra: number } {
+  const working = frames.map((frame, i) => ({ frame, i })).filter(({ i }) => !failed.has(i));
+  const shown = cover && working[0]?.i === 0 ? working.slice(0, 1) : working;
+  const visible = shown.slice(0, MAX_ART_FRAMES);
+  return { visible, shown: shown.length, extra: shown.length - visible.length };
 }
 
 // Splits a headline before its last word, so an icon set after it can stay

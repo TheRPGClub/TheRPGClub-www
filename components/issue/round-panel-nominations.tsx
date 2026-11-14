@@ -24,7 +24,7 @@ export function RoundPanelNominations({
             >
               <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-background/15">
                 {cover && (
-                  // eslint-disable-next-line @next/next/no-img-element
+                  // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
                   <img
                     src={cover}
                     alt=""

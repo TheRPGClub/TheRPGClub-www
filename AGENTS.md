@@ -6,9 +6,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Structure rules
 
-These keep the site readable and themeable (spec www#80). Lint checks them: `eslint/structure.mjs`, tests in `eslint/structure.test.ts`. They warn today and become errors once the codebase is clean.
+These keep the site readable and themeable (spec www#80). Lint checks them: `eslint/structure.mjs`, tests in `eslint/structure.test.ts`. They are errors: CI fails a pull request that breaks one.
 
-- **Aim for about 100 lines of code per file.** Lint warns past 120 (`max-lines`; blank lines and comments do not count) in route files and components. Primitives (`components/ui`), server actions (`app/actions`), `lib/` and `hooks/` are exempt.
+- **Aim for about 100 lines of code per file.** Lint errors past 120 (`max-lines`; blank lines and comments do not count) in route files and components. Primitives (`components/ui`), server actions (`app/actions`), `lib/` and `hooks/` are exempt.
 - **Use the shadcn primitive, never a hand-made one.** No raw `<button>`, `<input>`, `<select>`, `<textarea>` or `<table>` outside `components/ui` (`structure/no-raw-controls`). Missing primitive? Add it with the shadcn CLI. A real exception takes an inline disable comment with a reason: `// eslint-disable-next-line structure/no-raw-controls -- native file picker` (`structure/disable-needs-reason` flags one without).
 - **Pass only layout classes to primitives** (spacing, size, placement, flex, grid), in every class prop (`className`, `indicatorClassName`...). No background, text colour, radius, shadow or ring, or border colour (`structure/no-look-classes-on-primitives`). A different look is a named, semantic variant on the primitive (`tone="gotm"`, `variant="inverse"`), not a class. A link that looks like a button is `<ButtonLink>` (next/link, or `render={<a download />}`), never `buttonVariants()` on another element: that element has no `data-slot`, so no Theme can reach it.
 - **Components never live beside routes.** `app/` holds route files only; components go under `components/`.

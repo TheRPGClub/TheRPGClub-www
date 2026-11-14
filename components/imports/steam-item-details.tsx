@@ -62,8 +62,7 @@ export function SteamHeaderImage({ appId, name }: { appId: number; name: string 
   }
 
   return (
-    // Steam's CDN art: a plain img avoids adding the host to next/image.
-    // eslint-disable-next-line @next/next/no-img-element
+    // eslint-disable-next-line @next/next/no-img-element -- Steam's CDN art, a host next/image isn't configured for
     <img
       src={steamHeaderImageUrl(appId)}
       alt={`${name} on Steam`}

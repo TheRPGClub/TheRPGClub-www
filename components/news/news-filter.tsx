@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, type FormEvent } from "react";
-import { Search, X } from "lucide-react";
-import {
-  NEWS_PATH,
-  newsHref,
-  newsInk,
-  type NewsCategoryRow,
-  type NewsFilters,
-} from "@/lib/news";
+import { useTransition } from "react";
+import { NEWS_PATH, newsHref, type NewsCategoryRow, type NewsFilters } from "@/lib/news";
 import { cn } from "@/lib/utils";
-import { InkSquare } from "./ink-square";
+import { Input } from "@/components/ui/input";
+import { NewsCategoryToggle } from "./news-category-toggle";
+import { NewsSearchField } from "./news-search-field";
 
 // The rail's filter: the search field, the News Categories as toggles, and
 // "Show all categories". The search stays when the category list couldn't
@@ -42,7 +37,7 @@ export function NewsFilter({
       aria-busy={pending}
       className={cn("transition-opacity duration-150", pending && "opacity-60")}
     >
-      <SearchField filters={filters} go={go} />
+      <NewsSearchField filters={filters} go={go} />
       <section aria-labelledby={headingId} className="mt-[18px]">
         <h2
           id={headingId}
@@ -66,11 +61,11 @@ export function NewsFilter({
               go(href);
             }}
           >
-            {filters.q && <input type="hidden" name="q" value={filters.q} />}
+            {filters.q && <Input type="hidden" name="q" value={filters.q} />}
             <ul>
               {rows.map((row) => (
                 <li key={row.key} className="border-b border-border">
-                  <CategoryToggle row={row} />
+                  <NewsCategoryToggle row={row} />
                 </li>
               ))}
             </ul>
@@ -90,96 +85,5 @@ export function NewsFilter({
         )}
       </section>
     </div>
-  );
-}
-
-// One category as a toggle button. Without JS it submits the chosen set
-// after toggling (no name when that set is empty, so the address stays bare).
-function CategoryToggle({ row }: { row: NewsCategoryRow }) {
-  const counted = row.chosen || !row.hidden;
-  return (
-    <button
-      type="submit"
-      name={row.next.length ? "category" : undefined}
-      value={row.next.join(",")}
-      data-href={row.href}
-      aria-pressed={row.chosen}
-      className={cn(
-        "group/row font-label flex h-[38px] w-full cursor-pointer items-center gap-2.5 rounded-xs text-left text-[0.9rem]",
-        FOCUS,
-      )}
-    >
-      <InkSquare {...newsInk(row.key)} filled={row.inView} />
-      <span
-        className={cn(
-          "min-w-0 truncate transition-colors group-hover/row:text-highlight",
-          row.inView ? "text-foreground" : "text-faint-foreground",
-        )}
-      >
-        {row.name}
-      </span>
-      {row.note && (
-        <span className="ml-auto shrink-0 pr-0.5 text-[0.8rem] text-faint-foreground">
-          {row.note}
-          {counted && <span className="sr-only">{row.note === "1" ? " item" : " items"}</span>}
-        </span>
-      )}
-    </button>
-  );
-}
-
-// "Search news titles": submits on Enter. The text follows the address
-// (back/forward, "Clear filters") by re-syncing during render.
-function SearchField({
-  filters,
-  go,
-}: {
-  filters: NewsFilters;
-  go: (href: string) => void;
-}) {
-  const [text, setText] = useState(filters.q);
-  const [synced, setSynced] = useState(filters.q);
-  if (synced !== filters.q) {
-    setSynced(filters.q);
-    setText(filters.q);
-  }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    go(newsHref(filters, { q: text }));
-  }
-
-  return (
-    <form action={NEWS_PATH} method="get" role="search" onSubmit={submit}>
-      {filters.categories.length > 0 && (
-        <input type="hidden" name="category" value={filters.categories.join(",")} />
-      )}
-      <div className="flex h-9 items-center gap-2 rounded-sm border border-border-strong bg-card pr-1 pl-3 text-faint-foreground transition-colors focus-within:border-faint-foreground">
-        <Search aria-hidden className="size-4 shrink-0" />
-        <input
-          type="search"
-          name="q"
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder="Search news titles"
-          aria-label="Search news titles"
-          enterKeyHint="search"
-          className="h-full min-w-0 flex-1 bg-transparent text-[0.92rem] text-foreground outline-none placeholder:text-faint-foreground [&::-webkit-search-cancel-button]:hidden"
-        />
-        {filters.q && (
-          <Link
-            href={newsHref(filters, { q: "" })}
-            scroll={false}
-            aria-label="Clear search"
-            className={cn(
-              "grid size-7 shrink-0 place-items-center rounded-xs transition-colors hover:text-highlight",
-              FOCUS,
-            )}
-          >
-            <X aria-hidden className="size-4" />
-          </Link>
-        )}
-      </div>
-    </form>
   );
 }
