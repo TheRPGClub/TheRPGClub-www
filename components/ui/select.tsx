@@ -37,6 +37,8 @@ type SelectTriggerVariant =
   | "clearable"
   // A blank in a sentence the member completes (the backlog picker).
   | "blank"
+  // A sort or filter beside a page's search bar (GOTM history; www#97).
+  | "search"
 
 function SelectTrigger({
   className,

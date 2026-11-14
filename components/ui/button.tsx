@@ -74,6 +74,15 @@ const buttonVariants = cva(
         // Closes a card lying on the muted ground (the picked Achievement's
         // details).
         dismiss: "",
+        // www#97: voting, GOTM history and suggestions.
+        // The small x that clears a notice (a failed vote).
+        "dismiss-notice": "",
+        // A quiet action in a card's footer (Keep).
+        "card-action": "",
+        // A card footer action that withdraws or turns something down.
+        "card-action-destructive": "",
+        // A page search bar's own submit, beside the bar (GOTM history).
+        search: "",
       },
       size: {
         default:

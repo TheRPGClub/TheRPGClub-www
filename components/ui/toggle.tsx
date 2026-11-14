@@ -14,6 +14,9 @@ const toggleVariants = cva(
         // www#96: a segment that rests in the faint ink (the game page's
         // set switcher).
         quiet: "",
+        // www#97: a tag picked onto something (a Suggestion's types), drawn
+        // in its own ink: the caller sets --tag-ink.
+        tag: "",
       },
       size: {
         default:
@@ -38,6 +41,7 @@ function Toggle({
   return (
     <TogglePrimitive
       data-slot="toggle"
+      data-variant={variant}
       className={cn(toggleVariants({ variant, size, className }))}
       {...props}
     />

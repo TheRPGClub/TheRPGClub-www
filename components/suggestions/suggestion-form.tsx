@@ -1,55 +1,25 @@
 "use client";
 
-import { useState, useTransition, type CSSProperties } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Bug, Check, Send, Sparkles, Wrench, type LucideIcon } from "lucide-react";
-import type { Suggestion } from "@/lib/api/types";
+import { Send } from "lucide-react";
 import {
   SUGGESTION_DETAILS_MAX,
   SUGGESTION_TITLE_MAX,
-  SUGGESTION_TYPES,
   type SuggestionType,
 } from "@/lib/suggestions";
+import { previewSuggestion } from "@/lib/suggestions-preview";
 import { createSuggestionAction } from "@/app/actions/suggestions";
-import { SuggestionCard } from "@/components/suggestions/suggestion-card";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-const TYPE_ICON: Record<SuggestionType, LucideIcon> = {
-  "New Feature": Sparkles,
-  Improvement: Wrench,
-  Bug,
-};
-
-const FIELD_LABEL = "font-label block text-[0.82rem] text-faint-foreground";
-const FIELD =
-  "w-full min-w-0 rounded-sm border border-border-strong bg-card px-3 text-foreground caret-highlight outline-none transition-colors placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
-const HINT = "mt-1.5 flex justify-between gap-4 text-[0.85rem] text-faint-foreground";
-
-const STEPS = [
-  <>
-    It goes on the <b>Suggestion Board</b> as <b>Pending</b>, and members can
-    upvote it.
-  </>,
-  <>
-    A Superadmin <b>approves</b> it into a GitHub issue, or <b>rejects</b> it
-    with a reason.
-  </>,
-  <>
-    The bot posts the outcome in Discord and mentions you. You can withdraw it
-    while it&apos;s Pending.
-  </>,
-];
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { SuggestionField } from "./suggestion-field";
+import { SuggestionPreview } from "./suggestion-preview";
+import { SuggestionTypePicker } from "./suggestion-type-picker";
 
 // The Suggest something form, with a live preview of the card it will pin to
 // the board and what happens after.
-export function SuggestionForm({
-  authorId,
-  authorName,
-}: {
-  authorId: string;
-  authorName: string;
-}) {
+export function SuggestionForm({ authorId, authorName }: { authorId: string; authorName: string }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
@@ -77,40 +47,19 @@ export function SuggestionForm({
     });
   }
 
-  // The preview's dates never show (its byline reads "just now").
-  const now = "2026-01-01T00:00:00Z";
-  const preview: Suggestion = {
-    suggestion_id: 0,
-    title: title.trim() || "Your title goes here",
-    details: details.trim() || null,
-    created_by: authorId,
-    created_by_name: authorName,
-    created_at: now,
-    updated_at: now,
-    labels: SUGGESTION_TYPES.filter((t) => types.includes(t.value))
-      .map((t) => t.value)
-      .join(", "),
-    status: "pending",
-    reviewed_by: null,
-    reviewed_at: null,
-    rejection_reason: null,
-    target_repo: null,
-    github_issue_number: null,
-    github_issue_url: null,
-    github_issue_state: null,
-    upvote_count: 0,
-    viewer_upvoted: false,
-  };
-
   return (
     <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,640px)_minmax(0,400px)]">
       <form onSubmit={submit} noValidate className="min-w-0">
-        <div className="mb-5.5">
-          <label htmlFor="suggestion-title" className={FIELD_LABEL}>
-            Title
-          </label>
-          <input
+        <SuggestionField
+          id="suggestion-title"
+          label="Title"
+          hint="One line that says what should change."
+          length={title.length}
+          max={SUGGESTION_TITLE_MAX}
+        >
+          <Input
             id="suggestion-title"
+            variant="compose"
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -120,22 +69,20 @@ export function SuggestionForm({
             required
             disabled={pending}
             aria-describedby="suggestion-title-hint"
-            className={cn(FIELD, "mt-1.5 h-9")}
+            className="mt-1.5 h-9 py-0 text-base md:text-base"
           />
-          <p id="suggestion-title-hint" className={HINT}>
-            <span>One line that says what should change.</span>
-            <span className="tabular-nums">
-              {title.length} / {SUGGESTION_TITLE_MAX}
-            </span>
-          </p>
-        </div>
+        </SuggestionField>
 
-        <div className="mb-5.5">
-          <label htmlFor="suggestion-details" className={FIELD_LABEL}>
-            Details
-          </label>
-          <textarea
+        <SuggestionField
+          id="suggestion-details"
+          label="Details"
+          hint="What it should do, and why it would help."
+          length={details.length}
+          max={SUGGESTION_DETAILS_MAX}
+        >
+          <Textarea
             id="suggestion-details"
+            variant="compose"
             value={details}
             onChange={(e) => {
               setDetails(e.target.value);
@@ -146,48 +93,11 @@ export function SuggestionForm({
             rows={7}
             disabled={pending}
             aria-describedby="suggestion-details-hint"
-            className={cn(FIELD, "mt-1.5 min-h-[150px] py-2 leading-normal")}
+            className="mt-1.5 inline-block min-h-[150px] px-3 py-2 text-base leading-normal field-sizing-fixed md:text-base"
           />
-          <p id="suggestion-details-hint" className={HINT}>
-            <span>What it should do, and why it would help.</span>
-            <span className="tabular-nums">
-              {details.length} / {SUGGESTION_DETAILS_MAX}
-            </span>
-          </p>
-        </div>
+        </SuggestionField>
 
-        <fieldset className="mb-5.5" aria-describedby="suggestion-type-hint">
-          <legend className={FIELD_LABEL}>Type</legend>
-          <div className="mt-1.5 flex flex-wrap gap-2">
-            {SUGGESTION_TYPES.map((t) => {
-              const on = types.includes(t.value);
-              const Icon = on ? Check : TYPE_ICON[t.value];
-              return (
-                <button
-                  key={t.value}
-                  type="button"
-                  aria-pressed={on}
-                  title={t.blurb}
-                  disabled={pending}
-                  onClick={() => toggle(t.value)}
-                  style={{ "--lc": t.ink } as CSSProperties}
-                  className={cn(
-                    "font-label inline-flex h-8 items-center gap-1.5 rounded-xs px-3 text-[0.85rem] whitespace-nowrap transition-colors focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
-                    on
-                      ? "bg-(--lc) text-background"
-                      : "text-(--lc) shadow-[inset_0_0_0_1.5px_var(--lc)] hover:bg-muted",
-                  )}
-                >
-                  <Icon aria-hidden className="size-3.5" />
-                  {t.value}
-                </button>
-              );
-            })}
-          </div>
-          <p id="suggestion-type-hint" className={HINT}>
-            <span>Pick every type that fits. Where it lands (bot or website) is decided on review.</span>
-          </p>
-        </fieldset>
+        <SuggestionTypePicker types={types} onToggle={toggle} disabled={pending} />
 
         {error && (
           <p role="alert" className="text-sm text-destructive">
@@ -206,43 +116,9 @@ export function SuggestionForm({
         </div>
       </form>
 
-      <aside aria-label="Preview" className="min-w-0">
-        <div className="mb-3 flex items-baseline gap-2.5 border-b border-border pb-1.5">
-          <h2 className="font-label text-[1.05rem] font-extrabold">On the board</h2>
-          <span className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
-            Preview
-          </span>
-        </div>
-        <div aria-hidden className="pointer-events-none">
-          <SuggestionCard
-            suggestion={preview}
-            mine
-            bylineWhen="just now"
-            headingLevel="h3"
-            actions={
-              <span className="font-label inline-flex h-[30px] items-center rounded-sm px-2.5 text-[0.85rem] font-extrabold text-faint-foreground shadow-[inset_0_0_0_1px_var(--color-border)]">
-                Upvote
-              </span>
-            }
-          />
-        </div>
-
-        <div className="mt-7 space-y-4">
-          <div className="flex items-baseline border-b border-border pb-1.5">
-            <h2 className="font-label text-[1.05rem] font-extrabold">What happens next</h2>
-          </div>
-          <ol className="space-y-4">
-            {STEPS.map((step, i) => (
-              <li key={i} className="grid grid-cols-[28px_1fr] items-start gap-3">
-                <span className="font-headline text-[1.6rem] text-faint-foreground">{i + 1}</span>
-                <p className="text-[0.92rem] text-dim-foreground [&_b]:font-semibold [&_b]:text-foreground">
-                  {step}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </aside>
+      <SuggestionPreview
+        suggestion={previewSuggestion({ title, details, types, authorId, authorName })}
+      />
     </div>
   );
 }

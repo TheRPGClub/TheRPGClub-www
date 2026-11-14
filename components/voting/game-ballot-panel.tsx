@@ -1,15 +1,14 @@
 "use client";
 
-import { useOptimistic, useState, useTransition } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Crown, EyeOff, Loader2, Vote, X } from "lucide-react";
-import { castVoteAction } from "@/app/actions/votes";
+import { Crown } from "lucide-react";
 import type { VotingCategory } from "@/lib/api/types";
-import { Button } from "@/components/ui/button";
+import { useBallotVote } from "@/hooks/use-ballot-vote";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { BAR_MOTION, type VotingAccent } from "./accents";
+import { BallotFooter } from "./ballot-footer";
+import { BallotStanding } from "./ballot-standing";
+import { VoteError } from "./vote-error";
 
 export interface GameBallotPanelProps {
   category: VotingCategory;
@@ -44,79 +43,22 @@ export interface GameBallotPanelProps {
 // Shown on a game's page while the game is sitting on the current round's
 // ballot, so a member who arrived here from a link or a search can vote
 // without going to /voting to find the card again.
-export function GameBallotPanel({
-  category,
-  categoryTitle,
-  round,
-  nominationId,
-  count,
-  maxCount,
-  countsHidden,
-  voted,
-  votesUsed,
-  cap,
-  votingOpen,
-  isWinner,
-  nominatedBy,
-  signedIn,
-}: GameBallotPanelProps) {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  // Same reason the board carries one: the action round-trips and then
-  // refreshes, so without this the count and the button sit stale until the
-  // new tally lands.
-  const [state, toggleOptimistic] = useOptimistic(
-    { count, voted, used: votesUsed },
-    (prev) =>
-      prev.voted
-        ? {
-            count: Math.max(0, prev.count - 1),
-            voted: false,
-            used: Math.max(0, prev.used - 1),
-          }
-        : {
-            count: prev.count + 1,
-            voted: true,
-            // At the cap the backend evicts the oldest vote instead of
-            // refusing, so the spend stays put and some other game loses one.
-            used: Math.min(cap, prev.used + 1),
-          },
-  );
-
-  const handleVote = () => {
-    setError(null);
-    startTransition(async () => {
-      toggleOptimistic(null);
-      const result = await castVoteAction(category, round, nominationId);
-      if (!result.ok) {
-        setError(result.error ?? "Failed to cast vote.");
-        return;
-      }
-      router.refresh();
-    });
-  };
+export function GameBallotPanel(props: GameBallotPanelProps) {
+  const { category, categoryTitle, round, maxCount, countsHidden, cap } = props;
+  const { votingOpen, isWinner, nominatedBy, signedIn } = props;
+  const ballot = useBallotVote(props);
 
   // A vote landing here changes the leader too, so the bar tracks whichever is
   // larger rather than clipping at a stale maximum.
-  const scale = Math.max(maxCount, state.count);
-
+  const scale = Math.max(maxCount, ballot.count);
   const gotm = category === "gotm";
-  const status = votingOpen ? "On the ballot" : "Was on the ballot";
 
   return (
     <section
       aria-label={`${categoryTitle} ballot, round ${round}`}
       className="relative overflow-hidden rounded-md border border-border bg-card px-4 pt-4 pb-3.5 sm:px-5"
     >
-      <span
-        aria-hidden
-        className={cn(
-          "absolute inset-x-0 top-0 h-1",
-          gotm ? "bg-gotm" : "bg-nr",
-        )}
-      />
+      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1", gotm ? "bg-gotm" : "bg-nr")} />
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 sm:grid-cols-[auto_1fr_auto] sm:gap-x-5.5">
         <p
           aria-hidden
@@ -138,99 +80,41 @@ export function GameBallotPanel({
             )}
           </h2>
           <p className="mt-0.5 text-[0.85rem] text-dim-foreground">
-            {status}
-            {nominatedBy.length > 0 && (
-              <> · nominated by {formatList(nominatedBy)}</>
-            )}
+            {votingOpen ? "On the ballot" : "Was on the ballot"}
+            {nominatedBy.length > 0 && <> · nominated by {formatList(nominatedBy)}</>}
           </p>
         </div>
-        <div className="col-span-full flex items-center gap-4 sm:col-span-1">
-          {countsHidden ? (
-            <p className="font-label flex items-center gap-1.5 text-[0.82rem] leading-tight font-extrabold tracking-[0.08em] text-faint-foreground sm:max-w-36 sm:text-right">
-              <EyeOff aria-hidden className="size-4 shrink-0" />
-              Counts hidden until voting ends
-            </p>
-          ) : (
-            <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground sm:text-right">
-              <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-foreground sm:mr-0 sm:block sm:text-[2.75rem]">
-                {state.count}
-              </span>
-              {state.count === 1 ? "vote" : "votes"}
-            </p>
-          )}
-
-          {votingOpen && signedIn && (
-            <Button
-              type="button"
-              variant={state.voted ? "outline" : "highlight"}
-              onClick={handleVote}
-              disabled={pending}
-              aria-pressed={state.voted}
-              className="ml-auto sm:ml-0"
-            >
-              {pending ? (
-                <Loader2 className="animate-spin" />
-              ) : state.voted ? (
-                <Check />
-              ) : (
-                <Vote />
-              )}
-              {state.voted ? "Voted" : "Vote"}
-            </Button>
-          )}
-        </div>
+        <BallotStanding
+          count={ballot.count}
+          countsHidden={countsHidden}
+          voted={ballot.voted}
+          pending={ballot.pending}
+          canVote={votingOpen && signedIn}
+          onVote={ballot.vote}
+        />
       </div>
 
       {!countsHidden && scale > 0 && (
         // Relative to the leading game's tally, matching the board's bars.
         <Progress
-          value={state.count}
+          value={ballot.count}
           max={scale}
-          aria-label={`${state.count} of ${scale} votes`}
+          aria-label={`${ballot.count} of ${scale} votes`}
           className="mt-3.5"
           tone={gotm ? "gotm" : "nr"}
           indicatorClassName={BAR_MOTION}
         />
       )}
 
-      {error && (
-        <div className="mt-3 flex items-start justify-between gap-3 rounded-sm border border-destructive/40 px-3 py-2 text-sm text-destructive">
-          <p>{error}</p>
-          <button
-            type="button"
-            aria-label="Dismiss"
-            onClick={() => setError(null)}
-            className="mt-0.5 shrink-0 text-faint-foreground transition-colors hover:text-foreground"
-          >
-            <X className="size-3.5" />
-          </button>
-        </div>
+      {ballot.error && (
+        <VoteError
+          message={ballot.error}
+          onDismiss={ballot.clearError}
+          className="mt-3 border-destructive/40"
+        />
       )}
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[0.8rem] text-faint-foreground">
-        <span>
-          {votingOpen && signedIn ? (
-            <>
-              You&apos;ve used{" "}
-              <span className="font-semibold text-foreground">
-                {state.used} of {cap}
-              </span>{" "}
-              votes. Vote again to take this one back.
-            </>
-          ) : votingOpen ? (
-            "Sign in to vote on this round."
-          ) : (
-            "Voting for this round has closed."
-          )}
-        </span>
-        <Link
-          href="/voting"
-          className="font-label inline-flex items-center gap-1 text-[0.82rem] font-extrabold tracking-[0.08em] text-foreground transition-colors hover:text-highlight [&_svg]:text-gotm"
-        >
-          See the full ballot
-          <ArrowRight className="size-3.5" />
-        </Link>
-      </div>
+      <BallotFooter votingOpen={votingOpen} signedIn={signedIn} used={ballot.used} cap={cap} />
     </section>
   );
 }
