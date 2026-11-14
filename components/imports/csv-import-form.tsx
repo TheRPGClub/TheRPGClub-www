@@ -9,6 +9,7 @@ import {
 } from "@/app/actions/imports";
 import { ImportUploadErrors } from "@/components/imports/import-upload-errors";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const initialState: CsvImportFormState = { error: null, rowErrors: [] };
 
@@ -35,13 +36,14 @@ export function CsvImportForm({
         >
           CSV file
         </label>
-        <input
+        <Input
           id="csv-file"
           name="file"
           type="file"
           accept=".csv,text/csv"
           required
-          className="block w-full rounded-sm border border-dashed border-border-strong bg-background p-2 text-sm text-dim-foreground file:font-label file:mr-3 file:h-8 file:cursor-pointer file:rounded-sm file:border file:border-border-strong file:bg-muted file:px-3 file:text-[0.9rem] file:font-extrabold file:tracking-[0.06em] file:text-foreground hover:file:border-faint-foreground"
+          variant="upload"
+          className="block h-auto p-2 text-sm file:mr-3 file:h-8 file:cursor-pointer file:px-3 file:text-[0.9rem]"
         />
         <p className="text-xs text-faint-foreground">Up to 2 MB.</p>
       </div>
