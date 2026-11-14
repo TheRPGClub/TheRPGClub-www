@@ -35,8 +35,8 @@ export function ClubSetMargin({
               <Link
                 href={memberSetHref(m.userId, set.id)}
                 className={cn(
-                  "foil block rounded-[3px] p-[3px] shadow-[0_5px_12px_rgb(0_0_0/0.45)] outline-none transition-transform",
-                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight motion-safe:hover:rotate-0",
+                  "foil block rounded-[3px] p-[3px] shadow-[0_5px_12px_rgb(0_0_0/0.45)] outline-none motion-safe:transition-transform",
+                  "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight motion-safe:hover:rotate-0",
                   i % 2 === 0 ? "-rotate-3" : "rotate-2",
                 )}
               >

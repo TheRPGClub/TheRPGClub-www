@@ -104,7 +104,7 @@ export function NominationCard({
               className="w-full"
             >
               {disabled ? (
-                <Loader2 aria-hidden className="animate-spin" />
+                <Loader2 aria-hidden className="motion-safe:animate-spin" />
               ) : voted ? (
                 <Check aria-hidden data-icon="inline-start" />
               ) : (

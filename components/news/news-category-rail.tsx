@@ -43,7 +43,7 @@ export function NewsCategoryRail({
           Filter
           <ChevronDown
             aria-hidden
-            className="size-4 text-faint-foreground transition-transform group-open/filter:rotate-180"
+            className="size-4 text-faint-foreground motion-safe:transition-transform group-open/filter:rotate-180"
           />
         </ButtonLink>
         <div className="mt-3 max-w-md">

@@ -60,7 +60,7 @@ export function CoverPanel({
         <img
           src={imageUrl}
           alt=""
-          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/panel:scale-[1.03]"
+          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] motion-safe:transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/panel:scale-[1.03]"
         />
       )}
       {/* Legibility scrim: ink rises from the foot where the story sits; a

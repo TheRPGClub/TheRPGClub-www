@@ -87,7 +87,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             <Button type="submit" variant="highlight" disabled={pending || f.games.length === 0}>
-              {pending ? <Loader2 className="animate-spin" /> : <Plus data-icon="inline-start" />}
+              {pending ? <Loader2 className="motion-safe:animate-spin" /> : <Plus data-icon="inline-start" />}
               Add {TRACK_NAME[f.category]} round {roundNumber ?? ""}
             </Button>
             <span className="text-[0.84rem] text-faint-foreground">The whole round is saved, or none of it.</span>

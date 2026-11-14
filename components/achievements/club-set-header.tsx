@@ -69,7 +69,7 @@ export function ClubSetHeader({
         </span>
         <ArrowRight
           aria-hidden
-          className="size-4 self-center text-faint-foreground transition-transform group-hover/you:translate-x-0.5 group-hover/you:text-highlight"
+          className="size-4 self-center text-faint-foreground motion-safe:transition-transform motion-safe:group-hover/you:translate-x-0.5 group-hover/you:text-highlight"
         />
       </Link>
     )}

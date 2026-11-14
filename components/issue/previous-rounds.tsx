@@ -91,7 +91,7 @@ function RoundPick({
           <img
             src={art}
             alt=""
-            className="size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/pick:scale-[1.04]"
+            className="size-full object-cover motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/pick:scale-[1.04]"
           />
         ) : (
           <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-faint-foreground">

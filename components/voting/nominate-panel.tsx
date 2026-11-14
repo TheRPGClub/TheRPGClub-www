@@ -69,7 +69,7 @@ export function NominatePanel({ category, round, open, existing }: NominatePanel
               disabled={pending}
               className="h-8.5 px-3"
             >
-              {pending ? <Loader2 className="animate-spin" /> : <Trash2 data-icon="inline-start" />}
+              {pending ? <Loader2 className="motion-safe:animate-spin" /> : <Trash2 data-icon="inline-start" />}
               Withdraw
             </Button>
           </>

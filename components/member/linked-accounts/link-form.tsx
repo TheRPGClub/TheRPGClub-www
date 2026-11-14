@@ -67,7 +67,7 @@ export function LinkForm({
           disabled={pending || !identifier.trim()}
         >
           {pending ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
+            <Loader2 data-icon="inline-start" className="motion-safe:animate-spin" />
           ) : (
             <Link2 data-icon="inline-start" />
           )}

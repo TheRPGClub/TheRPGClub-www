@@ -38,7 +38,7 @@ export function UnlinkThreadButton({
         disabled={pending}
         onClick={unlink}
       >
-        {pending ? <LoaderCircle className="animate-spin" /> : <Unlink />}
+        {pending ? <LoaderCircle className="motion-safe:animate-spin" /> : <Unlink />}
       </Button>
       {error && (
         <p role="alert" className="col-span-2 text-xs text-destructive">

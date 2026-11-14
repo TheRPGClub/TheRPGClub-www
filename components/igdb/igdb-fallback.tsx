@@ -80,7 +80,7 @@ export function IgdbFallback({
                 onClick={runSearch}
               >
                 {search.status === "loading" ? (
-                  <LoaderCircle data-icon="inline-start" className="animate-spin" />
+                  <LoaderCircle data-icon="inline-start" className="motion-safe:animate-spin" />
                 ) : (
                   <Download data-icon="inline-start" />
                 )}
@@ -93,7 +93,7 @@ export function IgdbFallback({
 
       {picker && search.status === "loading" && (
         <p className="flex items-center gap-2 px-1 py-1.5 text-xs text-faint-foreground">
-          <LoaderCircle aria-hidden className="size-3.5 animate-spin" />
+          <LoaderCircle aria-hidden className="size-3.5 motion-safe:animate-spin" />
           Searching IGDB…
         </p>
       )}

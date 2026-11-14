@@ -48,7 +48,7 @@ export function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: s
       </p>
       <Link
         href={editHref}
-        className="font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5"
+        className="font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-foreground transition-colors hover:text-highlight [&_svg]:size-4 motion-safe:[&_svg]:transition-transform motion-safe:hover:[&_svg]:translate-x-0.5"
       >
         Link your accounts
         <ArrowRight aria-hidden />

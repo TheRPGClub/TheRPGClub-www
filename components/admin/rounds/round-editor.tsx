@@ -64,7 +64,7 @@ export function RoundEditor({
 
         <div className="flex flex-wrap items-center gap-3">
           <Button type="submit" variant="highlight" disabled={pending || edits.length === 0}>
-            {pending ? <Loader2 className="animate-spin" /> : <Check data-icon="inline-start" />}
+            {pending ? <Loader2 className="motion-safe:animate-spin" /> : <Check data-icon="inline-start" />}
             {edits.length > 1 ? `Save ${edits.length} changes` : "Save changes"}
           </Button>
           <span className="text-[0.84rem] text-faint-foreground">

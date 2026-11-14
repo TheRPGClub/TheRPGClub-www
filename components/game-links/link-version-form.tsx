@@ -71,7 +71,7 @@ export function LinkVersionForm({
           onClick={link}
         >
           {pending ? (
-            <LoaderCircle data-icon="inline-start" className="animate-spin" />
+            <LoaderCircle data-icon="inline-start" className="motion-safe:animate-spin" />
           ) : (
             <Link2 data-icon="inline-start" />
           )}

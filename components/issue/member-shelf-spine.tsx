@@ -64,7 +64,7 @@ export function Spine({
     </>
   );
   const cls = cn(
-    "group/spine relative block w-11 shrink-0 overflow-hidden rounded-t-[2px] bg-muted transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-3.5 focus-visible:-translate-y-3.5 sm:w-13",
+    "group/spine relative block w-11 shrink-0 overflow-hidden rounded-t-[2px] bg-muted motion-safe:transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:hover:-translate-y-3.5 motion-safe:focus-visible:-translate-y-3.5 sm:w-13",
     className,
   );
   const style = { height: `calc(${h}px * var(--spine-scale, 1))` };

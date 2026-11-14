@@ -70,7 +70,7 @@ export function NominationForm({
         </Button>
         <Button type="submit" variant="highlight" size="sm" disabled={n.pending || !n.selectedGame}>
           {n.pending ? (
-            <Loader2 className="animate-spin" />
+            <Loader2 className="motion-safe:animate-spin" />
           ) : replacing ? (
             "Save nomination"
           ) : (

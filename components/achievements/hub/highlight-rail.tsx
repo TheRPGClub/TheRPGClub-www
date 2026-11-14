@@ -79,7 +79,7 @@ function RailRow({
     <li className="border-b border-border">
       <Link
         href={memberSetHref(card.user.user_id, set.id)}
-        className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-3.5 py-3 outline-none focus-visible:bg-card focus-visible:outline-2 focus-visible:outline-highlight"
+        className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-3.5 py-3 outline-none focus-visible:bg-card focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight"
       >
         <AchievementIcon
           view={view}

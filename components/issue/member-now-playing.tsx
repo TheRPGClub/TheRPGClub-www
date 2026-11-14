@@ -49,7 +49,7 @@ function OpenBook({
         <img
           src={art}
           alt=""
-          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/book:scale-[1.04]"
+          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/book:scale-[1.04]"
         />
       )}
       <span

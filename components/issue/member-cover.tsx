@@ -50,7 +50,7 @@ export function MemberCover({
           src={src}
           alt=""
           className={cn(
-            "size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/cover:scale-[1.04]",
+            "size-full object-cover motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/cover:scale-[1.04]",
             imgClassName,
           )}
         />

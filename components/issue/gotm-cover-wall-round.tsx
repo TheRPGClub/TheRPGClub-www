@@ -51,7 +51,7 @@ export function RoundCover({
           src={art}
           alt=""
           loading="lazy"
-          className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/cover:scale-[1.03]"
+          className="absolute inset-0 -z-20 size-full object-cover motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/cover:scale-[1.03]"
         />
       )}
       {/* Ink at the masthead and the foot, the art clear between. */}
