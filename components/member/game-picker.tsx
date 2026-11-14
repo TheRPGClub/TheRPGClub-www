@@ -14,7 +14,7 @@ export interface GamePickerProps {
   // Renders the input + result list inline. Use `compact` for embedded use
   // inside another form (e.g. the review form).
   compact?: boolean;
-  // Notified when the user picks a game. Doesn't clear the picker — leave that
+  // Notified when the user picks a game. Doesn't clear the picker: leave that
   // to the parent so it can decide what UX makes sense.
   onPick: (game: Game) => void;
   initialSelection?: Game | null;
