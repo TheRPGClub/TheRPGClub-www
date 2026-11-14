@@ -3,11 +3,12 @@ import { Scissors } from "lucide-react";
 import type { Nomination, VotingCategory } from "@/lib/api/types";
 import { UNDO_DELAY_MS } from "@/lib/desk";
 import { nominatorName, REMOVAL_REASON_MAX, TRACK_NAME } from "@/lib/rounds";
-import { fieldLabel } from "@/components/admin/rounds/styles";
+import { fieldLabelType } from "@/components/admin/rounds/styles";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { NominationNotice } from "./nomination-notice";
+import { Label } from "@/components/ui/label";
 
 // The reason box a delete opens in place of the entry: what goes, the
 // reason (required unless it is your own) and the bot's notice as it will
@@ -50,9 +51,9 @@ export function NominationReasonBox({
         {TRACK_NAME[category]} round {round}, nominated by {nominatorName(nomination)}
         {own && " (you)"}.{votesCast && " Any votes cast on it go too."}
       </p>
-      <label htmlFor={`${id}-reason`} className={cn(fieldLabel, "mt-3")}>
+      <Label htmlFor={`${id}-reason`} variant="field" className={cn(fieldLabelType, "mt-3")}>
         {own ? "Reason (optional: your own posts nothing)" : "Reason, posted with the change"}
-      </label>
+      </Label>
       <Textarea
         id={`${id}-reason`}
         variant="inset"

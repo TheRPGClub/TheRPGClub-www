@@ -675,7 +675,7 @@
         }
 
         /* Label: the tracked label voice in paper-mute. */
-        [data-slot="label"],
+        [data-slot="label"][data-variant="default"],
         [data-slot="field-label"] {
             @apply font-label tracking-[0.06em] text-faint-foreground;
         }
@@ -1195,6 +1195,53 @@
            follows its small corner, and a press doesn't nudge it. */
         [data-slot="button"][data-variant="filter-option"] {
             @apply font-label rounded-xs border-0 bg-transparent transition-none active:not-aria-[haspopup]:translate-y-0;
+        }
+        /* Labels (code review): the hand-made labels on the Label
+           primitive. Each keeps the type its caller sets; the Theme gives
+           the ink. field rests in the faint ink, title in the full ink,
+           lead in the dim ink, inverse on the yellow panel. option lights
+           on hover; ruled sits between rules; choice is the import
+           candidate's card (its radio's ring, yellow when checked, a yellow
+           focus outline); choice-tile is a muted tile, yellow ring when
+           checked; switch draws the settings switch's focus ring; file is a
+           file picker drawn as a field. frame has no look. */
+        [data-slot="label"] {
+            &[data-variant="field"] {
+                @apply text-faint-foreground;
+            }
+            &[data-variant="title"] {
+                @apply text-foreground;
+            }
+            &[data-variant="lead"] {
+                @apply text-dim-foreground;
+            }
+            &[data-variant="inverse"] {
+                @apply text-background;
+            }
+            &[data-variant="option"] {
+                @apply rounded-sm hover:bg-muted;
+            }
+            &[data-variant="ruled"] {
+                @apply border-border;
+            }
+            &[data-variant="choice"] {
+                @apply rounded-sm shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-data-checked:bg-muted has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
+            }
+            &[data-variant="choice-tile"] {
+                @apply rounded-sm bg-muted shadow-[inset_0_0_0_1px_var(--color-border-strong)] has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40;
+            }
+            &[data-variant="switch"] {
+                @apply rounded-sm has-focus-visible:ring-3 has-focus-visible:ring-ring/50;
+            }
+            &[data-variant="file"] {
+                @apply rounded-sm border-border bg-card focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-highlight/40;
+            }
+        }
+        /* Tabs ticks (code review): a slideshow's ticks in the label
+           voice, faint at rest, full ink on hover and for the current
+           slide; no ground, and the browser's own focus ring. */
+        [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-none bg-transparent tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-1 focus-visible:[outline-style:auto] focus-visible:outline-ring data-active:bg-transparent data-active:shadow-none;
         }
     }
 }

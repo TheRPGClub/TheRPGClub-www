@@ -1166,7 +1166,7 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
-        [data-slot="label"],
+        [data-slot="label"][data-variant="default"],
         [data-slot="field-label"] {
             background-color: var(--card);
             color: var(--card-foreground);
@@ -1859,6 +1859,21 @@
         }
         /* The News Hub (www#101). */
         [data-slot="button"][data-variant="filter-option"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Labels (code review). */
+        [data-slot="label"]:is([data-variant="field"], [data-variant="title"], [data-variant="lead"], [data-variant="inverse"]) {
+            color: var(--gotm);
+            text-decoration: underline wavy var(--highlight);
+        }
+        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"]) {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

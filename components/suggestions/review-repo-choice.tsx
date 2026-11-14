@@ -2,6 +2,7 @@
 
 import { SUGGESTION_TARGET_REPOS, type SuggestionTargetRepo } from "@/lib/suggestions";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // Approving: the repo the Suggestion's GitHub issue opens in, one card each.
 export function ReviewRepoChoice({
@@ -24,9 +25,10 @@ export function ReviewRepoChoice({
         className="gap-2 sm:grid-cols-3"
       >
         {SUGGESTION_TARGET_REPOS.map((r) => (
-          <label
+          <Label
             key={r.value}
-            className="flex cursor-pointer items-start gap-2 rounded-sm bg-muted px-2.5 py-2 shadow-[inset_0_0_0_1px_var(--color-border-strong)] has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40"
+            variant="choice-tile"
+            className="flex cursor-pointer items-start gap-2 px-2.5 py-2"
           >
             <RadioGroupItem value={r.value} className="mt-1" />
             <span className="min-w-0">
@@ -35,7 +37,7 @@ export function ReviewRepoChoice({
               </span>
               <span className="block text-[0.78rem] text-faint-foreground">{r.blurb}</span>
             </span>
-          </label>
+          </Label>
         ))}
       </RadioGroup>
       <p className="text-[0.82rem] text-faint-foreground">

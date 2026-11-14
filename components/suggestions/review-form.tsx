@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ReviewRepoChoice } from "./review-repo-choice";
+import { Label } from "@/components/ui/label";
 
 const FIELD_LABEL = "font-label text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 
@@ -47,7 +48,7 @@ export function ReviewForm({
       {mode === "approve" ? (
         <ReviewRepoChoice repo={repo} onChange={onRepo} author={author} labelClassName={FIELD_LABEL} />
       ) : (
-        <label className="block space-y-1">
+        <Label variant="frame" className="block space-y-1">
           <span className="flex justify-between gap-3">
             <span className={FIELD_LABEL}>Reason</span>
             <span
@@ -71,7 +72,7 @@ export function ReviewForm({
           <span className="block text-[0.82rem] text-faint-foreground">
             The bot posts it to {author} on Discord, and it shows on the Board&apos;s Rejected tab.
           </span>
-        </label>
+        </Label>
       )}
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={pending}>

@@ -2,6 +2,7 @@ import { Power, X } from "lucide-react";
 import { REASON_MAX } from "@/lib/feature-flags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface DraftProps {
   reasonId: string;
@@ -38,9 +39,9 @@ export function ReasonEditor({ name, onClose, ...field }: DraftProps & { name: s
   return (
     <div className="rounded-md border border-highlight/60 bg-card px-3.5 pt-2.5 pb-3">
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={field.reasonId} className="font-label text-[0.78rem] tracking-[0.08em] text-foreground">
+        <Label htmlFor={field.reasonId} variant="title" className="font-label text-[0.78rem] tracking-[0.08em]">
           Reason for {name}&apos;s next change
-        </label>
+        </Label>
         <Button type="button" variant="note" size="icon-sm" onClick={onClose} aria-label="Close the reason">
           <X aria-hidden className="size-4" />
         </Button>
@@ -74,9 +75,9 @@ export function OffConfirm({
         Nobody can use it, staff included. Its pages go not-found, its bot commands answer that it isn&apos;t
         available yet, and its automated posts and jobs pause until it&apos;s back on.
       </p>
-      <label htmlFor={field.reasonId} className="sr-only">
+      <Label htmlFor={field.reasonId} variant="field" className="sr-only">
         Reason (optional)
-      </label>
+      </Label>
       <div className="flex flex-wrap gap-2">
         <ReasonField {...field} onEnter={onConfirm} />
         <Button type="button" variant="destructive-solid" disabled={busy} onClick={onConfirm}>

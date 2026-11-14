@@ -6,6 +6,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Label } from "@/components/ui/label";
 
 // The app's running head: the current route as a trail (the @crumbs slot),
 // and a games search that lands on /games. No search when the viewer can't
@@ -29,9 +30,9 @@ export function TopBar({ trail, search }: { trail: React.ReactNode; search: bool
             <InputGroupAddon className="p-0">
               <Search aria-hidden className="size-4 shrink-0" />
             </InputGroupAddon>
-            <label htmlFor="top-search" className="sr-only">
+            <Label htmlFor="top-search" variant="field" className="sr-only">
               Search games
-            </label>
+            </Label>
             <InputGroupInput
               id="top-search"
               name="q"

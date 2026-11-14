@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
+import { Label } from "@/components/ui/label";
 
 // The Suggest something form's field frame: a label in the label voice over
 // the field, and a hint line with the field's count on its right.
 
-export const FIELD_LABEL = "font-label block text-[0.82rem] text-faint-foreground";
+// On a Label the Theme gives the ink: pass the type alone.
+export const FIELD_LABEL_TYPE = "font-label block text-[0.82rem]";
+export const FIELD_LABEL = `${FIELD_LABEL_TYPE} text-faint-foreground`;
 export const FIELD_HINT = "mt-1.5 flex justify-between gap-4 text-[0.85rem] text-faint-foreground";
 
 export function SuggestionField({
@@ -23,9 +26,9 @@ export function SuggestionField({
 }) {
   return (
     <div className="mb-5.5">
-      <label htmlFor={id} className={FIELD_LABEL}>
+      <Label htmlFor={id} variant="field" className={FIELD_LABEL_TYPE}>
         {label}
-      </label>
+      </Label>
       {children}
       <p id={`${id}-hint`} className={FIELD_HINT}>
         <span>{hint}</span>

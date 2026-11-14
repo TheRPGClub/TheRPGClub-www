@@ -2,6 +2,7 @@
 
 import type { useTypedConfirm } from "@/hooks/use-typed-confirm";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // The typed confirm's field: the words go here; it turns orange once they
 // match, and Enter confirms. The action's error shows under it.
@@ -16,9 +17,9 @@ export function TypedConfirmField({
 }) {
   return (
     <div>
-      <label htmlFor={`${id}-words`} className="sr-only">
+      <Label htmlFor={`${id}-words`} variant="field" className="sr-only">
         Type {words} to confirm
-      </label>
+      </Label>
       <Input
         id={`${id}-words`}
         value={confirm.typed}

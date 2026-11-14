@@ -9,6 +9,7 @@ import { DeskSelect } from "@/components/admin/desk/desk-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export const COMPLETION_LABEL = "font-label block text-[0.82rem] tracking-[0.08em] text-faint-foreground";
 const TYPES = [{ options: COMPLETION_TYPES.map((t) => ({ value: t, label: t })) }];
@@ -48,7 +49,7 @@ export function CompletionFields({ platforms, f }: { platforms: Platform[]; f: R
         disabled={off}
       />
 
-      <label className="space-y-1.5">
+      <Label variant="frame" className="space-y-1.5">
         <span className={COMPLETION_LABEL}>Final playtime (hours)</span>
         <Input
           type="number"
@@ -60,9 +61,9 @@ export function CompletionFields({ platforms, f }: { platforms: Platform[]; f: R
           placeholder="Unknown"
           aria-invalid={!f.playtimeOk || undefined}
         />
-      </label>
+      </Label>
 
-      <label className="space-y-1.5 sm:col-span-2">
+      <Label variant="frame" className="space-y-1.5 sm:col-span-2">
         <span className={COMPLETION_LABEL}>Note (optional)</span>
         <Textarea
           rows={2}
@@ -72,9 +73,9 @@ export function CompletionFields({ platforms, f }: { platforms: Platform[]; f: R
           className="inline-block min-h-0 px-3 text-sm field-sizing-fixed md:text-sm"
         />
         <span className="block text-xs text-faint-foreground">Kept on the profile; the post leaves it out.</span>
-      </label>
+      </Label>
 
-      <label className="flex items-start gap-3 border-y border-border py-3.5 sm:col-span-2">
+      <Label variant="ruled" className="flex items-start gap-3 border-y py-3.5 sm:col-span-2">
         <Checkbox checked={f.announce} onCheckedChange={f.setAnnounce} disabled={off} className="mt-1" />
         <span>
           <span className="block font-semibold">Announce it in Whatcha Playing</span>
@@ -82,7 +83,7 @@ export function CompletionFields({ platforms, f }: { platforms: Platform[]; f: R
             The bot posts it as the proof shows, naming you as the one who logged it.
           </span>
         </span>
-      </label>
+      </Label>
     </fieldset>
   );
 }

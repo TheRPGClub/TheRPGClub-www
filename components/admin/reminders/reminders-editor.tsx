@@ -35,13 +35,11 @@ export function PublicRemindersEditor({
     return channel ? guildChannelLabel(channel) : `Unknown channel (${id})`;
   };
 
-  const handleDelete = (reminder: PublicReminder) => {
-    if (!confirm(`Delete reminder #${reminder.reminder_id}?`)) return;
+  // After the row's confirm: an error stays in the confirm.
+  const handleDelete = async (reminder: PublicReminder) => {
     setError(null);
-    startTransition(async () => {
-      const result = await deletePublicReminderAction(reminder.reminder_id);
-      if (!result.ok) setError(result.error ?? "Failed to delete.");
-    });
+    const result = await deletePublicReminderAction(reminder.reminder_id);
+    return result.ok ? null : (result.error ?? "Failed to delete.");
   };
 
   // The action's revalidatePath has already brought the saved values in by

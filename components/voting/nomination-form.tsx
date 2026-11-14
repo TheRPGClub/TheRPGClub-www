@@ -5,6 +5,7 @@ import type { NominationState } from "@/hooks/use-nomination";
 import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 // The nomination form, set on an ink inset inside the yellow strip so the
 // game search and its results read as they do everywhere else.
@@ -41,7 +42,7 @@ export function NominationForm({
         <GamePicker compact autoFocus onPick={n.setSelectedGame} placeholder="Search for a game…" />
       )}
 
-      <label className="block">
+      <Label variant="frame" className="block">
         <span className="sr-only">Why this game? (optional)</span>
         <Textarea
           variant="note"
@@ -53,7 +54,7 @@ export function NominationForm({
           disabled={n.pending}
           className="inline-block min-h-0 px-3 text-sm field-sizing-fixed md:text-sm"
         />
-      </label>
+      </Label>
 
       {n.error && <p className="text-sm text-destructive">{n.error}</p>}
 

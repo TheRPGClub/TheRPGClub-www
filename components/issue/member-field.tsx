@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 // Form fields in the member pages' voice: a tracked-caps label over an ink
 // control.
@@ -35,10 +36,10 @@ export function MemberField({
   children: ReactNode;
 }) {
   return (
-    <label className={cn(frameClass, className)}>
+    <Label variant="frame" className={cn(frameClass, className)}>
       <FieldLabel>{label}</FieldLabel>
       {children}
-    </label>
+    </Label>
   );
 }
 

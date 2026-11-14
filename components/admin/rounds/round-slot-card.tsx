@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { fieldLabel } from "./styles";
+import { Label } from "@/components/ui/label";
 
 // One slot of the round being edited: its game (swapped through the
 // picker), its Reddit URL, a yellow rule once changed (with Put back) and a
@@ -79,7 +80,7 @@ export function RoundSlotCard({
           </Button>
         </div>
       )}
-      <label className="mt-3 block space-y-1.5">
+      <Label variant="frame" className="mt-3 block space-y-1.5">
         <span className={fieldLabel}>Reddit URL</span>
         <Input
           type="url"
@@ -89,7 +90,7 @@ export function RoundSlotCard({
           placeholder="https://www.reddit.com/r/…"
           disabled={pending}
         />
-      </label>
+      </Label>
     </li>
   );
 }

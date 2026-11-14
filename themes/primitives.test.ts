@@ -189,7 +189,7 @@ describe("Theme focus outlines are visible", () => {
     const unstyled = applies.filter(
       (line) =>
         /(^|\s)(has-)?focus-visible:-?outline-(\d|\[)/.test(line) &&
-        !/(^|\s)(has-)?focus-visible:outline-(solid|dashed|dotted|double)\b/.test(line),
+        !/(^|\s)(has-)?focus-visible:(outline-(solid|dashed|dotted|double)\b|\[outline-style:)/.test(line),
     );
     expect(unstyled).toEqual([]);
   });

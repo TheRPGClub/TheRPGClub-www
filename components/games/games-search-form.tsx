@@ -9,6 +9,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 
 const DEBOUNCE_MS = 500;
 
@@ -72,9 +73,9 @@ export function GamesSearchForm({
         <InputGroupAddon className="p-0">
           <Search aria-hidden className="size-4 shrink-0" />
         </InputGroupAddon>
-        <label htmlFor="games-search" className="sr-only">
+        <Label htmlFor="games-search" variant="field" className="sr-only">
           Search games
-        </label>
+        </Label>
         <InputGroupInput
           id="games-search"
           type="search"

@@ -5,7 +5,8 @@ import { GAME_KEY_REGIONS, MAX_KEY } from "@/lib/giveaways";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DONATE_LABEL } from "@/components/giveaways/donate-pick-fields";
+import { DONATE_LABEL, DONATE_LABEL_TYPE } from "@/components/giveaways/donate-pick-fields";
+import { Label } from "@/components/ui/label";
 
 const REGION_ITEMS = GAME_KEY_REGIONS.map((r) => ({
   value: r,
@@ -54,9 +55,9 @@ export function DonateKeyField({
 }) {
   return (
     <div className="mb-1">
-      <label htmlFor="donate-key" className={DONATE_LABEL}>
+      <Label htmlFor="donate-key" variant="inverse" className={DONATE_LABEL_TYPE}>
         Key
-      </label>
+      </Label>
       <div className="relative">
         <Input
           id="donate-key"

@@ -4,6 +4,7 @@ import { todayDate } from "@/lib/imports/completionator";
 import type { DateChoice } from "@/hooks/use-completion-form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const DATE_CHOICES: readonly [DateChoice, string][] = [
   ["today", "Today"],
@@ -39,10 +40,10 @@ export function CompletionDateField({
         className="flex w-auto flex-wrap gap-x-4 gap-y-1.5 pt-1.5 text-sm"
       >
         {DATE_CHOICES.map(([value, text]) => (
-          <label key={value} className="inline-flex items-center gap-1.5">
+          <Label key={value} variant="frame" className="inline-flex items-center gap-1.5">
             <RadioGroupItem value={value} />
             {text}
-          </label>
+          </Label>
         ))}
       </RadioGroup>
       {choice === "custom" && (

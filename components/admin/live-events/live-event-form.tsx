@@ -7,11 +7,12 @@ import { useLiveEvent, type LiveEventState } from "@/hooks/use-live-event";
 import { useLiveEventForm } from "@/hooks/use-live-event-form";
 import { ProofCard } from "@/components/admin/desk/proof-card";
 import { Input } from "@/components/ui/input";
-import { LIVE_EVENT_LABEL, LiveEventClock } from "./live-event-clock";
+import { LIVE_EVENT_LABEL_TYPE, LiveEventClock } from "./live-event-clock";
 import { LiveEventDispatch } from "./live-event-dispatch";
 import { LiveEventImageField } from "./live-event-image-field";
 import { LiveEventPoster } from "./live-event-poster";
 import { LiveEventSendRow } from "./live-event-send-row";
+import { Label } from "@/components/ui/label";
 
 // Follows a sent event and hands its state to the layout, so the dispatch
 // list and the proof's stamp read the same refresh run.
@@ -34,9 +35,9 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
     return (
       <div className="mt-6 grid items-start gap-9 xl:grid-cols-[minmax(0,1fr)_30rem]">
         <form onSubmit={f.submit} aria-label="New live event" className="min-w-0">
-          <label htmlFor="live-event-topic" className={LIVE_EVENT_LABEL}>
+          <Label htmlFor="live-event-topic" variant="field" className={LIVE_EVENT_LABEL_TYPE}>
             Topic
-          </label>
+          </Label>
           <Input
             id="live-event-topic"
             name="topic"

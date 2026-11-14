@@ -14,6 +14,7 @@ import type { CompletionatorStepProps } from "@/components/imports/completionato
 import { ImportSubhead } from "@/components/issue/import-item-layout";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 // The member's Now Playing entries for the game, so adding the completion can
 // take it off Now Playing, as the bot does.
@@ -87,10 +88,10 @@ export function AddCompletion({
       />
 
       {nowPlayingIds.length > 0 && (
-        <label className="flex items-center gap-2 text-sm">
+        <Label variant="frame" className="flex items-center gap-2 text-sm">
           <Checkbox checked={removeNowPlaying} onCheckedChange={setRemoveNowPlaying} />
           Also remove it from Now Playing
-        </label>
+        </Label>
       )}
 
       {error && (

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { hasNewsFilters, type NewsCategoryRow, type NewsFilters } from "@/lib/news";
-import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { NewsFilter } from "./news-filter";
 
 // The News page's category rail: a 15.5rem column beside the grid from `lg`,
@@ -28,28 +29,23 @@ export function NewsCategoryRail({
       <aside className="hidden lg:sticky lg:top-[84px] lg:block lg:self-start">
         <NewsFilter rows={rows} filters={filters} headingId="news-categories-rail" />
       </aside>
-      <details
-        open={open}
-        onToggle={(event) => setOpen(event.currentTarget.open)}
-        className="group/filter mb-1 lg:hidden"
-      >
-        <ButtonLink
-          render={<summary />}
-          variant="outline"
-          aria-expanded={open}
-          className="cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+      <Collapsible open={open} onOpenChange={setOpen} className="mb-1 lg:hidden">
+        <CollapsibleTrigger
+          render={<Button type="button" variant="outline" />}
+          className="group/filter cursor-pointer"
         >
           <SlidersHorizontal aria-hidden className="size-4" />
           Filter
           <ChevronDown
             aria-hidden
-            className="size-4 text-faint-foreground motion-safe:transition-transform group-open/filter:rotate-180"
+            className="size-4 text-faint-foreground motion-safe:transition-transform group-data-panel-open/filter:rotate-180"
           />
-        </ButtonLink>
-        <div className="mt-3 max-w-md">
+        </CollapsibleTrigger>
+        {/* Kept mounted while closed, as the disclosure kept its search. */}
+        <CollapsibleContent keepMounted className="mt-3 max-w-md">
           <NewsFilter rows={rows} filters={filters} headingId="news-categories-filter" />
-        </div>
-      </details>
+        </CollapsibleContent>
+      </Collapsible>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { useId } from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // The plain date field behind the ruler's pin ("type a date"): the vote's
 // opening in the viewer's zone. The pin focuses it by its id.
@@ -7,9 +8,9 @@ export function NextVoteField({ value, onChange }: { value: string; onChange: (v
   const id = useId();
   return (
     <div className="mb-2.5">
-      <label htmlFor="next-vote-field" className="mb-1 block text-[0.8rem] text-faint-foreground">
+      <Label htmlFor="next-vote-field" variant="field" className="mb-1 block text-[0.8rem]">
         Vote opens (your time)
-      </label>
+      </Label>
       <Input
         id="next-vote-field"
         type="datetime-local"

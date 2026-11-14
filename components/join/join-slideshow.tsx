@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { SlideTicks } from "@/components/join/slide-ticks";
 import { useSlideshow } from "@/hooks/use-slideshow";
@@ -26,16 +26,7 @@ export function JoinSlideshow({
 }) {
   const show = useSlideshow();
   const id = useId();
-  const tabs = useRef<HTMLDivElement>(null);
   const slideId = (index: number) => `${id}-slide-${index + 1}`;
-
-  // Keyboard on the ticks: the arrows move the slideshow (the carousel's own
-  // keys), and focus follows the selected tick.
-  useEffect(() => {
-    const list = tabs.current;
-    if (!list?.contains(document.activeElement)) return;
-    list.querySelector<HTMLElement>('[aria-selected="true"]')?.focus();
-  }, [show.selected]);
 
   return (
     <Carousel
@@ -47,7 +38,6 @@ export function JoinSlideshow({
       className={cn("h-full [&>[data-slot=carousel-content]]:h-full", className)}
     >
       <SlideTicks
-        ref={tabs}
         labels={slides.map((slide) => slide.label)}
         slideId={slideId}
         show={show}
