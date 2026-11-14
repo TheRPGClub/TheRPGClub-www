@@ -4,10 +4,8 @@ import { getSession, requireFeature } from "@/lib/session";
 import type { ApiSingle, User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
 import { parseMemberAchievementsQuery } from "@/lib/member-achievements";
-import {
-  fetchAchievementSummary,
-  fetchBinderPages,
-} from "@/lib/member-achievements-server";
+import { fetchAchievementSummary } from "@/lib/member-achievements-server";
+import { fetchBinderPages } from "@/lib/member-achievements-binder";
 import type { RawSearchParams } from "@/lib/search-params";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { BinderPage } from "@/components/achievements/binder/binder-page";

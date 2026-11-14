@@ -54,6 +54,13 @@ const buttonVariants = cva(
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
+        // www#91: the rest of the Monthly Issue editorial components.
+        // Previous or next through a set, sitting on art (the completed
+        // reel's spotlight).
+        step: "",
+        // A picture that is the button: the look is its content's (a frame
+        // in the completed reel's filmstrip).
+        frame: "",
         // www#96: a whole item that is picked from a set (an Achievement in
         // a set page's views, aria-pressed). Pass size="bare" and lay the
         // item out yourself. pick: the selection ring alone; pick-row: a

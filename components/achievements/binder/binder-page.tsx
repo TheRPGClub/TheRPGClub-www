@@ -6,7 +6,7 @@ import {
   type BinderHref,
   type MemberAchievementsQuery,
 } from "@/lib/member-achievements";
-import type { BinderPages } from "@/lib/member-achievements-server";
+import type { BinderPages } from "@/lib/member-achievements-binder";
 import { ListPagination } from "@/components/list-pagination";
 import { cn } from "@/lib/utils";
 import { BinderIndexRow, BinderRings } from "../member-binder";

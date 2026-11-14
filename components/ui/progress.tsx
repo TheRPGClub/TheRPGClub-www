@@ -16,6 +16,8 @@ type ProgressTone =
   | "neutral"
   // Failures or lost items.
   | "destructive"
+  // A bar on a light object (the yellow panel).
+  | "inverse"
   // www#96: a fill the caller sets with --progress-ink (an Achievement
   // Set's game tint, a Rarity tier's ink).
   | "tint"
@@ -31,7 +33,8 @@ function Progress({
   ...props
 }: ProgressPrimitive.Root.Props & {
   tone?: ProgressTone
-  // lg: the thicker bar (an Achievement Set's progress).
+  // lg: the heavier bar a page leads with (an import's count, an
+  // Achievement Set's progress).
   size?: "default" | "lg"
   indicatorClassName?: string
   trackClassName?: string

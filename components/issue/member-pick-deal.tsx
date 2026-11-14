@@ -1,35 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Check, ExternalLink, Hand, Shuffle } from "lucide-react";
+import { Shuffle } from "lucide-react";
 import type { BacklogPick, Platform } from "@/lib/api/types";
-import { MemberCover } from "@/components/issue/member-cover";
-import { StartPlayingForm } from "@/components/member/start-playing-form";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { DealCard } from "@/components/issue/member-pick-deal-card";
+import { KeptBar } from "@/components/issue/member-pick-deal-kept";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Deal three, pick one: the picker's draws laid out face up as a hand of
 // cards, HowLongToBeat times side by side. The member keeps one (the first
 // draw starts kept) and starts playing it from the bar underneath; dealing
 // again redraws the whole hand.
-
-// HowLongToBeat's display strings ("12½ Hours", "30 Mins") as a short
-// numeral and unit; anything else is shown as written.
-function hltbShort(value: string): { n: string; unit: string } {
-  const text = value.replace("½", ".5").trim();
-  const match = text.match(/(\d+(?:\.\d+)?)\s*(hours?|mins?)/i);
-  if (!match) return { n: value, unit: "" };
-  return { n: match[1], unit: /min/i.test(match[2]) ? "m" : "h" };
-}
-
-function timesOf(pick: BacklogPick) {
-  return [
-    { label: "Main", value: pick.hltb?.main },
-    { label: "+ Sides", value: pick.hltb?.main_sides },
-    { label: "Complete", value: pick.hltb?.completionist },
-  ].filter((t): t is { label: string; value: string } => Boolean(t.value));
-}
 
 // On screen the first draw sits in the middle of the hand, raised; the
 // reading order stays first, second, third.
@@ -66,100 +48,15 @@ export function PickDeal({
             picks.length === 1 && "sm:max-w-[20rem]",
           )}
         >
-          {picks.map((pick, i) => {
-            const on = i === kept;
-            const game = pick.game;
-            const times = timesOf(pick);
-            const coverGame = {
-              ...game,
-              cover_url: game.cover_url ?? pick.hltb?.image_url ?? null,
-            };
-            return (
-              <li
-                key={pick.entry_id}
-                className={cn(
-                  "flex overflow-hidden rounded-lg border bg-card shadow-[0_18px_40px_rgb(0_0_0/0.5)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] sm:row-start-1 sm:flex-col",
-                  picks.length === 3 ? SEAT[i] : "",
-                  on
-                    ? "border-foreground shadow-[0_0_0_2px_var(--color-foreground),0_22px_44px_rgb(0_0_0/0.55)] sm:-translate-y-3.5 sm:rotate-0"
-                    : "border-border-strong sm:hover:-translate-y-2",
-                )}
-              >
-                <Link
-                  href={`/games/${game.game_id}`}
-                  className="group/cover block w-24 shrink-0 sm:w-auto"
-                  tabIndex={-1}
-                  aria-hidden
-                >
-                  <MemberCover
-                    game={coverGame}
-                    platform={pick.platform}
-                    className="rounded-none sm:aspect-[4/4.4]"
-                    fallbackClassName="text-lg sm:text-3xl"
-                  />
-                </Link>
-                <div className="flex min-w-0 flex-1 flex-col gap-2.5 p-3.5 sm:px-4 sm:pt-3.5 sm:pb-4">
-                  <h2 className="font-headline text-2xl leading-[0.95] text-balance sm:text-[1.9rem]">
-                    <Link
-                      href={`/games/${game.game_id}`}
-                      className="transition-colors hover:text-highlight"
-                    >
-                      {game.title}
-                    </Link>
-                  </h2>
-                  <p className="font-label text-[0.75rem] font-bold tracking-[0.06em] text-faint-foreground">
-                    From your {pick.kind === "backlog" ? "backlog" : "collection"}
-                    {pick.platform && <> · {pick.platform.platform_name}</>}
-                  </p>
-                  {pick.note && (
-                    <p className="line-clamp-3 text-[0.84rem] text-dim-foreground italic">
-                      &ldquo;{pick.note}&rdquo;
-                    </p>
-                  )}
-                  {times.length > 0 ? (
-                    <dl className="grid grid-cols-3 border-t border-border pt-2.5">
-                      {times.map((t) => {
-                        const { n, unit } = hltbShort(t.value);
-                        return (
-                          <div key={t.label} className="flex flex-col-reverse gap-1">
-                            <dt className="font-label text-[0.68rem] font-extrabold tracking-[0.08em] text-faint-foreground">
-                              {t.label}
-                            </dt>
-                            <dd className="font-headline text-[1.6rem] leading-[0.85] sm:text-[1.9rem]">
-                              {n}
-                              {unit && (
-                                <small className="font-label ml-px text-sm font-extrabold">
-                                  {unit}
-                                </small>
-                              )}
-                            </dd>
-                          </div>
-                        );
-                      })}
-                    </dl>
-                  ) : (
-                    <p className="font-label border-t border-border pt-2.5 text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground">
-                      No HowLongToBeat times
-                    </p>
-                  )}
-                  <Button
-                    type="button"
-                    onClick={() => setKept(i)}
-                    aria-pressed={on}
-                    variant={on ? "selected" : "outline"}
-                    className="mt-auto w-full"
-                  >
-                    {on ? (
-                      <Check data-icon="inline-start" />
-                    ) : (
-                      <Hand data-icon="inline-start" />
-                    )}
-                    {on ? "Kept" : "Keep this one"}
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
+          {picks.map((pick, i) => (
+            <DealCard
+              key={pick.entry_id}
+              pick={pick}
+              on={i === kept}
+              seat={picks.length === 3 ? SEAT[i] : ""}
+              onKeep={() => setKept(i)}
+            />
+          ))}
         </ol>
 
         <div className="mt-6 flex justify-center sm:mt-9">
@@ -171,42 +68,7 @@ export function PickDeal({
       </div>
 
       {keptPick && (
-        <section
-          aria-label="Start playing"
-          className="flex flex-wrap items-end justify-between gap-4 rounded-md border border-border bg-card px-4.5 py-4"
-        >
-          <div className="min-w-0">
-            {/* One line, the verb leading the title, rather than a label
-                stacked over it. */}
-            <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-label text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground">
-                You kept
-              </span>
-              <span className="font-headline text-[1.65rem] leading-none">
-                {keptPick.game.title}
-              </span>
-            </p>
-            {keptPick.hltb?.url && (
-              <a
-                href={keptPick.hltb.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-label mt-2 inline-flex items-center gap-1 text-xs font-extrabold tracking-[0.08em] text-faint-foreground transition-colors hover:text-highlight"
-              >
-                HowLongToBeat
-                <ExternalLink aria-hidden className="size-3" />
-              </a>
-            )}
-          </div>
-          <StartPlayingForm
-            // A new keep is a new form: its platform choice and error reset.
-            key={keptPick.entry_id}
-            userId={userId}
-            gamedbGameId={keptPick.gamedb_game_id}
-            platformId={keptPick.platform_id}
-            platforms={platforms}
-          />
-        </section>
+        <KeptBar userId={userId} keptPick={keptPick} platforms={platforms} />
       )}
     </div>
   );

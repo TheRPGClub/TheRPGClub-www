@@ -7,7 +7,7 @@ import {
   type BinderHref,
   type MemberAchievementsQuery,
 } from "@/lib/member-achievements";
-import type { StatusCounts } from "@/lib/member-achievements-server";
+import type { StatusCounts } from "@/lib/member-achievements-binder";
 import { cn } from "@/lib/utils";
 import { PROVIDER_FILL } from "../provider-badge";
 

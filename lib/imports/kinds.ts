@@ -160,6 +160,13 @@ export interface ImportProgress {
   percent: number;
 }
 
+const STARTED = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+
+// "Nov 3": the day an import was started, for the hub's rows and panels.
+export function importStartedDate(iso: string): string {
+  return STARTED.format(new Date(iso));
+}
+
 export function importProgress(total: number, counts: ImportSummary | null): ImportProgress {
   const pending = counts ? (counts.by_status.pending ?? 0) : total;
   const resolved = Math.max(0, total - pending);

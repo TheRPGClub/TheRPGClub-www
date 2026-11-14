@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { ExternalLink } from "lucide-react";
 import type { Game } from "@/lib/api/types";
-import { Badge } from "@/components/ui/badge";
-import { GameCover, GameHeadline } from "@/components/issue/game-cover";
-import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
+import { GameCover } from "@/components/issue/game-cover";
+import { GameHeroStats, type GameHeroStat } from "@/components/issue/game-hero-stats";
+import { GameHeroText } from "@/components/issue/game-hero-text";
+import { gameTrack } from "@/components/issue/game-track";
 import { Starburst } from "@/components/issue/starburst";
-import { PlatformPills } from "@/components/platform-pills";
 import { cn } from "@/lib/utils";
 
 // A game's cover story: full-bleed key art, the box cover, the title in two
@@ -15,10 +14,7 @@ import { cn } from "@/lib/utils";
 // It bleeds to the edges of the app's content column, so it undoes the
 // layout's padding (px-4 py-6, sm:px-7) itself.
 
-export interface GameHeroStat {
-  label: string;
-  value: number;
-}
+export type { GameHeroStat };
 
 export function GameHero({
   game,
@@ -34,7 +30,6 @@ export function GameHero({
 }) {
   const track = gameTrack(game);
   const art = game.art_url;
-  const chips = trackChips(game);
 
   return (
     <section
@@ -92,63 +87,9 @@ export function GameHero({
           fallbackClassName="text-base md:text-[1.7rem]"
         />
 
-        <div className="col-span-full min-w-0 md:col-span-1 md:row-start-1 md:col-start-2">
-          <GameHeadline
-            title={game.title}
-            accentClassName={trackAccentText(track)}
-            className="text-[3.1rem] leading-[0.88] md:text-[5.5rem]"
-          />
-          {(badge || chips.length > 0 || (game.platforms?.length ?? 0) > 0) && (
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {badge}
-              {chips.map((chip) => (
-                <Badge key={chip.tone} tone={chip.tone} className="border-0">
-                  {chip.label}
-                </Badge>
-              ))}
-              <PlatformPills platforms={game.platforms} max={5} />
-            </div>
-          )}
-          {game.description && (
-            <p className="mt-3.5 line-clamp-4 max-w-[60ch] text-[0.9rem] leading-[1.55] text-dim-foreground">
-              {game.description}
-            </p>
-          )}
-          {game.igdb_url && (
-            <a
-              href={game.igdb_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-label mt-2.5 inline-flex items-center gap-1.5 text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight"
-            >
-              View on IGDB
-              <ExternalLink aria-hidden className="size-3.5" />
-            </a>
-          )}
-        </div>
+        <GameHeroText game={game} track={track} badge={badge} />
 
-        <dl className="col-start-2 row-start-1 flex items-end gap-4 self-end md:col-start-3 md:gap-7 md:pb-1.5">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col-reverse md:text-right">
-              <dt className="font-label text-[0.75rem] font-extrabold tracking-[0.08em] text-dim-foreground md:text-[0.82rem]">
-                {stat.label}
-              </dt>
-              <dd className="font-headline text-[2.5rem] leading-[0.9] md:text-[3.75rem]">
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-          {releaseDate && (
-            <div className="hidden flex-col-reverse text-right lg:flex">
-              <dt className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground">
-                Released
-              </dt>
-              <dd className="font-headline mb-0.5 text-[1.9rem] leading-none">
-                {releaseDate}
-              </dd>
-            </div>
-          )}
-        </dl>
+        <GameHeroStats stats={stats} releaseDate={releaseDate} />
       </div>
     </section>
   );
