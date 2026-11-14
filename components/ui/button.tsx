@@ -150,6 +150,11 @@ const buttonVariants = cva(
         // Removes one chip from a field of chips (a term in the synonyms
         // editor): the chip's own small x.
         "chip-remove": "",
+        // www#101: the News Hub.
+        // One choice in a list of filters that toggles it in or out of the
+        // view (a News Category on the News page's rail, aria-pressed): the
+        // label voice and no ground; the row's parts carry its ink.
+        "filter-option": "",
       },
       size: {
         default:

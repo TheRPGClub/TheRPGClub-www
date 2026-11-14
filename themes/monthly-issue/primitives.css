@@ -1189,5 +1189,11 @@
         [data-slot="button"][data-variant="chip-remove"] {
             @apply rounded-xs border-0 text-dim-foreground hover:bg-foreground/15 hover:text-foreground;
         }
+        /* The News Hub (www#101). A News Category in the rail's filter: the
+           label voice, no ground and no motion of its own; the focus ring
+           follows its small corner, and a press doesn't nudge it. */
+        [data-slot="button"][data-variant="filter-option"] {
+            @apply font-label rounded-xs border-0 bg-transparent transition-none active:not-aria-[haspopup]:translate-y-0;
+        }
     }
 }
