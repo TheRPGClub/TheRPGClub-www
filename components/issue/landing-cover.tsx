@@ -85,6 +85,7 @@ export function LandingCover({
   issueNumber,
   signInHref,
   profileHref,
+  notice,
 }: {
   // This round's lead Game of the Month.
   lead: PublicWinner;
@@ -92,6 +93,8 @@ export function LandingCover({
   issueNumber: number;
   signInHref: string;
   profileHref: string | null;
+  // A notice slip (sign-in failed), pinned over the cover art.
+  notice?: React.ReactNode;
 }) {
   const art = lead.art_url;
 
@@ -133,10 +136,20 @@ export function LandingCover({
         </span>
       </p>
 
+      {notice && (
+        <div className="absolute inset-x-4 top-[15rem] z-20 flex md:top-[15rem] md:right-10 md:left-auto xl:top-[27rem] xl:right-[24rem]">
+          {notice}
+        </div>
+      )}
+
       <LandingPitch
         signInHref={signInHref}
         profileHref={profileHref}
-        className="relative z-[2] flex-1 px-4 pt-21 pb-8 md:px-10 md:pt-26 md:pb-14 [&>h1]:mt-[13rem] md:[&>h1]:mt-auto md:[&>h1]:pt-12"
+        className={cn(
+          "relative z-[2] flex-1 px-4 pt-21 pb-8 md:px-10 md:pt-26 md:pb-14 [&>h1]:mt-[13rem] md:[&>h1]:mt-auto md:[&>h1]:pt-12",
+          // On a phone the slip sits between the masthead and the headline.
+          notice && "max-md:[&>h1]:mt-[17.5rem]",
+        )}
       />
 
       <ul className="relative z-[3] mx-4 mb-9 flex flex-col gap-4 rounded-sm bg-ink/82 px-5 py-4.5 md:absolute md:right-10 md:bottom-14 md:m-0 md:w-80">

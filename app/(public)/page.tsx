@@ -7,6 +7,9 @@ import { featureView } from "@/lib/features";
 import { firstParam } from "@/lib/search-params";
 import { buttonVariants } from "@/components/ui/button";
 import { LandingCover, LandingPitch } from "@/components/issue/landing-cover";
+import { SignInFailedSlip } from "@/components/issue/sign-in-failed-slip";
+import { TrackPlate } from "@/components/issue/track-plate";
+import { callbackPath, discordSignInUrl } from "@/lib/sign-in";
 import {
   LandingMarquee,
   type LandingMarqueeItem,
@@ -23,6 +26,8 @@ import { cn } from "@/lib/utils";
 type HomeProps = {
   searchParams?: Promise<{
     token?: string | string[];
+    return_to?: string | string[];
+    error?: string | string[];
   }>;
 };
 
@@ -32,8 +37,9 @@ export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
   const token = firstParam(params?.token);
 
+  // Until the cutover (www#84) the API hands the token to the front page.
   if (token) {
-    redirect(`/auth/callback?token=${encodeURIComponent(token)}`);
+    redirect(callbackPath(token, firstParam(params?.return_to)));
   }
 
   const [session, allWinners] = await Promise.all([
@@ -47,7 +53,11 @@ export default async function Home({ searchParams }: HomeProps) {
     session && !featureView(session.features).shown("voting_gotm")
       ? []
       : allWinners;
-  const signInHref = `${process.env.API_URL ?? "http://localhost:3000"}/auth/discord`;
+  const signInHref = discordSignInUrl();
+  const notice =
+    firstParam(params?.error) === "auth_failed" ? (
+      <SignInFailedSlip signInHref={signInHref} />
+    ) : null;
   const profileHref = session
     ? `/members/${session.principal.discord_id}`
     : null;
@@ -70,9 +80,10 @@ export default async function Home({ searchParams }: HomeProps) {
             issueNumber={latest.round_number}
             signInHref={signInHref}
             profileHref={profileHref}
+            notice={notice}
           />
         ) : (
-          <FlatHero signInHref={signInHref} profileHref={profileHref} />
+          <FlatHero signInHref={signInHref} profileHref={profileHref} notice={notice} />
         )}
         <HowItWorks />
         <TwoTracks winners={winners} />
@@ -97,51 +108,21 @@ export default async function Home({ searchParams }: HomeProps) {
 function FlatHero({
   signInHref,
   profileHref,
+  notice,
 }: {
   signInHref: string;
   profileHref: string | null;
+  // The sign-in-failed slip, pinned to the track plates.
+  notice: React.ReactNode;
 }) {
   return (
     <section className="grid gap-10 px-4 pt-24 pb-12 sm:px-10 sm:pt-28 sm:pb-16 lg:min-h-[52rem] lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-end lg:gap-14">
       <LandingPitch signInHref={signInHref} profileHref={profileHref} />
       <div className="grid gap-2.5">
-        <Plate
-          kind="gotm"
-          name="Game of the Month"
-          blurb="An RPG, nominated and voted in by the club, played through the month."
-        />
-        <Plate
-          kind="nr_gotm"
-          name="Non-RPG Game of the Month"
-          blurb="The wildcard: roguelikes, farming sims, metroidvanias, anything that isn't an RPG."
-        />
+        {notice}
+        <TrackPlate kind="gotm" />
+        <TrackPlate kind="nr_gotm" />
       </div>
-    </section>
-  );
-}
-
-function Plate({
-  kind,
-  name,
-  blurb,
-}: {
-  kind: VotingCategory;
-  name: string;
-  blurb: string;
-}) {
-  return (
-    <section
-      className={cn(
-        "rounded-md px-5 pt-4.5 pb-5 text-white",
-        kind === "gotm" ? "bg-gotm" : "bg-nr",
-      )}
-    >
-      <h2 className="font-headline max-w-[11ch] text-[2.4rem] leading-[0.9] sm:text-[2.75rem]">
-        {name}
-      </h2>
-      <p className="mt-2.5 max-w-[34ch] text-[0.92rem] font-medium text-white/85">
-        {blurb}
-      </p>
     </section>
   );
 }

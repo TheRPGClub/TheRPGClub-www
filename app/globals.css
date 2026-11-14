@@ -229,3 +229,13 @@
         transform: scaleX(0);
     }
 }
+
+/* A slideshow tick fills as its slide runs (the /join slideshow). */
+@keyframes tick-fill {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
