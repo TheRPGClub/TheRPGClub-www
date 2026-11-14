@@ -87,8 +87,8 @@ export async function MemberListTemplate({
                       className={cn(
                         "font-label inline-flex h-7.5 items-center gap-1.5 rounded-[3px] px-2 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors",
                         on
-                          ? "bg-paper text-ink"
-                          : "text-paper-mute hover:bg-ink-3 hover:text-paper",
+                          ? "bg-foreground text-background"
+                          : "text-faint-foreground hover:bg-muted hover:text-foreground",
                       )}
                     >
                       {list.label}

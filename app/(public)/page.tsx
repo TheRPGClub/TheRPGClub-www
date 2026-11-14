@@ -72,7 +72,7 @@ export default async function Home({ searchParams }: HomeProps) {
     : null;
 
   return (
-    <div className="flex min-h-svh flex-col bg-ink text-paper">
+    <div className="flex min-h-svh flex-col bg-background text-foreground">
       <main className="flex-1">
         {lead && latest ? (
           <LandingCover
@@ -92,7 +92,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <LandingMarquee items={marqueeItems(winners)} />
       </main>
 
-      <footer className="flex items-center gap-3 border-t border-rule px-4 py-5 text-[0.8rem] text-paper-mute sm:px-10">
+      <footer className="flex items-center gap-3 border-t border-border px-4 py-5 text-[0.8rem] text-faint-foreground sm:px-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="" width={26} height={26} className="size-6.5" />
         The RPG Club · a Discord community
@@ -133,7 +133,7 @@ function SectionTitle({ id, children }: { id?: string; children: React.ReactNode
   return (
     <h2
       id={id}
-      className="font-headline border-b-2 border-paper pb-3 text-[2.15rem] sm:text-[2.9rem]"
+      className="font-headline border-b-2 border-foreground pb-3 text-[2.15rem] sm:text-[2.9rem]"
     >
       {children}
     </h2>
@@ -160,7 +160,7 @@ function HowItWorks() {
     <section
       id="how"
       aria-labelledby="how-title"
-      className="scroll-mt-6 border-t border-rule px-4 py-12 sm:px-10 sm:py-18"
+      className="scroll-mt-6 border-t border-border px-4 py-12 sm:px-10 sm:py-18"
     >
       <SectionTitle id="how-title">How an issue comes together</SectionTitle>
       <ol className="mt-8 grid gap-9 md:grid-cols-3 md:gap-7">
@@ -168,14 +168,14 @@ function HowItWorks() {
           <li key={step.title}>
             <span
               aria-hidden
-              className="font-headline block text-[5.25rem] leading-[0.8] text-ink-3 [-webkit-text-stroke:1.5px_var(--color-paper-mute)] sm:text-[7.5rem]"
+              className="font-headline block text-[5.25rem] leading-[0.8] text-muted [-webkit-text-stroke:1.5px_var(--color-faint-foreground)] sm:text-[7.5rem]"
             >
               {i + 1}
             </span>
             <h3 className="font-headline mt-3.5 text-[2.25rem] leading-[0.95]">
               {step.title}
             </h3>
-            <p className="mt-2.5 max-w-[38ch] text-paper-dim">{step.body}</p>
+            <p className="mt-2.5 max-w-[38ch] text-dim-foreground">{step.body}</p>
           </li>
         ))}
       </ol>
@@ -199,7 +199,7 @@ function TwoTracks({ winners }: { winners: PublicWinner[] }) {
   return (
     <section
       aria-labelledby="tracks-title"
-      className="border-t border-rule px-4 py-12 sm:px-10 sm:py-18"
+      className="border-t border-border px-4 py-12 sm:px-10 sm:py-18"
     >
       <SectionTitle id="tracks-title">Two tracks, every month</SectionTitle>
       <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-7">
@@ -242,14 +242,14 @@ function Track({
       >
         {name}
       </h3>
-      <p className="mt-2.5 max-w-[52ch] text-paper-dim">{body}</p>
+      <p className="mt-2.5 max-w-[52ch] text-dim-foreground">{body}</p>
       {picks.length > 0 && (
         <ul className="mt-5 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
           {picks.map((pick, i) => (
             <li key={pick.round_number} className={cn(i >= 3 && "max-sm:hidden")}>
               <div
                 className={cn(
-                  "aspect-[3/4] overflow-hidden border-b-4 bg-ink-3",
+                  "aspect-[3/4] overflow-hidden border-b-4 bg-muted",
                   gotm ? "border-gotm" : "border-nr",
                 )}
               >
@@ -261,12 +261,12 @@ function Track({
                     className="size-full object-cover"
                   />
                 ) : (
-                  <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-paper-mute">
+                  <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-faint-foreground">
                     {pick.title}
                   </span>
                 )}
               </div>
-              <p className="font-label mt-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute">
+              <p className="font-label mt-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                 Round {pick.round_number}
               </p>
             </li>
@@ -289,17 +289,17 @@ function YourShelf() {
   return (
     <section
       aria-labelledby="shelf-title"
-      className="border-t border-rule px-4 py-12 sm:px-10 sm:py-18"
+      className="border-t border-border px-4 py-12 sm:px-10 sm:py-18"
     >
       <SectionTitle id="shelf-title">Your shelf in the club</SectionTitle>
       <dl className="mt-4 grid gap-x-12 lg:grid-cols-2">
         {SHELF.map(([title, body]) => (
           <div
             key={title}
-            className="grid gap-1 border-b border-rule py-4.5 sm:grid-cols-[11rem_1fr] sm:gap-5"
+            className="grid gap-1 border-b border-border py-4.5 sm:grid-cols-[11rem_1fr] sm:gap-5"
           >
             <dt className="font-headline text-[1.6rem] leading-none">{title}</dt>
-            <dd className="text-paper-dim">{body}</dd>
+            <dd className="text-dim-foreground">{body}</dd>
           </div>
         ))}
       </dl>
@@ -309,13 +309,13 @@ function YourShelf() {
 
 function Close({ signInHref }: { signInHref: string }) {
   return (
-    <section className="grid gap-7 bg-highlight px-4 py-11 text-ink sm:px-10 sm:py-16 md:grid-cols-[1fr_auto] md:items-end">
+    <section className="grid gap-7 bg-highlight px-4 py-11 text-highlight-foreground sm:px-10 sm:py-16 md:grid-cols-[1fr_auto] md:items-end">
       <div>
         <h2 className="font-headline text-[3.4rem] leading-[0.86] sm:text-[5.25rem]">
           Pull up
           <br />a chair.
         </h2>
-        <p className="mt-3.5 max-w-[52ch] font-medium text-highlight-ink">
+        <p className="mt-3.5 max-w-[52ch] font-medium text-highlight-muted-foreground">
           Sign in with your Discord account to join the round, vote on the
           ballot and start your shelf.
         </p>
@@ -324,7 +324,7 @@ function Close({ signInHref }: { signInHref: string }) {
         href={signInHref}
         className={cn(
           buttonVariants({ size: "lg" }),
-          "h-13 bg-ink px-6 text-lg text-paper hover:bg-ink/85",
+          "h-13 bg-background px-6 text-lg text-foreground hover:bg-background/85",
         )}
       >
         Sign in with Discord

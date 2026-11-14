@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 type Mode = "idle" | "approve" | "reject";
 
-const FIELD_LABEL = "font-label text-[0.82rem] tracking-[0.06em] text-paper-mute";
+const FIELD_LABEL = "font-label text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 
 // A Pending Suggestion in the Superadmin's queue: the board's card with
 // Approve and Reject in its footer. Approve asks which repo the GitHub issue
@@ -102,7 +102,7 @@ export function ReviewCard({
           onClick={() => open("approve")}
           className={cn(
             FOOT_LINK,
-            "px-2.5 text-paper shadow-[inset_0_0_0_1px_rgb(141_141_135/0.6)] hover:bg-ink-3 hover:shadow-[inset_0_0_0_1px_var(--color-paper)]",
+            "px-2.5 text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-faint-foreground)_60%,transparent)] hover:bg-muted hover:shadow-[inset_0_0_0_1px_var(--color-foreground)]",
           )}
         >
           <Check aria-hidden />
@@ -130,7 +130,7 @@ export function ReviewCard({
               ? `Approve "${suggestion.title}"`
               : `Reject "${suggestion.title}"`
           }
-          className="space-y-3 rounded-md border border-highlight bg-ink-2 p-3"
+          className="space-y-3 rounded-md border border-highlight bg-card p-3"
         >
           {mode === "approve" ? (
             <fieldset className="space-y-2">
@@ -139,7 +139,7 @@ export function ReviewCard({
                 {SUGGESTION_TARGET_REPOS.map((r) => (
                   <label
                     key={r.value}
-                    className="flex cursor-pointer items-start gap-2 rounded-sm bg-ink-3 px-2.5 py-2 shadow-[inset_0_0_0_1px_var(--color-rule-strong)] has-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40"
+                    className="flex cursor-pointer items-start gap-2 rounded-sm bg-muted px-2.5 py-2 shadow-[inset_0_0_0_1px_var(--color-border-strong)] has-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40"
                   >
                     <input
                       type="radio"
@@ -150,17 +150,17 @@ export function ReviewCard({
                       className="mt-1 accent-highlight"
                     />
                     <span className="min-w-0">
-                      <span className="font-label block text-[0.92rem] font-extrabold text-paper">
+                      <span className="font-label block text-[0.92rem] font-extrabold text-foreground">
                         {r.label}
                       </span>
-                      <span className="block text-[0.78rem] text-paper-mute">
+                      <span className="block text-[0.78rem] text-faint-foreground">
                         {r.blurb}
                       </span>
                     </span>
                   </label>
                 ))}
               </div>
-              <p className="text-[0.82rem] text-paper-mute">
+              <p className="text-[0.82rem] text-faint-foreground">
                 The issue takes its title, details and labels. The bot then
                 tells {author} on Discord.
               </p>
@@ -174,7 +174,7 @@ export function ReviewCard({
                     "text-[0.78rem]",
                     reason.trim().length > REJECTION_REASON_MAX
                       ? "text-destructive"
-                      : "text-paper-mute",
+                      : "text-faint-foreground",
                   )}
                 >
                   {reason.trim().length}/{REJECTION_REASON_MAX}
@@ -190,9 +190,9 @@ export function ReviewCard({
                   setReason(e.target.value);
                   if (error) setError(null);
                 }}
-                className="w-full min-w-0 rounded-sm border border-rule bg-ink-2 px-3 py-2 text-sm text-paper caret-highlight outline-none focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40"
+                className="w-full min-w-0 rounded-sm border border-border bg-card px-3 py-2 text-sm text-foreground caret-highlight outline-none focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40"
               />
-              <span className="block text-[0.82rem] text-paper-mute">
+              <span className="block text-[0.82rem] text-faint-foreground">
                 The bot posts it to {author} on Discord, and it shows on the
                 Board&apos;s Rejected tab.
               </span>

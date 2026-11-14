@@ -46,7 +46,7 @@ export default async function GiveawaysPage({
         count={keys === null ? undefined : `${total} ${total === 1 ? "key" : "keys"} on the shelf`}
       />
       {!canClaim && (
-        <p className="max-w-[65ch] text-sm text-paper-dim">
+        <p className="max-w-[65ch] text-sm text-dim-foreground">
           You can browse and donate, but claiming a key needs the Members role in Discord, as it does in the bot. If you
           have it, sign out and back in to refresh your roles.
         </p>
@@ -120,8 +120,8 @@ function PlatformTab({
       style={ink ? ({ "--p": ink } as CSSProperties) : undefined}
       className={cn(
         "font-label inline-flex h-8 items-center gap-2 rounded-sm px-3 text-[0.88rem] font-extrabold transition-colors",
-        !ink && (active ? "bg-ink-2 text-paper shadow-[inset_0_0_0_2px_var(--color-highlight)]" : "bg-ink-2 text-paper-dim hover:text-paper"),
-        ink && (active ? "bg-(--p) text-ink" : "text-paper-dim shadow-[inset_0_0_0_1.5px_var(--p)] hover:text-paper"),
+        !ink && (active ? "bg-card text-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)]" : "bg-card text-dim-foreground hover:text-foreground"),
+        ink && (active ? "bg-(--p) text-background" : "text-dim-foreground shadow-[inset_0_0_0_1.5px_var(--p)] hover:text-foreground"),
         count === 0 && !active && "opacity-60",
       )}
     >

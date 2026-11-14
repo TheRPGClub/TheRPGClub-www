@@ -45,7 +45,7 @@ export function GotmLedger({
           aria-label={group.year ? String(group.year) : "Undated rounds"}
         >
           {group.year && (
-            <h2 className="font-headline border-b-2 border-paper pt-2 pb-1.5 text-[1.4rem] text-paper-mute">
+            <h2 className="font-headline border-b-2 border-foreground pt-2 pb-1.5 text-[1.4rem] text-faint-foreground">
               {group.year}
             </h2>
           )}
@@ -74,12 +74,12 @@ function LedgerRow({
   const { month, year } = splitMonthYear(roundMonthYear(round));
 
   return (
-    <li className="grid gap-2.5 border-b border-rule py-5 md:grid-cols-[6.5rem_minmax(0,1fr)] md:gap-4.5 xl:grid-cols-[8.5rem_minmax(0,1.6fr)_minmax(0,1fr)]">
+    <li className="grid gap-2.5 border-b border-border py-5 md:grid-cols-[6.5rem_minmax(0,1fr)] md:gap-4.5 xl:grid-cols-[8.5rem_minmax(0,1.6fr)_minmax(0,1fr)]">
       <h3 className="flex items-baseline gap-3 md:block">
         <span className="font-headline block text-[3.5rem] leading-[0.8] md:text-[4rem] xl:text-[5.25rem]">
           {round.round_number}
         </span>
-        <span className="font-label block text-[0.85rem] leading-[1.2] font-extrabold tracking-[0.08em] text-paper-mute md:mt-2.5">
+        <span className="font-label block text-[0.85rem] leading-[1.2] font-extrabold tracking-[0.08em] text-faint-foreground md:mt-2.5">
           <span className="sr-only">Round {round.round_number}, </span>
           {month}
           {year && <span className="md:block"> {year}</span>}
@@ -123,7 +123,7 @@ function TrackColumn({
     return (
       <p
         className={cn(
-          "font-label grid min-h-24 place-items-center rounded-sm border border-dashed border-rule-strong p-3.5 text-center text-[0.85rem] font-bold tracking-[0.06em] text-paper-mute md:min-h-49",
+          "font-label grid min-h-24 place-items-center rounded-sm border border-dashed border-border-strong p-3.5 text-center text-[0.85rem] font-bold tracking-[0.06em] text-faint-foreground md:min-h-49",
           className,
         )}
       >
@@ -182,7 +182,7 @@ function ArtPanel({
   return (
     <article
       className={cn(
-        "group/panel relative isolate flex min-h-38 w-full overflow-hidden rounded-sm bg-ink-3 after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1 md:min-h-49",
+        "group/panel relative isolate flex min-h-38 w-full overflow-hidden rounded-sm bg-muted after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1 md:min-h-49",
         kind === "gotm" ? "after:bg-gotm" : "after:bg-nr",
       )}
     >
@@ -197,7 +197,7 @@ function ArtPanel({
       )}
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgb(11_11_13/0.96)_0%,rgb(11_11_13/0.6)_42%,rgb(11_11_13/0.05)_75%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_60%,transparent)_42%,color-mix(in_oklab,var(--color-background)_5%,transparent)_75%)]"
       />
       {single && (
         <WinnerMark track={kind} className="absolute top-3 right-3 size-14" />
@@ -207,7 +207,7 @@ function ArtPanel({
         <Link
           href={href}
           aria-label={`View ${title}`}
-          className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-paper focus-visible:outline-none focus-visible:ring-inset"
+          className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none focus-visible:ring-inset"
         />
       )}
       {/* Titles hang from a fixed line so co-winners in a row align; the

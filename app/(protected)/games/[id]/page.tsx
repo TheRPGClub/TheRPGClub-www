@@ -245,7 +245,7 @@ async function GameContent({
               className="mb-4"
             />
             {reviewTotal === null ? (
-              <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+              <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
                 Reviews couldn&apos;t be loaded right now.
               </p>
             ) : (
@@ -310,7 +310,7 @@ async function GameContent({
           {isAdmin && (
             <section>
               <RailHeading title="Images" count="Admin" />
-              <p className="mb-3 text-[0.82rem] text-paper-mute">
+              <p className="mb-3 text-[0.82rem] text-faint-foreground">
                 Upload a cover, key art or logo for this game.
               </p>
               <GameImageUploadForm gameId={gameId} />
@@ -489,7 +489,7 @@ async function GameDetails({
               <li key={c.company_id}>
                 {c.name}
                 {c.role && (
-                  <small className="text-paper-mute"> · {c.role}</small>
+                  <small className="text-faint-foreground"> · {c.role}</small>
                 )}
               </li>
             ))}
@@ -623,7 +623,7 @@ async function AlternateVersions({
         className="mb-4"
       />
       {alternates.length === 0 && (
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           No other version of this game is linked yet.
         </p>
       )}

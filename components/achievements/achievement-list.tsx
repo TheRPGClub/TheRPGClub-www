@@ -32,7 +32,7 @@ export function AchievementList({
         <li
           key={view.id}
           id={rowId?.(view)}
-          className="scroll-mt-20 rounded-md border border-rule bg-ink-2 p-3.5 target:border-paper-mute"
+          className="scroll-mt-20 rounded-md border border-border bg-card p-3.5 target:border-faint-foreground"
         >
           <AchievementDetails view={view} />
         </li>

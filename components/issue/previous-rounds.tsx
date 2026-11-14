@@ -43,12 +43,12 @@ export function PreviousRounds({ rounds }: { rounds: GotmRound[] }) {
           return (
             <li
               key={round.round_number}
-              className="grid grid-cols-[4.25rem_1fr] gap-4 xl:border-r xl:border-rule xl:pr-5 xl:last:border-r-0"
+              className="grid grid-cols-[4.25rem_1fr] gap-4 xl:border-r xl:border-border xl:pr-5 xl:last:border-r-0"
             >
               <p className="font-headline text-[3.6rem] leading-[0.85]">
                 {round.round_number}
                 {month && (
-                  <span className="font-label mt-2 block text-[0.8rem] leading-tight font-extrabold text-paper-mute">
+                  <span className="font-label mt-2 block text-[0.8rem] leading-tight font-extrabold text-faint-foreground">
                     {month}
                   </span>
                 )}
@@ -82,7 +82,7 @@ function RoundPick({
     <>
       <span
         className={cn(
-          "relative block h-28 overflow-hidden rounded-[3px] bg-ink-3 after:absolute after:inset-x-0 after:bottom-0 after:h-1",
+          "relative block h-28 overflow-hidden rounded-[3px] bg-muted after:absolute after:inset-x-0 after:bottom-0 after:h-1",
           kind === "gotm" ? "after:bg-gotm" : "after:bg-nr",
         )}
       >
@@ -94,7 +94,7 @@ function RoundPick({
             className="size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/pick:scale-[1.04]"
           />
         ) : (
-          <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-paper-mute">
+          <span className="font-headline grid size-full place-items-center p-2 text-center text-lg text-faint-foreground">
             {title}
           </span>
         )}
@@ -107,7 +107,7 @@ function RoundPick({
       >
         {TRACK_LABEL[kind]}
       </span>
-      <span className="font-label block text-[0.95rem] leading-tight tracking-[0.02em] text-paper">
+      <span className="font-label block text-[0.95rem] leading-tight tracking-[0.02em] text-foreground">
         {title}
       </span>
     </>

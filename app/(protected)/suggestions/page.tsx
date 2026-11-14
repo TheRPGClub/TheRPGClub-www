@@ -100,8 +100,8 @@ export default async function SuggestionBoardPage({
                 className={cn(
                   TAB_CLASS,
                   active
-                    ? "bg-ink-2 text-paper shadow-[inset_0_2px_0_var(--color-paper)]"
-                    : "bg-ink-3 text-paper-mute hover:text-paper",
+                    ? "bg-card text-foreground shadow-[inset_0_2px_0_var(--color-foreground)]"
+                    : "bg-muted text-faint-foreground hover:text-foreground",
                 )}
               >
                 {t.label}
@@ -109,7 +109,7 @@ export default async function SuggestionBoardPage({
                   <span
                     className={cn(
                       "font-bold",
-                      active ? "text-paper-dim" : "text-paper-mute",
+                      active ? "text-dim-foreground" : "text-faint-foreground",
                     )}
                   >
                     {t.count}
@@ -120,7 +120,7 @@ export default async function SuggestionBoardPage({
           })}
         </nav>
         {tab === "open" ? (
-          <ul className="font-label flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[0.8rem] text-paper-dim">
+          <ul className="font-label flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[0.8rem] text-dim-foreground">
             {KEY.map((k) => (
               <li key={k.label} className="inline-flex items-center gap-1.5">
                 <span
@@ -131,17 +131,17 @@ export default async function SuggestionBoardPage({
                 {k.label}
               </li>
             ))}
-            <li className="text-paper-mute">Most upvoted first</li>
+            <li className="text-faint-foreground">Most upvoted first</li>
           </ul>
         ) : (
-          <p className="text-[0.82rem] text-paper-mute">
+          <p className="text-[0.82rem] text-faint-foreground">
             Newest first. Each one carries the reason it was turned down.
           </p>
         )}
       </div>
 
       {!canVote && tab === "open" && (
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           Only Members role holders and staff can suggest and upvote. If you
           think your role is out of date, sign out and back in to refresh it
           from Discord.
@@ -151,7 +151,7 @@ export default async function SuggestionBoardPage({
       {tab === "open" && pinnedIsViewersPending && (
         <p
           role="status"
-          className="inline-flex items-center gap-2.5 rounded-md bg-highlight px-3.5 py-2.5 text-[0.92rem] font-semibold text-ink shadow-[0_12px_30px_rgb(0_0_0/0.5)]"
+          className="inline-flex items-center gap-2.5 rounded-md bg-highlight px-3.5 py-2.5 text-[0.92rem] font-semibold text-highlight-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)]"
         >
           <Pin aria-hidden className="size-[18px]" />
           Pinned. Your Suggestion is Pending.
@@ -163,7 +163,7 @@ export default async function SuggestionBoardPage({
           {"Couldn't load the Suggestions. Refresh to try again."}
         </p>
       ) : shown.rows.length === 0 ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-6 text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-faint-foreground">
           {tab === "open"
             ? "Nothing on the board yet."
             : "No Suggestions have been rejected."}

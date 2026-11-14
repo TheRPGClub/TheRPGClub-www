@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 // It only works inside a positioned, `overflow-hidden` container — the banner
 // is wider than the corner it crosses and relies on the card clipping it.
 const ribbonAccents = {
-  brand: "bg-gotm text-white",
-  purple: "bg-nr text-white",
+  brand: "bg-gotm text-gotm-foreground",
+  purple: "bg-nr text-nr-foreground",
 } as const;
 
 export type RibbonAccent = keyof typeof ribbonAccents;

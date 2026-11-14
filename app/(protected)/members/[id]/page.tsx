@@ -202,14 +202,14 @@ export default async function MemberPage({
           {nowPlaying.length > 0 ? (
             <NowPlayingBooks entries={nowPlaying} />
           ) : (
-            <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
               Nothing in progress right now.
             </p>
           )}
         </section>
       )}
 
-      <div className="border-t-2 border-paper">
+      <div className="border-t-2 border-foreground">
         <MemberShelf
           label="Favorites"
           count={counts.favorites}
@@ -352,7 +352,7 @@ export default async function MemberPage({
           {reviews.length > 0 ? (
             <MemberReviewRows reviews={reviews} />
           ) : (
-            <p className="mt-4 rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            <p className="mt-4 rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
               No reviews yet.
             </p>
           )}
@@ -376,7 +376,7 @@ export default async function MemberPage({
           {journalPreview.length > 0 ? (
             <ol className="grid gap-x-8 sm:grid-cols-2">
               {journalPreview.map((row) => (
-                <li key={row.game!.game_id} className="border-b border-rule">
+                <li key={row.game!.game_id} className="border-b border-border">
                   <Link
                     href={chapterHref(user.user_id, row.game!.game_id)}
                     className="group flex items-baseline gap-3 py-2"
@@ -385,7 +385,7 @@ export default async function MemberPage({
                       {row.game!.title}
                     </span>
                     {row.last_entry_at && (
-                      <span className="text-[0.82rem] text-paper-mute">
+                      <span className="text-[0.82rem] text-faint-foreground">
                         Last entry {journalDate(row.last_entry_at)}
                       </span>
                     )}
@@ -398,7 +398,7 @@ export default async function MemberPage({
               ))}
             </ol>
           ) : (
-            <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+            <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
               No journal entries yet.
             </p>
           )}

@@ -67,7 +67,7 @@ export function YearDial({
     return (
       <nav
         aria-label="Choose a year"
-        className="sticky top-20 flex max-h-[calc(100svh-6rem)] flex-col items-center gap-0.5 overflow-y-auto border-l border-rule py-2.5"
+        className="sticky top-20 flex max-h-[calc(100svh-6rem)] flex-col items-center gap-0.5 overflow-y-auto border-l border-border py-2.5"
       >
         {all && (
           <Link
@@ -76,8 +76,8 @@ export function YearDial({
             className={cn(
               "font-label mb-1 w-14 rounded-[3px] py-1 text-center text-[0.8rem] font-extrabold tracking-[0.08em] transition-colors",
               all.on
-                ? "bg-paper text-ink"
-                : "text-paper-mute hover:bg-ink-3 hover:text-paper",
+                ? "bg-foreground text-background"
+                : "text-faint-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             All
@@ -94,7 +94,7 @@ export function YearDial({
                 className={cn(
                   "font-headline mt-2 mb-1 px-1 leading-none transition-colors",
                   year.key === "unknown" ? "text-base" : "text-xl",
-                  on ? "text-paper" : "text-paper-mute hover:text-highlight",
+                  on ? "text-foreground" : "text-faint-foreground hover:text-highlight",
                 )}
               >
                 {year.label}
@@ -106,7 +106,7 @@ export function YearDial({
                       key={month.key}
                       href={month.href}
                       title={`${month.count} completed`}
-                      className="font-label w-12 rounded-[3px] py-0.5 text-center text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:bg-ink-3 hover:text-paper"
+                      className="font-label w-12 rounded-[3px] py-0.5 text-center text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       {month.label}
                     </Link>
@@ -114,7 +114,7 @@ export function YearDial({
                     <span
                       key={month.key}
                       aria-hidden
-                      className="font-label w-12 py-0.5 text-center text-[0.8rem] font-extrabold tracking-[0.08em] text-rule-strong"
+                      className="font-label w-12 py-0.5 text-center text-[0.8rem] font-extrabold tracking-[0.08em] text-border-strong"
                     >
                       {month.label}
                     </span>
@@ -136,7 +136,7 @@ export function YearDial({
               aria-current={all.on ? "page" : undefined}
               className={cn(
                 "font-label inline-flex h-8 items-center rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em]",
-                all.on ? "bg-paper text-ink" : "text-paper-dim hover:bg-ink-3",
+                all.on ? "bg-foreground text-background" : "text-dim-foreground hover:bg-muted",
               )}
             >
               All
@@ -152,7 +152,7 @@ export function YearDial({
                 aria-current={on ? "page" : undefined}
                 className={cn(
                   "inline-flex h-8 items-center gap-1.5 rounded-[3px] px-2.5",
-                  on ? "bg-paper text-ink" : "text-paper-dim hover:bg-ink-3",
+                  on ? "bg-foreground text-background" : "text-dim-foreground hover:bg-muted",
                 )}
               >
                 <span className="font-headline text-lg leading-none">

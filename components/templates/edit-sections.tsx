@@ -62,8 +62,8 @@ export function EditSections({
                   className={cn(
                     "font-label flex h-9 items-center justify-between gap-3 rounded-sm px-3 text-[0.95rem] font-extrabold tracking-[0.04em] transition-colors md:h-11 md:text-[1.05rem]",
                     on
-                      ? "bg-paper text-ink"
-                      : "bg-ink-2 text-paper-dim hover:bg-ink-3 hover:text-paper md:bg-transparent",
+                      ? "bg-foreground text-background"
+                      : "bg-card text-dim-foreground hover:bg-muted hover:text-foreground md:bg-transparent",
                   )}
                 >
                   {section.label}
@@ -71,7 +71,7 @@ export function EditSections({
                     <span
                       className={cn(
                         "font-headline text-[1.05rem] tracking-normal",
-                        on ? "text-ink" : "text-paper-mute",
+                        on ? "text-background" : "text-faint-foreground",
                       )}
                     >
                       {section.count}
@@ -82,10 +82,10 @@ export function EditSections({
             );
           })}
           {importsHref && (
-            <li className="shrink-0 md:mt-2.5 md:border-t md:border-rule md:pt-2.5">
+            <li className="shrink-0 md:mt-2.5 md:border-t md:border-border md:pt-2.5">
               <Link
                 href={importsHref}
-                className="font-label flex h-9 items-center justify-between gap-3 rounded-sm bg-ink-2 px-3 text-[0.95rem] font-extrabold tracking-[0.04em] text-paper transition-colors hover:bg-ink-3 hover:text-highlight md:h-11 md:bg-transparent md:text-[1.05rem]"
+                className="font-label flex h-9 items-center justify-between gap-3 rounded-sm bg-card px-3 text-[0.95rem] font-extrabold tracking-[0.04em] text-foreground transition-colors hover:bg-muted hover:text-highlight md:h-11 md:bg-transparent md:text-[1.05rem]"
               >
                 Import games
                 <FileUp aria-hidden className="size-4" />

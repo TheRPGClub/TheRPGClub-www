@@ -45,7 +45,7 @@ export function SetHeader({
   const ra = set.provider === "retroachievements";
 
   return (
-    <header className="border-b-2 border-paper pb-6">
+    <header className="border-b-2 border-foreground pb-6">
       <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="flex min-w-0 flex-col gap-4">
           <div
@@ -74,7 +74,7 @@ export function SetHeader({
             {set.platform_label && <Chip>{set.platform_label}</Chip>}
             <Link
               href={memberAchievementsHref(userId)}
-              className="font-label flex items-center gap-2 text-[0.95rem] text-paper-dim transition-colors hover:text-highlight"
+              className="font-label flex items-center gap-2 text-[0.95rem] text-dim-foreground transition-colors hover:text-highlight"
             >
               <MemberAvatar
                 userId={userId}
@@ -90,15 +90,15 @@ export function SetHeader({
         <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
           <div className="flex min-w-[16rem] flex-1 flex-col gap-2.5">
             <p className="flex items-end gap-3">
-              <span className="font-headline text-[5rem] leading-[0.8] tracking-[-0.01em] text-paper sm:text-[5.75rem]">
+              <span className="font-headline text-[5rem] leading-[0.8] tracking-[-0.01em] text-foreground sm:text-[5.75rem]">
                 {earned}
               </span>
-              <span className="font-headline pb-0.5 text-[2.75rem] leading-[0.8] text-paper-mute">
+              <span className="font-headline pb-0.5 text-[2.75rem] leading-[0.8] text-faint-foreground">
                 / {total}
               </span>
-              <span className="font-label flex flex-col pb-1 text-[0.85rem] leading-tight text-paper-dim">
+              <span className="font-label flex flex-col pb-1 text-[0.85rem] leading-tight text-dim-foreground">
                 <span>Unlocked</span>
-                <span className="text-paper-mute">
+                <span className="text-faint-foreground">
                   {left === 0 && total > 0 ? "Every one" : `${left} to go`}
                 </span>
               </span>
@@ -110,12 +110,12 @@ export function SetHeader({
               aria-valuemax={total}
               aria-valuenow={earned}
               aria-valuetext={`${earned} of ${total} unlocked`}
-              className="h-2 w-full overflow-hidden rounded-[1px] bg-ink-3"
+              className="h-2 w-full overflow-hidden rounded-[1px] bg-muted"
             >
               <div className="h-full" style={{ width: `${fill}%`, background: tint.tint }} />
             </div>
             {ra && progress && set.points_total > 0 && (
-              <p className="font-label text-[0.85rem] text-paper-mute">
+              <p className="font-label text-[0.85rem] text-faint-foreground">
                 {progress.points_earned} / {set.points_total} points
                 {progress.hardcore_earned_count > 0 &&
                   ` · ${progress.hardcore_earned_count} hardcore`}
@@ -125,8 +125,8 @@ export function SetHeader({
 
           <div className="flex items-end gap-6">
             <div className="flex flex-col gap-1">
-              <span className="font-label text-[0.8rem] text-paper-mute">Last Unlock</span>
-              <span className="font-headline text-[2rem] leading-[0.9] text-paper">
+              <span className="font-label text-[0.8rem] text-faint-foreground">Last Unlock</span>
+              <span className="font-headline text-[2rem] leading-[0.9] text-foreground">
                 {progress?.last_unlocked_at
                   ? formatUnlockDate(progress.last_unlocked_at)
                   : "None yet"}

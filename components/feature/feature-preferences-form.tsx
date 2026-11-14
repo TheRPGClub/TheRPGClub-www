@@ -79,7 +79,7 @@ export function FeaturePreferencesForm({
   return (
     <>
       {prefs.features.length > 0 ? (
-        <ul className="mt-4 border-t border-rule">
+        <ul className="mt-4 border-t border-border">
           {prefs.features.map((f) => {
             // Any key the API lists, including one www doesn't know yet.
             const key = f.key;
@@ -113,7 +113,7 @@ export function FeaturePreferencesForm({
           })}
         </ul>
       ) : (
-        <p className="mt-5 rounded-md border border-dashed border-rule-strong px-4 py-5 text-sm text-paper-dim">
+        <p className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground">
           Nothing to hide right now. Parts of the club you can hide will show up here once they&apos;re live.
         </p>
       )}
@@ -121,7 +121,7 @@ export function FeaturePreferencesForm({
       {/* Staff only, so it sits apart from the member's own switches on a
           raised ink-2 panel rather than as one more row of the list. */}
       {staff && (
-        <ul className="mt-8 rounded-md border border-rule bg-ink-2 px-4" aria-label="Staff">
+        <ul className="mt-8 rounded-md border border-border bg-card px-4" aria-label="Staff">
           <PreferenceRow
             id={SHOW_PREVIEW}
             name="Show Preview features"
@@ -170,7 +170,7 @@ function PreferenceRow({
   children: React.ReactNode;
 }) {
   return (
-    <li className={cn("border-b border-rule py-3.5", className)}>
+    <li className={cn("border-b border-border py-3.5", className)}>
       <div className="flex items-center justify-between gap-5">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
@@ -178,14 +178,14 @@ function PreferenceRow({
               id={`pref-${id}-name`}
               className={cn(
                 "font-label text-[0.95rem] font-bold transition-colors",
-                dim ? "text-paper-dim" : "text-paper",
+                dim ? "text-dim-foreground" : "text-foreground",
               )}
             >
               {name}
             </span>
             {badge}
           </div>
-          <p id={`pref-${id}-where`} className="mt-0.5 text-sm text-paper-dim">
+          <p id={`pref-${id}-where`} className="mt-0.5 text-sm text-dim-foreground">
             {where}
           </p>
         </div>

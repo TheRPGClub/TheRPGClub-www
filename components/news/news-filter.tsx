@@ -46,12 +46,12 @@ export function NewsFilter({
       <section aria-labelledby={headingId} className="mt-[18px]">
         <h2
           id={headingId}
-          className="font-label mb-1.5 text-[0.8rem] tracking-[0.08em] text-paper-mute"
+          className="font-label mb-1.5 text-[0.8rem] tracking-[0.08em] text-faint-foreground"
         >
           News Categories
         </h2>
         {rows.length === 0 ? (
-          <p className="text-sm text-paper-dim">
+          <p className="text-sm text-dim-foreground">
             Couldn&apos;t load the News Categories. Search still works.
           </p>
         ) : (
@@ -69,7 +69,7 @@ export function NewsFilter({
             {filters.q && <input type="hidden" name="q" value={filters.q} />}
             <ul>
               {rows.map((row) => (
-                <li key={row.key} className="border-b border-rule">
+                <li key={row.key} className="border-b border-border">
                   <CategoryToggle row={row} />
                 </li>
               ))}
@@ -81,7 +81,7 @@ export function NewsFilter({
             href={newsHref(filters, { categories: [] })}
             scroll={false}
             className={cn(
-              "font-label mt-3 inline-block rounded-xs text-[0.8rem] text-paper-dim underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight",
+              "font-label mt-3 inline-block rounded-xs text-[0.8rem] text-dim-foreground underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight",
               FOCUS,
             )}
           >
@@ -113,13 +113,13 @@ function CategoryToggle({ row }: { row: NewsCategoryRow }) {
       <span
         className={cn(
           "min-w-0 truncate transition-colors group-hover/row:text-highlight",
-          row.inView ? "text-paper" : "text-paper-mute",
+          row.inView ? "text-foreground" : "text-faint-foreground",
         )}
       >
         {row.name}
       </span>
       {row.note && (
-        <span className="ml-auto shrink-0 pr-0.5 text-[0.8rem] text-paper-mute">
+        <span className="ml-auto shrink-0 pr-0.5 text-[0.8rem] text-faint-foreground">
           {row.note}
           {counted && <span className="sr-only">{row.note === "1" ? " item" : " items"}</span>}
         </span>
@@ -154,7 +154,7 @@ function SearchField({
       {filters.categories.length > 0 && (
         <input type="hidden" name="category" value={filters.categories.join(",")} />
       )}
-      <div className="flex h-9 items-center gap-2 rounded-sm border border-rule-strong bg-ink-2 pr-1 pl-3 text-paper-mute transition-colors focus-within:border-paper-mute">
+      <div className="flex h-9 items-center gap-2 rounded-sm border border-border-strong bg-card pr-1 pl-3 text-faint-foreground transition-colors focus-within:border-faint-foreground">
         <Search aria-hidden className="size-4 shrink-0" />
         <input
           type="search"
@@ -164,7 +164,7 @@ function SearchField({
           placeholder="Search news titles"
           aria-label="Search news titles"
           enterKeyHint="search"
-          className="h-full min-w-0 flex-1 bg-transparent text-[0.92rem] text-paper outline-none placeholder:text-paper-mute [&::-webkit-search-cancel-button]:hidden"
+          className="h-full min-w-0 flex-1 bg-transparent text-[0.92rem] text-foreground outline-none placeholder:text-faint-foreground [&::-webkit-search-cancel-button]:hidden"
         />
         {filters.q && (
           <Link

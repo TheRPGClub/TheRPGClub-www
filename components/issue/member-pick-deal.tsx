@@ -56,7 +56,7 @@ export function PickDeal({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-lg border border-rule bg-[radial-gradient(ellipse_at_50%_40%,var(--color-ink-3)_0%,var(--color-ink)_70%)] px-0 py-4 max-sm:border-0 max-sm:bg-none sm:px-5 sm:pt-10 sm:pb-8">
+      <div className="rounded-lg border border-border bg-[radial-gradient(ellipse_at_50%_40%,var(--color-muted)_0%,var(--color-background)_70%)] px-0 py-4 max-sm:border-0 max-sm:bg-none sm:px-5 sm:pt-10 sm:pb-8">
         <ol
           aria-label="Your hand"
           className={cn(
@@ -78,11 +78,11 @@ export function PickDeal({
               <li
                 key={pick.entry_id}
                 className={cn(
-                  "flex overflow-hidden rounded-lg border bg-ink-2 shadow-[0_18px_40px_rgb(0_0_0/0.5)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] sm:row-start-1 sm:flex-col",
+                  "flex overflow-hidden rounded-lg border bg-card shadow-[0_18px_40px_rgb(0_0_0/0.5)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] sm:row-start-1 sm:flex-col",
                   picks.length === 3 ? SEAT[i] : "",
                   on
-                    ? "border-paper shadow-[0_0_0_2px_var(--color-paper),0_22px_44px_rgb(0_0_0/0.55)] sm:-translate-y-3.5 sm:rotate-0"
-                    : "border-rule-strong sm:hover:-translate-y-2",
+                    ? "border-foreground shadow-[0_0_0_2px_var(--color-foreground),0_22px_44px_rgb(0_0_0/0.55)] sm:-translate-y-3.5 sm:rotate-0"
+                    : "border-border-strong sm:hover:-translate-y-2",
                 )}
               >
                 <Link
@@ -107,22 +107,22 @@ export function PickDeal({
                       {game.title}
                     </Link>
                   </h2>
-                  <p className="font-label text-[0.75rem] font-bold tracking-[0.06em] text-paper-mute">
+                  <p className="font-label text-[0.75rem] font-bold tracking-[0.06em] text-faint-foreground">
                     From your {pick.kind === "backlog" ? "backlog" : "collection"}
                     {pick.platform && <> · {pick.platform.platform_name}</>}
                   </p>
                   {pick.note && (
-                    <p className="line-clamp-3 text-[0.84rem] text-paper-dim italic">
+                    <p className="line-clamp-3 text-[0.84rem] text-dim-foreground italic">
                       &ldquo;{pick.note}&rdquo;
                     </p>
                   )}
                   {times.length > 0 ? (
-                    <dl className="grid grid-cols-3 border-t border-rule pt-2.5">
+                    <dl className="grid grid-cols-3 border-t border-border pt-2.5">
                       {times.map((t) => {
                         const { n, unit } = hltbShort(t.value);
                         return (
                           <div key={t.label} className="flex flex-col-reverse gap-1">
-                            <dt className="font-label text-[0.68rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                            <dt className="font-label text-[0.68rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                               {t.label}
                             </dt>
                             <dd className="font-headline text-[1.6rem] leading-[0.85] sm:text-[1.9rem]">
@@ -138,7 +138,7 @@ export function PickDeal({
                       })}
                     </dl>
                   ) : (
-                    <p className="font-label border-t border-rule pt-2.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-mute">
+                    <p className="font-label border-t border-border pt-2.5 text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground">
                       No HowLongToBeat times
                     </p>
                   )}
@@ -149,7 +149,7 @@ export function PickDeal({
                     className={cn(
                       buttonVariants({ variant: "outline" }),
                       "mt-auto w-full",
-                      on && "border-paper bg-paper text-ink hover:bg-paper/90 hover:text-ink",
+                      on && "border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background",
                     )}
                   >
                     {on ? (
@@ -176,13 +176,13 @@ export function PickDeal({
       {keptPick && (
         <section
           aria-label="Start playing"
-          className="flex flex-wrap items-end justify-between gap-4 rounded-md border border-rule bg-ink-2 px-4.5 py-4"
+          className="flex flex-wrap items-end justify-between gap-4 rounded-md border border-border bg-card px-4.5 py-4"
         >
           <div className="min-w-0">
             {/* One line, the verb leading the title, rather than a label
                 stacked over it. */}
             <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-label text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim">
+              <span className="font-label text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground">
                 You kept
               </span>
               <span className="font-headline text-[1.65rem] leading-none">
@@ -194,7 +194,7 @@ export function PickDeal({
                 href={keptPick.hltb.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-label mt-2 inline-flex items-center gap-1 text-xs font-extrabold tracking-[0.08em] text-paper-mute transition-colors hover:text-highlight"
+                className="font-label mt-2 inline-flex items-center gap-1 text-xs font-extrabold tracking-[0.08em] text-faint-foreground transition-colors hover:text-highlight"
               >
                 HowLongToBeat
                 <ExternalLink aria-hidden className="size-3" />

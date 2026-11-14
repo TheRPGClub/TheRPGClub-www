@@ -22,7 +22,7 @@ const ReviewForm = dynamic(
   {
     ssr: false,
     loading: () => (
-      <p className="py-6 text-center text-sm text-paper-mute">
+      <p className="py-6 text-center text-sm text-faint-foreground">
         Loading editor…
       </p>
     ),
@@ -163,7 +163,7 @@ export function GameReviewsList({
               variant="ghost"
               size="icon-sm"
               aria-label="Edit your review"
-              className="text-paper-mute hover:text-paper"
+              className="text-faint-foreground hover:text-foreground"
               onClick={() => setEditingReviewId(review.review_id)}
             >
               <Pencil />
@@ -202,7 +202,7 @@ export function GameReviewsList({
 
       {reviews.length === 0 ? (
         !composing && (
-          <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+          <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
             {canWriteReview
               ? `${emptyMessage} Be the first to share what you think.`
               : emptyMessage}
@@ -213,7 +213,7 @@ export function GameReviewsList({
           className={cn(
             crew
               ? [
-                  "grid gap-px overflow-hidden rounded-md border border-rule bg-rule",
+                  "grid gap-px overflow-hidden rounded-md border border-border bg-border",
                   CREW_COLUMNS[Math.min(visible.length, 3)],
                 ]
               : "grid items-start gap-4 lg:grid-cols-2",

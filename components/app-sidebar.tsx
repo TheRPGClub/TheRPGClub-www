@@ -95,7 +95,7 @@ const STAFF_ICON: Partial<Record<StaffSection["key"], typeof ShieldCheck>> = {
 };
 
 const NAV_BUTTON_CLASS =
-  "font-label h-10 gap-3 rounded-sm px-2.5 text-[1.05rem] text-paper-dim hover:bg-ink-3 hover:text-paper data-active:bg-gotm data-active:font-bold data-active:text-white [&_svg]:size-[18px]";
+  "font-label h-10 gap-3 rounded-sm px-2.5 text-[1.05rem] text-dim-foreground hover:bg-muted hover:text-foreground data-active:bg-gotm data-active:font-bold data-active:text-gotm-foreground [&_svg]:size-[18px]";
 
 // The voting item is named for what the club is doing right now, so the nav
 // says whether nominations or the vote are what's live without opening the
@@ -249,7 +249,7 @@ export function AppSidebar({
 
         {staffSections.length > 0 && (
           <SidebarGroup>
-            <SidebarGroupLabel className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute uppercase">
+            <SidebarGroupLabel className="font-label text-[0.78rem] tracking-[0.08em] text-faint-foreground uppercase">
               Staff
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -282,7 +282,7 @@ export function AppSidebar({
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-rule">
+      <SidebarFooter className="border-t border-border">
         <SidebarMenu>
           {/* The member's own settings (what they see on the site). Never
               flagged, so every signed-in member has it. */}
@@ -320,7 +320,7 @@ export function AppSidebar({
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-semibold">{displayName}</span>
                   {principal.global_name && (
-                    <span className="truncate text-xs text-paper-mute">
+                    <span className="truncate text-xs text-faint-foreground">
                       @{principal.username}
                     </span>
                   )}
@@ -334,7 +334,7 @@ export function AppSidebar({
                   type="submit"
                   title="Sign out"
                   aria-label="Sign out"
-                  className="grid size-8 place-items-center rounded-sm text-paper-mute transition-colors hover:bg-ink-3 hover:text-paper"
+                  className="grid size-8 place-items-center rounded-sm text-faint-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <LogOut className="size-4" />
                 </button>

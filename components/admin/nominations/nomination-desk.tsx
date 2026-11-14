@@ -96,15 +96,15 @@ export function NominationDesk({
           <section key={track.category} aria-labelledby={`noms-${track.category}`} className="mb-8">
             <h2
               id={`noms-${track.category}`}
-              className="font-headline flex items-baseline justify-between gap-3 border-b-2 border-paper pb-1 text-[3rem] leading-[0.85]"
+              className="font-headline flex items-baseline justify-between gap-3 border-b-2 border-foreground pb-1 text-[3rem] leading-[0.85]"
             >
               {TRACK_NAME[track.category]}
-              <span className="font-label text-[0.85rem] font-bold tracking-[0.08em] text-paper-mute">
+              <span className="font-label text-[0.85rem] font-bold tracking-[0.08em] text-faint-foreground">
                 {count} {count === 1 ? "nomination" : "nominations"}
               </span>
             </h2>
             {entries.length === 0 ? (
-              <p className="mt-3 text-paper-dim">No {TRACK_NAME[track.category]} nominations for round {round}.</p>
+              <p className="mt-3 text-dim-foreground">No {TRACK_NAME[track.category]} nominations for round {round}.</p>
             ) : (
               <ul>
                 {entries.map((n) => {
@@ -112,14 +112,14 @@ export function NominationDesk({
                   const done = deleted[key];
                   if (done) {
                     return (
-                      <li key={key} className="border-b border-rule py-3">
+                      <li key={key} className="border-b border-border py-3">
                         <DeletedProof deleted={done} round={round} viewerName={viewerName} />
                       </li>
                     );
                   }
                   if (asking === key) {
                     return (
-                      <li key={key} className="-mx-3 my-1.5 rounded-md bg-ink-2 p-3 ring-1 ring-highlight ring-inset">
+                      <li key={key} className="-mx-3 my-1.5 rounded-md bg-card p-3 ring-1 ring-highlight ring-inset">
                         <ReasonBox
                           category={track.category}
                           nomination={n}
@@ -175,17 +175,17 @@ function Entry({
   onUndo: () => void;
 }) {
   const title = gameTitle(nomination) ?? "No game named";
-  const struck = held && "text-paper-mute line-through decoration-destructive";
+  const struck = held && "text-faint-foreground line-through decoration-destructive";
   return (
-    <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-rule py-2.5">
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-border py-2.5">
       <span className={cn("text-[1.05rem] font-bold break-words", struck)}>{title}</span>
-      <span className={cn("col-start-1 text-[0.93rem] break-words text-paper-dim italic", struck)}>
-        <b className="font-label mr-1.5 text-[0.72rem] tracking-[0.08em] text-paper-mute not-italic">By</b>
+      <span className={cn("col-start-1 text-[0.93rem] break-words text-dim-foreground italic", struck)}>
+        <b className="font-label mr-1.5 text-[0.72rem] tracking-[0.08em] text-faint-foreground not-italic">By</b>
         {nominatorName(nomination)}
         {own && <span className="not-italic"> (you)</span>}
       </span>
       {nomination.reason && (
-        <span className={cn("col-start-1 line-clamp-2 text-[0.88rem] text-paper-mute", struck)}>
+        <span className={cn("col-start-1 line-clamp-2 text-[0.88rem] text-faint-foreground", struck)}>
           &ldquo;{nomination.reason}&rdquo;
         </span>
       )}
@@ -195,7 +195,7 @@ function Entry({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="text-paper-dim hover:text-destructive"
+            className="text-dim-foreground hover:text-destructive"
             onClick={onDelete}
             aria-label={`Delete the nomination of ${title} by ${nominatorName(nomination)}`}
             title="Delete with a reason"
@@ -256,7 +256,7 @@ function ReasonBox({
           Deleting
         </span>
       </div>
-      <p className="text-[0.9rem] text-paper-dim">
+      <p className="text-[0.9rem] text-dim-foreground">
         {TRACK_NAME[category]} round {round}, nominated by {nominatorName(nomination)}
         {own && " (you)"}.{votesCast && " Any votes cast on it go too."}
       </p>
@@ -275,15 +275,15 @@ function ReasonBox({
         maxLength={REMOVAL_REASON_MAX}
         autoFocus
         aria-describedby={`${id}-count`}
-        className="mt-1.5 w-full rounded-sm border border-rule bg-ink px-3 py-2 text-sm text-paper caret-highlight outline-none placeholder:text-paper-mute focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40"
+        className="mt-1.5 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground caret-highlight outline-none placeholder:text-faint-foreground focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40"
         placeholder={own ? "" : "e.g. Already won GOTM in round 120"}
       />
-      <p id={`${id}-count`} className="text-right text-[0.75rem] text-paper-mute">
+      <p id={`${id}-count`} className="text-right text-[0.75rem] text-faint-foreground">
         {reason.length}/{REMOVAL_REASON_MAX}
       </p>
       {!own && (
         <NoticeText
-          className="mt-1 rounded-sm bg-ink p-2.5"
+          className="mt-1 rounded-sm bg-background p-2.5"
           category={category}
           round={round}
           deleter={viewerName}
@@ -300,7 +300,7 @@ function ReasonBox({
         <Button type="button" variant="outline" size="sm" onClick={onCancel}>
           Cancel
         </Button>
-        <span className="ml-auto text-[0.8rem] text-paper-mute">You get {Math.round(UNDO_DELAY_MS / 1000)} s to undo</span>
+        <span className="ml-auto text-[0.8rem] text-faint-foreground">You get {Math.round(UNDO_DELAY_MS / 1000)} s to undo</span>
       </div>
     </div>
   );
@@ -324,12 +324,12 @@ function NoticeText({
   reason: string;
   className?: string;
 }) {
-  const mention = "rounded-xs bg-paper/12 px-1 font-semibold text-paper";
+  const mention = "rounded-xs bg-foreground/12 px-1 font-semibold text-foreground";
   return (
-    <p className={cn("text-[0.9rem] leading-[1.45] text-paper-dim", className)}>
+    <p className={cn("text-[0.9rem] leading-[1.45] text-dim-foreground", className)}>
       <span className={mention}>@{deleter}</span> deleted <span className={mention}>@{nominator}</span>
       &apos;s nomination{title && <> &ldquo;{title}&rdquo;</>} for {TRACK_NAME[category]} Round {round}. Reason:{" "}
-      <span className="text-paper">{reason}</span>
+      <span className="text-foreground">{reason}</span>
     </p>
   );
 }
@@ -339,8 +339,8 @@ function DeletedProof({ deleted, round, viewerName }: { deleted: Deleted; round:
   const title = gameTitle(n) ?? "No game named";
   if (deleted.own) {
     return (
-      <p className="text-[0.93rem] text-paper-dim">
-        <span className="font-bold text-paper-mute line-through decoration-destructive">{title}</span>
+      <p className="text-[0.93rem] text-dim-foreground">
+        <span className="font-bold text-faint-foreground line-through decoration-destructive">{title}</span>
         <br />
         Your nomination is deleted. Nothing is posted for your own.
       </p>
@@ -353,8 +353,8 @@ function DeletedProof({ deleted, round, viewerName }: { deleted: Deleted; round:
       what="The announcement"
       caption={deleted.jobId != null ? null : "Deleted. The API queued no announcement for it."}
     >
-      <div className="rounded-sm bg-ink-2 py-3 pr-36 pl-3">
-        <p className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-paper-mute">
+      <div className="rounded-sm bg-card py-3 pr-36 pl-3">
+        <p className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-faint-foreground">
           Nomination change · with the refreshed list
         </p>
         <NoticeText

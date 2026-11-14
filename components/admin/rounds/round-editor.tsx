@@ -165,8 +165,8 @@ export function RoundEditor({
               <li
                 key={slot.id}
                 className={cn(
-                  "rounded-md bg-ink-2 p-3.5 ring-inset",
-                  twins ? "ring-1 ring-destructive" : changed ? "ring-1 ring-highlight" : "ring-1 ring-rule",
+                  "rounded-md bg-card p-3.5 ring-inset",
+                  twins ? "ring-1 ring-destructive" : changed ? "ring-1 ring-highlight" : "ring-1 ring-border",
                 )}
               >
                 <div className="flex items-center justify-between gap-3">
@@ -264,7 +264,7 @@ export function RoundEditor({
             {pending ? <Loader2 className="animate-spin" /> : <Check data-icon="inline-start" />}
             {edits.length > 1 ? `Save ${edits.length} changes` : "Save changes"}
           </Button>
-          <span className="text-[0.84rem] text-paper-mute">
+          <span className="text-[0.84rem] text-faint-foreground">
             {edits.length === 0
               ? savedOnce
                 ? "Saved. Each change has the bot reload the round."

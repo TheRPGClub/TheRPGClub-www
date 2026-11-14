@@ -52,7 +52,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-md border border-rule-strong bg-ink-2 bg-clip-padding p-5 text-sm text-paper shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:p-6",
+          "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-md border border-border-strong bg-card bg-clip-padding p-5 text-sm text-foreground shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:p-6",
           // Long copy has to stay reachable on a short window, so the popup
           // caps its height and scrolls rather than running off the screen.
           "max-h-[calc(100dvh-4rem)] overflow-y-auto",
@@ -96,7 +96,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("font-headline text-[1.9rem] leading-[0.95] text-paper text-balance", className)}
+      className={cn("font-headline text-[1.9rem] leading-[0.95] text-foreground text-balance", className)}
       {...props}
     />
   )
@@ -109,7 +109,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm text-paper-dim", className)}
+      className={cn("text-sm text-dim-foreground", className)}
       {...props}
     />
   )

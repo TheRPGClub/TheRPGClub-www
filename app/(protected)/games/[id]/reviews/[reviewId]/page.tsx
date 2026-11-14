@@ -117,7 +117,7 @@ export default async function GameReviewDetailPage({
             {hasBody ? (
               <ReviewBodyContent body={review.body} variant="article" />
             ) : (
-              <p className="text-paper-mute italic">
+              <p className="text-faint-foreground italic">
                 {isMine
                   ? "You scored this game but haven't written anything yet."
                   : `${authorName} scored this game without writing a review.`}

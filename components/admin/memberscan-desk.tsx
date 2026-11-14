@@ -41,13 +41,13 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
     // right column beside both the button and the earlier scans.
     <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem] lg:grid-rows-[auto_1fr]">
       <div className="min-w-0 lg:col-start-1">
-        <p className="max-w-[60ch] text-paper-dim">
+        <p className="max-w-[60ch] text-dim-foreground">
           The bot reads every member of the server, updates each one&rsquo;s profile and roles, and
           marks members who have left as departed. It takes a few minutes on a big server; the
           counts land on the sheet when it is done.
         </p>
         {waiting && (
-          <p className="mt-3 text-[0.9rem] text-paper">
+          <p className="mt-3 text-[0.9rem] text-foreground">
             A scan is already waiting for the bot. Starting another queues a second one.
           </p>
         )}
@@ -99,12 +99,12 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
       <section aria-labelledby="memberscan-earlier" className="min-w-0 lg:col-start-1">
         <h2
           id="memberscan-earlier"
-          className="font-label border-b-2 border-paper pb-1.5 text-[1.05rem] tracking-[0.06em]"
+          className="font-label border-b-2 border-foreground pb-1.5 text-[1.05rem] tracking-[0.06em]"
         >
           Earlier scans
         </h2>
         {earlier.length === 0 ? (
-          <p className="py-3 text-sm text-paper-dim">No scans on the wire yet.</p>
+          <p className="py-3 text-sm text-dim-foreground">No scans on the wire yet.</p>
         ) : (
           <ol>
             {earlier.map((job) => (
@@ -130,12 +130,12 @@ function CountSheet({ job, heading }: { job: BotJob | null; heading: string }) {
     { label: "Departed", value: counts?.departed },
   ];
   return (
-    <div className="bg-ink-2 p-5">
-      <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">{heading}</p>
-      <dl className="mt-4 grid grid-cols-3 border-t border-rule">
+    <div className="bg-card p-5">
+      <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">{heading}</p>
+      <dl className="mt-4 grid grid-cols-3 border-t border-border">
         {cells.map((cell, i) => (
-          <div key={cell.label} className={i > 0 ? "border-l border-rule pt-3 pl-4" : "pt-3 pr-4"}>
-            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">
+          <div key={cell.label} className={i > 0 ? "border-l border-border pt-3 pl-4" : "pt-3 pr-4"}>
+            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-faint-foreground">
               {cell.label}
             </dt>
             <dd className="font-headline mt-1 text-[2.6rem] leading-[0.9] tabular-nums">
@@ -145,7 +145,7 @@ function CountSheet({ job, heading }: { job: BotJob | null; heading: string }) {
         ))}
       </dl>
       {done && !counts && job.result_text && (
-        <p className="mt-4 border-t border-dashed border-rule-strong pt-3 text-[0.92rem] text-paper-dim italic">
+        <p className="mt-4 border-t border-dashed border-border-strong pt-3 text-[0.92rem] text-dim-foreground italic">
           &ldquo;{job.result_text}&rdquo;
         </p>
       )}

@@ -21,7 +21,7 @@ export function ReviewIndex({
   activeId: number | null;
 }) {
   return (
-    <ol className="border-t-2 border-paper">
+    <ol className="border-t-2 border-foreground">
       {reviews.map((review) => {
         const name = reviewerName(review.user, "A member");
         const active = review.review_id === activeId;
@@ -31,8 +31,8 @@ export function ReviewIndex({
               href={hrefs[review.review_id]}
               aria-current={active ? "true" : undefined}
               className={cn(
-                "group/row grid grid-cols-[52px_1fr] items-start gap-3.5 border-b border-rule px-3 py-3.5 transition-colors",
-                active ? "bg-ink-3" : "hover:bg-ink-2",
+                "group/row grid grid-cols-[52px_1fr] items-start gap-3.5 border-b border-border px-3 py-3.5 transition-colors",
+                active ? "bg-muted" : "hover:bg-card",
               )}
             >
               <ScoreBox rating={review.rating} className="size-[52px] text-[1.8rem]" />
@@ -40,12 +40,12 @@ export function ReviewIndex({
                 <b
                   className={cn(
                     "font-label block text-base leading-[1.15] font-extrabold tracking-[0.01em] transition-colors",
-                    active ? "text-paper" : "group-hover/row:text-highlight",
+                    active ? "text-foreground" : "group-hover/row:text-highlight",
                   )}
                 >
                   {review.title ?? `${name}'s review`}
                 </b>
-                <small className="mt-1.5 flex items-center gap-1.5 text-[0.8rem] text-paper-mute">
+                <small className="mt-1.5 flex items-center gap-1.5 text-[0.8rem] text-faint-foreground">
                   <ReviewerAvatar userId={review.user_id} name={name} size="xs" />
                   <span className="truncate">
                     {name} · {formatReviewDate(review.created_at)}

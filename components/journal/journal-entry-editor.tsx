@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 export type JournalEditorGame = Pick<GameSummary, "game_id" | "title" | "cover_url">;
 
 const FIELD =
-  "w-full min-w-0 rounded-sm border border-rule-strong bg-ink text-paper caret-highlight outline-none transition-colors placeholder:text-paper-mute focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
+  "w-full min-w-0 rounded-sm border border-border-strong bg-background text-foreground caret-highlight outline-none transition-colors placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
 
 // The owner's editor, open for their own edits (the yellow edge): optional
 // title, the entry, and the game it files under. Writes the next entry, or
@@ -95,7 +95,7 @@ export function JournalEntryEditor({
       noValidate
       aria-label={entryId ? "Edit entry" : "Write an entry"}
       className={cn(
-        "rounded-md bg-ink-2 px-4 py-3.5 shadow-[inset_0_0_0_1.5px_var(--color-highlight)] sm:px-4.5",
+        "rounded-md bg-card px-4 py-3.5 shadow-[inset_0_0_0_1.5px_var(--color-highlight)] sm:px-4.5",
         className,
       )}
     >
@@ -107,16 +107,16 @@ export function JournalEntryEditor({
             onClick={() => setPicking(true)}
             disabled={pending}
             aria-label={`Game: ${game.title}. Change the game`}
-            className="font-label ml-auto inline-flex h-7 max-w-full min-w-0 items-center gap-2 rounded-sm bg-ink py-0 pr-2.5 pl-1 text-[0.82rem] text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-paper-mute)] focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none"
+            className="font-label ml-auto inline-flex h-7 max-w-full min-w-0 items-center gap-2 rounded-sm bg-background py-0 pr-2.5 pl-1 text-[0.82rem] text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none"
           >
-            <span className="block h-[21px] w-4 shrink-0 overflow-hidden rounded-[1.5px] bg-ink-3">
+            <span className="block h-[21px] w-4 shrink-0 overflow-hidden rounded-[1.5px] bg-muted">
               {game.cover_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={game.cover_url} alt="" className="size-full object-cover" />
               )}
             </span>
             <span className="min-w-0 truncate">{game.title}</span>
-            <ChevronDown aria-hidden className="size-3.5 shrink-0 text-paper-mute" />
+            <ChevronDown aria-hidden className="size-3.5 shrink-0 text-faint-foreground" />
           </button>
         )}
       </div>
@@ -141,7 +141,7 @@ export function JournalEntryEditor({
             <button
               type="button"
               onClick={() => setPicking(false)}
-              className="font-label mt-1.5 text-[0.8rem] text-paper-mute hover:text-highlight"
+              className="font-label mt-1.5 text-[0.8rem] text-faint-foreground hover:text-highlight"
             >
               Keep {game?.title ?? initialGame.title}
             </button>
@@ -199,7 +199,7 @@ export function JournalEntryEditor({
             Cancel
           </Button>
         )}
-        <span className="font-label ml-auto text-[0.78rem] tracking-[0.08em] text-paper-mute tabular-nums">
+        <span className="font-label ml-auto text-[0.78rem] tracking-[0.08em] text-faint-foreground tabular-nums">
           Title {title.length} / {JOURNAL_TITLE_MAX} · Entry {body.length} / {JOURNAL_BODY_MAX}
         </span>
       </div>

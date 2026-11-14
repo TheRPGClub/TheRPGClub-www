@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 // books above the case.
 
 const SPINE_LINK =
-  "font-label inline-flex items-center gap-1.5 text-[0.84rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight [&_svg]:size-3.5 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5";
+  "font-label inline-flex items-center gap-1.5 text-[0.84rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5";
 
 export function MemberShelf({
   label,
@@ -35,7 +35,7 @@ export function MemberShelf({
   return (
     <section
       aria-labelledby={id}
-      className="grid gap-3 border-b-[6px] border-ink-3 pt-5 shadow-[0_1px_0_var(--color-rule)] sm:grid-cols-[10.5rem_1fr] sm:gap-6"
+      className="grid gap-3 border-b-[6px] border-muted pt-5 shadow-[0_1px_0_var(--color-border)] sm:grid-cols-[10.5rem_1fr] sm:gap-6"
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 sm:flex-col sm:flex-nowrap sm:items-start sm:gap-1.5 sm:pb-4">
         <p className="font-headline text-[2.5rem] leading-[0.82] sm:text-[3.9rem]">
@@ -45,7 +45,7 @@ export function MemberShelf({
           {label}
         </h2>
         {blurb && (
-          <p className="hidden text-[0.82rem] leading-snug text-paper-mute sm:block">
+          <p className="hidden text-[0.82rem] leading-snug text-faint-foreground sm:block">
             {blurb}
           </p>
         )}
@@ -72,7 +72,7 @@ export function MemberShelf({
           )}
         </div>
       ) : (
-        <p className="self-center pb-5 text-sm text-paper-mute sm:pb-4">
+        <p className="self-center pb-5 text-sm text-faint-foreground sm:pb-4">
           {empty}
         </p>
       )}
@@ -127,7 +127,7 @@ export function Spine({
         </span>
       ) : (
         tag && (
-          <span className="font-label absolute inset-x-0 top-2 z-10 truncate px-0.5 text-center text-[0.66rem] font-extrabold tracking-[0.06em] text-paper-dim">
+          <span className="font-label absolute inset-x-0 top-2 z-10 truncate px-0.5 text-center text-[0.66rem] font-extrabold tracking-[0.06em] text-dim-foreground">
             {tag}
           </span>
         )
@@ -138,7 +138,7 @@ export function Spine({
     </>
   );
   const cls = cn(
-    "group/spine relative block w-11 shrink-0 overflow-hidden rounded-t-[2px] bg-ink-3 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-3.5 focus-visible:-translate-y-3.5 sm:w-13",
+    "group/spine relative block w-11 shrink-0 overflow-hidden rounded-t-[2px] bg-muted transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-3.5 focus-visible:-translate-y-3.5 sm:w-13",
     className,
   );
   const style = { height: `calc(${h}px * var(--spine-scale, 1))` };
@@ -189,7 +189,7 @@ export function PodiumSpines({
             />
             <span
               className={cn(
-                "font-headline grid place-items-center border-t-2 border-paper bg-ink-3 text-paper leading-none",
+                "font-headline grid place-items-center border-t-2 border-foreground bg-muted text-foreground leading-none",
                 STEP[i],
                 i === 0 ? "text-[1.9rem]" : "text-2xl",
               )}

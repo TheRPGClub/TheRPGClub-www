@@ -37,7 +37,7 @@ export function RarityChip({
   return (
     <span
       className={cn(
-        "font-label inline-flex items-center rounded-xs whitespace-nowrap text-ink",
+        "font-label inline-flex items-center rounded-xs whitespace-nowrap text-rarity-foreground",
         size === "sm" ? "h-5 px-1.5 text-[0.72rem]" : "h-6 px-2 text-[0.78rem]",
         RARITY_FILL[tier],
         className,

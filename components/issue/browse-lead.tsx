@@ -77,7 +77,7 @@ function LeadCard({
   const art = game?.art_url ?? game?.cover_url;
   const href = entry.gamedb_game_id ? `/games/${entry.gamedb_game_id}` : null;
   const className = cn(
-    "group/lead relative isolate flex min-h-50 overflow-hidden bg-ink-3 after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1 md:min-h-75",
+    "group/lead relative isolate flex min-h-50 overflow-hidden bg-muted after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1 md:min-h-75",
     kind === "gotm" ? "after:bg-gotm" : "after:bg-nr",
     lead && "min-h-60",
     span && "col-span-2 md:col-span-1",
@@ -94,7 +94,7 @@ function LeadCard({
       )}
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgb(11_11_13/0.96)_0%,rgb(11_11_13/0.55)_40%,rgb(11_11_13/0.05)_72%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_55%,transparent)_40%,color-mix(in_oklab,var(--color-background)_5%,transparent)_72%)]"
       />
       <WinnerMark track={kind} className="absolute top-3.5 right-3.5 size-16" />
       <span className="mt-auto block px-5 pt-16 pb-4.5">

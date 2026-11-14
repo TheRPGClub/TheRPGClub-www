@@ -52,7 +52,7 @@ export function FeatureSwitch({
         aria-hidden
         className={cn(
           "font-label w-14 text-right text-[0.78rem] font-bold transition-colors",
-          pending ? "text-paper-mute" : checked ? "text-paper" : "text-paper-dim",
+          pending ? "text-faint-foreground" : checked ? "text-foreground" : "text-dim-foreground",
         )}
       >
         {pending ? "Saving" : checked ? onLabel : offLabel}
@@ -64,8 +64,8 @@ export function FeatureSwitch({
           checked
             ? cn("bg-highlight", !unavailable && "group-hover/switch:bg-highlight/85")
             : cn(
-                "bg-ink-3 shadow-[inset_0_0_0_1px_var(--color-rule-strong)]",
-                !unavailable && "group-hover/switch:shadow-[inset_0_0_0_1px_var(--color-paper-mute)]",
+                "bg-muted shadow-[inset_0_0_0_1px_var(--color-border-strong)]",
+                !unavailable && "group-hover/switch:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)]",
               ),
           pending && "opacity-70",
         )}
@@ -73,7 +73,7 @@ export function FeatureSwitch({
         <span
           className={cn(
             "absolute top-[3px] left-[3px] size-[18px] rounded-xs motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]",
-            checked ? "translate-x-5 bg-ink" : "translate-x-0 bg-paper-mute",
+            checked ? "translate-x-5 bg-background" : "translate-x-0 bg-faint-foreground",
           )}
         />
       </span>

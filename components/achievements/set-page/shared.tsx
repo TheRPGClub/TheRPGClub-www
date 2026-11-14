@@ -72,7 +72,7 @@ export function PageHead({
   return (
     <div
       className={cn(
-        "font-label flex items-baseline justify-between gap-4 border-b border-rule pb-2.5 text-[0.8rem] text-paper-mute",
+        "font-label flex items-baseline justify-between gap-4 border-b border-border pb-2.5 text-[0.8rem] text-faint-foreground",
         className,
       )}
     >
@@ -99,7 +99,7 @@ export function HeadlineChip({
     <span
       className={cn(
         "font-label inline-flex h-6 items-center rounded-xs px-2 text-[0.78rem] whitespace-nowrap",
-        foil ? "foil text-ink" : className,
+        foil ? "foil text-foil-foreground" : className,
       )}
       style={foil ? undefined : style}
     >

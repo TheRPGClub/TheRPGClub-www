@@ -174,7 +174,7 @@ export default async function MemberAchievementsPage({
 
       <div
         className={cn(
-          "relative mr-4 flex flex-col gap-2 rounded-lg bg-rule p-2 shadow-[0_24px_60px_rgb(0_0_0/0.6)]",
+          "relative mr-4 flex flex-col gap-2 rounded-lg bg-border p-2 shadow-[0_24px_60px_rgb(0_0_0/0.6)]",
           "xl:mr-12 xl:grid xl:grid-cols-[25rem_30px_minmax(0,1fr)] xl:gap-0 xl:p-2.5",
           !sets && "mt-6 xl:mt-8",
         )}
@@ -190,7 +190,7 @@ export default async function MemberAchievementsPage({
 
         <section
           aria-labelledby="binder-view"
-          className="rounded-md bg-ink-2 px-4 pt-4 pb-5 sm:px-6 xl:pr-6 xl:pl-6 xl:shadow-[inset_18px_0_22px_-14px_rgb(0_0_0/0.7)]"
+          className="rounded-md bg-card px-4 pt-4 pb-5 sm:px-6 xl:pr-6 xl:pl-6 xl:shadow-[inset_18px_0_22px_-14px_rgb(0_0_0/0.7)]"
         >
           <IndexHeader
             query={query}
@@ -312,12 +312,12 @@ function FilterTabs({
                   className={cn(
                     tabBase,
                     on
-                      ? "h-9 bg-ink-2 text-paper shadow-[inset_0_2px_0_var(--color-paper)]"
-                      : "bg-ink-3 text-paper-dim shadow-[inset_0_1px_0_var(--color-rule-strong)] hover:text-highlight",
+                      ? "h-9 bg-card text-foreground shadow-[inset_0_2px_0_var(--color-foreground)]"
+                      : "bg-muted text-dim-foreground shadow-[inset_0_1px_0_var(--color-border-strong)] hover:text-highlight",
                   )}
                 >
                   {s.label}
-                  {n != null && <span className={on ? "text-paper" : "text-paper-mute"}>{n}</span>}
+                  {n != null && <span className={on ? "text-foreground" : "text-faint-foreground"}>{n}</span>}
                 </Link>
               </li>
             );
@@ -340,8 +340,8 @@ function FilterTabs({
                     className={cn(
                       tabBase,
                       PROVIDER_FILL[p],
-                      "text-ink",
-                      on && "h-9 shadow-[inset_0_2px_0_var(--color-paper)]",
+                      "text-background",
+                      on && "h-9 shadow-[inset_0_2px_0_var(--color-foreground)]",
                       dim && "h-7 hover:h-8",
                       "motion-safe:transition-[height]",
                     )}
@@ -379,7 +379,7 @@ function IndexHeader({
     { key: "unlocks" as const, label: "Unlocks", count: unlockCount, noun: ["Unlock", "Unlocks"] },
   ];
   return (
-    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-2 border-paper pb-2">
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-2 border-foreground pb-2">
       <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
         <nav aria-label="Achievement views" id="binder-view">
           <ul className="flex items-end gap-5">
@@ -394,14 +394,14 @@ function IndexHeader({
                     className={cn(
                       "font-headline leading-[0.85] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight",
                       on
-                        ? "text-[2rem] text-paper sm:text-[2.2rem]"
-                        : "text-[1.35rem] text-paper-mute hover:text-highlight",
+                        ? "text-[2rem] text-foreground sm:text-[2.2rem]"
+                        : "text-[1.35rem] text-faint-foreground hover:text-highlight",
                     )}
                   >
                     {v.label}
                   </Link>
                   {on && v.count != null && (
-                    <span className="font-label pb-0.5 text-[0.8rem] text-paper-mute">
+                    <span className="font-label pb-0.5 text-[0.8rem] text-faint-foreground">
                       {v.count.toLocaleString("en-US")}{" "}
                       {v.count === 1 ? v.noun[0] : v.noun[1]}
                     </span>
@@ -415,7 +415,7 @@ function IndexHeader({
       </div>
       {query.tab === "sets" && (
         <nav aria-label="Sort" className="flex items-center gap-2.5 pb-0.5">
-          <span className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute">Sort</span>
+          <span className="font-label text-[0.78rem] tracking-[0.08em] text-faint-foreground">Sort</span>
           <ul className="flex items-center gap-0.5">
             {(Object.keys(SET_SORT_LABEL) as AchievementSetsSort[]).map((s) => {
               const on = query.filter.sort === s;
@@ -427,7 +427,7 @@ function IndexHeader({
                     scroll={false}
                     className={cn(
                       "font-label inline-flex h-6 items-center rounded-xs px-1.5 text-[0.8rem] transition-colors focus-visible:outline-2 focus-visible:outline-highlight",
-                      on ? "bg-paper text-ink" : "text-paper-dim hover:text-highlight",
+                      on ? "bg-foreground text-background" : "text-dim-foreground hover:text-highlight",
                     )}
                   >
                     {SET_SORT_LABEL[s]}
@@ -467,14 +467,14 @@ function MemberPage({
   return (
     <section
       aria-labelledby="binder-member"
-      className="rounded-md bg-ink-2 px-5 pt-5 pb-4 sm:px-7 sm:pt-6 xl:shadow-[inset_-18px_0_22px_-14px_rgb(0_0_0/0.7)]"
+      className="rounded-md bg-card px-5 pt-5 pb-4 sm:px-7 sm:pt-6 xl:shadow-[inset_-18px_0_22px_-14px_rgb(0_0_0/0.7)]"
     >
       <div className="flex flex-col gap-6 xl:sticky xl:top-[5.5rem]">
-        <div className="flex items-start justify-between gap-4 border-b-2 border-paper pb-4">
+        <div className="flex items-start justify-between gap-4 border-b-2 border-foreground pb-4">
           <h1
             id="binder-member"
             className={cn(
-              "font-headline min-w-0 pt-1 leading-[0.82] tracking-[0.01em] break-words text-paper",
+              "font-headline min-w-0 pt-1 leading-[0.82] tracking-[0.01em] break-words text-foreground",
               NAME_SIZE[binderNameSize(displayName)],
             )}
           >
@@ -501,7 +501,7 @@ function MemberPage({
           {isSelf && (
             <Link
               href={linkedAccountsEditHref(userId)}
-              className="font-label inline-flex items-center gap-1.5 text-[0.82rem] text-paper-dim transition-colors hover:text-highlight [&_svg]:size-4"
+              className="font-label inline-flex items-center gap-1.5 text-[0.82rem] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-4"
             >
               <Link2 aria-hidden /> Manage Linked Accounts
             </Link>
@@ -509,8 +509,8 @@ function MemberPage({
         </div>
 
         {summary.rarest_unlocks.length > 0 && (
-          <div className="border-t border-rule pt-3">
-            <h2 className="font-label text-[0.78rem] tracking-[0.1em] text-paper-mute">
+          <div className="border-t border-border pt-3">
+            <h2 className="font-label text-[0.78rem] tracking-[0.1em] text-faint-foreground">
               Rarest Unlocks
             </h2>
             <RarestUnlocks
@@ -527,7 +527,7 @@ function MemberPage({
 
 function PageNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mt-5 rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+    <p className="mt-5 rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
       {children}
     </p>
   );
@@ -535,11 +535,11 @@ function PageNote({ children }: { children: React.ReactNode }) {
 
 function LinkAccountCta({ userId }: { userId: string }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-md border border-dashed border-rule-strong px-5 py-8 sm:px-7">
-      <p className="font-headline text-3xl text-paper sm:text-4xl">
+    <div className="flex flex-col items-start gap-4 rounded-md border border-dashed border-border-strong px-5 py-8 sm:px-7">
+      <p className="font-headline text-3xl text-foreground sm:text-4xl">
         No Linked Accounts yet
       </p>
-      <p className="max-w-[52ch] text-paper-dim">
+      <p className="max-w-[52ch] text-dim-foreground">
         Link your RetroAchievements, Steam or PSN account and the club mirrors
         your achievements here and on your profile. Only you see this page
         until you do.

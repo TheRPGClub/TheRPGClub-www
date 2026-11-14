@@ -88,7 +88,7 @@ export function ImageBackfillDesk({
   return (
     <div className="mt-6 grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_30rem]">
       <div className="min-w-0">
-        <p className="max-w-[60ch] text-paper-dim">
+        <p className="max-w-[60ch] text-dim-foreground">
           The club&rsquo;s server looks up every GameDB game with no stored images on IGDB and saves
           its cover and art. Games with no IGDB id are skipped. It runs on the server, not the bot,
           so it carries on if you leave this page.
@@ -104,7 +104,7 @@ export function ImageBackfillDesk({
             <ImageDown data-icon="inline-start" />
             {pending ? "Starting..." : "Download missing images"}
           </Button>
-          <p id="backfill-start-note" className="text-[0.86rem] text-paper-mute">
+          <p id="backfill-start-note" className="text-[0.86rem] text-faint-foreground">
             {live
               ? "A download is running. Start comes back when it finishes."
               : "One download runs at a time."}
@@ -128,9 +128,9 @@ export function ImageBackfillDesk({
 
 function EmptySheet() {
   return (
-    <div className="bg-ink-2 p-5">
-      <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">No download yet</p>
-      <p className="mt-4 border-t border-rule pt-4 text-paper-dim">
+    <div className="bg-card p-5">
+      <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">No download yet</p>
+      <p className="mt-4 border-t border-border pt-4 text-dim-foreground">
         The first download&rsquo;s progress shows here once it starts.
       </p>
     </div>
@@ -153,9 +153,9 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
   ];
 
   return (
-    <div className="bg-ink-2 p-5">
+    <div className="bg-card p-5">
       <div className="flex items-baseline justify-between gap-3">
-        <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">
+        <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">
           Download #{run.id}
           {isClient && (
             <>
@@ -180,17 +180,17 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
         </span>
       </div>
 
-      <div className="mt-4 border-t border-rule pt-4" role="status" aria-live="polite">
+      <div className="mt-4 border-t border-border pt-4" role="status" aria-live="polite">
         <div className="flex items-baseline justify-between gap-3">
           <span className="font-headline text-[3.4rem] leading-[0.85] tabular-nums">
             {percent}%
           </span>
-          <span className="text-[0.86rem] text-paper-mute tabular-nums">
+          <span className="text-[0.86rem] text-faint-foreground tabular-nums">
             {handled} of {run.total} games
           </span>
         </div>
         <div
-          className="mt-3 h-1.5 w-full overflow-hidden bg-ink-3"
+          className="mt-3 h-1.5 w-full overflow-hidden bg-muted"
           role="progressbar"
           aria-label="Games dealt with"
           aria-valuemin={0}
@@ -200,17 +200,17 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
           <div
             className={cn(
               "h-full transition-[width] duration-500",
-              run.status === "failed" ? "bg-destructive" : "bg-paper",
+              run.status === "failed" ? "bg-destructive" : "bg-foreground",
             )}
             style={{ width: `${percent}%` }}
           />
         </div>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 border-t border-rule sm:grid-cols-4">
+      <dl className="mt-4 grid grid-cols-2 border-t border-border sm:grid-cols-4">
         {cells.map((cell, i) => (
-          <div key={cell.label} className={cn("border-rule py-3", CELL_EDGE[i])}>
-            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-paper-mute">
+          <div key={cell.label} className={cn("border-border py-3", CELL_EDGE[i])}>
+            <dt className="font-label text-[0.78rem] tracking-[0.06em] text-faint-foreground">
               {cell.label}
             </dt>
             <dd
@@ -227,7 +227,7 @@ function RunSheet({ run }: { run: ImageBackfillRun }) {
 
       {run.last_error && (
         <blockquote className="mt-1 border-t border-dashed border-destructive/50 pt-3 text-[0.92rem] leading-[1.4] break-words text-destructive italic">
-          <cite className="font-label mb-0.5 block text-[0.7rem] tracking-[0.08em] text-paper-mute not-italic">
+          <cite className="font-label mb-0.5 block text-[0.7rem] tracking-[0.08em] text-faint-foreground not-italic">
             Latest error
           </cite>
           &ldquo;{run.last_error}&rdquo;

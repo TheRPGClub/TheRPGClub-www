@@ -128,23 +128,6 @@
     --container-page: 120rem;
 }
 
-/* Legacy names, kept only until the codemod (www#86) moves every use onto
-   the tokens above (mapping: themes/monthly-issue/README.md). They hold
-   Monthly Issue values on purpose: the test Theme leaves them alone, so a
-   surface still using one stands out. Do not use them in new code. */
-@theme {
-    --color-ink: #0b0b0d;
-    --color-ink-2: #141417;
-    --color-ink-3: #1d1d22;
-    --color-rule: #2a2a31;
-    --color-rule-strong: #3a3a43;
-    --color-paper: #f4f4f0;
-    --color-paper-dim: #b9b9b2;
-    --color-paper-mute: #8d8d87;
-    --color-highlight-ink: #3a3200;
-    --color-destructive-ink: #2a1300;
-}
-
 /* Bleed: a banner breaks out of the content frame to the full width beside
    the sidebar, wherever the frame sits. 50cqi is half the sidebar inset (the
    app's query container); 50% is half the frame's content box. */
