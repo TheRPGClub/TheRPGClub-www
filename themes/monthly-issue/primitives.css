@@ -165,6 +165,56 @@
             }
         }
 
+        /* Badge, the chip family (www#90): Provider chips in their own
+           colour, the giveaway platform chip in its ribbon ink, the hub's
+           filter chips (the current one marked, a Provider not picked drawn
+           as a stroke in its colour), the journal catalogue's picked filter,
+           a quiet hairline status and the sidebar's badge scale. */
+        [data-slot="badge"] {
+            &[data-tone="provider-retroachievements"] {
+                @apply bg-provider-retroachievements text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-steam"] {
+                @apply bg-provider-steam text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)] hover:brightness-125;
+                }
+            }
+            &[data-tone="provider-psn"] {
+                @apply bg-provider-psn text-provider-foreground;
+                &[data-fill="outline"] {
+                    @apply bg-transparent text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)] hover:brightness-125;
+                }
+            }
+            &:is([data-tone="provider-retroachievements"], [data-tone="provider-steam"], [data-tone="provider-psn"])[aria-current="page"] {
+                @apply outline-2 outline-offset-2 outline-highlight;
+            }
+            &[data-tone="platform"] {
+                @apply bg-(--platform-ink) font-extrabold text-background;
+            }
+            &[data-tone="option"] {
+                @apply bg-foreground/6 text-dim-foreground hover:text-foreground;
+                &[aria-current="page"] {
+                    @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+                }
+            }
+            &[data-tone="picked"] {
+                @apply rounded-sm bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+            }
+            &[data-tone="quiet"] {
+                @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
+            }
+            &[data-size="nav"] {
+                @apply font-extrabold;
+            }
+            &[data-size="filter"] {
+                @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            }
+        }
+
         /* Input: an ink-2 field with a rule, paper-mute on focus and the
            yellow caret. */
         [data-slot="input"] {

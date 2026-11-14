@@ -34,14 +34,38 @@ const badgeVariants = cva(
         "rarity-ultra": "",
         // Platinum, Mastery and Completion.
         foil: "",
+        // An Achievement Provider, in its own colour.
+        "provider-retroachievements": "",
+        "provider-steam": "",
+        "provider-psn": "",
+        // A giveaway platform, in its ribbon ink: the caller sets
+        // --platform-ink.
+        platform: "",
+        // A filter option that is no Provider (the hub's "All"); the current
+        // one carries aria-current.
+        option: "",
+        // A filter the reader picked, holding its own clear button.
+        picked: "",
+        // A quiet status (not saved yet) drawn as a hairline.
+        quiet: "",
+      },
+      // A Provider that is not picked while another one is.
+      fill: {
+        solid: "",
+        outline: "",
       },
       size: {
         default: "",
         sm: "h-5 px-1.5 text-[0.72rem]",
+        // The sidebar's badge scale, beside a nav item's label.
+        nav: "h-auto px-1.5 py-px text-[0.7rem]",
+        // A filter chip that is a link (the hub's Provider filter).
+        filter: "h-[26px] px-2.5 text-[0.8rem]",
       },
     },
     defaultVariants: {
       tone: "neutral",
+      fill: "solid",
       size: "default",
     },
   }
@@ -50,6 +74,7 @@ const badgeVariants = cva(
 function Badge({
   className,
   tone = "neutral",
+  fill = "solid",
   size = "default",
   render,
   ...props
@@ -58,7 +83,7 @@ function Badge({
     defaultTagName: "span",
     props: mergeProps<"span">(
       {
-        className: cn(badgeVariants({ tone, size }), className),
+        className: cn(badgeVariants({ tone, fill, size }), className),
       },
       props
     ),
@@ -66,6 +91,7 @@ function Badge({
     state: {
       slot: "badge",
       tone,
+      fill,
       size,
     },
   })

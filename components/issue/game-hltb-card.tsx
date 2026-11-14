@@ -19,7 +19,7 @@ import {
   type Hltb,
   type HltbLookupFailure,
 } from "@/lib/hltb";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -87,9 +87,9 @@ export function GameHltbCard({
           Time to beat
         </h2>
         {notSaved ? (
-          <Chip className="bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset">
+          <Badge tone="quiet" className="border-0">
             Not saved
-          </Chip>
+          </Badge>
         ) : (
           <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
             Hours

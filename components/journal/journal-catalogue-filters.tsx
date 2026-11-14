@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
 import { GamePicker } from "@/components/member/game-picker";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -104,7 +105,7 @@ export function JournalCatalogueFilters({
       </label>
 
       {game ? (
-        <span className={cn(CHIP, "bg-muted pr-1 text-foreground")}>
+        <Badge tone="picked" className="h-9 gap-1.5 border-0 px-3 pr-1 text-[0.85rem]">
           <span className="max-w-[14rem] truncate">{game.title}</span>
           <Button
             variant="ghost"
@@ -114,7 +115,7 @@ export function JournalCatalogueFilters({
           >
             <X />
           </Button>
-        </span>
+        </Badge>
       ) : picking ? (
         <div className="w-full sm:w-72">
           <GamePicker

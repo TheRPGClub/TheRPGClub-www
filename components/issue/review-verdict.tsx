@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MAX_RATING } from "@/lib/api/rating";
 import type { Game, Review } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
 import { trackChips } from "@/components/issue/game-track";
 import {
@@ -97,9 +97,9 @@ export function ReviewVerdict({
             )}
           </div>
           {chip && (
-            <Chip tone={chip.tone} className="ml-auto hidden sm:inline-flex">
+            <Badge tone={chip.tone} className="ml-auto hidden sm:inline-flex border-0">
               {chip.label}
-            </Chip>
+            </Badge>
           )}
         </div>
 

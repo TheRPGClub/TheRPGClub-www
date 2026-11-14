@@ -1,11 +1,11 @@
 import Link from "next/link";
-import type { AchievementProvider } from "@/lib/api/types";
 import {
   FEED_VIEW_OPTIONS,
   feedHref,
   type AchievementFeedFilters as Filters,
 } from "@/lib/api/achievement-feed";
 import { ACHIEVEMENT_PROVIDERS, PROVIDER_LABEL } from "@/lib/achievements";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // The hub's two controls, both plain links so the URL holds the state
@@ -51,64 +51,36 @@ export function HubViewTabs({ filters }: { filters: Filters }) {
 // "All" plus one chip per Provider in its own colour. With every Provider
 // shown, every chip is solid; once one is picked, it alone stays solid and
 // the rest drop to an outline in their colour.
-const PROVIDER_CHIP: Record<AchievementProvider, { solid: string; outline: string }> = {
-  retroachievements: {
-    solid: "bg-provider-retroachievements text-provider-foreground",
-    outline:
-      "text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)]",
-  },
-  steam: {
-    solid: "bg-provider-steam text-provider-foreground",
-    outline: "text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)]",
-  },
-  psn: {
-    solid: "bg-provider-psn text-provider-foreground",
-    outline: "text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)]",
-  },
-};
-
-const CHIP =
-  "font-label inline-flex h-[26px] items-center rounded-xs px-2.5 text-[0.8rem] font-extrabold tracking-[0.06em] whitespace-nowrap transition-[color,background-color,box-shadow,opacity]";
-
 export function HubProviderFilter({ filters }: { filters: Filters }) {
   const all = filters.provider == null;
   return (
     <nav aria-label="Provider">
       <ul className="flex flex-wrap gap-1.5">
         <li>
-          <Link
-            href={feedHref(filters, { provider: null, page: 1 })}
+          <Badge
+            render={<Link href={feedHref(filters, { provider: null, page: 1 })} scroll={false} />}
             aria-current={all ? "page" : undefined}
-            scroll={false}
-            className={cn(
-              CHIP,
-              all
-                ? "text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
-                : "bg-foreground/6 text-dim-foreground hover:text-foreground",
-              FOCUS,
-            )}
+            tone="option"
+            size="filter"
+            className="border-0"
           >
             All
-          </Link>
+          </Badge>
         </li>
         {ACHIEVEMENT_PROVIDERS.map((provider) => {
           const on = filters.provider === provider;
-          const style = PROVIDER_CHIP[provider];
           return (
             <li key={provider}>
-              <Link
-                href={feedHref(filters, { provider, page: 1 })}
+              <Badge
+                render={<Link href={feedHref(filters, { provider, page: 1 })} scroll={false} />}
                 aria-current={on ? "page" : undefined}
-                scroll={false}
-                className={cn(
-                  CHIP,
-                  all || on ? style.solid : cn(style.outline, "hover:brightness-125"),
-                  on && "outline-2 outline-offset-2 outline-highlight",
-                  !on && FOCUS,
-                )}
+                tone={`provider-${provider}`}
+                fill={all || on ? "solid" : "outline"}
+                size="filter"
+                className="border-0"
               >
                 {PROVIDER_LABEL[provider]}
-              </Link>
+              </Badge>
             </li>
           );
         })}

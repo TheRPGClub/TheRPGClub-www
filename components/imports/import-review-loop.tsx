@@ -22,7 +22,7 @@ import {
   ImportProgressBar,
   importPending,
 } from "@/components/imports/import-progress";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 
 // Safety net for the "call advance again" loop: each call resolves up to 25
@@ -181,9 +181,9 @@ export function ImportReviewLoop({
           />
         </div>
         <div className="flex min-h-6 flex-wrap items-center gap-2">
-          <Chip tone={job.status === "active" ? "highlight" : "neutral"}>
+          <Badge tone={job.status === "active" ? "highlight" : "neutral"} className="border-0">
             {statusLabel}
-          </Chip>
+          </Badge>
           {busy && (
             <span
               role="status"

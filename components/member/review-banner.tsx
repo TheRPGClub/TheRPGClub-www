@@ -2,7 +2,7 @@ import { Pencil } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { trackChips } from "@/components/issue/game-track";
 import {
   ReviewerAvatar,
@@ -105,9 +105,9 @@ export function ReviewBanner({
             <p className="mt-4 flex flex-wrap items-center gap-2">
               {badge}
               {chips.map((chip) => (
-                <Chip key={chip.tone} tone={chip.tone}>
+                <Badge key={chip.tone} tone={chip.tone} className="border-0">
                   {chip.label}
-                </Chip>
+                </Badge>
               ))}
               {title && (
                 <Link
