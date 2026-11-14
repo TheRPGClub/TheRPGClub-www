@@ -75,7 +75,7 @@ export function RoundPanel({
     <section
       aria-label={`Round ${n} ${title.toLowerCase()}`}
       className={cn(
-        "flex flex-col rounded-md bg-highlight px-4.5 pt-3.5 pb-4 text-ink",
+        "flex flex-col rounded-md bg-highlight px-4.5 pt-3.5 pb-4 text-highlight-foreground",
         tall && "h-full",
       )}
     >
@@ -94,12 +94,12 @@ export function RoundPanel({
           </p>
         )}
       </div>
-      <p className="mt-1.5 text-[0.82rem] font-medium text-highlight-ink">
+      <p className="mt-1.5 text-[0.82rem] font-medium text-highlight-muted-foreground">
         {detail}
       </p>
 
       {tall && nominations.length > 0 && (
-        <div className="mt-3 flex-1 border-t-2 border-ink">
+        <div className="mt-3 flex-1 border-t-2 border-background">
           <h3 className="font-label pt-2 pb-1 text-[0.8rem] font-extrabold tracking-[0.1em]">
             Latest nominations
           </h3>
@@ -110,9 +110,9 @@ export function RoundPanel({
               return (
                 <li
                   key={`${nomination.category}-${nomination.nomination_id}`}
-                  className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 border-t border-ink/20 py-1.5 first:border-t-0"
+                  className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 border-t border-background/20 py-1.5 first:border-t-0"
                 >
-                  <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-ink/15">
+                  <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-background/15">
                     {cover && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -126,7 +126,7 @@ export function RoundPanel({
                     <b className="font-label block truncate text-[0.95rem] leading-tight font-extrabold tracking-[0.02em]">
                       {nomination.game?.title ?? "Unknown game"}
                     </b>
-                    <small className="block truncate text-xs text-highlight-ink">
+                    <small className="block truncate text-xs text-highlight-muted-foreground">
                       by{" "}
                       {nomination.user?.global_name ??
                         nomination.user?.username ??
@@ -154,7 +154,7 @@ export function RoundPanel({
             href="/voting"
             className={cn(
               buttonVariants(),
-              "bg-ink text-paper hover:bg-ink/85",
+              "bg-background text-foreground hover:bg-background/85",
             )}
           >
             {nominating ? <Plus data-icon="inline-start" /> : <Vote data-icon="inline-start" />}
@@ -169,7 +169,7 @@ export function RoundPanel({
           href="/voting"
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "border-ink text-ink hover:border-ink hover:bg-ink/10",
+            "border-background text-background hover:border-background hover:bg-background/10",
           )}
         >
           {nominating || voting

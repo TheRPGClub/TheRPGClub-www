@@ -80,9 +80,9 @@ export function SuggestionCard({
     (reviewed ? null : shortDate(s.created_at));
 
   const byline = (
-    <span className="text-[0.82rem] text-paper-mute">
+    <span className="text-[0.82rem] text-faint-foreground">
       by{" "}
-      <b className="font-semibold text-paper-dim">
+      <b className="font-semibold text-dim-foreground">
         {s.created_by_name ?? "Unknown"}
       </b>
       {when && <> · {when}</>}
@@ -99,7 +99,7 @@ export function SuggestionCard({
         } as CSSProperties
       }
       className={cn(
-        "relative rotate-(--tilt) rounded-md bg-ink-2 shadow-[0_10px_24px_rgb(0_0_0/0.45)] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:rotate-0",
+        "relative rotate-(--tilt) rounded-md bg-card shadow-[0_10px_24px_rgb(0_0_0/0.45)] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:rotate-0",
         highlight && "ring-2 ring-highlight",
         phase === "rejected" && "pb-4",
         className,
@@ -107,9 +107,9 @@ export function SuggestionCard({
     >
       <header
         className={cn(
-          "flex items-center justify-between gap-3 rounded-t-md px-3.5 py-2 text-ink",
+          "flex items-center justify-between gap-3 rounded-t-md px-3.5 py-2 text-background",
           phase === "withdrawn"
-            ? "text-paper-mute shadow-[inset_0_0_0_1px_var(--band)]"
+            ? "text-faint-foreground shadow-[inset_0_0_0_1px_var(--band)]"
             : "bg-(--band)",
         )}
       >
@@ -163,11 +163,11 @@ export function SuggestionCard({
       </header>
 
       <div className="px-3.5 pt-3 pb-3.5">
-        <Heading className="text-[1.05rem] leading-snug font-semibold break-words text-paper">
+        <Heading className="text-[1.05rem] leading-snug font-semibold break-words text-foreground">
           {s.title}
         </Heading>
         {s.details && phase !== "rejected" && (
-          <p className="mt-1.5 text-[0.88rem] leading-normal break-words whitespace-pre-line text-paper-dim">
+          <p className="mt-1.5 text-[0.88rem] leading-normal break-words whitespace-pre-line text-dim-foreground">
             {s.details}
           </p>
         )}
@@ -186,7 +186,7 @@ export function SuggestionCard({
           </div>
         )}
         {actions && (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-2.5">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5">
             {byline}
             <div className="ml-auto flex items-center gap-2">{actions}</div>
           </div>
@@ -226,7 +226,7 @@ function RejectionSlip({
   return (
     <div
       style={{ "--slip": `${tilt}deg` } as CSSProperties}
-      className="relative mx-4 mt-1 ml-8 rotate-(--slip) rounded-xs bg-paper px-3.5 pt-2.5 pb-3 text-ink shadow-[0_6px_14px_rgb(0_0_0/0.45)] before:absolute before:-top-[7px] before:left-1/2 before:-ml-[27px] before:h-3.5 before:w-[54px] before:-rotate-3 before:bg-paper/35"
+      className="relative mx-4 mt-1 ml-8 rotate-(--slip) rounded-xs bg-foreground px-3.5 pt-2.5 pb-3 text-background shadow-[0_6px_14px_rgb(0_0_0/0.45)] before:absolute before:-top-[7px] before:left-1/2 before:-ml-[27px] before:h-3.5 before:w-[54px] before:-rotate-3 before:bg-foreground/35"
     >
       <p className="font-label flex justify-between gap-3 text-[0.74rem] font-extrabold text-[#8a1559]">
         Reason

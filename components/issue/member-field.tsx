@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 // chrome is drawn.
 
 export const memberControlClass =
-  "h-9.5 w-full min-w-0 rounded-sm border border-rule-strong bg-ink-2 px-2.5 text-sm text-paper caret-highlight [color-scheme:dark] outline-none transition-colors placeholder:text-paper-mute hover:border-paper-mute focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40";
+  "h-9.5 w-full min-w-0 rounded-sm border border-border-strong bg-card px-2.5 text-sm text-foreground caret-highlight [color-scheme:dark] outline-none transition-colors placeholder:text-faint-foreground hover:border-faint-foreground focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40";
 
 export function MemberField({
   label,
@@ -20,7 +20,7 @@ export function MemberField({
 }) {
   return (
     <label className={cn("flex min-w-0 flex-col gap-1.5", className)}>
-      <span className="font-label text-[0.78rem] font-extrabold tracking-[0.1em] text-paper-mute">
+      <span className="font-label text-[0.78rem] font-extrabold tracking-[0.1em] text-faint-foreground">
         {label}
       </span>
       {children}
@@ -43,7 +43,7 @@ export function MemberSelect({
       </select>
       <ChevronDown
         aria-hidden
-        className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-paper-mute"
+        className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-faint-foreground"
       />
     </span>
   );

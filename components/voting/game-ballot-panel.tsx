@@ -108,7 +108,7 @@ export function GameBallotPanel({
   return (
     <section
       aria-label={`${categoryTitle} ballot, round ${round}`}
-      className="relative overflow-hidden rounded-md border border-rule bg-ink-2 px-4 pt-4 pb-3.5 sm:px-5"
+      className="relative overflow-hidden rounded-md border border-border bg-card px-4 pt-4 pb-3.5 sm:px-5"
     >
       <span
         aria-hidden
@@ -131,13 +131,13 @@ export function GameBallotPanel({
           <h2 className="font-label text-[1.05rem] leading-tight font-extrabold tracking-[0.04em] sm:text-lg">
             Round {round} · {categoryTitle}
             {isWinner && (
-              <span className="font-label ml-2.5 inline-flex translate-y-[-2px] items-center gap-1.5 rounded-xs bg-paper px-1.5 py-px align-middle text-[0.78rem] font-extrabold tracking-[0.08em] text-ink [&_svg]:size-3.5">
+              <span className="font-label ml-2.5 inline-flex translate-y-[-2px] items-center gap-1.5 rounded-xs bg-foreground px-1.5 py-px align-middle text-[0.78rem] font-extrabold tracking-[0.08em] text-background [&_svg]:size-3.5">
                 <Crown aria-hidden />
                 Won the round
               </span>
             )}
           </h2>
-          <p className="mt-0.5 text-[0.85rem] text-paper-dim">
+          <p className="mt-0.5 text-[0.85rem] text-dim-foreground">
             {status}
             {nominatedBy.length > 0 && (
               <> · nominated by {formatList(nominatedBy)}</>
@@ -146,13 +146,13 @@ export function GameBallotPanel({
         </div>
         <div className="col-span-full flex items-center gap-4 sm:col-span-1">
           {countsHidden ? (
-            <p className="font-label flex items-center gap-1.5 text-[0.82rem] leading-tight font-extrabold tracking-[0.08em] text-paper-mute sm:max-w-36 sm:text-right">
+            <p className="font-label flex items-center gap-1.5 text-[0.82rem] leading-tight font-extrabold tracking-[0.08em] text-faint-foreground sm:max-w-36 sm:text-right">
               <EyeOff aria-hidden className="size-4 shrink-0" />
               Counts hidden until voting ends
             </p>
           ) : (
-            <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim sm:text-right">
-              <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-paper sm:mr-0 sm:block sm:text-[2.75rem]">
+            <p className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground sm:text-right">
+              <span className="font-headline mr-1.5 align-baseline text-[2rem] leading-[0.9] text-foreground sm:mr-0 sm:block sm:text-[2.75rem]">
                 {state.count}
               </span>
               {state.count === 1 ? "vote" : "votes"}
@@ -199,19 +199,19 @@ export function GameBallotPanel({
             type="button"
             aria-label="Dismiss"
             onClick={() => setError(null)}
-            className="mt-0.5 shrink-0 text-paper-mute transition-colors hover:text-paper"
+            className="mt-0.5 shrink-0 text-faint-foreground transition-colors hover:text-foreground"
           >
             <X className="size-3.5" />
           </button>
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[0.8rem] text-paper-mute">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[0.8rem] text-faint-foreground">
         <span>
           {votingOpen && signedIn ? (
             <>
               You&apos;ve used{" "}
-              <span className="font-semibold text-paper">
+              <span className="font-semibold text-foreground">
                 {state.used} of {cap}
               </span>{" "}
               votes. Vote again to take this one back.
@@ -224,7 +224,7 @@ export function GameBallotPanel({
         </span>
         <Link
           href="/voting"
-          className="font-label inline-flex items-center gap-1 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper transition-colors hover:text-highlight [&_svg]:text-gotm"
+          className="font-label inline-flex items-center gap-1 text-[0.82rem] font-extrabold tracking-[0.08em] text-foreground transition-colors hover:text-highlight [&_svg]:text-gotm"
         >
           See the full ballot
           <ArrowRight className="size-3.5" />

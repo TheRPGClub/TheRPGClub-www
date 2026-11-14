@@ -53,14 +53,14 @@ export function NrFeature({
   return (
     <section
       aria-label={`${LABEL}, round ${roundNumber}: ${winners.length} winners`}
-      className="relative flex flex-col overflow-hidden rounded-md border border-rule bg-ink-2"
+      className="relative flex flex-col overflow-hidden rounded-md border border-border bg-card"
     >
       <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-nr" />
       <div className="flex items-baseline justify-between gap-3 px-4 pt-4.5 pb-3">
         <h2 className="font-headline text-[1.45rem] leading-none text-nr-soft">
           {LABEL}
         </h2>
-        <p className="font-label shrink-0 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim">
+        <p className="font-label shrink-0 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground">
           {winners.length} winners
         </p>
       </div>
@@ -75,7 +75,7 @@ export function NrFeature({
             <>
               <div
                 className={cn(
-                  "relative shrink-0 overflow-hidden rounded-xs bg-ink-3 after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:bg-nr",
+                  "relative shrink-0 overflow-hidden rounded-xs bg-muted after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:bg-nr",
                   winners.length === 2 ? "h-22 w-16.5" : "h-[4.3rem] w-13",
                 )}
               >
@@ -93,7 +93,7 @@ export function NrFeature({
                 >
                   {game.title}
                 </h3>
-                <p className="font-label mt-1 truncate text-[0.78rem] text-paper-mute">
+                <p className="font-label mt-1 truncate text-[0.78rem] text-faint-foreground">
                   <span className="font-headline mr-1.5 text-[0.95rem] text-nr-soft">
                     {"ABC"[i]}
                   </span>
@@ -105,7 +105,7 @@ export function NrFeature({
               {href && (
                 <ArrowRight
                   aria-hidden
-                  className="size-4 text-paper-mute transition-colors group-hover/row:text-nr-soft"
+                  className="size-4 text-faint-foreground transition-colors group-hover/row:text-nr-soft"
                 />
               )}
             </>
@@ -115,12 +115,12 @@ export function NrFeature({
           return (
             <li
               key={entry.gamedb_game_id ?? `index-${i}`}
-              className="flex-1 border-t border-rule"
+              className="flex-1 border-t border-border"
             >
               {href ? (
                 <Link
                   href={href}
-                  className={cn(rowClass, "transition-colors hover:bg-ink-3")}
+                  className={cn(rowClass, "transition-colors hover:bg-muted")}
                 >
                   {body}
                 </Link>
@@ -159,7 +159,7 @@ function FeatureCard({
   return (
     <section
       aria-label={`${LABEL}, round ${roundNumber}`}
-      className="relative flex flex-col overflow-hidden rounded-md border border-rule bg-ink-2"
+      className="relative flex flex-col overflow-hidden rounded-md border border-border bg-card"
     >
       <span aria-hidden className="absolute inset-x-0 top-0 z-10 h-1 bg-nr" />
       {art && (
@@ -174,7 +174,7 @@ function FeatureCard({
           />
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-ink-2)_0%,transparent_65%)]"
+            className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-card)_0%,transparent_65%)]"
           />
         </div>
       )}
@@ -188,18 +188,18 @@ function FeatureCard({
           {game.title}
         </h2>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
-          <span className="font-label inline-flex h-6 items-center rounded-xs bg-nr px-2 text-[0.78rem] font-extrabold text-white">
+          <span className="font-label inline-flex h-6 items-center rounded-xs bg-nr px-2 text-[0.78rem] font-extrabold text-nr-foreground">
             Non-RPG GOTM
           </span>
           {game.year && (
-            <span className="font-label inline-flex h-6 items-center rounded-xs bg-paper/8 px-2 text-[0.78rem] text-paper-dim">
+            <span className="font-label inline-flex h-6 items-center rounded-xs bg-foreground/8 px-2 text-[0.78rem] text-dim-foreground">
               {game.year}
             </span>
           )}
           <PlatformPills platforms={game.platforms} max={3} />
         </div>
         {game.description && (
-          <p className="mt-2.5 line-clamp-3 text-sm text-paper-dim">
+          <p className="mt-2.5 line-clamp-3 text-sm text-dim-foreground">
             {game.description}
           </p>
         )}
@@ -207,7 +207,7 @@ function FeatureCard({
           <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
             {stats.map((stat) => (
               <div key={stat.key} className="flex items-baseline gap-1.5">
-                <dt className="font-label order-2 text-[0.8rem] font-extrabold text-paper-dim">
+                <dt className="font-label order-2 text-[0.8rem] font-extrabold text-dim-foreground">
                   {statLabel(stat, "cover")}
                 </dt>
                 <dd
@@ -238,7 +238,7 @@ function FeatureCard({
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-label inline-flex items-center gap-1 px-1.5 py-1 text-[0.85rem] text-paper-dim transition-colors hover:text-nr-soft"
+              className="font-label inline-flex items-center gap-1 px-1.5 py-1 text-[0.85rem] text-dim-foreground transition-colors hover:text-nr-soft"
             >
               {link.label}
               <ExternalLink aria-hidden className="size-3.5" />

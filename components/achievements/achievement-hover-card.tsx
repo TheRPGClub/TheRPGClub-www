@@ -54,7 +54,7 @@ export function AchievementHoverCard({
         >
           <PreviewCard.Popup
             className={cn(
-              "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-rule-strong bg-ink-2 p-3.5 text-paper shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",
+              "w-72 max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-md border border-border-strong bg-card p-3.5 text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)] outline-none",
               "duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             )}
           >

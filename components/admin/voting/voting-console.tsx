@@ -73,13 +73,13 @@ export function VotingConsole({
 
   return (
     <div>
-      <header className="grid items-end gap-x-7 gap-y-1.5 border-b-2 border-paper pb-3.5 md:grid-cols-[auto_minmax(0,1fr)]">
+      <header className="grid items-end gap-x-7 gap-y-1.5 border-b-2 border-foreground pb-3.5 md:grid-cols-[auto_minmax(0,1fr)]">
         <p aria-hidden className="font-headline text-[5.5rem] leading-[0.8] md:text-[8rem]">
           {n}
         </p>
         <div className="min-w-0">
           <h1 className="font-headline text-[2.6rem] leading-[0.9] md:text-[3.75rem]">Voting console</h1>
-          <p className="font-label mt-1.5 text-base tracking-[0.08em] text-paper-dim">
+          <p className="font-label mt-1.5 text-base tracking-[0.08em] text-dim-foreground">
             {roundStatusLine(round, votes, now)}
           </p>
         </div>
@@ -175,7 +175,7 @@ function rulerTicks(
 
 function Op({ icon: Icon, title, children }: { icon: typeof SquareX; title: string; children: ReactNode }) {
   return (
-    <section className="min-w-0 rounded-md bg-ink-2 px-3.5 py-3">
+    <section className="min-w-0 rounded-md bg-card px-3.5 py-3">
       <h2 className="font-label flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em]">
         <Icon aria-hidden className="size-4" />
         {title}
@@ -186,11 +186,11 @@ function Op({ icon: Icon, title, children }: { icon: typeof SquareX; title: stri
 }
 
 function OpText({ children }: { children: ReactNode }) {
-  return <p className="mt-0.75 mb-2.5 text-[0.84rem] leading-[1.4] text-paper-dim">{children}</p>;
+  return <p className="mt-0.75 mb-2.5 text-[0.84rem] leading-[1.4] text-dim-foreground">{children}</p>;
 }
 
 function OpNote({ children }: { children: ReactNode }) {
-  return <span className="text-[0.8rem] text-paper-mute">{children}</span>;
+  return <span className="text-[0.8rem] text-faint-foreground">{children}</span>;
 }
 
 function CloseNowOp({ round }: { round: VotingRound }) {
@@ -225,7 +225,7 @@ function CloseNowOp({ round }: { round: VotingRound }) {
         )}
       </div>
       {done && (
-        <p role="status" className="mt-2 text-[0.84rem] text-paper-dim">
+        <p role="status" className="mt-2 text-[0.84rem] text-dim-foreground">
           Voting for Round {n} is closed.
         </p>
       )}
@@ -363,7 +363,7 @@ function NextVoteOp({
       </OpText>
       {fieldOpen && (
         <div className="mb-2.5">
-          <label htmlFor="next-vote-field" className="mb-1 block text-[0.8rem] text-paper-mute">
+          <label htmlFor="next-vote-field" className="mb-1 block text-[0.8rem] text-faint-foreground">
             Vote opens (your time)
           </label>
           <Input
@@ -375,9 +375,9 @@ function NextVoteOp({
               const iso = localInputToOffsetIso(e.target.value);
               if (iso) setDraft(Date.parse(iso));
             }}
-            className="bg-ink"
+            className="bg-background"
           />
-          <p id={`${id}-zone`} className="mt-1 text-[0.78rem] text-paper-mute">
+          <p id={`${id}-zone`} className="mt-1 text-[0.78rem] text-faint-foreground">
             The close moves with it, to the end of that weekend in club time.
           </p>
         </div>
@@ -415,7 +415,7 @@ function NextVoteOp({
         </p>
       )}
       {notice && !changed && (
-        <p role="status" className="mt-2 text-[0.84rem] text-paper-dim">
+        <p role="status" className="mt-2 text-[0.84rem] text-dim-foreground">
           {notice}
         </p>
       )}

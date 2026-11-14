@@ -19,10 +19,10 @@ export function RailHeading({
   count?: string;
 }) {
   return (
-    <div className="mb-3 flex items-baseline justify-between gap-3 border-b-2 border-paper pb-2">
+    <div className="mb-3 flex items-baseline justify-between gap-3 border-b-2 border-foreground pb-2">
       <h2 className="font-headline text-[1.4rem] leading-none">{title}</h2>
       {count && (
-        <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+        <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
           {count}
         </span>
       )}
@@ -54,7 +54,7 @@ export function RailMembers({
         }
       />
       {users.length === 0 ? (
-        <p className="text-sm text-paper-mute">{empty}</p>
+        <p className="text-sm text-faint-foreground">{empty}</p>
       ) : (
         <ul className="flex items-center">
           {shown.map((user, i) => {
@@ -67,7 +67,7 @@ export function RailMembers({
                       <Link
                         href={`/members/${user.user_id}`}
                         aria-label={name}
-                        className="relative block rounded-full ring-3 ring-ink transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:z-10"
+                        className="relative block rounded-full ring-3 ring-background transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:z-10"
                       />
                     }
                   >
@@ -79,7 +79,7 @@ export function RailMembers({
             );
           })}
           {rest > 0 && (
-            <li className="font-label ml-2.5 text-sm font-extrabold tracking-[0.04em] text-paper-dim">
+            <li className="font-label ml-2.5 text-sm font-extrabold tracking-[0.04em] text-dim-foreground">
               +{rest}
             </li>
           )}
@@ -104,10 +104,10 @@ export function RailFacts({
       <dl className="grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-2.5 text-sm">
         {facts.map((fact) => (
           <div key={fact.label} className="contents">
-            <dt className="font-label pt-px text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-mute">
+            <dt className="font-label pt-px text-[0.8rem] font-extrabold tracking-[0.08em] text-faint-foreground">
               {fact.label}
             </dt>
-            <dd className="leading-[1.4] text-paper">{fact.value}</dd>
+            <dd className="leading-[1.4] text-foreground">{fact.value}</dd>
           </div>
         ))}
       </dl>

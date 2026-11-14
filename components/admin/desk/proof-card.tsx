@@ -94,7 +94,7 @@ function ProofFrame({
         <div className={cn("absolute top-[22px] right-3", overhang && "sm:-right-3.5")}>{stamp}</div>
       )}
       {status}
-      {caption && <figcaption className="mt-3 text-[0.82rem] text-paper-mute">{caption}</figcaption>}
+      {caption && <figcaption className="mt-3 text-[0.82rem] text-faint-foreground">{caption}</figcaption>}
     </figure>
   );
 }

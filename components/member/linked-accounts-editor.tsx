@@ -38,7 +38,7 @@ import {
   unlinkWarning,
   unlockCount,
 } from "@/lib/linked-accounts";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { Chip } from "@/components/issue/chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,7 +99,7 @@ export function LinkedAccountsEditor({
           count={`${linked} of ${ACHIEVEMENT_PROVIDERS.length} linked`}
           className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
         />
-        <p className="max-w-[65ch] text-sm text-paper-mute">
+        <p className="max-w-[65ch] text-sm text-faint-foreground">
           Link your RetroAchievements, Steam and PSN accounts to bring your
           achievements to the hub. The club syncs them four times a day. These
           are separate from your socials.
@@ -109,7 +109,7 @@ export function LinkedAccountsEditor({
       {accounts === null ? (
         <p
           role="alert"
-          className="rounded-md border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute"
+          className="rounded-md border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground"
         >
           Your Linked Accounts couldn&rsquo;t be loaded. Reload the page to try again.
         </p>
@@ -120,7 +120,7 @@ export function LinkedAccountsEditor({
             return (
               <li
                 key={provider}
-                className="rounded-md border border-rule bg-ink-2 p-3.5"
+                className="rounded-md border border-border bg-card p-3.5"
               >
                 {account ? (
                   <LinkedRow
@@ -146,7 +146,7 @@ export function LinkedAccountsEditor({
 
 function ProviderName({ provider }: { provider: AchievementProvider }) {
   return (
-    <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+    <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
       {PROVIDER_LABEL[provider]}
     </span>
   );
@@ -221,7 +221,7 @@ function LinkForm({
           Link {PROVIDER_LABEL[provider]}
         </Button>
       </div>
-      <p id={helpId} className="mt-1.5 text-[0.82rem] text-paper-mute">
+      <p id={helpId} className="mt-1.5 text-[0.82rem] text-faint-foreground">
         {field.help}
       </p>
       <InlineError message={error} />
@@ -281,7 +281,7 @@ function LinkedRow({
         <div className="min-w-0 flex-1">
           <ProviderName provider={provider} />
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <span className="truncate font-semibold text-paper">
+            <span className="truncate font-semibold text-foreground">
               {account.display_name || account.external_id}
             </span>
             <Chip>
@@ -289,7 +289,7 @@ function LinkedRow({
               {statusLabel(account)}
             </Chip>
           </div>
-          <p className="mt-1 text-sm text-paper-dim">
+          <p className="mt-1 text-sm text-dim-foreground">
             {account.sync_status === "ok" && account.last_synced_at ? (
               <time dateTime={account.last_synced_at}>{statusLine(account)}</time>
             ) : (

@@ -26,20 +26,20 @@ export function JournalEntryHead({
   return (
     <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1">
       {entry.entry_title && (
-        <h3 className="text-[1.02rem] leading-snug font-semibold text-paper italic">
+        <h3 className="text-[1.02rem] leading-snug font-semibold text-foreground italic">
           {entry.entry_title}
         </h3>
       )}
       <span
         className={cn(
           "font-label text-[0.8rem] tracking-[0.08em] whitespace-nowrap",
-          selected ? "text-highlight" : "text-paper-mute",
+          selected ? "text-highlight" : "text-faint-foreground",
         )}
       >
         <time dateTime={entry.created_at}>{label}</time>
       </span>
       {edited && (
-        <span className="font-label text-[0.76rem] tracking-[0.08em] text-paper-mute">
+        <span className="font-label text-[0.76rem] tracking-[0.08em] text-faint-foreground">
           {edited}
         </span>
       )}
@@ -60,7 +60,7 @@ export function JournalEntryProse({
   return (
     <p
       className={cn(
-        "max-w-[68ch] text-[0.95rem] leading-[1.55] whitespace-pre-line text-paper-dim",
+        "max-w-[68ch] text-[0.95rem] leading-[1.55] whitespace-pre-line text-dim-foreground",
         clamp === 2 && "line-clamp-2",
         clamp === 3 && "line-clamp-3",
         className,

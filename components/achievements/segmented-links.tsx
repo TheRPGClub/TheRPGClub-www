@@ -29,8 +29,8 @@ export function SegmentedLinks({
                 "font-label inline-flex items-center gap-1.5 rounded-[3px] font-extrabold tracking-[0.06em] transition-colors",
                 size === "md" ? "h-9 px-3 text-[1rem]" : "h-7.5 px-2 text-[0.88rem]",
                 option.on
-                  ? "bg-paper text-ink"
-                  : "text-paper-mute hover:bg-ink-3 hover:text-paper",
+                  ? "bg-foreground text-background"
+                  : "text-faint-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               {option.label}

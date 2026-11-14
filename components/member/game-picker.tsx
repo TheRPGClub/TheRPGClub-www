@@ -122,7 +122,7 @@ export function GamePicker({
     return (
       <div
         className={cn(
-          "flex h-9 items-center gap-2 rounded-sm border border-highlight/60 bg-ink-3 pr-1 pl-3 text-sm",
+          "flex h-9 items-center gap-2 rounded-sm border border-highlight/60 bg-muted pr-1 pl-3 text-sm",
           className,
         )}
       >
@@ -147,7 +147,7 @@ export function GamePicker({
   return (
     <div className={cn("space-y-1.5", className)}>
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-paper-mute" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground" />
         <Input
           type="search"
           value={query}
@@ -170,17 +170,17 @@ export function GamePicker({
       {hasQuery && !showIgdb && (
         <div
           className={cn(
-            "max-h-72 overflow-y-auto rounded-sm border border-rule-strong bg-ink-3 shadow-[0_12px_30px_rgb(0_0_0/0.45)]",
+            "max-h-72 overflow-y-auto rounded-sm border border-border-strong bg-muted shadow-[0_12px_30px_rgb(0_0_0/0.45)]",
             compact && "max-h-60",
           )}
           role="listbox"
           aria-label="Matching games"
         >
           {loading && (
-            <p className="px-3 py-2.5 text-xs text-paper-mute">Searching…</p>
+            <p className="px-3 py-2.5 text-xs text-faint-foreground">Searching…</p>
           )}
           {!loading && results.length === 0 && !error && (
-            <p className="px-3 py-2.5 text-xs text-paper-mute">No matches.</p>
+            <p className="px-3 py-2.5 text-xs text-faint-foreground">No matches.</p>
           )}
           {results.map((game) => {
             const year = game.initial_release_date
@@ -196,9 +196,9 @@ export function GamePicker({
                 role="option"
                 aria-selected={false}
                 onClick={() => pick(game)}
-                className="group/result grid w-full grid-cols-[2.1rem_1fr_auto] items-center gap-3 border-t border-rule px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
+                className="group/result grid w-full grid-cols-[2.1rem_1fr_auto] items-center gap-3 border-t border-border px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
               >
-                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-ink-2">
+                <span className="block h-11 w-[2.1rem] overflow-hidden rounded-[2px] bg-card">
                   {game.cover_url && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -211,12 +211,12 @@ export function GamePicker({
                 <span className="min-w-0">
                   <span className="block truncate font-semibold">{game.title}</span>
                   {(year || platforms.length > 0) && (
-                    <span className="block truncate text-xs text-paper-mute">
+                    <span className="block truncate text-xs text-faint-foreground">
                       {[year, ...platforms].filter(Boolean).join(" · ")}
                     </span>
                   )}
                 </span>
-                <span className="font-label rounded-xs border border-rule-strong px-2 py-0.5 text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors group-hover/result:border-highlight group-hover/result:bg-highlight group-hover/result:text-ink">
+                <span className="font-label rounded-xs border border-border-strong px-2 py-0.5 text-[0.75rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors group-hover/result:border-highlight group-hover/result:bg-highlight group-hover/result:text-highlight-foreground">
                   Pick
                 </span>
               </button>
@@ -229,7 +229,7 @@ export function GamePicker({
         <button
           type="button"
           onClick={() => setIgdbAskedFor(trimmedQuery)}
-          className="w-full rounded-sm border border-dashed border-rule-strong bg-ink-3 px-3 py-2 text-left text-xs text-paper-dim transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/50 focus-visible:outline-none"
+          className="w-full rounded-sm border border-dashed border-border-strong bg-muted px-3 py-2 text-left text-xs text-dim-foreground transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/50 focus-visible:outline-none"
         >
           Not listed? Search IGDB for &ldquo;{trimmedQuery}&rdquo;
         </button>

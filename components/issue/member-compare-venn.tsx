@@ -38,10 +38,10 @@ export function CompareVenn({
           >
             <path
               d="M70 0 A150 150 0 0 1 70 262 A150 150 0 0 1 70 0 Z"
-              className="fill-paper"
+              className="fill-foreground"
             />
           </svg>
-          <p className="relative text-ink">
+          <p className="relative text-background">
             <b className="font-headline block text-[3rem] leading-[0.85] font-normal sm:text-[4.75rem]">
               {both}
             </b>
@@ -62,7 +62,7 @@ function Ring({ side, align }: { side: Side; align: "left" | "right" }) {
   return (
     <div
       className={
-        "absolute top-0 flex aspect-square h-full flex-col justify-center rounded-full shadow-[inset_0_0_0_2px_var(--color-paper-dim)] " +
+        "absolute top-0 flex aspect-square h-full flex-col justify-center rounded-full shadow-[inset_0_0_0_2px_var(--color-dim-foreground)] " +
         (right
           ? "right-0 items-end pr-[7.5%] text-right"
           : "left-0 items-start pl-[7.5%]")
@@ -85,12 +85,12 @@ function Ring({ side, align }: { side: Side; align: "left" | "right" }) {
       <p className="font-headline text-[2.5rem] leading-[0.85] sm:text-[4rem]">
         {side.only}
       </p>
-      <p className="font-label mt-1.5 max-w-[60%] truncate text-[0.7rem] font-extrabold tracking-[0.08em] text-paper-mute sm:text-[0.8rem]">
+      <p className="font-label mt-1.5 max-w-[60%] truncate text-[0.7rem] font-extrabold tracking-[0.08em] text-faint-foreground sm:text-[0.8rem]">
         Only {side.name}
       </p>
       <Link
         href={side.href}
-        className="font-label mt-2.5 hidden max-w-[60%] items-center gap-1 text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight sm:inline-flex [&_svg]:size-3.5"
+        className="font-label mt-2.5 hidden max-w-[60%] items-center gap-1 text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight sm:inline-flex [&_svg]:size-3.5"
       >
         <span className="truncate">Completed list</span>
         <ArrowRight aria-hidden className="shrink-0" />

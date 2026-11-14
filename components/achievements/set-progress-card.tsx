@@ -42,26 +42,26 @@ export function SetProgressCard({
   return (
     <article
       className={cn(
-        "group relative flex gap-4 rounded-md border border-rule bg-ink-2 p-4 transition-colors",
-        href && "hover:border-rule-strong hover:bg-ink-3/60",
+        "group relative flex gap-4 rounded-md border border-border bg-card p-4 transition-colors",
+        href && "hover:border-border-strong hover:bg-muted/60",
         className,
       )}
     >
-      <span className="relative size-16 shrink-0 overflow-hidden rounded-sm bg-ink-3 sm:size-[4.5rem]">
+      <span className="relative size-16 shrink-0 overflow-hidden rounded-sm bg-muted sm:size-[4.5rem]">
         {set.icon_url ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote Provider icons
           <img src={set.icon_url} alt="" loading="lazy" className="size-full object-cover" />
         ) : (
-          <span aria-hidden className="flex size-full items-center justify-center text-paper-mute">
+          <span aria-hidden className="flex size-full items-center justify-center text-faint-foreground">
             <Trophy className="size-6" />
           </span>
         )}
-        <span aria-hidden className="pointer-events-none absolute inset-0 rounded-sm shadow-[inset_0_0_0_1px_rgb(244_244_240/0.12)]" />
+        <span aria-hidden className="pointer-events-none absolute inset-0 rounded-sm shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_12%,transparent)]" />
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="flex flex-col gap-2">
-          <h3 className="font-headline line-clamp-2 text-[1.3rem] leading-[0.95] text-paper sm:text-[1.45rem]">
+          <h3 className="font-headline line-clamp-2 text-[1.3rem] leading-[0.95] text-foreground sm:text-[1.45rem]">
             {href ? (
               <Link
                 href={href}
@@ -86,14 +86,14 @@ export function SetProgressCard({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-end justify-between gap-3">
               <p className="flex items-baseline gap-1">
-                <span className="font-headline text-[1.9rem] leading-[0.8] text-paper">
+                <span className="font-headline text-[1.9rem] leading-[0.8] text-foreground">
                   {progress.earned_count}
                 </span>
-                <span className="font-label text-[0.85rem] text-paper-mute">
+                <span className="font-label text-[0.85rem] text-faint-foreground">
                   / {progress.total_count}
                 </span>
               </p>
-              <span className="font-label text-[0.8rem] text-paper-dim">
+              <span className="font-label text-[0.8rem] text-dim-foreground">
                 {percent}%
               </span>
             </div>
@@ -104,12 +104,12 @@ export function SetProgressCard({
               aria-valuemax={progress.total_count}
               aria-valuenow={progress.earned_count}
               aria-valuetext={`${progress.earned_count} of ${progress.total_count} unlocked`}
-              className="h-1 w-full overflow-hidden bg-ink-3"
+              className="h-1 w-full overflow-hidden bg-muted"
             >
-              <div className="h-full bg-paper" style={{ width: `${fill}%` }} />
+              <div className="h-full bg-foreground" style={{ width: `${fill}%` }} />
             </div>
             {ra && (
-              <p className="font-label flex flex-wrap gap-x-3 text-[0.74rem] text-paper-mute">
+              <p className="font-label flex flex-wrap gap-x-3 text-[0.74rem] text-faint-foreground">
                 {set.points_total > 0 && (
                   <span>
                     {progress.points_earned} / {set.points_total} pts
@@ -122,7 +122,7 @@ export function SetProgressCard({
             )}
           </div>
         ) : (
-          <p className="font-label text-[0.8rem] text-paper-mute">
+          <p className="font-label text-[0.8rem] text-faint-foreground">
             {set.achievements_count} achievements
             {ra && set.points_total > 0 ? ` · ${set.points_total} pts` : ""}
           </p>

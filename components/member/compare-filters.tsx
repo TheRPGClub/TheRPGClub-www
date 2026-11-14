@@ -74,7 +74,7 @@ export function CompareFiltersForm({
   return (
     <Form
       action={action}
-      className="flex flex-wrap items-end gap-2.5 border-t-2 border-paper pt-3.5"
+      className="flex flex-wrap items-end gap-2.5 border-t-2 border-foreground pt-3.5"
     >
       {heading && (
         <h2 className="font-headline mr-auto w-full self-center text-[2rem] leading-none lg:w-auto">

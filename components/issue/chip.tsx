@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 // A fact chip (year, platform, studio) in the label voice. Tracks colour
 // their own chips; everything else stays paper on ink.
 const TONE = {
-  neutral: "bg-paper/8 text-paper-dim",
-  gotm: "bg-gotm text-white",
-  nr_gotm: "bg-nr text-white",
-  highlight: "bg-highlight text-ink",
+  neutral: "bg-foreground/8 text-dim-foreground",
+  gotm: "bg-gotm text-gotm-foreground",
+  nr_gotm: "bg-nr text-nr-foreground",
+  highlight: "bg-highlight text-highlight-foreground",
 } as const;
 
 export type ChipTone = keyof typeof TONE;

@@ -40,7 +40,7 @@ export function MemberCover({
   return (
     <div
       className={cn(
-        "relative aspect-3/4 overflow-hidden rounded-[3px] bg-ink-3",
+        "relative aspect-3/4 overflow-hidden rounded-[3px] bg-muted",
         className,
       )}
     >
@@ -57,7 +57,7 @@ export function MemberCover({
       ) : (
         <span
           className={cn(
-            "font-headline grid size-full place-items-center p-3 text-center text-xl leading-[0.95] text-balance text-paper-mute",
+            "font-headline grid size-full place-items-center p-3 text-center text-xl leading-[0.95] text-balance text-faint-foreground",
             fallbackClassName,
           )}
         >
@@ -65,7 +65,7 @@ export function MemberCover({
         </span>
       )}
       {tab && (
-        <span className="font-label absolute bottom-1.5 left-1.5 rounded-[2px] bg-ink/85 px-1.5 py-px text-[0.72rem] font-extrabold tracking-[0.06em] text-paper">
+        <span className="font-label absolute bottom-1.5 left-1.5 rounded-[2px] bg-background/85 px-1.5 py-px text-[0.72rem] font-extrabold tracking-[0.06em] text-foreground">
           {tab}
         </span>
       )}
@@ -89,7 +89,7 @@ export function MemberAvatar({
       <AvatarImage src={`${API_BASE}/api/v1/users/${userId}/avatar`} alt="" />
       <AvatarFallback
         className={cn(
-          "font-headline bg-paper text-ink",
+          "font-headline bg-foreground text-background",
           fallbackClassName,
         )}
       >

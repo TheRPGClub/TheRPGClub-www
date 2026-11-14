@@ -4,7 +4,7 @@ import type { GameCompletion, JournalEntry } from "@/lib/api/types";
 import { fetchGameJournal } from "@/lib/api/journals";
 import { buildChronology, chapterHref, memberInk } from "@/lib/journals";
 import { memberName } from "@/lib/achievements";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { JournalVolume } from "@/components/journal/journal-book";
 import { GameJournalPlate, type PlateLine } from "@/components/journal/game-journal-plate";
 import { buttonVariants } from "@/components/ui/button";
@@ -85,11 +85,11 @@ export async function GameJournalSection({
         className="items-center"
       />
       {journal === null ? (
-        <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           The journal couldn&apos;t be loaded right now.
         </p>
       ) : chronology === null || lines.length === 0 ? (
-        <p className="mt-4 rounded-md border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
           No one has journaled this game yet.
         </p>
       ) : (

@@ -52,11 +52,11 @@ export function RarityView({
           <section
             key={band.tier ?? "none"}
             aria-label={band.tier ? RARITY_TIER_LABEL[band.tier] : "No Rarity"}
-            className="grid gap-x-6 gap-y-4 border-b border-rule py-6 first:pt-1 last:border-b-0 md:grid-cols-[11rem_minmax(0,1fr)]"
+            className="grid gap-x-6 gap-y-4 border-b border-border py-6 first:pt-1 last:border-b-0 md:grid-cols-[11rem_minmax(0,1fr)]"
           >
             <BandLabel band={band} />
             {band.items.length === 0 ? (
-              <p className="self-center text-[0.95rem] text-paper-mute">
+              <p className="self-center text-[0.95rem] text-faint-foreground">
                 Nothing in the set is this rare.
               </p>
             ) : (
@@ -74,7 +74,7 @@ export function RarityView({
                         onClick={() => onSelect(view.id)}
                         className={itemClass(
                           selected,
-                          "flex w-full flex-col gap-2 rounded-md p-1.5 hover:bg-ink-3",
+                          "flex w-full flex-col gap-2 rounded-md p-1.5 hover:bg-muted",
                         )}
                       >
                         <AchievementIcon
@@ -88,7 +88,7 @@ export function RarityView({
                           <span
                             className={cn(
                               "line-clamp-3 text-[0.82rem] leading-tight font-semibold break-words sm:text-[0.92rem]",
-                              view.unlocked ? "text-paper" : "text-paper-dim",
+                              view.unlocked ? "text-foreground" : "text-dim-foreground",
                             )}
                           >
                             <span
@@ -102,7 +102,7 @@ export function RarityView({
                             </span>
                             <AchievementName view={view} />
                           </span>
-                          <span className="text-[0.78rem] text-paper-mute">
+                          <span className="text-[0.78rem] text-faint-foreground">
                             {sealed
                               ? "Hidden"
                               : [
@@ -133,19 +133,19 @@ function BandLabel({ band }: { band: RarityBand }) {
     <div className="flex items-start gap-3 md:flex-col md:gap-2">
       <span
         aria-hidden
-        className={cn("mt-1 h-7 w-1.5 shrink-0 rounded-[1px] md:mt-0 md:h-1.5 md:w-10", band.tier ? TIER_RULE[band.tier] : "bg-rule-strong")}
+        className={cn("mt-1 h-7 w-1.5 shrink-0 rounded-[1px] md:mt-0 md:h-1.5 md:w-10", band.tier ? TIER_RULE[band.tier] : "bg-border-strong")}
       />
       <div className="flex flex-col gap-1">
         <h3
           className={cn(
             "font-headline text-[1.85rem] leading-[0.95] md:text-[2.1rem]",
-            band.tier ? TIER_TEXT[band.tier] : "text-paper-dim",
+            band.tier ? TIER_TEXT[band.tier] : "text-dim-foreground",
           )}
         >
           {label}
         </h3>
-        <p className="font-label flex flex-wrap gap-x-3 text-[0.8rem] text-paper-mute">
-          {band.tier && <span className="text-paper-dim">{RARITY_BAND_RANGE[band.tier]}</span>}
+        <p className="font-label flex flex-wrap gap-x-3 text-[0.8rem] text-faint-foreground">
+          {band.tier && <span className="text-dim-foreground">{RARITY_BAND_RANGE[band.tier]}</span>}
           <span>
             {band.unlocked} of {band.items.length} unlocked
           </span>

@@ -33,8 +33,8 @@ export function NewsCategorySwitches({
   const reasonId = `${id}-reason`;
 
   return (
-    <div className="mt-3 ml-1 border-l border-paper-mute pl-4 sm:ml-2 sm:pl-5">
-      <p id={introId} className="max-w-[60ch] text-sm text-paper-dim">
+    <div className="mt-3 ml-1 border-l border-faint-foreground pl-4 sm:ml-2 sm:pl-5">
+      <p id={introId} className="max-w-[60ch] text-sm text-dim-foreground">
         Categories you see by default. Off ones stay in the News page filter.
       </p>
       {initial ? (
@@ -45,12 +45,12 @@ export function NewsCategorySwitches({
           reasonId={reasonId}
         />
       ) : (
-        <p role="alert" className="mt-2 text-sm text-paper-dim">
+        <p role="alert" className="mt-2 text-sm text-dim-foreground">
           Couldn&apos;t load your News Categories. Reload the page to try again.
         </p>
       )}
       {initial && unavailable && (
-        <p id={reasonId} className="mt-2 text-sm text-paper-dim">
+        <p id={reasonId} className="mt-2 text-sm text-dim-foreground">
           Show the News Hub to choose its categories.
         </p>
       )}
@@ -109,7 +109,7 @@ function CategoryList({
         const on = !c.hidden;
         const nameId = `news-cat-${c.key}-name`;
         return (
-          <li key={c.key} className="border-b border-rule py-2.5 last:border-b-0">
+          <li key={c.key} className="border-b border-border py-2.5 last:border-b-0">
             <div className="flex items-center justify-between gap-5">
               <div className="flex min-w-0 items-center gap-2.5">
                 <InkSquare
@@ -120,7 +120,7 @@ function CategoryList({
                   id={nameId}
                   className={cn(
                     "font-label min-w-0 text-[0.95rem] font-bold transition-colors",
-                    unavailable ? "text-paper-mute" : on ? "text-paper" : "text-paper-dim",
+                    unavailable ? "text-faint-foreground" : on ? "text-foreground" : "text-dim-foreground",
                   )}
                 >
                   {c.name}

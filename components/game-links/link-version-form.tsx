@@ -47,8 +47,8 @@ export function LinkVersionForm({
   }
 
   return (
-    <div className="mt-4 max-w-xl rounded-sm border border-dashed border-rule-strong p-3.5">
-      <p className="font-label mb-2 text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-mute">
+    <div className="mt-4 max-w-xl rounded-sm border border-dashed border-border-strong p-3.5">
+      <p className="font-label mb-2 text-[0.8rem] font-extrabold tracking-[0.08em] text-faint-foreground">
         Link a version
         <span className="ml-2 font-normal tracking-normal">Admin</span>
       </p>
@@ -80,15 +80,15 @@ export function LinkVersionForm({
       </div>
       <div aria-live="polite" className="mt-2 empty:mt-0">
         {problem ? (
-          <p className="text-sm text-paper-mute">{problem}</p>
+          <p className="text-sm text-faint-foreground">{problem}</p>
         ) : error ? (
           <p role="alert" className="text-sm text-destructive">
             {error}
           </p>
         ) : linked ? (
-          <p className="flex items-center gap-2 text-sm text-paper-dim">
+          <p className="flex items-center gap-2 text-sm text-dim-foreground">
             <CircleCheck aria-hidden className="size-4 shrink-0 text-rarity-uncommon" />
-            Linked <b className="font-semibold text-paper">{linked}</b> as a version.
+            Linked <b className="font-semibold text-foreground">{linked}</b> as a version.
           </p>
         ) : null}
       </div>

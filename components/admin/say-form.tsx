@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-paper-mute";
-const HINT = "text-[0.82rem] text-paper-mute";
+const LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-faint-foreground";
+const HINT = "text-[0.82rem] text-faint-foreground";
 const PROBLEM = "text-[0.82rem] text-destructive";
 
 // /admin/say: pick a text channel, write the message, optionally paste the
@@ -139,7 +139,7 @@ export function SayForm({
             <span
               className={cn(
                 "font-label text-[0.78rem] tracking-[0.06em] tabular-nums",
-                length > SAY_CONTENT_MAX ? "text-destructive" : "text-paper-mute",
+                length > SAY_CONTENT_MAX ? "text-destructive" : "text-faint-foreground",
               )}
             >
               {length} / {SAY_CONTENT_MAX}
@@ -148,7 +148,7 @@ export function SayForm({
           <textarea
             name="content"
             rows={7}
-            className="w-full min-w-0 rounded-sm border border-rule bg-ink-2 px-3 py-2 text-[0.95rem] leading-[1.45] text-paper caret-highlight outline-none focus-visible:border-paper-mute focus-visible:ring-2 focus-visible:ring-highlight/40 disabled:opacity-60 aria-invalid:border-destructive"
+            className="w-full min-w-0 rounded-sm border border-border bg-card px-3 py-2 text-[0.95rem] leading-[1.45] text-foreground caret-highlight outline-none focus-visible:border-faint-foreground focus-visible:ring-2 focus-visible:ring-highlight/40 disabled:opacity-60 aria-invalid:border-destructive"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onBlur={() => setTouched((t) => ({ ...t, content: true }))}
@@ -216,25 +216,25 @@ function MessageProof({
 }) {
   const text = content.trim();
   return (
-    <div className="bg-ink-2 p-5">
-      <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">
+    <div className="bg-card p-5">
+      <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">
         {replyingTo ? "Reply" : "Message"} · {channel ?? "No channel yet"}
       </p>
-      <div className="mt-4 border-t border-rule pt-4">
+      <div className="mt-4 border-t border-border pt-4">
         {replyingTo && (
-          <p className="mb-1.5 flex items-center gap-1.5 pl-1 text-[0.82rem] text-paper-mute">
+          <p className="mb-1.5 flex items-center gap-1.5 pl-1 text-[0.82rem] text-faint-foreground">
             <CornerUpLeft aria-hidden className="size-3.5 shrink-0" />
             <span className="min-w-0 truncate">Replying to message {replyingTo}</span>
           </p>
         )}
         <div className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-3">
-          <span className="grid size-10 place-items-center rounded-full bg-ink-3 text-paper-dim">
+          <span className="grid size-10 place-items-center rounded-full bg-muted text-dim-foreground">
             <Bot aria-hidden className="size-5" />
           </span>
           <div className="min-w-0">
             <p className="flex items-center gap-2">
               <span className="font-semibold">The bot</span>
-              <span className="font-label rounded-xs bg-ink-3 px-1.5 pt-0.5 text-[0.68rem] tracking-[0.06em] text-paper-dim">
+              <span className="font-label rounded-xs bg-muted px-1.5 pt-0.5 text-[0.68rem] tracking-[0.06em] text-dim-foreground">
                 App
               </span>
             </p>
@@ -243,7 +243,7 @@ function MessageProof({
                 {text}
               </p>
             ) : (
-              <p className="mt-1 text-[0.95rem] text-paper-mute italic">Your message shows here.</p>
+              <p className="mt-1 text-[0.95rem] text-faint-foreground italic">Your message shows here.</p>
             )}
           </div>
         </div>

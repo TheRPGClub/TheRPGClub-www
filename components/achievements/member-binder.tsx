@@ -33,10 +33,10 @@ export function BinderTotals({
   return (
     <dl className={cn("flex flex-col gap-5", className)}>
       <div className="flex items-end gap-3">
-        <dd className="font-headline text-[4.5rem] leading-[0.8] text-paper sm:text-[5.25rem]">
+        <dd className="font-headline text-[4.5rem] leading-[0.8] text-foreground sm:text-[5.25rem]">
           {lead.value.toLocaleString("en-US")}
         </dd>
-        <dt className="font-label max-w-[7ch] pb-0.5 text-[1rem] leading-[1.1] text-paper-dim">
+        <dt className="font-label max-w-[7ch] pb-0.5 text-[1rem] leading-[1.1] text-dim-foreground">
           {label(lead)}
         </dt>
       </div>
@@ -44,10 +44,10 @@ export function BinderTotals({
         <div className="grid grid-cols-4 gap-x-3 gap-y-4">
           {rest.map((stat) => (
             <div key={stat.key} className="flex flex-col-reverse gap-1.5">
-              <dt className="font-label max-w-[9ch] text-[0.74rem] leading-[1.1] tracking-[0.08em] text-paper-mute">
+              <dt className="font-label max-w-[9ch] text-[0.74rem] leading-[1.1] tracking-[0.08em] text-faint-foreground">
                 {label(stat)}
               </dt>
-              <dd className="font-headline text-[2rem] leading-[0.8] text-paper">
+              <dd className="font-headline text-[2rem] leading-[0.8] text-foreground">
                 {stat.value.toLocaleString("en-US")}
               </dd>
             </div>
@@ -105,7 +105,7 @@ export function SlotDots({
       {Array.from({ length: empty }, (_, i) => (
         <i
           key={`e${i}`}
-          className="size-[7px] rounded-full border border-dashed border-paper-mute/70"
+          className="size-[7px] rounded-full border border-dashed border-faint-foreground/70"
         />
       ))}
     </span>
@@ -134,7 +134,7 @@ export function BinderIndexRow({
   const n = String(number).padStart(2, "0");
 
   return (
-    <li className="group relative flex min-h-[5.25rem] flex-col justify-center gap-2.5 border-b border-rule pt-3 pb-4 sm:pb-3">
+    <li className="group relative flex min-h-[5.25rem] flex-col justify-center gap-2.5 border-b border-border pt-3 pb-4 sm:pb-3">
       <span
         aria-hidden
         className="font-headline absolute top-3 left-full ml-[18px] flex h-12 w-5 items-center justify-end rounded-r-[4px] pr-2 text-[1.2rem] leading-none shadow-[4px_4px_10px_rgb(0_0_0/0.45)] sm:ml-[26px] xl:ml-[30px] xl:h-14 xl:w-[3.25rem]"
@@ -151,7 +151,7 @@ export function BinderIndexRow({
         >
           {n}
         </span>
-        <h3 className="font-headline min-w-0 truncate text-[1.25rem] leading-none text-paper sm:text-[1.5rem]">
+        <h3 className="font-headline min-w-0 truncate text-[1.25rem] leading-none text-foreground sm:text-[1.5rem]">
           <Link
             href={href}
             className="transition-colors group-hover:text-highlight focus-visible:outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-highlight"
@@ -160,15 +160,15 @@ export function BinderIndexRow({
           </Link>
         </h3>
         <ProviderBadge provider={set.provider} short className="h-5 shrink-0 px-1.5 text-[0.72rem]" />
-        <span className="font-headline ml-auto shrink-0 pl-2 text-[1.25rem] leading-none whitespace-nowrap text-paper sm:text-[1.5rem]">
+        <span className="font-headline ml-auto shrink-0 pl-2 text-[1.25rem] leading-none whitespace-nowrap text-foreground sm:text-[1.5rem]">
           {row.earned_count}
-          <span className="text-paper-mute"> / {row.total_count}</span>
+          <span className="text-faint-foreground"> / {row.total_count}</span>
         </span>
         <span className="hidden w-[5.75rem] shrink-0 justify-end sm:flex">
           {badge ? (
             <FoilStamp kind={badge} size="sm" />
           ) : (
-            <span className="font-label text-[0.8rem] text-paper-mute">
+            <span className="font-label text-[0.8rem] text-faint-foreground">
               {progressPercent(row)}%
             </span>
           )}
@@ -186,7 +186,7 @@ export function BinderIndexRow({
           {badge ? (
             <FoilStamp kind={badge} size="sm" />
           ) : (
-            <span className="font-label text-[0.8rem] text-paper-mute">
+            <span className="font-label text-[0.8rem] text-faint-foreground">
               {progressPercent(row)}%
             </span>
           )}
@@ -207,7 +207,7 @@ export function BinderRings({ count }: { count: number }) {
       {Array.from({ length: count }, (_, i) => (
         <i
           key={i}
-          className="h-4 w-[30px] rounded-[9px] border-[3px] border-[#9a9aa2] bg-ink-2 shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)]"
+          className="h-4 w-[30px] rounded-[9px] border-[3px] border-[#9a9aa2] bg-card shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)]"
         />
       ))}
     </div>

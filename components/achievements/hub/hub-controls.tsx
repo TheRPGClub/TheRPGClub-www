@@ -30,8 +30,8 @@ export function HubViewTabs({ filters }: { filters: Filters }) {
                 className={cn(
                   "font-label inline-flex h-[34px] items-center gap-2 rounded-sm px-3.5 text-base font-extrabold tracking-[0.06em] transition-colors",
                   on
-                    ? "text-paper shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
-                    : "bg-paper/6 text-paper-dim hover:bg-paper/10 hover:text-paper",
+                    ? "text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
+                    : "bg-foreground/6 text-dim-foreground hover:bg-foreground/10 hover:text-foreground",
                   FOCUS,
                 )}
               >
@@ -53,16 +53,16 @@ export function HubViewTabs({ filters }: { filters: Filters }) {
 // the rest drop to an outline in their colour.
 const PROVIDER_CHIP: Record<AchievementProvider, { solid: string; outline: string }> = {
   retroachievements: {
-    solid: "bg-provider-retroachievements text-ink",
+    solid: "bg-provider-retroachievements text-provider-foreground",
     outline:
       "text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)]",
   },
   steam: {
-    solid: "bg-provider-steam text-ink",
+    solid: "bg-provider-steam text-provider-foreground",
     outline: "text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)]",
   },
   psn: {
-    solid: "bg-provider-psn text-ink",
+    solid: "bg-provider-psn text-provider-foreground",
     outline: "text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)]",
   },
 };
@@ -83,8 +83,8 @@ export function HubProviderFilter({ filters }: { filters: Filters }) {
             className={cn(
               CHIP,
               all
-                ? "text-paper shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
-                : "bg-paper/6 text-paper-dim hover:text-paper",
+                ? "text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
+                : "bg-foreground/6 text-dim-foreground hover:text-foreground",
               FOCUS,
             )}
           >

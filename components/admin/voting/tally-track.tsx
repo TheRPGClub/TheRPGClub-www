@@ -73,7 +73,7 @@ export function TallyTrack({
       >
         <span className={ink.soft}>{label}</span>
         {nominating ? "Nominations" : "Private tally"}
-        <small className="ml-auto text-[0.78rem] tracking-[0.08em] text-paper-mute">
+        <small className="ml-auto text-[0.78rem] tracking-[0.08em] text-faint-foreground">
           {nominating
             ? `${track.lines.length} ${track.lines.length === 1 ? "game" : "games"}`
             : `${track.total} ${track.total === 1 ? "vote" : "votes"}`}
@@ -85,7 +85,7 @@ export function TallyTrack({
           {"Couldn't read the tally. Refresh to try again."}
         </p>
       ) : track.lines.length === 0 ? (
-        <p className="py-4 text-[0.9rem] text-paper-dim">
+        <p className="py-4 text-[0.9rem] text-dim-foreground">
           {nominating ? "No nominations yet." : "Nothing on this ballot."}
         </p>
       ) : (
@@ -93,7 +93,7 @@ export function TallyTrack({
       )}
 
       {nominating && track.lines.length > 0 && (
-        <p className="mt-3 text-[0.86rem] text-paper-dim">The tally starts when the vote opens.</p>
+        <p className="mt-3 text-[0.86rem] text-dim-foreground">The tally starts when the vote opens.</p>
       )}
 
       {leadersTied && (
@@ -105,9 +105,9 @@ export function TallyTrack({
 
       {track.runoff && (
         <div className="mt-5">
-          <h3 className="font-label flex items-baseline gap-2 border-b border-rule pb-1 text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim">
+          <h3 className="font-label flex items-baseline gap-2 border-b border-border pb-1 text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground">
             Runoff
-            <small className="ml-auto text-[0.74rem] tracking-[0.08em] text-paper-mute">
+            <small className="ml-auto text-[0.74rem] tracking-[0.08em] text-faint-foreground">
               {round.runoff_open ? "Open" : "Closed"}
             </small>
           </h3>
@@ -155,7 +155,7 @@ export function TallyTrack({
             </TypedConfirmButton>
           )}
           {notice && (
-            <p role="status" className="text-[0.86rem] text-paper-dim">
+            <p role="status" className="text-[0.86rem] text-dim-foreground">
               {notice}
             </p>
           )}
@@ -183,18 +183,18 @@ function Lines({
         return (
           <li
             key={line.gameId}
-            className="grid grid-cols-[3.2rem_minmax(0,1fr)] items-center gap-3 border-b border-rule py-2.25"
+            className="grid grid-cols-[3.2rem_minmax(0,1fr)] items-center gap-3 border-b border-border py-2.25"
           >
             <span
               className={cn(
                 "font-headline text-right text-[2.2rem] leading-[0.85] tabular-nums",
-                lead ? ink.soft : showCounts ? "text-paper" : "text-paper-mute",
+                lead ? ink.soft : showCounts ? "text-foreground" : "text-faint-foreground",
               )}
             >
               {showCounts ? line.count : "·"}
             </span>
             <div className="min-w-0">
-              <p className={cn("leading-tight", dim ? "text-paper-dim" : "font-semibold text-paper")}>
+              <p className={cn("leading-tight", dim ? "text-dim-foreground" : "font-semibold text-foreground")}>
                 {line.title}
                 {showCounts && <span className="sr-only">, {line.count} {line.count === 1 ? "vote" : "votes"}</span>}
               </p>
@@ -244,20 +244,20 @@ function TieBreak({
   };
 
   return (
-    <fieldset className="mt-5 rounded-md bg-ink-2 px-3.5 pt-1 pb-3.5">
+    <fieldset className="mt-5 rounded-md bg-card px-3.5 pt-1 pb-3.5">
       <legend className="sr-only">{label} tie break</legend>
       <p className="font-label flex items-center gap-2 pt-2.5 text-[0.95rem] font-extrabold tracking-[0.06em]">
         <Scale aria-hidden className="size-4" />
         {label} tie break
       </p>
-      <p className="mt-1 mb-2.5 text-[0.84rem] leading-snug text-paper-dim">
+      <p className="mt-1 mb-2.5 text-[0.84rem] leading-snug text-dim-foreground">
         {hadRunoff ? "The runoff tied again. " : "The vote closed tied. "}
         Pick the winner, or more than one for joint winners. The bot announces it.
       </p>
       <ul className="space-y-1.5">
         {games.map((game) => (
           <li key={game.game_id}>
-            <label className="flex cursor-pointer items-center gap-2.5 rounded-sm px-1 py-1 hover:bg-ink-3">
+            <label className="flex cursor-pointer items-center gap-2.5 rounded-sm px-1 py-1 hover:bg-muted">
               <input
                 type="checkbox"
                 checked={picked.includes(game.game_id)}

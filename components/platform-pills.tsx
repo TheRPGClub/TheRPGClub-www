@@ -34,7 +34,7 @@ export function PlatformPills({
   const shown = platforms.slice(0, max);
   const hidden = platforms.length - shown.length;
   const pill =
-    "font-label inline-flex h-6 items-center rounded-xs bg-paper/8 px-2 text-[0.78rem] text-paper-dim";
+    "font-label inline-flex h-6 items-center rounded-xs bg-foreground/8 px-2 text-[0.78rem] text-dim-foreground";
 
   return (
     <ul className={cn("flex flex-wrap items-center gap-1.5", className)}>

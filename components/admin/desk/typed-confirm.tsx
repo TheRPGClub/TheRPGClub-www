@@ -78,11 +78,11 @@ export function TypedConfirm({
         <Icon aria-hidden className="size-[13px]" />
         {label}
       </legend>
-      <p className="font-semibold text-paper">{question}</p>
-      <p id={`${id}-how`} className="mt-1 mb-2.5 text-[0.84rem] text-paper-dim">
+      <p className="font-semibold text-foreground">{question}</p>
+      <p id={`${id}-how`} className="mt-1 mb-2.5 text-[0.84rem] text-dim-foreground">
         {children}
         {children ? " " : null}
-        Type <b className="font-semibold text-paper">{words}</b> to go ahead.
+        Type <b className="font-semibold text-foreground">{words}</b> to go ahead.
       </p>
       <div className="flex flex-wrap gap-2">
         <label htmlFor={`${id}-words`} className="sr-only">
@@ -103,8 +103,8 @@ export function TypedConfirm({
           spellCheck={false}
           autoFocus
           className={cn(
-            "min-w-40 flex-1 bg-ink",
-            ready && "border-destructive text-paper ring-3 ring-destructive/15 focus-visible:border-destructive",
+            "min-w-40 flex-1 bg-background",
+            ready && "border-destructive text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive",
           )}
         />
         <Button type="button" variant="destructive-solid" disabled={!ready || pending} onClick={confirm}>

@@ -16,13 +16,13 @@ import {
   STATE_LABEL,
   type FeatureFlagEntry,
 } from "@/lib/feature-flags";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // Each state's ink on the desk: Live in done green, Preview in highlighter
-// yellow, Off in masthead red (DESIGN.md, Production desk: the Off-red
+// yellow, Off in masthead red (themes/monthly-issue/README.md, Production desk: the Off-red
 // exception). Type and strokes only, never a fill behind type.
 const STATE_INK: Record<FeatureState, string> = {
   live: "text-ok",
@@ -37,8 +37,8 @@ const COVERAGE = [
 ] as const;
 
 const TH =
-  "font-label border-b border-rule pt-2 pb-1.5 pr-3 text-left align-bottom text-[0.72rem] tracking-[0.08em] text-paper-mute";
-const TH_COVER = "border-l border-rule-strong pl-3 text-paper-dim";
+  "font-label border-b border-border pt-2 pb-1.5 pr-3 text-left align-bottom text-[0.72rem] tracking-[0.08em] text-faint-foreground";
+const TH_COVER = "border-l border-border-strong pl-3 text-dim-foreground";
 
 // The desk's two departments, Core Features and Hideable Features, as one
 // table split in two: the same columns, so a Feature's coverage, last change
@@ -58,7 +58,7 @@ export function FeatureFlagDesk({ entries, now }: { entries: FeatureFlagEntry[];
 
   if (rows.length === 0) {
     return (
-      <p className="mt-6.5 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-dim">
+      <p className="mt-6.5 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-dim-foreground">
         The club&apos;s server lists no Features.
       </p>
     );
@@ -115,10 +115,10 @@ function FlagDepartment({
                 <th
                   scope="colgroup"
                   colSpan={3}
-                  className={cn(TH, TH_COVER, "border-rule-strong pt-2.5 pb-1 text-paper")}
+                  className={cn(TH, TH_COVER, "border-border-strong pt-2.5 pb-1 text-foreground")}
                 >
                   One flag switches
-                  <span className="ml-2 font-semibold tracking-[0.06em] text-paper-mute">all three at once</span>
+                  <span className="ml-2 font-semibold tracking-[0.06em] text-faint-foreground">all three at once</span>
                 </th>
                 <th scope="col" rowSpan={2} className={TH}>
                   Last change
@@ -239,14 +239,14 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
       <tr
         className={cn(
           "align-middle max-[85rem]:grid max-[85rem]:grid-cols-[minmax(0,1fr)_auto] max-[85rem]:items-center max-[85rem]:gap-x-3 max-[85rem]:gap-y-2 max-[85rem]:py-3.5",
-          panel || error ? "max-[85rem]:pb-2" : "border-b border-rule",
+          panel || error ? "max-[85rem]:pb-2" : "border-b border-border",
         )}
       >
         <th scope="row" className="py-2.5 pr-3 text-left font-normal max-[85rem]:p-0">
           <span
             className={cn(
               "font-headline flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[1.4rem] leading-[1.05]",
-              off && "text-paper-mute",
+              off && "text-faint-foreground",
             )}
           >
             {entry.name}
@@ -260,15 +260,15 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
         {COVERAGE.map((c) => (
           <td
             key={c.key}
-            className="bg-paper/[0.018] py-2.5 pr-3 align-middle max-[85rem]:col-span-2 max-[85rem]:grid max-[85rem]:grid-cols-[4.5rem_minmax(0,1fr)] max-[85rem]:items-baseline max-[85rem]:bg-transparent max-[85rem]:p-0 min-[85rem]:border-l min-[85rem]:border-rule min-[85rem]:pl-3"
+            className="bg-foreground/[0.018] py-2.5 pr-3 align-middle max-[85rem]:col-span-2 max-[85rem]:grid max-[85rem]:grid-cols-[4.5rem_minmax(0,1fr)] max-[85rem]:items-baseline max-[85rem]:bg-transparent max-[85rem]:p-0 min-[85rem]:border-l min-[85rem]:border-border min-[85rem]:pl-3"
           >
-            <span className="font-label text-[0.72rem] tracking-[0.08em] text-paper-mute min-[85rem]:hidden">{c.label}</span>
+            <span className="font-label text-[0.72rem] tracking-[0.08em] text-faint-foreground min-[85rem]:hidden">{c.label}</span>
             <CoverageChips items={entry.coverage[c.key]} />
           </td>
         ))}
         <td className="py-2.5 pr-3 max-[85rem]:col-span-2 max-[85rem]:p-0" aria-live="polite">
           {busy ? (
-            <span className="font-label text-[0.72rem] tracking-[0.06em] text-paper-mute">Saving...</span>
+            <span className="font-label text-[0.72rem] tracking-[0.06em] text-faint-foreground">Saving...</span>
           ) : (
             <LastChange entry={entry} clock={clock} landed={landed === entry.key} />
           )}
@@ -283,9 +283,9 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
               disabled={busy}
               onClick={() => showPanel(panel === "reason" ? null : "reason")}
               className={cn(
-                "grid size-9 place-items-center rounded-sm text-paper-mute transition-colors outline-none hover:bg-ink-3 hover:text-paper focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 min-[85rem]:size-8",
+                "grid size-9 place-items-center rounded-sm text-faint-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 min-[85rem]:size-8",
                 draft.trim() && "text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)] hover:text-highlight",
-                panel === "reason" && "bg-ink-3 text-paper",
+                panel === "reason" && "bg-muted text-foreground",
               )}
             >
               <MessageSquareText aria-hidden className="size-4" />
@@ -294,7 +294,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
               role="group"
               aria-label={`${entry.name} state`}
               aria-busy={busy}
-              className="grid shrink-0 grid-cols-[repeat(3,auto)] min-[85rem]:grid-cols-[repeat(3,4.25rem)] rounded-sm bg-ink-2 shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+              className="grid shrink-0 grid-cols-[repeat(3,auto)] min-[85rem]:grid-cols-[repeat(3,4.25rem)] rounded-sm bg-card shadow-[inset_0_0_0_1px_var(--color-border-strong)]"
             >
               {FEATURE_STATES.map((state) => {
                 const selected = shown === state;
@@ -311,8 +311,8 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
                     className={cn(
                       "font-label inline-flex h-9 items-center justify-center rounded-sm px-2 text-[0.82rem] tracking-[0.06em] min-[85rem]:px-1 transition-[color,background-color,box-shadow] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 min-[85rem]:h-8",
                       selected
-                        ? cn("bg-ink font-extrabold shadow-[inset_0_0_0_2px_currentColor]", STATE_INK[state])
-                        : "text-paper-mute hover:bg-ink-3 hover:text-paper disabled:opacity-50",
+                        ? cn("bg-background font-extrabold shadow-[inset_0_0_0_2px_currentColor]", STATE_INK[state])
+                        : "text-faint-foreground hover:bg-muted hover:text-foreground disabled:opacity-50",
                       arming && "text-gotm outline-[1.5px] -outline-offset-[3px] outline-gotm outline-dashed",
                     )}
                   >
@@ -325,7 +325,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
         </td>
       </tr>
       {(panel || error) && (
-        <tr className="border-b border-rule max-[85rem]:block">
+        <tr className="border-b border-border max-[85rem]:block">
           <td colSpan={6} id={panelId} className="pt-0.5 pb-3.5 max-[85rem]:block">
             <div className="ml-auto max-w-[42rem]">
               {panel === "confirm" ? (
@@ -366,7 +366,7 @@ function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: FeatureF
 function CoverageChips({ items }: { items: string[] }) {
   if (items.length === 0) {
     return (
-      <span className="inline-block h-[1.5px] w-3 translate-y-[-3px] bg-rule-strong">
+      <span className="inline-block h-[1.5px] w-3 translate-y-[-3px] bg-border-strong">
         <span className="sr-only">None</span>
       </span>
     );
@@ -377,7 +377,7 @@ function CoverageChips({ items }: { items: string[] }) {
         <li
           key={item}
           className={cn(
-            "font-label inline-flex min-h-[22px] max-w-full min-w-0 items-center rounded-xs bg-paper/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-paper-dim",
+            "font-label inline-flex min-h-[22px] max-w-full min-w-0 items-center rounded-xs bg-foreground/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-dim-foreground",
             isCommand(item) ? "tracking-[0.02em] whitespace-nowrap normal-case" : "[overflow-wrap:anywhere]",
           )}
         >
@@ -392,7 +392,7 @@ function LastChange({ entry, clock, landed }: { entry: FeatureFlagEntry; clock: 
   const change = entry.last_change;
   if (!change) {
     return (
-      <span className="font-label text-[0.72rem] leading-[1.3] tracking-[0.06em] text-paper-mute">
+      <span className="font-label text-[0.72rem] leading-[1.3] tracking-[0.06em] text-faint-foreground">
         Never set
       </span>
     );
@@ -404,17 +404,17 @@ function LastChange({ entry, clock, landed }: { entry: FeatureFlagEntry; clock: 
         landed && "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-left-1 motion-safe:duration-300",
       )}
     >
-      <span className="font-label block text-[0.72rem] leading-[1.3] tracking-[0.06em] text-paper-mute tabular-nums">
+      <span className="font-label block text-[0.72rem] leading-[1.3] tracking-[0.06em] text-faint-foreground tabular-nums">
         <b className={cn("font-extrabold", STATE_INK[change.to_state])}>{STATE_LABEL[change.to_state]}</b>
         {" · "}
-        <span className="text-paper-dim">{changerName(change)}</span>
+        <span className="text-dim-foreground">{changerName(change)}</span>
         {" · "}
         <time dateTime={change.changed_at} title={new Date(change.changed_at).toUTCString()}>
           {changeWhen(change.changed_at, clock)}
         </time>
       </span>
       {change.reason && (
-        <q className="mt-0.5 block text-[0.8rem] leading-[1.3] text-paper-dim italic">{change.reason}</q>
+        <q className="mt-0.5 block text-[0.8rem] leading-[1.3] text-dim-foreground italic">{change.reason}</q>
       )}
     </div>
   );
@@ -450,7 +450,7 @@ function ReasonField({
       autoFocus={autoFocus}
       aria-invalid={over || undefined}
       aria-describedby={`${reasonId}-hint`}
-      className="min-w-48 flex-1 bg-ink"
+      className="min-w-48 flex-1 bg-background"
     />
   );
 }
@@ -469,16 +469,16 @@ function ReasonEditor({
   onClose: () => void;
 }) {
   return (
-    <div className="rounded-md border border-highlight/60 bg-ink-2 px-3.5 pt-2.5 pb-3">
+    <div className="rounded-md border border-highlight/60 bg-card px-3.5 pt-2.5 pb-3">
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={reasonId} className="font-label text-[0.78rem] tracking-[0.08em] text-paper">
+        <label htmlFor={reasonId} className="font-label text-[0.78rem] tracking-[0.08em] text-foreground">
           Reason for {name}&apos;s next change
         </label>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close the reason"
-          className="grid size-7 place-items-center rounded-sm text-paper-mute outline-none hover:bg-ink-3 hover:text-paper focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="grid size-7 place-items-center rounded-sm text-faint-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <X aria-hidden className="size-4" />
         </button>
@@ -486,7 +486,7 @@ function ReasonEditor({
       <div className="mt-1.5 flex">
         <ReasonField reasonId={reasonId} draft={draft} onDraft={onDraft} autoFocus onEnter={onClose} />
       </div>
-      <p id={`${reasonId}-hint`} className="mt-1.5 text-[0.8rem] text-paper-mute">
+      <p id={`${reasonId}-hint`} className="mt-1.5 text-[0.8rem] text-faint-foreground">
         Optional. It goes with the state you pick next, here and in the admin channel.
       </p>
     </div>
@@ -516,7 +516,7 @@ function OffConfirm({
         <Power aria-hidden className="size-[13px]" />
         Turn {name} Off?
       </legend>
-      <p className="mt-0.5 mb-2.5 text-[0.84rem] text-paper-dim">
+      <p className="mt-0.5 mb-2.5 text-[0.84rem] text-dim-foreground">
         Nobody can use it, staff included. Its pages go not-found, its bot commands answer that it isn&apos;t
         available yet, and its automated posts and jobs pause until it&apos;s back on.
       </p>
@@ -533,7 +533,7 @@ function OffConfirm({
           Cancel
         </Button>
       </div>
-      <p id={`${reasonId}-hint`} className="mt-1.5 text-[0.8rem] text-paper-mute">
+      <p id={`${reasonId}-hint`} className="mt-1.5 text-[0.8rem] text-faint-foreground">
         Reason optional; it shows here and in the admin channel.
       </p>
     </fieldset>

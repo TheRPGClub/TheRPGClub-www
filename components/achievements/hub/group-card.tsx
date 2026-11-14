@@ -72,7 +72,7 @@ function CardShell({
   return (
     <article
       className={cn(
-        "relative overflow-hidden rounded-md border border-rule bg-ink-2 pl-2.5",
+        "relative overflow-hidden rounded-md border border-border bg-card pl-2.5",
         className,
       )}
     >
@@ -86,7 +86,7 @@ function WhoLine({ card }: { card: AchievementFeedGroup }) {
   const time = formatUtcTime(card.latest_unlocked_at);
   return (
     <div className="flex items-start gap-x-3">
-      <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.95rem] text-paper-dim">
+      <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.95rem] text-dim-foreground">
         <MemberLink user={card.user} className="text-base tracking-[0.06em]" />
         <span>
           unlocked {card.count} {card.count === 1 ? "Achievement" : "Achievements"} in
@@ -95,7 +95,7 @@ function WhoLine({ card }: { card: AchievementFeedGroup }) {
       {time && (
         <time
           dateTime={card.latest_unlocked_at}
-          className="font-label ml-auto shrink-0 pt-1 text-[0.78rem] tracking-[0.08em] text-paper-mute"
+          className="font-label ml-auto shrink-0 pt-1 text-[0.78rem] tracking-[0.08em] text-faint-foreground"
         >
           {time} UTC
         </time>
@@ -168,7 +168,7 @@ function PlainGroupCard({
                 href={href}
                 aria-label={`${more} more Unlocks`}
                 className={cn(
-                  "font-headline grid size-14 place-items-center rounded-[6px] border-[1.5px] border-dashed border-rule-strong bg-ink-3 text-2xl text-paper-dim @xl:size-16",
+                  "font-headline grid size-14 place-items-center rounded-[6px] border-[1.5px] border-dashed border-border-strong bg-muted text-2xl text-dim-foreground @xl:size-16",
                   HUB_LINK,
                 )}
               >
@@ -178,7 +178,7 @@ function PlainGroupCard({
           )}
         </ul>
         {names && (
-          <p className="mt-auto truncate text-[0.82rem] text-paper-mute @xl:col-start-1 @xl:mt-0">
+          <p className="mt-auto truncate text-[0.82rem] text-faint-foreground @xl:col-start-1 @xl:mt-0">
             {names}
           </p>
         )}
@@ -210,7 +210,7 @@ function HighlightGroupCard({
         <div className="flex min-w-0 flex-col gap-3 px-4 pt-3 pb-4">
           <WhoLine card={card} />
           <BandLine card={card} tint={tint} />
-          <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[0.9rem] text-paper-dim">
+          <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[0.9rem] text-dim-foreground">
             {lead.highlight === "completion" || lead.highlight === "mastery" ? (
               <span>
                 {HIGHLIGHT_LABEL[lead.highlight]}: all {set.achievements_count}{" "}
@@ -218,7 +218,7 @@ function HighlightGroupCard({
                 {lead.highlight === "mastery" && ", hardcore"}
               </span>
             ) : (
-              <SpoilerText spoiler={isSpoiler(view)} className="min-w-0 truncate font-semibold text-paper">
+              <SpoilerText spoiler={isSpoiler(view)} className="min-w-0 truncate font-semibold text-foreground">
                 {view.name ?? "Untitled achievement"}
               </SpoilerText>
             )}
@@ -234,8 +234,8 @@ function HighlightGroupCard({
                   <li
                     key={unlock.id}
                     className={cn(
-                      "size-[13px] rounded-[1.5px] border-2 bg-ink-3",
-                      tier ? RARITY_DOT[tier] : "border-paper-mute",
+                      "size-[13px] rounded-[1.5px] border-2 bg-muted",
+                      tier ? RARITY_DOT[tier] : "border-faint-foreground",
                       unlock.id === lead.id && foil && "foil border-transparent",
                     )}
                   />
@@ -243,7 +243,7 @@ function HighlightGroupCard({
               })}
             </ul>
             {more > 0 && (
-              <span className="font-label text-[0.78rem] text-paper-mute">+{more}</span>
+              <span className="font-label text-[0.78rem] text-faint-foreground">+{more}</span>
             )}
           </div>
         </div>

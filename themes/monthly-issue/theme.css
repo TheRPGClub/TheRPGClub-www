@@ -1,0 +1,105 @@
+/* The Monthly Issue Theme: the club's 90s game magazine, and the default.
+   Its rules and the palette-to-token mapping live in ./README.md. A Theme is
+   CSS only (api ADR-0008): it sets the tokens app/globals.css maps into
+   Tailwind, and (from www#88) styles primitives by data-slot/data-variant. */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Surface and text roles (shadcn). Ink-black issue stock with
+           off-white paper type; the comment names the palette step each
+           role replaces. */
+        --background: #0b0b0d; /* ink */
+        --foreground: #f4f4f0; /* paper */
+        --dim-foreground: #b9b9b2; /* paper-dim */
+        --faint-foreground: #8d8d87; /* paper-mute */
+        --card: #141417; /* ink-2 */
+        --card-foreground: #f4f4f0;
+        --popover: #141417;
+        --popover-foreground: #f4f4f0;
+        --primary: #ff0000;
+        --primary-foreground: #ffffff;
+        --secondary: #1d1d22;
+        --secondary-foreground: #f4f4f0;
+        --muted: #1d1d22; /* ink-3 */
+        --muted-foreground: #9a9a93;
+        --accent: #1d1d22;
+        --accent-foreground: #f4f4f0;
+        /* Signal orange: off both the GOTM red and the highlighter yellow, so
+           a destructive action never reads as a track or a call to action. */
+        --destructive: oklch(0.74 0.17 52);
+        --destructive-foreground: #2a1300; /* was destructive-ink */
+        --border: #2a2a31; /* rule */
+        --border-strong: #3a3a43; /* rule-strong */
+        --input: #3a3a43;
+        --ring: #ffd400;
+        --chart-1: #ff0000;
+        --chart-2: #8a4dff;
+        --chart-3: #ffd400;
+        --chart-4: #b9b9b2;
+        --chart-5: #3a3a43;
+        --sidebar: #141417;
+        --sidebar-foreground: #f4f4f0;
+        --sidebar-primary: #ff0000;
+        --sidebar-primary-foreground: #ffffff;
+        --sidebar-accent: #1d1d22;
+        --sidebar-accent-foreground: #f4f4f0;
+        --sidebar-border: #2a2a31;
+        --sidebar-ring: #ffd400;
+
+        /* Club colours. Each track owns one ink: masthead red is GOTM (and
+           the active nav state), violet is NR-GOTM, highlighter yellow is
+           calls to action. A Theme may change them but keeps them distinct
+           and readable; each fill carries the type that sits on it. */
+        --gotm: #ff0000;
+        --gotm-soft: #ff5a4f;
+        --gotm-foreground: #ffffff;
+        --nr: #8a4dff;
+        --nr-soft: #b896ff;
+        --nr-foreground: #ffffff;
+        --highlight: #ffd400;
+        --highlight-foreground: #0b0b0d;
+        --highlight-muted-foreground: #3a3200; /* was highlight-ink */
+        /* Rarity inks: the die-cut edge of an unlocked icon, by the
+           Provider's global Rarity (common >= 50%, uncommon 15-50%, rare
+           5-15%, ultra under 5%). */
+        --rarity-common: #f4f4f0;
+        --rarity-uncommon: #5fd08a;
+        --rarity-rare: #4aa8ff;
+        --rarity-ultra: #ff4fa3;
+        --rarity-foreground: #0b0b0d;
+        /* Staff desk only: the Done stamp on a bot job. */
+        --ok: #5fd08a;
+        /* News inks, one per News Category, on news surfaces only. Read them
+           through newsInk() in lib/news.ts. */
+        --news-announcements: #ff5ca8;
+        --news-releases: #b4e05a;
+        --news-emulation: #2fd3c0;
+        --news-industry: #6c9bff;
+        --news-hardware: #d4a373;
+        --news-rumours: #c0c4d6;
+        --news-general: #8d8d87;
+        /* Foil: the one sanctioned gradient. A holographic conic edge under
+           a soft diagonal sheen, only on Platinum, Mastery and Completion,
+           never on text, always with ink type. */
+        --foil-conic: conic-gradient(from 210deg, #b9f3ff, #ffd6f5, #fff3b0, #c7ffd9, #b9f3ff);
+        --foil-sheen: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.55) 44%, transparent 58%);
+        --foil-foreground: #0b0b0d;
+
+        /* Shape: hard rectangles from a 0.25rem base (rounded-xs 2px,
+           rounded-sm 2.4px, rounded-md 3.2px, rounded-lg 4px). */
+        --radius: 0.25rem;
+
+        /* Type: Anton is the masthead/headline voice (caps only), Barlow
+           Condensed the tracked-caps label voice, Barlow the body. The font
+           files load in ./fonts.ts. */
+        --typeface-body: var(--font-barlow);
+        --typeface-display: var(--font-anton);
+        --typeface-label: var(--font-barlow-condensed);
+        --headline-weight: 400;
+        --headline-case: uppercase;
+        --headline-leading: 0.9;
+        --label-weight: 700;
+        --label-case: uppercase;
+        --label-tracking: 0.06em;
+    }
+}

@@ -16,8 +16,8 @@ export interface VotingTab {
 }
 
 const COUNT_TONE: Record<VotingCategory, string> = {
-  gotm: "bg-gotm text-white",
-  nr_gotm: "bg-nr text-white",
+  gotm: "bg-gotm text-gotm-foreground",
+  nr_gotm: "bg-nr text-nr-foreground",
 };
 
 export function VotingTabs({ tabs }: { tabs: VotingTab[] }) {
@@ -40,7 +40,7 @@ export function VotingTabs({ tabs }: { tabs: VotingTab[] }) {
       <div
         role="tablist"
         aria-label="Ballot tracks"
-        className="flex items-end gap-0.5 border-b-2 border-paper"
+        className="flex items-end gap-0.5 border-b-2 border-foreground"
       >
         {tabs.map((tab, i) => {
           const selected = tab.category === active;
@@ -61,8 +61,8 @@ export function VotingTabs({ tabs }: { tabs: VotingTab[] }) {
               className={cn(
                 "font-headline inline-flex h-10.5 items-center gap-2.5 rounded-t-sm px-2.5 text-[1.2rem] transition-colors sm:h-11.5 sm:px-4 sm:text-2xl",
                 selected
-                  ? "bg-paper text-ink"
-                  : "text-paper-mute hover:text-paper",
+                  ? "bg-foreground text-background"
+                  : "text-faint-foreground hover:text-foreground",
               )}
             >
               {tab.label}

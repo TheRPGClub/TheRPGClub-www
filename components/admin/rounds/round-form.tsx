@@ -118,7 +118,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
 
         <fieldset disabled={locked} className="space-y-1.5">
           <legend className={fieldLabel}>Track</legend>
-          <div className="mt-1.5 inline-flex rounded-sm border border-rule-strong p-0.5">
+          <div className="mt-1.5 inline-flex rounded-sm border border-border-strong p-0.5">
             {TRACKS.map((c) => (
               <label
                 key={c}
@@ -126,9 +126,9 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
                   "font-label cursor-pointer rounded-xs px-3.5 py-1.5 text-[0.9rem] font-bold tracking-[0.06em] transition-colors has-focus-visible:ring-2 has-focus-visible:ring-highlight/60",
                   category === c
                     ? c === "gotm"
-                      ? "bg-gotm text-paper"
-                      : "bg-nr text-paper"
-                    : "text-paper-dim hover:text-paper",
+                      ? "bg-gotm text-foreground"
+                      : "bg-nr text-foreground"
+                    : "text-dim-foreground hover:text-foreground",
                 )}
               >
                 <input
@@ -179,13 +179,13 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
             Games, in slot order
           </span>
           {games.length > 0 && (
-            <ol aria-labelledby={`${id}-games`} className="border-t border-rule">
+            <ol aria-labelledby={`${id}-games`} className="border-t border-border">
               {games.map((game, i) => (
                 <li
                   key={game.game_id}
-                  className="grid grid-cols-[1.5rem_2.25rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-rule py-2"
+                  className="grid grid-cols-[1.5rem_2.25rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-2"
                 >
-                  <span className="font-headline text-center text-[1.2rem] text-paper-mute">{i + 1}</span>
+                  <span className="font-headline text-center text-[1.2rem] text-faint-foreground">{i + 1}</span>
                   <GameCover
                     title={game.title}
                     coverUrl={game.cover_url}
@@ -199,7 +199,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="text-paper-dim"
+                        className="text-dim-foreground"
                         disabled={i === 0}
                         onClick={() => setGames((list) => moveItem(list, i, i - 1))}
                         aria-label={`Move ${game.title} up`}
@@ -210,7 +210,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="text-paper-dim"
+                        className="text-dim-foreground"
                         disabled={i === games.length - 1}
                         onClick={() => setGames((list) => moveItem(list, i, i + 1))}
                         aria-label={`Move ${game.title} down`}
@@ -221,7 +221,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="text-paper-dim hover:text-destructive"
+                        className="text-dim-foreground hover:text-destructive"
                         onClick={() => setGames((list) => list.filter((g) => g.game_id !== game.game_id))}
                         aria-label={`Remove ${game.title}`}
                       >
@@ -259,7 +259,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
               <Pencil data-icon="inline-start" />
               Edit this round
             </Link>
-            <span className="text-[0.86rem] text-paper-mute">
+            <span className="text-[0.86rem] text-faint-foreground">
               Saved. The bot reloads {TRACK_NAME[sent.category]} round {sent.roundNumber}.
             </span>
           </div>
@@ -269,7 +269,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
               {pending ? <Loader2 className="animate-spin" /> : <Plus data-icon="inline-start" />}
               Add {TRACK_NAME[category]} round {roundNumber ?? ""}
             </Button>
-            <span className="text-[0.84rem] text-paper-mute">The whole round is saved, or none of it.</span>
+            <span className="text-[0.84rem] text-faint-foreground">The whole round is saved, or none of it.</span>
           </div>
         )}
       </form>

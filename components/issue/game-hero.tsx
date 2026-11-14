@@ -59,8 +59,8 @@ export function GameHero({
         className={cn(
           "absolute inset-0 -z-10",
           art
-            ? "bg-[linear-gradient(0deg,var(--color-ink)_8%,rgb(11_11_13/0.82)_52%,rgb(11_11_13/0.35)_100%)] md:bg-[linear-gradient(90deg,rgb(11_11_13/0.97)_0%,rgb(11_11_13/0.8)_38%,rgb(11_11_13/0.05)_72%),linear-gradient(0deg,var(--color-ink)_0%,rgb(11_11_13/0)_46%)]"
-            : "bg-[linear-gradient(0deg,var(--color-ink)_0%,var(--color-ink-2)_100%)]",
+            ? "bg-[linear-gradient(0deg,var(--color-background)_8%,color-mix(in_oklab,var(--color-background)_82%,transparent)_52%,color-mix(in_oklab,var(--color-background)_35%,transparent)_100%)] md:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_80%,transparent)_38%,color-mix(in_oklab,var(--color-background)_5%,transparent)_72%),linear-gradient(0deg,var(--color-background)_0%,color-mix(in_oklab,var(--color-background)_0%,transparent)_46%)]"
+            : "bg-[linear-gradient(0deg,var(--color-background)_0%,var(--color-card)_100%)]",
         )}
       />
 
@@ -110,7 +110,7 @@ export function GameHero({
             </div>
           )}
           {game.description && (
-            <p className="mt-3.5 line-clamp-4 max-w-[60ch] text-[0.9rem] leading-[1.55] text-paper-dim">
+            <p className="mt-3.5 line-clamp-4 max-w-[60ch] text-[0.9rem] leading-[1.55] text-dim-foreground">
               {game.description}
             </p>
           )}
@@ -119,7 +119,7 @@ export function GameHero({
               href={game.igdb_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-label mt-2.5 inline-flex items-center gap-1.5 text-[0.85rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight"
+              className="font-label mt-2.5 inline-flex items-center gap-1.5 text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight"
             >
               View on IGDB
               <ExternalLink aria-hidden className="size-3.5" />
@@ -130,7 +130,7 @@ export function GameHero({
         <dl className="col-start-2 row-start-1 flex items-end gap-4 self-end md:col-start-3 md:gap-7 md:pb-1.5">
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col-reverse md:text-right">
-              <dt className="font-label text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-dim md:text-[0.82rem]">
+              <dt className="font-label text-[0.75rem] font-extrabold tracking-[0.08em] text-dim-foreground md:text-[0.82rem]">
                 {stat.label}
               </dt>
               <dd className="font-headline text-[2.5rem] leading-[0.9] md:text-[3.75rem]">
@@ -140,7 +140,7 @@ export function GameHero({
           ))}
           {releaseDate && (
             <div className="hidden flex-col-reverse text-right lg:flex">
-              <dt className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim">
+              <dt className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground">
                 Released
               </dt>
               <dd className="font-headline mb-0.5 text-[1.9rem] leading-none">

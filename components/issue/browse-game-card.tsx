@@ -26,7 +26,7 @@ export function BrowseGameCard({ game }: { game: Game }) {
       )}
       <span
         className={cn(
-          "relative block aspect-[3/4] overflow-hidden rounded-sm bg-ink-3 shadow-[inset_0_0_0_1px_rgb(244_244_240/0.06)]",
+          "relative block aspect-[3/4] overflow-hidden rounded-sm bg-muted shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_6%,transparent)]",
           track &&
             "after:absolute after:inset-x-0 after:bottom-0 after:h-1",
           track === "gotm" && "after:bg-gotm",
@@ -42,15 +42,15 @@ export function BrowseGameCard({ game }: { game: Game }) {
             className="size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/card:scale-[1.04]"
           />
         ) : (
-          <span className="font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-balance text-paper-mute">
+          <span className="font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-balance text-faint-foreground">
             {game.title}
           </span>
         )}
       </span>
-      <span className="font-label mt-2.5 line-clamp-2 text-base leading-[1.15] font-bold tracking-[0.02em] text-paper transition-colors group-hover/card:text-highlight">
+      <span className="font-label mt-2.5 line-clamp-2 text-base leading-[1.15] font-bold tracking-[0.02em] text-foreground transition-colors group-hover/card:text-highlight">
         {game.title}
       </span>
-      <span className="font-label mt-0.5 flex flex-wrap gap-x-2 text-[0.8rem] font-bold tracking-[0.08em] text-paper-mute">
+      <span className="font-label mt-0.5 flex flex-wrap gap-x-2 text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">
         {year && <span>{year}</span>}
         {game.gotm_won && <span className="text-gotm-soft">GOTM winner</span>}
         {game.nr_gotm_won && <span className="text-nr-soft">NR-GOTM winner</span>}

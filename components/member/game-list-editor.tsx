@@ -13,7 +13,7 @@ import {
   type GameListKind,
 } from "@/lib/api/game-list-entry";
 import type { Game, Platform } from "@/lib/api/types";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { Button } from "@/components/ui/button";
 import { GamePicker } from "./game-picker";
 
@@ -41,7 +41,7 @@ const OWNERSHIP_TYPES = ["Digital", "Physical", "Subscription", "Other"] as cons
 
 // In-world native selects: ink field, paper text, yellow focus.
 export const EDIT_SELECT_CLASS =
-  "h-9 w-full min-w-0 rounded-sm border border-rule-strong bg-ink-2 px-2.5 text-sm text-paper outline-none transition-colors focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
+  "h-9 w-full min-w-0 rounded-sm border border-border-strong bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
 
 // One of the member's lists as a shelf of covers: each cover carries its
 // remove button, and the dashed Add tile at the end opens the game picker
@@ -130,7 +130,7 @@ export function GameListEditor({
           className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
           action={
             pending ? (
-              <span className="font-label inline-flex items-center gap-1.5 text-sm text-paper-mute">
+              <span className="font-label inline-flex items-center gap-1.5 text-sm text-faint-foreground">
                 <Loader2 aria-hidden className="size-3.5 animate-spin" />
                 Saving…
               </span>
@@ -138,7 +138,7 @@ export function GameListEditor({
           }
         />
         {description && (
-          <p className="text-sm text-paper-mute">{description}</p>
+          <p className="text-sm text-faint-foreground">{description}</p>
         )}
       </div>
 
@@ -149,7 +149,7 @@ export function GameListEditor({
       )}
 
       {adding && (
-        <div className="space-y-2.5 rounded-md border border-highlight bg-ink-2 p-3 sm:p-3.5">
+        <div className="space-y-2.5 rounded-md border border-highlight bg-card p-3 sm:p-3.5">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-label mr-auto text-[0.95rem] font-extrabold tracking-[0.06em] text-highlight">
               Add to {title}
@@ -231,7 +231,7 @@ export function GameListEditor({
           const meta = entryMeta(kind, entry);
           return (
             <li key={id ?? `unresolved-${index}`} className="min-w-0">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-ink-3">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-muted">
                 {entry.game?.cover_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -240,7 +240,7 @@ export function GameListEditor({
                     className="size-full object-cover"
                   />
                 ) : (
-                  <span className="font-headline grid size-full place-items-center p-2 text-center text-base text-paper-mute sm:text-lg">
+                  <span className="font-headline grid size-full place-items-center p-2 text-center text-base text-faint-foreground sm:text-lg">
                     {gameTitle}
                   </span>
                 )}
@@ -249,7 +249,7 @@ export function GameListEditor({
                   onClick={() => handleRemove(id)}
                   disabled={pending || id === undefined}
                   aria-label={`Remove ${gameTitle}`}
-                  className="absolute top-1.5 right-1.5 grid size-7.5 place-items-center rounded-full bg-ink/85 text-paper transition-colors hover:bg-paper hover:text-ink disabled:pointer-events-none disabled:opacity-50"
+                  className="absolute top-1.5 right-1.5 grid size-7.5 place-items-center rounded-full bg-background/85 text-foreground transition-colors hover:bg-foreground hover:text-background disabled:pointer-events-none disabled:opacity-50"
                 >
                   <X aria-hidden className="size-4" />
                 </button>
@@ -258,12 +258,12 @@ export function GameListEditor({
                 {gameTitle}
               </p>
               {meta && (
-                <p className="font-label mt-1 truncate text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                <p className="font-label mt-1 truncate text-[0.75rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                   {meta}
                 </p>
               )}
               {entry.note && (
-                <p className="mt-1 line-clamp-2 text-[0.8rem] text-paper-mute">
+                <p className="mt-1 line-clamp-2 text-[0.8rem] text-faint-foreground">
                   {entry.note}
                 </p>
               )}
@@ -276,7 +276,7 @@ export function GameListEditor({
               type="button"
               onClick={openPicker}
               disabled={pending}
-              className="font-label flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-[3px] border border-dashed border-rule-strong text-[0.85rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
+              className="font-label flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-[3px] border border-dashed border-border-strong text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
             >
               <Plus aria-hidden className="size-5" />
               Add a game
@@ -286,13 +286,13 @@ export function GameListEditor({
       </ul>
 
       {shownCount === 0 && (
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           Nothing here yet. Add a game to start this list.
         </p>
       )}
 
       {hasMoreThanShown && (
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           Showing the first {shownCount}. Use the profile page to browse the
           full list.
         </p>

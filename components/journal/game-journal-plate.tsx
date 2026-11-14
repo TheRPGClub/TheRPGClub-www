@@ -77,11 +77,11 @@ export function GameJournalPlate({
         <h3 className="font-headline mt-4 mb-1 text-[1.6rem] leading-[0.9]">
           One chapter per member
         </h3>
-        <p className="mb-3 text-[0.88rem] text-paper-mute">
+        <p className="mb-3 text-[0.88rem] text-faint-foreground">
           Each line runs from a member&apos;s first entry on this game to their latest.
         </p>
-        <div className="border-t-2 border-paper pt-1">
-          <div aria-hidden className={cn(COLS, "h-[30px] border-b border-rule py-1.5")}>
+        <div className="border-t-2 border-foreground pt-1">
+          <div aria-hidden className={cn(COLS, "h-[30px] border-b border-border py-1.5")}>
             <span />
             <span />
             <div className="relative h-[18px]">
@@ -89,7 +89,7 @@ export function GameJournalPlate({
                 <span
                   key={`${tick.label}-${tick.at}`}
                   style={{ left: `${tick.at}%` }}
-                  className="font-label absolute top-px text-[0.76rem] tracking-[0.08em] text-paper-mute before:absolute before:-top-[7px] before:-left-1.5 before:h-[30px] before:border-l before:border-rule"
+                  className="font-label absolute top-px text-[0.76rem] tracking-[0.08em] text-faint-foreground before:absolute before:-top-[7px] before:-left-1.5 before:h-[30px] before:border-l before:border-border"
                 >
                   {tick.label}
                 </span>
@@ -107,11 +107,11 @@ export function GameJournalPlate({
                   onClick={() => choose(l.userId)}
                   className={cn(
                     COLS,
-                    "-mx-2 h-[50px] cursor-pointer border-b border-rule px-2 transition-colors",
-                    on ? "bg-ink-3" : "hover:bg-ink-3/60",
+                    "-mx-2 h-[50px] cursor-pointer border-b border-border px-2 transition-colors",
+                    on ? "bg-muted" : "hover:bg-muted/60",
                   )}
                 >
-                  <span className="font-headline text-[1.05rem] text-paper-mute">
+                  <span className="font-headline text-[1.05rem] text-faint-foreground">
                     {romanNumeral(i + 1)}
                   </span>
                   <button
@@ -160,7 +160,7 @@ export function GameJournalPlate({
                             sel ? "size-[15px]" : "size-[9px] hover:size-3",
                             mark.completion ? "rotate-45 rounded-[1.5px]" : "rounded-full",
                             sel &&
-                              "shadow-[0_0_0_3px_var(--color-ink-3),0_0_0_5px_var(--color-highlight)]",
+                              "shadow-[0_0_0_3px_var(--color-muted),0_0_0_5px_var(--color-highlight)]",
                           )}
                         />
                       );
@@ -175,14 +175,14 @@ export function GameJournalPlate({
             })}
           </ol>
         </div>
-        <div className="font-label mt-auto flex flex-wrap gap-x-4.5 gap-y-1.5 pt-2.5 text-[0.76rem] text-paper-mute">
+        <div className="font-label mt-auto flex flex-wrap gap-x-4.5 gap-y-1.5 pt-2.5 text-[0.76rem] text-faint-foreground">
           <span className="flex items-center gap-1.5">
-            <i aria-hidden className="size-2 rounded-full bg-paper-dim" />
+            <i aria-hidden className="size-2 rounded-full bg-dim-foreground" />
             Journal entry
           </span>
           {completionKey && (
             <span className="flex items-center gap-1.5">
-              <i aria-hidden className="size-2 rotate-45 rounded-[1px] bg-paper-dim" />
+              <i aria-hidden className="size-2 rotate-45 rounded-[1px] bg-dim-foreground" />
               Game Completion logged that day
             </span>
           )}
@@ -204,10 +204,10 @@ export function GameJournalPlate({
           <MemberAvatar userId={line.userId} name={line.name} className="size-8" fallbackClassName="text-sm" />
           <h3 className="font-headline min-w-0 truncate text-[1.6rem] leading-[0.9]">{line.name}</h3>
         </div>
-        <p className="mb-3 text-[0.88rem] text-paper-mute">
+        <p className="mb-3 text-[0.88rem] text-faint-foreground">
           {journalDateRange(line.firstAt, line.lastAt)} · newest first
         </p>
-        <div className="border-t-2 border-paper">
+        <div className="border-t-2 border-foreground">
           {shown.map((entry, i) => (
             <JournalEntryView
               key={entry.entry_id}
@@ -215,7 +215,7 @@ export function GameJournalPlate({
               number={numberAt(from + i)}
               selected={i === 0}
               clamp={i === 0 ? 3 : 2}
-              className={cn("py-3", i > 0 && "border-t border-rule")}
+              className={cn("py-3", i > 0 && "border-t border-border")}
             />
           ))}
         </div>

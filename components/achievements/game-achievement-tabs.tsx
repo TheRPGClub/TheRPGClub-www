@@ -75,9 +75,9 @@ export function GameAchievementTabs({
               style={{ "--pc": PROVIDER_VAR[tab.provider] } as React.CSSProperties}
               className={cn(
                 "font-label inline-flex h-10 shrink-0 items-center gap-2 rounded-t-[3px] px-3.5 text-[1rem] font-extrabold tracking-[0.06em] whitespace-nowrap outline-none sm:px-4",
-                "bg-ink-2 text-paper-dim shadow-[inset_0_3px_0_var(--pc)] transition-colors hover:bg-ink-3 hover:text-paper",
+                "bg-card text-dim-foreground shadow-[inset_0_3px_0_var(--pc)] transition-colors hover:bg-muted hover:text-foreground",
                 "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight",
-                "data-active:bg-(--pc) data-active:text-ink data-active:shadow-none",
+                "data-active:bg-(--pc) data-active:text-provider-foreground data-active:shadow-none",
               )}
             >
               {PROVIDER_LABEL[tab.provider]}
@@ -108,7 +108,7 @@ export function GameAchievementTabs({
                   className={cn(
                     "font-label inline-flex h-7.5 items-center rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors outline-none",
                     "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-highlight",
-                    on ? "bg-paper text-ink" : "text-paper-mute hover:bg-ink-3 hover:text-paper",
+                    on ? "bg-foreground text-background" : "text-faint-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {set.label}

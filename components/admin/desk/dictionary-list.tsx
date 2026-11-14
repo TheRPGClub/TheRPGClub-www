@@ -82,7 +82,7 @@ export function DictionaryList<T, K extends string | number>({
               <a
                 key={letter}
                 href={`#dict-${letter}`}
-                className="font-headline grid size-[30px] place-items-center rounded-xs text-[1.05rem] text-paper transition-colors hover:bg-paper hover:text-ink"
+                className="font-headline grid size-[30px] place-items-center rounded-xs text-[1.05rem] text-foreground transition-colors hover:bg-foreground hover:text-background"
               >
                 {letter}
               </a>
@@ -90,7 +90,7 @@ export function DictionaryList<T, K extends string | number>({
               <span
                 key={letter}
                 aria-hidden
-                className="font-headline grid size-[30px] place-items-center text-[1.05rem] text-paper-mute/60"
+                className="font-headline grid size-[30px] place-items-center text-[1.05rem] text-faint-foreground/60"
               >
                 {letter}
               </span>
@@ -100,12 +100,12 @@ export function DictionaryList<T, K extends string | number>({
       )}
 
       {groups.length === 0 ? (
-        <div className="mt-5 text-paper-dim">{empty ?? "Nothing here yet."}</div>
+        <div className="mt-5 text-dim-foreground">{empty ?? "Nothing here yet."}</div>
       ) : (
         <div className="mt-5 gap-x-11 md:columns-2">
           {groups.map((group) => (
             <section key={group.letter} id={`dict-${group.letter}`} className="mb-4.5 scroll-mt-20 break-inside-avoid">
-              <h2 className="font-headline mb-1 border-b-2 border-paper pb-1 text-[3.4rem] leading-[0.85]">
+              <h2 className="font-headline mb-1 border-b-2 border-foreground pb-1 text-[3.4rem] leading-[0.85]">
                 {group.letter}
               </h2>
               <ul>
@@ -120,7 +120,7 @@ export function DictionaryList<T, K extends string | number>({
                     return (
                       <li
                         key={key}
-                        className="-mx-3 my-1.5 break-inside-avoid rounded-md bg-ink-2 p-3 ring-1 ring-highlight ring-inset"
+                        className="-mx-3 my-1.5 break-inside-avoid rounded-md bg-card p-3 ring-1 ring-highlight ring-inset"
                       >
                         {renderEditor(item)}
                       </li>
@@ -130,12 +130,12 @@ export function DictionaryList<T, K extends string | number>({
                   return (
                     <li
                       key={key}
-                      className="grid break-inside-avoid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-rule py-2.5"
+                      className="grid break-inside-avoid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-border py-2.5"
                     >
                       <span
                         className={cn(
                           "text-[1.05rem] font-bold break-words",
-                          held && "text-paper-mute line-through decoration-destructive",
+                          held && "text-faint-foreground line-through decoration-destructive",
                         )}
                       >
                         {word}
@@ -143,11 +143,11 @@ export function DictionaryList<T, K extends string | number>({
                       {others.length > 0 && (
                         <span
                           className={cn(
-                            "col-start-1 text-[0.93rem] break-words text-paper-dim italic",
-                            held && "text-paper-mute line-through decoration-destructive",
+                            "col-start-1 text-[0.93rem] break-words text-dim-foreground italic",
+                            held && "text-faint-foreground line-through decoration-destructive",
                           )}
                         >
-                          <b className="font-label mr-1.5 text-[0.72rem] tracking-[0.08em] text-paper-mute not-italic">
+                          <b className="font-label mr-1.5 text-[0.72rem] tracking-[0.08em] text-faint-foreground not-italic">
                             {alsoLabel}
                           </b>
                           {others.join(", ")}
@@ -160,7 +160,7 @@ export function DictionaryList<T, K extends string | number>({
                               type="button"
                               variant="ghost"
                               size="icon-sm"
-                              className="text-paper-dim"
+                              className="text-dim-foreground"
                               onClick={() => onEdit(item)}
                               aria-label={`Edit ${word}`}
                               title="Edit"
@@ -172,7 +172,7 @@ export function DictionaryList<T, K extends string | number>({
                             type="button"
                             variant="ghost"
                             size="icon-sm"
-                            className="text-paper-dim hover:text-destructive"
+                            className="text-dim-foreground hover:text-destructive"
                             onClick={() => hold(item)}
                             aria-label={`Delete ${word}`}
                             title="Delete"

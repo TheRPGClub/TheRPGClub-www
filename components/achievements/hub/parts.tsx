@@ -34,14 +34,14 @@ export function DayTape({
     <h2 className="flex items-center gap-3.5">
       <span
         className={cn(
-          "font-label shrink-0 bg-paper/90 px-4 pt-1 pb-[3px] text-[0.95rem] font-extrabold tracking-[0.1em] text-ink [clip-path:polygon(0_8%,3%_0,97%_6%,100%_0,99%_92%,96%_100%,2%_94%,0_100%)]",
+          "font-label shrink-0 bg-foreground/90 px-4 pt-1 pb-[3px] text-[0.95rem] font-extrabold tracking-[0.1em] text-background [clip-path:polygon(0_8%,3%_0,97%_6%,100%_0,99%_92%,96%_100%,2%_94%,0_100%)]",
           index % 2 ? "rotate-[0.9deg]" : "-rotate-[1.2deg]",
         )}
       >
         {day ? <time dateTime={day}>{label}</time> : label}
       </span>
-      <span aria-hidden className="h-px min-w-6 flex-1 bg-rule" />
-      <span className="font-label min-w-0 truncate text-[0.8rem] tracking-[0.08em] text-paper-mute">
+      <span aria-hidden className="h-px min-w-6 flex-1 bg-border" />
+      <span className="font-label min-w-0 truncate text-[0.8rem] tracking-[0.08em] text-faint-foreground">
         {tally}
       </span>
     </h2>
@@ -63,7 +63,7 @@ export function MemberLink({
     <Link
       href={memberAchievementsHref(user.user_id)}
       className={cn(
-        "font-label inline-flex min-w-0 items-center gap-2 font-extrabold text-paper",
+        "font-label inline-flex min-w-0 items-center gap-2 font-extrabold text-foreground",
         HUB_LINK,
         className,
       )}
@@ -116,7 +116,7 @@ export function OddsTag({
   return (
     <span
       className={cn(
-        "font-headline inline-block rotate-6 rounded-xs bg-rarity-ultra px-1.5 pt-[3px] pb-0.5 text-[0.95rem] leading-none text-ink shadow-[0_3px_8px_rgb(0_0_0/0.5)]",
+        "font-headline inline-block rotate-6 rounded-xs bg-rarity-ultra px-1.5 pt-[3px] pb-0.5 text-[0.95rem] leading-none text-rarity-foreground shadow-[0_3px_8px_rgb(0_0_0/0.5)]",
         className,
       )}
     >

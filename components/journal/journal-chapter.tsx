@@ -67,7 +67,7 @@ export function JournalChapter({
         parts={[chapterLabel, game.title]}
         note={count > 0 ? "Newest first" : undefined}
       />
-      <header className="flex items-end gap-4.5 border-b-2 border-paper pt-4 pb-3.5">
+      <header className="flex items-end gap-4.5 border-b-2 border-foreground pt-4 pb-3.5">
         <Link href={`/games/${game.game_id}`} className="shrink-0" tabIndex={-1} aria-hidden>
           <GameCover
             title={game.title}
@@ -91,7 +91,7 @@ export function JournalChapter({
             {chapterLabel}: {game.title}
           </span>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="text-[0.82rem] text-paper-mute">
+            <span className="text-[0.82rem] text-faint-foreground">
               {count} {count === 1 ? "entry" : "entries"}
               {span && ` · ${span}`}
             </span>
@@ -110,7 +110,7 @@ export function JournalChapter({
           />
         )}
         {entries.length === 0 && (
-          <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+          <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
             {isOwner
               ? "No entries on this game yet. The first one opens the chapter."
               : "No entries on this game."}
@@ -124,14 +124,14 @@ export function JournalChapter({
               entry={entry}
               number={number}
               game={editorGame}
-              className={cn(i > 0 && "border-t border-rule pt-3")}
+              className={cn(i > 0 && "border-t border-border pt-3")}
             />
           ) : (
             <JournalEntryView
               key={entry.entry_id}
               entry={entry}
               number={number}
-              className={cn(i > 0 && "border-t border-rule pt-3")}
+              className={cn(i > 0 && "border-t border-border pt-3")}
             />
           );
         })}

@@ -11,17 +11,17 @@ export function DetailList({
 }) {
   return (
     <div className="space-y-2">
-      <dl className="font-label flex flex-wrap gap-x-5.5 gap-y-1.5 text-[0.85rem] font-extrabold tracking-[0.06em] text-paper-mute">
+      <dl className="font-label flex flex-wrap gap-x-5.5 gap-y-1.5 text-[0.85rem] font-extrabold tracking-[0.06em] text-faint-foreground">
         {rows.map(([label, value]) => (
           <div key={label} className="flex min-w-0 items-baseline gap-1.5">
             <dt>{label}</dt>
-            <dd className="min-w-0 break-words text-paper">{value}</dd>
+            <dd className="min-w-0 break-words text-foreground">{value}</dd>
           </div>
         ))}
       </dl>
       {note && (
-        <p className="max-w-[65ch] text-sm text-paper-dim">
-          <span className="font-semibold text-paper">Note:</span> {note}
+        <p className="max-w-[65ch] text-sm text-dim-foreground">
+          <span className="font-semibold text-foreground">Note:</span> {note}
         </p>
       )}
       {problem && (

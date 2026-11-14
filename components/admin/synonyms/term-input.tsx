@@ -55,7 +55,7 @@ export function TermInput({
   return (
     <div
       className={cn(
-        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-sm border border-rule-strong bg-ink px-2 py-[5px] text-[0.9rem]",
+        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-sm border border-border-strong bg-background px-2 py-[5px] text-[0.9rem]",
         "focus-within:border-highlight focus-within:ring-2 focus-within:ring-highlight/40",
         disabled && "opacity-50",
       )}
@@ -65,7 +65,7 @@ export function TermInput({
         {terms.map((term, i) => (
           <li
             key={`${term}-${i}`}
-            className="inline-flex max-w-full items-center gap-1 rounded-xs bg-paper/12 py-px pr-1 pl-2 break-all"
+            className="inline-flex max-w-full items-center gap-1 rounded-xs bg-foreground/12 py-px pr-1 pl-2 break-all"
           >
             {term}
             <button
@@ -77,7 +77,7 @@ export function TermInput({
                 inputRef.current?.focus();
               }}
               aria-label={`Remove ${term}`}
-              className="grid size-5 shrink-0 place-items-center rounded-xs text-paper-dim hover:bg-paper/15 hover:text-paper"
+              className="grid size-5 shrink-0 place-items-center rounded-xs text-dim-foreground hover:bg-foreground/15 hover:text-foreground"
             >
               <X className="size-3.5" />
             </button>

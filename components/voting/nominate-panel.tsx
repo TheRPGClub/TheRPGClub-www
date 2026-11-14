@@ -23,9 +23,9 @@ const TRACK_NOUN: Record<VotingCategory, string> = {
 };
 
 // Ink controls on the yellow strip.
-const inkButton = "bg-ink text-paper hover:bg-ink/85";
+const inkButton = "bg-background text-foreground hover:bg-background/85";
 const inkOutline =
-  "border-ink text-ink hover:border-ink hover:bg-ink/10 aria-expanded:bg-ink/10";
+  "border-background text-background hover:border-background hover:bg-background/10 aria-expanded:bg-background/10";
 
 export interface NominatePanelProps {
   category: VotingCategory;
@@ -162,14 +162,14 @@ export function NominatePanel({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-sm bg-ink p-3.5 text-paper"
+      className="space-y-3 rounded-sm bg-background p-3.5 text-foreground"
     >
       <p className="font-label text-[0.95rem] font-extrabold tracking-[0.06em]">
         {existing ? "Replace your nomination" : "Nominate a game"}
       </p>
 
       {selectedGame ? (
-        <div className="flex items-center gap-2 rounded-sm border border-rule-strong bg-ink-2 px-2.5 py-1.5 text-sm">
+        <div className="flex items-center gap-2 rounded-sm border border-border-strong bg-card px-2.5 py-1.5 text-sm">
           <span className="truncate font-medium">{selectedGame.title}</span>
           <Button
             type="button"
@@ -201,16 +201,16 @@ export function NominatePanel({
           maxLength={1500}
           placeholder="Why this game? (optional)"
           disabled={pending}
-          className="w-full rounded-sm border border-rule-strong bg-ink-2 px-3 py-2 text-sm text-paper outline-none placeholder:text-paper-mute focus-visible:border-paper-mute disabled:opacity-50"
+          className="w-full rounded-sm border border-border-strong bg-card px-3 py-2 text-sm text-foreground outline-none placeholder:text-faint-foreground focus-visible:border-faint-foreground disabled:opacity-50"
         />
       </label>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <p className="text-xs text-paper-mute">
+      <p className="text-xs text-faint-foreground">
         One nomination per member per track; saving again replaces it. Also
         works via{" "}
-        <code className="rounded-xs bg-ink-3 px-1 py-0.5 text-[11px] text-paper-dim">
+        <code className="rounded-xs bg-muted px-1 py-0.5 text-[11px] text-dim-foreground">
           /nominate
         </code>{" "}
         on Discord.
@@ -259,12 +259,12 @@ function ExistingNomination({
   const cover = game?.cover_url ?? game?.art_url;
   return (
     <div className="grid grid-cols-[3.75rem_minmax(0,1fr)] items-center gap-3.5">
-      <span className="block h-20 w-15 overflow-hidden rounded-xs bg-ink ring-2 ring-ink">
+      <span className="block h-20 w-15 overflow-hidden rounded-xs bg-background ring-2 ring-background">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={cover} alt="" className="size-full object-cover" />
         ) : (
-          <span className="font-headline grid size-full place-items-center p-1 text-center text-[0.7rem] leading-none text-paper-mute">
+          <span className="font-headline grid size-full place-items-center p-1 text-center text-[0.7rem] leading-none text-faint-foreground">
             {title}
           </span>
         )}
@@ -274,12 +274,12 @@ function ExistingNomination({
           {title}
         </p>
         {nomination.reason && (
-          <p className="mt-1 line-clamp-2 text-[0.82rem] text-highlight-ink">
+          <p className="mt-1 line-clamp-2 text-[0.82rem] text-highlight-muted-foreground">
             &ldquo;{nomination.reason}&rdquo;
           </p>
         )}
         {note && (
-          <p className="mt-1 text-[0.82rem] font-medium text-highlight-ink">
+          <p className="mt-1 text-[0.82rem] font-medium text-highlight-muted-foreground">
             {note}
           </p>
         )}
@@ -290,7 +290,7 @@ function ExistingNomination({
 
 function EmptySlot({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-label grid min-h-18 flex-1 place-items-center rounded-xs border-2 border-dashed border-ink/45 p-2.5 text-center text-[0.88rem] font-extrabold tracking-[0.06em] text-highlight-ink">
+    <p className="font-label grid min-h-18 flex-1 place-items-center rounded-xs border-2 border-dashed border-background/45 p-2.5 text-center text-[0.88rem] font-extrabold tracking-[0.06em] text-highlight-muted-foreground">
       {children}
     </p>
   );
@@ -298,7 +298,7 @@ function EmptySlot({ children }: { children: React.ReactNode }) {
 
 function SlotError({ children }: { children: React.ReactNode }) {
   return (
-    <p role="alert" className="text-[0.85rem] font-semibold text-ink">
+    <p role="alert" className="text-[0.85rem] font-semibold text-background">
       {children}
     </p>
   );

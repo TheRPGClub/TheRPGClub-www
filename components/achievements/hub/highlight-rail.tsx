@@ -10,7 +10,7 @@ import {
 } from "@/lib/achievements";
 import { foilKind } from "@/lib/achievements/hub";
 import type { SetTint } from "@/lib/achievements/tint-color";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { ReviewerAvatar } from "@/components/issue/review-meta";
 import { cn } from "@/lib/utils";
 import { AchievementIcon } from "../achievement-icon";
@@ -38,7 +38,7 @@ export function HighlightRail({
         className="items-end"
       />
       {cards.length === 0 ? (
-        <p className="mt-3 rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-[0.95rem] text-paper-dim">
+        <p className="mt-3 rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-[0.95rem] text-dim-foreground">
           No Highlights this week.
         </p>
       ) : (
@@ -51,7 +51,7 @@ export function HighlightRail({
       <Link
         href={allHref}
         className={cn(
-          "font-label mt-2 inline-flex text-sm font-extrabold text-paper-dim",
+          "font-label mt-2 inline-flex text-sm font-extrabold text-dim-foreground",
           HUB_LINK,
         )}
       >
@@ -76,10 +76,10 @@ function RailRow({
   const set = card.achievement_set;
 
   return (
-    <li className="border-b border-rule">
+    <li className="border-b border-border">
       <Link
         href={memberSetHref(card.user.user_id, set.id)}
-        className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-3.5 py-3 outline-none focus-visible:bg-ink-2 focus-visible:outline-2 focus-visible:outline-highlight"
+        className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-3.5 py-3 outline-none focus-visible:bg-card focus-visible:outline-2 focus-visible:outline-highlight"
       >
         <AchievementIcon
           view={view}
@@ -96,7 +96,7 @@ function RailRow({
               </span>
             )}
           </span>
-          <span className="mt-1.5 flex min-w-0 items-center gap-2 text-[0.88rem] text-paper-dim">
+          <span className="mt-1.5 flex min-w-0 items-center gap-2 text-[0.88rem] text-dim-foreground">
             <ReviewerAvatar userId={card.user.user_id} name={name} size="xs" className="shrink-0" />
             <span className="shrink-0">{name}</span>
             <span aria-hidden className="h-3.5 w-1 shrink-0 rounded-[1px]" style={{ background: tint.tint }} />

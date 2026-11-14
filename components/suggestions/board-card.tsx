@@ -72,7 +72,7 @@ export function BoardCard({
       {withdrawable &&
         (confirming ? (
           <span className="flex items-center gap-1">
-            <span className="text-[0.82rem] text-paper-dim">Withdraw it?</span>
+            <span className="text-[0.82rem] text-dim-foreground">Withdraw it?</span>
             <button
               type="button"
               onClick={withdraw}
@@ -85,7 +85,7 @@ export function BoardCard({
               type="button"
               onClick={() => setConfirming(false)}
               disabled={pending}
-              className={cn(FOOT_LINK, "text-paper-dim hover:bg-ink-3")}
+              className={cn(FOOT_LINK, "text-dim-foreground hover:bg-muted")}
             >
               Keep
             </button>
@@ -116,8 +116,8 @@ export function BoardCard({
             FOOT_LINK,
             "px-2.5 text-[0.85rem]",
             suggestion.viewer_upvoted
-              ? "bg-highlight text-ink hover:bg-highlight/85"
-              : "text-paper shadow-[inset_0_0_0_1px_rgb(141_141_135/0.6)] hover:bg-ink-3 hover:shadow-[inset_0_0_0_1px_var(--color-paper)]",
+              ? "bg-highlight text-highlight-foreground hover:bg-highlight/85"
+              : "text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-faint-foreground)_60%,transparent)] hover:bg-muted hover:shadow-[inset_0_0_0_1px_var(--color-foreground)]",
           )}
         >
           <ThumbsUp aria-hidden className="size-[15px]!" />

@@ -45,7 +45,7 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
           const claimed = Boolean(k.claimed_by_user_id);
           return (
             <Fragment key={k.key_id}>
-              <li className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-rule py-3 sm:grid-cols-[52px_minmax(0,1fr)_auto_auto]">
+              <li className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-border py-3 sm:grid-cols-[52px_minmax(0,1fr)_auto_auto]">
                 <GameCover title="" coverUrl={k.game?.cover_url} className="w-[52px]" />
                 <div className="min-w-0">
                   <p className="font-headline text-[1.2rem] leading-[0.95]">
@@ -57,12 +57,12 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
                       title
                     )}
                   </p>
-                  <p className="mt-1 flex flex-wrap items-center gap-2 text-[0.84rem] text-paper-mute">
+                  <p className="mt-1 flex flex-wrap items-center gap-2 text-[0.84rem] text-faint-foreground">
                     <PlatformChip ink={platformFamily(k.platform).ink}>{k.platform}</PlatformChip>
                     {k.region !== "Global" && <span>{k.region}</span>}
                     {claimed ? (
                       <span>
-                        Claimed by <b className="text-paper">{names[k.claimed_by_user_id ?? ""] ?? "a member"}</b>{" "}
+                        Claimed by <b className="text-foreground">{names[k.claimed_by_user_id ?? ""] ?? "a member"}</b>{" "}
                         {shortDate(k.claimed_at)}
                       </span>
                     ) : (
@@ -88,7 +88,7 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
                 )}
               </li>
               {confirming === k.key_id && (
-                <li className="my-1.5 flex flex-wrap items-center gap-3 rounded-md bg-ink-2 px-3.5 py-3 text-sm shadow-[inset_0_0_0_1px_var(--color-destructive)]">
+                <li className="my-1.5 flex flex-wrap items-center gap-3 rounded-md bg-card px-3.5 py-3 text-sm shadow-[inset_0_0_0_1px_var(--color-destructive)]">
                   <TriangleAlert aria-hidden className="size-4 text-destructive" />
                   <span>Take {title} off the shelf? The key comes back to you.</span>
                   <span className="ml-auto flex gap-2">
@@ -96,14 +96,14 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
                       type="button"
                       disabled={isPending}
                       onClick={() => revoke(k.key_id)}
-                      className="font-label inline-flex h-7 items-center rounded-sm bg-destructive px-2.5 text-[0.82rem] font-extrabold text-ink disabled:opacity-50"
+                      className="font-label inline-flex h-7 items-center rounded-sm bg-destructive px-2.5 text-[0.82rem] font-extrabold text-background disabled:opacity-50"
                     >
                       {isPending ? "Revoking…" : "Revoke key"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setConfirming(null)}
-                      className="font-label inline-flex h-7 items-center rounded-sm px-2 text-[0.82rem] font-extrabold text-paper-dim hover:text-paper"
+                      className="font-label inline-flex h-7 items-center rounded-sm px-2 text-[0.82rem] font-extrabold text-dim-foreground hover:text-foreground"
                     >
                       Keep it
                     </button>

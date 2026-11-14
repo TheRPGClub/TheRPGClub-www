@@ -62,7 +62,7 @@ export function BotJobStatusView({
           <AlertTriangle aria-hidden className="size-3.5 shrink-0" />
           Unavailable
         </Chip>
-        <span className="text-paper-dim">{error}</span>
+        <span className="text-dim-foreground">{error}</span>
       </div>
     );
   }
@@ -77,7 +77,7 @@ export function BotJobStatusView({
         <PhaseIcon phase={phase} busy={busy} />
         {copy.label}
       </Chip>
-      <span className={phase === "failed" ? "text-destructive" : "text-paper-dim"}>
+      <span className={phase === "failed" ? "text-destructive" : "text-dim-foreground"}>
         {copy.detail}
       </span>
       {error && <span className="text-destructive">{error}</span>}

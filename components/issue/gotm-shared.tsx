@@ -77,7 +77,7 @@ export function OutboundLinks({
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-label inline-flex items-center gap-1 px-1 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-dim transition-colors hover:text-highlight"
+            className="font-label inline-flex items-center gap-1 px-1 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-dim-foreground transition-colors hover:text-highlight"
           >
             {link.label}
             <ExternalLink aria-hidden className="size-3.25" />

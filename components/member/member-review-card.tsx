@@ -47,7 +47,7 @@ export function ReviewRating({
   accent?: ReviewAccent;
 }) {
   if (rating === null || rating === undefined) {
-    return <p className="text-sm text-paper-mute">No rating</p>;
+    return <p className="text-sm text-faint-foreground">No rating</p>;
   }
   const pct = Math.max(0, Math.min(100, (rating / MAX_RATING) * 100));
   return (
@@ -56,9 +56,9 @@ export function ReviewRating({
       aria-label={`Rated ${rating} out of ${MAX_RATING}`}
     >
       <span className="font-headline text-xl leading-none">{rating}</span>
-      <span className="font-label text-xs text-paper-mute">/ {MAX_RATING}</span>
-      <div aria-hidden className="h-1 w-20 overflow-hidden rounded-[2px] bg-ink-3">
-        <div className={cn("h-full bg-paper")} style={{ width: `${pct}%` }} />
+      <span className="font-label text-xs text-faint-foreground">/ {MAX_RATING}</span>
+      <div aria-hidden className="h-1 w-20 overflow-hidden rounded-[2px] bg-muted">
+        <div className={cn("h-full bg-foreground")} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

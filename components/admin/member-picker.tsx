@@ -65,13 +65,13 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
         <img
           src={discordAvatarUrl(value.user_id, value.discord_avatar, 64)}
           alt=""
-          className="mb-1 size-9 shrink-0 rounded-full bg-ink-3"
+          className="mb-1 size-9 shrink-0 rounded-full bg-muted"
         />
         <div className="min-w-0 flex-1">
           <p className="font-headline truncate text-[1.8rem] leading-none md:text-[2.4rem]">
             {memberName(value)}
           </p>
-          <p className="mt-1 truncate text-[0.85rem] text-paper-mute">
+          <p className="mt-1 truncate text-[0.85rem] text-faint-foreground">
             {value.username ? `@${value.username}` : value.user_id}
             {value.server_left_at ? " · left the server" : ""}
           </p>
@@ -100,7 +100,7 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
       <div className="relative">
         <Search
           aria-hidden
-          className="pointer-events-none absolute top-1/2 left-0 size-5 -translate-y-1/2 text-paper-mute"
+          className="pointer-events-none absolute top-1/2 left-0 size-5 -translate-y-1/2 text-faint-foreground"
         />
         <input
           type="search"
@@ -114,7 +114,7 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
           aria-expanded={hasQuery}
           role="combobox"
           aria-autocomplete="list"
-          className="font-headline block w-full border-0 border-b-2 border-rule-strong bg-transparent pt-1.5 pb-2.5 pl-8 text-[1.8rem] leading-none text-paper caret-highlight outline-none placeholder:text-paper-mute/70 focus-visible:border-highlight md:text-[2.4rem] [&::-webkit-search-cancel-button]:hidden"
+          className="font-headline block w-full border-0 border-b-2 border-border-strong bg-transparent pt-1.5 pb-2.5 pl-8 text-[1.8rem] leading-none text-foreground caret-highlight outline-none placeholder:text-faint-foreground/70 focus-visible:border-highlight md:text-[2.4rem] [&::-webkit-search-cancel-button]:hidden"
         />
       </div>
       {error && <p className="mt-1.5 text-xs text-destructive">{error}</p>}
@@ -123,11 +123,11 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
           id={listId}
           role="listbox"
           aria-label="Matching members"
-          className="mt-1.5 max-h-72 overflow-y-auto rounded-sm border border-rule-strong bg-ink-3 shadow-[0_12px_30px_rgb(0_0_0/0.45)]"
+          className="mt-1.5 max-h-72 overflow-y-auto rounded-sm border border-border-strong bg-muted shadow-[0_12px_30px_rgb(0_0_0/0.45)]"
         >
-          {!settled && <p className="px-3 py-2.5 text-xs text-paper-mute">Searching…</p>}
+          {!settled && <p className="px-3 py-2.5 text-xs text-faint-foreground">Searching…</p>}
           {settled && results.length === 0 && (
-            <p className="px-3 py-2.5 text-xs text-paper-mute">No member matches.</p>
+            <p className="px-3 py-2.5 text-xs text-faint-foreground">No member matches.</p>
           )}
           {settled &&
             results.map((user) => (
@@ -137,22 +137,22 @@ export function MemberPicker({ value, onChange, disabled, autoFocus, labelId }: 
                 role="option"
                 aria-selected={false}
                 onClick={() => onChange(user)}
-                className="group/result grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-t border-rule px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
+                className="group/result grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-t border-border px-2.5 py-2 text-left text-sm transition-colors first:border-t-0 hover:bg-highlight/8 focus-visible:bg-highlight/8 focus-visible:outline-none"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={discordAvatarUrl(user.user_id, user.discord_avatar, 64)}
                   alt=""
-                  className="size-8 rounded-full bg-ink-2"
+                  className="size-8 rounded-full bg-card"
                 />
                 <span className="min-w-0">
                   <span className="block truncate font-semibold">{memberName(user)}</span>
-                  <span className="block truncate text-xs text-paper-mute">
+                  <span className="block truncate text-xs text-faint-foreground">
                     {user.username ? `@${user.username}` : user.user_id}
                     {user.server_left_at ? " · left the server" : ""}
                   </span>
                 </span>
-                <span className="font-label rounded-xs border border-rule-strong px-2 py-0.5 text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors group-hover/result:border-highlight group-hover/result:bg-highlight group-hover/result:text-ink">
+                <span className="font-label rounded-xs border border-border-strong px-2 py-0.5 text-[0.75rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors group-hover/result:border-highlight group-hover/result:bg-highlight group-hover/result:text-highlight-foreground">
                   Pick
                 </span>
               </button>

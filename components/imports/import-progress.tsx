@@ -21,7 +21,7 @@ export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProp
     <div className="min-w-0">
       <p className="font-headline text-[3.4rem] leading-[0.8] sm:text-[5.25rem]">
         {progress.resolved}
-        <span className="font-label mt-2 block text-[0.88rem] leading-tight font-extrabold tracking-[0.08em] text-paper-mute">
+        <span className="font-label mt-2 block text-[0.88rem] leading-tight font-extrabold tracking-[0.08em] text-faint-foreground">
           of {progress.total} {IMPORT_KINDS[kind].itemNoun.other} done
         </span>
       </p>
@@ -32,7 +32,7 @@ export function ImportProgressBar({ kind, total, counts }: ImportProgressBarProp
         aria-valuemax={progress.total}
         aria-valuenow={progress.resolved}
         aria-valuetext={`${progress.percent}%`}
-        className="mt-3.5 h-2 w-full overflow-hidden bg-ink-3"
+        className="mt-3.5 h-2 w-full overflow-hidden bg-muted"
       >
         <div
           className="h-full bg-highlight transition-[width] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
@@ -56,7 +56,7 @@ export function ImportOutcomeList({
   const rows = resultReasonRows(counts);
   if (rows.length === 0 && !pending) return null;
   return (
-    <ul className="border-t-2 border-paper">
+    <ul className="border-t-2 border-foreground">
       {pending !== undefined && pending > 0 && (
         <OutcomeRow label="Still to review" n={pending} lead />
       )}
@@ -69,13 +69,13 @@ export function ImportOutcomeList({
 
 function OutcomeRow({ label, n, lead }: { label: string; n: number; lead?: boolean }) {
   return (
-    <li className="flex items-baseline justify-between gap-3 border-b border-rule py-2.5 text-sm text-paper-dim">
+    <li className="flex items-baseline justify-between gap-3 border-b border-border py-2.5 text-sm text-dim-foreground">
       <span>{label}</span>
       <b
         className={
           lead
             ? "font-headline text-xl font-normal text-highlight"
-            : "font-headline text-xl font-normal text-paper"
+            : "font-headline text-xl font-normal text-foreground"
         }
       >
         {n}

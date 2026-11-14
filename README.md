@@ -16,19 +16,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `app/(public)/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Environment
 
-Set these in `.env.local` (all server-only, read at request time):
+Set these in `.env.local` (all server-only, read at request time; `DISCORD_INVITE_URL` also at build):
 
 | Variable | Required | Purpose |
 |---|---|---|
 | `API_URL` | no (defaults to `http://localhost:3000`) | Base URL of the TheRPGClub API. |
 | `DISCORD_GUILD_ID` | no | The club's Discord server id. Needed for the "Thread" and "Voting results" links on GOTM cards; without it those links are hidden. |
 | `DISCORD_ANNOUNCEMENTS_CHANNEL_ID` | no | The announcements channel that holds the GOTM voting-results messages (the bot's `ANNOUNCEMENTS_CHANNEL_ID`). Without it the "Voting results" link is hidden. |
+| `DISCORD_INVITE_URL` | **yes** | The club's permanent Discord invite (an https link), the Open the invite button on /join. `next build` and the server fail without it rather than ship a dead button. |
 
 ## Learn More
 

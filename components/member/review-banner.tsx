@@ -90,8 +90,8 @@ export function ReviewBanner({
         className={cn(
           "absolute inset-0 -z-10",
           art
-            ? "bg-[linear-gradient(0deg,var(--color-ink)_0%,rgb(11_11_13/0.75)_45%,rgb(11_11_13/0.9)_100%)] md:bg-[linear-gradient(90deg,rgb(11_11_13/0.97)_0%,rgb(11_11_13/0.82)_46%,rgb(11_11_13/0.25)_100%),linear-gradient(0deg,var(--color-ink)_0%,transparent_50%)]"
-            : "bg-[linear-gradient(0deg,var(--color-ink)_0%,var(--color-ink-2)_100%)]",
+            ? "bg-[linear-gradient(0deg,var(--color-background)_0%,color-mix(in_oklab,var(--color-background)_75%,transparent)_45%,color-mix(in_oklab,var(--color-background)_90%,transparent)_100%)] md:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_82%,transparent)_46%,color-mix(in_oklab,var(--color-background)_25%,transparent)_100%),linear-gradient(0deg,var(--color-background)_0%,transparent_50%)]"
+            : "bg-[linear-gradient(0deg,var(--color-background)_0%,var(--color-card)_100%)]",
         )}
       />
 
@@ -112,7 +112,7 @@ export function ReviewBanner({
               {title && (
                 <Link
                   href={`/games/${game.game_id}`}
-                  className="font-label text-base font-extrabold tracking-[0.06em] text-paper transition-colors hover:text-highlight"
+                  className="font-label text-base font-extrabold tracking-[0.06em] text-foreground transition-colors hover:text-highlight"
                 >
                   {game.title}
                 </Link>
@@ -121,12 +121,12 @@ export function ReviewBanner({
           )}
 
           {authorId && authorName && (
-            <p className="mt-4.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-paper-dim">
+            <p className="mt-4.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-dim-foreground">
               <ReviewerAvatar userId={authorId} name={authorName} size="lg" />
               <span>
                 <Link
                   href={`/members/${authorId}`}
-                  className="font-semibold text-paper transition-colors hover:text-highlight"
+                  className="font-semibold text-foreground transition-colors hover:text-highlight"
                 >
                   {authorName}
                 </Link>
@@ -140,7 +140,7 @@ export function ReviewBanner({
               {canEdit && (
                 <Link
                   href="?edit=1"
-                  className="font-label ml-1.5 inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight"
+                  className="font-label ml-1.5 inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight"
                 >
                   <Pencil aria-hidden className="size-3.5" />
                   Edit your review
@@ -156,7 +156,7 @@ export function ReviewBanner({
               rating={rating}
               className="size-[76px] text-[3.25rem] md:size-[150px] md:rounded-md md:text-[6.5rem]"
             />
-            <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.1em] text-paper-dim md:mt-2">
+            <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.1em] text-dim-foreground md:mt-2">
               Out of {MAX_RATING}
             </span>
           </div>

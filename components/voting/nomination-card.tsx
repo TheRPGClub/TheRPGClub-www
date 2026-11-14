@@ -20,14 +20,14 @@ const TRACK = {
     bar: "after:bg-gotm",
     fill: "bg-gotm",
     voted: "ring-gotm",
-    chip: "bg-gotm text-white",
+    chip: "bg-gotm text-gotm-foreground",
     button: "default",
   },
   nr_gotm: {
     bar: "after:bg-nr",
     fill: "bg-nr",
     voted: "ring-nr",
-    chip: "bg-nr text-white",
+    chip: "bg-nr text-nr-foreground",
     button: "nr",
   },
 } as const;
@@ -78,7 +78,7 @@ export function NominationCard({
   const coverBlock = (
     <span
       className={cn(
-        "relative block aspect-[3/4] overflow-hidden rounded-sm bg-ink-3 after:absolute after:inset-x-0 after:bottom-0 after:h-1",
+        "relative block aspect-[3/4] overflow-hidden rounded-sm bg-muted after:absolute after:inset-x-0 after:bottom-0 after:h-1",
         track.bar,
         isOwn && "ring-3 ring-highlight",
         showVoted && !isOwn && cn("ring-3", track.voted),
@@ -93,13 +93,13 @@ export function NominationCard({
           className="size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/tile:scale-[1.04]"
         />
       ) : (
-        <span className="font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-balance text-paper-mute">
+        <span className="font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-balance text-faint-foreground">
           {title}
         </span>
       )}
       <span className="absolute top-2 left-2 flex flex-col items-start gap-1">
         {isOwn && (
-          <span className={chipClass("bg-highlight text-ink")}>Your pick</span>
+          <span className={chipClass("bg-highlight text-highlight-foreground")}>Your pick</span>
         )}
         {isWinner && (
           <span className={chipClass(track.chip)}>Most votes</span>
@@ -142,7 +142,7 @@ export function NominationCard({
         )}
       </h3>
 
-      <p className="font-label flex min-w-0 items-center gap-1.75 text-[0.82rem] font-bold tracking-[0.06em] text-paper-mute">
+      <p className="font-label flex min-w-0 items-center gap-1.75 text-[0.82rem] font-bold tracking-[0.06em] text-faint-foreground">
         <Avatar className="size-5 after:hidden">
           <AvatarImage
             src={
@@ -156,7 +156,7 @@ export function NominationCard({
             }
             alt=""
           />
-          <AvatarFallback className="font-label bg-ink-3 text-[0.65rem] text-paper-dim">
+          <AvatarFallback className="font-label bg-muted text-[0.65rem] text-dim-foreground">
             {nominatorName[0]?.toUpperCase() ?? "?"}
           </AvatarFallback>
         </Avatar>
@@ -167,7 +167,7 @@ export function NominationCard({
       </p>
 
       {nomination.reason && (
-        <p className="line-clamp-3 text-[0.82rem] leading-[1.45] text-paper-dim">
+        <p className="line-clamp-3 text-[0.82rem] leading-[1.45] text-dim-foreground">
           &ldquo;{nomination.reason}&rdquo;
         </p>
       )}
@@ -176,8 +176,8 @@ export function NominationCard({
         <div className="mt-auto space-y-2 pt-1">
           {count !== null && (
             <div>
-              <p className="font-label flex items-baseline gap-1.5 text-[0.82rem] font-bold tracking-[0.06em] text-paper-mute">
-                <span className="font-headline text-[1.6rem] leading-none text-paper tabular-nums">
+              <p className="font-label flex items-baseline gap-1.5 text-[0.82rem] font-bold tracking-[0.06em] text-faint-foreground">
+                <span className="font-headline text-[1.6rem] leading-none text-foreground tabular-nums">
                   {count}
                 </span>
                 {count === 1 ? "vote" : "votes"}
@@ -186,7 +186,7 @@ export function NominationCard({
                 // Relative to the leader's tally, not an absolute target.
                 <span
                   aria-hidden
-                  className="mt-1.5 block h-1 overflow-hidden rounded-full bg-ink-3"
+                  className="mt-1.5 block h-1 overflow-hidden rounded-full bg-muted"
                 >
                   <span
                     className={cn("block h-full", track.fill, BAR_MOTION)}
