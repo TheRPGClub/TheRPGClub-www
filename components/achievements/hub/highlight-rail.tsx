@@ -10,7 +10,7 @@ import {
 } from "@/lib/achievements";
 import { foilKind } from "@/lib/achievements/hub";
 import type { SetTint } from "@/lib/achievements/tint-color";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import { ReviewerAvatar } from "@/components/issue/review-meta";
 import { cn } from "@/lib/utils";
 import { AchievementIcon } from "../achievement-icon";

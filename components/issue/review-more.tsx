@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Review } from "@/lib/api/types";
-import { SectionHeading } from "@/components/issue/page-header";
+import { SectionHeading } from "@/components/templates/page-header";
 import {
   ScoreBox,
   formatReviewDate,

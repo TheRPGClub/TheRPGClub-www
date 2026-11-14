@@ -1,0 +1,80 @@
+import { notFound } from "next/navigation";
+import { apiFetch } from "@/lib/api";
+import { getSession } from "@/lib/session";
+import type {
+  ApiCollection,
+  ApiSingle,
+  Review,
+  User,
+} from "@/lib/api/types";
+import { paginationOf } from "@/lib/api/pagination";
+import { MemberListTemplate } from "@/components/templates/member-list-template";
+import { ListPagination } from "@/components/list-pagination";
+import { MemberReviewList } from "@/components/member/member-review-list";
+import { memberCounts, memberName } from "@/components/member/member-lists";
+
+const PAGE_SIZE = 10;
+
+export default async function MemberReviewsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
+  const currentPage = Math.max(1, parseInt(page, 10) || 1);
+
+  const [userRes, session, listRes] = await Promise.all([
+    apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
+    getSession(),
+    apiFetch(`/api/v1/users/${id}/reviews?per=${PAGE_SIZE}&page=${currentPage}`, {
+      cache: "no-store",
+    }),
+  ]);
+
+  if (!userRes.ok) notFound();
+  const { data: user }: ApiSingle<User> = await userRes.json();
+  const isSelf = session?.principal.discord_id === id;
+  const displayName = memberName(user);
+
+  let reviews: Review[] = [];
+  let total = 0;
+  let totalPages = 1;
+  if (listRes.ok) {
+    const body: ApiCollection<Review> = await listRes.json();
+    reviews = body.data;
+    // The server owns the split; PAGE_SIZE is only what we asked for.
+    const pagination = paginationOf(body.meta, reviews.length);
+    total = pagination.total;
+    totalPages = pagination.totalPages;
+  }
+  const href = (p: number) =>
+    `/members/${id}/reviews${p > 1 ? `?page=${p}` : ""}`;
+
+  return (
+    <MemberListTemplate
+      userId={id}
+      displayName={displayName}
+      title="Reviews"
+      count={total}
+      countNoun={["review", "reviews"]}
+      current="reviews"
+      counts={memberCounts(user)}
+    >
+      <MemberReviewList
+        reviews={reviews}
+        hideUser={isSelf}
+        emptyMessage={
+          isSelf ? "You haven't written any reviews yet." : "No reviews yet."
+        }
+      />
+
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        buildHref={href}
+      />
+    </MemberListTemplate>
+  );
+}
