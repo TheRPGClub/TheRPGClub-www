@@ -14,12 +14,27 @@ function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
   )
 }
 
-function RadioGroupItem({ className, ...props }: RadioPrimitive.Root.Props) {
+// What the radio is, drawn by each Theme by
+// [data-slot="radio-group-item"][data-variant] (api ADR-0008).
+type RadioGroupItemVariant =
+  // A radio beside its label.
+  | "default"
+  // The radio of a choice card: the whole card is its label and carries
+  // the focus (an import's candidate match).
+  | "choice"
+
+function RadioGroupItem({
+  className,
+  variant = "default",
+  ...props
+}: RadioPrimitive.Root.Props & { variant?: RadioGroupItemVariant }) {
   return (
     <RadioPrimitive.Root
       data-slot="radio-group-item"
+      data-variant={variant}
       className={cn(
         "group/radio-group-item peer relative flex aspect-square size-4 shrink-0 border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+        variant === "choice" && "size-5",
         className
       )}
       {...props}
