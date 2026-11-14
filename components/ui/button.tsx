@@ -146,6 +146,10 @@ const buttonVariants = cva(
         // A dashed offer under a list to look further (Not listed? Search
         // IGDB).
         offer: "focus-visible:ring-2 focus-visible:ring-highlight/50",
+        // www#99: the staff desks, part B.
+        // Removes one chip from a field of chips (a term in the synonyms
+        // editor): the chip's own small x.
+        "chip-remove": "",
       },
       size: {
         default:
