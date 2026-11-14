@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { gamesIndexHref } from "@/lib/games/index-href";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 const DEBOUNCE_MS = 500;
 
@@ -30,10 +36,7 @@ export function GamesSearchForm({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function navigate(q: string) {
-    const ps = new URLSearchParams();
-    if (q.trim()) ps.set("q", q.trim());
-    if (winner) ps.set("winner", winner);
-    router.push(`/games${ps.size ? `?${ps}` : ""}`);
+    router.push(gamesIndexHref({ q, winner }));
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -59,21 +62,29 @@ export function GamesSearchForm({
     <form
       onSubmit={handleSubmit}
       role="search"
-      className="flex h-11.5 min-w-0 flex-1 basis-72 items-center gap-2.5 rounded-sm border border-border-strong bg-card px-3.5 text-faint-foreground transition-colors focus-within:border-faint-foreground"
+      className="flex min-w-0 flex-1 basis-72"
     >
-      <Search aria-hidden className="size-4 shrink-0" />
-      <label htmlFor="games-search" className="sr-only">
-        Search games
-      </label>
-      <input
-        id="games-search"
-        type="search"
-        name="q"
-        placeholder={placeholder}
-        value={query}
-        onChange={handleChange}
-        className="h-full min-w-0 flex-1 bg-transparent text-[0.95rem] text-foreground outline-none placeholder:text-faint-foreground"
-      />
+      {/* The group pads its field after an addon; here the gap spaces them. */}
+      <InputGroup
+        variant="search"
+        className="h-11.5 gap-2.5 px-3.5 has-[>[data-align=inline-start]]:[&>input]:pl-0"
+      >
+        <InputGroupAddon className="p-0">
+          <Search aria-hidden className="size-4 shrink-0" />
+        </InputGroupAddon>
+        <label htmlFor="games-search" className="sr-only">
+          Search games
+        </label>
+        <InputGroupInput
+          id="games-search"
+          type="search"
+          name="q"
+          placeholder={placeholder}
+          value={query}
+          onChange={handleChange}
+          className="h-full p-0 text-[0.95rem] md:text-[0.95rem]"
+        />
+      </InputGroup>
     </form>
   );
 }
