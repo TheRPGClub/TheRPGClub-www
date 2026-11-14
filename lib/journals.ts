@@ -135,7 +135,7 @@ function hash(value: string): number {
   return h;
 }
 
-// The journal member inks (DESIGN.md, "Journal member inks"): bright marks
+// The journal member inks (themes/monthly-issue/README.md, "Journal member inks"): bright marks
 // for ink grounds, each over 6:1 on ink-2 and ink-3, kept off the track
 // inks, the highlighter yellow and the destructive orange.
 export const JOURNAL_INKS: readonly string[] = [

@@ -1,0 +1,88 @@
+/* The test Theme: throwaway, development only. It swaps every token the
+   Monthly Issue Theme sets for something loud, so any surface that still
+   looks like the Monthly Issue is one that names the old palette (or a hex)
+   instead of a token. Turn it on with `DEV_THEME=test npm run dev`
+   (themes/registry.ts ignores it outside development). It loads no fonts.
+   themes/tokens.test.ts fails if it misses a Monthly Issue token. */
+
+@layer themes {
+    [data-theme="test"] {
+        /* Surface and text roles. */
+        --background: #00ff66;
+        --foreground: #ff00cc;
+        --dim-foreground: #0033ff;
+        --faint-foreground: #8000ff;
+        --card: #00e5ff;
+        --card-foreground: #ff00cc;
+        --popover: #ffee00;
+        --popover-foreground: #0033ff;
+        --primary: #0033ff;
+        --primary-foreground: #ffee00;
+        --secondary: #ff6a00;
+        --secondary-foreground: #0033ff;
+        --muted: #ffee00;
+        --muted-foreground: #ff0066;
+        --accent: #ff00cc;
+        --accent-foreground: #00ff66;
+        --destructive: #00ffff;
+        --destructive-foreground: #ff0000;
+        --border: #ff0000;
+        --border-strong: #0000ff;
+        --input: #ff6a00;
+        --ring: #00ffff;
+        --chart-1: #00ffff;
+        --chart-2: #ffaa00;
+        --chart-3: #ff00ff;
+        --chart-4: #0033ff;
+        --chart-5: #ff0000;
+        --sidebar: #ff6a00;
+        --sidebar-foreground: #0033ff;
+        --sidebar-primary: #00ffff;
+        --sidebar-primary-foreground: #ff0000;
+        --sidebar-accent: #ffee00;
+        --sidebar-accent-foreground: #ff00cc;
+        --sidebar-border: #0000ff;
+        --sidebar-ring: #ff00ff;
+
+        /* Club colours. */
+        --gotm: #00ffff;
+        --gotm-soft: #00a0a0;
+        --gotm-foreground: #ff0000;
+        --nr: #ffaa00;
+        --nr-soft: #a06a00;
+        --nr-foreground: #0000ff;
+        --highlight: #ff00ff;
+        --highlight-foreground: #00ff66;
+        --highlight-muted-foreground: #ffee00;
+        --rarity-common: #0000ff;
+        --rarity-uncommon: #ff0000;
+        --rarity-rare: #ffee00;
+        --rarity-ultra: #00ff66;
+        --rarity-foreground: #ff00cc;
+        --ok: #ff0000;
+        --news-announcements: #0000ff;
+        --news-releases: #ff0000;
+        --news-emulation: #ffee00;
+        --news-industry: #ff00ff;
+        --news-hardware: #00ffff;
+        --news-rumours: #ff6a00;
+        --news-general: #000000;
+        --foil-conic: repeating-linear-gradient(45deg, #ff00ff 0 6px, #00ff66 6px 12px);
+        --foil-sheen: linear-gradient(transparent, transparent);
+        --foil-foreground: #0033ff;
+
+        /* Shape: pill-round everything, so a hard-coded corner stands out. */
+        --radius: 1rem;
+
+        /* Type: system faces only, in mixed case, so a page-set face shows. */
+        --typeface-body: ui-monospace, monospace;
+        --typeface-display: Georgia, serif;
+        --typeface-label: "Courier New", monospace;
+        --headline-weight: 700;
+        --headline-case: none;
+        --headline-leading: 1.2;
+        --label-weight: 400;
+        --label-case: lowercase;
+        --label-tracking: 0.2em;
+    }
+}

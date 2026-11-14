@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // Each state's ink on the desk: Live in done green, Preview in highlighter
-// yellow, Off in masthead red (DESIGN.md, Production desk: the Off-red
+// yellow, Off in masthead red (themes/monthly-issue/README.md, Production desk: the Off-red
 // exception). Type and strokes only, never a fill behind type.
 const STATE_INK: Record<FeatureState, string> = {
   live: "text-ok",
