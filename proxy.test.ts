@@ -28,6 +28,7 @@ describe("proxy", () => {
       "/",
       "/join",
       "/join?return_to=%2Fgames",
+      "/join/continue?return_to=%2Fgames",
       "/auth/callback?token=abc",
       "/favicon.ico",
       "/icon.svg",
@@ -119,7 +120,7 @@ describe("proxy", () => {
       expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false);
     });
 
-    it.each(["/", "/dashboard", "/games/12", "/api/games/search", "/auth/callback", "/join"])(
+    it.each(["/", "/dashboard", "/games/12", "/api/games/search", "/auth/callback", "/join", "/join/continue"])(
       "runs on %s",
       (url) => {
         expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
