@@ -321,6 +321,11 @@
                 color: var(--destructive-foreground);
                 border-color: var(--destructive-foreground);
             }
+            &[data-variant="filter"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
         }
         [data-slot="skeleton"] {
             background-color: var(--card);
@@ -1030,6 +1035,14 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="input-group"][data-variant="search"] {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-color: var(--border-strong);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="input-group"][data-variant="list-search"] {
             background-color: var(--card);
             color: var(--card-foreground);
             border-color: var(--border-strong);

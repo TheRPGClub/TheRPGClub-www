@@ -14,6 +14,9 @@ type InputVariant =
   | "destructive"
   // A field on a light object (the yellow panel).
   | "inverse"
+  // A field in a bar of filters, beside the member pages' selects (the
+  // compare page's search): their strong rule.
+  | "filter"
 
 function Input({
   className,
