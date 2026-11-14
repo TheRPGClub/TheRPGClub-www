@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { requireAuth } from "@/lib/session";
 import {
   parseBacklogPickParams,
   type BacklogPickSearchParams,
@@ -8,7 +8,8 @@ import { dealHand, loadPickPlatforms } from "@/lib/members/backlog-deal";
 import { fetchMember } from "@/lib/members/member-page";
 import { PickSentence } from "@/components/issue/member-pick-sentence";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { PickEmpty } from "@/components/member/pick/pick-empty";
 import { PickHand } from "@/components/member/pick/pick-hand";
 
@@ -22,9 +23,7 @@ export default async function BacklogPickPage({
   searchParams: Promise<BacklogPickSearchParams>;
 }) {
   const [{ id }, raw] = await Promise.all([params, searchParams]);
-  const session = await getSession();
-
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== id) {
     redirect(`/members/${id}/backlogged-games`);
   }

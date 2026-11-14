@@ -5,7 +5,7 @@ import { SocialsEditor } from "@/components/socials-editor";
 import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { PageHeader } from "@/components/templates/page-header";
-import { EditSections, type EditSection } from "@/components/templates/edit-sections";
+import { EditSections, type EditSection } from "@/components/member/edit/edit-sections";
 import { ButtonLink } from "@/components/ui/button";
 
 // The profile edit page: its header, then one section per list the member is

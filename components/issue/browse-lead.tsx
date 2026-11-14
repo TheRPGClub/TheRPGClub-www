@@ -89,7 +89,7 @@ function LeadCard({
         <img
           src={art}
           alt=""
-          className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/lead:scale-[1.03]"
+          className="absolute inset-0 -z-20 size-full object-cover motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/lead:scale-[1.03]"
         />
       )}
       <span

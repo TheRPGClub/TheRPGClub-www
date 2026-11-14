@@ -77,4 +77,4 @@ export function SectionHeading({
 
 // The "All 112 rounds →" style trailing link used beside headings.
 export const headingLinkClass =
-  "font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:text-gotm [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5";
+  "font-label group inline-flex items-center gap-1.5 text-sm font-extrabold text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:text-gotm motion-safe:[&_svg]:transition-transform motion-safe:hover:[&_svg]:translate-x-0.5";

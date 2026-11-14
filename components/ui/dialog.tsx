@@ -56,7 +56,7 @@ function DialogContent({
           // Long copy has to stay reachable on a short window, so the popup
           // caps its height and scrolls rather than running off the screen.
           "max-h-[calc(100dvh-4rem)] overflow-y-auto",
-          "transition duration-200 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+          "transition duration-200 ease-out motion-reduce:transition-opacity data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
           className
         )}
         {...props}

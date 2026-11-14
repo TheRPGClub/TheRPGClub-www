@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-export const DONATE_LABEL = "font-label mb-1.5 block text-sm text-background";
+// On a Label the Theme gives the ink: pass the type alone.
+export const DONATE_LABEL_TYPE = "font-label mb-1.5 block text-sm";
+export const DONATE_LABEL = `${DONATE_LABEL_TYPE} text-background`;
 export const OTHER_PLATFORM = "Other";
 // The IGDB fallback is drawn for the dark page, so it sits on a dark panel
 // here (bg-background, so its bg-muted "You stay here" note still stands out).
@@ -42,15 +44,14 @@ export function DonateGameField({
           </Button>
         </div>
       ) : (
-        <div className="[&_input]:border-background [&_input]:bg-[#fff8cc] [&_input]:text-background [&_input]:caret-background [&_input]:placeholder:text-background/55">
-          <GamePicker
-            key={pickerKey}
-            compact
-            onPick={onPick}
-            placeholder="Search the GameDB…"
-            igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
-          />
-        </div>
+        <GamePicker
+          key={pickerKey}
+          compact
+          variant="inverse"
+          onPick={onPick}
+          placeholder="Search the GameDB…"
+          igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
+        />
       )}
     </div>
   );

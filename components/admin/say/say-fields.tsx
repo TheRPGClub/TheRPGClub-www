@@ -8,6 +8,7 @@ import { DeskSelect } from "@/components/admin/desk/desk-select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 export const SAY_LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 export const SAY_HINT = "text-[0.82rem] text-faint-foreground";
@@ -44,7 +45,7 @@ export function SayFields({ channels, f }: { channels: GuildChannel[]; f: Return
             </p>
           )}
         </div>
-        <label className="block space-y-1.5">
+        <Label variant="frame" className="block space-y-1.5">
           <span className={SAY_LABEL}>Reply to (optional)</span>
           <Input
             name="reply_to_message_link"
@@ -61,10 +62,10 @@ export function SayFields({ channels, f }: { channels: GuildChannel[]; f: Return
           <p id="say-link-note" className={linkProblem ? PROBLEM : SAY_HINT}>
             {linkProblem || "Paste a message link to reply to it. Leave it empty to post."}
           </p>
-        </label>
+        </Label>
       </div>
 
-      <label className="block space-y-1.5">
+      <Label variant="frame" className="block space-y-1.5">
         <span className="flex items-baseline justify-between gap-3">
           <span className={SAY_LABEL}>Message</span>
           <span
@@ -90,7 +91,7 @@ export function SayFields({ channels, f }: { channels: GuildChannel[]; f: Return
         <p id="say-content-note" className={contentProblem ? PROBLEM : SAY_HINT}>
           {contentProblem || "Line breaks are kept. Member mentions ping; @everyone, @here and roles never do."}
         </p>
-      </label>
+      </Label>
     </>
   );
 }

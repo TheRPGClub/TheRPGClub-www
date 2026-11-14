@@ -1,6 +1,8 @@
 import { Bot } from "lucide-react";
 
-export const PRESENCE_LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-faint-foreground";
+// On a Label the Theme gives the ink: pass the type alone.
+export const PRESENCE_LABEL_TYPE = "font-label block text-[0.82rem] tracking-[0.06em]";
+export const PRESENCE_LABEL = `${PRESENCE_LABEL_TYPE} text-faint-foreground`;
 
 // A proof of the bot's presence as Discord shows it: the member list line
 // and the profile's "Playing" block.

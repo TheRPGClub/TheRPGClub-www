@@ -60,7 +60,7 @@ export function UnlinkDialog({
             onClick={onUnlink}
           >
             {pending ? (
-              <Loader2 data-icon="inline-start" className="animate-spin" />
+              <Loader2 data-icon="inline-start" className="motion-safe:animate-spin" />
             ) : (
               <Unlink data-icon="inline-start" />
             )}

@@ -2,6 +2,7 @@
 
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 // The settings on/off switch: a hard-cornered track that fills highlighter
 // yellow when on (the member's own choice), with the state also spelled out in
@@ -30,9 +31,10 @@ export function FeatureSwitch({
   describedBy?: string;
 }) {
   return (
-    <label
+    <Label
+      variant="switch"
       className={cn(
-        "-my-2 -mr-2 flex shrink-0 items-center gap-3 rounded-sm py-2 pr-2 pl-3 has-focus-visible:ring-3 has-focus-visible:ring-ring/50",
+        "-my-2 -mr-2 flex shrink-0 items-center gap-3 py-2 pr-2 pl-3",
         unavailable ? "cursor-not-allowed opacity-45" : pending && "cursor-progress",
       )}
     >
@@ -61,6 +63,6 @@ export function FeatureSwitch({
         aria-disabled={pending || unavailable || undefined}
         className={cn(pending && "opacity-70")}
       />
-    </label>
+    </Label>
   );
 }

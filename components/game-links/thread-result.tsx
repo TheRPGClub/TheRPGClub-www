@@ -46,7 +46,7 @@ export function ThreadResult({
           aria-label={`Link ${thread.thread_name}`}
         >
           {busy ? (
-            <LoaderCircle data-icon="inline-start" className="animate-spin" />
+            <LoaderCircle data-icon="inline-start" className="motion-safe:animate-spin" />
           ) : (
             <Plus data-icon="inline-start" />
           )}

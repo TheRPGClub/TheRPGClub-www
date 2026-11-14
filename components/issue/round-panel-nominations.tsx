@@ -1,4 +1,4 @@
-import type { TrackedNomination } from "@/components/issue/round-panel";
+import type { TrackedNomination } from "@/lib/dashboard/issue";
 import { cn } from "@/lib/utils";
 
 // The tall round panel's latest nominations: cover, game, nominator and the

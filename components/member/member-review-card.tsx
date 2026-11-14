@@ -57,6 +57,7 @@ export function ReviewRating({
     >
       <span className="font-headline text-xl leading-none">{rating}</span>
       <span className="font-label text-xs text-faint-foreground">/ {MAX_RATING}</span>
+      {/* A meter (the score out of the maximum), not progress: no Progress. */}
       <div aria-hidden className="h-1 w-20 overflow-hidden rounded-[2px] bg-muted">
         <div className={cn("h-full bg-foreground")} style={{ width: `${pct}%` }} />
       </div>

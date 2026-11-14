@@ -23,6 +23,7 @@ export function NominationTally({
         </span>
         {count === 1 ? "vote" : "votes"}
       </p>
+      {/* A meter (votes against the leader), not progress: no Progress. */}
       {maxCount > 0 && (
         <span aria-hidden className="mt-1.5 block h-1 overflow-hidden rounded-full bg-muted">
           <span

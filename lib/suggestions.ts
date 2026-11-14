@@ -97,14 +97,15 @@ export function suggestionPhase(s: Pick<Suggestion, "status" | "github_issue_sta
   return s.status;
 }
 
-// Each phase's band ink, with ink type on it. Pending is paper, Approved
-// teal, Done green, Rejected hot pink; Withdrawn is an outline.
+// Each phase's band ink (a Theme token), with ink type on it. In the Monthly
+// Issue: Pending is paper, Approved teal, Done green, Rejected hot pink;
+// Withdrawn is an outline.
 export const PHASE_INK: Record<SuggestionPhase, string> = {
-  pending: "#f4f4f0",
-  approved: "#2ec4b6",
-  done: "#5fd08a",
-  rejected: "#ff4fa3",
-  withdrawn: "#3a3a43",
+  pending: "var(--color-foreground)",
+  approved: "var(--color-phase-approved)",
+  done: "var(--color-phase-done)",
+  rejected: "var(--color-phase-rejected)",
+  withdrawn: "var(--color-border-strong)",
 };
 
 export const PHASE_LABEL: Record<SuggestionPhase, string> = {

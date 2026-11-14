@@ -5,6 +5,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 
 // Search the member's completed games, across every year. A GET form:
 // next/form keeps it client-side.
@@ -21,15 +22,15 @@ export function CompletedSearch({
     <Form action={action} role="search" className="w-full max-w-80">
       {/* The group pads its field after an addon; here the gap spaces them. */}
       <InputGroup
-        variant="list-search"
+        variant="quick-search"
         className="h-10 gap-2 px-3 has-[>[data-align=inline-start]]:[&>input]:pl-0"
       >
         <InputGroupAddon className="p-0">
           <Search aria-hidden className="size-4 shrink-0" />
         </InputGroupAddon>
-        <label htmlFor="completed-search" className="sr-only">
+        <Label htmlFor="completed-search" variant="field" className="sr-only">
           Search {displayName}&apos;s completed games
-        </label>
+        </Label>
         <InputGroupInput
           id="completed-search"
           name="q"

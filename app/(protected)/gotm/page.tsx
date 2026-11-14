@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { getSession, requireFeature } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import {
   fetchGotmRounds,
   parseGotmHistoryFilters,
@@ -28,8 +27,8 @@ export default async function GotmHistoryPage({
 async function GotmHistoryContent({ filters }: { filters: Filters }) {
   // The archive read needs auth, so confirm a session first rather than make
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
-  // getSession is memoised per request.
-  if (!(await getSession())) redirect("/");
+  // The session read is memoised per request.
+  await requireAuth();
   const features = await requireFeature("voting_gotm");
   const result = await fetchGotmRounds(filters);
 

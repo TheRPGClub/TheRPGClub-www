@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle, Game, Review, User } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { getSession, requireFeature } from "@/lib/session";
-import { reviewerName } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 
 // The game's reviews page reads: the game, one page of its reviews, and the
 // review open in the reader.

@@ -56,7 +56,7 @@ function DropdownMenuContent({
           data-slot="dropdown-menu-content"
           className={cn(
             "max-h-[var(--available-height)] min-w-40 overflow-y-auto border p-1",
-            "origin-[var(--transform-origin)] transition duration-150 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+            "origin-[var(--transform-origin)] transition duration-150 ease-out motion-reduce:transition-opacity data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className
           )}
           {...props}

@@ -36,14 +36,13 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
     open(null, false);
     startTransition(() => router.refresh());
   };
-  const handleDelete = (socialId: number) => {
-    if (!confirm("Delete this social?")) return;
+  // After the row's confirm: an error stays in the confirm.
+  const handleDelete = async (socialId: number) => {
     setError(null);
-    startTransition(async () => {
-      const result = await deleteUserSocialAction(socialId, userId);
-      if (!result.ok) return setError(result.error ?? "Failed to delete.");
-      router.refresh();
-    });
+    const result = await deleteUserSocialAction(socialId, userId);
+    if (!result.ok) return result.error ?? "Failed to delete.";
+    startTransition(() => router.refresh());
+    return null;
   };
   const form = (key: string, initial: DraftSocial, socialId: number | null, onCancel: () => void) => (
     <li key={key} className="rounded-md border border-highlight bg-card p-3 lg:col-span-2">

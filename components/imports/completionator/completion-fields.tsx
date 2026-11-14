@@ -13,6 +13,7 @@ import {
 import { FIELD_LABEL, FieldSelect } from "@/components/imports/completionator/field-select";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // The platform Select's "no platform" option; the form keeps it as "".
 const OTHER_PLATFORM = "other";
@@ -78,10 +79,10 @@ export function CompletionFields({
           className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1"
         >
           {dateOptions.map(([value, label]) => (
-            <label key={value} className="inline-flex items-center gap-1.5">
+            <Label key={value} variant="frame" className="inline-flex items-center gap-1.5">
               <RadioGroupItem value={value} />
               {label}
-            </label>
+            </Label>
           ))}
         </RadioGroup>
         {values.dateChoice === "custom" && (
@@ -96,7 +97,7 @@ export function CompletionFields({
         )}
       </fieldset>
 
-      <label className="space-y-1.5 text-sm">
+      <Label variant="frame" className="space-y-1.5 text-sm">
         <span className={FIELD_LABEL}>Playtime (hours)</span>
         <Input
           type="number"
@@ -107,7 +108,7 @@ export function CompletionFields({
           onChange={(e) => onChange({ playtime: e.target.value })}
           placeholder="Unknown"
         />
-      </label>
+      </Label>
     </div>
   );
 }

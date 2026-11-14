@@ -10,7 +10,7 @@ import type {
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { paginationOf } from "@/lib/api/pagination";
 import { commonCompletionsQuery, type CompareFilters } from "@/lib/completions-compare";
-import { fetchAllCompletions } from "@/components/member/member-lists-server";
+import { fetchAllCompletions } from "@/lib/members/completions";
 import { fetchMember } from "@/lib/members/member-page";
 
 // Compare completions: the overlap diagram ("only A / both / only B") over a

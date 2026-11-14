@@ -10,6 +10,7 @@ import {
 import { ImportUploadErrors } from "@/components/imports/import-upload-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const initialState: CsvImportFormState = { error: null, rowErrors: [] };
 
@@ -30,12 +31,13 @@ export function CsvImportForm({
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-1.5">
-        <label
+        <Label
           htmlFor="csv-file"
-          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground"
+          variant="lead"
+          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em]"
         >
           CSV file
-        </label>
+        </Label>
         <Input
           id="csv-file"
           name="file"

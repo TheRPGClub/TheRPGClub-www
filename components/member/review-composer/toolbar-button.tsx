@@ -37,7 +37,7 @@ export function ToolbarButton({
     return (
       <Button
         type="button"
-        variant="subtle"
+        variant="editor-tool"
         size="icon-sm"
         onMouseDown={keepSelection}
         onClick={onClick}

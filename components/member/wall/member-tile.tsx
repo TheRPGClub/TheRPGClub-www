@@ -23,7 +23,7 @@ export function MemberTile({ member }: { member: WallMember }) {
           <AvatarImage
             src={`${API_BASE}/api/v1/users/${user.user_id}/avatar`}
             alt=""
-            className="transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/tile:scale-[1.04]"
+            className="motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/tile:scale-[1.04]"
           />
           {/* No avatar on file: the member's initial, set like a cover
               line on an ink block. */}

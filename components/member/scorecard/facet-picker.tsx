@@ -50,7 +50,7 @@ export function FacetPicker({
           catalogue row is the better move where one is close enough. */}
       <Button
         type="button"
-        variant="subtle"
+        variant="editor-tool"
         size="xs"
         disabled={disabled || full}
         onClick={onAddOwn}

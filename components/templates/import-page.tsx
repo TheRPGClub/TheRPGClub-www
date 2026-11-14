@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ImportJob } from "@/lib/api/types";
 import { loadActiveImport, loadImportSummary, loadSocials } from "@/lib/imports/active";
@@ -16,7 +16,7 @@ import {
   linkAccountsHref,
   requiredAccount,
 } from "@/lib/imports/linked-account";
-import { ImportTemplate } from "@/components/templates/import-template";
+import { PageHeader } from "@/components/templates/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
@@ -41,8 +41,7 @@ export async function ImportPage<J extends ImportJob>({
   intro,
   form,
 }: ImportPageProps<J>) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== userId) redirect(`/members/${userId}`);
   const feature = IMPORT_KINDS[kind].feature;
   const features = await requireFeature(feature);
@@ -61,16 +60,17 @@ export async function ImportPage<J extends ImportJob>({
     !active && account !== null && !hasRequiredAccount(kind, await loadSocials(userId));
 
   return (
-    <ImportTemplate
-      title={IMPORT_KINDS[kind].label}
-      badge={features.preview(feature) && <PreviewBadge />}
-      actions={
-        <ButtonLink href={importsHubHref(userId)} variant="outline">
-          <ChevronLeft data-icon="inline-start" />
-          All imports
-        </ButtonLink>
-      }
-    >
+    <div className="space-y-7">
+      <PageHeader
+        title={IMPORT_KINDS[kind].label}
+        badge={features.preview(feature) && <PreviewBadge />}
+        actions={
+          <ButtonLink href={importsHubHref(userId)} variant="outline">
+            <ChevronLeft data-icon="inline-start" />
+            All imports
+          </ButtonLink>
+        }
+      />
       {active ? (
         <div className="space-y-4">
           {intro(active)}
@@ -97,6 +97,6 @@ export async function ImportPage<J extends ImportJob>({
       ) : (
         <div className="grid gap-5">{form}</div>
       )}
-    </ImportTemplate>
+    </div>
   );
 }

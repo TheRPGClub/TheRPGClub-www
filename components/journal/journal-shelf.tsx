@@ -39,7 +39,7 @@ export function JournalShelf({
                   { "--ink": memberInk(c.user_id), height: spineHeight(c.user_id) } as CSSProperties
                 }
                 className={cn(
-                  "group relative flex w-14 flex-col items-center rounded-t-sm pb-2.5 transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] focus-visible:ring-3 focus-visible:ring-highlight/60 focus-visible:outline-none",
+                  "group relative flex w-14 flex-col items-center rounded-t-sm pb-2.5 motion-safe:transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] focus-visible:ring-3 focus-visible:ring-highlight/60 focus-visible:outline-none",
                   on
                     ? "-translate-y-[18px] bg-card shadow-[inset_0_0_0_1.5px_var(--color-highlight),0_12px_30px_rgb(0_0_0/0.5)]"
                     : "bg-muted shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_8%,transparent)] motion-safe:hover:-translate-y-1.5",

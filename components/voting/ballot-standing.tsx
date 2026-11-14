@@ -43,7 +43,7 @@ export function BallotStanding({
           aria-pressed={voted}
           className="ml-auto sm:ml-0"
         >
-          {pending ? <Loader2 className="animate-spin" /> : voted ? <Check /> : <Vote />}
+          {pending ? <Loader2 className="motion-safe:animate-spin" /> : voted ? <Check /> : <Vote />}
           {voted ? "Voted" : "Vote"}
         </Button>
       )}

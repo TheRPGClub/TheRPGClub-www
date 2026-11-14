@@ -12,6 +12,7 @@ import { RoundFormGames } from "./round-form-games";
 import { RoundProof } from "./round-proof";
 import { RoundTrackPicker } from "./round-track-picker";
 import { fieldLabel } from "./styles";
+import { Label } from "@/components/ui/label";
 
 export interface RoundFormProps {
   // Each track's next round and month, from the newest rounds.
@@ -40,7 +41,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
         <RoundTrackPicker category={f.category} onPick={f.pickTrack} disabled={locked} />
 
         <div className="grid gap-4 sm:grid-cols-[9rem_minmax(0,1fr)]">
-          <label className="space-y-1.5">
+          <Label variant="frame" className="space-y-1.5">
             <span className={fieldLabel}>Round</span>
             <Input
               inputMode="numeric"
@@ -49,8 +50,8 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
               disabled={locked}
               aria-invalid={f.roundText.trim() !== "" && !roundNumber}
             />
-          </label>
-          <label className="space-y-1.5">
+          </Label>
+          <Label variant="frame" className="space-y-1.5">
             <span className={fieldLabel}>Month</span>
             <Input
               value={f.monthYear}
@@ -59,7 +60,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
               maxLength={40}
               disabled={locked}
             />
-          </label>
+          </Label>
         </div>
 
         <RoundFormGames id={id} games={f.games} setGames={f.setGames} onPick={f.addGame} pickerKey={f.pickerKey} locked={locked} />
@@ -87,7 +88,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             <Button type="submit" variant="highlight" disabled={pending || f.games.length === 0}>
-              {pending ? <Loader2 className="animate-spin" /> : <Plus data-icon="inline-start" />}
+              {pending ? <Loader2 className="motion-safe:animate-spin" /> : <Plus data-icon="inline-start" />}
               Add {TRACK_NAME[f.category]} round {roundNumber ?? ""}
             </Button>
             <span className="text-[0.84rem] text-faint-foreground">The whole round is saved, or none of it.</span>

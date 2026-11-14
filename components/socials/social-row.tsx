@@ -4,9 +4,11 @@ import { Pencil, Trash2 } from "lucide-react";
 import type { UserSocial } from "@/lib/api/types";
 import { SocialIcon } from "@/components/social-icon";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 // A linked social as a row: its platform, the handle (a link when it has
-// one), and edit and delete.
+// one), and edit and delete (after a confirm). `onDelete` answers with an
+// error to show in the confirm, or null once the social is gone.
 export function SocialRow({
   social,
   pending,
@@ -16,7 +18,7 @@ export function SocialRow({
   social: UserSocial;
   pending: boolean;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete: () => Promise<string | null>;
 }) {
   const platform = social.social_platform?.label;
   return (
@@ -49,16 +51,18 @@ export function SocialRow({
       >
         <Pencil />
       </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={onDelete}
-        disabled={pending}
-        aria-label={`Delete ${platform ?? "social"}`}
-      >
-        <Trash2 />
-      </Button>
+      <ConfirmDialog
+        trigger={
+          <Button type="button" variant="ghost" size="icon-sm" disabled={pending} aria-label={`Delete ${platform ?? "social"}`}>
+            <Trash2 />
+          </Button>
+        }
+        title="Delete this social?"
+        description={`${platform ?? "This social"} comes off your profile.`}
+        confirmLabel="Delete"
+        pendingLabel="Deleting…"
+        onConfirm={onDelete}
+      />
     </li>
   );
 }

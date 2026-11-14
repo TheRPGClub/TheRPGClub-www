@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { MemberProfile } from "@/lib/members/profile-page";
 import { chapterHref, journalDate } from "@/lib/journals";
 import { DetailSection, SectionLink } from "@/components/templates/detail-template";
-import { memberListHref } from "@/components/member/member-lists";
+import { memberListHref } from "@/lib/members/member-lists";
 import { ProfileEmpty } from "@/components/member/profile/profile-empty";
 
 // The member's Game Journal: their newest chapters, one line per game.

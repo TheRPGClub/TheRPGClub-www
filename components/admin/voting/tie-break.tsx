@@ -8,6 +8,7 @@ import { CATEGORY_SHORT } from "@/lib/voting-console";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { JobLine } from "./job-line";
+import { Label } from "@/components/ui/label";
 
 // The admins' call once the vote (and any runoff) closed level: pick the
 // winner, or more than one for joint winners, as the bot's tie prompt does.
@@ -53,10 +54,10 @@ export function TieBreak({
       <ul className="space-y-1.5">
         {games.map((game) => (
           <li key={game.game_id}>
-            <label className="flex cursor-pointer items-center gap-2.5 rounded-sm px-1 py-1 hover:bg-muted">
+            <Label variant="option" className="flex cursor-pointer items-center gap-2.5 px-1 py-1">
               <Checkbox checked={picked.includes(game.game_id)} onCheckedChange={() => toggle(game.game_id)} />
               <span className="font-semibold">{game.title}</span>
-            </label>
+            </Label>
           </li>
         ))}
       </ul>

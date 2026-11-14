@@ -55,7 +55,7 @@ export function ReelStrip({
                       game={entry.game}
                       title={name}
                       className={cn(
-                        "transition-[transform,box-shadow] duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:shadow-[0_0_0_3px_var(--color-highlight)]",
+                        "transition-[box-shadow] motion-safe:transition-[transform,box-shadow] duration-200 motion-safe:group-hover/cover:-translate-y-1 group-focus-visible/cover:shadow-[0_0_0_3px_var(--color-highlight)]",
                         on && "shadow-[0_0_0_3px_var(--color-foreground)]",
                       )}
                       fallbackClassName="text-sm p-1.5"

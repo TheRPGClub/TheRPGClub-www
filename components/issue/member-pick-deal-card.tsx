@@ -28,11 +28,11 @@ export function DealCard({
   return (
     <li
       className={cn(
-        "flex overflow-hidden rounded-lg border bg-card shadow-[0_18px_40px_rgb(0_0_0/0.5)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] sm:row-start-1 sm:flex-col",
+        "flex overflow-hidden rounded-lg border bg-card shadow-[0_18px_40px_rgb(0_0_0/0.5)] transition-[box-shadow] motion-safe:transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] sm:row-start-1 sm:flex-col",
         seat,
         on
           ? "border-foreground shadow-[0_0_0_2px_var(--color-foreground),0_22px_44px_rgb(0_0_0/0.55)] sm:-translate-y-3.5 sm:rotate-0"
-          : "border-border-strong sm:hover:-translate-y-2",
+          : "border-border-strong motion-safe:sm:hover:-translate-y-2",
       )}
     >
       <Link

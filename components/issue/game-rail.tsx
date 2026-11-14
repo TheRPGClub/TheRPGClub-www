@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { User } from "@/lib/api/types";
-import { ReviewerAvatar, reviewerName } from "@/components/issue/review-meta";
+import { ReviewerAvatar } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import {
   Tooltip,
   TooltipContent,
@@ -67,7 +68,7 @@ export function RailMembers({
                       <Link
                         href={`/members/${user.user_id}`}
                         aria-label={name}
-                        className="relative block rounded-full ring-3 ring-background transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:z-10"
+                        className="relative block rounded-full ring-3 ring-background motion-safe:transition-transform hover:z-10 motion-safe:hover:-translate-y-0.5 focus-visible:z-10"
                       />
                     }
                   >

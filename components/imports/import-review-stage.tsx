@@ -55,7 +55,7 @@ export function ImportReviewStage({
       {job.status === "active" && !item && busy && (
         <div className="grid min-h-60 place-items-center rounded-md border border-dashed border-border-strong px-6 text-center">
           <p className="font-label inline-flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em] text-dim-foreground">
-            <Loader2 aria-hidden className="size-4 animate-spin" />
+            <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" />
             {busy}
           </p>
         </div>

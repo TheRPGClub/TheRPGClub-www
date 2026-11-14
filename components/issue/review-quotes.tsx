@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Review } from "@/lib/api/types";
 import { MAX_RATING } from "@/lib/api/rating";
 import { SectionHeading } from "@/components/templates/page-header";
-import { ReviewerAvatar, reviewerName } from "@/components/issue/review-meta";
+import { ReviewerAvatar } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { reviewPullQuote } from "@/components/issue/review-quote";
 
 // "In their words": a line from each of a few reviews, set as pull quotes.

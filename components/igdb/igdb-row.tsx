@@ -85,7 +85,7 @@ export function IgdbRow({
           onClick={onAdd}
         >
           {busy ? (
-            <LoaderCircle data-icon="inline-start" className="animate-spin" />
+            <LoaderCircle data-icon="inline-start" className="motion-safe:animate-spin" />
           ) : existing ? (
             <Check data-icon="inline-start" />
           ) : (

@@ -4,7 +4,7 @@ import { ReviewBanner } from "@/components/member/review-banner";
 import { ReviewBodyContent } from "@/components/member/review-body";
 import { ReviewDetail } from "@/components/member/review-detail";
 import { ReviewMore } from "@/components/issue/review-more";
-import { reviewerName } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { ReviewVerdict } from "@/components/issue/review-verdict";
 import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";

@@ -1,7 +1,8 @@
 import type { MemberProfile } from "@/lib/members/profile-page";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
 import { MemberShelf, PodiumSpines, Spine } from "@/components/issue/member-shelf";
-import { memberListHref, memberName } from "@/components/member/member-lists";
+import { memberListHref } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { mobileCut, shelfMore, spineHref } from "@/components/member/profile/shelf-parts";
 
 // The top shelf: the member's favorites, ranked, the first three on a podium.

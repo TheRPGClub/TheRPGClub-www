@@ -39,9 +39,9 @@ export function AchievementHoverCard({
         render={href ? <a href={href} /> : <button type="button" />}
         aria-label={`${label}, ${view.unlocked ? "unlocked" : "locked"}`}
         className={cn(
-          "block outline-none transition-transform duration-150",
+          "block outline-none motion-safe:transition-transform duration-150",
           "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight",
-          "motion-safe:hover:-translate-y-0.5 data-[popup-open]:-translate-y-0.5",
+          "motion-safe:hover:-translate-y-0.5 motion-safe:data-[popup-open]:-translate-y-0.5",
           className,
         )}
       >

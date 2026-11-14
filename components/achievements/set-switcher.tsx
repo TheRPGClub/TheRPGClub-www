@@ -19,7 +19,7 @@ export function SetSwitcher({
   return (
     <ToggleGroup
       aria-label={label}
-      variant="quiet"
+      variant="switcher"
       spacing={0.5}
       value={[String(value)]}
       onValueChange={(next) => {

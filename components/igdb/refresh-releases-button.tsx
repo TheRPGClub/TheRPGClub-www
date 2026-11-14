@@ -46,7 +46,7 @@ export function RefreshReleasesButton({ gameId }: { gameId: number }) {
       <div aria-live="polite">
         {pending ? (
           <Status label="Running">
-            <LoaderCircle aria-hidden className="size-4 shrink-0 animate-spin" />
+            <LoaderCircle aria-hidden className="size-4 shrink-0 motion-safe:animate-spin" />
             Checking IGDB for releases
           </Status>
         ) : outcome?.state === "added" ? (

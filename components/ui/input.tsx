@@ -20,7 +20,9 @@ type InputVariant =
   // A file field: a dropped-in file on the page's ground, its button a
   // small control (an import's CSV upload).
   | "upload"
-  // A field on a page whose work is writing one thing (Suggest something).
+  // A field you write into, with the strong rule and the yellow focus: a
+  // page whose work is writing one thing (Suggest something), the journal
+  // catalogue's every-entry search.
   | "compose"
   // www#94: a field inside something that already draws it (a scorecard
   // row's rename, the rating's big readout): no rule, no ground of its own.
@@ -32,9 +34,6 @@ type InputVariant =
   // event's topic): no box, a strong rule under it that turns yellow on
   // focus.
   | "headline"
-  // www#100: the search of a catalogue (the journal catalogue's every-entry
-  // search): the strong rule, and the yellow focus.
-  | "catalogue"
   // www#100: a field of a journal entry in its open editor (the title): the
   // page's ink, the strong rule and the yellow focus.
   | "entry"

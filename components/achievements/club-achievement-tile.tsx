@@ -60,7 +60,7 @@ export function ClubAchievementTile({
         aria-label={label}
         className={cn(
           "group/tile relative block rounded-[8px] outline-none",
-          "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-highlight",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight",
           RING_PAD[size],
           className,
         )}

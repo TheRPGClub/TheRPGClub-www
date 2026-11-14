@@ -1,5 +1,4 @@
 import type { RibbonAccent } from "@/components/corner-ribbon";
-import type { VotingCategory } from "@/lib/api/types";
 
 // Per-category accent classes for the voting surfaces.
 //
@@ -38,11 +37,6 @@ export const accentClasses = {
 
 export type VotingAccent = keyof typeof accentClasses;
 
-// The club's two categories each own a hue, everywhere they appear.
-export const accentForCategory: Record<VotingCategory, VotingAccent> = {
-  gotm: "brand",
-  nr_gotm: "purple",
-};
 export type AccentStyle = (typeof accentClasses)[VotingAccent];
 
 // Slides a tally bar to its new relative scale when a vote lands. Overrides

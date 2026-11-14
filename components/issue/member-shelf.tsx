@@ -11,7 +11,7 @@ export { Spine, spineHeight } from "@/components/issue/member-shelf-spine";
 export { PodiumSpines } from "@/components/issue/member-shelf-podium";
 
 const SPINE_LINK =
-  "font-label inline-flex items-center gap-1.5 text-[0.84rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5 [&_svg]:transition-transform hover:[&_svg]:translate-x-0.5";
+  "font-label inline-flex items-center gap-1.5 text-[0.84rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5 motion-safe:[&_svg]:transition-transform motion-safe:hover:[&_svg]:translate-x-0.5";
 
 export function MemberShelf({
   label,

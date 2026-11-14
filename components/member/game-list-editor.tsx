@@ -55,7 +55,7 @@ export function GameListEditor({
           action={
             editor.pending ? (
               <span className="font-label inline-flex items-center gap-1.5 text-sm text-faint-foreground">
-                <Loader2 aria-hidden className="size-3.5 animate-spin" />
+                <Loader2 aria-hidden className="size-3.5 motion-safe:animate-spin" />
                 Saving…
               </span>
             ) : undefined

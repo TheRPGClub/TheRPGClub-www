@@ -6,9 +6,10 @@ import { setPresenceAction } from "@/app/actions/presence";
 import type { BotPresence } from "@/lib/api/types";
 import { PRESENCE_MAX, validatePresenceName } from "@/lib/presence";
 import { ProofCard } from "@/components/admin/desk/proof-card";
-import { PresenceProof, PRESENCE_LABEL as LABEL } from "@/components/admin/presence/presence-proof";
+import { PresenceProof, PRESENCE_LABEL_TYPE } from "@/components/admin/presence/presence-proof";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // Set the bot's "Playing ..." presence, with a proof of how Discord shows
 // it. Once sent the proof is stamped and follows the `presence_set` job.
@@ -42,9 +43,9 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
   return (
     <div className="mt-6 grid items-start gap-9 xl:grid-cols-[minmax(0,1fr)_26rem]">
       <form onSubmit={submit} aria-label="Set the bot's presence" className="min-w-0">
-        <label htmlFor="presence-name" className={LABEL}>
+        <Label htmlFor="presence-name" variant="field" className={PRESENCE_LABEL_TYPE}>
           Playing
-        </label>
+        </Label>
         <Input
           id="presence-name"
           variant="headline"

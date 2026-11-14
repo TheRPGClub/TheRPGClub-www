@@ -1,5 +1,6 @@
 import { Plus, Vote } from "lucide-react";
-import type { Nomination, VotingCategory, VotingRound } from "@/lib/api/types";
+import type { VotingRound } from "@/lib/api/types";
+import type { TrackedNomination } from "@/lib/dashboard/issue";
 import { ButtonLink } from "@/components/ui/button";
 import { RoundPanelNominations } from "@/components/issue/round-panel-nominations";
 import { cn } from "@/lib/utils";
@@ -8,8 +9,6 @@ import { cn } from "@/lib/utils";
 // vote for the next round, with a monumental days-left count. `tall` is the
 // panel taking a whole column (a round with only one track's winners), which
 // leaves room to list the latest nominations.
-
-export type TrackedNomination = Nomination & { category: VotingCategory };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

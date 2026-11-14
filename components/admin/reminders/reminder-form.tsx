@@ -8,6 +8,7 @@ import { DeskSelect } from "@/components/admin/desk/desk-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const FIELD_LABEL = "font-label text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 const REPEATS = [{ value: "", label: "Doesn't repeat" }, ...RECURRENCE_UNITS];
@@ -48,7 +49,7 @@ export function ReminderForm({
             required
           />
         </div>
-        <label className="space-y-1">
+        <Label variant="frame" className="space-y-1">
           <span className={FIELD_LABEL}>When (your time zone, {browserZone()})</span>
           <Input
             type="datetime-local"
@@ -57,9 +58,9 @@ export function ReminderForm({
             onChange={(e) => f.setDueLocal(e.target.value)}
             required
           />
-        </label>
+        </Label>
       </div>
-      <label className="block space-y-1">
+      <Label variant="frame" className="block space-y-1">
         <span className={FIELD_LABEL}>Message</span>
         <Textarea
           name="message"
@@ -69,7 +70,7 @@ export function ReminderForm({
           onChange={(e) => f.setMessage(e.target.value)}
           required
         />
-      </label>
+      </Label>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1">
           <span id={`${idBase}-repeats`} className={FIELD_LABEL}>
@@ -83,7 +84,7 @@ export function ReminderForm({
           />
         </div>
         {f.recurUnit && (
-          <label className="space-y-1">
+          <Label variant="frame" className="space-y-1">
             <span className={FIELD_LABEL}>Every how many {f.recurUnit}</span>
             <Input
               type="number"
@@ -94,7 +95,7 @@ export function ReminderForm({
               onChange={(e) => f.setRecurEvery(e.target.value)}
               required
             />
-          </label>
+          </Label>
         )}
       </div>
       {f.error && (

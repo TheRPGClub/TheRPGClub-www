@@ -6,6 +6,7 @@ import {
   JOIN_RETRY_COOKIE,
   SESSION_COOKIE,
   SESSION_MAX_AGE_SECONDS,
+  signInCookie,
 } from "@/lib/sign-in";
 
 // The end of Discord sign-in: the API sends the session token here. The
@@ -21,12 +22,7 @@ export async function GET(request: NextRequest) {
 
   const destination = safeReturnTo(params.get(RETURN_TO_PARAM)) ?? DEFAULT_DESTINATION;
   const response = NextResponse.redirect(new URL(destination, request.url));
-  response.cookies.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_MAX_AGE_SECONDS,
-  });
+  response.cookies.set(SESSION_COOKIE, token, signInCookie(SESSION_MAX_AGE_SECONDS));
   // Signed in, so any second try on /join is over.
   if (request.cookies.has(JOIN_RETRY_COOKIE)) {
     response.cookies.delete(JOIN_RETRY_COOKIE);

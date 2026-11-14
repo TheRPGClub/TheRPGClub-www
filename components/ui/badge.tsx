@@ -46,13 +46,8 @@ const badgeVariants = cva(
         option: "",
         // A filter the reader picked, holding its own clear button.
         picked: "",
-        // A quiet status (not saved yet) drawn as a hairline.
-        quiet: "",
-      },
-      // A Provider that is not picked while another one is.
-      fill: {
-        solid: "",
-        outline: "",
+        // A status beside a heading (not saved yet), drawn as a hairline.
+        status: "",
       },
       size: {
         default: "",
@@ -65,7 +60,6 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       tone: "neutral",
-      fill: "solid",
       size: "default",
     },
   }
@@ -74,16 +68,21 @@ const badgeVariants = cva(
 function Badge({
   className,
   tone = "neutral",
-  fill = "solid",
   size = "default",
+  unpicked = false,
   render,
   ...props
-}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+}: useRender.ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & {
+    // A Provider filter chip that is not picked while another one is
+    // (data-unpicked).
+    unpicked?: boolean
+  }) {
   return useRender({
     defaultTagName: "span",
     props: mergeProps<"span">(
       {
-        className: cn(badgeVariants({ tone, fill, size }), className),
+        className: cn(badgeVariants({ tone, size }), className),
       },
       props
     ),
@@ -91,7 +90,7 @@ function Badge({
     state: {
       slot: "badge",
       tone,
-      fill,
+      unpicked,
       size,
     },
   })

@@ -3,10 +3,10 @@
 @import "shadcn/tailwind.css";
 /* Themes (api ADR-0008): one folder each under themes/, scoped to the
    <html data-theme> the root layout sets. Their @layer themes sits above
-   Tailwind's utilities. The test Theme only ever turns on in development
-   (themes/registry.ts). */
+   Tailwind's utilities. Every shipped Theme is imported here; a
+   development-only one (the test Theme) is loaded by app/layout.tsx in
+   development alone, so production never ships it (themes/registry.ts). */
 @import "../themes/monthly-issue/theme.css";
-@import "../themes/test/theme.css";
 
 /* shadcn's dark styles follow the Theme's declared mode (<html data-mode>). */
 @custom-variant dark (&:is([data-mode="dark"] *));
@@ -68,6 +68,11 @@
     --color-rarity-ultra: var(--rarity-ultra);
     --color-rarity-foreground: var(--rarity-foreground);
     --color-ok: var(--ok);
+    --color-phase-approved: var(--phase-approved);
+    --color-phase-done: var(--phase-done);
+    --color-phase-rejected: var(--phase-rejected);
+    --color-phase-rejected-deep: var(--phase-rejected-deep);
+    --color-slip-muted-foreground: var(--slip-muted-foreground);
     --color-news-announcements: var(--news-announcements);
     --color-news-releases: var(--news-releases);
     --color-news-emulation: var(--news-emulation);
@@ -171,6 +176,24 @@
     }
     a {
         text-underline-offset: 3px;
+    }
+}
+
+/* The Theme floor's reduced motion (DESIGN.md): the popups' enter and exit
+   (tw-animate's zoom and slide) keep their fade and drop the movement.
+   Unlayered, so it wins over the utilities that set them. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        --tw-enter-scale: 1;
+        --tw-enter-rotate: 0;
+        --tw-enter-translate-x: 0;
+        --tw-enter-translate-y: 0;
+        --tw-exit-scale: 1;
+        --tw-exit-rotate: 0;
+        --tw-exit-translate-x: 0;
+        --tw-exit-translate-y: 0;
     }
 }
 

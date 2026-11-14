@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
 import type { UserNowPlaying } from "@/lib/api/types";
 import { resolveEntryId } from "@/lib/api/game-list-entry";
-import { shortDate } from "@/components/member/member-lists";
+import { shortDate } from "@/lib/members/member-lists";
 import { cn } from "@/lib/utils";
 
 // Now Playing as open books: each game face-on in its wide key art, the
@@ -49,7 +49,7 @@ function OpenBook({
         <img
           src={art}
           alt=""
-          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover/book:scale-[1.04]"
+          className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/book:scale-[1.04]"
         />
       )}
       <span

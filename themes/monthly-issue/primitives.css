@@ -70,10 +70,10 @@
                twin resting in the muted ink (a dense editor's small tools);
                a quiet dotted link that opens an explainer; a round remove
                on a cover, light ink that inverts on hover. */
-            &[data-variant="subtle"] {
+            &[data-variant="editor-tool"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-muted-foreground;
             }
-            &[data-variant="destructive-subtle"] {
+            &[data-variant="destructive-editor-tool"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-muted-foreground;
             }
             &[data-variant="help"] {
@@ -224,24 +224,25 @@
         /* Badge, the chip family (www#90): Provider chips in their own
            colour, the giveaway platform chip in its ribbon ink, the hub's
            filter chips (the current one marked, a Provider not picked drawn
-           as a stroke in its colour), the journal catalogue's picked filter,
-           a quiet hairline status and the sidebar's badge scale. */
+           as a stroke in its colour, data-unpicked), the journal catalogue's
+           picked filter, a status drawn as a hairline and the sidebar's
+           badge scale. */
         [data-slot="badge"] {
             &[data-tone="provider-retroachievements"] {
                 @apply bg-provider-retroachievements text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-retroachievements shadow-[inset_0_0_0_1.5px_var(--color-provider-retroachievements)] hover:brightness-125;
                 }
             }
             &[data-tone="provider-steam"] {
                 @apply bg-provider-steam text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-steam shadow-[inset_0_0_0_1.5px_var(--color-provider-steam)] hover:brightness-125;
                 }
             }
             &[data-tone="provider-psn"] {
                 @apply bg-provider-psn text-provider-foreground;
-                &[data-fill="outline"] {
+                &[data-unpicked] {
                     @apply bg-transparent text-provider-psn shadow-[inset_0_0_0_1.5px_var(--color-provider-psn)] hover:brightness-125;
                 }
             }
@@ -260,14 +261,14 @@
             &[data-tone="picked"] {
                 @apply rounded-sm bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)];
             }
-            &[data-tone="quiet"] {
+            &[data-tone="status"] {
                 @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
             }
             &[data-size="nav"] {
                 @apply font-extrabold;
             }
             &[data-size="filter"] {
-                @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight;
+                @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
             }
         }
 
@@ -569,14 +570,10 @@
             @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground;
         }
 
-        /* Card: a panel of ink-2 with a rule, 3.2px corners. Paper drops the
-           rule; the active panel (being edited, picked) takes the yellow
+        /* Card: a panel of ink-2 with a rule, 3.2px corners. The active panel (being edited, picked) takes the yellow
            rule; a cover card is art under a legibility scrim. */
         [data-slot="card"] {
             @apply rounded-md border-border bg-card text-card-foreground *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md;
-            &[data-variant="paper"] {
-                @apply border-transparent;
-            }
             &[data-variant="active"] {
                 @apply border-highlight;
             }
@@ -633,11 +630,6 @@
         [data-slot="input-group"][data-variant="search"] {
             @apply border-border-strong focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
-        /* A search inside one list (www#93): the plain rule, and focus
-           shows on the rule alone. */
-        [data-slot="input-group"][data-variant="list-search"] {
-            @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
-        }
         [data-slot="input-group-addon"] {
             @apply font-medium text-faint-foreground [&>kbd]:rounded-[calc(var(--radius)-5px)];
         }
@@ -675,7 +667,7 @@
         }
 
         /* Label: the tracked label voice in paper-mute. */
-        [data-slot="label"],
+        [data-slot="label"][data-variant="default"],
         [data-slot="field-label"] {
             @apply font-label tracking-[0.06em] text-faint-foreground;
         }
@@ -858,6 +850,9 @@
                 @apply border-0 bg-transparent focus-visible:ring-0 active:not-aria-[haspopup]:translate-y-0;
             }
         }
+        /* A quick search in place (the top bar's games search, a search
+           inside one list): the plain rule, and focus shows on the rule
+           alone. */
         [data-slot="input-group"][data-variant="quick-search"] {
             @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
@@ -865,26 +860,27 @@
         /* The achievements area (www#96). */
         /* Button: an item picked from a set (aria-pressed), size bare. The
            inset yellow ring marks the pick, as a selection does app-wide;
-           focus shows the same ring. pick-row lights on hover and fills
+           focus is a yellow outline set off from the item, so a focused
+           item never reads as picked. pick-row lights on hover and fills
            while picked; pick-tile lights on hover; pick-card is a filled
            card that lights on hover. */
         [data-slot="button"] {
             &[data-variant="pick"] {
-                @apply cursor-pointer rounded-md text-left transition-colors focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                @apply cursor-pointer rounded-md text-left transition-colors focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
             }
             &[data-variant="pick-row"] {
-                @apply cursor-pointer text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:bg-muted aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                @apply cursor-pointer text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:bg-muted aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
             }
             &[data-variant="pick-tile"] {
-                @apply cursor-pointer rounded-md text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                @apply cursor-pointer rounded-md text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
             }
             &[data-variant="pick-card"] {
-                @apply cursor-pointer rounded-md bg-muted/60 text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                @apply cursor-pointer rounded-md bg-muted/60 text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
             }
             /* Closes a card on the muted ground: faint ink, the card ground
                on hover, a yellow focus outline. */
             &[data-variant="dismiss"] {
-                @apply rounded-sm text-faint-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-highlight;
+                @apply rounded-sm text-faint-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight;
             }
         }
         /* Tabs. chip: chips in the label voice, the current one ringed in
@@ -894,23 +890,24 @@
            (--tab-ink, --tab-ink-foreground). Each shows focus as a yellow
            outline. */
         [data-slot="tabs-list"][data-variant="chip"] [data-slot="tabs-trigger"] {
-            @apply font-label rounded-sm bg-foreground/6 font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            @apply font-label rounded-sm bg-foreground/6 font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
             &[data-active] {
                 @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
             }
         }
         [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
-            @apply font-label rounded-t-[3px] bg-card font-extrabold tracking-[0.06em] text-dim-foreground shadow-[inset_0_3px_0_var(--tab-ink)] transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight data-active:bg-(--tab-ink) data-active:text-provider-foreground data-active:shadow-none;
+            @apply font-label rounded-t-[3px] bg-card font-extrabold tracking-[0.06em] text-dim-foreground shadow-[inset_0_3px_0_var(--tab-ink)] transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-highlight data-active:bg-(--tab-ink) data-active:text-provider-foreground data-active:shadow-none;
         }
         [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
-            @apply font-label rounded-t-md bg-card font-extrabold tracking-[0.06em] text-faint-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-highlight;
+            @apply font-label rounded-t-md bg-card font-extrabold tracking-[0.06em] text-faint-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight;
             &[data-active] {
                 @apply bg-(--tab-ink) text-(--tab-ink-foreground) shadow-none;
             }
         }
-        /* Toggle quiet: the segment rests in the faint ink. */
-        [data-slot="toggle"][data-variant="quiet"],
-        [data-slot="toggle-group-item"][data-variant="quiet"] {
+        /* Toggle switcher: a switch between alternatives in place; the
+           segment rests in the faint ink. */
+        [data-slot="toggle"][data-variant="switcher"],
+        [data-slot="toggle-group-item"][data-variant="switcher"] {
             @apply text-faint-foreground transition-colors hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight aria-pressed:text-background data-pressed:text-background;
         }
         /* Progress: the tint tone fills with --progress-ink; its lg bar
@@ -939,7 +936,9 @@
            fields (a yellow rule and a soft yellow ring on focus); a
            Suggestion's type tags, each in its own ink. */
         [data-slot="button"] {
-            &[data-variant="dismiss-notice"] {
+            /* The x that clears something in place (a notice, a field's
+               text): faint until hovered, no ground. */
+            &[data-variant="clear"] {
                 @apply border-0 text-faint-foreground transition-colors hover:text-foreground;
             }
             &[data-variant="card-action"] {
@@ -1136,17 +1135,10 @@
             @apply border-b;
         }
         /* The journal catalogue's filters: chips in the label voice on ink-2
-           with a strong hairline (Any member, Any game), dim until hovered;
-           its search field on the strong rule with the yellow focus, and
-           the x that clears it, faint until hovered. */
+           with a strong hairline (Any member, Any game), dim until hovered.
+           Its search field is an Input compose, its x a Button clear. */
         :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"] {
             @apply font-label rounded-sm border-0 bg-card text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground;
-        }
-        [data-slot="input"][data-variant="catalogue"] {
-            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25;
-        }
-        [data-slot="button"][data-variant="field-clear"] {
-            @apply rounded-sm border-0 text-faint-foreground hover:text-foreground;
         }
         /* The journal entry editor (the yellow edge): its fields on the
            page's ink with the strong rule and the yellow focus, its game as
@@ -1194,6 +1186,53 @@
            follows its small corner, and a press doesn't nudge it. */
         [data-slot="button"][data-variant="filter-option"] {
             @apply font-label rounded-xs border-0 bg-transparent transition-none active:not-aria-[haspopup]:translate-y-0;
+        }
+        /* Labels (code review): the hand-made labels on the Label
+           primitive. Each keeps the type its caller sets; the Theme gives
+           the ink. field rests in the faint ink, title in the full ink,
+           lead in the dim ink, inverse on the yellow panel. option lights
+           on hover; ruled sits between rules; choice is the import
+           candidate's card (its radio's ring, yellow when checked, a yellow
+           focus outline); choice-tile is a muted tile, yellow ring when
+           checked; switch draws the settings switch's focus ring; file is a
+           file picker drawn as a field. frame has no look. */
+        [data-slot="label"] {
+            &[data-variant="field"] {
+                @apply text-faint-foreground;
+            }
+            &[data-variant="title"] {
+                @apply text-foreground;
+            }
+            &[data-variant="lead"] {
+                @apply text-dim-foreground;
+            }
+            &[data-variant="inverse"] {
+                @apply text-background;
+            }
+            &[data-variant="option"] {
+                @apply rounded-sm hover:bg-muted;
+            }
+            &[data-variant="ruled"] {
+                @apply border-border;
+            }
+            &[data-variant="choice"] {
+                @apply rounded-sm shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-data-checked:bg-muted has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
+            }
+            &[data-variant="choice-tile"] {
+                @apply rounded-sm bg-muted shadow-[inset_0_0_0_1px_var(--color-border-strong)] has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:ring-2 has-focus-visible:ring-highlight/40;
+            }
+            &[data-variant="switch"] {
+                @apply rounded-sm has-focus-visible:ring-3 has-focus-visible:ring-ring/50;
+            }
+            &[data-variant="file"] {
+                @apply rounded-sm border-border bg-card focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-highlight/40;
+            }
+        }
+        /* Tabs ticks (code review): a slideshow's ticks in the label
+           voice, faint at rest, full ink on hover and for the current
+           slide; no ground, and the browser's own focus ring. */
+        [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-none bg-transparent tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-1 focus-visible:[outline-style:auto] focus-visible:outline-ring data-active:bg-transparent data-active:shadow-none;
         }
     }
 }

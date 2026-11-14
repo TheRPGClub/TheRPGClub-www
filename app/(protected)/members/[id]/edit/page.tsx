@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getFeatures, getSession } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { fetchMemberEdit, memberEditShown } from "@/lib/member-edit";
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
@@ -13,9 +13,7 @@ export default async function MemberEditPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== id) {
     redirect(`/members/${id}`);
   }

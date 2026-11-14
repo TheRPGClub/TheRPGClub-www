@@ -1,5 +1,5 @@
 import type { GameCompletion } from "@/lib/api/types";
-import { completionMonth, monthLabel, playtimeHours } from "@/components/member/member-lists";
+import { completionMonth, monthLabel, playtimeHours } from "@/lib/members/member-lists";
 
 // The completed reel's data: the page's completions grouped by month, and
 // the facts its spotlight lists for one completion.

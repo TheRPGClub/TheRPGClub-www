@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Game, Review } from "@/lib/api/types";
 import type { SelectedReview } from "@/lib/games/reviews-page";
 import { ReviewIndex } from "@/components/issue/review-index";
-import { reviewerName } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { ReviewReader } from "@/components/issue/review-reader";
 
 // The reviews page's reader (`?review=<id>`): the chosen review open in full

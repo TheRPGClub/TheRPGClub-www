@@ -4,8 +4,8 @@ import {
   ReviewerAvatar,
   ScoreBox,
   formatReviewDate,
-  reviewerName,
 } from "@/components/issue/review-meta";
+import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { cn } from "@/lib/utils";
 
 // The reader's left column: every review on the page as a compact row (score,

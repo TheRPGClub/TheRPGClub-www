@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { requireAuth } from "@/lib/session";
 import { featureView } from "@/lib/features";
 import { fetchCurrentPhase } from "@/lib/api/voting-round";
 import { AppShell } from "@/components/shell/app-shell";
@@ -12,8 +11,8 @@ export default async function AppLayout({
   // The @crumbs slot: the current route's trail for the top bar.
   crumbs: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  // An expired or revoked session goes back through sign-in to this page.
+  const session = await requireAuth();
 
   // Sequenced behind the redirect, not run alongside getSession.
   //

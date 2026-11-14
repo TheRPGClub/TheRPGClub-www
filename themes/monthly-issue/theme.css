@@ -72,6 +72,15 @@
         --rarity-foreground: #0b0b0d;
         /* Staff desk only: the Done stamp on a bot job. */
         --ok: #5fd08a;
+        /* Suggestion phases: the Approved, Done and Rejected bands, and
+           the rejected pink deepened for type on a light slip. */
+        --phase-approved: #2ec4b6;
+        --phase-done: #5fd08a;
+        --phase-rejected: #ff4fa3;
+        --phase-rejected-deep: #8a1559;
+        /* Muted type on a light slip on the page (a rejection slip, a
+           highlight tile's foot). */
+        --slip-muted-foreground: #55554f;
         /* News inks, one per News Category, on news surfaces only. Read them
            through newsInk() in lib/news.ts. */
         --news-announcements: #ff5ca8;

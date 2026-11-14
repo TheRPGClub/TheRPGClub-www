@@ -6,6 +6,7 @@ import { JOURNAL_BODY_MAX, JOURNAL_TITLE_MAX } from "@/lib/journals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 // A journal entry's words: the optional title in Barlow italic over the
 // prose, both set on the page's ink inside the open editor.
@@ -27,9 +28,9 @@ export function JournalEntryFields({
   const ids = useId();
   return (
     <>
-      <label htmlFor={`${ids}-title`} className="sr-only">
+      <Label htmlFor={`${ids}-title`} variant="field" className="sr-only">
         Title (optional)
-      </label>
+      </Label>
       <Input
         id={`${ids}-title`}
         value={title}
@@ -40,9 +41,9 @@ export function JournalEntryFields({
         variant="entry"
         className="mb-2 py-0 text-base font-semibold italic placeholder:font-normal md:text-base"
       />
-      <label htmlFor={`${ids}-body`} className="sr-only">
+      <Label htmlFor={`${ids}-body`} variant="field" className="sr-only">
         Entry
-      </label>
+      </Label>
       <Textarea
         id={`${ids}-body`}
         value={body}

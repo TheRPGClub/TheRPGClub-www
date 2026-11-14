@@ -4,7 +4,8 @@ import { loadMemberList, pageNumber } from "@/lib/members/member-page";
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { MemberListEmpty } from "@/components/member/member-game-card";
-import { memberCounts, memberName } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
+import { memberName } from "@/lib/achievements";
 import { ListPagination } from "@/components/list-pagination";
 
 const PAGE_SIZE = 24;

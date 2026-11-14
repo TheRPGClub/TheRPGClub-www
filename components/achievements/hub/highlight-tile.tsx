@@ -89,7 +89,7 @@ export function HighlightTile({
             {view.name ?? "Untitled achievement"}
           </SpoilerText>
         </h3>
-        <p className="font-label truncate text-[0.78rem] leading-snug font-semibold tracking-[0.04em] text-[#55554f]">
+        <p className="font-label truncate text-[0.78rem] leading-snug font-semibold tracking-[0.04em] text-slip-muted-foreground">
           <Link
             href={memberSetHref(card.user.user_id, set.id)}
             className="underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-highlight"
@@ -99,7 +99,7 @@ export function HighlightTile({
           {" · "}
           {name}
         </p>
-        <p className="font-label text-[0.72rem] leading-snug font-semibold tracking-[0.06em] text-[#55554f]">
+        <p className="font-label text-[0.72rem] leading-snug font-semibold tracking-[0.06em] text-slip-muted-foreground">
           <time dateTime={card.unlocked_at}>{formatUnlockStamp(card.unlocked_at)}</time>
         </p>
       </div>

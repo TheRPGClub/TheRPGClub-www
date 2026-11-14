@@ -83,7 +83,7 @@ export function ImportRoute({
         {title}
         <ChevronDown
           aria-hidden
-          className="ml-auto size-4 text-faint-foreground transition-transform group-data-panel-open/route:rotate-180"
+          className="ml-auto size-4 text-faint-foreground motion-safe:transition-transform group-data-panel-open/route:rotate-180"
         />
       </CollapsibleTrigger>
       {/* Kept mounted while closed, so a search typed into a route survives

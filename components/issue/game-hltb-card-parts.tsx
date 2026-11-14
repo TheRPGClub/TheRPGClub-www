@@ -26,6 +26,7 @@ export function Bar({
       <span className="font-label text-[0.85rem] font-bold tracking-[0.06em] text-dim-foreground uppercase">
         {label}
       </span>
+      {/* A meter (hours on the card's shared scale), not progress: no Progress. */}
       <span aria-hidden className="relative h-2.5 rounded-[1px] bg-muted">
         <i
           className={cn(

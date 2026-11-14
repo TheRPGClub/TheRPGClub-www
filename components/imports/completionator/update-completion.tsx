@@ -10,6 +10,7 @@ import type { CompletionatorStepProps } from "@/components/imports/completionato
 import { ImportSubhead } from "@/components/issue/import-item-layout";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 // Copy the chosen values from the file onto the member's completion.
 export function UpdateCompletion({
@@ -47,13 +48,13 @@ export function UpdateCompletion({
       <fieldset className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
         <legend className="sr-only">Values to update</legend>
         {options.map((field) => (
-          <label key={field} className="inline-flex items-center gap-1.5">
+          <Label key={field} variant="frame" className="inline-flex items-center gap-1.5">
             <Checkbox
               checked={selected.includes(field)}
               onCheckedChange={(checked) => toggle(field, checked)}
             />
             {UPDATE_FIELD_LABELS[field]}
-          </label>
+          </Label>
         ))}
       </fieldset>
       <div className="flex flex-wrap gap-2">

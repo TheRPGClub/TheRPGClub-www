@@ -47,10 +47,6 @@ describe("Theme tokens", () => {
     }
   });
 
-  it.each(THEMES.map((theme) => theme.name))("the %s Theme's stylesheet is loaded", (name) => {
-    expect(read("app/globals.css")).toContain(`@import "../themes/${name}/theme.css";`);
-  });
-
   it.each(THEMES.map((theme) => theme.name))("the %s Theme sets every token the site reads", (name) => {
     const tokens = tokensOf(name);
     expect(tokensReadByGlobals().filter((token) => !tokens.has(token))).toEqual([]);

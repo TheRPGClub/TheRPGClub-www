@@ -1,5 +1,4 @@
 import { MAX_RATING } from "@/lib/api/rating";
-import type { User } from "@/lib/api/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +14,6 @@ export {
 export { FacetBars } from "@/components/issue/review-meta-facet-bars";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
-
-export function reviewerName(
-  user: Pick<User, "global_name" | "username"> | null | undefined,
-  fallback: string,
-): string {
-  return user?.global_name ?? user?.username ?? fallback;
-}
 
 export function formatReviewDate(
   iso: string,

@@ -3,6 +3,12 @@ import type { Metadata, Viewport } from "next";
 import { DEFAULT_THEME, rootTheme } from "@/themes";
 import "./globals.css";
 
+// Development-only Themes (themes/registry.ts) load here, in development
+// alone, so production builds never ship their stylesheets.
+if (process.env.NODE_ENV === "development") {
+  await import("../themes/test/styles");
+}
+
 export const metadata: Metadata = {
   title: "The RPG Club",
   description: "The RPG Club community hub",

@@ -112,6 +112,69 @@ describe("raw-element ban (structure/no-raw-controls)", () => {
   });
 });
 
+// Every inline disable says why, whichever rule it turns off.
+describe("disable comments (structure/disable-needs-reason)", () => {
+  const rule = "structure/disable-needs-reason";
+  const file = "lib/sample.ts";
+
+  it.each([
+    ["a rule outside the structure rules", "// eslint-disable-next-line @typescript-eslint/no-explicit-any"],
+    ["a whole-file disable of one rule", "/* eslint-disable @typescript-eslint/no-explicit-any */"],
+    ["every rule on a line", "// eslint-disable-next-line"],
+  ])("errors on %s without a reason", async (_kind, comment) => {
+    const found = await warningsFor(rule, `${comment}\nexport const v: any = 1;\n`, file);
+    expect(found).toHaveLength(1);
+    expect(found[0].severity).toBe(2);
+  });
+
+  it("accepts any disable that gives a reason", async () => {
+    const code = "// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the API's loose payload\nexport const v: any = 1;\n";
+    expect(await warningsFor(rule, code, file)).toEqual([]);
+  });
+
+  it("leaves eslint-enable alone", async () => {
+    expect(await warningsFor(rule, "/* eslint-enable */\nexport const v = 1;\n", file)).toEqual([]);
+  });
+
+  // A bare eslint-disable block comment turns this rule off with the rest, so no
+  // rule can see it: the source is read here instead.
+  it("finds no whole-file disable of every rule without a reason", () => {
+    const blanket = /\/\*\s*eslint-disable\s*\*\//;
+    const offenders = sourceFiles().filter((file) => blanket.test(readFileSync(path.join(root, file), "utf8")));
+    expect(offenders).toEqual([]);
+  });
+});
+
+// Every TypeScript and module source the lint covers, as repo paths.
+function sourceFiles(dir = "."): string[] {
+  const skip = new Set(["node_modules", ".next", ".git", "public"]);
+  return readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((entry) => {
+    const rel = path.join(dir, entry.name);
+    if (entry.isDirectory()) return skip.has(entry.name) ? [] : sourceFiles(rel);
+    return /\.(?:ts|tsx|mjs)$/.test(entry.name) && !entry.name.endsWith(".d.ts") ? [rel] : [];
+  });
+}
+
+// Library code is what components are built on: it never reaches back into
+// components/ (types and helpers it needs live in lib/).
+describe("library code does not import components (no-restricted-imports)", () => {
+  const rule = "no-restricted-imports";
+
+  it.each([
+    'import { Thing } from "@/components/member/thing";',
+    'import type { Thing } from "@/components/issue/thing";',
+  ])("errors on %s in lib/", async (line) => {
+    const found = await warningsFor(rule, `${line}\nexport const v = Thing;\n`, "lib/members/sample.ts");
+    expect(found).toHaveLength(1);
+    expect(found[0].severity).toBe(2);
+  });
+
+  it("lets components import components", async () => {
+    const code = 'import { Thing } from "@/components/member/thing";\nexport const v = Thing;\n';
+    expect(await warningsFor(rule, code, "components/games/sample.ts")).toEqual([]);
+  });
+});
+
 describe("look-class ban (structure/no-look-classes-on-primitives)", () => {
   const rule = "structure/no-look-classes-on-primitives";
   const file = "components/games/sample.tsx";

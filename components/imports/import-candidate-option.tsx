@@ -1,6 +1,7 @@
 import type { ImportCandidate } from "@/lib/api/types";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // One GameDB match as a choice card: the whole card is the radio's label.
 export function ImportCandidateOption({
@@ -12,7 +13,7 @@ export function ImportCandidateOption({
   exact: boolean;
 }) {
   return (
-    <label className="grid cursor-pointer grid-cols-[1.25rem_2.9rem_1fr] items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-data-checked:bg-muted has-data-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight has-data-disabled:cursor-default has-data-disabled:opacity-60 sm:grid-cols-[1.25rem_2.9rem_1fr_auto]">
+    <Label variant="choice" className="grid cursor-pointer grid-cols-[1.25rem_2.9rem_1fr] items-center gap-3.5 px-3 py-2.5 has-data-disabled:cursor-default has-data-disabled:opacity-60 sm:grid-cols-[1.25rem_2.9rem_1fr_auto]">
       <RadioGroupItem variant="choice" value={candidate.game_id} />
       <span className="block h-[3.8rem] w-[2.9rem] overflow-hidden rounded-[2px] bg-background">
         {candidate.cover_url && (
@@ -33,6 +34,6 @@ export function ImportCandidateOption({
           Exact match
         </Badge>
       )}
-    </label>
+    </Label>
   );
 }

@@ -2,30 +2,40 @@
 name: Monthly Issue
 description: Every GOTM round is an issue of the club's own 90s game magazine.
 colors:
-  ink: "#0b0b0d"
-  ink-2: "#141417"
-  ink-3: "#1d1d22"
-  rule: "#2a2a31"
-  rule-strong: "#3a3a43"
-  paper: "#f4f4f0"
-  paper-dim: "#b9b9b2"
-  paper-mute: "#8d8d87"
+  background: "#0b0b0d"
+  card: "#141417"
+  muted: "#1d1d22"
+  border: "#2a2a31"
+  border-strong: "#3a3a43"
+  foreground: "#f4f4f0"
+  dim-foreground: "#b9b9b2"
+  faint-foreground: "#8d8d87"
   gotm: "#ff0000"
   gotm-soft: "#ff5a4f"
+  gotm-foreground: "#ffffff"
   nr: "#8a4dff"
   nr-soft: "#b896ff"
+  nr-foreground: "#ffffff"
   highlight: "#ffd400"
-  highlight-ink: "#3a3200"
+  highlight-foreground: "#0b0b0d"
+  highlight-muted-foreground: "#3a3200"
   destructive: "oklch(0.74 0.17 52)"
-  destructive-ink: "#2a1300"
+  destructive-foreground: "#2a1300"
   ok: "#5fd08a"
+  phase-approved: "#2ec4b6"
+  phase-done: "#5fd08a"
+  phase-rejected: "#ff4fa3"
+  phase-rejected-deep: "#8a1559"
+  slip-muted-foreground: "#55554f"
   rarity-common: "#f4f4f0"
   rarity-uncommon: "#5fd08a"
   rarity-rare: "#4aa8ff"
   rarity-ultra: "#ff4fa3"
+  rarity-foreground: "#0b0b0d"
   provider-retroachievements: "#2ec4b6"
   provider-steam: "#66c0f4"
   provider-psn: "#4677e6"
+  provider-foreground: "#0b0b0d"
   tier-bronze: "#c8814a"
   tier-silver: "#c0c6cc"
   tier-gold: "#e0b84a"
@@ -36,6 +46,7 @@ colors:
   news-hardware: "#d4a373"
   news-rumours: "#c0c4d6"
   news-general: "#8d8d87"
+  foil-foreground: "#0b0b0d"
 typography:
   numeral:
     fontFamily: "Anton, Impact, sans-serif"
@@ -98,44 +109,44 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.gotm}"
-    textColor: "#ffffff"
+    textColor: "{colors.gotm-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "36px"
   button-highlight:
     backgroundColor: "{colors.highlight}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.highlight-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "36px"
   button-nr:
     backgroundColor: "{colors.nr}"
-    textColor: "#ffffff"
+    textColor: "{colors.nr-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "36px"
   button-outline:
     backgroundColor: "transparent"
-    textColor: "{colors.paper}"
+    textColor: "{colors.foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
     height: "36px"
   button-outline-hover:
-    backgroundColor: "{colors.ink-3}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.muted}"
+    textColor: "{colors.foreground}"
   button-on-highlight:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.background}"
+    textColor: "{colors.foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     height: "36px"
   button-destructive-solid:
     backgroundColor: "{colors.destructive}"
-    textColor: "{colors.destructive-ink}"
+    textColor: "{colors.destructive-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 14px"
@@ -149,127 +160,127 @@ components:
     height: "36px"
   chip-neutral:
     backgroundColor: "rgb(244 244 240 / 0.08)"
-    textColor: "{colors.paper-dim}"
+    textColor: "{colors.dim-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
     height: "24px"
   chip-gotm:
     backgroundColor: "{colors.gotm}"
-    textColor: "#ffffff"
+    textColor: "{colors.gotm-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     height: "24px"
   chip-nr:
     backgroundColor: "{colors.nr}"
-    textColor: "#ffffff"
+    textColor: "{colors.nr-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     height: "24px"
   chip-highlight:
     backgroundColor: "{colors.highlight}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.highlight-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     height: "24px"
   nav-item:
     backgroundColor: "transparent"
-    textColor: "{colors.paper-dim}"
+    textColor: "{colors.dim-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0 10px"
     height: "40px"
   nav-item-active:
     backgroundColor: "{colors.gotm}"
-    textColor: "#ffffff"
+    textColor: "{colors.gotm-foreground}"
   search-field:
-    backgroundColor: "{colors.ink-2}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.foreground}"
     rounded: "{rounded.sm}"
     padding: "0 12px"
     height: "36px"
   round-panel:
     backgroundColor: "{colors.highlight}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.highlight-foreground}"
     rounded: "{rounded.md}"
     padding: "14px 18px 16px"
   feature-card:
-    backgroundColor: "{colors.ink-2}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.foreground}"
     rounded: "{rounded.md}"
   game-cover-fallback:
-    backgroundColor: "{colors.ink-3}"
-    textColor: "{colors.paper-mute}"
+    backgroundColor: "{colors.muted}"
+    textColor: "{colors.faint-foreground}"
     typography: "{typography.title}"
     rounded: "{rounded.sm}"
   achievement-icon:
-    backgroundColor: "{colors.ink-3}"
+    backgroundColor: "{colors.muted}"
     rounded: "{rounded.die-cut}"
     size: "56px"
   achievement-icon-locked:
     backgroundColor: "transparent"
-    textColor: "{colors.paper-mute}"
+    textColor: "{colors.faint-foreground}"
     rounded: "{rounded.die-cut}"
     size: "56px"
   chip-rarity-ultra:
     backgroundColor: "{colors.rarity-ultra}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.rarity-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
     height: "24px"
   chip-provider-retroachievements:
     backgroundColor: "{colors.provider-retroachievements}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.provider-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
     height: "24px"
   chip-provider-steam:
     backgroundColor: "{colors.provider-steam}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.provider-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
     height: "24px"
   chip-provider-psn:
     backgroundColor: "{colors.provider-psn}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.provider-foreground}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
     height: "24px"
   foil-stamp:
-    textColor: "{colors.ink}"
+    textColor: "{colors.foil-foreground}"
     typography: "{typography.title}"
     rounded: "{rounded.xs}"
     padding: "8px 12px 6px"
   binder:
-    backgroundColor: "{colors.rule}"
+    backgroundColor: "{colors.border}"
     rounded: "{rounded.lg}"
     padding: "10px"
   binder-page:
-    backgroundColor: "{colors.ink-2}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.foreground}"
     rounded: "{rounded.md}"
   view-tab:
-    backgroundColor: "{colors.ink-2}"
-    textColor: "{colors.paper-mute}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.faint-foreground}"
     typography: "{typography.label}"
     rounded: "{rounded.md}"
     height: "36px"
   day-tape:
-    backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.foreground}"
+    textColor: "{colors.background}"
     typography: "{typography.label}"
     padding: "4px 16px 3px"
   news-card:
-    backgroundColor: "{colors.ink-2}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.foreground}"
     rounded: "{rounded.md}"
   news-tag:
     backgroundColor: "{colors.news-announcements}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.background}"
     typography: "{typography.chip}"
     rounded: "{rounded.xs}"
     padding: "0 8px"
@@ -290,7 +301,7 @@ The first Theme and the default (api ADR-0008): every GOTM round is an issue of 
 The stylesheet sets every token the token map in `app/globals.css` reads (`themes/tokens.test.ts` checks it):
 
 - **Surface and text roles** (shadcn's, plus three): `background`, `foreground`, `dim-foreground`, `faint-foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent` (each with its `-foreground`), `destructive`, `destructive-foreground`, `border`, `border-strong`, `input`, `ring`, `chart-1..5`, `sidebar-*`.
-- **Club colours** (a Theme may change them, but keeps them distinct and readable): `gotm`, `gotm-soft`, `gotm-foreground`, `nr`, `nr-soft`, `nr-foreground`, `highlight`, `highlight-foreground`, `highlight-muted-foreground`, `rarity-common`, `rarity-uncommon`, `rarity-rare`, `rarity-ultra`, `rarity-foreground`, plus `ok` (staff desk), the News inks `news-*`, and foil (`foil-conic`, `foil-sheen`, `foil-foreground`, drawn by the `foil` utility).
+- **Club colours** (a Theme may change them, but keeps them distinct and readable): `gotm`, `gotm-soft`, `gotm-foreground`, `nr`, `nr-soft`, `nr-foreground`, `highlight`, `highlight-foreground`, `highlight-muted-foreground`, `rarity-common`, `rarity-uncommon`, `rarity-rare`, `rarity-ultra`, `rarity-foreground`, plus `ok` (staff desk), the Suggestion phase bands `phase-approved`, `phase-done`, `phase-rejected` and `phase-rejected-deep` (type on a light slip), `slip-muted-foreground` (muted type on a light slip), the News inks `news-*`, and foil (`foil-conic`, `foil-sheen`, `foil-foreground`, drawn by the `foil` utility).
 - **Shape**: `radius` (0.25rem; `rounded-xs` to `rounded-4xl` derive from it).
 - **Type**: `typeface-body`, `typeface-display`, `typeface-label` (Tailwind's `font-sans`, `font-display`, `font-cond`), and the voice settings `font-headline` and `font-label` read: `headline-weight`, `headline-case`, `headline-leading`, `label-weight`, `label-case`, `label-tracking`.
 
@@ -452,7 +463,7 @@ Generated from the code at `651156a` (feat/web-structure-www, after www#82 and w
 
 ## Design rules
 
-The Monthly Issue's own rules. They sit on top of the Theme floor in `DESIGN.md` (contrast, focus, reduced motion, target size), which every Theme meets. The colour names below are this Theme's palette; section 1 above maps each one to the token that carries it.
+The Monthly Issue's own rules. They sit on top of the Theme floor in `DESIGN.md` (contrast, focus, reduced motion, target size), which every Theme meets. Colours are named by their tokens (`background`, `card`, `foreground`...), which is what code and design work use. The plain words in the prose (ink, paper, rule) are this Theme's display names for them: Ink is `background` (Ink 2 `card`, Ink 3 `muted`), Paper is `foreground` (Dim Paper `dim-foreground`, Mute Paper `faint-foreground`), Rule is `border` (Strong Rule `border-strong`); "ink type" on a club colour is that colour's `-foreground` pair (`highlight-foreground`, `rarity-foreground`, `provider-foreground`, `foil-foreground`).
 
 ### Overview
 
@@ -492,19 +503,19 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 
 #### Tertiary
 - **Highlighter Yellow** (highlight): the member's own business. As a fill: calls to action (the nominations/voting round panel, the voting ballot strip, the review compose panel, the imports panel, the landing's join band, the `highlight` button and chip, the sidebar's voting badge, "Your pick") and the GOTM starburst. As type or a line: the GOTM headline's second line, link and card-title hover, the focus ring, text selection, the input caret, and the border of an editor panel that is open for the member's own edits.
-- **Yellow Ink** (highlight-ink): secondary text set on a yellow panel (bylines, small print).
+- **Yellow Ink** (`highlight-muted-foreground`): secondary text set on a yellow panel (bylines, small print).
 
 #### Neutral
-- **Ink** (ink): the page ground and the base of every scrim.
-- **Ink 2** (ink-2): raised panels, cards, the search field and the sidebar.
-- **Ink 3** (ink-3): wells inside panels, cover placeholders, hover fills.
-- **Rule** (rule): hairlines, top-bar and sidebar borders.
-- **Strong Rule** (rule-strong): input strokes, dashed empty-state borders, the scrollbar thumb.
-- **Paper** (paper): primary type, and the 2px rule under every page and section heading.
-- **Dim Paper** (paper-dim): body copy, blurbs, inactive nav and secondary labels.
-- **Mute Paper** (paper-mute): meta, counts, parent crumbs, placeholders and the cover-fallback title.
+- **Ink** (`background`): the page ground and the base of every scrim.
+- **Ink 2** (`card`): raised panels, cards, the search field and the sidebar.
+- **Ink 3** (`muted`): wells inside panels, cover placeholders, hover fills.
+- **Rule** (`border`): hairlines, top-bar and sidebar borders.
+- **Strong Rule** (`border-strong`): input strokes, dashed empty-state borders, the scrollbar thumb.
+- **Paper** (`foreground`): primary type, and the 2px rule under every page and section heading.
+- **Dim Paper** (`dim-foreground`): body copy, blurbs, inactive nav and secondary labels.
+- **Mute Paper** (`faint-foreground`): meta, counts, parent crumbs, placeholders and the cover-fallback title.
 - **Signal Orange** (destructive): destructive actions only. It is chosen to sit off both red and yellow, so a destructive action never reads as a track or a call to action.
-- **Orange Ink** (destructive-ink): type on a solid signal-orange fill (the confirmed destructive button). Paper type on orange misses AA; this near-black brown clears it.
+- **Orange Ink** (`destructive-foreground`): type on a solid signal-orange fill (the confirmed destructive button). Paper type on orange misses AA; this near-black brown clears it.
 - **Done Green** (ok): the Done stamp, dot and check on the staff production desk only. A mark, never a fill behind type, and never on member surfaces. See the Production desk section for why it shares the uncommon Rarity ink's hex.
 
 #### Named Rules
@@ -517,7 +528,7 @@ An ink-black stock printed with off-white paper type and three spot inks, each o
 #### Achievement roles (achievement surfaces only)
 The Achievement Hub adds four roles to the palette. They live on achievement surfaces only (the member achievements page, set pages, the hub, the profile's Achievements section and the game page's achievements) and never leave them. (The staff desk's done green `ok` shares the uncommon ink's hex as a token of its own; see the Desk Green Rule.) On these surfaces, red appears only as "you are here" in the shell, violet never appears, and yellow stays with calls to action and interaction states.
 - **Game tint** (sampled, not a token): each Achievement Set's colour, taken from the vivid dominant hue of its cover (or its set icon), clamped to a vivid-but-not-neon, mid-lightness range, and darkened until ink or paper type on it clears 4.5:1. A set without usable art gets a hashed tint from a curated list kept away from the GOTM red and the NR violet. It is a set's spine, its title band, its view and index tabs, its slot numbers and slot dots, its progress bar, and the seal across a hidden tile.
-- **Rarity inks** (rarity-common, rarity-uncommon, rarity-rare, rarity-ultra): the 3px die-cut edge of an unlocked icon, the Rarity chip fills, and the Rarity tally bars, by the Provider's overall Rarity: common at 50% and above (paper), uncommon 15-50% (green), rare 5-15% (blue), ultra rare under 5% (hot pink). Ultra rare is the Highlight line, so hot pink also prints an ultra-rare Unlock's odds tag.
+- **Rarity inks** (rarity-common, rarity-uncommon, rarity-rare, rarity-ultra): the 3px die-cut edge of an unlocked icon, the Rarity chip fills, and the Rarity tally bars, by the Provider's overall Rarity: common at 50% and above (`foreground`), uncommon 15-50% (green), rare 5-15% (blue), ultra rare under 5% (hot pink). Ultra rare is the Highlight line, so hot pink also prints an ultra-rare Unlock's odds tag.
 - **Provider colours** (provider-retroachievements, provider-steam, provider-psn): solid Provider chips and Linked Account chips, Provider filter tabs, and a 3px top rule on Provider pages and cards, always with ink type. A deselected Provider chip drops to a 1.5px inset outline in its colour. PlayStation is lifted from #3b6fe0 so ink type on it clears AA.
 - **PSN tier metals** (tier-bronze, tier-silver, tier-gold): the small corner dot on a PSN trophy's icon. The Platinum dot is foil.
 - **Foil** (sidecar `foil`): a holographic conic edge (#b9f3ff, #ffd6f5, #fff3b0, #c7ffd9) under a soft diagonal white sheen, always with ink type.
@@ -530,19 +541,19 @@ The Achievement Hub adds four roles to the palette. They live on achievement sur
 **The Foil Is Earned Rule.** Foil is the system's single sanctioned gradient. It marks only Platinum, Mastery and Completion: the foil stamp, the foil die-cut edge on the Unlock behind one, the Platinum tier dot, the foil frame behind a Platinum on a game's club page, and a Completion signed in the margin. It never sets text, and it never decorates.
 
 #### Journal member inks (journal surfaces only)
-The Game Journal gives each member a colour of their own, so their run reads at a glance on the game page's chronology plate (the line and dots) and on the /journals shelf (the cap of their spine). It is picked from the member's Discord id, so a member wears the same ink on every journal surface. The six inks are fern #6dd17f, lagoon #43d3cc, orchid #f077c0, sky #86d3f6, peony #fab6ba and cornflower #719def. They are marks, never fills behind type: each clears 6:1 against ink-2 and ink-3, so a dot or line holds well past the 3:1 non-text minimum.
+The Game Journal gives each member a colour of their own, so their run reads at a glance on the game page's chronology plate (the line and dots) and on the /journals shelf (the cap of their spine). It is picked from the member's Discord id, so a member wears the same ink on every journal surface. The six inks are fern #6dd17f, lagoon #43d3cc, orchid #f077c0, sky #86d3f6, peony #fab6ba and cornflower #719def. They are marks, never fills behind type: each clears 6:1 against `card` and `muted`, so a dot or line holds well past the 3:1 non-text minimum.
 
 **The Journal Ink Is a Person Rule.** A journal ink means one member and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a journal line never reads as a track, a call to action or a destructive action, and the yellow ring on a selected dot stays the only interaction mark. They do not borrow the Achievement roles (the member ring colours stay on achievement surfaces), and they never leave journal surfaces.
 
 #### News inks (news surfaces only)
-The News Hub gives each News Category an ink of its own, so a card's category reads before its headline. The inks live on news surfaces only: the News page, its cards and its filter, and the category switches on /settings. They are marks, chips and bars (a card's 4px foot bar and corner tag, the 16px square beside a category's name), never a panel. Type on an ink is ink, and each ink clears 5:1 against ink, ink-2 and ink-3. Only five hues fit between the reserved inks (masthead red, feature violet, highlighter yellow and signal orange), so Hardware is a tan and the last two are neutrals told apart by stroke.
+The News Hub gives each News Category an ink of its own, so a card's category reads before its headline. The inks live on news surfaces only: the News page, its cards and its filter, and the category switches on /settings. They are marks, chips and bars (a card's 4px foot bar and corner tag, the 16px square beside a category's name), never a panel. Type on an ink is ink, and each ink clears 5:1 against ink, `card` and `muted`. Only five hues fit between the reserved inks (masthead red, feature violet, highlighter yellow and signal orange), so Hardware is a tan and the last two are neutrals told apart by stroke.
 - **Announcements** (news-announcements): magenta, for Announcements & Trailers.
 - **Releases** (news-releases): lime, for Releases & Updates.
 - **Emulation** (news-emulation): teal, for Emulation & Preservation.
 - **Industry** (news-industry): blue.
 - **Hardware** (news-hardware): tan, for Hardware & Platforms.
 - **Rumours** (news-rumours): cool grey, for Rumours & Leaks, always drawn dashed because the news is unconfirmed (a dashed foot bar, a dashed inner outline on its tag and square).
-- **General** (news-general): paper-mute's grey, for General and for any item whose category the page does not know.
+- **General** (news-general): `faint-foreground`'s grey, for General and for any item whose category the page does not know.
 
 **The News Inks Stay on News Surfaces Rule.** A News ink means one News Category and nothing else, and it never leaves news surfaces. The inks do not borrow or lend to the Achievement roles or the Journal member inks: magenta sits near rarity-ultra and teal near the RetroAchievements Provider colour, but they never share a surface, so neither can be misread. Read them through `newsInk()` in lib/news.ts, which also says when to dash.
 
@@ -568,7 +579,7 @@ The News Hub gives each News Category an ink of its own, so a card's category re
 
 **The Caps Are the Face Rule.** Anton and Barlow Condensed are always set in caps through the `font-headline` and `font-label` utilities. Anton never sets mixed case, and it never sets body text.
 
-**The Earned Over Total Rule.** In the Achievement Hub a count reads as an Anton numeral with its total beside it in paper-mute ("23 / 41"): a set header sets it at numeral scale, the binder index and club pages at 1.25-1.5rem. A member's Unlocks are the binder's monumental numeral (4.5rem to 5.25rem), with Completions, Masteries, Platinums and RA points as 2rem Anton over label captions. Slot numbers are two-digit Anton ("07").
+**The Earned Over Total Rule.** In the Achievement Hub a count reads as an Anton numeral with its total beside it in `faint-foreground` ("23 / 41"): a set header sets it at numeral scale, the binder index and club pages at 1.25-1.5rem. A member's Unlocks are the binder's monumental numeral (4.5rem to 5.25rem), with Completions, Masteries, Platinums and RA points as 2rem Anton over label captions. Slot numbers are two-digit Anton ("07").
 
 ### Layout
 
@@ -576,27 +587,27 @@ The app shell is a left sidebar (collapsible to icons; an off-canvas sheet on ph
 
 The dashboard is a two-column issue from `lg`: the cover story fills the flexible column and a 23rem right rail holds the NR feature over the yellow round panel. The previous-rounds strip runs below. Below `lg` everything stacks.
 
-**The Empty Track Rule.** A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small "No Game of the Month this round" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed rule-strong box with a short muted label. Under a title search, that box stays silent, because absence there means "no match".
+**The Empty Track Rule.** A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small "No Game of the Month this round" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed `border-strong` box with a short muted label. Under a title search, that box stays silent, because absence there means "no match".
 
 **The Multi-Winner Rule.** Co-winners share one cover, never a carousel. Two winners split it (1.42fr / 1fr). Three put a tall lead panel beside two stacked panels (1.3fr / 1fr). The lead carries the numeral, a paper "N winners" tag and every outbound link, and the narrow panels keep two links. Each winner gets a square letter tile (A, B, C) in its track's ink, and titles step down by panel size. The NR rail does the same: one winner is a feature card, and two or three are a ranked list of covers with A/B/C letters. Side-by-side panels reserve equal blurb height so their stats and actions sit level.
 
-**The Open Binder Rule.** A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift, holding two ink-2 pages. From `xl` it is a 25rem left page (the member, their totals, Linked Accounts and four rarest Unlocks), a 30px gutter of rings, and the index page. Filter tabs (status, then one per Linked Account's Provider) sit on the binder's top edge, and each index row's game-tint tab sticks out past the binder's right edge. Below `xl` the binder closes to one page with the member first and the index below.
+**The Open Binder Rule.** A member's achievements open as a binder: a rule-coloured cover with 4px corners and a deep object lift, holding two `card` pages. From `xl` it is a 25rem left page (the member, their totals, Linked Accounts and four rarest Unlocks), a 30px gutter of rings, and the index page. Filter tabs (status, then one per Linked Account's Provider) sit on the binder's top edge, and each index row's game-tint tab sticks out past the binder's right edge. Below `xl` the binder closes to one page with the member first and the index below.
 
 **The Spread Rule.** A set page is a two-page spread: from `xl` the left page (1.7fr) holds the view (Checklist, Rarity or Timeline) and the right page (at least 20rem) holds the picked Achievement's details over the Rarity tally, sticky under the top bar. The pages meet at a shadowed gutter. Game-tint view tabs sit on the spread's top edge. On phones the spread closes to one page and the details open under the picked item.
 
 **The Day Band Rule.** The hub runs newest first in UTC day bands, each headed by a paper-tape label with a rule running out to its tally. From `xl` the Latest wall takes 62% beside a 38% rail of this week's Highlights. The wall is two columns from `sm`, and a card holding a Highlight spans both, as does a day's odd card out, so the wall never ends on a hole. The Highlights wall alone runs 2 to 6 columns without day bands, each tag carrying its own date.
 
-**The Contact Sheet Rule.** The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a "Filter" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title ("Today", "Yesterday", or a date like "Sun 8 Nov", with the year added when it is not this year), a label-type date and item count in paper-mute, and a 2px rule-strong line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type "Days and times in UTC" note.
+**The Contact Sheet Rule.** The News page puts a 15.5rem category rail beside the card grid from `lg`, sticky under the top bar, with a 28px gap. Below `lg` the rail becomes a "Filter" outline-button disclosure above the grid holding the same list. The grid runs newest first in UTC day bands: each is headed by an Anton title ("Today", "Yesterday", or a date like "Sun 8 Nov", with the year added when it is not this year), a label-type date and item count in `faint-foreground`, and a 2px `border-strong` line running out to the edge. The grid's columns follow the width of its own column (a container query, not the viewport): one, then two, then three, with 20px gaps. Numbered pagination sits under the last band, followed by a small label-type "Days and times in UTC" note.
 
 ### Elevation & Depth
 
-The system is flat with tonal layering: ink, then ink-2 for panels, then ink-3 for wells. Depth on art surfaces comes from black legibility scrims over full-bleed key art, never from glow. Shadows are soft, black and directional, and they appear only on objects that physically sit on the page: the starburst, a dealt pick card, a member avatar, the lifted cover in a filmstrip, a notice slip, the /join panel.
+The system is flat with tonal layering: ink, then `card` for panels, then `muted` for wells. Depth on art surfaces comes from black legibility scrims over full-bleed key art, never from glow. Shadows are soft, black and directional, and they appear only on objects that physically sit on the page: the starburst, a dealt pick card, a member avatar, the lifted cover in a filmstrip, a notice slip, the /join panel.
 
 #### Shadow Vocabulary
 - **Stamp shadow** (`drop-shadow(0 6px 14px rgba(0,0,0,0.45))`): the starburst.
 - **Object lift** (`box-shadow: 0 12px 30px rgb(0 0 0 / 0.5)` up to `0 24px 60px rgb(0 0 0 / 0.6)`): dealt cards, covers lifted in a reel, the banner avatar, the covers dealt on a /join slide and a notice slip; the /join panel takes the top end.
 - **Type-on-art shadow** (`text-shadow: 0 1px 8px rgb(0 0 0 / 0.85)`): small labels sitting directly on key art.
-- **Inset ring** (`box-shadow: inset 0 0 0 1-2px <rule-strong | paper-mute | highlight>`): strokes without layout shift; yellow marks a selection, including the current option in the hub's controls and the picked Achievement in a set view.
+- **Inset ring** (`box-shadow: inset 0 0 0 1-2px <`border-strong` | `faint-foreground` | highlight>`): strokes without layout shift; yellow marks a selection, including the current option in the hub's controls and the picked Achievement in a set view.
 - **Die-cut rest** (`0 3px 6px rgb(0 0 0 / 0.45)`, up to `0 8px 16px rgb(0 0 0 / 0.55)` at larger sizes): an unlocked icon sitting on its slot, fanned icons and pinned Highlights. The foil stamp and an odds tag take the stamp shadow's soft drop.
 - **Gutter shade** (`inset ±18-22px 0 22-26px -14 to -20px rgb(0 0 0 / 0.7)`): binder and spread pages darken into the gutter where they meet.
 - **Tab lift** (`4px 4px 10px rgb(0 0 0 / 0.45)`): an index row's tint tab standing proud of the binder's edge.
@@ -623,35 +634,35 @@ Blunt, label-voiced and loud.
 - **On a yellow panel:** ink with paper type for the main action, and an ink-outlined transparent button beside it (the Inverse and Inverse outline variants).
 - **Inverse:** the page ground as fill on a light object (the yellow panel, a notice slip): ink with paper type, dropping to 85% on hover, with an ink focus ring.
 - **Inverse outline:** the second action beside it: transparent with a 1.5px inset stroke in the object's own type colour (ink on yellow) and a 10% wash of it on hover.
-- **Outline:** a 1px paper-mute/60 stroke, transparent, paper type; on hover the stroke goes paper and the fill ink-3.
+- **Outline:** a 1px `faint-foreground`/60 stroke, transparent, paper type; on hover the stroke goes paper and the fill `muted`.
 - **Link:** paper type with a 2px red underline offset 4px; it turns yellow on hover.
 - **Destructive outline:** a signal-orange stroke with orange type on transparent; on hover a 10% orange wash. It is the button that opens a destructive action's confirm (Delete, Reset votes, Close now).
 - **Destructive solid:** signal orange with orange-ink type; on hover it drops to 85%. It is the confirmed destructive action, after the typed-word confirm. Destructive never uses masthead red.
 - **Destructive ghost:** a ghost action that removes something; its icon turns signal orange on hover.
 - **Overlay:** the outline button sitting on art (a banner, a cover reel), over a 70% ink ground.
 - **Selected:** the chosen one of a row of outline buttons (aria-pressed): a paper block with ink type.
-- **Focus / Active:** a yellow focus ring (3px at 50%); pressing nudges the button down 1px. Outbound text links ("Reddit ↗") are small label-voice links in paper-dim that turn yellow on hover.
+- **Focus / Active:** a yellow focus ring (3px at 50%); pressing nudges the button down 1px. Outbound text links ("Reddit ↗") are small label-voice links in `dim-foreground` that turn yellow on hover.
 
 #### Chips
-- **Style:** 24px tall, 2px corners, 8px padding, chip type. The neutral chip (year, platform, studio, role) is paper at 8% with paper-dim text.
-- **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink. The Badge primitive carries them as `tone`, with inverse (paper/ink), outline (a 1.5px paper-dim stroke), secondary (ink-3), destructive, the four Rarity inks and foil.
+- **Style:** 24px tall, 2px corners, 8px padding, chip type. The neutral chip (year, platform, studio, role) is paper at 8% with `dim-foreground` text.
+- **Tones:** gotm (red/white), nr (violet/white) and highlight (yellow/ink, for "Your pick" and badges). Only a track's own fact wears its ink. The Badge primitive carries them as `tone`, with inverse (paper/ink), outline (a 1.5px `dim-foreground` stroke), secondary (`muted`), destructive, the four Rarity inks and foil.
 - **Preview badge (staff only):** a Preview Feature's pages carry the highlight chip reading "Preview" beside the page title (or leading the header's chip row on a banner), so staff never mistake a Preview page for a Live one. Members never see a Preview Feature, so never the badge.
 
 #### Cards / Containers
 - **Corner Style:** rounded.md.
-- **Background:** ink-2 on ink, with an optional 1px rule border. A track is marked by a 3-4px bar in its ink: the NR feature card's top edge, and the foot of a pick's art.
+- **Background:** `card` on ink, with an optional 1px rule border. A track is marked by a 3-4px bar in its ink: the NR feature card's top edge, and the foot of a pick's art.
 - **Internal Padding:** 16-28px (20px on narrow panels, 28px on the cover from `sm`).
-- **Empty states:** a dashed rule-strong border with a short muted line ("Nothing in progress right now.").
-- **Card primitive:** default (ink-2 with a rule), paper (no rule), active (the yellow rule of the panel being edited or picked) and cover (art in a CardCover under a CardScrim that fades the foot to ink).
+- **Empty states:** a dashed `border-strong` border with a short muted line ("Nothing in progress right now.").
+- **Card primitive:** default (`card` with a rule), paper (no rule), active (the yellow rule of the panel being edited or picked) and cover (art in a CardCover under a CardScrim that fades the foot to ink).
 
 #### Inputs / Fields
-- **Style:** 36px, ink-2 fill, 1px rule (or rule-strong) stroke, rounded.sm, a muted 16px leading icon, and a muted placeholder.
-- **Focus:** the stroke shifts to paper-mute (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
-- **Input variants:** inset (an ink field set into an ink-2 panel), destructive (the armed typed-word confirm: an orange stroke and ring) and inverse (a pale yellow field with ink type on the yellow panel).
+- **Style:** 36px, `card` fill, 1px rule (or `border-strong`) stroke, rounded.sm, a muted 16px leading icon, and a muted placeholder.
+- **Focus:** the stroke shifts to `faint-foreground` (top-bar search) or yellow with a soft yellow ring (editors). The caret is yellow.
+- **Input variants:** inset (an ink field set into an `card` panel), destructive (the armed typed-word confirm: an orange stroke and ring) and inverse (a pale yellow field with ink type on the yellow panel).
 
 #### Navigation
-- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in paper-dim with 18px line icons. Hover fills ink-3. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. News carries the Newspaper icon and shows only while the News Hub Feature is on for the viewer. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
-- **Running head (top bar):** the current route as a trail (e.g. GAMES / <TITLE> / REVIEWS), in label type at 0.95rem with 0.08em tracking. Parent crumbs are paper-mute links that go paper on hover, separators are red slashes, and the current page is paper. Middle crumbs truncate first, at 14rem. On phones, only the page and its parent show. The trail is resolved on the server through the `@crumbs` parallel slot and replaces every in-page breadcrumb. The search field sits at the right (w-80, w-36 on phones) and lands on /games.
+- **Sidebar:** the wordmark in Anton ("The **RPG** Club", with RPG in red). Items are 40px tall, label type at 1.05rem in `dim-foreground` with 18px line icons. Hover fills `muted`. The active item is solid masthead red with white bold type. Voting carries a yellow phase badge when a round is open. News carries the Newspaper icon and shows only while the News Hub Feature is on for the viewer. For staff, a Preview Feature's item carries a "Preview" badge of the same size in the same slot (hidden on the icon rail, where the tooltip says it).
+- **Running head (top bar):** the current route as a trail (e.g. GAMES / <TITLE> / REVIEWS), in label type at 0.95rem with 0.08em tracking. Parent crumbs are `faint-foreground` links that go paper on hover, separators are red slashes, and the current page is paper. Middle crumbs truncate first, at 14rem. On phones, only the page and its parent show. The trail is resolved on the server through the `@crumbs` parallel slot and replaces every in-page breadcrumb. The search field sits at the right (w-80, w-36 on phones) and lands on /games.
 
 #### Cover Story (signature)
 Full-bleed key art under an ink scrim, with the monumental round numeral in the track's ink, "Round N / Month Year" beside it, then the two-line headline, fact chips, a three-line blurb, the club's stats (Anton numerals over label-type captions, the first in the track's accent: playing, cleared, reviews), the track button and outbound links. Art scales to 1.03 on hover over 700ms (`cubic-bezier(0.2,0.8,0.2,1)`).
@@ -674,16 +685,16 @@ The one way the site says "that didn't work". A paper slip with ink type at 2px 
 - **Slides:** the first two are this month's winners as cover stories with their starbursts, or flat track plates (a rounded.md plate in the track's ink with its name in Anton and one line), the same plates as the front page's flat hero. The other four set a feature in Anton on ink over a fan of real recent winners' covers seated on the slide's foot at their hand-placed tilts. No counts, no member data, and /join never uses "issue" or "edition" words.
 
 #### Game Cover (image fallback)
-Box art at 3:4 with rounded.sm and a 1px paper/12 inset outline. When a game has no art, the cover is an ink-3 block with the title set in Anton caps in paper-mute, centred. It is never an empty grey rectangle or a stand-in image. Cover stories without art fall back to their ink scrim on black and keep their full typographic layout. The landing marquee renders only with real winners' art and shows nothing rather than stand-ins.
+Box art at 3:4 with rounded.sm and a 1px paper/12 inset outline. When a game has no art, the cover is an `muted` block with the title set in Anton caps in `faint-foreground`, centred. It is never an empty grey rectangle or a stand-in image. Cover stories without art fall back to their ink scrim on black and keep their full typographic layout. The landing marquee renders only with real winners' art and shows nothing rather than stand-ins.
 
 #### Shelves and Spines (profile)
 Lists not being read are a bookcase. Each shelf has a monumental count and an Anton title on the left, and closed spines with titles set sideways on the right. Favorites ranked 1-3 stand on a podium (first in the middle and highest); rank 4 and lower sit level on the shelf. Now Playing sits above the case as open books, face-on.
 
 #### Achievement Icon (die-cut, signature)
 An Achievement's icon as a die-cut tile resting in its slot, at four sizes (40, 56, 80 and 128px; the edge is 3px, 5px at the largest). It is decorative: its name is always set beside it.
-- **Unlocked:** the art on ink-3 inside a die-cut edge in its Rarity ink (paper-mute when the Provider gives no Rarity), at its stable tilt, with the die-cut rest shadow. The Unlock behind a Platinum, Mastery or Completion takes a foil edge instead. A PSN trophy carries a corner dot in its tier's metal (foil for Platinum), and a RetroAchievements hardcore Unlock carries a small paper "HC" tag. Without art the tile fills with the game tint and shows the slot number in Anton in the tint's contrast colour.
-- **Locked:** the empty slot, a 1.5px dashed rule-strong outline with the two-digit slot number in Anton in the game tint at 60%.
-- **Hidden:** a sealed ink-3 tile with a rule-strong stroke, crossed by a diagonal band in the game tint, with an Anton "?" and, at large sizes, a "Hidden" label. Its name stays blurred until the viewer reveals it.
+- **Unlocked:** the art on `muted` inside a die-cut edge in its Rarity ink (`faint-foreground` when the Provider gives no Rarity), at its stable tilt, with the die-cut rest shadow. The Unlock behind a Platinum, Mastery or Completion takes a foil edge instead. A PSN trophy carries a corner dot in its tier's metal (foil for Platinum), and a RetroAchievements hardcore Unlock carries a small paper "HC" tag. Without art the tile fills with the game tint and shows the slot number in Anton in the tint's contrast colour.
+- **Locked:** the empty slot, a 1.5px dashed `border-strong` outline with the two-digit slot number in Anton in the game tint at 60%.
+- **Hidden:** a sealed `muted` tile with a `border-strong` stroke, crossed by a diagonal band in the game tint, with an Anton "?" and, at large sizes, a "Hidden" label. Its name stays blurred until the viewer reveals it.
 
 #### Foil Stamp
 A Completion, Mastery or Platinum lettered in Anton ink on foil, pressed at -8deg with an inset ink outline and the stamp shadow, at three sizes. It sits on the corner of a set's title band, at the end of a binder index row, and over a Highlight.
@@ -694,16 +705,16 @@ Both are solid chips at the chip scale with ink type (20px tall at the small siz
 #### Game Tint: Spine, Band and Tabs
 - **Spine:** a 10-14px tint strip down the left edge of a set's page or a hub card.
 - **Band:** a solid tint block behind a game's title, in Anton set in the tint's contrast colour. It is the set page's masthead at 2.5-4rem, sitting on the 2px paper rule, and a 1.45rem link on hub cards.
-- **Tabs:** the set page's view tabs (Checklist, Rarity, Timeline) sit on the spread's edge. The current tab is a taller tint tab, and the others are ink-2 tabs in paper-mute that go ink-3 on hover. The binder's index rows each carry a tint tab past the binder edge, numbered from `xl`.
+- **Tabs:** the set page's view tabs (Checklist, Rarity, Timeline) sit on the spread's edge. The current tab is a taller tint tab, and the others are `card` tabs in `faint-foreground` that go `muted` on hover. The binder's index rows each carry a tint tab past the binder edge, numbered from `xl`.
 
 #### Binder
 - **Totals:** the left page's monumental Unlocks numeral and a four-column row of secondary counts.
-- **Index row:** the two-digit row number in the tint, the set's title in Anton (it turns yellow on hover), a short Provider chip, then earned / total and a foil stamp once complete, or the percentage. A strip of 7px slot dots runs beneath: earned dots in the tint first, the rest dashed paper-mute.
-- **Filter tabs:** status tabs are ink-3, and the current one is ink-2 with a 2px paper top edge, carrying its count. Provider tabs are solid in their colour. Once one is picked, the others drop in height.
+- **Index row:** the two-digit row number in the tint, the set's title in Anton (it turns yellow on hover), a short Provider chip, then earned / total and a foil stamp once complete, or the percentage. A strip of 7px slot dots runs beneath: earned dots in the tint first, the rest dashed `faint-foreground`.
+- **Filter tabs:** status tabs are `muted`, and the current one is `card` with a 2px paper top edge, carrying its count. Provider tabs are solid in their colour. Once one is picked, the others drop in height.
 - **Rings:** 4 to 12 metal rings down the gutter from `xl`.
 
 #### Hub
-- **Day tape:** the day's label in extra-bold label type on torn paper tape, slightly tilted, with a hairline running out to a paper-mute tally.
+- **Day tape:** the day's label in extra-bold label type on torn paper tape, slightly tilted, with a hairline running out to a `faint-foreground` tally.
 - **Latest card:** one member's Unlocks in one set on one day, on a tint spine, with up to five icons fanned like a hand of cards. A card holding a Highlight doubles: its lead Unlock sits large under a foil stamp or an ultra-rare odds tag, and the rest shrink to a strip of Rarity-ink dots.
 - **Highlight tile:** the Unlock large and tilted, the stamp or odds tag pressed over it, the member's avatar on its corner, and a paper tag beneath edged in the tint (left) and the Provider colour (top).
 - **Controls:** a view switch and Provider chips as plain links. The current option carries the yellow inset ring.
@@ -712,16 +723,16 @@ Both are solid chips at the chip scale with ink type (20px tall at the small siz
 One composite page per Provider behind Provider tabs. A tab carries a 3px top rule in its Provider colour and fills solid when active, so it joins the page's Provider-coloured top rule. The page has a tint spine. Each Achievement is faded by how few members hold it and ringed by a dot per member (filled in that member's ring colour when they hold it), opening on hover, focus or tap to the members who unlocked it. The members who completed the set sign the margin on foil, oldest first. The viewer's own earned / total links to their set page.
 
 #### News card
-One News Item as a frame on the contact sheet: an ink-2 card at rounded.md.
+One News Item as a frame on the contact sheet: an `card` card at rounded.md.
 - **Art:** a 16:9 box with a 4px foot bar in the News Category's ink (dashed for Rumours) and the category tag in its top-left corner: a 22px chip in chip type, ink on the ink, reading the category's short name (the part before " & ", so "Announcements"), with a dashed inner ink outline for Rumours. The art scales to 1.03 on hover over 700ms, behind `motion-safe`.
-- **Body:** the headline in Barlow 600 (about 1.02rem) links straight to the outside page in a new tab, with a small paper-mute up-right arrow; it goes yellow on hover. The site's description follows in two lines of paper-dim, then the member's comment in italic paper-dim inside quotes.
-- **Meta line:** label type at 0.76rem in paper-mute, the site on the left, and the poster and UTC clock on the right. The poster links to their profile when they are a member.
-- **No art:** the box is ink-3 with the headline in Anton paper-mute, centred and set clear of the tag, keeping its foot bar and tag (as with the Game Cover fallback). An outside image that fails to load is dropped to this fallback, so a broken image never leaves a hole. A frame the API marks unavailable reads "Image loading" in the same box.
+- **Body:** the headline in Barlow 600 (about 1.02rem) links straight to the outside page in a new tab, with a small `faint-foreground` up-right arrow; it goes yellow on hover. The site's description follows in two lines of `dim-foreground`, then the member's comment in italic `dim-foreground` inside quotes.
+- **Meta line:** label type at 0.76rem in `faint-foreground`, the site on the left, and the poster and UTC clock on the right. The poster links to their profile when they are a member.
+- **No art:** the box is `muted` with the headline in Anton `faint-foreground`, centred and set clear of the tag, keeping its foot bar and tag (as with the Game Cover fallback). An outside image that fails to load is dropped to this fallback, so a broken image never leaves a hole. A frame the API marks unavailable reads "Image loading" in the same box.
 - **Image-only News Item:** the member's comment takes the headline slot (with no comment there is no headline), and its images are a contact sheet of up to four frames with 2px gaps: two side by side, three as one tall frame beside two, four as a 2x2 grid, with an Anton "+N" on the last frame when there are more. Each frame opens its image full size in a new tab.
 - **Images:** outside images load straight from their own address with no referrer, never through the image optimiser.
 
 #### News category rail
-The key to the cards' inks, and the News page's filter. On top, the "Search news titles" field (the input style, rule-strong stroke going paper-mute on focus, a clear X while a search is on; Enter searches). Under it a label-type section label, "News Categories", in paper-mute over 38px rows on rule hairlines. Each row is a toggle button (`aria-pressed`): a 16px ink square (dashed for Rumours), the category's name in label type at 0.9rem, and on the right its count for the current search in paper-mute, or "hidden by you" for a category the member switched off in settings until it is chosen. A square is filled while its category is in the view (chosen, or, with nothing chosen, not switched off) and outlined in its ink otherwise, with the name dropping to paper-mute. The name turns yellow on hover, and the row takes the yellow focus ring. While a category is chosen, a "Show all categories" link (label type, paper-dim, 2px red underline) sits at the foot and returns to the default view, keeping the search. Choosing, searching and clearing go through the page address without scrolling, and the rail dims while the page loads. When a filter or search finds nothing, the empty state names what was asked ("Nothing in Industry matches "zelda".") and offers "Clear filters".
+The key to the cards' inks, and the News page's filter. On top, the "Search news titles" field (the input style, `border-strong` stroke going `faint-foreground` on focus, a clear X while a search is on; Enter searches). Under it a label-type section label, "News Categories", in `faint-foreground` over 38px rows on rule hairlines. Each row is a toggle button (`aria-pressed`): a 16px ink square (dashed for Rumours), the category's name in label type at 0.9rem, and on the right its count for the current search in `faint-foreground`, or "hidden by you" for a category the member switched off in settings until it is chosen. A square is filled while its category is in the view (chosen, or, with nothing chosen, not switched off) and outlined in its ink otherwise, with the name dropping to `faint-foreground`. The name turns yellow on hover, and the row takes the yellow focus ring. While a category is chosen, a "Show all categories" link (label type, `dim-foreground`, 2px red underline) sits at the foot and returns to the default view, keeping the search. Choosing, searching and clearing go through the page address without scrolling, and the rail dims while the page loads. When a filter or search finds nothing, the empty state names what was asked ("Nothing in Industry matches "zelda".") and offers "Clear filters".
 
 #### Production desk (staff surfaces)
 The /admin area is a production desk: the club's staff put the next issue together. It is a staff surface only; members never see it. Every desk page opens with the desk header and keeps the Two-Line Headline and paper-rule habits of the rest of the site.
@@ -733,11 +744,11 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Typed confirm:** a destructive action confirms by typing the words shown, in a dashed signal-orange box with its label cut into the border. The solid orange button stays off until the words match.
 - **Dictionary list and Undo bar:** lists and editors file entries under big letters in two columns with an A to Z jump bar. Delete strikes the entry through and holds it behind an Undo bar, a signal-orange bar that drains over the hold; the request is sent only when the bar runs out.
 - **Date ruler (voting console):** the round as a ruler of dates: nominations opening, the vote, any runoff, today in red, and the yellow Next vote pin. The pin drags in whole days and steps with the keyboard, and a plain date field beside it sets it too. Below md the ruler is left out (as in the chosen mock) and the console leads on the round numeral; the date field still sets the pin.
-- **Feature Flags (/admin/features):** the desk header ("Features", with the Live / Preview / Off counts and a note that changes reach the site at once and the bot within a minute), then two departments, Core Features and Hideable Features, each a section heading with no subtitle over one table whose columns line up across both: the Feature's name in Anton, what it covers (Website, Bot, Posts as neutral chips on a faint well, bot commands in their own case), the last change (state, who, when, and the reason quoted in italic) and an Off / Preview / Live segmented control. The selected segment and the state in the last change wear the state's ink: Live in done green, Preview in highlighter yellow, Off in masthead red, as type and a 2px inset stroke on ink, never as a fill. A Preview Feature's name carries a yellow "Staff only" outline tag, and an Off Feature's name drops to paper-mute. Preview and Live save on click; Off opens a dashed signal-orange confirm under the row, its question cut into the border (no typed words, since Off is undone with one click). A speech-bubble button beside the control opens a yellow-edged reason field whose text goes with the next state picked. In the table the three segments are equal and fixed in width, so the control never shifts when a state is picked; stacked, they size to their labels so the name keeps its room. Below 85rem (1360px) each row stacks: name and control, then the coverage lines, then the last change.
+- **Feature Flags (/admin/features):** the desk header ("Features", with the Live / Preview / Off counts and a note that changes reach the site at once and the bot within a minute), then two departments, Core Features and Hideable Features, each a section heading with no subtitle over one table whose columns line up across both: the Feature's name in Anton, what it covers (Website, Bot, Posts as neutral chips on a faint well, bot commands in their own case), the last change (state, who, when, and the reason quoted in italic) and an Off / Preview / Live segmented control. The selected segment and the state in the last change wear the state's ink: Live in done green, Preview in highlighter yellow, Off in masthead red, as type and a 2px inset stroke on ink, never as a fill. A Preview Feature's name carries a yellow "Staff only" outline tag, and an Off Feature's name drops to `faint-foreground`. Preview and Live save on click; Off opens a dashed signal-orange confirm under the row, its question cut into the border (no typed words, since Off is undone with one click). A speech-bubble button beside the control opens a yellow-edged reason field whose text goes with the next state picked. In the table the three segments are equal and fixed in width, so the control never shifts when a state is picked; stacked, they size to their labels so the name keeps its room. Below 85rem (1360px) each row stacks: name and control, then the coverage lines, then the last change.
 
 **The Desk Green Rule.** Done green (`ok`) shares the hex of the uncommon Rarity ink because the two never meet: Rarity inks stay on achievement surfaces and done green stays on the staff desk, which shows no achievements. It is its own token so neither role borrows the other, and it is still a mark (type, a stamp outline, a dot), never a fill behind type.
 
-**The Off Red Rule.** On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not ink-3, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.
+**The Off Red Rule.** On the staff desk only, masthead red also marks a Feature Flag that is Off: its selected segment and its state in the last change, as type and a stroke on ink (ink, not `muted`, under it, so the red clears 4.5:1). Off is the loudest thing a flag can do, so it takes the loudest ink, and staff alone see it, so it can never read as GOTM to a member. The confirmed action that turns a Feature Off is still a signal-orange destructive button: red is the state, orange is the act. Members' surfaces never show a flag's state.
 
 ### Do's and Don'ts
 
@@ -747,7 +758,7 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Do** set every game headline with the Two-Line Headline Rule.
 - **Do** give an absent track's space to what remains (the yellow panel or the promoted NR cover) on the dashboard.
 - **Do** split one cover between co-winners and letter them A, B, C in the track's ink.
-- **Do** fall back to the title in Anton on ink-3 when art is missing.
+- **Do** fall back to the title in Anton on `muted` when art is missing.
 - **Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.
 - **Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.
 - **Do** keep foil for Platinum, Mastery and Completion.

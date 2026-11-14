@@ -7,6 +7,7 @@ import type { ThreadSearchResult } from "@/lib/api/types";
 import { useThreadSearch } from "@/hooks/use-thread-search";
 import { Input } from "@/components/ui/input";
 import { ThreadResult } from "@/components/game-links/thread-result";
+import { SearchProblemNote } from "@/components/search-problem-note";
 
 // Finds a Discord thread by name and links it to the game (Regulars, or
 // Moderator and up). The action revalidates the page, so the rail's list
@@ -48,7 +49,7 @@ export function LinkThreadPicker({ gameId }: { gameId: number }) {
         />
       </div>
 
-      {searchError && <p className="text-xs text-destructive">{searchError}</p>}
+      {searchError && <SearchProblemNote problem={searchError} />}
       {rowError && (
         <p role="alert" className="text-xs text-destructive">
           {rowError}

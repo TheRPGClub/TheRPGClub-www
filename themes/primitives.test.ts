@@ -135,7 +135,7 @@ describe("Themes style the voting and suggestions variants", () => {
   it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
     const keys = styled(name);
     const voting = [
-      "button/variant=dismiss-notice",
+      "button/variant=clear",
       "button/variant=card-action",
       "button/variant=card-action-destructive",
       "button/variant=search",
@@ -177,5 +177,20 @@ describe("Themes style the staff desk variants", () => {
       "textarea/variant=inset",
     ];
     expect(desk.filter((key) => !keys.has(key))).toEqual([]);
+  });
+});
+
+// The DESIGN.md floor: focus is always visible. Tailwind v4's `outline-none`
+// (on every control's base) zeroes the outline style, so a focus outline's
+// width alone draws nothing: a Theme rule that sets one must set its style too.
+describe("Theme focus outlines are visible", () => {
+  it.each(THEMES.map((theme) => theme.name))("the %s Theme sets a style with every focus outline", (name) => {
+    const applies = [...read(`themes/${name}/primitives.css`).matchAll(/@apply ([^;]*);/g)].map((m) => m[1]);
+    const unstyled = applies.filter(
+      (line) =>
+        /(^|\s)(has-)?focus-visible:-?outline-(\d|\[)/.test(line) &&
+        !/(^|\s)(has-)?focus-visible:(outline-(solid|dashed|dotted|double)\b|\[outline-style:)/.test(line),
+    );
+    expect(unstyled).toEqual([]);
   });
 });

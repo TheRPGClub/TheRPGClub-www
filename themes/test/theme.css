@@ -6,6 +6,12 @@
    themes/tokens.test.ts fails if it misses a Monthly Issue token. Its
    primitives are restyled in ./primitives.css. */
 
+/* Loaded on its own, in development only (app/layout.tsx), after
+   app/globals.css. Restating the layer order keeps @layer themes above
+   Tailwind's utilities even if this sheet arrived first. Where it loads is
+   checked by themes/wiring.test.ts. */
+@layer theme, base, components, utilities, themes;
+
 @import "./primitives.css";
 
 @layer themes {
@@ -63,6 +69,11 @@
         --rarity-ultra: #00ff66;
         --rarity-foreground: #ff00cc;
         --ok: #ff0000;
+        --phase-approved: #ff00ff;
+        --phase-done: #0000ff;
+        --phase-rejected: #00ffff;
+        --phase-rejected-deep: #ff6a00;
+        --slip-muted-foreground: #00ff66;
         --news-announcements: #0000ff;
         --news-releases: #ff0000;
         --news-emulation: #ffee00;

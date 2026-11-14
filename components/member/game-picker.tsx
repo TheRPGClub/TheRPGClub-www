@@ -9,6 +9,7 @@ import { Combobox, ComboboxField, ComboboxList } from "@/components/ui/combobox"
 import { cn } from "@/lib/utils";
 import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 import { GamePickerResult } from "@/components/member/game-picker-result";
+import { SearchProblemNote } from "@/components/search-problem-note";
 
 export interface GamePickerProps {
   // Renders the input + result list inline. Use `compact` for embedded use
@@ -21,6 +22,9 @@ export interface GamePickerProps {
   placeholder?: string;
   autoFocus?: boolean;
   className?: string;
+  // What the field sits on: `inverse` for a light object (the yellow donate
+  // panel), drawn by the Theme as the Input's inverse field.
+  variant?: "default" | "inverse";
   // Offer "add it from IGDB" when the GameDB has no match. The added game is
   // picked like any other. `blockedReason` explains why the viewer can't add
   // one, or is null when they can. A list picker names its list; the donate
@@ -45,6 +49,7 @@ export function GamePicker({
   placeholder = "Search games…",
   autoFocus,
   className,
+  variant = "default",
   igdbFallback,
 }: GamePickerProps) {
   const [query, setQuery] = useState("");
@@ -109,10 +114,10 @@ export function GamePicker({
       <div className={cn("space-y-1.5", className)}>
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground" />
-          <ComboboxField type="search" placeholder={placeholder} autoFocus={autoFocus} aria-label={placeholder.replace(/…$/, "")} className="pl-9" />
+          <ComboboxField variant={variant} type="search" placeholder={placeholder} autoFocus={autoFocus} aria-label={placeholder.replace(/…$/, "")} className="pl-9" />
         </div>
 
-        {error && <p className="text-xs text-destructive">{error}</p>}
+        {error && <SearchProblemNote problem={error} />}
 
         {igdbBox && igdbFallback?.className ? <div className={igdbFallback.className}>{igdbBox}</div> : igdbBox}
 

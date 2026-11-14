@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center border text-[0.95rem] whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center border text-[0.95rem] whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px motion-reduce:active:not-aria-[haspopup]:translate-y-0 disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       // What the button is, never how it looks: each Theme draws every
@@ -56,10 +56,10 @@ const buttonVariants = cva(
         add: "",
         // www#94: the Member editors.
         // A small secondary tool in a dense editor (rename, save a name, add
-        // your own row): a ghost resting in the muted ink.
-        subtle: "",
+        // your own row), quieter than a tool on content.
+        "editor-tool": "",
         // Its counterpart that throws something away (discard a rename).
-        "destructive-subtle": "",
+        "destructive-editor-tool": "",
         // A quiet dotted link that opens an explainer ("What's this?").
         help: "",
         // A round action sitting on a cover (remove the game from a list).
@@ -85,8 +85,9 @@ const buttonVariants = cva(
         // details).
         dismiss: "",
         // www#97: voting, GOTM history and suggestions.
-        // The small x that clears a notice (a failed vote).
-        "dismiss-notice": "",
+        // The small x that clears something in place: a notice (a failed
+        // vote), a field's text (the journal catalogue's search).
+        clear: "",
         // A quiet action in a card's footer (Keep).
         "card-action": "",
         // A card footer action that withdraws or turns something down.
@@ -127,9 +128,6 @@ const buttonVariants = cva(
         // A filter chip beside a search (the journal catalogue's Any game):
         // the label voice on ink-2 with a strong hairline.
         chip: "",
-        // The x that clears a field (the journal catalogue's search): faint
-        // until hovered, no ground.
-        "field-clear": "",
         // A field's picked value as a chip that reopens its picker (the
         // journal editor's game).
         picked: "disabled:opacity-100",

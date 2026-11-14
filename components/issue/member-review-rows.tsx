@@ -3,7 +3,7 @@ import type { Review } from "@/lib/api/types";
 import { MAX_RATING } from "@/lib/api/rating";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { MemberCover } from "@/components/issue/member-cover";
-import { shortDate } from "@/components/member/member-lists";
+import { shortDate } from "@/lib/members/member-lists";
 
 // The profile's latest reviews as magazine rows: the game's cover, "On
 // <game>", the review's headline and opening lines, and the score set big on

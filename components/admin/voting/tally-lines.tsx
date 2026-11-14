@@ -43,6 +43,7 @@ export function TallyLines({
                 {line.title}
                 {showCounts && <span className="sr-only">, {line.count} {line.count === 1 ? "vote" : "votes"}</span>}
               </p>
+              {/* A meter (votes against the leader), not progress: no Progress. */}
               {showCounts && top > 0 && (
                 <i
                   aria-hidden

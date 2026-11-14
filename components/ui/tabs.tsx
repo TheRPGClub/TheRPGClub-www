@@ -38,6 +38,9 @@ const tabsListVariants = cva(
         // index: index tabs on a page's top edge, the current one in the
         // game tint; the list sets --tab-ink and --tab-ink-foreground.
         index: "items-end justify-start gap-1 p-0 group-data-horizontal/tabs:h-auto",
+        // ticks: a slideshow's ticks, one per slide, in the label voice
+        // (the /join slideshow); the caller draws each tick's bar.
+        ticks: "",
       },
     },
     defaultVariants: {

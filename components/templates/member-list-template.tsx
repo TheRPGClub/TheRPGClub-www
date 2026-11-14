@@ -8,7 +8,7 @@ import {
   memberListHref,
   type MemberCounts,
   type MemberListKey,
-} from "@/components/member/member-lists";
+} from "@/lib/members/member-lists";
 import { getFeatures } from "@/lib/session";
 import type { FeatureKey } from "@/lib/features";
 import { PreviewBadge } from "@/components/feature/preview-badge";

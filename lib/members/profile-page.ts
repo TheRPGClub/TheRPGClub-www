@@ -16,7 +16,7 @@ import { NO_ROWS, paginationOf, type ListPage } from "@/lib/api/pagination";
 import { shownImportKinds } from "@/lib/imports/kinds";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { fetchMember } from "@/lib/members/member-page";
-import { memberCounts } from "@/components/member/member-lists";
+import { memberCounts } from "@/lib/members/member-lists";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk (face-on key art), everything else is closed books on a bookcase, one

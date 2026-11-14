@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LIVE_EVENT_LABEL } from "./live-event-clock";
+import { Label } from "@/components/ui/label";
 
 function fileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -41,7 +42,7 @@ export function LiveEventImageField({
       <div className="mt-1 flex flex-wrap items-center gap-2.5">
         {image.mode === "file" ? (
           <>
-            <label className="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-sm border border-border bg-card px-3 text-sm focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-highlight/40">
+            <Label variant="file" className="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 border px-3 text-sm">
               <ImageIcon aria-hidden className="size-4 shrink-0 text-faint-foreground" />
               <span className={cn("min-w-0 truncate", file ? "text-foreground" : "text-faint-foreground")}>
                 {file ? file.name : "Choose a JPEG, PNG, WebP or GIF"}
@@ -56,7 +57,7 @@ export function LiveEventImageField({
                 className="sr-only"
                 onChange={(e) => image.pickFile(e.target.files?.[0] ?? null)}
               />
-            </label>
+            </Label>
             {file && (
               <Button type="button" variant="ghost" size="icon-sm" onClick={image.clearFile} aria-label="Remove the image">
                 <X />

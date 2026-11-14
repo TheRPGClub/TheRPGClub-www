@@ -12,7 +12,7 @@ export function BinderRings({ count }: { count: number }) {
       {Array.from({ length: count }, (_, i) => (
         <i
           key={i}
-          className="h-4 w-[30px] rounded-[9px] border-[3px] border-[#9a9aa2] bg-card shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)]"
+          className="h-4 w-[30px] rounded-[9px] border-[3px] border-muted-foreground bg-card shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)]"
         />
       ))}
     </div>

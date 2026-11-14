@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { getSession, requireFeature } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import {
   parseFeedFilters,
   type AchievementFeedFilters as Filters,
@@ -29,8 +28,7 @@ export default async function AchievementsHubPage({
 
 async function AchievementsHub({ filters }: { filters: Filters }) {
   // The feed needs auth; confirm a session before a fetch that can only 401.
-  const session = await getSession();
-  if (!session) redirect("/");
+  const session = await requireAuth();
   const features = await requireFeature("achievement_hub");
   const feed = await fetchHubFeed(filters);
 

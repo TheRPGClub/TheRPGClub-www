@@ -33,7 +33,7 @@ export function TemplatePicker({
         render={<Button type="button" variant="outline" size="xs" />}
       >
         {REVIEW_TEMPLATES.find((template) => template.key === choice)?.label}
-        <ChevronDown className="text-muted-foreground transition-transform group-aria-expanded/button:rotate-180" />
+        <ChevronDown className="text-muted-foreground motion-safe:transition-transform group-aria-expanded/button:rotate-180" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-72">
         {/* Radio items, because exactly one template is applied at a time —
