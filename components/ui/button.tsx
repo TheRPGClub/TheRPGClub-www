@@ -28,6 +28,14 @@ const buttonVariants = cva(
         // A destructive action that opens its confirm: orange stroke.
         "destructive-outline":
           "border-destructive bg-transparent text-destructive hover:bg-destructive/10",
+        // The main action on a light object (the yellow panel, a notice
+        // slip): the page's own ground as the fill, with its type.
+        inverse:
+          "bg-background text-foreground hover:bg-background/85 focus-visible:border-background focus-visible:ring-background/45",
+        // The second action beside it: a stroke in the object's own type
+        // colour, so it reads on any light fill.
+        "inverse-outline":
+          "bg-transparent inset-ring-[1.5px] inset-ring-current hover:bg-current/10 focus-visible:border-current focus-visible:ring-current/35",
         link: "text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight",
       },
       size: {

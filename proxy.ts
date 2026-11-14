@@ -1,14 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { SESSION_COOKIE, discordSignInUrl } from "@/lib/sign-in";
 
 // Deny by default: every path is for Members unless it is listed here. This
 // is an optimistic check on the session cookie only and never calls the API;
 // the protected layout's session read stays the authority on who is signed in.
 
-const SESSION_COOKIE = "rpgclub_token";
-
 const PUBLIC_PATHS = new Set([
   "/",
   "/join",
+  // The join page's Continue (restarts sign-in with the return-to).
+  "/join/continue",
   // App metadata files at the root of app/.
   "/favicon.ico",
   "/icon.svg",
@@ -29,10 +30,8 @@ function isPublic(pathname: string) {
 }
 
 function discordSignIn(request: NextRequest) {
-  const api = process.env.API_URL ?? "http://localhost:3000";
   const { pathname, search } = request.nextUrl;
-  const query = new URLSearchParams({ return_to: `${pathname}${search}` });
-  return `${api}/auth/discord?${query}`;
+  return discordSignInUrl(`${pathname}${search}`);
 }
 
 export function proxy(request: NextRequest) {
