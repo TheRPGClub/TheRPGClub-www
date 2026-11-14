@@ -5,6 +5,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   InputGroup,
   InputGroupAddon,
@@ -84,6 +85,18 @@ function ComboboxInput({
   )
 }
 
+// www#100: the combobox's input as a plain field, without the trigger and
+// clear of ComboboxInput, for a combobox whose list sits inline under it
+// (the game picker). It is the Input, so it keeps the Input's look.
+function ComboboxField({
+  variant,
+  ...props
+}: ComboboxPrimitive.Input.Props & {
+  variant?: React.ComponentProps<typeof Input>["variant"]
+}) {
+  return <ComboboxPrimitive.Input render={<Input variant={variant} />} {...props} />
+}
+
 function ComboboxContent({
   className,
   side = "bottom",
@@ -131,14 +144,25 @@ function ComboboxList({ className, ...props }: ComboboxPrimitive.List.Props) {
   )
 }
 
+// What the item is, drawn by each Theme by [data-slot="combobox-item"]
+// [data-variant] (api ADR-0008).
+type ComboboxItemVariant =
+  // A choice in the list.
+  | "default"
+  // www#100: a search result in a list under its field (the game picker):
+  // ruled from the one above, lit while highlighted.
+  | "result"
+
 function ComboboxItem({
   className,
   children,
+  variant = "default",
   ...props
-}: ComboboxPrimitive.Item.Props) {
+}: ComboboxPrimitive.Item.Props & { variant?: ComboboxItemVariant }) {
   return (
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
+      data-variant={variant}
       className={cn(
         "relative flex w-full cursor-default items-center gap-2 py-1 pr-8 pl-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
@@ -279,6 +303,7 @@ function useComboboxAnchor() {
 
 export {
   Combobox,
+  ComboboxField,
   ComboboxInput,
   ComboboxContent,
   ComboboxList,

@@ -74,6 +74,28 @@ const buttonVariants = cva(
         // A quiet text action on a light object (an Admin's revoke on a
         // gift tag): the object's ink, softened until hovered.
         "inverse-link": "focus-visible:ring-background/30",
+        // A filter chip beside a search (the journal catalogue's Any game):
+        // the label voice on ink-2 with a strong hairline.
+        chip: "",
+        // The x that clears a field (the journal catalogue's search): faint
+        // until hovered, no ground.
+        "field-clear": "",
+        // A field's picked value as a chip that reopens its picker (the
+        // journal editor's game).
+        picked: "disabled:opacity-100",
+        // A quiet text action under a control that backs out of a change
+        // (Keep the game).
+        "quiet-link": "",
+        // A row's own label that picks the row (a chronology line's member):
+        // no look of its own, the focus ring kept.
+        "row-label": "",
+        // A data mark on a chart, in the ink its row sets (--ink): an entry
+        // on the chronology plate, and a Game Completion's diamond.
+        mark: "",
+        "mark-completion": "",
+        // A dashed offer under a list to look further (Not listed? Search
+        // IGDB).
+        offer: "focus-visible:ring-2 focus-visible:ring-highlight/50",
       },
       size: {
         default:

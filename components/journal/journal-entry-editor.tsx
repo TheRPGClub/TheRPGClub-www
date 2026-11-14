@@ -1,22 +1,13 @@
 "use client";
 
-import { useId, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { Check, ChevronDown } from "lucide-react";
+import { useState } from "react";
 import type { GameSummary } from "@/lib/api/types";
-import { JOURNAL_BODY_MAX, JOURNAL_TITLE_MAX, chapterHref } from "@/lib/journals";
-import {
-  createJournalEntryAction,
-  updateJournalEntryAction,
-} from "@/app/actions/journals";
-import { GamePicker } from "@/components/member/game-picker";
-import { Button } from "@/components/ui/button";
+import { useJournalEntrySave } from "@/hooks/use-journal-entry-save";
+import { EntryGameChip, EntryGamePicker } from "@/components/journal/journal-entry-game";
+import { JournalEntryActions, JournalEntryFields } from "@/components/journal/journal-entry-fields";
 import { cn } from "@/lib/utils";
 
 export type JournalEditorGame = Pick<GameSummary, "game_id" | "title" | "cover_url">;
-
-const FIELD =
-  "w-full min-w-0 rounded-sm border border-border-strong bg-background text-foreground caret-highlight outline-none transition-colors placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
 
 // The owner's editor, open for their own edits (the yellow edge): optional
 // title, the entry, and the game it files under. Writes the next entry, or
@@ -49,49 +40,27 @@ export function JournalEntryEditor({
   autoFocus?: boolean;
   className?: string;
 }) {
-  const router = useRouter();
-  const ids = useId();
   const [game, setGame] = useState<JournalEditorGame | null>(initialGame);
   const [picking, setPicking] = useState(initialGame === null);
   const [title, setTitle] = useState(initialTitle);
   const [body, setBody] = useState(initialBody);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  function save(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    if (!game) {
-      setError("Pick the game this entry is about.");
-      return;
-    }
-    startTransition(async () => {
-      const res = entryId
-        ? await updateJournalEntryAction({
-            entryId,
-            gameId: game.game_id,
-            title,
-            body,
-            previousGameId: initialGame?.game_id,
-          })
-        : await createJournalEntryAction({ userId, gameId: game.game_id, title, body });
-      if (!res.ok) {
-        setError(res.error ?? "Couldn't save the entry. Try again.");
-        return;
-      }
-      if (game.game_id !== chapterGameId) {
-        router.push(chapterHref(userId, game.game_id));
-      } else if (!entryId) {
-        setTitle("");
-        setBody("");
-      }
-      onSaved?.();
-    });
-  }
+  const { error, setError, pending, save } = useJournalEntrySave({
+    userId,
+    entryId,
+    previousGameId: initialGame?.game_id,
+    chapterGameId,
+    onSaved,
+  });
 
   return (
     <form
-      onSubmit={save}
+      onSubmit={(event) => {
+        event.preventDefault();
+        save(game?.game_id ?? null, title, body, () => {
+          setTitle("");
+          setBody("");
+        });
+      }}
       noValidate
       aria-label={entryId ? "Edit entry" : "Write an entry"}
       className={cn(
@@ -101,86 +70,35 @@ export function JournalEntryEditor({
     >
       <div className="mb-2.5 flex flex-wrap items-center gap-2.5">
         <span className="font-label text-[0.88rem] text-highlight">{label}</span>
-        {game && !picking && (
-          <button
-            type="button"
-            onClick={() => setPicking(true)}
-            disabled={pending}
-            aria-label={`Game: ${game.title}. Change the game`}
-            className="font-label ml-auto inline-flex h-7 max-w-full min-w-0 items-center gap-2 rounded-sm bg-background py-0 pr-2.5 pl-1 text-[0.82rem] text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none"
-          >
-            <span className="block h-[21px] w-4 shrink-0 overflow-hidden rounded-[1.5px] bg-muted">
-              {game.cover_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={game.cover_url} alt="" className="size-full object-cover" />
-              )}
-            </span>
-            <span className="min-w-0 truncate">{game.title}</span>
-            <ChevronDown aria-hidden className="size-3.5 shrink-0 text-faint-foreground" />
-          </button>
-        )}
+        {game && !picking && <EntryGameChip game={game} disabled={pending} onChange={() => setPicking(true)} />}
       </div>
 
       {picking && (
-        <div className="mb-2.5">
-          <GamePicker
-            compact
-            autoFocus={initialGame !== null}
-            placeholder="Which game is this entry about…"
-            onPick={(picked) => {
-              setGame({
-                game_id: picked.game_id,
-                title: picked.title,
-                cover_url: picked.cover_url,
-              });
-              setPicking(false);
-              setError(null);
-            }}
-          />
-          {initialGame && (
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="font-label mt-1.5 text-[0.8rem] text-faint-foreground hover:text-highlight"
-            >
-              Keep {game?.title ?? initialGame.title}
-            </button>
-          )}
-        </div>
+        <EntryGamePicker
+          autoFocus={initialGame !== null}
+          keepTitle={initialGame ? (game?.title ?? initialGame.title) : null}
+          onPick={(picked) => {
+            setGame({ game_id: picked.game_id, title: picked.title, cover_url: picked.cover_url });
+            setPicking(false);
+            setError(null);
+          }}
+          onKeep={() => setPicking(false)}
+        />
       )}
 
-      <label htmlFor={`${ids}-title`} className="sr-only">
-        Title (optional)
-      </label>
-      <input
-        id={`${ids}-title`}
-        value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
+      <JournalEntryFields
+        title={title}
+        body={body}
+        onTitle={(next) => {
+          setTitle(next);
           setError(null);
         }}
-        maxLength={JOURNAL_TITLE_MAX}
-        placeholder="Title (optional)"
+        onBody={(next) => {
+          setBody(next);
+          setError(null);
+        }}
         disabled={pending}
-        className={cn(FIELD, "mb-2 h-9 px-3 font-semibold italic placeholder:font-normal")}
-      />
-      <label htmlFor={`${ids}-body`} className="sr-only">
-        Entry
-      </label>
-      <textarea
-        id={`${ids}-body`}
-        value={body}
-        onChange={(e) => {
-          setBody(e.target.value);
-          setError(null);
-        }}
-        maxLength={JOURNAL_BODY_MAX}
-        rows={4}
-        required
         autoFocus={autoFocus}
-        placeholder="Where you are, what happened, what you think of it so far."
-        disabled={pending}
-        className={cn(FIELD, "min-h-[88px] px-3 py-2.5 text-[0.98rem] leading-[1.55]")}
       />
 
       {error && (
@@ -189,20 +107,12 @@ export function JournalEntryEditor({
         </p>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2.5">
-        <Button type="submit" variant="highlight" disabled={pending}>
-          <Check aria-hidden />
-          {pending ? "Saving" : "Save entry"}
-        </Button>
-        {onCancel && (
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={pending}>
-            Cancel
-          </Button>
-        )}
-        <span className="font-label ml-auto text-[0.78rem] tracking-[0.08em] text-faint-foreground tabular-nums">
-          Title {title.length} / {JOURNAL_TITLE_MAX} · Entry {body.length} / {JOURNAL_BODY_MAX}
-        </span>
-      </div>
+      <JournalEntryActions
+        pending={pending}
+        onCancel={onCancel}
+        titleLength={title.length}
+        bodyLength={body.length}
+      />
     </form>
   );
 }

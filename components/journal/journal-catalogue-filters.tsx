@@ -2,14 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Search, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { GamePicker } from "@/components/member/game-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-const CHIP =
-  "font-label inline-flex h-9 items-center gap-1.5 rounded-sm bg-card px-3 text-[0.85rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none";
+import { CatalogueSearch, MemberFilter } from "@/components/journal/journal-catalogue-search";
 
 // The catalogue's search bar: words to find, then narrow to one member or one
 // game. Every change is a new address, so a search can be shared.
@@ -30,7 +27,6 @@ export function JournalCatalogueFilters({
   current: Record<string, string>;
 }) {
   const router = useRouter();
-  const [text, setText] = useState(q);
   const [picking, setPicking] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -49,60 +45,8 @@ export function JournalCatalogueFilters({
 
   return (
     <div className="mt-3.5 flex flex-wrap items-center gap-2.5" aria-busy={pending}>
-      <form
-        role="search"
-        onSubmit={(e) => {
-          e.preventDefault();
-          go({ q: text.trim() || null });
-        }}
-        className="relative w-full max-w-[520px] min-w-0 sm:flex-1"
-      >
-        <Search
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground"
-        />
-        <input
-          type="search"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Search every entry…"
-          aria-label="Search every entry"
-          className="h-9 w-full rounded-sm border border-border-strong bg-card pr-9 pl-9 text-foreground caret-highlight outline-none placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 [&::-webkit-search-cancel-button]:hidden"
-        />
-        {text && (
-          <button
-            type="button"
-            aria-label="Clear the search"
-            onClick={() => {
-              setText("");
-              go({ q: null });
-            }}
-            className="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded-sm text-faint-foreground hover:text-foreground"
-          >
-            <X aria-hidden className="size-4" />
-          </button>
-        )}
-      </form>
-
-      <label className="relative">
-        <span className="sr-only">Member</span>
-        <select
-          value={by ?? ""}
-          onChange={(e) => go({ by: e.target.value || null })}
-          className={cn(CHIP, "appearance-none pr-8")}
-        >
-          <option value="">Any member</option>
-          {members.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name}
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-faint-foreground"
-        />
-      </label>
+      <CatalogueSearch q={q} onSearch={(text) => go({ q: text || null })} />
+      <MemberFilter by={by} members={members} onPick={(id) => go({ by: id })} />
 
       {game ? (
         <Badge tone="picked" className="h-9 gap-1.5 border-0 px-3 pr-1 text-[0.85rem]">
@@ -129,10 +73,10 @@ export function JournalCatalogueFilters({
           />
         </div>
       ) : (
-        <button type="button" className={CHIP} onClick={() => setPicking(true)}>
+        <Button variant="chip" className="gap-1.5 px-3 text-[0.85rem]" onClick={() => setPicking(true)}>
           Any game
           <ChevronDown aria-hidden className="size-3.5 text-faint-foreground" />
-        </button>
+        </Button>
       )}
 
       <span

@@ -896,5 +896,53 @@
         :is([data-slot="table"][data-variant="records"], [data-slot="table"][data-variant="index"]) [data-slot="table-body"] [data-slot="table-row"]:last-child {
             @apply border-b;
         }
+        /* The journal catalogue's filters: chips in the label voice on ink-2
+           with a strong hairline (Any member, Any game), dim until hovered;
+           its search field on the strong rule with the yellow focus, and
+           the x that clears it, faint until hovered. */
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"] {
+            @apply font-label rounded-sm border-0 bg-card text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground;
+        }
+        [data-slot="input"][data-variant="catalogue"] {
+            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25;
+        }
+        [data-slot="button"][data-variant="field-clear"] {
+            @apply rounded-sm border-0 text-faint-foreground hover:text-foreground;
+        }
+        /* The journal entry editor (the yellow edge): its fields on the
+           page's ink with the strong rule and the yellow focus, its game as
+           an ink chip on a strong hairline, and the quiet Keep under the
+           picker. */
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="entry"] {
+            @apply border-border-strong bg-background text-foreground placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:bg-background dark:disabled:bg-background;
+        }
+        [data-slot="button"][data-variant="picked"] {
+            @apply font-label rounded-sm border-0 bg-background text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)];
+        }
+        [data-slot="button"][data-variant="quiet-link"] {
+            @apply font-label border-0 bg-transparent text-faint-foreground hover:text-highlight;
+        }
+        /* The chronology plate: a line's member name is the button with no
+           look of its own; its marks are dots (a Game Completion's a
+           diamond) in the line's ink, the picked one ringed in yellow over
+           the row's ground. */
+        [data-slot="button"][data-variant="row-label"] {
+            @apply border-0 bg-transparent active:not-aria-[haspopup]:translate-y-0;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            @apply rounded-full border-0 bg-(--ink) transition-none focus-visible:ring-highlight/60 active:not-aria-[haspopup]:translate-y-0 aria-pressed:shadow-[0_0_0_3px_var(--color-muted),0_0_0_5px_var(--color-highlight)];
+        }
+        [data-slot="button"][data-variant="mark-completion"] {
+            @apply rounded-[1.5px];
+        }
+        /* The game picker: its matches ruled from one another on ink-3, the
+           highlighted one lit yellow at a whisper; the dashed offer under
+           them to look further, yellow on hover. */
+        [data-slot="combobox-item"][data-variant="result"] {
+            @apply rounded-none border-t border-border transition-colors first:border-t-0 data-highlighted:bg-highlight/8;
+        }
+        [data-slot="button"][data-variant="offer"] {
+            @apply rounded-sm border-dashed border-border-strong bg-muted font-normal text-dim-foreground transition-colors hover:text-highlight;
+        }
     }
 }

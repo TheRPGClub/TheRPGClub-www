@@ -39,6 +39,9 @@ type SelectTriggerVariant =
   | "blank"
   // www#100: a field on the yellow panel (the donated key's region).
   | "inverse"
+  // www#100: a filter chip beside a search (the journal catalogue's Any
+  // member).
+  | "chip"
 
 function SelectTrigger({
   className,

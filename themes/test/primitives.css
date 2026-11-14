@@ -1517,5 +1517,28 @@
                 border-color: var(--nr);
             }
         }
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"],
+        [data-slot="button"]:is([data-variant="field-clear"], [data-variant="picked"], [data-variant="quiet-link"], [data-variant="row-label"]) {
+            background-color: var(--gotm);
+            color: var(--gotm-foreground);
+            outline: 3px dotted var(--highlight);
+        }
+        [data-slot="input"]:is([data-variant="catalogue"], [data-variant="entry"]),
+        [data-slot="textarea"][data-variant="entry"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-color: var(--highlight);
+            border-style: dashed;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            background-color: var(--highlight);
+            outline: 2px solid var(--destructive);
+        }
+        [data-slot="combobox-item"][data-variant="result"],
+        [data-slot="button"][data-variant="offer"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }
