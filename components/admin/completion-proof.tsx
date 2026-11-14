@@ -18,18 +18,18 @@ export function CompletionProof({
   muted?: boolean;
 }) {
   return (
-    <div className={cn("bg-ink-2 p-5 transition-opacity sm:p-6", muted && "opacity-45")}>
-      <p className="font-label text-[0.85rem] tracking-[0.08em] text-paper-dim">
+    <div className={cn("bg-card p-5 transition-opacity sm:p-6", muted && "opacity-45")}>
+      <p className="font-label text-[0.85rem] tracking-[0.08em] text-dim-foreground">
         Completion post · Whatcha Playing
       </p>
-      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-md border border-rule-strong bg-ink p-4">
+      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-md border border-border-strong bg-background p-4">
         {announcement && title ? (
           <div className="min-w-0 space-y-3">
             <p className="font-headline text-[2rem] leading-[0.95] break-words sm:text-[2.4rem]">
               {announcement.heading}
             </p>
-            <p className="text-[0.95rem] leading-[1.45] text-paper-dim">
-              {announcement.lead} <b className="font-semibold text-paper">{title}</b>
+            <p className="text-[0.95rem] leading-[1.45] text-dim-foreground">
+              {announcement.lead} <b className="font-semibold text-foreground">{title}</b>
               {" - "}
               {announcement.details}
               <br />
@@ -38,15 +38,15 @@ export function CompletionProof({
           </div>
         ) : (
           <div className="min-w-0 space-y-3" aria-hidden>
-            <p className="font-headline text-[2rem] leading-[0.95] text-paper-mute sm:text-[2.4rem]">
+            <p className="font-headline text-[2rem] leading-[0.95] text-faint-foreground sm:text-[2.4rem]">
               Member
             </p>
-            <p className="text-[0.95rem] text-paper-mute">
+            <p className="text-[0.95rem] text-faint-foreground">
               Pick a member and a game to see the post.
             </p>
           </div>
         )}
-        <div className="h-[6.5rem] w-[5rem] overflow-hidden rounded-[3px] bg-ink-3">
+        <div className="h-[6.5rem] w-[5rem] overflow-hidden rounded-[3px] bg-muted">
           {coverUrl && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={coverUrl} alt="" className="size-full object-cover" />

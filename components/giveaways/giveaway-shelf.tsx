@@ -126,7 +126,7 @@ export function GiveawayShelf({
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem]">
         <div className="min-w-0 space-y-9">
           {shelves.length === 0 && (
-            <p className="rounded-md border border-dashed border-rule-strong px-5 py-8 text-paper-mute">
+            <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">
               {emptyCopy}
             </p>
           )}
@@ -147,7 +147,7 @@ export function GiveawayShelf({
                 </PlatformChip>
               </div>
               <ul
-                className="relative flex snap-x gap-[18px] overflow-x-auto border-b-[6px] border-rule-strong px-1.5 pt-2.5 [scrollbar-width:thin]"
+                className="relative flex snap-x gap-[18px] overflow-x-auto border-b-[6px] border-border-strong px-1.5 pt-2.5 [scrollbar-width:thin]"
                 style={{ "--p": shelf.family.ink } as CSSProperties}
               >
                 {shelf.boxes.map((box) => {
@@ -169,7 +169,7 @@ export function GiveawayShelf({
                   );
                 })}
               </ul>
-              <div aria-hidden className="mt-1 h-2 bg-ink-3" />
+              <div aria-hidden className="mt-1 h-2 bg-muted" />
             </section>
           ))}
         </div>
@@ -177,7 +177,7 @@ export function GiveawayShelf({
           {notice && (
             <div
               role="alert"
-              className="flex items-start gap-2.5 rounded-sm bg-paper/6 px-3 py-2.5 text-sm text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+              className="flex items-start gap-2.5 rounded-sm bg-foreground/6 px-3 py-2.5 text-sm text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)]"
             >
               <AlertCircle
                 aria-hidden
@@ -248,21 +248,21 @@ function GiftBox({
           />
           <i
             aria-hidden
-            className="absolute top-[calc(62%+7px)] left-[calc(72%+7px)] -mt-[15px] -ml-[15px] size-[30px] rotate-45 rounded-[3px] bg-(--p) shadow-[0_3px_6px_rgb(0_0_0/0.45)] after:absolute after:inset-[9px] after:rounded-[2px] after:bg-ink/25"
+            className="absolute top-[calc(62%+7px)] left-[calc(72%+7px)] -mt-[15px] -ml-[15px] size-[30px] rotate-45 rounded-[3px] bg-(--p) shadow-[0_3px_6px_rgb(0_0_0/0.45)] after:absolute after:inset-[9px] after:rounded-[2px] after:bg-background/25"
           />
         </div>
         {open.length > 1 && (
-          <span className="font-headline absolute -top-2 -right-1.5 rotate-6 rounded-xs bg-paper px-1.5 py-px text-[0.95rem] text-ink shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
+          <span className="font-headline absolute -top-2 -right-1.5 rotate-6 rounded-xs bg-foreground px-1.5 py-px text-[0.95rem] text-background shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
             ×{open.length}
           </span>
         )}
       </div>
       <div
         className={cn(
-          "relative mt-2.5 mb-[22px] rounded-sm px-[9px] pt-2 pb-[9px] shadow-[0_3px_8px_rgb(0_0_0/0.45)] before:absolute before:-top-1.5 before:left-1/2 before:-ml-1 before:size-2 before:rounded-full before:bg-ink before:shadow-[0_0_0_2px_var(--color-paper)]",
+          "relative mt-2.5 mb-[22px] rounded-sm px-[9px] pt-2 pb-[9px] shadow-[0_3px_8px_rgb(0_0_0/0.45)] before:absolute before:-top-1.5 before:left-1/2 before:-ml-1 before:size-2 before:rounded-full before:bg-background before:shadow-[0_0_0_2px_var(--color-foreground)]",
           gone
-            ? "bg-ink-3 text-paper shadow-[inset_0_0_0_1px_var(--color-destructive)]"
-            : "bg-paper text-ink",
+            ? "bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-destructive)]"
+            : "bg-foreground text-background",
         )}
         style={{ transform: `rotate(${tilt}deg)` }}
       >
@@ -280,7 +280,7 @@ function GiftBox({
             Already claimed. Someone got there first.
           </p>
         ) : (
-          <p className="mt-[3px] text-[0.74rem] leading-tight text-ink/70">
+          <p className="mt-[3px] text-[0.74rem] leading-tight text-background/70">
             {mine ? "Your donation" : `From ${donorName}`} ·{" "}
             {shelfAge(next.created_at)}
             {region}
@@ -293,7 +293,7 @@ function GiftBox({
         ) : mine ? (
           <Link
             href="/giveaways/donate"
-            className="font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-ink text-[0.8rem] font-extrabold text-paper hover:bg-ink-3"
+            className="font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-background text-[0.8rem] font-extrabold text-foreground hover:bg-muted"
           >
             Manage
           </Link>
@@ -318,7 +318,7 @@ function GiftBox({
             </TagButton>
             <p
               id={`why-${box.id}`}
-              className="mt-[7px] text-[0.74rem] leading-tight text-ink/75"
+              className="mt-[7px] text-[0.74rem] leading-tight text-background/75"
             >
               {CLAIM_REFUSAL_COPY.not_member}
             </p>
@@ -339,7 +339,7 @@ function GiftBox({
                 <button
                   type="button"
                   onClick={() => setConfirmingKey(null)}
-                  className="font-label text-ink/70 hover:underline"
+                  className="font-label text-background/70 hover:underline"
                 >
                   Keep it
                 </button>
@@ -348,7 +348,7 @@ function GiftBox({
               <button
                 type="button"
                 onClick={() => setConfirmingKey(next.key_id)}
-                className="font-label inline-flex items-center gap-1 text-ink/70 hover:text-ink hover:underline"
+                className="font-label inline-flex items-center gap-1 text-background/70 hover:text-background hover:underline"
               >
                 <Undo2 aria-hidden className="size-3" />
                 Revoke (Admin)
@@ -370,7 +370,7 @@ function TagButton({
     <button
       type="button"
       className={cn(
-        "font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-ink text-[0.8rem] font-extrabold text-paper transition-colors hover:bg-ink-3 focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none disabled:cursor-not-allowed",
+        "font-label mt-[7px] flex h-[26px] w-full items-center justify-center gap-1.5 rounded-sm bg-background text-[0.8rem] font-extrabold text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none disabled:cursor-not-allowed",
         className,
       )}
       {...props}

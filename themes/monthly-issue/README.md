@@ -297,7 +297,9 @@ Fixed colours sit outside every Theme, in `app/globals.css`: the Provider colour
 
 ## Palette to token mapping
 
-The Monthly Issue palette names (`ink`, `ink-2`, `ink-3`, `rule`, `rule-strong`, `paper`, `paper-dim`, `paper-mute`) and the two `-ink` club names still work as Tailwind colours until www#86. That ticket's codemod rewrites every use with the rules below, in order; then the legacy block in `app/globals.css` goes and `structure/no-palette-colors` becomes an error. Every row keeps today's exact value, so nothing visibly changes.
+The Monthly Issue palette names (`ink`, `ink-2`, `ink-3`, `rule`, `rule-strong`, `paper`, `paper-dim`, `paper-mute`) and the two `-ink` club names are this Theme's own vocabulary, not Tailwind colours. The www#86 codemod rewrote every use with the rules below, in order, then removed the names from `app/globals.css`; `structure/no-palette-colors` (an error) keeps them out of the code, and catches `highlight-ink` and `destructive-ink` too. Every row keeps the exact value, so nothing visibly changed. Read the rules when you meet a palette name in this README or an old branch.
+
+The codemod went two steps past the rules as written: in rule 4 the other two Monthly Issue colours written as literals, `rgb(141_141_135/A)` (paper-mute) and `rgb(255_212_0/A)` (highlight), map the same way to `--color-faint-foreground` and `--color-highlight`; and rule 3's pairs were applied by hand where the fill and the type sit in sibling strings of one `cn()` (the Rarity chip and label, the Provider badge and tabs, the starburst).
 
 ### 1. Names
 
@@ -353,7 +355,7 @@ Likewise `text-white` next to `bg-gotm` becomes `text-gotm-foreground`, and next
 - Per-feature ink lists held as hex in `lib/` (the journal member inks in `lib/journals.ts`, the platform inks in `lib/giveaways.ts`, the suggestion inks in `lib/suggestions.ts`). They are content colours, not palette names; moving them into the Theme is a separate decision.
 - `text-white`, `bg-white` and `black` outside the pairs in 3.
 
-### 6. Every palette class in use
+### 6. Every palette class the codemod met
 
 Generated from the code at `651156a` (feat/web-structure-www, after www#82 and www#87): every distinct palette class, by utility and modifier, with its rewrite before rule 3 and its count of uses. Classes with variants (`hover:`, `md:`, `group-hover/x:`) follow the same row.
 

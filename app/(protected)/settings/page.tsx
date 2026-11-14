@@ -43,7 +43,7 @@ export default async function SettingsPage() {
 
       <section aria-labelledby="settings-features" className="flex flex-col">
         <SectionHeading title={<span id="settings-features">Features</span>} />
-        <p className="mt-3 max-w-[60ch] text-paper-dim">
+        <p className="mt-3 max-w-[60ch] text-dim-foreground">
           Hide parts of the club you don&apos;t use. They leave your sidebar, your dashboard and other
           pages. Direct links still work.
         </p>
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
         ) : (
           <p
             role="alert"
-            className="mt-5 rounded-md border border-dashed border-rule-strong px-4 py-5 text-sm text-paper-dim"
+            className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground"
           >
             Couldn&apos;t load your settings from the club&apos;s server. Reload the page to try again.
           </p>

@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-paper-mute";
+const LABEL = "font-label block text-[0.82rem] tracking-[0.06em] text-faint-foreground";
 
 function fileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -164,13 +164,13 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
             disabled={locked}
             autoComplete="off"
             placeholder="What are we playing?"
-            className="font-headline block w-full border-0 border-b-2 border-rule-strong bg-transparent pt-1.5 pb-2.5 text-[1.8rem] leading-none text-paper caret-highlight outline-none placeholder:text-paper-mute focus-visible:border-highlight disabled:opacity-70 md:text-[2.4rem]"
+            className="font-headline block w-full border-0 border-b-2 border-border-strong bg-transparent pt-1.5 pb-2.5 text-[1.8rem] leading-none text-foreground caret-highlight outline-none placeholder:text-faint-foreground focus-visible:border-highlight disabled:opacity-70 md:text-[2.4rem]"
           />
-          <p className="mt-1 text-right text-[0.8rem] text-paper-mute">
+          <p className="mt-1 text-right text-[0.8rem] text-faint-foreground">
             {squishTopic(topic).length} / {TOPIC_MAX}
           </p>
 
-          <div className="mt-4 grid border-t border-rule md:grid-cols-2">
+          <div className="mt-4 grid border-t border-border md:grid-cols-2">
             <Clock
               id="live-event-start"
               label="Starts"
@@ -198,13 +198,13 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
             <div className="mt-1 flex flex-wrap items-center gap-2.5">
               {imageMode === "file" ? (
                 <>
-                  <label className="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-sm border border-rule bg-ink-2 px-3 text-sm focus-within:border-paper-mute focus-within:ring-2 focus-within:ring-highlight/40">
-                    <ImageIcon aria-hidden className="size-4 shrink-0 text-paper-mute" />
-                    <span className={cn("min-w-0 truncate", file ? "text-paper" : "text-paper-mute")}>
+                  <label className="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-sm border border-border bg-card px-3 text-sm focus-within:border-faint-foreground focus-within:ring-2 focus-within:ring-highlight/40">
+                    <ImageIcon aria-hidden className="size-4 shrink-0 text-faint-foreground" />
+                    <span className={cn("min-w-0 truncate", file ? "text-foreground" : "text-faint-foreground")}>
                       {file ? file.name : "Choose a JPEG, PNG, WebP or GIF"}
                     </span>
-                    {file && <span className="ml-auto shrink-0 text-[0.82rem] text-paper-mute">{fileSize(file.size)}</span>}
-                    {!file && <Upload aria-hidden className="ml-auto size-4 shrink-0 text-paper-mute" />}
+                    {file && <span className="ml-auto shrink-0 text-[0.82rem] text-faint-foreground">{fileSize(file.size)}</span>}
+                    {!file && <Upload aria-hidden className="ml-auto size-4 shrink-0 text-faint-foreground" />}
                     <input
                       ref={fileInput}
                       type="file"
@@ -219,7 +219,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                       <X />
                     </Button>
                   )}
-                  <span className="text-[0.84rem] text-paper-mute">or</span>
+                  <span className="text-[0.84rem] text-faint-foreground">or</span>
                   <Button type="button" variant="outline" size="sm" onClick={() => switchImageMode("url")}>
                     <Link2 data-icon="inline-start" />
                     Use a URL
@@ -237,7 +237,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                     onChange={(e) => setImageUrl(e.target.value)}
                     className="min-w-0 flex-1 basis-56"
                   />
-                  <span className="text-[0.84rem] text-paper-mute">or</span>
+                  <span className="text-[0.84rem] text-faint-foreground">or</span>
                   <Button type="button" variant="outline" size="sm" onClick={() => switchImageMode("file")}>
                     <Upload data-icon="inline-start" />
                     Upload a file
@@ -245,7 +245,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                 </>
               )}
             </div>
-            <p className="mt-1.5 text-[0.82rem] text-paper-mute">At most 4 MB; for a larger image, link it by URL. The bot puts it on the thread and the event.</p>
+            <p className="mt-1.5 text-[0.82rem] text-faint-foreground">At most 4 MB; for a larger image, link it by URL. The bot puts it on the thread and the event.</p>
           </fieldset>
 
           {error && (
@@ -261,7 +261,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                   <Plus data-icon="inline-start" />
                   Start another
                 </Button>
-                <span className="text-[0.86rem] text-paper-mute">
+                <span className="text-[0.86rem] text-faint-foreground">
                   {"This one's with the bot. You can edit it in Discord once it's there."}
                 </span>
               </>
@@ -271,7 +271,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
                   <Send data-icon="inline-start" />
                   {pending ? "Sending..." : "Send to the bot"}
                 </Button>
-                <span className="text-[0.86rem] text-paper-mute">The bot makes the thread, then the event.</span>
+                <span className="text-[0.86rem] text-faint-foreground">The bot makes the thread, then the event.</span>
               </>
             )}
           </div>
@@ -332,7 +332,7 @@ function Clock({
   const isClient = useIsClient();
   const reading = isClient && iso ? clockReading(iso) : null;
   return (
-    <div className={cn("min-w-0 border-b border-rule py-3.5 md:pr-4", second && "md:border-l md:pl-4")}>
+    <div className={cn("min-w-0 border-b border-border py-3.5 md:pr-4", second && "md:border-l md:pl-4")}>
       <label htmlFor={id} className={LABEL}>
         {label}
       </label>
@@ -346,11 +346,11 @@ function Clock({
             {duration ? ` · ${duration}` : ""}
           </>
         ) : (
-          <span className="text-paper-mute">Pick a day and time</span>
+          <span className="text-faint-foreground">Pick a day and time</span>
         )}
       </p>
-      <p className="mt-0.5 text-[0.85rem] text-paper-dim">
-        Club time <b className="font-semibold text-paper">{reading?.club ?? "--"}</b>
+      <p className="mt-0.5 text-[0.85rem] text-dim-foreground">
+        Club time <b className="font-semibold text-foreground">{reading?.club ?? "--"}</b>
       </p>
       <Input
         id={id}
@@ -381,11 +381,11 @@ function Dispatch({ state, guildId }: { state: LiveEventState; guildId: string |
     : "";
 
   return (
-    <section aria-label="Dispatch" className="mt-5 border-t-2 border-paper pt-2.5">
+    <section aria-label="Dispatch" className="mt-5 border-t-2 border-foreground pt-2.5">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="font-label text-[1rem] font-extrabold tracking-[0.06em]">Dispatch</h3>
         {event.bot_job_id != null && (
-          <span className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute">Bot job #{event.bot_job_id}</span>
+          <span className="font-label text-[0.78rem] tracking-[0.08em] text-faint-foreground">Bot job #{event.bot_job_id}</span>
         )}
       </div>
       <ol aria-live="polite">
@@ -445,8 +445,8 @@ function Step({
   return (
     <li
       className={cn(
-        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2.5 border-b border-rule py-1.75 text-[0.9rem]",
-        muted && "text-paper-mute",
+        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2.5 border-b border-border py-1.75 text-[0.9rem]",
+        muted && "text-faint-foreground",
         icon === "failed" && "text-destructive",
       )}
     >
@@ -459,7 +459,7 @@ function Step({
         </span>
       )}
       <span>{children}</span>
-      <span className="text-[0.8rem] text-paper-mute">{meta}</span>
+      <span className="text-[0.8rem] text-faint-foreground">{meta}</span>
     </li>
   );
 }

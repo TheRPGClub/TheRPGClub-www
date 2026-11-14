@@ -57,8 +57,8 @@ function OpenBook({
         className={cn(
           "absolute inset-0 -z-10",
           art
-            ? "bg-[linear-gradient(0deg,rgb(11_11_13/0.95)_0%,rgb(11_11_13/0.6)_45%,rgb(11_11_13/0.05)_100%)]"
-            : "bg-ink-3",
+            ? "bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_95%,transparent)_0%,color-mix(in_oklab,var(--color-background)_60%,transparent)_45%,color-mix(in_oklab,var(--color-background)_5%,transparent)_100%)]"
+            : "bg-muted",
         )}
       />
       <span className="mt-auto block p-4">
@@ -66,13 +66,13 @@ function OpenBook({
           {title}
         </span>
         {(platform || since) && (
-          <span className="font-label mt-1.5 flex items-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-dim">
+          <span className="font-label mt-1.5 flex items-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] text-dim-foreground">
             <Gamepad2 aria-hidden className="size-3.5" />
             {[platform, since && `since ${since}`].filter(Boolean).join(" · ")}
           </span>
         )}
         {entry.note && (
-          <span className="mt-1.5 line-clamp-2 block text-[0.82rem] leading-snug text-paper-dim italic">
+          <span className="mt-1.5 line-clamp-2 block text-[0.82rem] leading-snug text-dim-foreground italic">
             &ldquo;{entry.note}&rdquo;
           </span>
         )}

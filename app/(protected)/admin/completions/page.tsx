@@ -45,7 +45,7 @@ export default async function CompletionForMemberPage() {
           </>
         }
       />
-      <p className="mt-3 max-w-[60ch] text-paper-dim">{SECTION.blurb}</p>
+      <p className="mt-3 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
       <CompletionForMemberForm
         actorName={actorName}
         platforms={platforms}

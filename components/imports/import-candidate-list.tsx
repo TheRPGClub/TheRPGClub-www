@@ -51,7 +51,7 @@ export function ImportCandidateList({
         </legend>
 
         {candidates.length === 0 ? (
-          <p className="mt-2.5 rounded-sm border border-dashed border-rule-strong px-4 py-5 text-sm text-paper-mute">
+          <p className="mt-2.5 rounded-sm border border-dashed border-border-strong px-4 py-5 text-sm text-faint-foreground">
             No GameDB matches for this title. Search a different title, pick a
             game yourself or try IGDB.
           </p>
@@ -59,7 +59,7 @@ export function ImportCandidateList({
           <ul className="mt-2.5 space-y-2">
             {candidates.map((candidate, i) => (
               <li key={candidate.game_id}>
-                <label className="group/opt grid cursor-pointer grid-cols-[1.25rem_2.9rem_1fr] items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-rule)] transition-colors hover:bg-ink-3 has-checked:bg-ink-3 has-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight has-disabled:cursor-default has-disabled:opacity-60 sm:grid-cols-[1.25rem_2.9rem_1fr_auto]">
+                <label className="group/opt grid cursor-pointer grid-cols-[1.25rem_2.9rem_1fr] items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-border)] transition-colors hover:bg-muted has-checked:bg-muted has-checked:shadow-[inset_0_0_0_2px_var(--color-highlight)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight has-disabled:cursor-default has-disabled:opacity-60 sm:grid-cols-[1.25rem_2.9rem_1fr_auto]">
                   <input
                     type="radio"
                     name={name}
@@ -73,7 +73,7 @@ export function ImportCandidateList({
                     aria-hidden
                     className="size-5 rounded-full shadow-[inset_0_0_0_2px_#4a4a55] transition-shadow group-has-checked/opt:shadow-[inset_0_0_0_6px_var(--color-highlight)]"
                   />
-                  <span className="block h-[3.8rem] w-[2.9rem] overflow-hidden rounded-[2px] bg-ink">
+                  <span className="block h-[3.8rem] w-[2.9rem] overflow-hidden rounded-[2px] bg-background">
                     {candidate.cover_url && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -87,7 +87,7 @@ export function ImportCandidateList({
                     <span className="font-label block text-[1.1rem] leading-[1.05] font-extrabold tracking-[0.02em] break-words">
                       {candidate.title}
                     </span>
-                    <span className="mt-0.5 block text-[0.8rem] text-paper-mute tabular-nums">
+                    <span className="mt-0.5 block text-[0.8rem] text-faint-foreground tabular-nums">
                       GameDB #{candidate.game_id}
                     </span>
                   </span>
@@ -103,7 +103,7 @@ export function ImportCandidateList({
         )}
       </fieldset>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-rule pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
         {candidates.length > 0 && (
           <Button
             type="button"

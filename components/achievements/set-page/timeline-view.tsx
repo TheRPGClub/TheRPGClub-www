@@ -48,23 +48,23 @@ export function TimelineView(props: SpreadViewProps) {
   return (
     <div className="flex flex-col gap-8">
       {model.clusters.length === 0 ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-5 py-6 text-[0.95rem] text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-5 py-6 text-[0.95rem] text-faint-foreground">
           {props.memberName} has no dated Unlocks in this set yet.
         </p>
       ) : (
         <section aria-label="Unlocks over time" className="flex flex-col gap-4">
-          <p className="font-label flex flex-wrap gap-x-5 gap-y-1 text-[0.85rem] text-paper-mute">
+          <p className="font-label flex flex-wrap gap-x-5 gap-y-1 text-[0.85rem] text-faint-foreground">
             <span>
-              First <span className="text-paper">{formatUnlockDate(model.firstAt as string)}</span>
+              First <span className="text-foreground">{formatUnlockDate(model.firstAt as string)}</span>
             </span>
             <span>
-              Latest <span className="text-paper">{formatUnlockDate(model.lastAt as string)}</span>
+              Latest <span className="text-foreground">{formatUnlockDate(model.lastAt as string)}</span>
             </span>
             <span>
-              Run <span className="text-paper">{runDays}</span> {runDays === 1 ? "day" : "days"}
+              Run <span className="text-foreground">{runDays}</span> {runDays === 1 ? "day" : "days"}
             </span>
             <span>
-              Unlocks on <span className="text-paper">{model.clusters.length}</span>{" "}
+              Unlocks on <span className="text-foreground">{model.clusters.length}</span>{" "}
               {model.clusters.length === 1 ? "day" : "days"}
             </span>
           </p>
@@ -168,7 +168,7 @@ function HorizontalAxis({
           <span
             key={`stem-${c.day}`}
             aria-hidden
-            className="absolute w-px bg-rule-strong"
+            className="absolute w-px bg-border-strong"
             style={{ left: centers[i], top: bottom - 4, height: axisY - bottom + 4 }}
           />
         );
@@ -187,11 +187,11 @@ function HorizontalAxis({
           className="absolute flex -translate-x-1/2 flex-col items-center gap-1"
           style={{ left: PAD + t.at * track, top: axisY + 3 }}
         >
-          <span className={cn("w-px bg-paper-mute", t.major ? "h-2" : "h-1 opacity-60")} />
+          <span className={cn("w-px bg-faint-foreground", t.major ? "h-2" : "h-1 opacity-60")} />
           <span
             className={cn(
               "font-label whitespace-nowrap",
-              t.major ? "text-[0.8rem] text-paper-dim" : "text-[0.7rem] text-paper-mute/70",
+              t.major ? "text-[0.8rem] text-dim-foreground" : "text-[0.7rem] text-faint-foreground/70",
             )}
           >
             {t.label}
@@ -206,7 +206,7 @@ function HorizontalAxis({
         return (
           <span
             key={`gap-${c.day}`}
-            className="font-label absolute -translate-x-1/2 bg-ink-2 px-1.5 text-[0.72rem] whitespace-nowrap text-paper-mute"
+            className="font-label absolute -translate-x-1/2 bg-card px-1.5 text-[0.72rem] whitespace-nowrap text-faint-foreground"
             style={{ left: mid, top: axisY - 20 }}
           >
             +{gap} days
@@ -217,8 +217,8 @@ function HorizontalAxis({
         <span
           key={`dot-${c.day}`}
           aria-hidden
-          className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-ink"
-          style={{ left: centers[i], top: axisY + 0.5, borderColor: "var(--color-paper)" }}
+          className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-background"
+          style={{ left: centers[i], top: axisY + 0.5, borderColor: "var(--color-foreground)" }}
         />
       ))}
 
@@ -228,12 +228,12 @@ function HorizontalAxis({
         return (
           <div
             key={c.day}
-            className="absolute z-10 flex flex-col gap-1 rounded-md bg-ink-2"
+            className="absolute z-10 flex flex-col gap-1 rounded-md bg-card"
             style={{ left: placed[i].left, top: laneBottom(placed[i].lane) - h, width: CLUSTER_W, height: h }}
           >
-            <span className="font-label px-1 text-[0.78rem] text-paper-mute">
+            <span className="font-label px-1 text-[0.78rem] text-faint-foreground">
               {dayLabel(c.day)}
-              {c.items.length > 1 && <span className="text-paper-dim"> · {c.items.length}</span>}
+              {c.items.length > 1 && <span className="text-dim-foreground"> · {c.items.length}</span>}
             </span>
             {c.items.length === 1 ? (
               <ClusterSingle item={c.items[0]} tint={tint.tint} selectedId={selectedId} onSelect={onSelect} />
@@ -287,7 +287,7 @@ function ClusterSingle({
         <span className="font-headline" style={{ color: tint }}>
           {formatSlot(item.slot)}
         </span>
-        <AchievementName view={item.view} className="line-clamp-2 font-semibold text-paper" />
+        <AchievementName view={item.view} className="line-clamp-2 font-semibold text-foreground" />
       </span>
     </button>
   );
@@ -321,23 +321,23 @@ function VerticalRun({
           <Fragment key={c.day}>
             {newMonth && (
               <li className="relative pt-3 pb-2 pl-[3.6rem]">
-                <span className="font-headline text-[1.4rem] leading-none text-paper">{month}</span>
+                <span className="font-headline text-[1.4rem] leading-none text-foreground">{month}</span>
               </li>
             )}
             {c.gapDays != null && c.gapDays >= 7 && (
-              <li className="font-label py-1 pl-[3.6rem] text-[0.75rem] text-paper-mute">
+              <li className="font-label py-1 pl-[3.6rem] text-[0.75rem] text-faint-foreground">
                 +{c.gapDays} days
               </li>
             )}
             <li className="relative grid grid-cols-[2.2rem_1fr] gap-x-[1.4rem] py-2">
               <span className="flex flex-col items-end pt-1">
-                <span className="font-headline text-[1.6rem] leading-none text-paper">
+                <span className="font-headline text-[1.6rem] leading-none text-foreground">
                   {date.getUTCDate()}
                 </span>
               </span>
               <span
                 aria-hidden
-                className="absolute top-[0.95rem] left-[2.6rem] size-3 -translate-x-[4.5px] rounded-full border-2 border-paper bg-ink"
+                className="absolute top-[0.95rem] left-[2.6rem] size-3 -translate-x-[4.5px] rounded-full border-2 border-foreground bg-background"
               />
               <ul className="flex min-w-0 flex-col gap-1">
                 {c.items.map((item) => {
@@ -351,7 +351,7 @@ function VerticalRun({
                         onClick={() => onSelect(item.view.id)}
                         className={itemClass(
                           selected,
-                          "grid w-full grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-3 rounded-md p-1 hover:bg-ink-3",
+                          "grid w-full grid-cols-[2.5rem_minmax(0,1fr)] items-center gap-3 rounded-md p-1 hover:bg-muted",
                         )}
                       >
                         <AchievementIcon view={item.view} size="sm" slot={item.slot} tint={tint.tint} />
@@ -362,7 +362,7 @@ function VerticalRun({
                             </span>
                             <AchievementName
                               view={item.view}
-                              className="truncate text-[0.95rem] font-semibold text-paper"
+                              className="truncate text-[0.95rem] font-semibold text-foreground"
                             />
                           </span>
                           <RarityChip rarity={item.view.rarity} figure={shown.rarity} size="sm" className="w-fit" />
@@ -397,9 +397,9 @@ function Tray({
   const picked = group.find((i) => i.view.id === selectedId);
   return (
     <section aria-label={title} className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-paper pb-2">
-        <h3 className="font-headline text-[1.875rem] leading-[0.9] text-paper">{title}</h3>
-        <span className="font-label text-[0.85rem] text-paper-mute">{note}</span>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-foreground pb-2">
+        <h3 className="font-headline text-[1.875rem] leading-[0.9] text-foreground">{title}</h3>
+        <span className="font-label text-[0.85rem] text-faint-foreground">{note}</span>
       </div>
       <ul className="grid gap-3 sm:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))]">
         {group.map((item) => {
@@ -415,7 +415,7 @@ function Tray({
                 onClick={() => onSelect(view.id)}
                 className={itemClass(
                   selected,
-                  "grid w-full grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3 rounded-md bg-ink-3/60 p-2.5 hover:bg-ink-3",
+                  "grid w-full grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3 rounded-md bg-muted/60 p-2.5 hover:bg-muted",
                 )}
               >
                 <AchievementIcon view={view} size="md" slot={slot} tint={tint.tint} />
@@ -426,11 +426,11 @@ function Tray({
                     </span>
                     <AchievementName
                       view={view}
-                      className="truncate text-[0.95rem] font-semibold text-paper-dim"
+                      className="truncate text-[0.95rem] font-semibold text-dim-foreground"
                     />
                   </span>
                   {sealed ? (
-                    <span className="font-label inline-flex h-5 w-fit items-center rounded-xs bg-paper/8 px-1.5 text-[0.72rem] text-paper-dim">
+                    <span className="font-label inline-flex h-5 w-fit items-center rounded-xs bg-foreground/8 px-1.5 text-[0.72rem] text-dim-foreground">
                       Hidden
                     </span>
                   ) : (

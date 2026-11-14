@@ -34,14 +34,14 @@ export function ImportItemLayout({
     >
       <section
         aria-label={label}
-        className="overflow-hidden rounded-md border border-rule bg-ink-2"
+        className="overflow-hidden rounded-md border border-border bg-card"
       >
         {art && (
           <div className="relative h-36 sm:h-52">
             {art}
             <div
               aria-hidden
-              className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-ink-2)_2%,transparent_70%)]"
+              className="absolute inset-0 bg-[linear-gradient(0deg,var(--color-card)_2%,transparent_70%)]"
             />
           </div>
         )}
@@ -75,13 +75,13 @@ export function ImportRoute({
   return (
     <details
       open={defaultOpen}
-      className="group/route rounded-sm border border-rule bg-ink-2 open:border-rule-strong"
+      className="group/route rounded-sm border border-border bg-card open:border-border-strong"
     >
       <summary className="font-label flex cursor-pointer list-none items-center gap-2.5 px-4 py-3.5 text-[0.95rem] font-extrabold tracking-[0.06em] transition-colors select-none hover:text-highlight [&::-webkit-details-marker]:hidden">
         {title}
         <ChevronDown
           aria-hidden
-          className="ml-auto size-4 text-paper-mute transition-transform group-open/route:rotate-180"
+          className="ml-auto size-4 text-faint-foreground transition-transform group-open/route:rotate-180"
         />
       </summary>
       <div className="px-4 pb-4">{children}</div>

@@ -133,8 +133,8 @@ export function CompletedReel({
           className={cn(
             "absolute inset-0 -z-10",
             art
-              ? "bg-[linear-gradient(90deg,rgb(11_11_13/0.94)_0%,rgb(11_11_13/0.8)_45%,rgb(11_11_13/0.35)_100%),linear-gradient(0deg,rgb(11_11_13/0.85),transparent_55%)]"
-              : "bg-ink-2",
+              ? "bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_94%,transparent)_0%,color-mix(in_oklab,var(--color-background)_80%,transparent)_45%,color-mix(in_oklab,var(--color-background)_35%,transparent)_100%),linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_85%,transparent),transparent_55%)]"
+              : "bg-card",
           )}
         />
         <MemberCover
@@ -151,7 +151,7 @@ export function CompletedReel({
             <dl className="mt-5 flex flex-wrap gap-x-6.5 gap-y-3.5">
               {facts.map((fact) => (
                 <div key={fact.small} className="flex flex-col-reverse gap-1">
-                  <dt className="font-label text-[0.8rem] font-extrabold tracking-[0.08em] text-paper-dim">
+                  <dt className="font-label text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground">
                     {fact.small}
                   </dt>
                   <dd className="font-headline text-[1.9rem] leading-[0.85] sm:text-[2.5rem]">
@@ -162,9 +162,9 @@ export function CompletedReel({
             </dl>
           )}
           {current.note && (
-            <blockquote className="mt-4.5 max-w-[52ch] text-base text-paper italic">
+            <blockquote className="mt-4.5 max-w-[52ch] text-base text-foreground italic">
               &ldquo;{current.note}&rdquo;
-              <footer className="font-label mt-1 text-xs font-extrabold tracking-[0.1em] text-paper-mute not-italic">
+              <footer className="font-label mt-1 text-xs font-extrabold tracking-[0.1em] text-faint-foreground not-italic">
                 {ownerName}&apos;s note
               </footer>
             </blockquote>
@@ -177,7 +177,7 @@ export function CompletedReel({
                 type="button"
                 onClick={() => step(-1)}
                 aria-label="Previous completion"
-                className="grid size-10.5 place-items-center rounded-sm bg-ink/70 text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-paper-mute)] focus-visible:outline-2 focus-visible:outline-highlight"
+                className="grid size-10.5 place-items-center rounded-sm bg-background/70 text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:outline-2 focus-visible:outline-highlight"
               >
                 <ChevronLeft aria-hidden className="size-4.5" />
               </button>
@@ -185,19 +185,19 @@ export function CompletedReel({
                 type="button"
                 onClick={() => step(1)}
                 aria-label="Next completion"
-                className="grid size-10.5 place-items-center rounded-sm bg-ink/70 text-paper shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-paper-mute)] focus-visible:outline-2 focus-visible:outline-highlight"
+                className="grid size-10.5 place-items-center rounded-sm bg-background/70 text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:outline-2 focus-visible:outline-highlight"
               >
                 <ChevronRight aria-hidden className="size-4.5" />
               </button>
             </div>
           )}
-          <p className="font-label text-[0.82rem] font-extrabold tracking-[0.1em] text-paper-mute">
-            <b className="text-paper">{offset + selected + 1}</b> of {total}
+          <p className="font-label text-[0.82rem] font-extrabold tracking-[0.1em] text-faint-foreground">
+            <b className="text-foreground">{offset + selected + 1}</b> of {total}
           </p>
           {game && (
             <Link
               href={`/games/${game.game_id}`}
-              className={cn(buttonVariants({ variant: "outline" }), "ml-auto bg-ink/70 xl:ml-0")}
+              className={cn(buttonVariants({ variant: "outline" }), "ml-auto bg-background/70 xl:ml-0")}
             >
               View game
               <ArrowRight data-icon="inline-end" />
@@ -209,7 +209,7 @@ export function CompletedReel({
       <div
         role="list"
         aria-label="Completions by month"
-        className="space-y-6 md:flex md:gap-5.5 md:space-y-0 md:overflow-x-auto md:px-0.5 md:pt-3 md:pb-3.5 md:[scrollbar-color:var(--color-rule-strong)_transparent]"
+        className="space-y-6 md:flex md:gap-5.5 md:space-y-0 md:overflow-x-auto md:px-0.5 md:pt-3 md:pb-3.5 md:[scrollbar-color:var(--color-border-strong)_transparent]"
       >
         {groups.map((group) => (
           <section
@@ -219,8 +219,8 @@ export function CompletedReel({
             aria-label={group.label}
             className="flex scroll-mt-24 flex-col gap-2.5 md:shrink-0"
           >
-            <h3 className="font-label border-b border-rule pb-1.5 text-[0.84rem] font-extrabold tracking-[0.1em] text-paper-mute">
-              <span className="text-paper">{group.label}</span>
+            <h3 className="font-label border-b border-border pb-1.5 text-[0.84rem] font-extrabold tracking-[0.1em] text-faint-foreground">
+              <span className="text-foreground">{group.label}</span>
               <span className="ml-2">{group.entries.length}</span>
             </h3>
             <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:flex">
@@ -238,7 +238,7 @@ export function CompletedReel({
                       {on && (
                         <span
                           aria-hidden
-                          className="absolute -top-3 left-1/2 hidden -translate-x-1/2 border-[6px] border-transparent border-t-paper md:block"
+                          className="absolute -top-3 left-1/2 hidden -translate-x-1/2 border-[6px] border-transparent border-t-foreground md:block"
                         />
                       )}
                       <MemberCover
@@ -246,14 +246,14 @@ export function CompletedReel({
                         title={name}
                         className={cn(
                           "transition-[transform,box-shadow] duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:shadow-[0_0_0_3px_var(--color-highlight)]",
-                          on && "shadow-[0_0_0_3px_var(--color-paper)]",
+                          on && "shadow-[0_0_0_3px_var(--color-foreground)]",
                         )}
                         fallbackClassName="text-sm p-1.5"
                       />
                       <span
                         className={cn(
                           "font-label mt-1.5 line-clamp-2 block text-[0.8rem] leading-tight font-bold",
-                          on ? "text-paper" : "text-paper-dim",
+                          on ? "text-foreground" : "text-dim-foreground",
                         )}
                       >
                         {name}

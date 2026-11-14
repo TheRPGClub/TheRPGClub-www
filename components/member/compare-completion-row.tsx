@@ -59,19 +59,19 @@ function CompareSide({
         />
         <span className="sr-only">{who.name}</span>
       </dt>
-      <dd className="font-label text-[0.8rem] leading-tight font-bold tracking-[0.04em] text-paper-dim">
-        <b className="font-extrabold text-paper">{month}</b>
+      <dd className="font-label text-[0.8rem] leading-tight font-bold tracking-[0.04em] text-dim-foreground">
+        <b className="font-extrabold text-foreground">{month}</b>
         {platform && <> · {platform}</>}
         {count > 1 && (
           <span
-            className="ml-1 text-paper-mute"
+            className="ml-1 text-faint-foreground"
             title={`Completed ${count} times`}
           >
             ×{count}
           </span>
         )}
         {latest.completion_type && (
-          <span className="block text-[0.72rem] text-paper-mute">
+          <span className="block text-[0.72rem] text-faint-foreground">
             {latest.completion_type}
           </span>
         )}

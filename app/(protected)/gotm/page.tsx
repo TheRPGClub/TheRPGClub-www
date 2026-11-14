@@ -103,7 +103,7 @@ async function GotmHistory({ filters }: { filters: Filters }) {
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

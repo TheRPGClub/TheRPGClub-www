@@ -28,12 +28,12 @@ export default async function SuggestionReviewPage() {
         description={SECTION.blurb}
         count={queue ? `${queue.total} pending` : undefined}
       />
-      <p className="text-sm text-paper-mute">
+      <p className="text-sm text-faint-foreground">
         Most upvoted first. Reviewed cards stay here until you refresh; past
         decisions are on the{" "}
         <Link
           href="/suggestions"
-          className="text-paper underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight"
+          className="text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight"
         >
           Suggestion Board
         </Link>
@@ -45,7 +45,7 @@ export default async function SuggestionReviewPage() {
           {"Couldn't load the Suggestions. Refresh to try again."}
         </p>
       ) : queue.rows.length === 0 ? (
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-6 text-paper-mute">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-faint-foreground">
           Nothing waiting for review.
         </p>
       ) : (

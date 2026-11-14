@@ -27,7 +27,7 @@ function DropdownMenuLabel({
     <MenuPrimitive.GroupLabel
       data-slot="dropdown-menu-label"
       className={cn(
-        "font-label px-2 py-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute",
+        "font-label px-2 py-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground",
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ function DropdownMenuContent({
         <MenuPrimitive.Popup
           data-slot="dropdown-menu-content"
           className={cn(
-            "max-h-[var(--available-height)] min-w-40 overflow-y-auto rounded-sm border border-rule-strong bg-ink-2 bg-clip-padding p-1 text-paper shadow-[0_12px_30px_rgb(0_0_0/0.5)]",
+            "max-h-[var(--available-height)] min-w-40 overflow-y-auto rounded-sm border border-border-strong bg-card bg-clip-padding p-1 text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)]",
             "origin-[var(--transform-origin)] transition duration-150 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className
           )}

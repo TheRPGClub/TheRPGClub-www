@@ -119,7 +119,7 @@ export function LinkThreadPicker({ gameId }: { gameId: number }) {
   return (
     <div className="mt-3 space-y-1.5">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-paper-mute" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground" />
         <Input
           type="search"
           value={query}
@@ -140,13 +140,13 @@ export function LinkThreadPicker({ gameId }: { gameId: number }) {
       {hasQuery && !searchError && (
         <ul
           aria-label="Matching threads"
-          className="max-h-72 overflow-y-auto rounded-sm border border-rule-strong bg-ink-3 shadow-[0_12px_30px_rgb(0_0_0/0.45)]"
+          className="max-h-72 overflow-y-auto rounded-sm border border-border-strong bg-muted shadow-[0_12px_30px_rgb(0_0_0/0.45)]"
         >
           {loading && results.length === 0 && (
-            <li className="px-3 py-2.5 text-xs text-paper-mute">Searching…</li>
+            <li className="px-3 py-2.5 text-xs text-faint-foreground">Searching…</li>
           )}
           {!loading && results.length === 0 && (
-            <li className="px-3 py-2.5 text-xs text-paper-mute">
+            <li className="px-3 py-2.5 text-xs text-faint-foreground">
               No thread has that in its name.
             </li>
           )}
@@ -156,20 +156,20 @@ export function LinkThreadPicker({ gameId }: { gameId: number }) {
             return (
               <li
                 key={thread.thread_id}
-                className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-rule px-3 py-2 text-sm first:border-t-0"
+                className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-border px-3 py-2 text-sm first:border-t-0"
               >
                 <span className="min-w-0">
                   <span className="block truncate font-semibold">
                     {thread.thread_name}
                   </span>
                   {others.length > 0 && (
-                    <span className="block truncate text-xs text-paper-mute">
+                    <span className="block truncate text-xs text-faint-foreground">
                       Also on {others.join(", ")}
                     </span>
                   )}
                 </span>
                 {linkedHere ? (
-                  <span className="font-label flex items-center gap-1 px-2 text-[0.75rem] font-extrabold tracking-[0.08em] text-paper-mute">
+                  <span className="font-label flex items-center gap-1 px-2 text-[0.75rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                     <Check aria-hidden className="size-3.5" />
                     Linked
                   </span>

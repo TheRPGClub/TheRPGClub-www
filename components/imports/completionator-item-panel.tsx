@@ -99,7 +99,7 @@ function CompletionatorStep({
   return (
     <ImportItemLayout
       label={`${importItemLabel(kind)} ${item.row_index}`}
-      title={title || <span className="text-paper-mute">Untitled {noun}</span>}
+      title={title || <span className="text-faint-foreground">Untitled {noun}</span>}
       facts={<ImportItemDetails kind={kind} item={item} />}
       routes={
         choosing ? (
@@ -121,11 +121,11 @@ function CompletionatorStep({
         {choosing ? (
           game ? (
             <div className="space-y-3">
-              <p className="text-sm text-paper-dim">
+              <p className="text-sm text-dim-foreground">
                 Pick the right game from GameDB or IGDB, or keep the one it
                 was matched to.
               </p>
-              <div className="flex flex-wrap gap-2 border-t border-rule pt-4">
+              <div className="flex flex-wrap gap-2 border-t border-border pt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -172,7 +172,7 @@ function CompletionatorStep({
                 onBack={sameCompletion === true ? () => setSameCompletion(null) : undefined}
               />
             ) : null}
-            <div className="flex justify-end border-t border-rule pt-4">{skip}</div>
+            <div className="flex justify-end border-t border-border pt-4">{skip}</div>
           </>
         )}
       </div>
@@ -191,14 +191,14 @@ function MatchedGame({
 }) {
   return (
     <div className="flex items-center gap-3.5 rounded-sm px-3 py-2.5 shadow-[inset_0_0_0_2px_var(--color-highlight)]">
-      <span className="block h-[3.8rem] w-[2.9rem] shrink-0 overflow-hidden rounded-[2px] bg-ink">
+      <span className="block h-[3.8rem] w-[2.9rem] shrink-0 overflow-hidden rounded-[2px] bg-background">
         {game.cover_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={game.cover_url} alt="" className="size-full object-cover" />
         )}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-[0.8rem] text-paper-mute">Matched to</p>
+        <p className="text-[0.8rem] text-faint-foreground">Matched to</p>
         <p className="font-label line-clamp-2 text-[1.1rem] leading-[1.05] font-extrabold tracking-[0.02em]">
           {game.title}
         </p>
@@ -328,7 +328,7 @@ function AddCompletion({
     <form onSubmit={submit} className="space-y-4">
       <div>
         <ImportSubhead>Add the completion</ImportSubhead>
-        <p className="mt-1 text-sm text-paper-mute">
+        <p className="mt-1 text-sm text-faint-foreground">
           {review.existing_completion
             ? "This is added as a separate completion; your existing one stays as it is."
             : "Check the details and add it to your completed games."}
@@ -337,7 +337,7 @@ function AddCompletion({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5 text-sm">
-          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Completion type</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-dim-foreground">Completion type</span>
           <select
             value={completionType}
             onChange={(e) => setCompletionType(e.target.value)}
@@ -352,7 +352,7 @@ function AddCompletion({
         </label>
 
         <label className="space-y-1.5 text-sm">
-          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Platform</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-dim-foreground">Platform</span>
           <select
             value={platformId}
             onChange={(e) => setPlatformId(e.target.value)}
@@ -366,14 +366,14 @@ function AddCompletion({
             ))}
           </select>
           {createsRelease && (
-            <span className="block text-xs text-paper-mute">
+            <span className="block text-xs text-faint-foreground">
               This platform isn&apos;t listed for the game yet; adding it records a release.
             </span>
           )}
         </label>
 
         <fieldset className="space-y-1.5 text-sm sm:col-span-2">
-          <legend className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Date finished</legend>
+          <legend className="font-label font-extrabold tracking-[0.06em] text-dim-foreground">Date finished</legend>
           <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1">
             {dateOptions.map(([value, label]) => (
               <label key={value} className="inline-flex items-center gap-1.5">
@@ -402,7 +402,7 @@ function AddCompletion({
         </fieldset>
 
         <label className="space-y-1.5 text-sm">
-          <span className="font-label font-extrabold tracking-[0.06em] text-paper-dim">Playtime (hours)</span>
+          <span className="font-label font-extrabold tracking-[0.06em] text-dim-foreground">Playtime (hours)</span>
           <Input
             type="number"
             min={0}
@@ -458,7 +458,7 @@ function CompletionDiff({
   const rows = completionDiffRows(review.existing_completion, review.item);
   return (
     <table className="w-full text-left text-sm">
-      <thead className="font-label text-[0.78rem] tracking-[0.08em] text-paper-mute">
+      <thead className="font-label text-[0.78rem] tracking-[0.08em] text-faint-foreground">
         <tr>
           <th className="py-1 pr-3 font-medium" />
           <th className="py-1 pr-3 font-medium">Your completion</th>
@@ -469,8 +469,8 @@ function CompletionDiff({
         {rows.map(([field, current, incoming]) => {
           const differs = highlight.includes(field);
           return (
-            <tr key={field} className="border-t border-rule align-top">
-              <th scope="row" className="py-1.5 pr-3 font-normal text-paper-mute">
+            <tr key={field} className="border-t border-border align-top">
+              <th scope="row" className="py-1.5 pr-3 font-normal text-faint-foreground">
                 {UPDATE_FIELD_LABELS[field]}
               </th>
               <td className="py-1.5 pr-3">{current}</td>
@@ -496,7 +496,7 @@ function ConfirmSame({
     <section className="space-y-4">
       <div>
         <ImportSubhead>Is this the same completion?</ImportSubhead>
-        <p className="mt-1 text-sm text-paper-mute">
+        <p className="mt-1 text-sm text-faint-foreground">
           You already finished this game, on a different date. Update that
           completion, or add this one as a separate playthrough.
         </p>
@@ -540,7 +540,7 @@ function UpdateCompletion({
     >
       <div>
         <ImportSubhead>Update your completion</ImportSubhead>
-        <p className="mt-1 text-sm text-paper-mute">
+        <p className="mt-1 text-sm text-faint-foreground">
           You already finished this game. Choose which values from the file to
           copy onto it.
         </p>

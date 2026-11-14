@@ -58,7 +58,7 @@ export default async function LiveEventsPage() {
           <Plus data-icon="inline-start" />
           New live event
         </Link>
-        <p className="text-sm text-paper-dim">{SECTION.blurb}</p>
+        <p className="text-sm text-dim-foreground">{SECTION.blurb}</p>
       </div>
       <div className="mt-6">
         {list === null ? (

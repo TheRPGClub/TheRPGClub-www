@@ -110,7 +110,7 @@ async function VotingContent() {
     return (
       <div className="space-y-6">
         <PageHeader title="Nominations & voting" badge={badge} />
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-12 text-center text-paper-dim">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           No voting round is scheduled right now. Check back soon!
         </p>
       </div>
@@ -225,7 +225,7 @@ function VotesSlot({
       <p className="flex items-baseline gap-2">
         <span className="font-headline text-[2.6rem] leading-[0.85]">
           {track.userVotes.length}
-          <span className="text-highlight-ink"> / {cap}</span>
+          <span className="text-highlight-muted-foreground"> / {cap}</span>
         </span>
         <span className="font-label text-[0.85rem] font-extrabold tracking-[0.08em]">
           votes cast
@@ -250,7 +250,7 @@ function VotesSlot({
         </SlotNote>
       )}
       {own && (
-        <p className="mt-auto text-[0.82rem] font-medium text-highlight-ink">
+        <p className="mt-auto text-[0.82rem] font-medium text-highlight-muted-foreground">
           Your nomination: {own.game?.title ?? "Unknown game"}
         </p>
       )}
@@ -274,7 +274,7 @@ function ResultSlot({
         <p className="font-headline text-[1.75rem] leading-[0.95] text-balance">
           {tied.map((game) => game.title).join(" / ")}
         </p>
-        <p className="text-[0.82rem] font-medium text-highlight-ink">
+        <p className="text-[0.82rem] font-medium text-highlight-muted-foreground">
           {round.phase === "runoff"
             ? "Tied. A runoff between them decides it."
             : "Tied. The admins will pick the winner."}
@@ -307,7 +307,7 @@ function ResultSlot({
       <p className="font-headline text-[1.75rem] leading-[0.95] text-balance">
         {leaders.join(" / ")}
       </p>
-      <p className="text-[0.82rem] font-medium text-highlight-ink">
+      <p className="text-[0.82rem] font-medium text-highlight-muted-foreground">
         Most votes, with {top} {top === 1 ? "vote" : "votes"}.
       </p>
     </div>
@@ -316,7 +316,7 @@ function ResultSlot({
 
 function SlotNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[0.85rem] font-medium text-highlight-ink">{children}</p>
+    <p className="text-[0.85rem] font-medium text-highlight-muted-foreground">{children}</p>
   );
 }
 

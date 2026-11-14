@@ -69,7 +69,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
           count={`${socials.length} linked`}
           className="[&_h2]:text-4xl sm:[&_h2]:text-[2.75rem]"
         />
-        <p className="text-sm text-paper-mute">
+        <p className="text-sm text-faint-foreground">
           Handles, friend codes and profiles. Imports from Steam and
           Completionator read the accounts linked here.
         </p>
@@ -83,7 +83,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
 
       <ul className="grid gap-2.5 lg:grid-cols-2">
         {socials.length === 0 && !addingNew && (
-          <li className="text-sm text-paper-mute lg:col-span-2">
+          <li className="text-sm text-faint-foreground lg:col-span-2">
             No socials yet. Link an account to share your handles.
           </li>
         )}
@@ -91,7 +91,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
           editingId === social.id ? (
             <li
               key={social.id}
-              className="rounded-md border border-highlight bg-ink-2 p-3 lg:col-span-2"
+              className="rounded-md border border-highlight bg-card p-3 lg:col-span-2"
             >
               <SocialForm
                 userId={userId}
@@ -115,13 +115,13 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
           ) : (
             <li
               key={social.id}
-              className="flex min-h-15 items-center gap-3 rounded-md border border-rule bg-ink-2 py-2 pr-2 pl-3.5 text-sm"
+              className="flex min-h-15 items-center gap-3 rounded-md border border-border bg-card py-2 pr-2 pl-3.5 text-sm"
             >
               <SocialIcon
                 label={social.social_platform?.label}
-                className="shrink-0 text-paper-mute"
+                className="shrink-0 text-faint-foreground"
               />
-              <span className="font-label w-24 shrink-0 truncate text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+              <span className="font-label w-24 shrink-0 truncate text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                 {social.social_platform?.label ?? "Unknown"}
               </span>
               <span className="min-w-0 flex-1">
@@ -168,7 +168,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
           ),
         )}
         {addingNew ? (
-          <li className="rounded-md border border-highlight bg-ink-2 p-3 lg:col-span-2">
+          <li className="rounded-md border border-highlight bg-card p-3 lg:col-span-2">
             <SocialForm
               userId={userId}
               platforms={platforms}
@@ -194,7 +194,7 @@ export function SocialsEditor({ userId, socials, platforms }: SocialsEditorProps
                 setError(null);
               }}
               disabled={pending}
-              className="font-label flex min-h-15 w-full items-center justify-center gap-2 rounded-md border border-dashed border-rule-strong text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
+              className="font-label flex min-h-15 w-full items-center justify-center gap-2 rounded-md border border-dashed border-border-strong text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight disabled:opacity-50"
             >
               <Plus aria-hidden className="size-4" />
               Link another account

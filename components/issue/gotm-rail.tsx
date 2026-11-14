@@ -51,8 +51,8 @@ export function GotmRail({
                   className={cn(
                     "font-label flex h-9.5 items-center justify-center gap-2.5 rounded-sm px-2.5 text-[0.82rem] font-extrabold tracking-[0.06em] transition-colors sm:text-[0.95rem] lg:justify-start",
                     active
-                      ? "bg-paper text-ink"
-                      : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+                      ? "bg-foreground text-background"
+                      : "text-dim-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {dot && (
@@ -100,7 +100,7 @@ export function GotmRail({
       {hasActiveGotmFilters(filters) && (
         <Link
           href={GOTM_HISTORY_PATH}
-          className="font-label self-start text-sm font-extrabold tracking-[0.06em] text-paper-dim underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight"
+          className="font-label self-start text-sm font-extrabold tracking-[0.06em] text-dim-foreground underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight"
         >
           Clear filters
         </Link>
@@ -110,7 +110,7 @@ export function GotmRail({
 }
 
 const railLabel =
-  "font-label mb-1.5 text-[0.8rem] font-extrabold tracking-[0.12em] text-paper-mute";
+  "font-label mb-1.5 text-[0.8rem] font-extrabold tracking-[0.12em] text-faint-foreground";
 
 function YearLink({
   href,
@@ -128,8 +128,8 @@ function YearLink({
       className={cn(
         "font-headline block rounded-xs px-2 py-1.25 text-[1.2rem] leading-none transition-colors",
         active
-          ? "bg-paper text-ink"
-          : "text-paper-dim hover:bg-ink-3 hover:text-paper",
+          ? "bg-foreground text-background"
+          : "text-dim-foreground hover:bg-muted hover:text-foreground",
       )}
     >
       {children}

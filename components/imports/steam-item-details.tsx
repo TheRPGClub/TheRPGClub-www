@@ -37,7 +37,7 @@ export function SteamItemDetails({ item }: { item: SteamCollectionImportItem }) 
     <div className="space-y-2">
       <DetailList rows={rows} problem={item.error_text} />
       {item.result_reason === "skip_mapped" && (
-        <p className="max-w-[65ch] text-sm text-paper-dim">
+        <p className="max-w-[65ch] text-sm text-dim-foreground">
           Someone skipped this Steam app in an earlier import, so no matches
           were looked up. Pick a game if you want it in your collection.
         </p>
@@ -46,7 +46,7 @@ export function SteamItemDetails({ item }: { item: SteamCollectionImportItem }) 
   );
 }
 
-const HEADER_CLASS = "size-full bg-ink-3";
+const HEADER_CLASS = "size-full bg-muted";
 
 // Steam's store header art, or a neutral placeholder when the app has none
 // (delisted apps, tools) or the CDN fails.
@@ -55,7 +55,7 @@ export function SteamHeaderImage({ appId, name }: { appId: number; name: string 
 
   if (failed) {
     return (
-      <div aria-hidden className={cn(HEADER_CLASS, "flex items-center justify-center text-paper-mute")}>
+      <div aria-hidden className={cn(HEADER_CLASS, "flex items-center justify-center text-faint-foreground")}>
         <Gamepad2 className="size-8" />
       </div>
     );

@@ -36,26 +36,26 @@ export function ReviewQuotes({
           return (
             <figure
               key={review.review_id}
-              className="border-t border-rule pt-3.5"
+              className="border-t border-border pt-3.5"
             >
               <blockquote className="font-headline text-[1.5rem] leading-[1.02] md:text-[1.7rem]">
                 <Link
                   href={hrefs[review.review_id]}
                   className="transition-colors hover:text-highlight"
                 >
-                  <span aria-hidden className="text-paper-mute">
+                  <span aria-hidden className="text-faint-foreground">
                     &ldquo;
                   </span>
                   {quote}
-                  <span aria-hidden className="text-paper-mute">
+                  <span aria-hidden className="text-faint-foreground">
                     &rdquo;
                   </span>
                 </Link>
               </blockquote>
-              <figcaption className="mt-3 flex items-center gap-2 text-[0.85rem] text-paper-mute">
+              <figcaption className="mt-3 flex items-center gap-2 text-[0.85rem] text-faint-foreground">
                 <ReviewerAvatar userId={review.user_id} name={name} size="sm" />
                 <span>
-                  <b className="font-semibold text-paper">{name}</b> ·{" "}
+                  <b className="font-semibold text-foreground">{name}</b> ·{" "}
                   {review.rating}/{MAX_RATING}
                 </span>
               </figcaption>

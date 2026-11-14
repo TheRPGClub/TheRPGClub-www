@@ -1,5 +1,6 @@
 // Structure rules for spec www#80. They ship as warnings (www#81) and become
-// errors in www#101. The agent guide (AGENTS.md) explains them in prose.
+// errors in www#101; the palette-name ban is an error since the codemod
+// (www#86). The agent guide (AGENTS.md) explains them in prose.
 import disableNeedsReason from "./rules/disable-needs-reason.mjs";
 import noLookClassesOnPrimitives from "./rules/no-look-classes-on-primitives.mjs";
 import noPaletteColors from "./rules/no-palette-colors.mjs";
@@ -51,7 +52,7 @@ export const structureConfig = [
     files: ["**/*.{ts,tsx}"],
     ignores: ["**/themes/**", "eslint/**"],
     rules: {
-      "structure/no-palette-colors": "warn",
+      "structure/no-palette-colors": "error",
     },
   },
 ];

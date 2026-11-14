@@ -99,7 +99,7 @@ export default async function RoundsAdminPage({
       <section aria-labelledby="rounds-on-file" className="mt-12">
         <h2
           id="rounds-on-file"
-          className="font-headline border-b-2 border-paper pb-1.5 text-[2rem] leading-none"
+          className="font-headline border-b-2 border-foreground pb-1.5 text-[2rem] leading-none"
         >
           Rounds on file
         </h2>
@@ -108,7 +108,7 @@ export default async function RoundsAdminPage({
             {"Couldn't load the rounds. Refresh to try again."}
           </p>
         ) : rounds.length === 0 ? (
-          <p className="mt-4 text-paper-dim">No rounds yet. Add the first one above.</p>
+          <p className="mt-4 text-dim-foreground">No rounds yet. Add the first one above.</p>
         ) : (
           <ol>
             {rounds.map((round) => (
@@ -127,10 +127,10 @@ export default async function RoundsAdminPage({
 function RoundRow({ round }: { round: GotmRound }) {
   const monthYear = round.gotm?.month_year ?? round.nr_gotm?.month_year ?? "";
   return (
-    <li className="grid gap-3 border-b border-rule py-4 md:grid-cols-[6rem_minmax(0,1fr)_minmax(0,1fr)] md:gap-6">
+    <li className="grid gap-3 border-b border-border py-4 md:grid-cols-[6rem_minmax(0,1fr)_minmax(0,1fr)] md:gap-6">
       <h3 className="flex items-baseline gap-3 md:block">
         <span className="font-headline block text-[3rem] leading-[0.8] md:text-[3.5rem]">{round.round_number}</span>
-        <span className="font-label block text-[0.82rem] font-bold tracking-[0.08em] text-paper-mute md:mt-2">
+        <span className="font-label block text-[0.82rem] font-bold tracking-[0.08em] text-faint-foreground md:mt-2">
           <span className="sr-only">Round {round.round_number}, </span>
           {monthYear}
         </span>
@@ -169,7 +169,7 @@ function TrackCell({
         {block ? (
           <Link
             href={roundEditHref(category, round.round_number)}
-            className="font-label inline-flex items-center gap-1 rounded-xs px-1.5 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-dim transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/60 focus-visible:outline-none"
+            className="font-label inline-flex items-center gap-1 rounded-xs px-1.5 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-dim-foreground transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/60 focus-visible:outline-none"
             aria-label={`Edit ${label} round ${round.round_number}`}
           >
             <Pencil className="size-3.5" aria-hidden />
@@ -178,7 +178,7 @@ function TrackCell({
         ) : (
           <Link
             href={prefillHref(category, round, monthYear)}
-            className="font-label inline-flex items-center gap-1 rounded-xs px-1.5 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-paper-dim transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/60 focus-visible:outline-none"
+            className="font-label inline-flex items-center gap-1 rounded-xs px-1.5 py-0.5 text-[0.8rem] font-bold tracking-[0.06em] text-dim-foreground transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-highlight/60 focus-visible:outline-none"
             aria-label={`Add ${label} round ${round.round_number}`}
           >
             <Plus className="size-3.5" aria-hidden />
@@ -187,9 +187,9 @@ function TrackCell({
         )}
       </div>
       {!block ? (
-        <p className="mt-1 text-[0.9rem] text-paper-mute">No {label} this round.</p>
+        <p className="mt-1 text-[0.9rem] text-faint-foreground">No {label} this round.</p>
       ) : games.length === 0 ? (
-        <p className="mt-1 text-[0.9rem] text-paper-mute">No game (placeholder)</p>
+        <p className="mt-1 text-[0.9rem] text-faint-foreground">No game (placeholder)</p>
       ) : (
         <ul className="mt-1 space-y-0.5">
           {games.map((g) => (

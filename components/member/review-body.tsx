@@ -75,7 +75,7 @@ function makeParagraph(article: boolean) {
         as="p"
         className={cn(
           "mt-[0.85em] whitespace-pre-wrap first:mt-0",
-          article && "mt-[1.1em] text-[1.09rem] leading-[1.8] text-paper/90",
+          article && "mt-[1.1em] text-[1.09rem] leading-[1.8] text-foreground/90",
         )}
       >
         {props.children}
@@ -105,7 +105,7 @@ function makeHeading(level: 1 | 2 | 3, article: boolean) {
         {...props}
         as={tag}
         className={cn(
-          "font-label leading-[1.1] font-extrabold tracking-[0.02em] text-paper",
+          "font-label leading-[1.1] font-extrabold tracking-[0.02em] text-foreground",
           article ? styled : compact,
           "first:mt-0",
         )}
@@ -126,8 +126,8 @@ function makeBlockquote(article: boolean) {
         as="blockquote"
         className={cn(
           article
-            ? "font-headline my-[1.4em] border-y-2 border-paper py-4 text-[2rem] leading-[1.02] text-paper [&_p]:m-0 [&_p]:text-[length:inherit] [&_p]:leading-[inherit] [&_p]:text-paper"
-            : "my-2 border-l border-rule-strong pl-3 text-paper-mute italic",
+            ? "font-headline my-[1.4em] border-y-2 border-foreground py-4 text-[2rem] leading-[1.02] text-foreground [&_p]:m-0 [&_p]:text-[length:inherit] [&_p]:leading-[inherit] [&_p]:text-foreground"
+            : "my-2 border-l border-border-strong pl-3 text-faint-foreground italic",
         )}
       >
         {props.children}
@@ -143,8 +143,8 @@ function makeBulletedList(article: boolean) {
         {...props}
         as="ul"
         className={cn(
-          "my-2 ml-5 list-disc marker:text-paper-mute [&_ul]:my-0 [&_ul]:list-[circle] [&_ol]:my-0",
-          article && "my-[1em] text-[1.09rem] leading-[1.8] text-paper/90",
+          "my-2 ml-5 list-disc marker:text-faint-foreground [&_ul]:my-0 [&_ul]:list-[circle] [&_ol]:my-0",
+          article && "my-[1em] text-[1.09rem] leading-[1.8] text-foreground/90",
         )}
       >
         {props.children}
@@ -160,8 +160,8 @@ function makeNumberedList(article: boolean) {
         {...props}
         as="ol"
         className={cn(
-          "my-2 ml-5 list-decimal marker:text-paper-mute [&_ol]:my-0 [&_ol]:list-[lower-alpha] [&_ul]:my-0",
-          article && "my-[1em] text-[1.09rem] leading-[1.8] text-paper/90",
+          "my-2 ml-5 list-decimal marker:text-faint-foreground [&_ol]:my-0 [&_ol]:list-[lower-alpha] [&_ul]:my-0",
+          article && "my-[1em] text-[1.09rem] leading-[1.8] text-foreground/90",
         )}
       >
         {props.children}
@@ -207,7 +207,7 @@ function Link(props: SlateElementProps) {
           ? { target: "_blank", rel: "noopener noreferrer nofollow ugc" }
           : {}),
       }}
-      className="underline decoration-paper-mute/60 underline-offset-2 hover:text-highlight hover:decoration-highlight"
+      className="underline decoration-faint-foreground/60 underline-offset-2 hover:text-highlight hover:decoration-highlight"
     >
       {props.children}
     </SlateElement>

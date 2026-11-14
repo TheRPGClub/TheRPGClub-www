@@ -26,7 +26,7 @@ export function GotmHistoryFilters({ filters }: { filters: Filters }) {
       {filters.year && (
         <input type="hidden" name="year" value={filters.year} />
       )}
-      <div className="flex h-9.5 min-w-0 flex-1 basis-full items-center gap-2 rounded-sm border border-rule-strong bg-ink-2 px-3 text-paper-mute transition-colors focus-within:border-paper-mute sm:w-72 sm:flex-none sm:basis-auto">
+      <div className="flex h-9.5 min-w-0 flex-1 basis-full items-center gap-2 rounded-sm border border-border-strong bg-card px-3 text-faint-foreground transition-colors focus-within:border-faint-foreground sm:w-72 sm:flex-none sm:basis-auto">
         <Search aria-hidden className="size-4 shrink-0" />
         <input
           type="search"
@@ -34,7 +34,7 @@ export function GotmHistoryFilters({ filters }: { filters: Filters }) {
           defaultValue={filters.q}
           placeholder="Search titles…"
           aria-label="Search titles"
-          className="h-full min-w-0 flex-1 bg-transparent text-sm text-paper outline-none placeholder:text-paper-mute"
+          className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-faint-foreground"
         />
       </div>
       <SubmitOnChangeSelect
@@ -42,13 +42,13 @@ export function GotmHistoryFilters({ filters }: { filters: Filters }) {
         defaultValue={filters.sort}
         aria-label="Sort"
         options={GOTM_SORT_OPTIONS}
-        className="font-label h-9.5 rounded-sm border border-rule-strong bg-ink-2 px-2.5 text-[0.92rem] font-bold tracking-[0.05em] text-paper outline-none focus-visible:border-paper-mute"
+        className="font-label h-9.5 rounded-sm border border-border-strong bg-card px-2.5 text-[0.92rem] font-bold tracking-[0.05em] text-foreground outline-none focus-visible:border-faint-foreground"
       />
       {/* Enter submits the search; the button is there for anyone who
           doesn't reach for it. */}
       <button
         type="submit"
-        className="font-label h-9.5 rounded-sm border border-rule-strong px-3 text-[0.92rem] font-extrabold tracking-[0.05em] text-paper transition-colors hover:border-paper-mute hover:bg-ink-3"
+        className="font-label h-9.5 rounded-sm border border-border-strong px-3 text-[0.92rem] font-extrabold tracking-[0.05em] text-foreground transition-colors hover:border-faint-foreground hover:bg-muted"
       >
         Search
       </button>

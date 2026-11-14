@@ -48,7 +48,7 @@ export function ReviewReader({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <Link
           href={backHref}
-          className="font-label inline-flex items-center gap-1.5 text-[0.88rem] font-extrabold tracking-[0.08em] text-paper transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:text-gotm"
+          className="font-label inline-flex items-center gap-1.5 text-[0.88rem] font-extrabold tracking-[0.08em] text-foreground transition-colors hover:text-highlight [&_svg]:size-4 [&_svg]:text-gotm"
         >
           <ArrowLeft aria-hidden />
           Back to reviews
@@ -57,7 +57,7 @@ export function ReviewReader({
           {isMine && (
             <Link
               href={`${fullHref}?edit=1`}
-              className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight [&_svg]:size-3.5"
+              className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5"
             >
               <Pencil aria-hidden />
               Edit your review
@@ -65,7 +65,7 @@ export function ReviewReader({
           )}
           <Link
             href={fullHref}
-            className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight [&_svg]:size-3.5"
+            className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight [&_svg]:size-3.5"
           >
             Open as a page
             <ArrowRight aria-hidden />
@@ -73,7 +73,7 @@ export function ReviewReader({
         </div>
       </div>
 
-      <div className="relative isolate h-[140px] overflow-hidden rounded-md bg-ink-3 md:h-[170px]">
+      <div className="relative isolate h-[140px] overflow-hidden rounded-md bg-muted md:h-[170px]">
         {art && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -84,7 +84,7 @@ export function ReviewReader({
         )}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(11_11_13/0.85),rgb(11_11_13/0.1))]"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_85%,transparent),color-mix(in_oklab,var(--color-background)_10%,transparent))]"
         />
         <div className="absolute bottom-4 left-4 flex items-center gap-2.5 md:bottom-4.5 md:left-5">
           <ReviewerAvatar userId={review.user_id} name={authorName} size="lg" />
@@ -95,7 +95,7 @@ export function ReviewReader({
             >
               {authorName}
             </Link>
-            <small className="text-[0.82rem] text-paper-dim">
+            <small className="text-[0.82rem] text-dim-foreground">
               Reviewed{" "}
               <time dateTime={review.created_at}>
                 {formatReviewDate(review.created_at)}
@@ -119,18 +119,18 @@ export function ReviewReader({
       {facets.length > 0 ? (
         <FacetBars
           facets={facets}
-          className="mt-4.5 grid-cols-2 gap-x-5 gap-y-3 border-t-2 border-b border-t-paper border-b-rule py-3.5 sm:grid-cols-3 xl:grid-cols-4"
+          className="mt-4.5 grid-cols-2 gap-x-5 gap-y-3 border-t-2 border-b border-t-foreground border-b-border py-3.5 sm:grid-cols-3 xl:grid-cols-4"
           valueClassName="text-[1.4rem]"
         />
       ) : (
-        <div aria-hidden className="mt-4.5 border-t-2 border-paper" />
+        <div aria-hidden className="mt-4.5 border-t-2 border-foreground" />
       )}
 
       <div className="mt-6 max-w-[68ch]">
         {hasBody ? (
           <ReviewBodyContent body={review.body} variant="article" />
         ) : (
-          <p className="text-paper-mute italic">
+          <p className="text-faint-foreground italic">
             {authorName} scored this game without writing a review.
           </p>
         )}
@@ -139,15 +139,15 @@ export function ReviewReader({
       {(newer || older) && (
         <nav
           aria-label="More reviews"
-          className="mt-8 flex justify-between gap-3.5 border-t border-rule pt-4"
+          className="mt-8 flex justify-between gap-3.5 border-t border-border pt-4"
         >
           {newer ? (
             <Link
               href={newer.href}
-              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute"
+              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground"
             >
               Previous
-              <b className="text-base leading-tight tracking-[0.01em] text-paper transition-colors group-hover/nx:text-highlight">
+              <b className="text-base leading-tight tracking-[0.01em] text-foreground transition-colors group-hover/nx:text-highlight">
                 {newer.title}
               </b>
             </Link>
@@ -157,10 +157,10 @@ export function ReviewReader({
           {older && (
             <Link
               href={older.href}
-              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-right text-[0.78rem] font-extrabold tracking-[0.08em] text-paper-mute"
+              className="group/nx font-label flex max-w-[48%] flex-col gap-1 text-right text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground"
             >
               Next review
-              <b className="text-base leading-tight tracking-[0.01em] text-paper transition-colors group-hover/nx:text-highlight">
+              <b className="text-base leading-tight tracking-[0.01em] text-foreground transition-colors group-hover/nx:text-highlight">
                 {older.title}
               </b>
             </Link>

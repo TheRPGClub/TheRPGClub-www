@@ -80,18 +80,18 @@ export function GameHltbCard({
   return (
     <section
       aria-labelledby="game-hltb"
-      className="rounded-sm bg-ink-2 px-4.5 pt-4 pb-3.5"
+      className="rounded-sm bg-card px-4.5 pt-4 pb-3.5"
     >
-      <div className="mb-3 flex items-baseline justify-between gap-3 border-b-2 border-rule-strong pb-2">
+      <div className="mb-3 flex items-baseline justify-between gap-3 border-b-2 border-border-strong pb-2">
         <h2 id="game-hltb" className="font-headline text-[1.4rem] leading-none">
           Time to beat
         </h2>
         {notSaved ? (
-          <Chip className="bg-transparent text-paper-dim ring-1 ring-rule-strong ring-inset">
+          <Chip className="bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset">
             Not saved
           </Chip>
         ) : (
-          <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+          <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
             Hours
           </span>
         )}
@@ -127,7 +127,7 @@ export function GameHltbCard({
 }
 
 const labelClass =
-  "font-label text-[0.8rem] font-bold tracking-[0.06em] text-paper-mute uppercase";
+  "font-label text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground uppercase";
 
 function Bar({
   label,
@@ -144,21 +144,21 @@ function Bar({
 }) {
   return (
     <li className="grid h-7.5 grid-cols-[6.875rem_1fr_2.875rem] items-center gap-2.5">
-      <span className="font-label text-[0.85rem] font-bold tracking-[0.06em] text-paper-dim uppercase">
+      <span className="font-label text-[0.85rem] font-bold tracking-[0.06em] text-dim-foreground uppercase">
         {label}
       </span>
-      <span aria-hidden className="relative h-2.5 rounded-[1px] bg-ink-3">
+      <span aria-hidden className="relative h-2.5 rounded-[1px] bg-muted">
         <i
           className={cn(
             "absolute inset-y-0 left-0 rounded-[1px]",
-            placeholder ? "bg-rule-strong" : "bg-paper",
+            placeholder ? "bg-border-strong" : "bg-foreground",
           )}
           style={{ width: `${percent}%` }}
         />
       </span>
       <span className="text-right font-headline text-[1.35rem] leading-none">
         {figure}
-        {unit && <small className="text-[0.8rem] text-paper-dim normal-case">{unit}</small>}
+        {unit && <small className="text-[0.8rem] text-dim-foreground normal-case">{unit}</small>}
       </span>
     </li>
   );
@@ -174,7 +174,7 @@ function Foot({
   return (
     <div
       className={cn(
-        "mt-2.5 flex justify-between gap-3 border-t border-rule pt-2.5",
+        "mt-2.5 flex justify-between gap-3 border-t border-border pt-2.5",
         className,
       )}
     >
@@ -191,7 +191,7 @@ function SourceLink({ href, children }: { href: string; children: React.ReactNod
       rel="noopener noreferrer"
       className={cn(
         labelClass,
-        "inline-flex items-center gap-1 text-paper-dim underline-offset-4 hover:text-paper hover:underline",
+        "inline-flex items-center gap-1 text-dim-foreground underline-offset-4 hover:text-foreground hover:underline",
       )}
     >
       {children}
@@ -229,7 +229,7 @@ function Times({
           ))}
         </ul>
       ) : (
-        <p className="text-[0.9rem] text-paper-dim">
+        <p className="text-[0.9rem] text-dim-foreground">
           HowLongToBeat lists no times for this game yet.
         </p>
       )}
@@ -244,7 +244,7 @@ function Times({
         </Foot>
       ) : (
         <Foot className="block">
-          <p className="text-[0.82rem] leading-snug text-paper-dim">
+          <p className="text-[0.82rem] leading-snug text-dim-foreground">
             {hltbNotSavedNote(releaseDate)}
           </p>
         </Foot>
@@ -273,7 +273,7 @@ function LookingUp() {
 }
 
 const emptyBoxClass =
-  "flex flex-col items-start gap-3 rounded-sm border border-dashed border-rule-strong px-4 py-4.5";
+  "flex flex-col items-start gap-3 rounded-sm border border-dashed border-border-strong px-4 py-4.5";
 
 function Empty({
   unloaded,
@@ -286,7 +286,7 @@ function Empty({
 }) {
   return (
     <div className={emptyBoxClass}>
-      <p className="text-[0.9rem] text-paper-dim">
+      <p className="text-[0.9rem] text-dim-foreground">
         {unloaded
           ? "Saved times couldn't be loaded right now."
           : "No HowLongToBeat times saved yet."}{" "}
@@ -320,10 +320,10 @@ function Failure({
   const retry = onRetry && (failure === "failed" || failure === "other");
   return (
     <div className={emptyBoxClass}>
-      <div className="flex items-start gap-2.5 text-[0.92rem] text-paper-dim">
-        <Icon aria-hidden className="mt-0.5 size-4.5 shrink-0 text-paper-mute" />
+      <div className="flex items-start gap-2.5 text-[0.92rem] text-dim-foreground">
+        <Icon aria-hidden className="mt-0.5 size-4.5 shrink-0 text-faint-foreground" />
         <span>
-          <b className="font-semibold text-paper">{copy.title}</b>{" "}
+          <b className="font-semibold text-foreground">{copy.title}</b>{" "}
           {message ?? copy.body}
         </span>
       </div>

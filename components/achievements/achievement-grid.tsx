@@ -26,7 +26,7 @@ export function AchievementGrid({
 }) {
   if (items.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-rule-strong px-4 py-5 text-sm text-paper-mute">
+      <p className="rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-faint-foreground">
         {empty}
       </p>
     );

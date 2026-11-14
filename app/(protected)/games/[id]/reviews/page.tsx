@@ -154,11 +154,11 @@ export default async function GameReviewsPage({
               <h1 className="font-headline text-[2.6rem] leading-[0.9]">
                 Reviews
               </h1>
-              <span className="font-headline text-2xl text-paper-mute">
+              <span className="font-headline text-2xl text-faint-foreground">
                 {total}
               </span>
               {totalPages > 1 && (
-                <span className="font-label ml-auto text-[0.8rem] text-paper-mute">
+                <span className="font-label ml-auto text-[0.8rem] text-faint-foreground">
                   Page {currentPage} of {totalPages}
                 </span>
               )}
@@ -234,7 +234,7 @@ export default async function GameReviewsPage({
               className="text-[1.75rem] leading-[0.9] lg:mt-4 lg:text-[2.4rem]"
             />
             {meta.length > 0 && (
-              <p className="font-label mt-2 text-[0.85rem] tracking-[0.06em] text-paper-mute">
+              <p className="font-label mt-2 text-[0.85rem] tracking-[0.06em] text-faint-foreground">
                 {meta.join(" · ")}
               </p>
             )}
@@ -244,7 +244,7 @@ export default async function GameReviewsPage({
           )}
           <Link
             href={`/games/${gameId}`}
-            className="font-label col-span-full hidden items-center gap-1.5 text-[0.85rem] font-extrabold tracking-[0.08em] text-paper-dim transition-colors hover:text-highlight lg:mt-3.5 lg:inline-flex [&_svg]:size-3.5"
+            className="font-label col-span-full hidden items-center gap-1.5 text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight lg:mt-3.5 lg:inline-flex [&_svg]:size-3.5"
           >
             <ArrowLeft aria-hidden />
             Back to the game
@@ -253,18 +253,18 @@ export default async function GameReviewsPage({
 
         <div className="min-w-0 space-y-10">
           <div>
-            <header className="mb-4.5 flex flex-wrap items-end gap-x-4 gap-y-1 border-b-2 border-paper pb-3">
+            <header className="mb-4.5 flex flex-wrap items-end gap-x-4 gap-y-1 border-b-2 border-foreground pb-3">
               <h1 className="font-headline text-[2.9rem] leading-[0.85] md:text-[4rem]">
                 Reviews
               </h1>
-              <p className="font-label pb-1 text-[0.95rem] font-extrabold tracking-[0.08em] text-paper-mute">
+              <p className="font-label pb-1 text-[0.95rem] font-extrabold tracking-[0.08em] text-faint-foreground">
                 {total} {total === 1 ? "review" : "reviews"}
                 {totalPages > 1 && ` · page ${currentPage} of ${totalPages}`}
               </p>
             </header>
 
             {listFailed ? (
-              <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-mute">
+              <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
                 Reviews couldn&apos;t be loaded right now.
               </p>
             ) : (

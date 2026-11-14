@@ -10,7 +10,7 @@ function Marked({ text, q }: { text: string; q: string }) {
     <>
       {highlightRuns(text, q).map((run, i) =>
         run.hit ? (
-          <mark key={i} className="rounded-[2px] bg-highlight/22 px-0.5 text-paper">
+          <mark key={i} className="rounded-[2px] bg-highlight/22 px-0.5 text-foreground">
             {run.text}
           </mark>
         ) : (
@@ -22,7 +22,7 @@ function Marked({ text, q }: { text: string; q: string }) {
 }
 
 const TH =
-  "font-label border-b-2 border-paper pr-3.5 pb-2 text-left text-[0.76rem] font-bold tracking-[0.08em] text-paper-mute";
+  "font-label border-b-2 border-foreground pr-3.5 pb-2 text-left text-[0.76rem] font-bold tracking-[0.08em] text-faint-foreground";
 
 // The catalogue: every matching entry, newest first, as a back-of-book table
 // (date, member, game, the entry with the match marked). On phones each row
@@ -44,14 +44,14 @@ export function JournalCatalogue({
           <th scope="col" className={TH}>Entry</th>
         </tr>
       </thead>
-      <tbody className="max-md:block max-md:border-t-2 max-md:border-paper">
+      <tbody className="max-md:block max-md:border-t-2 max-md:border-foreground">
         {entries.map((entry) => {
           const name = entry.user ? memberName(entry.user) : "Member";
           const title = entry.game?.title ?? "Unknown game";
           return (
             <tr
               key={entry.entry_id}
-              className="border-b border-rule align-top text-[0.92rem] transition-colors hover:bg-ink-2 max-md:grid max-md:grid-cols-[auto_minmax(0,1fr)] max-md:gap-x-3 max-md:gap-y-1.5 max-md:py-3"
+              className="border-b border-border align-top text-[0.92rem] transition-colors hover:bg-card max-md:grid max-md:grid-cols-[auto_minmax(0,1fr)] max-md:gap-x-3 max-md:gap-y-1.5 max-md:py-3"
             >
               <td className="font-label py-2.5 pr-3.5 tracking-[0.06em] whitespace-nowrap md:w-[110px] max-md:p-0">
                 <time dateTime={entry.created_at}>{journalDate(entry.created_at, true)}</time>
@@ -79,13 +79,13 @@ export function JournalCatalogue({
                   <span className="truncate">{title}</span>
                 </Link>
               </td>
-              <td className="py-2.5 text-paper-dim max-md:col-span-2 max-md:p-0">
+              <td className="py-2.5 text-dim-foreground max-md:col-span-2 max-md:p-0">
                 <Link
                   href={chapterHref(entry.user_id, entry.gamedb_game_id)}
-                  className="block hover:text-paper"
+                  className="block hover:text-foreground"
                 >
                   {entry.entry_title && (
-                    <span className="mr-1.5 text-[0.95rem] font-semibold text-paper italic">
+                    <span className="mr-1.5 text-[0.95rem] font-semibold text-foreground italic">
                       <Marked text={entry.entry_title} q={q} />
                     </span>
                   )}

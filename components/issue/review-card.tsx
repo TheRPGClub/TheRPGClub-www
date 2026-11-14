@@ -82,12 +82,12 @@ export function ReviewCard({
             {review.game.title}
           </Link>
         ) : null}
-        <small className="block text-[0.8rem] text-paper-mute">
+        <small className="block text-[0.8rem] text-faint-foreground">
           {showUser && showGame && review.game && (
             <>
               <Link
                 href={`/games/${review.gamedb_game_id}`}
-                className="hover:text-paper"
+                className="hover:text-foreground"
               >
                 {review.game.title}
               </Link>
@@ -114,11 +114,11 @@ export function ReviewCard({
   );
 
   const body = hasBody ? (
-    <div className="text-[0.88rem] leading-[1.6] text-paper-dim [&_h1]:text-paper [&_h2]:text-paper [&_h3]:text-paper">
+    <div className="text-[0.88rem] leading-[1.6] text-dim-foreground [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground">
       <ReviewBodyContent body={excerpt.value} />
     </div>
   ) : (
-    <p className="text-[0.88rem] text-paper-mute italic">
+    <p className="text-[0.88rem] text-faint-foreground italic">
       Scored without a written review.
     </p>
   );
@@ -129,11 +129,11 @@ export function ReviewCard({
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-md border border-rule bg-ink-2",
+          "overflow-hidden rounded-md border border-border bg-card",
           className,
         )}
       >
-        <div className="flex items-stretch border-b border-rule">
+        <div className="flex items-stretch border-b border-border">
           <ScoreBox
             rating={review.rating}
             className="h-auto min-h-16 w-[4.9rem] rounded-none text-[2.75rem]"
@@ -161,7 +161,7 @@ export function ReviewCard({
 
   return (
     <article
-      className={cn("flex flex-col gap-3 bg-ink-2 p-[18px]", className)}
+      className={cn("flex flex-col gap-3 bg-card p-[18px]", className)}
     >
       <div className="flex items-center gap-2.5">
         {byline}
@@ -173,11 +173,11 @@ export function ReviewCard({
       {title}
       <FacetBars facets={facets} limit={facetLimit} />
       {body}
-      <div className="font-label mt-auto flex items-center justify-between pt-1 text-[0.82rem] tracking-[0.06em] text-paper-mute">
+      <div className="font-label mt-auto flex items-center justify-between pt-1 text-[0.82rem] tracking-[0.06em] text-faint-foreground">
         <span>{excerpt.truncated ? "Excerpt" : hasBody ? "In full" : "Score only"}</span>
         <Link
           href={target}
-          className="font-extrabold text-paper transition-colors hover:text-highlight"
+          className="font-extrabold text-foreground transition-colors hover:text-highlight"
         >
           {readLabel}
         </Link>

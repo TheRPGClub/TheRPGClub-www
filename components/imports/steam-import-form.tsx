@@ -27,7 +27,7 @@ export function SteamImportForm({
       <div className="space-y-1.5">
         <label
           htmlFor="steam-profile"
-          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em] text-paper-dim"
+          className="font-label block text-[0.9rem] font-extrabold tracking-[0.06em] text-dim-foreground"
         >
           Steam profile
         </label>
@@ -44,7 +44,7 @@ export function SteamImportForm({
           aria-invalid={state.error ? true : undefined}
           aria-describedby="steam-profile-help"
         />
-        <p id="steam-profile-help" className="text-xs text-paper-mute">
+        <p id="steam-profile-help" className="text-xs text-faint-foreground">
           Your profile URL, your 17-digit SteamID64 or your custom URL name.
           Your game details must be public.
         </p>

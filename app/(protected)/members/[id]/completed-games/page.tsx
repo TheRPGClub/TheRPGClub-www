@@ -211,14 +211,14 @@ export default async function CompletedGamesPage({
               ) : (
                 year
               )}
-              <span className="font-label ml-3 align-middle text-sm font-extrabold tracking-[0.08em] text-paper-mute">
+              <span className="font-label ml-3 align-middle text-sm font-extrabold tracking-[0.08em] text-faint-foreground">
                 {total} {total === 1 ? "game" : "games"}
               </span>
             </h2>
             <Form
               action={base}
               role="search"
-              className="flex h-10 w-full max-w-80 items-center gap-2 rounded-sm border border-rule bg-ink-2 px-3 text-paper-mute transition-colors focus-within:border-paper-mute"
+              className="flex h-10 w-full max-w-80 items-center gap-2 rounded-sm border border-border bg-card px-3 text-faint-foreground transition-colors focus-within:border-faint-foreground"
             >
               <Search aria-hidden className="size-4 shrink-0" />
               <label htmlFor="completed-search" className="sr-only">
@@ -230,7 +230,7 @@ export default async function CompletedGamesPage({
                 type="search"
                 defaultValue={q}
                 placeholder="Search completed games"
-                className="h-full min-w-0 flex-1 bg-transparent text-sm text-paper outline-none placeholder:text-paper-mute"
+                className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-faint-foreground"
               />
               <input type="hidden" name="year" value="all" />
             </Form>
@@ -263,7 +263,7 @@ export default async function CompletedGamesPage({
                 <p className="text-center">
                   <Link
                     href={hrefFor(null, 1, "")}
-                    className="font-label text-sm font-extrabold text-paper-dim transition-colors hover:text-highlight"
+                    className="font-label text-sm font-extrabold text-dim-foreground transition-colors hover:text-highlight"
                   >
                     Clear search
                   </Link>
@@ -299,7 +299,7 @@ export default async function CompletedGamesPage({
       </div>
 
       {history?.capped && (
-        <p className="text-xs text-paper-mute">
+        <p className="text-xs text-faint-foreground">
           The year dial covers the first {history.entries.length} completions
           only; use All to reach the rest.
         </p>

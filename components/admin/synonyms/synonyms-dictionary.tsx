@@ -33,7 +33,7 @@ export function SynonymsDictionary({ groups }: { groups: SearchSynonymGroup[] })
     <div>
       <div className="mt-4.5 flex flex-wrap items-center gap-3">
         <div className="relative w-full max-w-[380px]">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-paper-mute" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground" />
           <Input
             type="search"
             value={query}
@@ -58,7 +58,7 @@ export function SynonymsDictionary({ groups }: { groups: SearchSynonymGroup[] })
       </div>
 
       {creating && (
-        <div className="mt-4.5 max-w-xl rounded-md bg-ink-2 p-3 ring-1 ring-highlight ring-inset">
+        <div className="mt-4.5 max-w-xl rounded-md bg-card p-3 ring-1 ring-highlight ring-inset">
           <SynonymEditor
             groupId={null}
             initialTerms={addSynonymTerms([], q)}
@@ -160,7 +160,7 @@ function SynonymEditor({
       aria-label={isNew ? "New entry" : `Edit ${initialTerms[0] ?? "entry"}`}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={`${fieldId}-headword`} className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-paper-mute uppercase">
+        <label htmlFor={`${fieldId}-headword`} className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-faint-foreground uppercase">
           Headword
         </label>
         <span className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-highlight uppercase">
@@ -175,10 +175,10 @@ function SynonymEditor({
         autoFocus={isNew || !headword}
         placeholder="final fantasy"
         maxLength={255}
-        className="mt-1 h-10 bg-ink text-[1.05rem] font-bold md:text-[1.05rem]"
+        className="mt-1 h-10 bg-background text-[1.05rem] font-bold md:text-[1.05rem]"
       />
 
-      <label htmlFor={`${fieldId}-also`} className="font-label mt-3 mb-1 block text-[0.72rem] font-bold tracking-[0.08em] text-paper-mute uppercase">
+      <label htmlFor={`${fieldId}-also`} className="font-label mt-3 mb-1 block text-[0.72rem] font-bold tracking-[0.08em] text-faint-foreground uppercase">
         Also searched as
       </label>
       <TermInput
@@ -205,7 +205,7 @@ function SynonymEditor({
         <Button type="button" variant="outline" size="sm" onClick={onDone} disabled={saving}>
           Cancel
         </Button>
-        <span className="ml-auto text-[0.8rem] text-paper-mute">Enter adds a term</span>
+        <span className="ml-auto text-[0.8rem] text-faint-foreground">Enter adds a term</span>
       </div>
     </form>
   );

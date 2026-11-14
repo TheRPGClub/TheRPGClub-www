@@ -19,34 +19,34 @@ export function LiveEventList({ events, guildId }: { events: LiveEvent[]; guildI
   const isClient = useIsClient();
   if (events.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-rule-strong px-4 py-5 text-sm text-paper-dim">
+      <p className="rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground">
         No live events yet. A new one gets a forum thread and a Discord event.
       </p>
     );
   }
   return (
-    <ol className="border-t-2 border-paper">
+    <ol className="border-t-2 border-foreground">
       {events.map((event) => {
         const start = isClient ? clockReading(event.starts_at) : null;
         const links = liveEventLinks(event, guildId);
         const length = durationText(event.starts_at, event.ends_at);
         return (
-          <li key={event.id} className="grid grid-cols-[4.6rem_minmax(0,1fr)] gap-3.5 border-b border-rule py-3 sm:grid-cols-[5.2rem_minmax(0,1fr)_auto]">
-            <time dateTime={event.starts_at} className="font-headline text-[1.6rem] leading-[0.9] text-paper-dim">
+          <li key={event.id} className="grid grid-cols-[4.6rem_minmax(0,1fr)] gap-3.5 border-b border-border py-3 sm:grid-cols-[5.2rem_minmax(0,1fr)_auto]">
+            <time dateTime={event.starts_at} className="font-headline text-[1.6rem] leading-[0.9] text-dim-foreground">
               {start?.time ?? "--:--"}
-              <small className="font-label mt-1 block text-[0.7rem] tracking-[0.08em] text-paper-mute">
+              <small className="font-label mt-1 block text-[0.7rem] tracking-[0.08em] text-faint-foreground">
                 {start?.day ?? " "}
               </small>
             </time>
             <div className="min-w-0">
               <h3 className="font-semibold break-words">{event.topic}</h3>
-              <p className="text-[0.84rem] text-paper-dim">
+              <p className="text-[0.84rem] text-dim-foreground">
                 Club time {start?.club ?? "--"}
                 {length ? ` · ${length}` : ""}
               </p>
-              <p className="text-[0.82rem] text-paper-mute">{PROGRESS[event.status]}</p>
+              <p className="text-[0.82rem] text-faint-foreground">{PROGRESS[event.status]}</p>
               {(links.thread || links.event) && (
-                <p className="font-label mt-1 flex gap-3 text-[0.82rem] tracking-[0.06em] text-paper-dim">
+                <p className="font-label mt-1 flex gap-3 text-[0.82rem] tracking-[0.06em] text-dim-foreground">
                   {links.thread && <Out href={links.thread}>Thread</Out>}
                   {links.event && <Out href={links.event}>Event</Out>}
                 </p>

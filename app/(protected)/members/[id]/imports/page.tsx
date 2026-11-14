@@ -104,12 +104,12 @@ export default async function ImportsHubPage({
 
       {kinds.length === 0 ? (
         // Every list an import writes to is hidden (flag or preference).
-        <p className="rounded-md border border-dashed border-rule-strong px-4 py-8 text-center text-sm text-paper-dim">
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-dim-foreground">
           Nothing to import right now. Imports add to your Collection and Completed lists, and
           neither is shown to you.
         </p>
       ) : (
-        <ul className="border-t-2 border-paper">
+        <ul className="border-t-2 border-foreground">
           {kinds.map(({ kind, active: job }) => {
             const account = requiredAccount(kind);
             const blocked = !job && account !== null && !hasRequiredAccount(kind, socials);
@@ -149,7 +149,7 @@ function OpenImportPanel({
   return (
     <section
       aria-label={`Open import: ${IMPORT_KINDS[kind].label}`}
-      className="grid gap-4 rounded-md bg-highlight px-5 py-5 text-ink sm:grid-cols-[auto_1fr] sm:items-center sm:gap-7 sm:px-6.5 sm:py-6 lg:grid-cols-[auto_1fr_auto]"
+      className="grid gap-4 rounded-md bg-highlight px-5 py-5 text-highlight-foreground sm:grid-cols-[auto_1fr] sm:items-center sm:gap-7 sm:px-6.5 sm:py-6 lg:grid-cols-[auto_1fr_auto]"
     >
       <p className="font-headline text-[5rem] leading-[0.78] sm:text-[6.75rem]">
         {progress.percent}
@@ -159,7 +159,7 @@ function OpenImportPanel({
         <h2 className="font-headline text-[1.9rem] leading-[0.95] sm:text-[2.25rem]">
           {IMPORT_KINDS[kind].label}, {status.toLowerCase()}
         </h2>
-        <p className="mt-1.5 font-medium text-highlight-ink">
+        <p className="mt-1.5 font-medium text-highlight-muted-foreground">
           {progress.resolved} of {progress.total} {noun} done. Started{" "}
           {DATE.format(new Date(job.created_at))}.
         </p>
@@ -169,9 +169,9 @@ function OpenImportPanel({
           aria-valuemin={0}
           aria-valuemax={progress.total}
           aria-valuenow={progress.resolved}
-          className="mt-3.5 h-2 overflow-hidden bg-ink/18"
+          className="mt-3.5 h-2 overflow-hidden bg-background/18"
         >
-          <div className="h-full bg-ink" style={{ width: `${progress.percent}%` }} />
+          <div className="h-full bg-background" style={{ width: `${progress.percent}%` }} />
         </div>
         {outcomes.length > 0 && (
           <ul className="font-label mt-3 flex flex-wrap gap-x-5.5 gap-y-1.5 text-[0.82rem] font-extrabold tracking-[0.06em]">
@@ -190,7 +190,7 @@ function OpenImportPanel({
         href={href}
         className={cn(
           buttonVariants({ size: "lg" }),
-          "justify-self-start bg-ink text-paper hover:bg-ink/85 sm:col-span-2 lg:col-span-1",
+          "justify-self-start bg-background text-foreground hover:bg-background/85 sm:col-span-2 lg:col-span-1",
         )}
       >
         {job.status === "paused" ? "Resume" : "Continue"}
@@ -217,16 +217,16 @@ function ImportKindRow({
   const affects = AFFECTS_LABEL[config.affects[0] ?? ""];
 
   return (
-    <li className="grid gap-3 border-b border-rule py-5.5 md:grid-cols-[17rem_1fr_14rem] md:items-center md:gap-7 lg:grid-cols-[19rem_1fr_14rem]">
+    <li className="grid gap-3 border-b border-border py-5.5 md:grid-cols-[17rem_1fr_14rem] md:items-center md:gap-7 lg:grid-cols-[19rem_1fr_14rem]">
       <h2 className="font-headline text-[2.15rem] leading-[0.95]">
         {config.label}
         {affects && (
-          <span className="font-label mt-1.5 block text-[0.82rem] font-extrabold tracking-[0.08em] text-paper-mute">
+          <span className="font-label mt-1.5 block text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
             {affects}
           </span>
         )}
       </h2>
-      <p className="max-w-[60ch] text-[0.92rem] text-paper-dim">
+      <p className="max-w-[60ch] text-[0.92rem] text-dim-foreground">
         {config.description}
       </p>
       <div className="flex flex-col items-start gap-2 md:items-end md:text-right">
@@ -235,20 +235,20 @@ function ImportKindRow({
             <Chip tone="highlight">
               {IMPORT_STATUS_LABELS[active.status] ?? active.status}
             </Chip>
-            <small className="text-[0.8rem] text-paper-mute">
+            <small className="text-[0.8rem] text-faint-foreground">
               Started {DATE.format(new Date(active.created_at))} ·{" "}
               {importItemCount(kind, active.total_count)}
             </small>
             <Link
               href={href}
-              className="font-label inline-flex items-center gap-1 text-sm font-extrabold text-paper transition-colors hover:text-highlight"
+              className="font-label inline-flex items-center gap-1 text-sm font-extrabold text-foreground transition-colors hover:text-highlight"
             >
               Open it <ArrowRight aria-hidden className="size-4 text-gotm" />
             </Link>
           </>
         ) : blockedBy ? (
           <>
-            <span className="inline-flex items-center gap-1.5 text-[0.82rem] text-paper-dim">
+            <span className="inline-flex items-center gap-1.5 text-[0.82rem] text-dim-foreground">
               <Link2 aria-hidden className="size-3.5 text-highlight" />
               Link {blockedBy} first
             </span>

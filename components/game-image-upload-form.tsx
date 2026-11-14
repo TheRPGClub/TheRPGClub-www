@@ -30,7 +30,7 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
       <select
         name="kind"
         aria-label="Image kind"
-        className="h-9 rounded-sm border border-rule-strong bg-ink-2 px-2 text-sm text-paper outline-none focus-visible:border-paper-mute focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="h-9 rounded-sm border border-border-strong bg-card px-2 text-sm text-foreground outline-none focus-visible:border-faint-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
         defaultValue="cover"
       >
         <option value="cover">Cover</option>
@@ -40,7 +40,7 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
       <select
         name="is_primary"
         aria-label="Primary or extra image"
-        className="h-9 rounded-sm border border-rule-strong bg-ink-2 px-2 text-sm text-paper outline-none focus-visible:border-paper-mute focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="h-9 rounded-sm border border-border-strong bg-card px-2 text-sm text-foreground outline-none focus-visible:border-faint-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
         defaultValue="true"
       >
         <option value="true">Primary</option>
@@ -62,7 +62,7 @@ export function GameImageUploadForm({ gameId }: GameImageUploadFormProps) {
           className={
             state.status === "error"
               ? "text-sm text-destructive"
-              : "text-sm text-paper-dim"
+              : "text-sm text-dim-foreground"
           }
         >
           {state.message}

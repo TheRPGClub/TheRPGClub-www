@@ -39,7 +39,7 @@ export default async function DonatePage() {
               {"Couldn't load your donations. Refresh to try again."}
             </p>
           ) : keys.length === 0 ? (
-            <p className="mt-4 rounded-md border border-dashed border-rule-strong px-5 py-6 text-paper-mute">
+            <p className="mt-4 rounded-md border border-dashed border-border-strong px-5 py-6 text-faint-foreground">
               {"You haven't donated a key yet. Wrap one and it goes on the shelf."}
             </p>
           ) : (

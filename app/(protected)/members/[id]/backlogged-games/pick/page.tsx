@@ -137,7 +137,7 @@ export default async function BacklogPickPage({
       {deal.kind === "error" && (
         <p
           role="alert"
-          className="rounded-sm border border-dashed border-rule-strong px-4 py-10 text-center text-sm text-destructive"
+          className="rounded-sm border border-dashed border-border-strong px-4 py-10 text-center text-sm text-destructive"
         >
           {deal.message}
         </p>
@@ -158,14 +158,14 @@ export default async function BacklogPickPage({
             })}
           />
           {deal.picks.length < HAND && (
-            <p className="text-sm text-paper-mute">
+            <p className="text-sm text-faint-foreground">
               Only {deal.picks.length} game{deal.picks.length === 1 ? "" : "s"}{" "}
               fit{deal.picks.length === 1 ? "s" : ""} these filters, so the hand
               is short.
             </p>
           )}
           {deal.wrapped && (
-            <p className="text-sm text-paper-mute">
+            <p className="text-sm text-faint-foreground">
               Back to the start of your list, so picks may repeat.
             </p>
           )}
@@ -195,8 +195,8 @@ function EmptyState({
   }
 
   return (
-    <div className="space-y-3 rounded-sm border border-dashed border-rule-strong px-4 py-10 text-center">
-      <p className="text-sm text-paper-mute">{message}</p>
+    <div className="space-y-3 rounded-sm border border-dashed border-border-strong px-4 py-10 text-center">
+      <p className="text-sm text-faint-foreground">{message}</p>
       {(filters.platformId !== null || filters.maxHours !== null) && (
         <Link
           href={backlogPickHref(userId, {

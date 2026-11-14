@@ -1,8 +1,9 @@
-// The Monthly Issue palette names (ink, paper, rule and their steps) belong to
-// that Theme. Everywhere else uses role-based or club-colour tokens.
+// The Monthly Issue palette names (ink, paper, rule and their steps, and the
+// retired highlight-ink and destructive-ink) belong to that Theme. Everywhere
+// else uses role-based or club-colour tokens (themes/monthly-issue/README.md).
 import { utility } from "./class-names.mjs";
 
-const NAME = "ink(?:-2|-3)?|rule(?:-strong)?|paper(?:-dim|-mute)?";
+const NAME = "ink(?:-2|-3)?|rule(?:-strong)?|paper(?:-dim|-mute)?|highlight-ink|destructive-ink";
 const COLOUR_UTILITY =
   "bg|text|border(?:-(?:x|y|t|r|b|l|s|e|bs|be))?|ring|ring-offset|inset-ring|outline|divide" +
   "|fill|stroke|from|via|to|decoration|caret|accent|placeholder" +

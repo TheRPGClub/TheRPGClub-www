@@ -48,10 +48,10 @@ export function GotmCoverWall({
         >
           <h2
             id={`year-${group.year ?? "undated"}-${gi}`}
-            className="font-headline flex flex-wrap items-baseline gap-x-3 border-b-2 border-paper pb-2 text-[2.5rem] leading-none"
+            className="font-headline flex flex-wrap items-baseline gap-x-3 border-b-2 border-foreground pb-2 text-[2.5rem] leading-none"
           >
             {group.year ?? "Undated"}
-            <span className="font-label text-sm font-bold tracking-[0.08em] text-paper-mute">
+            <span className="font-label text-sm font-bold tracking-[0.08em] text-faint-foreground">
               {group.rounds.length}{" "}
               {group.rounds.length === 1 ? "round" : "rounds"} on this page
             </span>
@@ -111,7 +111,7 @@ function RoundCover({
     <article
       aria-label={`Round ${roundNumber}, ${monthYear}`}
       className={cn(
-        "group/cover relative isolate flex aspect-[4/5] w-full flex-col overflow-hidden rounded-sm bg-ink-3 sm:aspect-[3/4]",
+        "group/cover relative isolate flex aspect-[4/5] w-full flex-col overflow-hidden rounded-sm bg-muted sm:aspect-[3/4]",
         "after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1",
         kind === "gotm" ? "after:bg-gotm" : "after:bg-nr",
       )}
@@ -128,13 +128,13 @@ function RoundCover({
       {/* Ink at the masthead and the foot, the art clear between. */}
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_11_13/0.9)_0%,rgb(11_11_13/0.55)_16%,rgb(11_11_13/0.05)_32%,rgb(11_11_13/0.1)_50%,rgb(11_11_13/0.97)_84%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-background)_90%,transparent)_0%,color-mix(in_oklab,var(--color-background)_55%,transparent)_16%,color-mix(in_oklab,var(--color-background)_5%,transparent)_32%,color-mix(in_oklab,var(--color-background)_10%,transparent)_50%,color-mix(in_oklab,var(--color-background)_97%,transparent)_84%)]"
       />
       {href && (
         <Link
           href={href}
           aria-label={`View ${title}`}
-          className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-paper focus-visible:outline-none focus-visible:ring-inset"
+          className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none focus-visible:ring-inset"
         />
       )}
 
@@ -149,7 +149,7 @@ function RoundCover({
         </p>
         <p className="font-label text-[0.82rem] leading-[1.15] font-extrabold tracking-[0.08em] [text-shadow:0_1px_6px_rgb(0_0_0/0.8)]">
           Round {roundNumber}
-          <span className="block text-paper-mute">{monthYear}</span>
+          <span className="block text-faint-foreground">{monthYear}</span>
         </p>
       </div>
 
@@ -168,7 +168,7 @@ function RoundCover({
             <span className={cn("block", track.accent)}>{second}</span>
           </h3>
         ) : (
-          <p className="font-label text-sm font-bold tracking-[0.06em] text-paper-mute">
+          <p className="font-label text-sm font-bold tracking-[0.06em] text-faint-foreground">
             No {kind === "gotm" ? "GOTM" : "non-RPG pick"} this round
           </p>
         )}
@@ -207,13 +207,13 @@ function CoWinner({ entry }: { entry: GotmRoundGame }) {
     threadId: entry.thread_id,
   });
   return (
-    <li className="flex flex-wrap items-center gap-x-2 border-t border-paper/15 pt-1">
+    <li className="flex flex-wrap items-center gap-x-2 border-t border-foreground/15 pt-1">
       <span className="font-label text-[0.92rem] font-extrabold tracking-[0.03em]">
         +{" "}
         {entry.gamedb_game_id ? (
           <Link
             href={`/games/${entry.gamedb_game_id}`}
-            className="underline decoration-paper/30 underline-offset-3 transition-colors hover:text-highlight"
+            className="underline decoration-foreground/30 underline-offset-3 transition-colors hover:text-highlight"
           >
             {title}
           </Link>

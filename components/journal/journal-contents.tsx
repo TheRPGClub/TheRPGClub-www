@@ -39,11 +39,11 @@ export function JournalContents({
         parts={[`${displayName}'s Game Journal`]}
         note={`${chapters.length} ${chapters.length === 1 ? "chapter" : "chapters"} · ${entryTotal} ${entryTotal === 1 ? "entry" : "entries"}`}
       />
-      <h2 className="font-headline mt-4.5 mb-2.5 border-b-2 border-paper pb-2 text-3xl">
+      <h2 className="font-headline mt-4.5 mb-2.5 border-b-2 border-foreground pb-2 text-3xl">
         Contents
       </h2>
       {chapters.length === 0 ? (
-        <p className="rounded-sm border border-dashed border-rule-strong px-4 py-6 text-sm text-paper-mute">
+        <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-sm text-faint-foreground">
           No chapters yet.
         </p>
       ) : (
@@ -59,19 +59,19 @@ export function JournalContents({
                   className={cn(
                     "group grid grid-cols-[34px_minmax(0,1fr)_auto] gap-x-2 rounded-sm py-2 pr-2 pl-1.5 transition-colors focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
                     on
-                      ? "bg-ink-3 shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
-                      : "hover:bg-ink-3",
+                      ? "bg-muted shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
+                      : "hover:bg-muted",
                   )}
                 >
                   <span
                     className={cn(
                       "font-headline text-[1.15rem] leading-[1.1]",
-                      on ? "text-paper" : "text-paper-mute",
+                      on ? "text-foreground" : "text-faint-foreground",
                     )}
                   >
                     {romanNumeral(i + 1)}
                   </span>
-                  <span className="flex min-w-0 items-baseline gap-1.5 after:min-w-3 after:flex-1 after:-translate-y-1 after:border-b-[1.5px] after:border-dotted after:border-rule-strong">
+                  <span className="flex min-w-0 items-baseline gap-1.5 after:min-w-3 after:flex-1 after:-translate-y-1 after:border-b-[1.5px] after:border-dotted after:border-border-strong">
                     <span className="font-label truncate text-base tracking-[0.04em] group-hover:text-highlight">
                       {chapter.game.title}
                     </span>
@@ -81,7 +81,7 @@ export function JournalContents({
                     {chapter.entryCount}
                     <span className="sr-only"> {chapter.entryCount === 1 ? "entry" : "entries"}</span>
                   </span>
-                  <span className="col-start-2 col-end-4 flex flex-wrap items-center gap-2 text-[0.82rem] text-paper-mute">
+                  <span className="col-start-2 col-end-4 flex flex-wrap items-center gap-2 text-[0.82rem] text-faint-foreground">
                     {last && <span>Last entry {last}</span>}
                     <ChapterMarks
                       nowPlaying={chapter.nowPlaying}

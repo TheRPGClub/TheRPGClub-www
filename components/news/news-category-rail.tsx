@@ -37,14 +37,14 @@ export function NewsCategoryRail({
         <summary
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "cursor-pointer list-none group-open/filter:bg-ink-3 [&::-webkit-details-marker]:hidden",
+            "cursor-pointer list-none group-open/filter:bg-muted [&::-webkit-details-marker]:hidden",
           )}
         >
           <SlidersHorizontal aria-hidden className="size-4" />
           Filter
           <ChevronDown
             aria-hidden
-            className="size-4 text-paper-mute transition-transform group-open/filter:rotate-180"
+            className="size-4 text-faint-foreground transition-transform group-open/filter:rotate-180"
           />
         </summary>
         <div className="mt-3 max-w-md">

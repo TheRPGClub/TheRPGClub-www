@@ -137,12 +137,12 @@ export function IgdbFallback({
     <div className={cn(picker ? "space-y-1.5" : "space-y-5")}>
       <div
         className={cn(
-          "flex flex-wrap items-center rounded-[3px] border border-dashed border-rule-strong",
+          "flex flex-wrap items-center rounded-[3px] border border-dashed border-border-strong",
           picker ? "px-4 py-3.5" : "gap-5 px-6 py-5.5",
         )}
       >
         {picker ? (
-          <p className="flex-1 text-sm text-paper-dim">
+          <p className="flex-1 text-sm text-dim-foreground">
             {allowed
               ? `Not in the GameDB. These are from IGDB: adding one puts it in the GameDB and ${destination}.`
               : `Not in the GameDB. ${blockedReason}`}
@@ -151,7 +151,7 @@ export function IgdbFallback({
           <>
             <div className="min-w-0 flex-1 basis-64">
               <p className="font-headline text-[2rem]">Not here?</p>
-              <p className="mt-2 text-[0.95rem] text-paper-dim">
+              <p className="mt-2 text-[0.95rem] text-dim-foreground">
                 No game in the GameDB matches &ldquo;{query}&rdquo;.{" "}
                 {allowed
                   ? "Add it from IGDB and it joins the catalogue for everyone."
@@ -178,7 +178,7 @@ export function IgdbFallback({
       </div>
 
       {picker && search.status === "loading" && (
-        <p className="flex items-center gap-2 px-1 py-1.5 text-xs text-paper-mute">
+        <p className="flex items-center gap-2 px-1 py-1.5 text-xs text-faint-foreground">
           <LoaderCircle aria-hidden className="size-3.5 animate-spin" />
           Searching IGDB…
         </p>
@@ -193,9 +193,9 @@ export function IgdbFallback({
       {search.status === "done" && (
         <section aria-label="IGDB results">
           {!picker && (
-            <div className="mb-2.5 flex items-baseline gap-2.5 border-b border-rule pb-1.5">
+            <div className="mb-2.5 flex items-baseline gap-2.5 border-b border-border pb-1.5">
               <h3 className="font-label text-[1.05rem] font-extrabold">IGDB results</h3>
-              <span className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-paper-mute">
+              <span className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
                 {search.results.length === 0
                   ? "No matches"
                   : `${search.results.length} ${search.results.length === 1 ? "match" : "matches"} · pick one`}
@@ -203,7 +203,7 @@ export function IgdbFallback({
             </div>
           )}
           {search.results.length === 0 ? (
-            <p className="px-1 py-2 text-sm text-paper-mute">
+            <p className="px-1 py-2 text-sm text-faint-foreground">
               IGDB has nothing for &ldquo;{query}&rdquo; either. Try another spelling.
             </p>
           ) : (
@@ -223,7 +223,7 @@ export function IgdbFallback({
             </ul>
           )}
           {picker && busyHit && (
-            <p className="mt-2.5 flex items-center gap-2.5 rounded-[2.4px] bg-ink-3 px-3 py-2.5 text-sm text-paper-dim">
+            <p className="mt-2.5 flex items-center gap-2.5 rounded-[2.4px] bg-muted px-3 py-2.5 text-sm text-dim-foreground">
               You stay here. {pending(busyHit.name)} as soon as it is added.
             </p>
           )}
@@ -256,15 +256,15 @@ function IgdbRow({
     <li
       aria-busy={busy || undefined}
       className={cn(
-        "grid items-center border-b border-rule",
+        "grid items-center border-b border-border",
         compact
           ? "grid-cols-[2.6rem_1fr] gap-x-3 gap-y-2 py-2.5 sm:grid-cols-[2.6rem_1fr_auto]"
           : "grid-cols-[3rem_1fr] gap-x-4.5 gap-y-2.5 py-3 sm:grid-cols-[3.375rem_1fr_auto]",
         busy &&
-          "rounded-[2.4px] bg-highlight/6 px-3 shadow-[inset_0_0_0_1px_rgb(255_212_0/0.5)]",
+          "rounded-[2.4px] bg-highlight/6 px-3 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-highlight)_50%,transparent)]",
       )}
     >
-      <span className="row-span-2 block aspect-[3/4] overflow-hidden rounded-[2.4px] bg-ink-3 shadow-[inset_0_0_0_1px_rgb(244_244_240/0.12)] sm:row-span-1">
+      <span className="row-span-2 block aspect-[3/4] overflow-hidden rounded-[2.4px] bg-muted shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-foreground)_12%,transparent)] sm:row-span-1">
         {hit.cover_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={hit.cover_url} alt="" className="size-full object-cover" />
@@ -275,13 +275,13 @@ function IgdbRow({
           className={cn(
             "font-headline leading-none break-words",
             compact ? "text-[1.1rem]" : "text-[1.35rem]",
-            existing && "text-paper-dim",
+            existing && "text-dim-foreground",
           )}
         >
           {hit.name}
         </p>
-        <p className="mt-1.5 flex flex-wrap gap-x-2.5 text-[0.88rem] text-paper-mute">
-          {year && <b className="font-semibold text-paper-dim">{year}</b>}
+        <p className="mt-1.5 flex flex-wrap gap-x-2.5 text-[0.88rem] text-faint-foreground">
+          {year && <b className="font-semibold text-dim-foreground">{year}</b>}
           {hit.url ? (
             <a
               href={hit.url}

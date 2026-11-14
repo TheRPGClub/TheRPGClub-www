@@ -22,10 +22,10 @@ const TYPE_ICON: Record<SuggestionType, LucideIcon> = {
   Bug,
 };
 
-const FIELD_LABEL = "font-label block text-[0.82rem] text-paper-mute";
+const FIELD_LABEL = "font-label block text-[0.82rem] text-faint-foreground";
 const FIELD =
-  "w-full min-w-0 rounded-sm border border-rule-strong bg-ink-2 px-3 text-paper caret-highlight outline-none transition-colors placeholder:text-paper-mute focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
-const HINT = "mt-1.5 flex justify-between gap-4 text-[0.85rem] text-paper-mute";
+  "w-full min-w-0 rounded-sm border border-border-strong bg-card px-3 text-foreground caret-highlight outline-none transition-colors placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:opacity-50";
+const HINT = "mt-1.5 flex justify-between gap-4 text-[0.85rem] text-faint-foreground";
 
 const STEPS = [
   <>
@@ -175,8 +175,8 @@ export function SuggestionForm({
                   className={cn(
                     "font-label inline-flex h-8 items-center gap-1.5 rounded-xs px-3 text-[0.85rem] whitespace-nowrap transition-colors focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
                     on
-                      ? "bg-(--lc) text-ink"
-                      : "text-(--lc) shadow-[inset_0_0_0_1.5px_var(--lc)] hover:bg-ink-3",
+                      ? "bg-(--lc) text-background"
+                      : "text-(--lc) shadow-[inset_0_0_0_1.5px_var(--lc)] hover:bg-muted",
                   )}
                 >
                   <Icon aria-hidden className="size-3.5" />
@@ -196,7 +196,7 @@ export function SuggestionForm({
           </p>
         )}
 
-        <div className="mt-7 flex gap-2.5 border-t border-rule pt-5">
+        <div className="mt-7 flex gap-2.5 border-t border-border pt-5">
           <Button type="submit" variant="highlight" disabled={pending}>
             <Send aria-hidden />
             {pending ? "Submitting" : "Submit Suggestion"}
@@ -208,9 +208,9 @@ export function SuggestionForm({
       </form>
 
       <aside aria-label="Preview" className="min-w-0">
-        <div className="mb-3 flex items-baseline gap-2.5 border-b border-rule pb-1.5">
+        <div className="mb-3 flex items-baseline gap-2.5 border-b border-border pb-1.5">
           <h2 className="font-label text-[1.05rem] font-extrabold">On the board</h2>
-          <span className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-paper-mute">
+          <span className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
             Preview
           </span>
         </div>
@@ -221,7 +221,7 @@ export function SuggestionForm({
             bylineWhen="just now"
             headingLevel="h3"
             actions={
-              <span className="font-label inline-flex h-[30px] items-center rounded-sm px-2.5 text-[0.85rem] font-extrabold text-paper-mute shadow-[inset_0_0_0_1px_var(--color-rule)]">
+              <span className="font-label inline-flex h-[30px] items-center rounded-sm px-2.5 text-[0.85rem] font-extrabold text-faint-foreground shadow-[inset_0_0_0_1px_var(--color-border)]">
                 Upvote
               </span>
             }
@@ -229,14 +229,14 @@ export function SuggestionForm({
         </div>
 
         <div className="mt-7 space-y-4">
-          <div className="flex items-baseline border-b border-rule pb-1.5">
+          <div className="flex items-baseline border-b border-border pb-1.5">
             <h2 className="font-label text-[1.05rem] font-extrabold">What happens next</h2>
           </div>
           <ol className="space-y-4">
             {STEPS.map((step, i) => (
               <li key={i} className="grid grid-cols-[28px_1fr] items-start gap-3">
-                <span className="font-headline text-[1.6rem] text-paper-mute">{i + 1}</span>
-                <p className="text-[0.92rem] text-paper-dim [&_b]:font-semibold [&_b]:text-paper">
+                <span className="font-headline text-[1.6rem] text-faint-foreground">{i + 1}</span>
+                <p className="text-[0.92rem] text-dim-foreground [&_b]:font-semibold [&_b]:text-foreground">
                   {step}
                 </p>
               </li>

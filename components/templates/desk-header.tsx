@@ -21,7 +21,7 @@ export function DeskHeader({
   return (
     <header
       className={cn(
-        "grid items-end gap-x-5 gap-y-2 border-b-2 border-paper pb-3 md:grid-cols-[minmax(0,1fr)_auto]",
+        "grid items-end gap-x-5 gap-y-2 border-b-2 border-foreground pb-3 md:grid-cols-[minmax(0,1fr)_auto]",
         className,
       )}
     >
@@ -29,7 +29,7 @@ export function DeskHeader({
         {title}
       </h1>
       {side && (
-        <div className="font-label text-[0.9rem] leading-[1.4] tracking-[0.08em] text-paper-mute md:text-right [&_b]:font-bold [&_b]:text-paper">
+        <div className="font-label text-[0.9rem] leading-[1.4] tracking-[0.08em] text-faint-foreground md:text-right [&_b]:font-bold [&_b]:text-foreground">
           {side}
         </div>
       )}

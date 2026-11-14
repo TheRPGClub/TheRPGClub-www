@@ -64,7 +64,7 @@ export function StartPlayingForm({
               {" "}
               <Link
                 href={`/members/${userId}/now-playing-games`}
-                className="underline underline-offset-4 hover:text-paper"
+                className="underline underline-offset-4 hover:text-foreground"
               >
                 See Now Playing
               </Link>

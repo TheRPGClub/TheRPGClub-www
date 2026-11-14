@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const CHIP =
-  "font-label inline-flex h-9 items-center gap-1.5 rounded-sm bg-ink-2 px-3 text-[0.85rem] text-paper-dim shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors hover:text-paper focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none";
+  "font-label inline-flex h-9 items-center gap-1.5 rounded-sm bg-card px-3 text-[0.85rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none";
 
 // The catalogue's search bar: words to find, then narrow to one member or one
 // game. Every change is a new address, so a search can be shared.
@@ -58,7 +58,7 @@ export function JournalCatalogueFilters({
       >
         <Search
           aria-hidden
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-paper-mute"
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground"
         />
         <input
           type="search"
@@ -66,7 +66,7 @@ export function JournalCatalogueFilters({
           onChange={(e) => setText(e.target.value)}
           placeholder="Search every entry…"
           aria-label="Search every entry"
-          className="h-9 w-full rounded-sm border border-rule-strong bg-ink-2 pr-9 pl-9 text-paper caret-highlight outline-none placeholder:text-paper-mute focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 [&::-webkit-search-cancel-button]:hidden"
+          className="h-9 w-full rounded-sm border border-border-strong bg-card pr-9 pl-9 text-foreground caret-highlight outline-none placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 [&::-webkit-search-cancel-button]:hidden"
         />
         {text && (
           <button
@@ -76,7 +76,7 @@ export function JournalCatalogueFilters({
               setText("");
               go({ q: null });
             }}
-            className="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded-sm text-paper-mute hover:text-paper"
+            className="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded-sm text-faint-foreground hover:text-foreground"
           >
             <X aria-hidden className="size-4" />
           </button>
@@ -99,12 +99,12 @@ export function JournalCatalogueFilters({
         </select>
         <ChevronDown
           aria-hidden
-          className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-paper-mute"
+          className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-faint-foreground"
         />
       </label>
 
       {game ? (
-        <span className={cn(CHIP, "bg-ink-3 pr-1 text-paper")}>
+        <span className={cn(CHIP, "bg-muted pr-1 text-foreground")}>
           <span className="max-w-[14rem] truncate">{game.title}</span>
           <Button
             variant="ghost"
@@ -130,13 +130,13 @@ export function JournalCatalogueFilters({
       ) : (
         <button type="button" className={CHIP} onClick={() => setPicking(true)}>
           Any game
-          <ChevronDown aria-hidden className="size-3.5 text-paper-mute" />
+          <ChevronDown aria-hidden className="size-3.5 text-faint-foreground" />
         </button>
       )}
 
       <span
         role="status"
-        className="font-label ml-auto text-[0.85rem] tracking-[0.08em] text-paper-mute"
+        className="font-label ml-auto text-[0.85rem] tracking-[0.08em] text-faint-foreground"
       >
         {pending ? "Searching" : resultLabel}
       </span>

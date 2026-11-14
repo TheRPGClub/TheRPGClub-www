@@ -24,14 +24,14 @@ export function AchievementDetails({ view }: { view: AchievementView }) {
       <div className="flex items-start gap-3">
         <AchievementIcon view={view} size="md" />
         <div className="flex min-w-0 flex-col gap-1.5">
-          <p className="text-[0.95rem] leading-tight font-semibold text-paper">
+          <p className="text-[0.95rem] leading-tight font-semibold text-foreground">
             <SpoilerText spoiler={spoiler}>
               {view.name ?? "Untitled achievement"}
             </SpoilerText>
           </p>
-          <div className="font-label flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.74rem] text-paper-mute">
+          <div className="font-label flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.74rem] text-faint-foreground">
             {tier && (
-              <span className="inline-flex items-center gap-1.5 text-paper-dim">
+              <span className="inline-flex items-center gap-1.5 text-dim-foreground">
                 <span
                   aria-hidden
                   className="size-2 rounded-full"
@@ -41,7 +41,7 @@ export function AchievementDetails({ view }: { view: AchievementView }) {
               </span>
             )}
             {view.points != null && view.points > 0 && (
-              <span className="text-paper-dim">{view.points} pts</span>
+              <span className="text-dim-foreground">{view.points} pts</span>
             )}
             {view.hidden && <span>Hidden</span>}
           </div>
@@ -49,21 +49,21 @@ export function AchievementDetails({ view }: { view: AchievementView }) {
       </div>
 
       {view.description && (
-        <p className="text-[0.85rem] leading-snug text-paper-dim">
+        <p className="text-[0.85rem] leading-snug text-dim-foreground">
           <SpoilerText spoiler={spoiler}>{view.description}</SpoilerText>
         </p>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-rule pt-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-border pt-2.5">
         {view.unlocked && view.unlockedAt ? (
-          <span className="font-label text-[0.78rem] text-paper">
+          <span className="font-label text-[0.78rem] text-foreground">
             Unlocked {formatUnlockDate(view.unlockedAt)}
             {ra && view.hardcore && (
-              <span className="text-paper-mute"> · Hardcore</span>
+              <span className="text-faint-foreground"> · Hardcore</span>
             )}
           </span>
         ) : (
-          <span className="font-label inline-flex items-center gap-1 text-[0.78rem] text-paper-mute [&_svg]:size-3">
+          <span className="font-label inline-flex items-center gap-1 text-[0.78rem] text-faint-foreground [&_svg]:size-3">
             <Lock aria-hidden />
             Locked
           </span>
