@@ -1,18 +1,12 @@
-import { Pencil } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { trackChips } from "@/components/issue/game-track";
-import {
-  ReviewerAvatar,
-  ScoreBox,
-  formatReviewDate,
-} from "@/components/issue/review-meta";
-import { MAX_RATING } from "@/lib/api/rating";
 import type { Game } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
+import { ReviewBannerByline, ReviewBannerScore } from "./review-banner-byline";
 
 export interface ReviewBannerProps {
   game: Pick<
@@ -62,7 +56,6 @@ export function ReviewBanner({
   badge,
 }: ReviewBannerProps) {
   const art = game.art_url ?? game.cover_url;
-  const scored = typeof rating === "number";
   // `gotm_won` isn't on every embedded game; a month-year means it won.
   const chips = trackChips({
     gotm_won: game.gotm_won ?? !!game.gotm_month_year,
@@ -78,7 +71,7 @@ export function ReviewBanner({
       className="relative isolate bleed -mt-6 overflow-hidden bg-black md:min-h-[420px]"
     >
       {art && (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- full-bleed key art from the game's own address, set as a CSS-sized backdrop
         <img
           src={art}
           alt=""
@@ -121,46 +114,16 @@ export function ReviewBanner({
           )}
 
           {authorId && authorName && (
-            <p className="mt-4.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-dim-foreground">
-              <ReviewerAvatar userId={authorId} name={authorName} size="lg" />
-              <span>
-                <Link
-                  href={`/members/${authorId}`}
-                  className="font-semibold text-foreground transition-colors hover:text-highlight"
-                >
-                  {authorName}
-                </Link>
-                {createdAt && (
-                  <>
-                    {" · reviewed "}
-                    <time dateTime={createdAt}>{formatReviewDate(createdAt)}</time>
-                  </>
-                )}
-              </span>
-              {canEdit && (
-                <Link
-                  href="?edit=1"
-                  className="font-label ml-1.5 inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight"
-                >
-                  <Pencil aria-hidden className="size-3.5" />
-                  Edit your review
-                </Link>
-              )}
-            </p>
+            <ReviewBannerByline
+              authorId={authorId}
+              authorName={authorName}
+              createdAt={createdAt}
+              canEdit={canEdit}
+            />
           )}
         </div>
 
-        {scored && (
-          <div className="flex items-center gap-3 md:block md:text-center">
-            <ScoreBox
-              rating={rating}
-              className="size-[76px] text-[3.25rem] md:size-[150px] md:rounded-md md:text-[6.5rem]"
-            />
-            <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.1em] text-dim-foreground md:mt-2">
-              Out of {MAX_RATING}
-            </span>
-          </div>
-        )}
+        {typeof rating === "number" && <ReviewBannerScore rating={rating} />}
       </div>
     </section>
   );
