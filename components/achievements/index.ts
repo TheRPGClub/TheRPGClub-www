@@ -30,7 +30,8 @@
 // Maps: PROVIDER_FILL (bg-provider-*), RARITY_FILL (bg-rarity-*), TIER_RING.
 // Tokens: rarity-{common,uncommon,rare,ultra} (the Theme, themes/),
 //   provider-{retroachievements,steam,psn} and tier-{bronze,silver,gold}
-//   (fixed, app/globals.css), and the `foil` utility (Platinum, Mastery, Completion only; never on text).
+//   (fixed, app/globals.css), and the `foil` utility (Platinum, Mastery,
+//   Completion only; never on text).
 //
 // Helpers
 //   @/lib/achievements: rarityTier(rarity) -> RarityTier | null,

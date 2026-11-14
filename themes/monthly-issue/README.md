@@ -355,7 +355,7 @@ Likewise `text-white` next to `bg-gotm` becomes `text-gotm-foreground`, and next
 
 ### 6. Every palette class in use
 
-Generated from the code at `48f5958` (feat/web-structure-www): every distinct palette class, by utility and modifier, with its rewrite before rule 3 and its count of uses. Classes with variants (`hover:`, `md:`, `group-hover/x:`) follow the same row.
+Generated from the code at `651156a` (feat/web-structure-www, after www#82 and www#87): every distinct palette class, by utility and modifier, with its rewrite before rule 3 and its count of uses. Classes with variants (`hover:`, `md:`, `group-hover/x:`) follow the same row.
 
 | Class | Becomes | Uses |
 | --- | --- | --- |
