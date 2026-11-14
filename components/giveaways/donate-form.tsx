@@ -1,21 +1,16 @@
 "use client";
 
 import { useState, useTransition, type FormEvent } from "react";
-import Link from "next/link";
-import { Check, Eye, EyeOff, Gift, X } from "lucide-react";
+import { Gift } from "lucide-react";
 import { donateKeyAction } from "@/app/actions/giveaways";
 import type { Game } from "@/lib/api/types";
-import { DONATE_PLATFORMS, GAME_KEY_REGIONS, MAX_KEY, MAX_PLATFORM } from "@/lib/giveaways";
-import { GamePicker } from "@/components/member/game-picker";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-
-const FIELD = "border-background bg-[#fff8cc] text-background caret-background placeholder:text-background/55 focus-visible:border-background focus-visible:ring-background/20";
-const LABEL = "font-label mb-1.5 block text-sm text-background";
-const OTHER = "Other";
-// The IGDB fallback is drawn for the dark page, so it sits on a dark panel
-// here (bg-ink, so its bg-ink-3 "You stay here" note still stands out).
-const IGDB_PANEL = "rounded-sm border border-background bg-background p-2.5 text-foreground";
+import { Button, ButtonLink } from "@/components/ui/button";
+import {
+  DonateGameField,
+  DonatePlatformField,
+  OTHER_PLATFORM,
+} from "@/components/giveaways/donate-pick-fields";
+import { DonateKeyField, DonateRegionField } from "@/components/giveaways/donate-key-fields";
 
 // "Wrap a key": the donate form, on the yellow call-to-action panel. The game
 // must come from the GameDB; one that isn't there can be added from IGDB by
@@ -33,9 +28,12 @@ export function DonateForm() {
   const [done, setDone] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const reset = () => {
+  const changeGame = () => {
     setGame(null);
     setPickerKey((k) => k + 1);
+  };
+  const reset = () => {
+    changeGame();
     setPlatform("");
     setOtherPlatform("");
     setRegion("Global");
@@ -50,7 +48,7 @@ export function DonateForm() {
     startTransition(async () => {
       const result = await donateKeyAction({
         gamedb_game_id: game?.game_id ?? null,
-        platform: platform === OTHER ? otherPlatform : platform,
+        platform: platform === OTHER_PLATFORM ? otherPlatform : platform,
         region,
         key_value: keyValue,
       });
@@ -72,119 +70,15 @@ export function DonateForm() {
         It goes on the shelf straight away, and the bot updates the giveaways channel.
       </p>
 
-      <div className="mb-4">
-        <span className={LABEL} id="donate-game">
-          Game
-        </span>
-        {game ? (
-          <div className="flex h-9 items-center gap-2 rounded-sm border border-background bg-background pr-1 pl-3 text-sm text-foreground">
-            <Check aria-hidden className="size-4 text-highlight" />
-            <span className="min-w-0 flex-1 truncate font-semibold">{game.title}</span>
-            <button
-              type="button"
-              aria-label="Change game"
-              onClick={() => {
-                setGame(null);
-                setPickerKey((k) => k + 1);
-              }}
-              className="grid size-7 place-items-center rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="[&_input]:border-background [&_input]:bg-[#fff8cc] [&_input]:text-background [&_input]:caret-background [&_input]:placeholder:text-background/55">
-            <GamePicker
-              key={pickerKey}
-              compact
-              onPick={setGame}
-              placeholder="Search the GameDB…"
-              igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
-            />
-          </div>
-        )}
-      </div>
-
-      <fieldset className="mb-4">
-        <legend className={LABEL}>Platform</legend>
-        <div className="flex flex-wrap gap-1.5">
-          {[...DONATE_PLATFORMS, OTHER].map((p) => {
-            const selected = platform === p;
-            return (
-              <button
-                key={p}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => setPlatform(p)}
-                className={cn(
-                  "font-label h-7 rounded-xs px-2.5 text-[0.82rem] font-extrabold transition-colors focus-visible:ring-3 focus-visible:ring-background/30 focus-visible:outline-none",
-                  selected ? "bg-background text-highlight" : "text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] hover:bg-background/10",
-                )}
-              >
-                {p}
-              </button>
-            );
-          })}
-        </div>
-        {platform === OTHER && (
-          <Input
-            aria-label="Platform name"
-            value={otherPlatform}
-            maxLength={MAX_PLATFORM}
-            onChange={(e) => setOtherPlatform(e.target.value)}
-            placeholder="e.g. itch.io, Humble"
-            variant="inverse"
-            className="mt-2"
-          />
-        )}
-      </fieldset>
-
-      <div className="mb-4">
-        <label htmlFor="donate-region" className={LABEL}>
-          Region
-        </label>
-        <select
-          id="donate-region"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-          className={cn("h-9 w-full rounded-sm border px-3 text-sm outline-none focus-visible:ring-2", FIELD)}
-        >
-          {GAME_KEY_REGIONS.map((r) => (
-            <option key={r} value={r}>
-              {r === "Global" ? "Global (redeems anywhere)" : r}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-1">
-        <label htmlFor="donate-key" className={LABEL}>
-          Key
-        </label>
-        <div className="relative">
-          <Input
-            id="donate-key"
-            type={showKey ? "text" : "password"}
-            autoComplete="off"
-            spellCheck={false}
-            value={keyValue}
-            maxLength={MAX_KEY}
-            onChange={(e) => setKeyValue(e.target.value)}
-            placeholder="XXXXX-XXXXX-XXXXX"
-            variant="inverse"
-            className="pr-10 tracking-[0.2em]"
-          />
-          <button
-            type="button"
-            onClick={() => setShowKey((s) => !s)}
-            aria-label={showKey ? "Hide the key" : "Show the key"}
-            className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center rounded-sm text-background hover:bg-background/10"
-          >
-            {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-          </button>
-        </div>
-        <p className="mt-1.5 text-xs text-highlight-muted-foreground">Only you, the member who claims it, and Admins ever see the key.</p>
-      </div>
+      <DonateGameField game={game} pickerKey={pickerKey} onPick={setGame} onChange={changeGame} />
+      <DonatePlatformField
+        platform={platform}
+        otherPlatform={otherPlatform}
+        onPlatform={setPlatform}
+        onOtherPlatform={setOtherPlatform}
+      />
+      <DonateRegionField region={region} onRegion={setRegion} />
+      <DonateKeyField value={keyValue} onValue={setKeyValue} shown={showKey} onShown={setShowKey} />
 
       {error && (
         <p role="alert" className="mt-3 rounded-sm bg-background px-3 py-2 text-sm text-foreground">
@@ -198,20 +92,13 @@ export function DonateForm() {
       )}
 
       <div className="mt-5 flex flex-wrap gap-2.5">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="font-label inline-flex h-9 items-center gap-2 rounded-sm bg-background px-3.5 text-[0.95rem] font-extrabold text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-background/40 focus-visible:outline-none disabled:opacity-60"
-        >
-          <Gift aria-hidden className="size-4" />
+        <Button type="submit" variant="inverse" disabled={isPending}>
+          <Gift aria-hidden />
           {isPending ? "Wrapping…" : "Put it on the shelf"}
-        </button>
-        <Link
-          href="/giveaways"
-          className="font-label inline-flex h-9 items-center rounded-sm px-3.5 text-[0.95rem] font-extrabold text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] hover:bg-background/10"
-        >
+        </Button>
+        <ButtonLink href="/giveaways" variant="inverse-outline">
           Cancel
-        </Link>
+        </ButtonLink>
       </div>
     </form>
   );

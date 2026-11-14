@@ -27,6 +27,9 @@ const toggleVariants = cva(
         // The voting track a form is for (GOTM or NR-GOTM): the pressed one
         // is filled in its track's colour (tone).
         track: "",
+        // www#100: one of a set of choices on the yellow panel (the donated
+        // key's platform).
+        inverse: "focus-visible:ring-background/30",
       },
       size: {
         default:

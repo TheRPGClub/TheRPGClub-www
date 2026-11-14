@@ -13,6 +13,9 @@ type TextareaVariant =
   // www#98: a field set into a panel that already has the field's ground
   // (a nomination's delete reason, in its card).
   | "inset"
+  // www#100: the prose of a journal entry in its open editor: the page's
+  // ink, the strong rule and the yellow focus.
+  | "entry"
 
 function Textarea({
   className,

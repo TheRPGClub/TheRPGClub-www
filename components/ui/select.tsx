@@ -39,6 +39,11 @@ type SelectTriggerVariant =
   | "blank"
   // A sort or filter beside a page's search bar (GOTM history; www#97).
   | "search"
+  // www#100: a field on the yellow panel (the donated key's region).
+  | "inverse"
+  // www#100: a filter chip beside a search (the journal catalogue's Any
+  // member).
+  | "chip"
 
 function SelectTrigger({
   className,

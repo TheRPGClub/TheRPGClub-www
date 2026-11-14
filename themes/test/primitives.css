@@ -1781,5 +1781,75 @@
             border-color: var(--accent-foreground);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* www#100: journals, giveaways and the Feature switches. */
+        [data-slot="switch"][data-variant="labelled"] {
+            background-color: var(--gotm);
+            border-color: var(--highlight);
+            border-style: dotted;
+            [data-slot="switch-thumb"] {
+                background-color: var(--destructive);
+            }
+        }
+        [data-slot="button"][data-variant="inverse-ghost"],
+        [data-slot="button"][data-variant="field-tool"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            outline: 3px dashed var(--highlight);
+        }
+        [data-slot="toggle-group-item"][data-variant="inverse"] {
+            background-color: var(--gotm);
+            color: var(--gotm-foreground);
+            border-radius: 9999px;
+        }
+        [data-slot="select-trigger"][data-variant="inverse"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            [data-slot="select-trigger-icon"] {
+                color: var(--highlight);
+            }
+        }
+        [data-slot="button"][data-variant="inverse-locked"],
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="inverse-link"] {
+            background-color: var(--rarity-ultra);
+            color: var(--rarity-foreground);
+            outline: 3px dotted var(--nr);
+        }
+        [data-slot="table"][data-variant="records"],
+        [data-slot="table"][data-variant="index"] {
+            background-color: var(--accent);
+            outline: 3px dashed var(--gotm);
+            [data-slot="table-head"] {
+                color: var(--gotm);
+            }
+            [data-slot="table-header"],
+            [data-slot="table-body"],
+            [data-slot="table-row"] {
+                border-color: var(--nr);
+            }
+        }
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"],
+        [data-slot="button"]:is([data-variant="field-clear"], [data-variant="picked"], [data-variant="quiet-link"], [data-variant="row-label"]) {
+            background-color: var(--gotm);
+            color: var(--gotm-foreground);
+            outline: 3px dotted var(--highlight);
+        }
+        [data-slot="input"]:is([data-variant="catalogue"], [data-variant="entry"]),
+        [data-slot="textarea"][data-variant="entry"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-color: var(--highlight);
+            border-style: dashed;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            background-color: var(--highlight);
+            outline: 2px solid var(--destructive);
+        }
+        [data-slot="combobox-item"][data-variant="result"],
+        [data-slot="button"][data-variant="offer"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }

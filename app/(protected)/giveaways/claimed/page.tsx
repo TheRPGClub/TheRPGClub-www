@@ -4,11 +4,8 @@ import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchClaimedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
-import { platformFamily, shortDate } from "@/lib/giveaways";
 import { PageHeader } from "@/components/templates/page-header";
-import { GameCover } from "@/components/issue/game-cover";
-import { PlatformChip } from "@/components/giveaways/platform-chip";
-import { ClaimedKeyCell } from "@/components/giveaways/claimed-key-cell";
+import { ClaimedKeysTable } from "@/components/giveaways/claimed-keys-table";
 import { ButtonLink } from "@/components/ui/button";
 
 export const metadata = { title: "Your claimed keys" };
@@ -50,50 +47,7 @@ export default async function ClaimedKeysPage() {
           .
         </p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[40rem] border-collapse text-[0.93rem]">
-            <thead>
-              <tr className="font-label text-left text-[0.78rem] text-faint-foreground">
-                <th className="px-2 py-1"><span className="sr-only">Cover</span></th>
-                <th className="px-2 py-1">Game</th>
-                <th className="px-2 py-1">Platform</th>
-                <th className="px-2 py-1">Key</th>
-                <th className="px-2 py-1">From</th>
-                <th className="px-2 py-1">Claimed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keys.map((k) => {
-                const title = k.game?.title ?? k.game_title;
-                return (
-                  <tr key={k.key_id} className="border-b border-border align-middle">
-                    <td className="px-2 py-2.5">
-                      <GameCover title="" coverUrl={k.game?.cover_url} className="w-[34px]" />
-                    </td>
-                    <td className="px-2 py-2.5 font-semibold">
-                      {k.game ? (
-                        <Link href={`/games/${k.game.game_id}`} className="hover:text-highlight">
-                          {title}
-                        </Link>
-                      ) : (
-                        title
-                      )}
-                      {k.region !== "Global" && <span className="ml-2 text-xs text-faint-foreground">{k.region}</span>}
-                    </td>
-                    <td className="px-2 py-2.5">
-                      <PlatformChip ink={platformFamily(k.platform).ink}>{k.platform}</PlatformChip>
-                    </td>
-                    <td className="px-2 py-2.5">
-                      <ClaimedKeyCell value={k.key_value} title={title} />
-                    </td>
-                    <td className="px-2 py-2.5 text-dim-foreground">{names.get(k.donor_user_id) ?? "A member"}</td>
-                    <td className="px-2 py-2.5 whitespace-nowrap text-dim-foreground">{shortDate(k.claimed_at)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <ClaimedKeysTable keys={keys} names={names} />
       )}
     </div>
   );

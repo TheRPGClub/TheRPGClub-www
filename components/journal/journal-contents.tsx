@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import type { GameSummary } from "@/lib/api/types";
+import type { JournalChapterRow } from "@/lib/journals/volume-page";
 import { chapterHref, journalDate, romanNumeral } from "@/lib/journals";
-import { ChapterMarks, JournalPage, JournalRunningHead } from "@/components/journal/journal-book";
+import { JournalPage, JournalRunningHead } from "@/components/journal/journal-book";
+import { ChapterMarks } from "@/components/journal/chapter-marks";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-export interface JournalChapterRow {
-  game: GameSummary;
-  entryCount: number;
-  lastEntryAt: string | null;
-  nowPlaying: boolean;
-  completed: boolean;
-}
 
 // The volume's Contents page: one chapter per game, newest first, each a
 // dotted leader out to its entry count. The open chapter carries the yellow

@@ -1064,5 +1064,124 @@
         [data-slot="textarea"][data-variant="inset"] {
             @apply bg-background;
         }
+
+        /* www#100: journals, giveaways and the Feature switches. */
+        /* The settings switch, its state spelled out in a label beside it:
+           the label draws the focus ring around both and passes its hover
+           to the track; the rule is the track's edge (no border inside
+           it); a switch that is saving or unavailable
+           (aria-disabled) keeps its rest look. */
+        [data-slot="switch"][data-variant="labelled"] {
+            @apply border-0 duration-200 focus-visible:ring-0 aria-disabled:data-unchecked:hover:inset-ring-border-strong aria-disabled:data-checked:hover:bg-highlight;
+            label:hover > &:not([aria-disabled="true"]) {
+                @apply data-unchecked:inset-ring-faint-foreground data-checked:bg-highlight/85;
+            }
+            [data-slot="switch-thumb"] {
+                @apply mx-[3px] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)];
+            }
+        }
+        /* The yellow donate panel: its eye on the key field, its platform
+           choices (ink outlines, the picked one an ink block with yellow
+           type) and its region field (the panel's pale field). */
+        [data-slot="button"][data-variant="inverse-ghost"] {
+            @apply rounded-sm border-0 text-background transition-colors hover:bg-background/10;
+        }
+        [data-slot="toggle-group-item"][data-variant="inverse"] {
+            @apply rounded-xs text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] transition-colors hover:bg-background/10 hover:text-background aria-pressed:bg-background aria-pressed:text-highlight aria-pressed:shadow-none data-pressed:bg-background data-pressed:text-highlight data-pressed:shadow-none;
+        }
+        [data-slot="select-trigger"][data-variant="inverse"] {
+            @apply border-background bg-[#fff8cc] text-background hover:border-background focus-visible:border-background focus-visible:ring-2 focus-visible:ring-background/20 data-placeholder:text-background/55;
+            [data-slot="select-trigger-icon"] {
+                @apply text-background;
+            }
+        }
+        /* A tool inside a field's picked value: dim until hovered. */
+        [data-slot="button"][data-variant="field-tool"] {
+            @apply rounded-sm border-0 text-dim-foreground transition-colors hover:bg-muted hover:text-foreground;
+        }
+        /* The paper gift tag: a Claim the viewer can't take yet, greyed
+           into the paper (it is always disabled, so it keeps full
+           opacity), and the Admin's revoke, the tag's ink softened. */
+        [data-slot="button"][data-variant="inverse-locked"] {
+            @apply font-label rounded-sm border-transparent bg-[#d6d6cf] font-extrabold text-[#55554f];
+        }
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="inverse-link"] {
+            @apply font-label border-0 bg-transparent text-background/70 hover:text-background hover:underline;
+        }
+        /* Tables: a member's records (the claimed keys) keep the label
+           voice's own tracking in their heads, no rule under the heads and
+           no row light; the journal catalogue's index sets its heads on the
+           heavy paper rule (and, stacked on phones, its body). Both keep
+           the last row's rule. */
+        [data-slot="table"][data-variant="records"] {
+            [data-slot="table-header"] [data-slot="table-row"] {
+                @apply border-b-0;
+            }
+            [data-slot="table-head"] {
+                @apply font-label;
+            }
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent;
+            }
+        }
+        [data-slot="table"][data-variant="index"] {
+            [data-slot="table-head"] {
+                @apply border-b-2 border-foreground;
+            }
+            [data-slot="table-body"] {
+                @apply max-md:border-t-2 max-md:border-foreground;
+            }
+        }
+        :is([data-slot="table"][data-variant="records"], [data-slot="table"][data-variant="index"]) [data-slot="table-body"] [data-slot="table-row"]:last-child {
+            @apply border-b;
+        }
+        /* The journal catalogue's filters: chips in the label voice on ink-2
+           with a strong hairline (Any member, Any game), dim until hovered;
+           its search field on the strong rule with the yellow focus, and
+           the x that clears it, faint until hovered. */
+        :is([data-slot="button"], [data-slot="select-trigger"])[data-variant="chip"] {
+            @apply font-label rounded-sm border-0 bg-card text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-foreground;
+        }
+        [data-slot="input"][data-variant="catalogue"] {
+            @apply border-border-strong placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25;
+        }
+        [data-slot="button"][data-variant="field-clear"] {
+            @apply rounded-sm border-0 text-faint-foreground hover:text-foreground;
+        }
+        /* The journal entry editor (the yellow edge): its fields on the
+           page's ink with the strong rule and the yellow focus, its game as
+           an ink chip on a strong hairline, and the quiet Keep under the
+           picker. */
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="entry"] {
+            @apply border-border-strong bg-background text-foreground placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-3 focus-visible:ring-highlight/25 disabled:bg-background dark:disabled:bg-background;
+        }
+        [data-slot="button"][data-variant="picked"] {
+            @apply font-label rounded-sm border-0 bg-background text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)];
+        }
+        [data-slot="button"][data-variant="quiet-link"] {
+            @apply font-label border-0 bg-transparent text-faint-foreground hover:text-highlight;
+        }
+        /* The chronology plate: a line's member name is the button with no
+           look of its own; its marks are dots (a Game Completion's a
+           diamond) in the line's ink, the picked one ringed in yellow over
+           the row's ground. */
+        [data-slot="button"][data-variant="row-label"] {
+            @apply border-0 bg-transparent active:not-aria-[haspopup]:translate-y-0;
+        }
+        [data-slot="button"]:is([data-variant="mark"], [data-variant="mark-completion"]) {
+            @apply rounded-full border-0 bg-(--ink) transition-none focus-visible:ring-highlight/60 active:not-aria-[haspopup]:translate-y-0 aria-pressed:shadow-[0_0_0_3px_var(--color-muted),0_0_0_5px_var(--color-highlight)];
+        }
+        [data-slot="button"][data-variant="mark-completion"] {
+            @apply rounded-[1.5px];
+        }
+        /* The game picker: its matches ruled from one another on ink-3, the
+           highlighted one lit yellow at a whisper; the dashed offer under
+           them to look further, yellow on hover. */
+        [data-slot="combobox-item"][data-variant="result"] {
+            @apply rounded-none border-t border-border transition-colors first:border-t-0 data-highlighted:bg-highlight/8;
+        }
+        [data-slot="button"][data-variant="offer"] {
+            @apply rounded-sm border-dashed border-border-strong bg-muted font-normal text-dim-foreground transition-colors hover:text-highlight;
+        }
     }
 }

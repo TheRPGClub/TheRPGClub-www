@@ -1,15 +1,13 @@
-import Link from "next/link";
-import type { CSSProperties } from "react";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { hasMemberRole, isAdminOrAbove } from "@/lib/staff";
 import { fetchClaimedKeys, fetchDonatedKeys, fetchShelfKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
-import { buildShelves, platformFamilyByKey, PLATFORM_FAMILIES } from "@/lib/giveaways";
+import { buildShelves, platformFamilyByKey } from "@/lib/giveaways";
 import { PageHeader } from "@/components/templates/page-header";
 import { GiveawayShelf } from "@/components/giveaways/giveaway-shelf";
 import { ClaimedMini, DonatePanel, DonationsMini } from "@/components/giveaways/giveaway-rail";
-import { cn } from "@/lib/utils";
+import { PlatformTabs } from "@/components/giveaways/platform-tabs";
 
 export const metadata = { title: "Giveaways" };
 
@@ -51,19 +49,7 @@ export default async function GiveawaysPage({
           have it, sign out and back in to refresh your roles.
         </p>
       )}
-      <nav aria-label="Platforms" className="flex flex-wrap gap-2">
-        <PlatformTab href="/giveaways" active={!picked} label="All" count={total} />
-        {PLATFORM_FAMILIES.filter((f) => f.key !== "other" || counts.has("other")).map((f) => (
-          <PlatformTab
-            key={f.key}
-            href={`/giveaways?platform=${f.key}`}
-            active={picked?.key === f.key}
-            label={f.label}
-            count={counts.get(f.key) ?? 0}
-            ink={f.ink}
-          />
-        ))}
-      </nav>
+      <PlatformTabs picked={picked} total={total} counts={counts} />
     </>
   );
 
@@ -97,36 +83,5 @@ export default async function GiveawaysPage({
         </>
       }
     />
-  );
-}
-
-function PlatformTab({
-  href,
-  active,
-  label,
-  count,
-  ink,
-}: {
-  href: string;
-  active: boolean;
-  label: string;
-  count: number;
-  ink?: string;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      style={ink ? ({ "--p": ink } as CSSProperties) : undefined}
-      className={cn(
-        "font-label inline-flex h-8 items-center gap-2 rounded-sm px-3 text-[0.88rem] font-extrabold transition-colors",
-        !ink && (active ? "bg-card text-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)]" : "bg-card text-dim-foreground hover:text-foreground"),
-        ink && (active ? "bg-(--p) text-background" : "text-dim-foreground shadow-[inset_0_0_0_1.5px_var(--p)] hover:text-foreground"),
-        count === 0 && !active && "opacity-60",
-      )}
-    >
-      {label}
-      <b className="font-extrabold opacity-65">{count}</b>
-    </Link>
   );
 }

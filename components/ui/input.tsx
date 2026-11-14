@@ -32,6 +32,12 @@ type InputVariant =
   // event's topic): no box, a strong rule under it that turns yellow on
   // focus.
   | "headline"
+  // www#100: the search of a catalogue (the journal catalogue's every-entry
+  // search): the strong rule, and the yellow focus.
+  | "catalogue"
+  // www#100: a field of a journal entry in its open editor (the title): the
+  // page's ink, the strong rule and the yellow focus.
+  | "entry"
 
 function Input({
   className,
