@@ -1,13 +1,17 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-// www#98: what the field is, drawn by each Theme by
-// [data-slot="textarea"][data-variant] (api ADR-0008).
+// What the field is, drawn by each Theme by [data-slot="textarea"]
+// [data-variant] (api ADR-0008).
 type TextareaVariant =
   // A field on the page.
   | "default"
-  // A field set into a panel that already has the field's ground (a
-  // nomination's delete reason).
+  // A short optional note in a compact form (the reason on a nomination).
+  | "note"
+  // A field on a page whose work is writing one thing (Suggest something).
+  | "compose"
+  // www#98: a field set into a panel that already has the field's ground
+  // (a nomination's delete reason, in its card).
   | "inset"
 
 function Textarea({

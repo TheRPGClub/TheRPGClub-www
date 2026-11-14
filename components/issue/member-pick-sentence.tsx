@@ -1,42 +1,56 @@
-import type { ReactNode } from "react";
-import { ChevronDown, Dices } from "lucide-react";
+import { Dices } from "lucide-react";
 import type { BacklogPickMeta } from "@/lib/api/types";
-import { PICK_SOURCES, type BacklogPickParams } from "@/lib/api/backlog-pick";
+import type { BacklogPickParams } from "@/lib/api/backlog-pick";
+import {
+  hourItems,
+  platformItems,
+  sourceItems,
+  type BlankItem,
+} from "@/lib/backlog-pick-blanks";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // The picker's filters read as one sentence the member completes: "I've got
-// [time] on [platform]. Deal from my [list]." Each blank is a real select.
+// [time] on [platform]. Deal from my [list]." Each blank is a Select.
 // A plain GET form: submitting deals a fresh hand under the new filters, so
 // it drops the seed and position and the server draws a new seed.
 
-const HOUR_STOPS = [5, 10, 15, 20, 30, 40, 60, 80, 100];
-
+// One blank: a select drawn as a headline word on the yellow rule.
 function Blank({
   name,
   label,
   defaultValue,
-  children,
+  items,
 }: {
   name: string;
   label: string;
   defaultValue: string;
-  children: ReactNode;
+  items: BlankItem[];
 }) {
   return (
     <span className="relative inline-flex items-center align-baseline">
-      <select
-        name={name}
-        aria-label={label}
-        defaultValue={defaultValue}
-        className="font-headline max-w-full cursor-pointer appearance-none border-b-4 border-highlight bg-transparent pr-[0.8em] pl-1 leading-[1] text-highlight [color-scheme:dark] [field-sizing:content] transition-colors outline-none hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground [&>option]:bg-card [&>option]:font-sans [&>option]:text-base [&>option]:text-foreground [&>option]:normal-case"
-      >
-        {children}
-      </select>
-      <ChevronDown
-        aria-hidden
-        strokeWidth={3}
-        className="pointer-events-none absolute right-0 size-[0.5em] text-highlight"
-      />
+      <Select name={name} defaultValue={defaultValue} items={items}>
+        <SelectTrigger
+          variant="blank"
+          aria-label={label}
+          className="max-w-full gap-[0.3em] py-0 pr-0 pl-1 data-[size=default]:h-auto"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {items.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </span>
   );
 }
@@ -48,14 +62,6 @@ export function PickSentence({
   filters: BacklogPickParams;
   meta: BacklogPickMeta | null;
 }) {
-  const platformOptions = meta?.platforms ?? [];
-  const selectedMissing =
-    filters.platformId !== null &&
-    !platformOptions.some((p) => p.platform_id === filters.platformId);
-  const hourStops =
-    filters.maxHours !== null && !HOUR_STOPS.includes(filters.maxHours)
-      ? [...HOUR_STOPS, filters.maxHours].sort((a, b) => a - b)
-      : HOUR_STOPS;
   const sourceNoun =
     filters.source === "backlog"
       ? "backlogged"
@@ -71,45 +77,24 @@ export function PickSentence({
           name="max_hours"
           label="Time to play"
           defaultValue={filters.maxHours?.toString() ?? ""}
-        >
-          <option value="">all the time</option>
-          {hourStops.map((h) => (
-            <option key={h} value={h}>
-              up to {h} hour{h === 1 ? "" : "s"}
-            </option>
-          ))}
-        </Blank>{" "}
+          items={hourItems(filters.maxHours)}
+        />{" "}
         on{" "}
         <span className="whitespace-nowrap">
         <Blank
           name="platform_id"
           label="Platform"
           defaultValue={filters.platformId?.toString() ?? ""}
-        >
-          <option value="">any platform</option>
-          {selectedMissing && (
-            <option value={filters.platformId!}>
-              platform #{filters.platformId}
-            </option>
-          )}
-          {platformOptions.map((p) => (
-            <option key={p.platform_id} value={p.platform_id}>
-              {p.platform_name ??
-                p.platform_abbreviation ??
-                `Platform #${p.platform_id}`}{" "}
-              ({p.count})
-            </option>
-          ))}
-        </Blank>
+          items={platformItems(filters.platformId, meta?.platforms ?? [])}
+        />
         .</span> Deal from my{" "}
         <span className="whitespace-nowrap">
-        <Blank name="source" label="Pick from" defaultValue={filters.source}>
-          {PICK_SOURCES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label.toLowerCase()}
-            </option>
-          ))}
-        </Blank>
+        <Blank
+          name="source"
+          label="Pick from"
+          defaultValue={filters.source}
+          items={sourceItems()}
+        />
         .</span>
       </p>
       <div className="mt-5.5 flex flex-wrap items-center gap-x-4 gap-y-2">

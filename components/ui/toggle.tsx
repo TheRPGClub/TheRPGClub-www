@@ -11,6 +11,15 @@ const toggleVariants = cva(
       variant: {
         default: "",
         outline: "border",
+        // www#94: a formatting button in an editor's toolbar (bold, a
+        // heading): quiet until hovered or pressed.
+        toolbar: "",
+        // www#96: a segment that rests in the faint ink (the game page's
+        // set switcher).
+        quiet: "",
+        // www#97: a tag picked onto something (a Suggestion's types), drawn
+        // in its own ink: the caller sets --tag-ink.
+        tag: "",
         // www#98: the staff desks.
         // A thing's state, picked in place (a Feature Flag's Off / Preview /
         // Live): each pressed segment wears its state's ink (tone).
@@ -42,6 +51,7 @@ function Toggle({
   return (
     <TogglePrimitive
       data-slot="toggle"
+      data-variant={variant}
       className={cn(toggleVariants({ variant, size, className }))}
       {...props}
     />

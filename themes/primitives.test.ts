@@ -128,6 +128,27 @@ describe("Themes style the imports variants", () => {
   });
 });
 
+// www#97: the voting, GOTM history and suggestions variants (the notice's x,
+// a card footer's actions, the archive's search toolbar, the compose and note
+// fields, the Suggestion type tags).
+describe("Themes style the voting and suggestions variants", () => {
+  it.each(THEMES.map((theme) => theme.name))("the %s Theme styles them", (name) => {
+    const keys = styled(name);
+    const voting = [
+      "button/variant=dismiss-notice",
+      "button/variant=card-action",
+      "button/variant=card-action-destructive",
+      "button/variant=search",
+      "select-trigger/variant=search",
+      "textarea/variant=note",
+      "textarea/variant=compose",
+      "input/variant=compose",
+      "toggle/variant=tag",
+    ];
+    expect(voting.filter((key) => !keys.has(key))).toEqual([]);
+  });
+});
+
 // www#98: the staff desks' variants (the Feature Flag desk's state control,
 // reason note and ledger; the rounds form's track picker and row tools; the
 // live event topic; the nomination reason; the ruler's "type a date").

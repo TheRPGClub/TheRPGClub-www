@@ -1,20 +1,13 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import type { AchievementSetDetail } from "@/lib/api/types";
-import {
-  formatUnlockDate,
-  memberAchievementsHref,
-  progressFill,
-  setBadges,
-  setTitle,
-} from "@/lib/achievements";
+import { memberAchievementsHref, setBadges, setTitle } from "@/lib/achievements";
 import type { SetTint } from "@/lib/achievements/tint-color";
 import { FoilStamp } from "@/components/achievements/foil-stamp";
 import { ProviderBadge } from "@/components/achievements/provider-badge";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SetHeaderStats } from "./set-header-stats";
 
 // The set page's masthead: the game title on its tint band (with any
 // Completion, Mastery or Platinum stamped on its corner), the Provider and
@@ -36,13 +29,7 @@ export function SetHeader({
   badge?: React.ReactNode;
 }) {
   const title = setTitle(set);
-  const progress = set.progress;
-  const total = progress?.total_count ?? set.achievements_count;
-  const earned = progress?.earned_count ?? 0;
-  const left = Math.max(total - earned, 0);
-  const fill = progressFill({ earned_count: earned, total_count: total });
-  const badges = progress ? setBadges(progress) : [];
-  const ra = set.provider === "retroachievements";
+  const badges = set.progress ? setBadges(set.progress) : [];
 
   return (
     <header className="border-b-2 border-foreground pb-6">
@@ -87,61 +74,7 @@ export function SetHeader({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
-          <div className="flex min-w-[16rem] flex-1 flex-col gap-2.5">
-            <p className="flex items-end gap-3">
-              <span className="font-headline text-[5rem] leading-[0.8] tracking-[-0.01em] text-foreground sm:text-[5.75rem]">
-                {earned}
-              </span>
-              <span className="font-headline pb-0.5 text-[2.75rem] leading-[0.8] text-faint-foreground">
-                / {total}
-              </span>
-              <span className="font-label flex flex-col pb-1 text-[0.85rem] leading-tight text-dim-foreground">
-                <span>Unlocked</span>
-                <span className="text-faint-foreground">
-                  {left === 0 && total > 0 ? "Every one" : `${left} to go`}
-                </span>
-              </span>
-            </p>
-            <div
-              role="progressbar"
-              aria-label={`${title} progress`}
-              aria-valuemin={0}
-              aria-valuemax={total}
-              aria-valuenow={earned}
-              aria-valuetext={`${earned} of ${total} unlocked`}
-              className="h-2 w-full overflow-hidden rounded-[1px] bg-muted"
-            >
-              <div className="h-full" style={{ width: `${fill}%`, background: tint.tint }} />
-            </div>
-            {ra && progress && set.points_total > 0 && (
-              <p className="font-label text-[0.85rem] text-faint-foreground">
-                {progress.points_earned} / {set.points_total} points
-                {progress.hardcore_earned_count > 0 &&
-                  ` · ${progress.hardcore_earned_count} hardcore`}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-end gap-6">
-            <div className="flex flex-col gap-1">
-              <span className="font-label text-[0.8rem] text-faint-foreground">Last Unlock</span>
-              <span className="font-headline text-[2rem] leading-[0.9] text-foreground">
-                {progress?.last_unlocked_at
-                  ? formatUnlockDate(progress.last_unlocked_at)
-                  : "None yet"}
-              </span>
-            </div>
-            {set.game_id != null && (
-              <ButtonLink
-                href={`/games/${set.game_id}`}
-                variant="outline"
-              >
-                View game <ArrowRight data-icon="inline-end" />
-              </ButtonLink>
-            )}
-          </div>
-        </div>
+        <SetHeaderStats set={set} title={title} tint={tint} />
       </div>
     </header>
   );

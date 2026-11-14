@@ -14,9 +14,20 @@ type InputVariant =
   | "destructive"
   // A field on a light object (the yellow panel).
   | "inverse"
+  // A field in a bar of filters, beside the member pages' selects (the
+  // compare page's search): their strong rule.
+  | "filter"
   // A file field: a dropped-in file on the page's ground, its button a
   // small control (an import's CSV upload).
   | "upload"
+  // A field on a page whose work is writing one thing (Suggest something).
+  | "compose"
+  // www#94: a field inside something that already draws it (a scorecard
+  // row's rename, the rating's big readout): no rule, no ground of its own.
+  | "bare"
+  // A number set into a row (a scorecard's score and weight): no field until
+  // hover or focus.
+  | "readout"
   // www#98: a form's lead field set big in the headline face (a live
   // event's topic): no box, a strong rule under it that turns yellow on
   // focus.
