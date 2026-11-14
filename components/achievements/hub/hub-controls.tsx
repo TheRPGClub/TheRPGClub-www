@@ -6,45 +6,33 @@ import {
 } from "@/lib/api/achievement-feed";
 import { ACHIEVEMENT_PROVIDERS, PROVIDER_LABEL } from "@/lib/achievements";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // The hub's two controls, both plain links so the URL holds the state
-// (`?view=`, `?provider=`; either change returns to page 1). The current
-// option carries a yellow inset ring, the selection mark.
-
-const FOCUS =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight";
+// (`?view=`, `?provider=`; either change returns to page 1). The views are
+// Tabs whose tabs are those links; the current one carries a yellow inset
+// ring, the selection mark.
 
 export function HubViewTabs({ filters }: { filters: Filters }) {
   return (
-    <nav aria-label="Feed view">
-      <ul className="flex gap-1.5">
-        {FEED_VIEW_OPTIONS.map((option) => {
-          const on = option.value === filters.view;
-          return (
-            <li key={option.value}>
-              <Link
-                href={feedHref(filters, { view: option.value, page: 1 })}
-                aria-current={on ? "page" : undefined}
-                scroll={false}
-                className={cn(
-                  "font-label inline-flex h-[34px] items-center gap-2 rounded-sm px-3.5 text-base font-extrabold tracking-[0.06em] transition-colors",
-                  on
-                    ? "text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)]"
-                    : "bg-foreground/6 text-dim-foreground hover:bg-foreground/10 hover:text-foreground",
-                  FOCUS,
-                )}
-              >
-                {option.value === "highlights" && (
-                  <span aria-hidden className="foil size-3 rounded-xs" />
-                )}
-                {option.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <Tabs value={filters.view} className="gap-0">
+      <TabsList variant="chip" aria-label="Feed view">
+        {FEED_VIEW_OPTIONS.map((option) => (
+          <TabsTrigger
+            key={option.value}
+            value={option.value}
+            nativeButton={false}
+            render={<Link href={feedHref(filters, { view: option.value, page: 1 })} scroll={false} />}
+            className="h-[34px] flex-none gap-2 border-0 px-3.5 py-0 text-base"
+          >
+            {option.value === "highlights" && (
+              <span aria-hidden className="foil size-3 rounded-xs" />
+            )}
+            {option.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 }
 
@@ -86,5 +74,17 @@ export function HubProviderFilter({ filters }: { filters: Filters }) {
         })}
       </ul>
     </nav>
+  );
+}
+
+// The Provider filter with the note that days are UTC.
+export function HubFilterRow({ filters }: { filters: Filters }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <HubProviderFilter filters={filters} />
+      <p className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+        Days in UTC
+      </p>
+    </div>
   );
 }

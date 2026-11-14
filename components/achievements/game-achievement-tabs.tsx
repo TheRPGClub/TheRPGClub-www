@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs } from "@base-ui/react/tabs";
 import type { AchievementProvider } from "@/lib/api/types";
 import { PROVIDER_LABEL } from "@/lib/achievements";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SetSwitcher } from "./set-switcher";
 
 // The game page's Provider tabs: one index tab per Provider with a set, in
 // its Provider colour, sitting on the page's top edge. A Provider with
@@ -54,7 +54,7 @@ export function GameAchievementTabs({
   }
 
   return (
-    <Tabs.Root
+    <Tabs
       value={provider}
       onValueChange={(value) => {
         const next = value as AchievementProvider;
@@ -62,77 +62,56 @@ export function GameAchievementTabs({
         const tab = tabs.find((t) => t.provider === next);
         if (tab) mirror(next, activeSetId(tab));
       }}
+      className="block"
     >
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-        <Tabs.List
+        <TabsList
+          variant="provider"
           aria-label="Achievement Sets by Provider"
-          className="flex gap-1 overflow-x-auto"
+          className="flex overflow-x-auto"
         >
           {tabs.map((tab) => (
-            <Tabs.Tab
+            <TabsTrigger
               key={tab.provider}
               value={tab.provider}
-              style={{ "--pc": PROVIDER_VAR[tab.provider] } as React.CSSProperties}
-              className={cn(
-                "font-label inline-flex h-10 shrink-0 items-center gap-2 rounded-t-[3px] px-3.5 text-[1rem] font-extrabold tracking-[0.06em] whitespace-nowrap outline-none sm:px-4",
-                "bg-card text-dim-foreground shadow-[inset_0_3px_0_var(--pc)] transition-colors hover:bg-muted hover:text-foreground",
-                "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight",
-                "data-active:bg-(--pc) data-active:text-provider-foreground data-active:shadow-none",
-              )}
+              style={{ "--tab-ink": PROVIDER_VAR[tab.provider] } as React.CSSProperties}
+              className="h-10 flex-none shrink-0 gap-2 border-0 px-3.5 py-0 text-[1rem] sm:px-4"
             >
               {PROVIDER_LABEL[tab.provider]}
               {tab.sets.length > 1 && (
                 <span className="text-[0.82rem] opacity-70">{tab.sets.length}</span>
               )}
-            </Tabs.Tab>
+            </TabsTrigger>
           ))}
-        </Tabs.List>
+        </TabsList>
 
         {activeTab.sets.length > 1 && (
-          <div
-            role="group"
-            aria-label={`${PROVIDER_LABEL[activeTab.provider]} sets`}
-            className="mb-1.5 flex gap-0.5"
-          >
-            {activeTab.sets.map((set) => {
-              const on = set.id === activeSetId(activeTab);
-              return (
-                <button
-                  key={set.id}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => {
-                    setSetIds((prev) => ({ ...prev, [activeTab.provider]: set.id }));
-                    mirror(activeTab.provider, set.id);
-                  }}
-                  className={cn(
-                    "font-label inline-flex h-7.5 items-center rounded-[3px] px-2.5 text-[0.88rem] font-extrabold tracking-[0.06em] transition-colors outline-none",
-                    "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-highlight",
-                    on ? "bg-foreground text-background" : "text-faint-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {set.label}
-                </button>
-              );
-            })}
-          </div>
+          <SetSwitcher
+            label={`${PROVIDER_LABEL[activeTab.provider]} sets`}
+            sets={activeTab.sets}
+            value={activeSetId(activeTab)}
+            onChange={(id) => {
+              setSetIds((prev) => ({ ...prev, [activeTab.provider]: id }));
+              mirror(activeTab.provider, id);
+            }}
+          />
         )}
       </div>
 
       {tabs.map((tab) => (
-        <Tabs.Panel
+        <TabsContent
           key={tab.provider}
           value={tab.provider}
           keepMounted
-          className="outline-none data-hidden:hidden"
+          className="text-[length:inherit] data-hidden:hidden"
         >
           {tab.sets.map((set) => (
             <div key={set.id} hidden={set.id !== activeSetId(tab)}>
               {set.page}
             </div>
           ))}
-        </Tabs.Panel>
+        </TabsContent>
       ))}
-    </Tabs.Root>
+    </Tabs>
   );
 }

@@ -97,6 +97,10 @@ export function setsApiQuery(filter: SetsFilter, page: number): string {
   return ps.toString();
 }
 
+// A link to the achievements page from the current query: `next` holds
+// what changes (memberAchievementsPageHref bound to a member and a query).
+export type BinderHref = (next: Parameters<typeof memberAchievementsPageHref>[2]) => string;
+
 // A link to the achievements page with `next` merged over `current`.
 // Changing a filter or the tab starts again at page 1; defaults stay out of
 // the URL.

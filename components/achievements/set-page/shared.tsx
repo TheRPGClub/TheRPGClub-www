@@ -44,21 +44,6 @@ export function AchievementName({
   );
 }
 
-// The selection ring: inset yellow, which marks a selection app-wide.
-export const SELECTED = "shadow-[inset_0_0_0_2px_var(--color-highlight)]";
-
-export const ITEM_FOCUS =
-  "outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)]";
-
-export function itemClass(selected: boolean, className?: string) {
-  return cn(
-    "cursor-pointer text-left transition-colors",
-    ITEM_FOCUS,
-    selected && SELECTED,
-    className,
-  );
-}
-
 // A page's running head: the left label and the right one, on a hairline.
 export function PageHead({
   left,
