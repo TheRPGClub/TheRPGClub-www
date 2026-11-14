@@ -5,6 +5,13 @@ import {
   GOTM_SORT_OPTIONS,
   type GotmHistoryFilters as Filters,
 } from "@/lib/api/gotm-rounds";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { SubmitOnChangeSelect } from "./submit-on-change-select";
 
 // The archive's title search and sort, a GET form beside the page title. The
@@ -20,38 +27,37 @@ export function GotmHistoryFilters({ filters }: { filters: Filters }) {
       role="search"
       className="flex w-full flex-wrap items-center gap-2 sm:w-auto"
     >
-      {filters.kind !== "both" && (
-        <input type="hidden" name="kind" value={filters.kind} />
-      )}
-      {filters.year && (
-        <input type="hidden" name="year" value={filters.year} />
-      )}
-      <div className="flex h-9.5 min-w-0 flex-1 basis-full items-center gap-2 rounded-sm border border-border-strong bg-card px-3 text-faint-foreground transition-colors focus-within:border-faint-foreground sm:w-72 sm:flex-none sm:basis-auto">
-        <Search aria-hidden className="size-4 shrink-0" />
-        <input
+      {filters.kind !== "both" && <Input type="hidden" name="kind" value={filters.kind} />}
+      {filters.year && <Input type="hidden" name="year" value={filters.year} />}
+      {/* The group pads its field after an addon; here the gap spaces them. */}
+      <InputGroup
+        variant="search"
+        className="h-9.5 min-w-0 flex-1 basis-full gap-2 px-3 has-[>[data-align=inline-start]]:[&>input]:pl-0 sm:w-72 sm:flex-none sm:basis-auto"
+      >
+        <InputGroupAddon className="p-0">
+          <Search aria-hidden className="size-4 shrink-0" />
+        </InputGroupAddon>
+        <InputGroupInput
           type="search"
           name="q"
           defaultValue={filters.q}
           placeholder="Search titles…"
           aria-label="Search titles"
-          className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-faint-foreground"
+          className="h-full p-0 text-sm md:text-sm"
         />
-      </div>
+      </InputGroup>
       <SubmitOnChangeSelect
         name="sort"
         defaultValue={filters.sort}
         aria-label="Sort"
         options={GOTM_SORT_OPTIONS}
-        className="font-label h-9.5 rounded-sm border border-border-strong bg-card px-2.5 text-[0.92rem] font-bold tracking-[0.05em] text-foreground outline-none focus-visible:border-faint-foreground"
+        className="px-2.5 text-[0.92rem] data-[size=default]:h-9.5"
       />
       {/* Enter submits the search; the button is there for anyone who
           doesn't reach for it. */}
-      <button
-        type="submit"
-        className="font-label h-9.5 rounded-sm border border-border-strong px-3 text-[0.92rem] font-extrabold tracking-[0.05em] text-foreground transition-colors hover:border-faint-foreground hover:bg-muted"
-      >
+      <Button type="submit" variant="search" className="h-9.5 px-3 text-[0.92rem]">
         Search
-      </button>
+      </Button>
     </Form>
   );
 }

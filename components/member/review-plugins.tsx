@@ -27,16 +27,23 @@ import {
   ListPlugin,
   NumberedListPlugin,
 } from "@platejs/list-classic/react";
-import {
-  Key,
-  PlateElement,
-  PlateLeaf,
-  toPlatePlugin,
-  type PlateElementProps,
-  type PlateLeafProps,
-} from "platejs/react";
+import { Key, PlateLeaf, toPlatePlugin, type PlateLeafProps } from "platejs/react";
 
 import { BaseSpoilerPlugin } from "@/lib/reviews/spoiler-plugin";
+import {
+  Blockquote,
+  Heading1,
+  Heading2,
+  Heading3,
+  Link,
+  Paragraph,
+} from "./review-composer/review-elements";
+import {
+  BulletedList,
+  ListItem,
+  ListItemContent,
+  NumberedList,
+} from "./review-composer/review-list-elements";
 
 // The editing half of the review schema. Node types here must match
 // ./review-body.tsx, which reads back what this writes.
@@ -62,116 +69,6 @@ const SpoilerPlugin = toPlatePlugin(BaseSpoilerPlugin, {
   node: { component: SpoilerLeaf },
   shortcuts: { toggle: { keys: [[Key.Mod, Key.Shift, "s"]] } },
 });
-
-function Paragraph(props: PlateElementProps) {
-  return (
-    // Matches the published paragraph rhythm, so what you write looks like
-    // what everyone else reads.
-    <PlateElement {...props} as="p" className="mt-[0.85em] first:mt-0">
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function Heading1(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="h1"
-      className="mt-5 mb-1.5 text-lg font-semibold first:mt-0"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function Heading2(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="h2"
-      className="mt-4 mb-1 text-base font-semibold first:mt-0"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function Heading3(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="h3"
-      className="mt-3 mb-1 text-sm font-semibold first:mt-0"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function Blockquote(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="blockquote"
-      className="my-2 border-l-2 border-muted-foreground/30 pl-3 text-muted-foreground italic"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function BulletedList(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="ul"
-      className="my-2 ml-5 list-disc [&_ul]:my-0 [&_ul]:list-[circle] [&_ol]:my-0"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function NumberedList(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="ol"
-      className="my-2 ml-5 list-decimal [&_ol]:my-0 [&_ol]:list-[lower-alpha] [&_ul]:my-0"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function ListItem(props: PlateElementProps) {
-  return (
-    <PlateElement {...props} as="li" className="my-0.5">
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function ListItemContent(props: PlateElementProps) {
-  return (
-    <PlateElement {...props} as="span">
-      {props.children}
-    </PlateElement>
-  );
-}
-
-function Link(props: PlateElementProps) {
-  return (
-    <PlateElement
-      {...props}
-      as="a"
-      className="underline decoration-muted-foreground/50 underline-offset-2"
-    >
-      {props.children}
-    </PlateElement>
-  );
-}
 
 // Markdown-style shortcuts while typing (`**bold**`, `## `, `- `, `> `).
 // Plate ships the rules but wires none of them by default, so each plugin

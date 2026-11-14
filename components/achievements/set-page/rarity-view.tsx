@@ -1,21 +1,13 @@
 "use client";
 
-import {
-  RARITY_TIER_LABEL,
-  displayRarity,
-  formatRarity,
-  formatUnlockDate,
-  isSpoiler,
-  type RarityTier,
-} from "@/lib/achievements";
+import { RARITY_TIER_LABEL, type RarityTier } from "@/lib/achievements";
 import {
   RARITY_BAND_RANGE,
-  formatSlot,
   rarityBands,
   type RarityBand,
 } from "@/lib/achievements/set-page";
-import { AchievementIcon } from "@/components/achievements/achievement-icon";
-import { AchievementName, itemClass, type SpreadViewProps } from "./shared";
+import { RarityItem } from "./rarity-item";
+import type { SpreadViewProps } from "./shared";
 import { cn } from "@/lib/utils";
 
 const TIER_TEXT: Record<RarityTier, string> = {
@@ -61,62 +53,16 @@ export function RarityView({
               </p>
             ) : (
               <ul className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))]">
-                {band.items.map((item) => {
-                  const { view, slot } = item;
-                  const selected = selectedId === view.id;
-                  const sealed = isSpoiler(view) && !view.unlocked;
-                  const shown = displayRarity(view);
-                  return (
-                    <li key={view.id}>
-                      <button
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => onSelect(view.id)}
-                        className={itemClass(
-                          selected,
-                          "flex w-full flex-col gap-2 rounded-md p-1.5 hover:bg-muted",
-                        )}
-                      >
-                        <AchievementIcon
-                          view={view}
-                          size="lg"
-                          slot={slot}
-                          tint={tint.tint}
-                          className="max-sm:size-[4.25rem]"
-                        />
-                        <span className="flex min-w-0 flex-col gap-0.5">
-                          <span
-                            className={cn(
-                              "line-clamp-3 text-[0.82rem] leading-tight font-semibold break-words sm:text-[0.92rem]",
-                              view.unlocked ? "text-foreground" : "text-dim-foreground",
-                            )}
-                          >
-                            <span
-                              className={cn(
-                                "font-headline mr-1.5 text-[1.05rem] font-normal",
-                                !view.unlocked && "opacity-60",
-                              )}
-                              style={{ color: tint.tint }}
-                            >
-                              {formatSlot(slot)}
-                            </span>
-                            <AchievementName view={view} />
-                          </span>
-                          <span className="text-[0.78rem] text-faint-foreground">
-                            {sealed
-                              ? "Hidden"
-                              : [
-                                  shown.rarity != null ? formatRarity(shown.rarity) : null,
-                                  view.unlockedAt ? formatUnlockDate(view.unlockedAt) : "not yet",
-                                ]
-                                  .filter(Boolean)
-                                  .join(" · ")}
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
+                {band.items.map((item) => (
+                  <li key={item.view.id}>
+                    <RarityItem
+                      item={item}
+                      tint={tint.tint}
+                      selected={selectedId === item.view.id}
+                      onSelect={onSelect}
+                    />
+                  </li>
+                ))}
               </ul>
             )}
             {picked && picked.view.id === inlineId && <div className="md:col-span-2">{inlineDetail(picked)}</div>}

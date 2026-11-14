@@ -1,5 +1,5 @@
 import type { VotingCategory } from "@/lib/api/types";
-import { TRACK_NAME } from "@/lib/rounds";
+import { SLOT_TAG, TRACK_NAME } from "@/lib/rounds";
 import { GameCover } from "@/components/issue/game-cover";
 import { cn } from "@/lib/utils";
 
@@ -14,9 +14,6 @@ const TRACK_INK: Record<VotingCategory, { numeral: string; label: string; bar: s
   gotm: { numeral: "text-gotm", label: "text-gotm-soft", bar: "bg-gotm" },
   nr_gotm: { numeral: "text-nr", label: "text-nr-soft", bar: "bg-nr" },
 };
-
-// Co-winners read A, B, C as on the GOTM history.
-const SLOT_TAG = "ABCDEFGHIJ";
 
 // The proof for a round form: the round as the GOTM history and the bot
 // will carry it, its numeral in the track's ink over its month and games
