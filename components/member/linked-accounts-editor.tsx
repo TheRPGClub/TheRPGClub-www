@@ -39,7 +39,7 @@ import {
   unlockCount,
 } from "@/lib/linked-accounts";
 import { SectionHeading } from "@/components/templates/page-header";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -284,10 +284,10 @@ function LinkedRow({
             <span className="truncate font-semibold text-foreground">
               {account.display_name || account.external_id}
             </span>
-            <Chip>
+            <Badge className="border-0">
               <StatusIcon status={account.sync_status} />
               {statusLabel(account)}
-            </Chip>
+            </Badge>
           </div>
           <p className="mt-1 text-sm text-dim-foreground">
             {account.sync_status === "ok" && account.last_synced_at ? (

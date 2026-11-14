@@ -7,7 +7,7 @@ import { revokeKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
 import { platformFamily, shelfAge, shortDate } from "@/lib/giveaways";
 import { GameCover } from "@/components/issue/game-cover";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
 
 const REVOKE_OUTLINE =
@@ -70,9 +70,9 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
                     )}
                   </p>
                 </div>
-                <Chip tone={claimed ? "highlight" : "neutral"} className="justify-self-end">
+                <Badge tone={claimed ? "highlight" : "neutral"} className="justify-self-end border-0">
                   {claimed ? "Claimed" : "Unclaimed"}
-                </Chip>
+                </Badge>
                 {!claimed ? (
                   <button
                     type="button"

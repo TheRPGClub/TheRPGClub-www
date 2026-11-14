@@ -3,7 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import type { ImportCandidate, ImportMatchConfidence } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const CONFIDENCE_LABELS: Record<ImportMatchConfidence, string> = {
@@ -46,7 +46,7 @@ export function ImportCandidateList({
         <legend className="font-label flex flex-wrap items-center gap-2.5 text-[0.95rem] font-extrabold tracking-[0.08em]">
           Matches in GameDB
           {confidence && candidates.length > 0 && (
-            <Chip className="h-5.5 text-[0.72rem]">{CONFIDENCE_LABELS[confidence]}</Chip>
+            <Badge className="h-5.5 text-[0.72rem] border-0">{CONFIDENCE_LABELS[confidence]}</Badge>
           )}
         </legend>
 
@@ -92,9 +92,9 @@ export function ImportCandidateList({
                     </span>
                   </span>
                   {i === 0 && confidence === "exact" && (
-                    <Chip className="hidden h-5.5 text-[0.72rem] sm:inline-flex">
+                    <Badge className="hidden h-5.5 text-[0.72rem] sm:inline-flex border-0">
                       Exact match
-                    </Chip>
+                    </Badge>
                   )}
                 </label>
               </li>

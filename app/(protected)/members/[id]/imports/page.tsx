@@ -26,7 +26,7 @@ import {
   requiredAccount,
 } from "@/lib/imports/linked-account";
 import { ImportTemplate } from "@/components/templates/import-template";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 
 // The imports hub: any open import leads as a yellow progress panel (it's
@@ -230,9 +230,9 @@ function ImportKindRow({
       <div className="flex flex-col items-start gap-2 md:items-end md:text-right">
         {active ? (
           <>
-            <Chip tone="highlight">
+            <Badge tone="highlight" className="border-0">
               {IMPORT_STATUS_LABELS[active.status] ?? active.status}
-            </Chip>
+            </Badge>
             <small className="text-[0.8rem] text-faint-foreground">
               Started {DATE.format(new Date(active.created_at))} ·{" "}
               {importItemCount(kind, active.total_count)}

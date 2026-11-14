@@ -12,7 +12,7 @@ import type { SetTint } from "@/lib/achievements/tint-color";
 import { FoilStamp } from "@/components/achievements/foil-stamp";
 import { ProviderBadge } from "@/components/achievements/provider-badge";
 import { MemberAvatar } from "@/components/issue/member-cover";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -71,7 +71,7 @@ export function SetHeader({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {badge}
             <ProviderBadge provider={set.provider} />
-            {set.platform_label && <Chip>{set.platform_label}</Chip>}
+            {set.platform_label && <Badge className="border-0">{set.platform_label}</Badge>}
             <Link
               href={memberAchievementsHref(userId)}
               className="font-label flex items-center gap-2 text-[0.95rem] text-dim-foreground transition-colors hover:text-highlight"

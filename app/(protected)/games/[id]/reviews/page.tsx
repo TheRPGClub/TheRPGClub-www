@@ -15,7 +15,7 @@ import type {
 import { paginationOf } from "@/lib/api/pagination";
 import { GameReviewsList } from "@/components/member/game-reviews-list";
 import { ListPagination } from "@/components/list-pagination";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { GameCover, GameHeadline } from "@/components/issue/game-cover";
 import { GameStrip } from "@/components/issue/game-strip";
 import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
@@ -221,9 +221,9 @@ export default async function GameReviewsPage({
               fallbackClassName="text-sm lg:text-[2rem]"
             />
             {winChip && (
-              <Chip tone={winChip.tone} className="absolute bottom-3 left-3 hidden lg:inline-flex">
+              <Badge tone={winChip.tone} className="absolute bottom-3 left-3 hidden lg:inline-flex border-0">
                 {winChip.label}
-              </Chip>
+              </Badge>
             )}
           </div>
           <div className="min-w-0">

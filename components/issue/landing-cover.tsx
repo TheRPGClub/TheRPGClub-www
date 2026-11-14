@@ -1,82 +1,15 @@
-import { ArrowRight } from "lucide-react";
 import type { PublicWinner } from "@/lib/api/types";
-import { ButtonLink } from "@/components/ui/button";
 import { Starburst } from "@/components/issue/starburst";
+import { LandingCoverArt } from "@/components/issue/landing-cover-art";
+import { LandingPitch } from "@/components/issue/landing-pitch";
 import { cn } from "@/lib/utils";
 
 // The landing's opening spread. With this round's Game of the Month in hand
 // it is a magazine cover: the winner's key art full-bleed under the masthead,
-// stamped with the GOTM starburst. LandingPitch is the masthead, headline and
-// calls to action, shared with the flat fallback hero in app/(public)/page.tsx.
-
-const ctaClass = "h-13 px-6 text-lg max-sm:w-full";
-
-export function LandingPitch({
-  signInHref,
-  profileHref,
-  className,
-}: {
-  signInHref: string;
-  profileHref: string | null;
-  className?: string;
-}) {
-  return (
-    <div className={cn("flex flex-col", className)}>
-      <p
-        aria-hidden
-        className="font-headline text-[5.75rem] leading-[0.8] tracking-[-0.01em] sm:text-[8rem] xl:text-[9.75rem]"
-      >
-        The <span className="text-gotm">RPG</span>
-        <br />
-        Club
-      </p>
-      <h1 className="font-headline mt-12 max-w-[15ch] text-[2.75rem] leading-[0.92] text-balance sm:mt-16 sm:text-[4rem]">
-        <span className="sr-only">The RPG Club: </span>
-        An <span className="text-gotm">RPG</span> and a{" "}
-        <span className="text-nr-soft">wildcard</span>, every month.{" "}
-        <span className="text-highlight">Played together.</span>
-      </h1>
-      <p className="mt-5 max-w-[50ch] text-base text-dim-foreground sm:text-[1.05rem]">
-        The RPG Club is a Discord community that votes on a Game of the Month
-        and plays it together, with a second pick for everything that
-        isn&apos;t an RPG. This site is the club&apos;s hub: the current round,
-        the ballot, every past winner, and every member&apos;s shelf.
-      </p>
-      <div className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-        <ButtonLink
-          render={<a />}
-          href={signInHref}
-          variant="highlight"
-          size="lg"
-          className={ctaClass}
-        >
-          Sign in with Discord
-          <ArrowRight data-icon="inline-end" />
-        </ButtonLink>
-        {profileHref ? (
-          <ButtonLink
-            href={profileHref}
-            variant="outline"
-            size="lg"
-            className={ctaClass}
-          >
-            My Profile
-          </ButtonLink>
-        ) : (
-          <ButtonLink
-            render={<a />}
-            href="#how"
-            variant="outline"
-            size="lg"
-            className={ctaClass}
-          >
-            How the club works
-          </ButtonLink>
-        )}
-      </div>
-    </div>
-  );
-}
+// stamped with the GOTM starburst. LandingPitch (landing-pitch.tsx) is the
+// masthead, headline and calls to action, shared with the flat fallback hero
+// in app/(public)/page.tsx, which still imports it from here.
+export { LandingPitch };
 
 export function LandingCover({
   lead,
@@ -94,32 +27,9 @@ export function LandingCover({
   // A notice slip (sign-in failed), pinned over the cover art.
   notice?: React.ReactNode;
 }) {
-  const art = lead.art_url;
-
   return (
     <section className="relative isolate flex flex-col overflow-hidden md:min-h-[53.75rem]">
-      {art ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={art}
-          alt=""
-          className="absolute inset-x-0 top-0 -z-20 h-[32.5rem] w-full object-cover object-[70%_20%] md:h-full md:object-[62%_30%]"
-        />
-      ) : (
-        // No key art: the winner's name, set huge in the art's place.
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 -z-20 flex h-[32.5rem] items-center justify-end overflow-hidden bg-card md:inset-y-0 md:left-[40%] md:h-full"
-        >
-          <span className="font-headline -mr-[0.06em] max-w-[9ch] text-right text-[7rem] leading-[0.85] text-balance text-muted md:text-[11rem] xl:text-[14rem]">
-            {lead.title}
-          </span>
-        </div>
-      )}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 -z-10 h-[32.5rem] bg-[linear-gradient(0deg,var(--color-background)_0%,color-mix(in_oklab,var(--color-background)_92%,transparent)_40%,color-mix(in_oklab,var(--color-background)_10%,transparent)_70%,color-mix(in_oklab,var(--color-background)_50%,transparent)_100%)] md:h-full md:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_86%,transparent)_36%,color-mix(in_oklab,var(--color-background)_12%,transparent)_70%,color-mix(in_oklab,var(--color-background)_30%,transparent)_100%),linear-gradient(0deg,var(--color-background)_0%,transparent_34%),linear-gradient(180deg,color-mix(in_oklab,var(--color-background)_70%,transparent)_0%,transparent_22%)]"
-      />
+      <LandingCoverArt lead={lead} />
 
       <Starburst
         track="gotm"

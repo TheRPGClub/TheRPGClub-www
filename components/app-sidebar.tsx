@@ -30,7 +30,7 @@ import {
   type FeatureKey,
   type SessionFeature,
 } from "@/lib/features";
-import { NAV_BADGE_CLASS } from "@/components/feature/preview-badge";
+import { NavBadge } from "@/components/feature/preview-badge";
 import {
   Award,
   BellRing,
@@ -231,10 +231,10 @@ export function AppSidebar({
                       {(preview || (href === VOTING_HREF && votingOpen)) && (
                         <span className="ml-auto flex gap-1">
                           {preview && (
-                            <span className={NAV_BADGE_CLASS}>Preview</span>
+                            <NavBadge>Preview</NavBadge>
                           )}
                           {href === VOTING_HREF && votingOpen && (
-                            <span className={NAV_BADGE_CLASS}>Open</span>
+                            <NavBadge>Open</NavBadge>
                           )}
                         </span>
                       )}

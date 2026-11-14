@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { GameKey } from "@/lib/api/types";
 import { platformFamily, redeemLink, shortDate } from "@/lib/giveaways";
 import { GameCover, GameHeadline } from "@/components/issue/game-cover";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { BotJobStatus } from "@/components/bot-job-status";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
@@ -80,9 +80,9 @@ export function UnwrappedKey({
           <GameHeadline title={title} as="h2" className="text-5xl leading-[0.9] sm:text-6xl" />
           <div className="mt-3.5 mb-5 flex flex-wrap items-center gap-2">
             <PlatformChip ink={family.ink}>{gameKey.platform}</PlatformChip>
-            {gameKey.region !== "Global" && <Chip>{gameKey.region}</Chip>}
-            <Chip>From {donorName}</Chip>
-            {gameKey.claimed_at && <Chip>Claimed {shortDate(gameKey.claimed_at)}</Chip>}
+            {gameKey.region !== "Global" && <Badge className="border-0">{gameKey.region}</Badge>}
+            <Badge className="border-0">From {donorName}</Badge>
+            {gameKey.claimed_at && <Badge className="border-0">Claimed {shortDate(gameKey.claimed_at)}</Badge>}
           </div>
 
           <p className="font-label mb-1.5 text-sm text-faint-foreground">Your key</p>

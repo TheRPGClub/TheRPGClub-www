@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Game } from "@/lib/api/types";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { splitGameTitle } from "@/components/issue/game-cover";
 import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
 import { cn } from "@/lib/utils";
@@ -60,11 +60,11 @@ export function GameStrip({
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             {badge}
             {trackChips(game, { short: true }).map((chip) => (
-              <Chip key={chip.tone} tone={chip.tone}>
+              <Badge key={chip.tone} tone={chip.tone} className="border-0">
                 {chip.label}
-              </Chip>
+              </Badge>
             ))}
-            {year && <Chip>{year}</Chip>}
+            {year && <Badge className="border-0">{year}</Badge>}
           </div>
         </div>
       </div>

@@ -10,7 +10,7 @@ import {
   setBadges,
   setTitle,
 } from "@/lib/achievements";
-import { Chip } from "@/components/issue/chip";
+import { Badge } from "@/components/ui/badge";
 import { ReviewerAvatar } from "@/components/issue/review-meta";
 import {
   Tooltip,
@@ -66,7 +66,7 @@ export function GameSetCard({
           </h3>
           <div className="flex flex-wrap items-center gap-1.5">
             <ProviderBadge provider={set.provider} />
-            {set.platform_label && <Chip>{set.platform_label}</Chip>}
+            {set.platform_label && <Badge className="border-0">{set.platform_label}</Badge>}
           </div>
           <p className="font-label text-[0.8rem] text-faint-foreground">
             {set.achievements_count}{" "}
