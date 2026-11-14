@@ -56,13 +56,20 @@ function ToggleGroup({
   )
 }
 
+// www#98: what a pressed item stands for, drawn by each Theme by
+// [data-slot="toggle-group-item"][data-tone]: a Feature Flag state (the
+// "state" group) or a voting track (the "track" group).
+type ToggleGroupItemTone = "live" | "preview" | "off" | "gotm" | "nr"
+
 function ToggleGroupItem({
   className,
   children,
   variant = "default",
   size = "default",
+  tone,
   ...props
-}: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) {
+}: TogglePrimitive.Props &
+  VariantProps<typeof toggleVariants> & { tone?: ToggleGroupItemTone }) {
   const context = React.useContext(ToggleGroupContext)
 
   return (
@@ -71,6 +78,7 @@ function ToggleGroupItem({
       data-variant={context.variant || variant}
       data-size={context.size || size}
       data-spacing={context.spacing}
+      data-tone={tone}
       className={cn(
         "shrink-0 group-data-[spacing=0]/toggle-group:px-2 focus:z-10 focus-visible:z-10 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-1.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-1.5 group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0 group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t",
         toggleVariants({

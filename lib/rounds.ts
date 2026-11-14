@@ -1,4 +1,5 @@
-import type { GotmEntry, GotmRound, NrGotmEntry, VotingCategory } from "@/lib/api/types";
+import type { RoundEntryEdit } from "@/app/actions/rounds";
+import type { Game, GotmEntry, GotmRound, Nomination, NrGotmEntry, VotingCategory } from "@/lib/api/types";
 
 // Pure helpers behind the rounds and nominations admin pages
 // (/admin/rounds, /admin/nominations).
@@ -25,6 +26,12 @@ export function trackFromSlug(slug: string | undefined): VotingCategory | null {
 
 export function roundEditHref(category: VotingCategory, round: number): string {
   return `/admin/rounds/${TRACK_SLUG[category]}/${round}`;
+}
+
+// The add form, prefilled for one track's round: `?track=nr-gotm&round=143&month=November 2026`.
+export function roundPrefillHref(category: VotingCategory, round: number, monthYear: string): string {
+  const ps = new URLSearchParams({ track: TRACK_SLUG[category], round: String(round), month: monthYear });
+  return `/admin/rounds?${ps}#add`;
 }
 
 const MONTHS = [
@@ -125,4 +132,88 @@ export function duplicateGames(gameIds: readonly (number | null)[]): Map<number,
     at.set(id, [...(at.get(id) ?? []), i]);
   });
   return new Map([...at].filter(([, slots]) => slots.length > 1));
+}
+
+// One slot of a track's round in the editor: its entry, the game it holds
+// (null until a game is picked when the API answered without it) and its
+// Reddit URL as typed.
+export interface RoundSlot {
+  id: number;
+  index: number;
+  game: Game | null;
+  gameId: number | null;
+  reddit: string;
+}
+
+export function roundSlotOf(entry: GotmEntry | NrGotmEntry): RoundSlot {
+  return {
+    id: roundEntryId(entry),
+    index: entry.game_index,
+    game: entry.game ?? null,
+    gameId: entry.gamedb_game_id,
+    reddit: entry.reddit_url ?? "",
+  };
+}
+
+// What changed in a slot since it was saved, as the PATCH body wants it.
+export function roundEntryEdit(slot: RoundSlot, saved: RoundSlot): RoundEntryEdit | null {
+  const edit: RoundEntryEdit = { id: slot.id };
+  if (slot.gameId !== saved.gameId && slot.gameId !== null) edit.gamedb_game_id = slot.gameId;
+  if (slot.reddit.trim() !== saved.reddit.trim()) edit.reddit_url = slot.reddit;
+  return Object.keys(edit).length > 1 ? edit : null;
+}
+
+// Co-winners read A, B, C as on the GOTM history.
+export const SLOT_TAG = "ABCDEFGHIJ";
+
+export function slotName(i: number, count: number): string {
+  return count > 1 ? `Game ${SLOT_TAG[i] ?? i + 1}` : "Game";
+}
+
+// "A", "A and B", "A, B and C".
+export function listNames(names: readonly string[]): string {
+  if (names.length <= 1) return names.join("");
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+// The editor's message when a save is refused partway: the API's error, the
+// slots that saved and the ones that didn't (by slot name, over `slotIds` in
+// slot order), and whether the round below was reloaded from the server
+// (`reloaded` undefined when the API didn't say).
+export function roundSaveFailure({
+  slotIds,
+  triedIds,
+  savedIds,
+  error,
+  reloaded,
+}: {
+  slotIds: readonly number[];
+  triedIds: readonly number[];
+  savedIds: readonly number[];
+  error?: string;
+  reloaded: boolean | undefined;
+}): string {
+  const saved = new Set(savedIds);
+  const tried = new Set(triedIds);
+  const names = (pick: (id: number) => boolean) =>
+    listNames(slotIds.flatMap((id, i) => (pick(id) ? [slotName(i, slotIds.length)] : [])));
+  const savedNames = names((id) => saved.has(id));
+  const unsavedNames = names((id) => tried.has(id) && !saved.has(id));
+  const outcome = savedNames
+    ? `Saved ${savedNames}; ${unsavedNames} not saved.`
+    : triedIds.length > 1
+      ? "Nothing was saved."
+      : "";
+  const reload =
+    reloaded === undefined
+      ? ""
+      : reloaded
+        ? " The round below is reloaded from the server."
+        : " Refresh the page to see what the server holds.";
+  return [error ?? "Couldn't save the round.", outcome].filter(Boolean).join(" ") + reload;
+}
+
+// Who nominated it: their display name, else their username, else the id.
+export function nominatorName(n: Nomination): string {
+  return n.user?.global_name || n.user?.username || n.user_id;
 }

@@ -93,6 +93,24 @@ const buttonVariants = cva(
         "card-action-destructive": "",
         // A page search bar's own submit, beside the bar (GOTM history).
         search: "",
+        // www#98: the staff desks.
+        // A list row's own tools (move a game up or down): a ghost resting
+        // in the dim ink, a step louder than a tool on content.
+        row: "",
+        // Its counterpart that removes the row (remove a game, delete a
+        // nomination).
+        "destructive-row": "",
+        // Opens or closes a note on a row (a Feature Flag's reason): rests
+        // in the faint ink and lifts onto the muted ground on hover and
+        // while open (aria-expanded); data-filled marks a note holding text.
+        note: "",
+        // An action inside running text ("Drag, or type a date"): the
+        // text's own face and ink, underlined in GOTM red. Pair with
+        // size="inline".
+        "inline-link": "",
+        // An action printed on a poster proof (open the live event's
+        // thread): a paper block on the art, yellow on hover.
+        poster: "",
       },
       size: {
         default:
@@ -110,6 +128,10 @@ const buttonVariants = cva(
         // row, a tile, a card) that is the control: the type, wrapping and
         // alignment it inherits stay as they are, and a press doesn't nudge.
         bare: "shrink border-0 text-[length:inherit] whitespace-normal select-auto items-stretch justify-normal active:not-aria-[haspopup]:translate-y-0",
+        // www#98: no box of its own, sitting in a line of text and taking
+        // its type; a press doesn't nudge it.
+        inline:
+          "inline-block h-auto border-0 p-0 text-[length:inherit] active:not-aria-[haspopup]:translate-y-0",
       },
     },
     defaultVariants: {

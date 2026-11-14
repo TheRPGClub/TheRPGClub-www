@@ -10,6 +10,9 @@ type TextareaVariant =
   | "note"
   // A field on a page whose work is writing one thing (Suggest something).
   | "compose"
+  // www#98: a field set into a panel that already has the field's ground
+  // (a nomination's delete reason, in its card).
+  | "inset"
 
 function Textarea({
   className,

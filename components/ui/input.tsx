@@ -28,6 +28,10 @@ type InputVariant =
   // A number set into a row (a scorecard's score and weight): no field until
   // hover or focus.
   | "readout"
+  // www#98: a form's lead field set big in the headline face (a live
+  // event's topic): no box, a strong rule under it that turns yellow on
+  // focus.
+  | "headline"
 
 function Input({
   className,

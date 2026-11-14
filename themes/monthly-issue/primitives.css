@@ -964,5 +964,105 @@
         [data-slot="toggle"][data-variant="tag"] {
             @apply rounded-xs font-bold text-(--tag-ink) shadow-[inset_0_0_0_1.5px_var(--tag-ink)] transition-colors hover:bg-muted hover:text-(--tag-ink) aria-pressed:bg-(--tag-ink) aria-pressed:text-background aria-pressed:shadow-none data-pressed:bg-(--tag-ink) data-pressed:text-background data-pressed:shadow-none;
         }
+
+        /* Staff desks (www#98). The Feature Flag state control: segments on
+           an ink-2 well, the pressed one an ink block stroked in its state's
+           ink (Live done green, Preview yellow, Off masthead red), the Off
+           segment dashed red while its confirm is open. The rounds form's
+           track picker fills the pressed track in its colour. The flags
+           ledger: rows never light, the coverage group on a faint well
+           behind a strong rule. A row's tools rest in the dim ink; the
+           reason note rests faint and turns yellow while it holds text. The
+           live event's topic is a headline over a strong rule; the
+           nomination reason sits on the card's ground; "type a date" is an
+           underline in running text. */
+        [data-slot="toggle-group"][data-variant="state"] {
+            @apply rounded-sm bg-card shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+        }
+        [data-slot="toggle-group-item"][data-variant="state"] {
+            @apply font-label rounded-sm text-faint-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-auto;
+            &[aria-pressed="true"] {
+                @apply bg-background font-extrabold shadow-[inset_0_0_0_2px_currentColor] hover:bg-background;
+            }
+            &[data-tone="live"][aria-pressed="true"] {
+                @apply text-ok hover:text-ok;
+            }
+            &[data-tone="preview"][aria-pressed="true"] {
+                @apply text-highlight hover:text-highlight;
+            }
+            &[data-tone="off"][aria-pressed="true"] {
+                @apply text-gotm hover:text-gotm;
+            }
+            &[aria-expanded="true"] {
+                @apply text-gotm outline-[1.5px] -outline-offset-[3px] outline-gotm outline-dashed hover:text-foreground;
+            }
+        }
+        [data-slot="toggle-group"][data-variant="track"] {
+            @apply rounded-sm border-border-strong;
+        }
+        [data-slot="toggle-group-item"][data-variant="track"] {
+            @apply cursor-pointer rounded-xs font-bold text-dim-foreground hover:bg-transparent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/60 disabled:pointer-events-auto disabled:opacity-100;
+            &[data-tone="gotm"][aria-pressed="true"] {
+                @apply bg-gotm text-foreground hover:bg-gotm;
+            }
+            &[data-tone="nr"][aria-pressed="true"] {
+                @apply bg-nr text-foreground hover:bg-nr;
+            }
+        }
+        [data-slot="table"][data-variant="ledger"] {
+            [data-slot="table-row"] {
+                @apply hover:bg-transparent has-aria-expanded:bg-transparent;
+            }
+            [data-slot="table-header"] [data-slot="table-head"] {
+                @apply border-border;
+                &[data-variant="grouped"] {
+                    @apply border-border-strong text-dim-foreground;
+                }
+                &[data-variant="grouped"][scope="colgroup"] {
+                    @apply text-foreground;
+                }
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                @apply [font-family:inherit] font-normal normal-case [letter-spacing:inherit] text-inherit;
+            }
+            [data-slot="table-cell"][data-variant="grouped"] {
+                @apply bg-foreground/[0.018] max-[85rem]:bg-transparent min-[85rem]:border-border;
+            }
+        }
+        [data-slot="button"] {
+            &[data-variant="row"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 text-dim-foreground;
+            }
+            &[data-variant="destructive-row"] {
+                @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 hover:bg-muted aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 hover:text-destructive text-dim-foreground;
+            }
+            &:is([data-variant="row"], [data-variant="destructive-row"]):is([data-size="sm"], [data-size="icon-sm"]) {
+                @apply rounded-[min(var(--radius-md),12px)];
+            }
+            &[data-variant="note"] {
+                @apply rounded-sm border-0 text-faint-foreground hover:bg-muted hover:text-foreground active:not-aria-[haspopup]:translate-y-0 disabled:pointer-events-auto;
+                &[aria-expanded="true"] {
+                    @apply bg-muted text-foreground;
+                }
+                &[data-filled] {
+                    @apply text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)] hover:text-highlight;
+                }
+                &[data-filled][aria-expanded="true"] {
+                    @apply text-foreground hover:text-highlight;
+                }
+            }
+            &[data-variant="poster"] {
+                @apply font-label rounded-sm border-0 bg-foreground font-extrabold text-background hover:bg-highlight active:not-aria-[haspopup]:translate-y-0 focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
+            }
+            &[data-variant="inline-link"] {
+                @apply underline decoration-gotm underline-offset-3 hover:text-highlight focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
+            }
+        }
+        [data-slot="input"][data-variant="headline"] {
+            @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;
+        }
+        [data-slot="textarea"][data-variant="inset"] {
+            @apply bg-background;
+        }
     }
 }

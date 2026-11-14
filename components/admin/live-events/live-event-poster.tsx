@@ -3,6 +3,7 @@
 import { ArrowUpRight } from "lucide-react";
 import { useIsClient } from "@/hooks/use-is-client";
 import { clockReading, type LiveEventLinks } from "@/lib/live-events";
+import { ButtonLink } from "@/components/ui/button";
 
 // The live event's poster proof: the image (or plain ink when there is
 // none) under an ink scrim from the foot, the topic in Anton, and when it
@@ -63,14 +64,14 @@ export function LiveEventPoster({
 
 function PosterLink({ href, children }: { href: string; children: string }) {
   return (
-    <a
+    <ButtonLink
       href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="font-label inline-flex h-8 items-center gap-1 rounded-sm bg-foreground px-3 text-[0.9rem] font-extrabold text-background hover:bg-highlight"
+      render={<a target="_blank" rel="noreferrer" />}
+      variant="poster"
+      className="h-8 gap-1 px-3 text-[0.9rem]"
     >
       {children}
       <ArrowUpRight aria-hidden className="size-4" />
-    </a>
+    </ButtonLink>
   );
 }

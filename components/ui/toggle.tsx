@@ -20,6 +20,13 @@ const toggleVariants = cva(
         // www#97: a tag picked onto something (a Suggestion's types), drawn
         // in its own ink: the caller sets --tag-ink.
         tag: "",
+        // www#98: the staff desks.
+        // A thing's state, picked in place (a Feature Flag's Off / Preview /
+        // Live): each pressed segment wears its state's ink (tone).
+        state: "",
+        // The voting track a form is for (GOTM or NR-GOTM): the pressed one
+        // is filled in its track's colour (tone).
+        track: "",
       },
       size: {
         default:
