@@ -15,6 +15,8 @@ type InputGroupVariant =
   | "default"
   // A page's own search bar (the game index).
   | "search"
+  // The quick games search in the app's top bar.
+  | "quick-search"
 
 function InputGroup({
   className,
