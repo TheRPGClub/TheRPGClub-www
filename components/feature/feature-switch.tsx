@@ -1,12 +1,13 @@
 "use client";
 
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 // The settings on/off switch: a hard-cornered track that fills highlighter
-// yellow when on (the member's own choice) with an ink block riding to the
-// right, and an ink-3 well with a muted block on the left when off. The
-// state is also spelled out in label type beside it, so it never rests on
-// colour alone. An unavailable switch keeps its position but dims and does
+// yellow when on (the member's own choice), with the state also spelled out in
+// label type beside it, so it never rests on colour alone. The label and the
+// track are one control (the label passes its clicks, hover and focus ring to
+// the switch). An unavailable switch keeps its position but dims and does
 // nothing; the row says why (see `describedBy`).
 export function FeatureSwitch({
   checked,
@@ -29,23 +30,10 @@ export function FeatureSwitch({
   describedBy?: string;
 }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-labelledby={labelledBy}
-      aria-describedby={describedBy}
-      aria-busy={pending || undefined}
-      // aria-disabled, not disabled: a disabled button drops the focus it
-      // just took, so a keyboard member would lose their place on each save,
-      // and an unavailable switch stays reachable so its reason is read out.
-      aria-disabled={pending || unavailable || undefined}
-      onClick={() => {
-        if (!pending && !unavailable) onChange(!checked);
-      }}
+    <label
       className={cn(
-        "group/switch -my-2 -mr-2 flex shrink-0 items-center gap-3 rounded-sm py-2 pr-2 pl-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-        unavailable ? "cursor-not-allowed opacity-45" : "aria-disabled:cursor-progress",
+        "-my-2 -mr-2 flex shrink-0 items-center gap-3 rounded-sm py-2 pr-2 pl-3 has-focus-visible:ring-3 has-focus-visible:ring-ring/50",
+        unavailable ? "cursor-not-allowed opacity-45" : pending && "cursor-progress",
       )}
     >
       <span
@@ -57,26 +45,22 @@ export function FeatureSwitch({
       >
         {pending ? "Saving" : checked ? onLabel : offLabel}
       </span>
-      <span
-        aria-hidden
-        className={cn(
-          "relative h-6 w-11 rounded-[3px] transition-colors duration-200",
-          checked
-            ? cn("bg-highlight", !unavailable && "group-hover/switch:bg-highlight/85")
-            : cn(
-                "bg-muted shadow-[inset_0_0_0_1px_var(--color-border-strong)]",
-                !unavailable && "group-hover/switch:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)]",
-              ),
-          pending && "opacity-70",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-[3px] left-[3px] size-[18px] rounded-xs motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]",
-            checked ? "translate-x-5 bg-background" : "translate-x-0 bg-faint-foreground",
-          )}
-        />
-      </span>
-    </button>
+      <Switch
+        size="lg"
+        variant="labelled"
+        checked={checked}
+        onCheckedChange={(next) => {
+          if (!pending && !unavailable) onChange(next);
+        }}
+        aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
+        aria-busy={pending || undefined}
+        // aria-disabled, not disabled: a disabled switch drops the focus it
+        // just took, so a keyboard member would lose their place on each save,
+        // and an unavailable switch stays reachable so its reason is read out.
+        aria-disabled={pending || unavailable || undefined}
+        className={cn(pending && "opacity-70")}
+      />
+    </label>
   );
 }

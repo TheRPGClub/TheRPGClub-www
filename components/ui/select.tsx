@@ -37,6 +37,8 @@ type SelectTriggerVariant =
   | "clearable"
   // A blank in a sentence the member completes (the backlog picker).
   | "blank"
+  // www#100: a field on the yellow panel (the donated key's region).
+  | "inverse"
 
 function SelectTrigger({
   className,

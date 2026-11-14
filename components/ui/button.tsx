@@ -61,6 +61,19 @@ const buttonVariants = cva(
         // A picture that is the button: the look is its content's (a frame
         // in the completed reel's filmstrip).
         frame: "",
+        // www#100: journals, giveaways and the Feature switches.
+        // An icon tool on the yellow panel (show the key being donated).
+        "inverse-ghost": "focus-visible:ring-background/30",
+        // A small tool inside a field's picked value (change the picked
+        // game): a ghost resting in the dim ink.
+        "field-tool": "",
+        // The main action on a light object that the viewer can't take yet
+        // (Claim without the Members role): greyed into the object, and
+        // always disabled.
+        "inverse-locked": "disabled:opacity-100",
+        // A quiet text action on a light object (an Admin's revoke on a
+        // gift tag): the object's ink, softened until hovered.
+        "inverse-link": "focus-visible:ring-background/30",
       },
       size: {
         default:

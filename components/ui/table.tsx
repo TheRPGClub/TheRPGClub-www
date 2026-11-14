@@ -13,6 +13,12 @@ type TableVariant =
   | "inset"
   // The problems inside a destructive notice (a rejected file's rows).
   | "destructive"
+  // www#100: a member's own records, read row by row (their claimed keys):
+  // quiet heads with no rule under them, rows that don't light.
+  | "records"
+  // www#100: a back-of-book index (the journal catalogue): heads on the
+  // heavy paper rule, rows that light on hover.
+  | "index"
 
 function Table({
   className,

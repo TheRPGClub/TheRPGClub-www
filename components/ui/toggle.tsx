@@ -11,6 +11,9 @@ const toggleVariants = cva(
       variant: {
         default: "",
         outline: "border",
+        // www#100: one of a set of choices on the yellow panel (the donated
+        // key's platform).
+        inverse: "focus-visible:ring-background/30",
       },
       size: {
         default:

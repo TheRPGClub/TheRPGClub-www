@@ -1,6 +1,5 @@
 "use client";
 
-import { useOptimistic, useState, useTransition } from "react";
 import { savePreferenceAction } from "@/app/actions/feature-preferences";
 import {
   applyPreferenceChange,
@@ -13,7 +12,8 @@ import { PreviewBadge } from "@/components/feature/preview-badge";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { NewsCategorySwitches } from "@/components/feature/news-category-switches";
 import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
-import { cn } from "@/lib/utils";
+import { PreferenceRow } from "@/components/feature/preference-row";
+import { useSwitchSaves } from "@/hooks/use-switch-saves";
 
 const SHOW_PREVIEW = "show_preview";
 const NEWS_HUB = "news_hub";
@@ -22,12 +22,8 @@ function changeId(change: PreferenceChange): string {
   return change.kind === "feature" ? change.key : SHOW_PREVIEW;
 }
 
-// The member's switches. Each saves the moment it is flipped: the switch
-// moves at once (an optimistic change over the page's own read), holds while
-// the API answers, and springs back with the reason if the save fails. The
-// action refreshes the page, so `initial` is the API's fresh document once a
-// save lands and the form follows it. Rows save independently, and a pending
-// row keeps its optimistic position over a refresh another row brought in.
+// The member's switches, each saving the moment it is flipped (see
+// useSwitchSaves).
 //
 // The News Hub row carries its News Category switches nested under it. They
 // render only when the API lists the News Hub (the member can use it), and
@@ -40,39 +36,12 @@ export function FeaturePreferencesForm({
   // The member's News Category Preferences; null when the read failed.
   newsCategories: NewsCategoryPreferences | null;
 }) {
-  const [prefs, applyOptimistic] = useOptimistic(initial, applyPreferenceChange);
-  const [pending, setPending] = useState<ReadonlySet<string>>(new Set());
-  const [errors, setErrors] = useState<Readonly<Record<string, string>>>({});
-  const [, startTransition] = useTransition();
-
-  function save(change: PreferenceChange) {
-    const id = changeId(change);
-    setPending((s) => new Set(s).add(id));
-    setErrors((e) => {
-      if (!(id in e)) return e;
-      const next = { ...e };
-      delete next[id];
-      return next;
-    });
-
-    startTransition(async () => {
-      applyOptimistic(change);
-      let result: Awaited<ReturnType<typeof savePreferenceAction>>;
-      try {
-        result = await savePreferenceAction(change);
-      } catch {
-        result = { ok: false, error: "Couldn't save that switch. Try again." };
-      }
-      if (!result.ok) {
-        setErrors((e) => ({ ...e, [id]: result.error ?? "Couldn't save that switch. Try again." }));
-      }
-      setPending((s) => {
-        const next = new Set(s);
-        next.delete(id);
-        return next;
-      });
-    });
-  }
+  const { state: prefs, pending, errors, save } = useSwitchSaves({
+    initial,
+    apply: applyPreferenceChange,
+    action: savePreferenceAction,
+    idOf: changeId,
+  });
 
   const staff = prefs.show_preview_features !== null;
 
@@ -144,59 +113,5 @@ export function FeaturePreferencesForm({
         </ul>
       )}
     </>
-  );
-}
-
-function PreferenceRow({
-  id,
-  name,
-  badge,
-  where,
-  dim,
-  error,
-  className,
-  nested,
-  children,
-}: {
-  id: string;
-  name: string;
-  badge: React.ReactNode;
-  where: string;
-  dim: boolean;
-  error?: string;
-  className?: string;
-  // Sub-settings that belong to this row, under its error line.
-  nested?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <li className={cn("border-b border-border py-3.5", className)}>
-      <div className="flex items-center justify-between gap-5">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <span
-              id={`pref-${id}-name`}
-              className={cn(
-                "font-label text-[0.95rem] font-bold transition-colors",
-                dim ? "text-dim-foreground" : "text-foreground",
-              )}
-            >
-              {name}
-            </span>
-            {badge}
-          </div>
-          <p id={`pref-${id}-where`} className="mt-0.5 text-sm text-dim-foreground">
-            {where}
-          </p>
-        </div>
-        {children}
-      </div>
-      {error && (
-        <p role="alert" className="mt-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
-      {nested}
-    </li>
   );
 }

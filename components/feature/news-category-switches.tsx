@@ -1,25 +1,23 @@
 "use client";
 
-import { useId, useOptimistic, useState, useTransition } from "react";
+import { useId } from "react";
 import { saveNewsCategoryAction } from "@/app/actions/news-category-preferences";
 import {
   applyNewsCategoryChange,
-  type NewsCategoryChange,
   type NewsCategoryPreferences,
 } from "@/lib/news-category-preferences";
 import { newsInk } from "@/lib/news";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { InkSquare } from "@/components/news/ink-square";
+import { useSwitchSaves } from "@/hooks/use-switch-saves";
 import { cn } from "@/lib/utils";
-
-const SAVE_FAILED = "Couldn't save that switch. Try again.";
 
 // The News Hub's own switches, indented under its Feature row on a paper-mute
 // rule: one line on what they do, then one plain row per News Category in
 // the API's order, each with its ink square. They save on flip exactly like
-// the Feature switches (optimistic, Saving while the API answers, back with
-// the reason on failure). While the member has the News Hub itself hidden
-// they stay in place but dimmed and inert, with the reason in one line.
+// the Feature switches (useSwitchSaves). While the member has the News Hub
+// itself hidden they stay in place but dimmed and inert, with the reason in
+// one line.
 // `prefs` null: the read failed, so the block says so instead.
 export function NewsCategorySwitches({
   initial,
@@ -69,39 +67,12 @@ function CategoryList({
   introId: string;
   reasonId: string;
 }) {
-  const [prefs, applyOptimistic] = useOptimistic(initial, applyNewsCategoryChange);
-  const [pending, setPending] = useState<ReadonlySet<string>>(new Set());
-  const [errors, setErrors] = useState<Readonly<Record<string, string>>>({});
-  const [, startTransition] = useTransition();
-
-  function save(change: NewsCategoryChange) {
-    const key = change.key;
-    setPending((s) => new Set(s).add(key));
-    setErrors((e) => {
-      if (!(key in e)) return e;
-      const next = { ...e };
-      delete next[key];
-      return next;
-    });
-
-    startTransition(async () => {
-      applyOptimistic(change);
-      let result: Awaited<ReturnType<typeof saveNewsCategoryAction>>;
-      try {
-        result = await saveNewsCategoryAction(change);
-      } catch {
-        result = { ok: false, error: SAVE_FAILED };
-      }
-      if (!result.ok) {
-        setErrors((e) => ({ ...e, [key]: result.error ?? SAVE_FAILED }));
-      }
-      setPending((s) => {
-        const next = new Set(s);
-        next.delete(key);
-        return next;
-      });
-    });
-  }
+  const { state: prefs, pending, errors, save } = useSwitchSaves({
+    initial,
+    apply: applyNewsCategoryChange,
+    action: saveNewsCategoryAction,
+    idOf: (change) => change.key,
+  });
 
   return (
     <ul aria-label="News Categories" aria-describedby={introId} className="mt-1.5">
