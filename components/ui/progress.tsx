@@ -18,6 +18,9 @@ type ProgressTone =
   | "destructive"
   // A bar on a light object (the yellow panel).
   | "inverse"
+  // www#96: a fill the caller sets with --progress-ink (an Achievement
+  // Set's game tint, a Rarity tier's ink).
+  | "tint"
 
 function Progress({
   className,
@@ -26,12 +29,15 @@ function Progress({
   tone = "default",
   size = "default",
   indicatorClassName,
+  trackClassName,
   ...props
 }: ProgressPrimitive.Root.Props & {
   tone?: ProgressTone
-  // lg: the heavier bar a page leads with (an import's count).
+  // lg: the heavier bar a page leads with (an import's count, an
+  // Achievement Set's progress).
   size?: "default" | "lg"
   indicatorClassName?: string
+  trackClassName?: string
 }) {
   return (
     <ProgressPrimitive.Root
@@ -43,7 +49,7 @@ function Progress({
       {...props}
     >
       {children}
-      <ProgressTrack className={cn(size === "lg" && "h-2")}>
+      <ProgressTrack className={cn(size === "lg" && "h-2", trackClassName)}>
         <ProgressIndicator className={indicatorClassName} />
       </ProgressTrack>
     </ProgressPrimitive.Root>

@@ -825,5 +825,74 @@
         [data-slot="input-group"][data-variant="quick-search"] {
             @apply focus-within:border-faint-foreground has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:none];
         }
+
+        /* The achievements area (www#96). */
+        /* Button: an item picked from a set (aria-pressed), size bare. The
+           inset yellow ring marks the pick, as a selection does app-wide;
+           focus shows the same ring. pick-row lights on hover and fills
+           while picked; pick-tile lights on hover; pick-card is a filled
+           card that lights on hover. */
+        [data-slot="button"] {
+            &[data-variant="pick"] {
+                @apply cursor-pointer rounded-md text-left transition-colors focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-row"] {
+                @apply cursor-pointer text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:bg-muted aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-tile"] {
+                @apply cursor-pointer rounded-md text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            &[data-variant="pick-card"] {
+                @apply cursor-pointer rounded-md bg-muted/60 text-left transition-colors hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:shadow-[inset_0_0_0_2px_var(--color-highlight)] aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+            /* Closes a card on the muted ground: faint ink, the card ground
+               on hover, a yellow focus outline. */
+            &[data-variant="dismiss"] {
+                @apply rounded-sm text-faint-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-highlight;
+            }
+        }
+        /* Tabs. chip: chips in the label voice, the current one ringed in
+           yellow. provider: folder tabs topped by their Provider's colour
+           (--tab-ink), the current one filled with it. index: folder tabs
+           on a page's top edge, the current one in the game tint
+           (--tab-ink, --tab-ink-foreground). Each shows focus as a yellow
+           outline. */
+        [data-slot="tabs-list"][data-variant="chip"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-sm bg-foreground/6 font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            &[data-active] {
+                @apply bg-transparent text-foreground shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+            }
+        }
+        [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-[3px] bg-card font-extrabold tracking-[0.06em] text-dim-foreground shadow-[inset_0_3px_0_var(--tab-ink)] transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight data-active:bg-(--tab-ink) data-active:text-provider-foreground data-active:shadow-none;
+        }
+        [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
+            @apply font-label rounded-t-md bg-card font-extrabold tracking-[0.06em] text-faint-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-highlight;
+            &[data-active] {
+                @apply bg-(--tab-ink) text-(--tab-ink-foreground) shadow-none;
+            }
+        }
+        /* Toggle quiet: the segment rests in the faint ink. */
+        [data-slot="toggle"][data-variant="quiet"],
+        [data-slot="toggle-group-item"][data-variant="quiet"] {
+            @apply text-faint-foreground transition-colors hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight aria-pressed:text-background data-pressed:text-background;
+        }
+        /* Progress: the tint tone fills with --progress-ink; its lg bar
+           keeps a hairline corner. */
+        [data-slot="progress"][data-tone="tint"] [data-slot="progress-indicator"] {
+            @apply bg-(--progress-ink);
+        }
+        [data-slot="progress"][data-tone="tint"][data-size="lg"] [data-slot="progress-track"] {
+            @apply rounded-[1px];
+        }
+        /* Hover card: an ink-2 card with the object lift, like the
+           dropdown menu; its trigger's focus outline follows small
+           corners. */
+        [data-slot="hover-card-content"] {
+            @apply rounded-md border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="hover-card-trigger"] {
+            @apply rounded-sm;
+        }
     }
 }

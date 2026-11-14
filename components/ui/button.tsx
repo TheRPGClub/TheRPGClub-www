@@ -61,6 +61,19 @@ const buttonVariants = cva(
         // A picture that is the button: the look is its content's (a frame
         // in the completed reel's filmstrip).
         frame: "",
+        // www#96: a whole item that is picked from a set (an Achievement in
+        // a set page's views, aria-pressed). Pass size="bare" and lay the
+        // item out yourself. pick: the selection ring alone; pick-row: a
+        // list row that lights on hover and fills while picked; pick-tile:
+        // a rounded tile that lights on hover; pick-card: a filled card that
+        // lights on hover.
+        pick: "",
+        "pick-row": "",
+        "pick-tile": "",
+        "pick-card": "",
+        // Closes a card lying on the muted ground (the picked Achievement's
+        // details).
+        dismiss: "",
       },
       size: {
         default:
@@ -72,6 +85,10 @@ const buttonVariants = cva(
         "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-7",
         "icon-lg": "size-9",
+        // www#96: no box of its own. The caller lays out a whole item (a
+        // row, a tile, a card) that is the control: the type, wrapping and
+        // alignment it inherits stay as they are, and a press doesn't nudge.
+        bare: "shrink border-0 text-[length:inherit] whitespace-normal select-auto items-stretch justify-normal active:not-aria-[haspopup]:translate-y-0",
       },
     },
     defaultVariants: {
