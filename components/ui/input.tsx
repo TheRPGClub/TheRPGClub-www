@@ -17,6 +17,12 @@ type InputVariant =
   // A file field: a dropped-in file on the page's ground, its button a
   // small control (an import's CSV upload).
   | "upload"
+  // www#94: a field inside something that already draws it (a scorecard
+  // row's rename, the rating's big readout): no rule, no ground of its own.
+  | "bare"
+  // A number set into a row (a scorecard's score and weight): no field until
+  // hover or focus.
+  | "readout"
 
 function Input({
   className,

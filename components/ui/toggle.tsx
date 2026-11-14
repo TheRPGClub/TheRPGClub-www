@@ -11,6 +11,9 @@ const toggleVariants = cva(
       variant: {
         default: "",
         outline: "border",
+        // www#94: a formatting button in an editor's toolbar (bold, a
+        // heading): quiet until hovered or pressed.
+        toolbar: "",
       },
       size: {
         default:
@@ -35,6 +38,7 @@ function Toggle({
   return (
     <TogglePrimitive
       data-slot="toggle"
+      data-variant={variant}
       className={cn(toggleVariants({ variant, size, className }))}
       {...props}
     />
