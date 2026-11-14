@@ -375,7 +375,7 @@ function NextVoteOp({
               const iso = localInputToOffsetIso(e.target.value);
               if (iso) setDraft(Date.parse(iso));
             }}
-            className="bg-background"
+            variant="inset"
           />
           <p id={`${id}-zone`} className="mt-1 text-[0.78rem] text-faint-foreground">
             The close moves with it, to the end of that weekend in club time.

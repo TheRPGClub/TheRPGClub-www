@@ -85,11 +85,11 @@ export function MemberAvatar({
   fallbackClassName?: string;
 }) {
   return (
-    <Avatar className={cn("size-10 after:hidden", className)}>
+    <Avatar variant="inverse" className={cn("size-10 after:hidden", className)}>
       <AvatarImage src={`${API_BASE}/api/v1/users/${userId}/avatar`} alt="" />
       <AvatarFallback
         className={cn(
-          "font-headline bg-foreground text-background",
+          "font-headline",
           fallbackClassName,
         )}
       >

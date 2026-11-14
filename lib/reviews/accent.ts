@@ -31,7 +31,9 @@ export interface ReviewAccentStyle {
   // game page's hero do. Distinct from `glow`, which is a drop-shadow on the
   // score readout — same word, different job.
   wash: string;
-  thumb: string;
+  // The Slider tone for a rating in this accent (its ramp and thumb are
+  // drawn by the Theme).
+  sliderTone: "gotm" | "nr" | "neutral";
   // Underlines the score field on hover and focus, so a borderless number
   // still announces itself as editable.
   caret: string;
@@ -61,7 +63,7 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     readout: "text-foreground",
     glow: "",
     wash: "from-background to-transparent",
-    thumb: "border-foreground bg-gotm ring-gotm/40",
+    sliderTone: "gotm",
     caret: "bg-gotm",
     pill: "bg-gotm text-gotm-foreground",
     quote: "border-gotm text-foreground",
@@ -76,7 +78,7 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     readout: "text-foreground",
     glow: "",
     wash: "from-background to-transparent",
-    thumb: "border-foreground bg-nr ring-nr/40",
+    sliderTone: "nr",
     caret: "bg-nr",
     pill: "bg-nr text-nr-foreground",
     quote: "border-nr text-foreground",
@@ -91,7 +93,7 @@ export const reviewAccents: Record<ReviewAccent, ReviewAccentStyle> = {
     readout: "text-foreground",
     glow: "",
     wash: "from-background to-transparent",
-    thumb: "border-foreground bg-foreground ring-foreground/30",
+    sliderTone: "neutral",
     caret: "bg-dim-foreground",
     pill: "bg-foreground/10 text-dim-foreground",
     quote: "border-foreground/30 text-foreground",

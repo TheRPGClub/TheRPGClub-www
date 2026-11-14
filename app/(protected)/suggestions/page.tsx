@@ -9,7 +9,7 @@ import { PHASE_INK, byReviewedDesc, canSuggest } from "@/lib/suggestions";
 import { PageHeader } from "@/components/templates/page-header";
 import { BoardCard } from "@/components/suggestions/board-card";
 import { SuggestionCard } from "@/components/suggestions/suggestion-card";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The Suggestion Board: Suggestions pinned to a wall, most upvoted first.
@@ -77,13 +77,13 @@ export default async function SuggestionBoardPage({
         }
         actions={
           canVote && (
-            <Link
+            <ButtonLink
               href="/suggestions/new"
-              className={buttonVariants({ variant: "highlight" })}
+              variant="highlight"
             >
               <MessageSquarePlus aria-hidden />
               Suggest something
-            </Link>
+            </ButtonLink>
           )
         }
       />

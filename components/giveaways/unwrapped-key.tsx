@@ -7,7 +7,7 @@ import { platformFamily, redeemLink, shortDate } from "@/lib/giveaways";
 import { GameCover, GameHeadline } from "@/components/issue/game-cover";
 import { Chip } from "@/components/issue/chip";
 import { BotJobStatus } from "@/components/bot-job-status";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
 import { CopyKeyButton } from "@/components/giveaways/copy-key-button";
 
@@ -46,10 +46,10 @@ export function UnwrappedKey({
               Back to the shelf
             </Button>
           ) : (
-            <Link href="/giveaways" className={buttonVariants({ variant: "outline" })}>
+            <ButtonLink href="/giveaways" variant="outline">
               <ArrowLeft data-icon="inline-start" />
               Back to the shelf
-            </Link>
+            </ButtonLink>
           )}
         </div>
       </header>
@@ -93,15 +93,16 @@ export function UnwrappedKey({
               </code>
               <CopyKeyButton value={value} />
               {redeem && (
-                <a
+                <ButtonLink
+                  render={<a />}
                   href={redeem.href}
                   target="_blank"
                   rel="noreferrer"
-                  className={buttonVariants({ variant: "outline" })}
+                  variant="outline"
                 >
                   <ExternalLink data-icon="inline-start" />
                   {redeem.label}
-                </a>
+                </ButtonLink>
               )}
             </div>
           ) : (

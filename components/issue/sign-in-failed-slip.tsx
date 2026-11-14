@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { cn } from "@/lib/utils";
 
@@ -22,13 +22,16 @@ export function SignInFailedSlip({
       dismissHref="/"
       className={cn("w-full max-w-[23rem]", className)}
       action={
-        <a
+        <ButtonLink
+          render={<a />}
           href={signInHref}
-          className={cn(buttonVariants({ variant: "inverse", size: "lg" }), "h-11 max-sm:w-full")}
+          variant="inverse"
+          size="lg"
+          className="h-11 max-sm:w-full"
         >
           Try again
           <ArrowRight data-icon="inline-end" />
-        </a>
+        </ButtonLink>
       }
     >
       It&apos;s usually a hiccup on the way back from Discord. Try again; if it keeps happening, let

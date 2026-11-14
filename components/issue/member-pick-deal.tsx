@@ -6,7 +6,7 @@ import { Check, ExternalLink, Hand, Shuffle } from "lucide-react";
 import type { BacklogPick, Platform } from "@/lib/api/types";
 import { MemberCover } from "@/components/issue/member-cover";
 import { StartPlayingForm } from "@/components/member/start-playing-form";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Deal three, pick one: the picker's draws laid out face up as a hand of
@@ -142,15 +142,12 @@ export function PickDeal({
                       No HowLongToBeat times
                     </p>
                   )}
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setKept(i)}
                     aria-pressed={on}
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "mt-auto w-full",
-                      on && "border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background",
-                    )}
+                    variant={on ? "selected" : "outline"}
+                    className="mt-auto w-full"
                   >
                     {on ? (
                       <Check data-icon="inline-start" />
@@ -158,7 +155,7 @@ export function PickDeal({
                       <Hand data-icon="inline-start" />
                     )}
                     {on ? "Kept" : "Keep this one"}
-                  </button>
+                  </Button>
                 </div>
               </li>
             );
@@ -166,10 +163,10 @@ export function PickDeal({
         </ol>
 
         <div className="mt-6 flex justify-center sm:mt-9">
-          <Link href={redealHref} className={buttonVariants({ variant: "outline" })}>
+          <ButtonLink href={redealHref} variant="outline">
             <Shuffle data-icon="inline-start" />
             Deal again
-          </Link>
+          </ButtonLink>
         </div>
       </div>
 

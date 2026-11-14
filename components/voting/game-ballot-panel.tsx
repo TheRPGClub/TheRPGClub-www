@@ -188,7 +188,8 @@ export function GameBallotPanel({
           max={scale}
           aria-label={`${state.count} of ${scale} votes`}
           className="mt-3.5"
-          indicatorClassName={cn(gotm ? "bg-gotm" : "bg-nr", BAR_MOTION)}
+          tone={gotm ? "gotm" : "nr"}
+          indicatorClassName={BAR_MOTION}
         />
       )}
 

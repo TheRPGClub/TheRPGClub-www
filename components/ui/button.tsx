@@ -1,54 +1,58 @@
+import Link from "next/link"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button font-label inline-flex shrink-0 items-center justify-center rounded-sm border border-transparent bg-clip-padding text-[0.95rem] font-extrabold whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center border text-[0.95rem] whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
+      // What the button is, never how it looks: each Theme draws every
+      // variant by [data-slot="button"][data-variant] (api ADR-0008;
+      // themes/<name>/primitives.css). Only the focus ring colour stays here.
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-gotm/85",
+        // The track's own action: GOTM.
+        default: "",
         // Calls to action: nominate, vote, the club's open business.
-        highlight: "bg-highlight text-highlight-foreground hover:bg-highlight/85",
-        // The NR-GOTM track's own ink.
-        nr: "bg-nr text-nr-foreground hover:bg-nr/85",
-        outline:
-          "border-faint-foreground/60 bg-transparent text-foreground hover:border-foreground hover:bg-muted aria-expanded:bg-muted",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        highlight: "",
+        // The NR-GOTM track's own action.
+        nr: "",
+        // A second action beside the main one.
+        outline: "",
+        // An outline button sitting on art (a banner, a cover reel).
+        overlay: "",
+        // The chosen one of a set of outline buttons (aria-pressed).
+        selected: "",
+        secondary: "",
+        // A quiet action that only shows its ground on hover.
+        ghost: "",
+        // A ghost action that removes something (delete, remove, discard).
+        "destructive-ghost": "",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        // The confirmed destructive action (after a typed-word confirm):
-        // solid signal orange, never red.
-        "destructive-solid":
-          "bg-destructive text-destructive-foreground hover:bg-destructive/85 focus-visible:ring-destructive/40",
-        // A destructive action that opens its confirm: orange stroke.
-        "destructive-outline":
-          "border-destructive bg-transparent text-destructive hover:bg-destructive/10",
+          "focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+        // The confirmed destructive action (after a typed-word confirm).
+        "destructive-solid": "focus-visible:ring-destructive/40",
+        // A destructive action that opens its confirm.
+        "destructive-outline": "",
         // The main action on a light object (the yellow panel, a notice
-        // slip): the page's own ground as the fill, with its type.
-        inverse:
-          "bg-background text-foreground hover:bg-background/85 focus-visible:border-background focus-visible:ring-background/45",
-        // The second action beside it: a stroke in the object's own type
-        // colour, so it reads on any light fill.
-        "inverse-outline":
-          "bg-transparent inset-ring-[1.5px] inset-ring-current hover:bg-current/10 focus-visible:border-current focus-visible:ring-current/35",
-        link: "text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight",
+        // slip).
+        inverse: "focus-visible:ring-background/45",
+        // The second action beside it, on the same light object.
+        "inverse-outline": "focus-visible:ring-current/35",
+        link: "underline decoration-2 underline-offset-4",
       },
       size: {
         default:
           "h-9 gap-2 px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        xs: "h-6 gap-1 px-2 text-xs has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 px-2.5 text-[0.8rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-10 gap-2 px-4 text-base has-data-[icon=inline-end]:pr-3.5 has-data-[icon=inline-start]:pl-3.5",
         icon: "size-8",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm":
-          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
+        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "size-7",
         "icon-lg": "size-9",
       },
     },
@@ -68,10 +72,37 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      data-variant={variant}
+      data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
   )
 }
 
-export { Button, buttonVariants }
+type ButtonLinkProps = useRender.ComponentProps<"a"> &
+  VariantProps<typeof buttonVariants> & { href?: string }
+
+// A link that looks like a Button. Base UI's Button enforces button
+// semantics, so a link keeps its own element (next/link by default, or any
+// element through render, such as <a download>) and takes the Button's slot,
+// variant and size for the Theme to draw.
+function ButtonLink({
+  className,
+  variant = "default",
+  size = "default",
+  href,
+  render,
+  ...props
+}: ButtonLinkProps) {
+  return useRender({
+    render: render ?? <Link href={href ?? ""} />,
+    props: mergeProps<"a">(
+      { className: cn(buttonVariants({ variant, size, className })) },
+      href && render ? { ...props, href } : props
+    ),
+    state: { slot: "button", variant, size },
+  })
+}
+
+export { Button, ButtonLink, buttonVariants }

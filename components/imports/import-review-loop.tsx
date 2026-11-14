@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ban, Loader2, Pause, Play, RotateCcw } from "lucide-react";
 import {
@@ -24,7 +23,7 @@ import {
   importPending,
 } from "@/components/imports/import-progress";
 import { Chip } from "@/components/issue/chip";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 
 // Safety net for the "call advance again" loop: each call resolves up to 25
 // rows, so this covers 5,000 automatic rows before asking the member to go on.
@@ -307,12 +306,12 @@ export function ImportReviewLoop({
             </p>
             <div className="flex flex-wrap gap-2">
               {resultsPath && (
-                <Link
+                <ButtonLink
                   href={`/members/${userId}/${resultsPath}`}
-                  className={buttonVariants({ variant: "highlight" })}
+                  variant="highlight"
                 >
                   See your list
-                </Link>
+                </ButtonLink>
               )}
               <Button
                 type="button"

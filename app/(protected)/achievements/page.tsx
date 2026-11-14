@@ -302,22 +302,22 @@ function EmptyState({ children }: { children: React.ReactNode }) {
 function HubSkeleton({ view }: { view: Filters["view"] }) {
   return (
     <div className="space-y-5">
-      <PageHeader title="Achievements" actions={<Skeleton className="h-[34px] w-56 rounded-sm" />} />
+      <PageHeader title="Achievements" actions={<Skeleton variant="control" className="h-[34px] w-56" />} />
       <div className="grid gap-8 xl:grid-cols-[minmax(0,62fr)_minmax(0,38fr)]">
         <div className="space-y-4">
-          <Skeleton className="h-[26px] w-96 max-w-full rounded-xs" />
-          <Skeleton className="h-7 w-40 rounded-xs" />
+          <Skeleton variant="text" className="h-[26px] w-96 max-w-full" />
+          <Skeleton variant="text" className="h-7 w-40" />
           {view === "latest" ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              <Skeleton className="h-48 rounded-md sm:col-span-2" />
+              <Skeleton className="h-48 sm:col-span-2" />
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-44 rounded-md" />
+                <Skeleton key={i} className="h-44" />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-52 rounded-md" />
+                <Skeleton key={i} className="h-52" />
               ))}
             </div>
           )}

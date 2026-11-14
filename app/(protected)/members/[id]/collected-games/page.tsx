@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FileUp } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -24,7 +23,7 @@ import {
   collectedGamesHref,
   parsePlatformFilter,
 } from "@/components/member/collection-platform-strip";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 
 const PAGE_SIZE = 24;
@@ -98,12 +97,12 @@ export default async function CollectedGamesPage({
       counts={memberCounts(user)}
       action={
         canImport && (
-          <Link
+          <ButtonLink
             href={importsHubHref(id)}
-            className={buttonVariants({ variant: "outline" })}
+            variant="outline"
           >
             <FileUp data-icon="inline-start" /> Import
-          </Link>
+          </ButtonLink>
         )
       }
     >

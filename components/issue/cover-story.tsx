@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import type { GotmRoundGame, VotingCategory } from "@/lib/api/types";
 import { gotmCardProps } from "@/components/gotm-card";
 import { PlatformPills } from "@/components/platform-pills";
 import { Starburst } from "@/components/issue/starburst";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { gotmLinks } from "@/lib/gotm-links";
 import {
   countStats,
@@ -332,16 +331,14 @@ function CoverPanel({
             )}
           >
             {href && (
-              <Link
+              <ButtonLink
                 href={href}
-                className={cn(
-                  buttonVariants({ variant: track.button }),
-                  "mr-2",
-                )}
+                variant={track.button}
+                className="mr-2"
               >
                 View game
                 <ArrowRight data-icon="inline-end" />
-              </Link>
+              </ButtonLink>
             )}
             {shownLinks.map((link) => (
               <a

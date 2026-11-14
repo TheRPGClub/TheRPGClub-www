@@ -26,7 +26,7 @@ export function SlideTicks({
     <div className="absolute inset-x-4 bottom-4 z-10 sm:inset-x-10 sm:bottom-9">
       <p aria-hidden className="font-label mb-1.5 flex items-center gap-2 text-sm text-foreground sm:hidden">
         {labels[selected]}
-        <Badge variant="secondary">
+        <Badge tone="secondary">
           {selected + 1} / {labels.length}
         </Badge>
       </p>

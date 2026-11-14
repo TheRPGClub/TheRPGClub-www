@@ -11,7 +11,7 @@ import {
 } from "@/components/journal/journal-book";
 import { JournalEntryView } from "@/components/journal/journal-entry";
 import { JournalCompose, JournalOwnerEntry } from "@/components/journal/journal-owner-entry";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The open chapter: one member's entries on one game, newest first, under the
@@ -144,22 +144,24 @@ export function JournalChapter({
           action={
             <>
               {page > 1 && (
-                <Link
+                <ButtonLink
                   href={pageHref(page - 1)}
-                  className={buttonVariants({ variant: "ghost", size: "sm" })}
+                  variant="ghost"
+                  size="sm"
                 >
                   <ArrowLeft aria-hidden />
                   Newer entries
-                </Link>
+                </ButtonLink>
               )}
               {page < pages && (
-                <Link
+                <ButtonLink
                   href={pageHref(page + 1)}
-                  className={buttonVariants({ variant: "ghost", size: "sm" })}
+                  variant="ghost"
+                  size="sm"
                 >
                   Older entries
                   <ArrowRight aria-hidden />
-                </Link>
+                </ButtonLink>
               )}
             </>
           }

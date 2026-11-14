@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { ESLint, type Linter } from "eslint";
@@ -158,6 +159,55 @@ describe("look-class ban (structure/no-look-classes-on-primitives)", () => {
 
   it("ignores elements that are not primitives", async () => {
     expect(await warningsFor(rule, sample('<div className="bg-ink rounded-lg" />'), file)).toEqual([]);
+  });
+
+  it.each(["ring-2 ring-gotm", "inset-ring-1", "focus-visible:ring-highlight/40"])(
+    "warns on a ring (%s), which is a shadow",
+    async (cls) => {
+      expect(await warningsFor(rule, sample(`<Button className="${cls}" />`), file)).toHaveLength(1);
+    },
+  );
+
+  it("checks the other class props a primitive takes", async () => {
+    const code = [
+      'import { Progress } from "@/components/ui/progress";',
+      "export const S = () => <Progress indicatorClassName=\"bg-gotm\" trackClassName=\"h-2\" />;",
+    ].join("\n");
+    const found = await warningsFor(rule, code, file);
+    expect(found).toHaveLength(1);
+    expect(found[0].message).toContain("bg-gotm");
+  });
+
+  it("flags a primitive's variant helper on another element, which no Theme can reach", async () => {
+    const code = [
+      'import Link from "next/link";',
+      'import { buttonVariants } from "@/components/ui/button";',
+      'export const S = () => <Link href="/" className={buttonVariants({ variant: "outline" })}>Go</Link>;',
+    ].join("\n");
+    const found = await warningsFor(rule, code, file);
+    expect(found).toHaveLength(1);
+    expect(found[0].message).toContain("buttonVariants");
+  });
+
+  // Every component a components/ui module exports is a primitive.
+  const primitiveExports = readdirSync(path.join(root, "components/ui"))
+    .filter((f) => f.endsWith(".tsx"))
+    .flatMap((f) => {
+      const text = readFileSync(path.join(root, "components/ui", f), "utf8");
+      const list = /export \{([^}]*)\}/.exec(text)?.[1] ?? "";
+      return list
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => /^[A-Z]/.test(s))
+        .map((name) => [name, f.replace(/\.tsx$/, "")] as const);
+    });
+
+  it.each(primitiveExports)("knows <%s> from ui/%s", async (name, module) => {
+    const code = [
+      `import { ${name} } from "@/components/ui/${module}";`,
+      `export const S = () => <${name} className="bg-gotm" />;`,
+    ].join("\n");
+    expect(await warningsFor(rule, code, file)).toHaveLength(1);
   });
 
   it("lets the primitives style each other", async () => {

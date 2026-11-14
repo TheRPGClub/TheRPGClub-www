@@ -115,9 +115,9 @@ function GotmHistorySkeleton() {
       <PageHeader title="GOTM history" />
       <div className="grid gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[15rem_minmax(0,1fr)]">
         <div className="space-y-2">
-          <Skeleton className="h-9.5 w-full rounded-sm" />
-          <Skeleton className="h-9.5 w-full rounded-sm" />
-          <Skeleton className="h-9.5 w-full rounded-sm" />
+          <Skeleton variant="control" className="h-9.5 w-full" />
+          <Skeleton variant="control" className="h-9.5 w-full" />
+          <Skeleton variant="control" className="h-9.5 w-full" />
         </div>
         <div className="space-y-5">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -125,9 +125,9 @@ function GotmHistorySkeleton() {
               key={i}
               className="grid gap-4 xl:grid-cols-[8.5rem_minmax(0,1.6fr)_minmax(0,1fr)]"
             >
-              <Skeleton className="h-20 w-28 rounded-sm" />
-              <Skeleton className="h-49 rounded-sm" />
-              <Skeleton className="h-49 rounded-sm" />
+              <Skeleton variant="card" className="h-20 w-28" />
+              <Skeleton variant="card" className="h-49" />
+              <Skeleton variant="card" className="h-49" />
             </div>
           ))}
         </div>

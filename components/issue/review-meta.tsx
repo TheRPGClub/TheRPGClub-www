@@ -54,6 +54,7 @@ export function ReviewerAvatar({
 }) {
   return (
     <Avatar
+      variant="byline"
       className={cn(
         "after:hidden",
         AVATAR_SIZE[size],
@@ -64,7 +65,7 @@ export function ReviewerAvatar({
         src={`${API_BASE}/api/v1/users/${userId}/avatar`}
         alt=""
       />
-      <AvatarFallback className="font-label bg-muted font-extrabold text-[length:inherit] text-foreground">
+      <AvatarFallback className="font-label font-extrabold text-[length:inherit]">
         {name.slice(0, 1).toUpperCase()}
       </AvatarFallback>
     </Avatar>

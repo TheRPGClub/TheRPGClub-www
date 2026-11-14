@@ -102,10 +102,8 @@ export function TypedConfirm({
           autoComplete="off"
           spellCheck={false}
           autoFocus
-          className={cn(
-            "min-w-40 flex-1 bg-background",
-            ready && "border-destructive text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive",
-          )}
+          variant={ready ? "destructive" : "inset"}
+          className="min-w-40 flex-1"
         />
         <Button type="button" variant="destructive-solid" disabled={!ready || pending} onClick={confirm}>
           {ActionIcon && <ActionIcon data-icon="inline-start" />}

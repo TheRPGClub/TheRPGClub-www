@@ -2,7 +2,7 @@ import { Download } from "lucide-react";
 import type { CollectionCsvImport } from "@/lib/api/types";
 import { ImportPage, ImportStep, ImportingLine } from "@/components/templates/import-page";
 import { CsvImportForm } from "@/components/imports/csv-import-form";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 const TEMPLATE_HREF = "/templates/collection-import-template.csv";
 
@@ -34,13 +34,14 @@ export default async function CollectionCsvImportPage({
             title="Fill in the template"
             description="One game per row. Rows whose note says EXAMPLE ROW are ignored, so you can leave them in."
           >
-            <a
+            <ButtonLink
+              render={<a />}
               href={TEMPLATE_HREF}
               download="collection-import-template.csv"
-              className={buttonVariants({ variant: "outline" })}
+              variant="outline"
             >
               <Download data-icon="inline-start" /> Download the template
-            </a>
+            </ButtonLink>
             <dl className="grid grid-cols-[auto_1fr] gap-x-5 border-t border-border text-sm">
               {COLUMNS.map(([column, help]) => (
                 <div key={column} className="contents">

@@ -13,7 +13,7 @@ import { FoilStamp } from "@/components/achievements/foil-stamp";
 import { ProviderBadge } from "@/components/achievements/provider-badge";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import { Chip } from "@/components/issue/chip";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The set page's masthead: the game title on its tint band (with any
@@ -133,12 +133,12 @@ export function SetHeader({
               </span>
             </div>
             {set.game_id != null && (
-              <Link
+              <ButtonLink
                 href={`/games/${set.game_id}`}
-                className={buttonVariants({ variant: "outline" })}
+                variant="outline"
               >
                 View game <ArrowRight data-icon="inline-end" />
-              </Link>
+              </ButtonLink>
             )}
           </div>
         </div>

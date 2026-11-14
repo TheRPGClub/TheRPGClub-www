@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/templates/page-header";
 import { GameCover } from "@/components/issue/game-cover";
 import { PlatformChip } from "@/components/giveaways/platform-chip";
 import { ClaimedKeyCell } from "@/components/giveaways/claimed-key-cell";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 
 export const metadata = { title: "Your claimed keys" };
 
@@ -31,10 +31,10 @@ export default async function ClaimedKeysPage() {
         count={keys ? `${keys.length} ${keys.length === 1 ? "key" : "keys"}` : undefined}
         description="Each key you claim stays here. The bot also sent each one to your Discord DMs when you claimed it."
         actions={
-          <Link href="/giveaways" className={buttonVariants({ variant: "outline" })}>
+          <ButtonLink href="/giveaways" variant="outline">
             <ArrowLeft data-icon="inline-start" />
             Back to the shelf
-          </Link>
+          </ButtonLink>
         }
       />
       {keys === null ? (

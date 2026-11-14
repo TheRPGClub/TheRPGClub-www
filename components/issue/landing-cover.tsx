@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { PublicWinner } from "@/lib/api/types";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { Starburst } from "@/components/issue/starburst";
 import { cn } from "@/lib/utils";
 
@@ -44,36 +43,35 @@ export function LandingPitch({
         the ballot, every past winner, and every member&apos;s shelf.
       </p>
       <div className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-        <a
+        <ButtonLink
+          render={<a />}
           href={signInHref}
-          className={cn(
-            buttonVariants({ variant: "highlight", size: "lg" }),
-            ctaClass,
-          )}
+          variant="highlight"
+          size="lg"
+          className={ctaClass}
         >
           Sign in with Discord
           <ArrowRight data-icon="inline-end" />
-        </a>
+        </ButtonLink>
         {profileHref ? (
-          <Link
+          <ButtonLink
             href={profileHref}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              ctaClass,
-            )}
+            variant="outline"
+            size="lg"
+            className={ctaClass}
           >
             My Profile
-          </Link>
+          </ButtonLink>
         ) : (
-          <a
+          <ButtonLink
+            render={<a />}
             href="#how"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              ctaClass,
-            )}
+            variant="outline"
+            size="lg"
+            className={ctaClass}
           >
             How the club works
-          </a>
+          </ButtonLink>
         )}
       </div>
     </div>

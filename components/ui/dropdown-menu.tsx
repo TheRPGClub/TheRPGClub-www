@@ -27,7 +27,7 @@ function DropdownMenuLabel({
     <MenuPrimitive.GroupLabel
       data-slot="dropdown-menu-label"
       className={cn(
-        "font-label px-2 py-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] text-faint-foreground",
+        "px-2 py-1.5 text-[0.78rem]",
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ function DropdownMenuContent({
         <MenuPrimitive.Popup
           data-slot="dropdown-menu-content"
           className={cn(
-            "max-h-[var(--available-height)] min-w-40 overflow-y-auto rounded-sm border border-border-strong bg-card bg-clip-padding p-1 text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)]",
+            "max-h-[var(--available-height)] min-w-40 overflow-y-auto border p-1",
             "origin-[var(--transform-origin)] transition duration-150 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className
           )}
@@ -73,8 +73,7 @@ function DropdownMenuItem({ className, ...props }: MenuPrimitive.Item.Props) {
     <MenuPrimitive.Item
       data-slot="dropdown-menu-item"
       className={cn(
-        "relative flex w-full cursor-default items-start gap-2 rounded-xs px-2 py-1.5 text-sm outline-none select-none",
-        "data-highlighted:bg-muted data-highlighted:text-foreground",
+        "relative flex w-full cursor-default items-start gap-2 px-2 py-1.5 text-sm outline-none select-none",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
@@ -103,8 +102,7 @@ function DropdownMenuRadioItem({
     <MenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex w-full cursor-default items-start gap-2 rounded-xs py-1.5 pr-2 pl-7 text-sm outline-none select-none",
-        "data-highlighted:bg-muted data-highlighted:text-foreground",
+        "relative flex w-full cursor-default items-start gap-2 py-1.5 pr-2 pl-7 text-sm outline-none select-none",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
@@ -126,7 +124,7 @@ function DropdownMenuSeparator({
     <div
       data-slot="dropdown-menu-separator"
       role="separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      className={cn("-mx-1 my-1 h-px", className)}
       {...props}
     />
   )

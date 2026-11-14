@@ -27,7 +27,7 @@ import {
 } from "@/components/member/member-lists";
 import { fetchAllCompletions } from "@/components/member/member-lists-server";
 import { ListPagination } from "@/components/list-pagination";
-import { buttonVariants } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { firstParam } from "@/lib/search-params";
 
@@ -169,31 +169,32 @@ export default async function CompletedGamesPage({
       action={
         <>
           {session && !isSelf && (
-            <Link
+            <ButtonLink
               href={`${base}/compare`}
-              className={buttonVariants({ variant: "outline" })}
+              variant="outline"
             >
               <GitCompareArrows data-icon="inline-start" /> Compare
-            </Link>
+            </ButtonLink>
           )}
           {isSelf && (
             // A plain link, not next/link: the route handler answers with an
             // attachment, so the browser downloads it instead of navigating.
-            <a
+            <ButtonLink
+              render={<a />}
               href={`/api/members/${id}/completions/export`}
               download="completions.csv"
-              className={buttonVariants({ variant: "outline" })}
+              variant="outline"
             >
               <Download data-icon="inline-start" /> Export CSV
-            </a>
+            </ButtonLink>
           )}
           {canImport && (
-            <Link
+            <ButtonLink
               href={importsHubHref(id)}
-              className={buttonVariants({ variant: "outline" })}
+              variant="outline"
             >
               <FileUp data-icon="inline-start" /> Import
-            </Link>
+            </ButtonLink>
           )}
         </>
       }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import Link from "next/link";
 import { ArrowDown, ArrowUp, Loader2, Pencil, Plus, X } from "lucide-react";
 import { createRoundAction } from "@/app/actions/rounds";
 import type { Game, VotingCategory } from "@/lib/api/types";
@@ -11,7 +10,7 @@ import { GameCover } from "@/components/issue/game-cover";
 import { ProofCard } from "@/components/admin/desk/proof-card";
 import { RoundProof } from "@/components/admin/rounds/round-proof";
 import { fieldLabel } from "@/components/admin/rounds/styles";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -219,9 +218,9 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
                       </Button>
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant="destructive-ghost"
                         size="icon-sm"
-                        className="text-dim-foreground hover:text-destructive"
+                        className="text-dim-foreground"
                         onClick={() => setGames((list) => list.filter((g) => g.game_id !== game.game_id))}
                         aria-label={`Remove ${game.title}`}
                       >
@@ -255,10 +254,10 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
               <Plus data-icon="inline-start" />
               Add another
             </Button>
-            <Link href={roundEditHref(sent.category, sent.roundNumber)} className={buttonVariants({ variant: "ghost" })}>
+            <ButtonLink href={roundEditHref(sent.category, sent.roundNumber)} variant="ghost">
               <Pencil data-icon="inline-start" />
               Edit this round
-            </Link>
+            </ButtonLink>
             <span className="text-[0.86rem] text-faint-foreground">
               Saved. The bot reloads {TRACK_NAME[sent.category]} round {sent.roundNumber}.
             </span>

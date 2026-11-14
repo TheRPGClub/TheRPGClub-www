@@ -3,7 +3,10 @@
    looks like the Monthly Issue is one that names the old palette (or a hex)
    instead of a token. Turn it on with `DEV_THEME=test npm run dev`
    (themes/registry.ts ignores it outside development). It loads no fonts.
-   themes/tokens.test.ts fails if it misses a Monthly Issue token. */
+   themes/tokens.test.ts fails if it misses a Monthly Issue token. Its
+   primitives are restyled in ./primitives.css. */
+
+@import "./primitives.css";
 
 @layer themes {
     [data-theme="test"] {
