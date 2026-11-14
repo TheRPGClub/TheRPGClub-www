@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getSession, requireFeature } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import type { ImportJob } from "@/lib/api/types";
 import { loadActiveImport, loadImportSummary, loadSocials } from "@/lib/imports/active";
@@ -41,8 +41,7 @@ export async function ImportPage<J extends ImportJob>({
   intro,
   form,
 }: ImportPageProps<J>) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== userId) redirect(`/members/${userId}`);
   const feature = IMPORT_KINDS[kind].feature;
   const features = await requireFeature(feature);

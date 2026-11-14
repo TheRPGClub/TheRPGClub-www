@@ -7,6 +7,7 @@ import { memberName } from "@/lib/achievements";
 import { useMemberSearch } from "@/hooks/use-member-search";
 import { MemberPicked } from "@/components/admin/member-picked";
 import { MemberPickerResult } from "@/components/admin/member-picker-result";
+import { SearchProblemNote } from "@/components/search-problem-note";
 import {
   Combobox,
   ComboboxField,
@@ -79,7 +80,7 @@ export function MemberPicker({
             className="font-headline block h-auto min-w-auto border-0 border-b-2 px-0 pt-1.5 pb-2.5 pl-8 text-[1.8rem] leading-none md:text-[2.4rem] [&::-webkit-search-cancel-button]:hidden"
           />
         </div>
-        {error && <p className="mt-1.5 text-xs text-destructive">{error}</p>}
+        {error && <SearchProblemNote problem={error} className="mt-1.5" />}
         {hasQuery && !error && (
           <div className="mt-1.5 max-h-72 overflow-y-auto rounded-sm border border-border-strong bg-muted shadow-[0_12px_30px_rgb(0_0_0/0.45)]">
             {!settled && (

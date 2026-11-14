@@ -14,6 +14,16 @@ export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 export const JOIN_RETRY_COOKIE = "rpgclub_join_retry";
 export const JOIN_RETRY_MAX_AGE_SECONDS = 60 * 10;
 
+// The page a Member opened, as path and query, handed by the proxy to the
+// protected layout (which cannot see the URL) in this request header.
+export const RETURN_TO_HEADER = "x-rpgclub-return-to";
+
+// Set by /auth/sign-in for a minute: a session that fails again that soon
+// after signing in stops at the auth-failed page instead of looping
+// through Discord.
+export const SIGN_IN_AGAIN_COOKIE = "rpgclub_sign_in_again";
+export const SIGN_IN_AGAIN_MAX_AGE_SECONDS = 60;
+
 export const AUTH_FAILED_PATH = "/?error=auth_failed";
 export const DEFAULT_DESTINATION = "/dashboard";
 
@@ -39,4 +49,11 @@ export function callbackPath(token: string, returnTo?: string | null): string {
 // The join page's Continue, keeping the return-to.
 export function joinContinuePath(returnTo?: string | null): string {
   return withReturnTo("/join/continue", returnTo);
+}
+
+// Sign in again after the session lapsed (the protected layout, a search's
+// "sign in again" link): /auth/sign-in drops the stale session cookie and
+// starts Discord sign-in with the return-to.
+export function signInAgainPath(returnTo?: string | null): string {
+  return withReturnTo("/auth/sign-in", returnTo);
 }

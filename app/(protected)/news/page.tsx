@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { getSession, requireFeature } from "@/lib/session";
+import { requireAuth, requireFeature } from "@/lib/session";
 import { parseNewsFilters } from "@/lib/news";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { NewsBody } from "@/components/news/news-body";
@@ -19,8 +18,7 @@ export default async function NewsPage({
 }) {
   // Gate here, outside the Suspense boundary: a not-found streamed from
   // inside one would answer 200.
-  const session = await getSession();
-  if (!session) redirect("/");
+  const session = await requireAuth();
   const features = await requireFeature("news_hub");
   const filters = parseNewsFilters(await searchParams);
   const badge = features.preview("news_hub") && <PreviewBadge />;

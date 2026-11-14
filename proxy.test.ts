@@ -106,6 +106,26 @@ describe("proxy", () => {
     );
   });
 
+  // The protected layout cannot see the URL; when the session read fails it
+  // sends the Member back through sign-in to the page they opened.
+  describe("hands the protected layout the page's return-to", () => {
+    const forwarded = (response: Response) =>
+      response.headers.get("x-middleware-request-x-rpgclub-return-to");
+
+    it.each([
+      ["/dashboard", "/dashboard"],
+      ["/games/12?tab=reviews&page=2", "/games/12?tab=reviews&page=2"],
+    ])("forwards %s", (path, returnTo) => {
+      expect(forwarded(proxy(request(path, { rpgclub_token: "a-token" })))).toBe(returnTo);
+    });
+
+    it("overwrites a return-to the browser sent", () => {
+      const req = request("/dashboard", { rpgclub_token: "a-token" });
+      req.headers.set("x-rpgclub-return-to", "//evil.example");
+      expect(forwarded(proxy(req))).toBe("/dashboard");
+    });
+  });
+
   describe("the matcher", () => {
     it.each([
       "/_next/static/chunks/main.js",

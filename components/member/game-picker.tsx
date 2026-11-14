@@ -9,6 +9,7 @@ import { Combobox, ComboboxField, ComboboxList } from "@/components/ui/combobox"
 import { cn } from "@/lib/utils";
 import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 import { GamePickerResult } from "@/components/member/game-picker-result";
+import { SearchProblemNote } from "@/components/search-problem-note";
 
 export interface GamePickerProps {
   // Renders the input + result list inline. Use `compact` for embedded use
@@ -112,7 +113,7 @@ export function GamePicker({
           <ComboboxField type="search" placeholder={placeholder} autoFocus={autoFocus} aria-label={placeholder.replace(/…$/, "")} className="pl-9" />
         </div>
 
-        {error && <p className="text-xs text-destructive">{error}</p>}
+        {error && <SearchProblemNote problem={error} />}
 
         {igdbBox && igdbFallback?.className ? <div className={igdbFallback.className}>{igdbBox}</div> : igdbBox}
 

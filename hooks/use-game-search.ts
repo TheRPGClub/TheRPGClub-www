@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import type { ApiCollection, Game } from "@/lib/api/types";
+import { searchProblem, type SearchProblem } from "@/lib/search-problem";
 
 // The GameDB search behind the game picker: once the query has two
 // characters, a short pause after typing searches `/api/games/search` (the
 // newest search wins). `searchedQuery` is the query `results` answer, so a
-// caller can tell a stale or pending answer from this one.
+// caller can tell a stale or pending answer from this one. A failed search
+// is a SearchProblem (a lapsed session asks the Member to sign in again).
 export function useGameSearch(query: string) {
   const [results, setResults] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<SearchProblem | null>(null);
   const [searchedQuery, setSearchedQuery] = useState<string | null>(null);
 
   const trimmedQuery = query.trim();
@@ -27,14 +29,17 @@ export function useGameSearch(query: string) {
           `/api/games/search?per=8&q=${encodeURIComponent(trimmedQuery)}`,
           { signal: controller.signal },
         );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          setError(searchProblem(res.status));
+          return;
+        }
         const body = (await res.json()) as ApiCollection<Game>;
         setResults(body.data);
         setSearchedQuery(trimmedQuery);
         setError(null);
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
-          setError("Search failed. Try again.");
+          setError(searchProblem(null));
         }
       } finally {
         setLoading(false);

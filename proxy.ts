@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, discordSignInUrl } from "@/lib/sign-in";
+import { RETURN_TO_HEADER, SESSION_COOKIE, discordSignInUrl } from "@/lib/sign-in";
 
 // Deny by default: every path is for Members unless it is listed here. This
 // is an optimistic check on the session cookie only and never calls the API;
@@ -29,21 +29,29 @@ function isPublic(pathname: string) {
   );
 }
 
-function discordSignIn(request: NextRequest) {
+function returnTo(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  return discordSignInUrl(`${pathname}${search}`);
+  return `${pathname}${search}`;
+}
+
+// Lets a Member's request through, telling the protected layout which page
+// it was (the layout sends an expired session back through sign-in to it).
+function signedIn(request: NextRequest) {
+  const headers = new Headers(request.headers);
+  headers.set(RETURN_TO_HEADER, returnTo(request));
+  return NextResponse.next({ request: { headers } });
 }
 
 export function proxy(request: NextRequest) {
   if (isPublic(request.nextUrl.pathname)) return NextResponse.next();
-  if (request.cookies.get(SESSION_COOKIE)?.value) return NextResponse.next();
+  if (request.cookies.get(SESSION_COOKIE)?.value) return signedIn(request);
 
   // The website's own route handlers (the pickers' searches) are fetched by
   // client code, which wants a status it can show, not a sign-in page.
   if (request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }
-  return NextResponse.redirect(discordSignIn(request));
+  return NextResponse.redirect(discordSignInUrl(returnTo(request)));
 }
 
 // Skips Next's internals and static files (by extension). Must stay a literal:

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { callbackPath, discordSignInUrl, joinContinuePath } from "./sign-in";
+import { callbackPath, discordSignInUrl, joinContinuePath, signInAgainPath } from "./sign-in";
 
 describe("discordSignInUrl", () => {
   beforeEach(() => vi.stubEnv("API_URL", "https://api.rpgclub.test"));
@@ -37,5 +37,19 @@ describe("joinContinuePath", () => {
 
   it.each([undefined, "//evil.example"])("goes without one for %o", (returnTo) => {
     expect(joinContinuePath(returnTo)).toBe("/join/continue");
+  });
+});
+
+// A Member whose session lapsed signs in again through the website, which
+// drops the stale session first.
+describe("signInAgainPath", () => {
+  it("keeps the return-to", () => {
+    expect(signInAgainPath("/games/12?tab=reviews")).toBe(
+      "/auth/sign-in?return_to=%2Fgames%2F12%3Ftab%3Dreviews",
+    );
+  });
+
+  it.each([undefined, null, "https://evil.example"])("goes without one for %o", (returnTo) => {
+    expect(signInAgainPath(returnTo)).toBe("/auth/sign-in");
   });
 });

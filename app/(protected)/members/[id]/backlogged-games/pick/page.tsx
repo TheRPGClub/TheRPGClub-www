@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { requireAuth } from "@/lib/session";
 import {
   parseBacklogPickParams,
   type BacklogPickSearchParams,
@@ -22,9 +22,7 @@ export default async function BacklogPickPage({
   searchParams: Promise<BacklogPickSearchParams>;
 }) {
   const [{ id }, raw] = await Promise.all([params, searchParams]);
-  const session = await getSession();
-
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== id) {
     redirect(`/members/${id}/backlogged-games`);
   }

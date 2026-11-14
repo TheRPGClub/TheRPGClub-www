@@ -1,6 +1,8 @@
 import { cache, type ReactNode } from "react";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { RETURN_TO_HEADER, signInAgainPath } from "@/lib/sign-in";
 import type { AppSession } from "@/lib/auth-types";
 import { featureView, type FeatureKey, type FeatureView } from "@/lib/features";
 
@@ -17,9 +19,13 @@ export const getSession = cache(async (): Promise<AppSession | null> => {
   }
 });
 
+// The signed-in Member, for the protected layout and staff pages. A session
+// the API no longer accepts (expired or revoked) goes back through Discord
+// sign-in to the page the Member opened, which the proxy names in a request
+// header (see /auth/sign-in for the loop guard).
 export async function requireAuth(): Promise<AppSession> {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect(signInAgainPath((await headers()).get(RETURN_TO_HEADER)));
   return session;
 }
 

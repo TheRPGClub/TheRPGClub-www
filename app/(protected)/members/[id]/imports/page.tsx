@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { getFeatures, getSession } from "@/lib/session";
+import { getFeatures, requireAuth } from "@/lib/session";
 import type { ImportJob } from "@/lib/api/types";
 import {
   loadActiveImport,
@@ -24,9 +24,7 @@ export default async function ImportsHubPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-
-  if (!session) redirect("/");
+  const session = await requireAuth();
   if (session.principal.discord_id !== id) redirect(`/members/${id}`);
 
   // Only the imports whose Feature (the list they write to) is shown.
