@@ -1270,5 +1270,70 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+
+        /* Imports (www#95). */
+        [data-slot="progress"][data-tone="inverse"] {
+            [data-slot="progress-track"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="progress-indicator"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--background);
+            }
+        }
+        [data-slot="radio-group-item"][data-variant="choice"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            box-shadow: 3px 3px 0 var(--foreground);
+            [data-slot="radio-group-dot"] {
+                background-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="inset"],
+        [data-slot="table"][data-variant="destructive"] {
+            [data-slot="table-header"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-body"] [data-slot="table-head"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            [data-slot="table-row"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+        }
+        [data-slot="table"][data-variant="destructive"] [data-slot="table-row"] {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            border-color: var(--destructive-foreground);
+        }
+        [data-slot="collapsible"][data-variant="card"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 3px 3px 0 var(--foreground);
+            > [data-slot="collapsible-trigger"] {
+                font-family: var(--typeface-label);
+                color: var(--accent-foreground);
+            }
+        }
+        [data-slot="input"][data-variant="upload"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            font-family: var(--typeface-label);
+            box-shadow: 3px 3px 0 var(--foreground);
+        }
     }
 }

@@ -14,6 +14,9 @@ type InputVariant =
   | "destructive"
   // A field on a light object (the yellow panel).
   | "inverse"
+  // A file field: a dropped-in file on the page's ground, its button a
+  // small control (an import's CSV upload).
+  | "upload"
 
 function Input({
   className,
