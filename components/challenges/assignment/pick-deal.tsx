@@ -34,7 +34,9 @@ export function PickDeal({
   if (!card) return null;
   const state = !picked ? "none" : picked.gameId === card.gameId ? "this" : "other";
   return (
-    <section aria-label={`Pick a game for ${recipient}`} className="mt-6">
+    // The deal's keys (← → S, Enter on the reel) bubble up from its card,
+    // buttons and reel; the section itself isn't a stop.
+    <section aria-label={`Pick a game for ${recipient}`} className="mt-6" onKeyDown={deal.onKeyDown}>
       {deal.error && (
         <NoticeSlip
           title="Not picked"

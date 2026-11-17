@@ -1,8 +1,17 @@
 import type { PickCard as Card } from "@/lib/challenges/santa-pick";
-import { hoursLabel } from "@/lib/challenges/santa-pick";
+import { hoursLabel, pickTitle } from "@/lib/challenges/santa-pick";
 import { Badge } from "@/components/ui/badge";
-import { GameCover, GameHeadline, splitGameTitle } from "@/components/issue/game-cover";
+import { GameCover } from "@/components/issue/game-cover";
 import { cn } from "@/lib/utils";
+
+// The headline steps down with its longest line so it keeps to two lines
+// (pickTitle); the comp's 96px for a short one.
+const SIZE = {
+  xl: "text-[3rem] @4xl:text-[6rem]",
+  lg: "text-[2.75rem] @4xl:text-[4.75rem]",
+  md: "text-[2.5rem] @4xl:text-[4rem]",
+  sm: "text-[2.25rem] @4xl:text-[3.25rem]",
+};
 
 // The deal card (surface brief challenges-santa-pick, 6C with 6A's tag): one
 // game of the recipient's backlog over its key art (the tint without art)
@@ -25,8 +34,7 @@ export function PickCard({
   swipe: React.HTMLAttributes<HTMLDivElement>;
 }) {
   const hours = hoursLabel(card.hours);
-  // A long line steps the headline down a size so it keeps to two lines.
-  const long = Math.max(...splitGameTitle(card.title).map((line) => line.length)) > 12;
+  const title = pickTitle(card.title);
   return (
     <div className="@container">
       <article
@@ -71,14 +79,12 @@ export function PickCard({
           className="relative z-10 flex flex-col px-4 pt-7 pb-5 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-300 @4xl:min-h-[460px] @4xl:max-w-[calc(100%-470px)] @4xl:p-8 @4xl:pb-[30px] @6xl:max-w-[600px]"
         >
           <p className="font-label text-[0.875rem] font-extrabold tracking-[0.1em] text-dim-foreground">{position}</p>
-          <GameHeadline
-            as="h2"
-            title={card.title}
-            className={cn(
-              "mt-2 mb-3.5 leading-[0.86]",
-              long ? "text-[2.5rem] @4xl:text-[3.75rem] @6xl:text-[4.75rem]" : "text-[3rem] @4xl:text-[5rem] @6xl:text-[6rem]",
-            )}
-          />
+          <h2
+            className={cn("font-headline mt-2 mb-3.5 leading-[0.9] text-balance break-words", SIZE[title.size])}
+          >
+            {title.lines[0] && <span className="block">{title.lines[0]}</span>}
+            <span className="block">{title.lines[1]}</span>
+          </h2>
           {(card.year || card.platforms.length > 0) && (
             <div className="flex flex-wrap gap-1.5">
               {card.year && <Badge>{card.year}</Badge>}

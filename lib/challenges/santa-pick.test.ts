@@ -5,6 +5,7 @@ import {
   pickCopy,
   pickPageState,
   pickRefusal,
+  pickTitle,
   santaEdition,
   shuffleTo,
   stepTo,
@@ -224,5 +225,26 @@ describe("santaEdition", () => {
     expect(santaEdition([ed(9, 2027, "signup"), ed(8, 2026, "picking")], null)?.id).toBe(8);
     expect(santaEdition([ed(9, 2027, "signup"), ed(8, 2026, "revealed")], 4)?.id).toBe(9);
     expect(santaEdition([], null)).toBeNull();
+  });
+});
+
+describe("pickTitle", () => {
+  it("breaks at the subtitle colon, else before the last word", () => {
+    expect(pickTitle("Persona 3 Reload").lines).toEqual(["Persona 3", "Reload"]);
+    expect(pickTitle("Tactics Ogre: Reborn").lines).toEqual(["Tactics Ogre:", "Reborn"]);
+    expect(pickTitle("Grandia").lines).toEqual(["", "Grandia"]);
+  });
+
+  it("keeps a short last word with the word before it", () => {
+    expect(pickTitle("Dragon Quest XI S").lines).toEqual(["Dragon Quest", "XI S"]);
+    expect(pickTitle("Lies of P").lines).toEqual(["Lies", "of P"]);
+  });
+
+  it("sizes the headline by its longest line", () => {
+    expect(pickTitle("Persona 3 Reload").size).toBe("xl");
+    expect(pickTitle("Dragon Quest XI S").size).toBe("lg");
+    expect(pickTitle("Xenoblade Chronicles 3").lines).toEqual(["Xenoblade", "Chronicles 3"]);
+    expect(pickTitle("Chained Echoes Remastered").size).toBe("md");
+    expect(pickTitle("Star Ocean: The Second Story R").size).toBe("sm");
   });
 });

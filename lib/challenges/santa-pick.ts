@@ -189,3 +189,24 @@ export function santaEdition(
     editions.find((e) => e.id === requested) ?? editions.find((e) => e.phase === "picking") ?? editions[0] ?? null
   );
 }
+
+// The card's two-line headline (DESIGN.md, the Two-Line Headline Rule):
+// broken at the subtitle colon, else before the last word, except that a
+// last word of two letters or fewer ("XI S", "of P") keeps the word before
+// it. The size steps down with the longest line so the headline stays on
+// two lines in the card's column: xl up to 9 letters, lg up to 13, md up
+// to 16, sm beyond.
+export function pickTitle(title: string): { lines: [string, string]; size: "xl" | "lg" | "md" | "sm" } {
+  const colon = title.indexOf(":");
+  let lines: [string, string];
+  if (colon > 0 && colon < title.length - 1) {
+    lines = [title.slice(0, colon + 1), title.slice(colon + 1).trim()];
+  } else {
+    const words = title.split(" ");
+    const cut = words.length > 2 && words.at(-1)!.length <= 2 ? words.length - 2 : words.length - 1;
+    lines = [words.slice(0, cut).join(" "), words.slice(cut).join(" ")];
+  }
+  const longest = Math.max(...lines.map((line) => line.length));
+  const size = longest <= 9 ? "xl" : longest <= 13 ? "lg" : longest <= 16 ? "md" : "sm";
+  return { lines, size };
+}

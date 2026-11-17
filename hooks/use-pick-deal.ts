@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import { pickGameAction } from "@/app/actions/challenge-editions";
 import { shuffleTo, stepTo, type PickCard } from "@/lib/challenges/santa-pick";
 
 // The Santa pick page's deal (www#111): which game is showing, which ones
 // the Santa has seen, the pick (kept here once the API takes it, so the tag
 // fills in at once), and the ways to move: ← → step through the backlog, S
-// shuffles, Enter on the reel picks, a swipe across the card steps.
+// shuffles, Enter on the reel picks (while focus is in the deal), a swipe
+// across the card steps.
 
 export interface Picked {
   gameId: number;
@@ -54,12 +55,15 @@ export function usePickDeal(editionId: number, cards: readonly PickCard[], initi
     });
   }, [card, editionId, pending, picked]);
 
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
+  // The keys act only while focus is inside the deal (the card or the
+  // reel), so a single-letter shortcut never fires from elsewhere on the
+  // page (WCAG 2.1.4).
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey || event.defaultPrevented) return;
-      const target = event.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable='true'], [role='dialog']")) return;
-      const onReel = target?.getAttribute("role") === "listbox";
+      const target = event.target as HTMLElement;
+      if (target.closest("input, textarea, select, [contenteditable='true'], [role='dialog']")) return;
+      const onReel = target.getAttribute("role") === "listbox";
       if (event.key === "ArrowRight") next();
       else if (event.key === "ArrowLeft") prev();
       else if (event.key === "s" || event.key === "S") shuffle();
@@ -68,10 +72,9 @@ export function usePickDeal(editionId: number, cards: readonly PickCard[], initi
       else if (event.key === "End" && onReel) go(cards.length - 1);
       else return;
       event.preventDefault();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, shuffle, pick, go, cards.length]);
+    },
+    [next, prev, shuffle, pick, go, cards.length],
+  );
 
   // Swiping the card left deals the next game, right the one before.
   const swipe = {
@@ -91,5 +94,5 @@ export function usePickDeal(editionId: number, cards: readonly PickCard[], initi
     },
   };
 
-  return { index, card, seen, picked, error, pending, go, next, prev, shuffle, pick, swipe, dismissError: () => setError(null) };
+  return { index, card, seen, picked, error, pending, go, next, prev, shuffle, pick, swipe, onKeyDown, dismissError: () => setError(null) };
 }
