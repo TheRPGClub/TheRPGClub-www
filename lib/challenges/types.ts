@@ -210,12 +210,38 @@ export interface ChallengeEdition extends ChallengeEditionSummary {
   picks_closed_at?: string | null;
 }
 
-// The signed-in Santa's side of an Edition (`GET .../santa`), as much of it
-// as the Edition page needs: who they pick for and what they picked.
+// The signed-in Santa's side of an Edition (`GET .../santa`, swagger
+// `ChallengeSanta`): who they pick for, hints about what that member likes,
+// what they picked, and the recipient's eligible backlog (their backlog
+// without the games they've Cleared). The Edition page reads only the first
+// few fields, so the rest are optional.
 export interface SantaView {
   edition_id: number;
+  year?: number;
+  challenge?: { id: number; name: string };
+  reveal_on?: string;
   recipient: ChallengeMember;
-  pick?: { game: GameSummary; picked_randomly: boolean } | null;
+  taste?: SantaTaste;
+  pick?: { game: GameSummary; picked_at?: string; picked_randomly: boolean } | null;
   pick_deadline_on?: string;
   picks_open?: boolean;
+  backlog?: SantaBacklogEntry[];
+}
+
+// Top 3 genres and the platform the recipient plays most on.
+export interface SantaTaste {
+  genres: { genre_id: number; name: string }[];
+  platform: { platform_id: number; platform_name: string; platform_abbreviation?: string | null } | null;
+}
+
+// One entry of the recipient's eligible backlog, with HowLongToBeat's time
+// (`hours`, the one backlog#pick compares; null without).
+export interface SantaBacklogEntry {
+  entry_id: number;
+  gamedb_game_id: number;
+  platform_id?: number | null;
+  note?: string | null;
+  game: GameSummary;
+  platform?: { platform_id: number; platform_name: string; platform_abbreviation?: string | null } | null;
+  hours?: number | null;
 }

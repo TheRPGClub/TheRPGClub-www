@@ -58,6 +58,7 @@ describe("crumbTrail", () => {
       { label: "Challenge 4", href: "/challenges/4" },
       { label: "Edit", href: "/challenges/4/edit" },
     ]);
+    expect((await trail("/challenges/4/pick")).at(-1)).toEqual({ label: "Your pick", href: "/challenges/4/pick" });
     expect((await trail("/challenges/new")).at(-1)).toEqual({ label: "New Challenge", href: "/challenges/new" });
   });
 

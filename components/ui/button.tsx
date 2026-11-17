@@ -169,6 +169,10 @@ const buttonVariants = cva(
         // rest of a profile's current Runs in place. Pair with size="bare"
         // and lay it out as a stamp.
         "stamp-more": "",
+        // www#111: an action already taken, standing where its button was
+        // (the Santa's "Picked"): the outline's look, at full strength
+        // though it can't be pressed. Pair with disabled.
+        done: "disabled:opacity-100",
       },
       size: {
         default:

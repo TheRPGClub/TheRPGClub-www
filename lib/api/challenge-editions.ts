@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
+import type { SantaRead } from "@/lib/challenges/santa-pick";
 import type { ChallengeEdition, SantaView } from "@/lib/challenges/types";
 
 // Server-only reads for an Assignment Challenge's Edition page (they read the
@@ -34,4 +35,26 @@ export async function fetchBacklogCount(userId: string): Promise<number | null> 
 export async function fetchSantaView(editionId: number): Promise<SantaView | null> {
   const body = await readJson<ApiSingle<SantaView>>(`/api/v1/challenge_editions/${editionId}/santa`);
   return body?.data ?? null;
+}
+
+// The pick page's read of the Santa view (www#111): the whole view with its
+// eligible backlog, or the API's refusal (403 `not_a_santa` for anyone the
+// draw didn't make this Edition's Santa) with its body, so the page can say
+// why.
+export async function readSantaView(editionId: number): Promise<SantaRead> {
+  try {
+    const res = await apiFetch(`/api/v1/challenge_editions/${editionId}/santa`, { cache: "no-store" });
+    if (!res.ok) {
+      let body: unknown = null;
+      try {
+        body = await res.json();
+      } catch {
+        // non-JSON error body
+      }
+      return { ok: false, status: res.status, body };
+    }
+    return { ok: true, view: ((await res.json()) as ApiSingle<SantaView>).data };
+  } catch {
+    return { ok: false, status: 0, body: null };
+  }
 }
