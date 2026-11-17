@@ -11,10 +11,13 @@ import { HostTools } from "@/components/challenges/host-tools";
 import { StaffMenu } from "@/components/challenges/staff-menu";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { RunActionButton } from "@/components/challenges/run-action-button";
+import { loadEditionPage } from "@/lib/challenges/edition-page";
+import { EditionView } from "@/components/challenges/assignment/edition-view";
 import { SlotsView } from "@/components/challenges/slots/slots-view";
 
 // A Challenge's page: its rules, Host and schedule, every member's Run, and
-// The Pool (`?view=pool`). `dup` names the Challenges that already had this
+// The Pool (`?view=pool`); an Assignment Challenge's Edition (`?edition=`,
+// else the current one). `dup` names the Challenges that already had this
 // one's name, right after it was created.
 export default async function ChallengePage({
   params,
@@ -26,13 +29,14 @@ export default async function ChallengePage({
     played?: string;
     all?: string;
     dup?: string;
+    edition?: string;
     run?: string;
   }>;
 }) {
   const session = await requireAuth();
   const features = await requireFeature("challenges");
   const { id: rawId } = await params;
-  const { view, played, all, dup, run } = await searchParams;
+  const { view, played, all, dup, edition, run } = await searchParams;
   const id = Number(rawId);
   if (!Number.isInteger(id) || id <= 0) notFound();
 
@@ -95,6 +99,10 @@ export default async function ChallengePage({
         runAction={runAction}
       />
     );
+  }
+  if (challenge.challenge_format === "assignment") {
+    const data = await loadEditionPage(challenge, Number(edition) || null, viewer.id, page.today);
+    return <EditionView page={page} data={data} badge={badge} tools={tools} notice={dupNotice} />;
   }
   return (
     <ChallengeView

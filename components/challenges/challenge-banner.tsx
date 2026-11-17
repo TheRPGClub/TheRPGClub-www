@@ -1,19 +1,38 @@
 import { FORMAT_NAME } from "@/lib/challenges/board";
-import { slotsChips } from "@/lib/challenges/facts";
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
+import type { BannerNumeral } from "@/lib/challenges/edition";
+import { hostAvatar, hostName, slotsChips } from "@/lib/challenges/facts";
 import { tintStyle } from "@/lib/challenges/tint";
 import { cn } from "@/lib/utils";
 import { splitGameTitle } from "@/components/issue/game-cover";
 import { FormatSquare } from "@/components/challenges/format-mark";
-import { NameTag, SlotRow } from "@/components/challenges/format-picture";
+import { SlotRow } from "@/components/challenges/format-picture";
+import { DoorsPicture } from "@/components/challenges/assignment/doors-picture";
+import { MemberMark } from "@/components/challenges/host-badge";
+import { Numeral } from "@/components/challenges/banner-numeral";
 
 // The Challenge banner, shared by every Challenge page (surface brief
 // challenges-pool, 2D): the key art over the tint, under the black
 // legibility scrim from the left; the tint chip and the Format chip; the
 // name as a two-line Anton headline whose second line takes the tint's hi;
-// and the numbers on an ink plate, days left first in the tint's hi.
-export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: React.ReactNode }) {
-  const { challenge, art, chip, daysLeft, runCount, finished, tint } = page;
+// and the numbers on an ink plate, days left first in the tint's hi. An
+// Edition page (www#110) passes its own chip ("Edition 2026"), its phase's
+// numerals and the Host chip.
+export function ChallengeBanner({
+  page,
+  badge,
+  chip: chipOverride,
+  numerals,
+  hostChip = false,
+}: {
+  page: ChallengePage;
+  badge?: React.ReactNode;
+  chip?: string;
+  numerals?: BannerNumeral[];
+  hostChip?: boolean;
+}) {
+  const { challenge, art, daysLeft, runCount, finished, tint } = page;
+  const chip = chipOverride ?? page.chip;
   // A growing Slots range counts its Caught Up Runs rather than Finished ones.
   const caughtUp = challenge.slots?.last_year === "current_year";
   const [first, second] = splitGameTitle(challenge.name);
@@ -28,7 +47,7 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
       ) : (
         <div className="absolute top-6 right-6 hidden w-[270px] opacity-90 sm:block sm:right-10">
           {page.slotPicture && <SlotRow squares={page.slotPicture} size="lg" />}
-          {challenge.challenge_format === "assignment" && <NameTag size="lg" />}
+          {challenge.challenge_format === "assignment" && <DoorsPicture />}
         </div>
       )}
       <div
@@ -44,6 +63,17 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
               <FormatSquare format={challenge.challenge_format} />
               {FORMAT_NAME[challenge.challenge_format]}
             </Chip>
+            {hostChip && (
+              <Chip className="bg-foreground/8 text-dim-foreground">
+                <MemberMark
+                  name={hostName(challenge)}
+                  src={hostAvatar(challenge)}
+                  club={challenge.hosted_by_club}
+                  size={14}
+                />
+                {challenge.hosted_by_club ? "Hosted by the club" : `Hosted by ${hostName(challenge)}`}
+              </Chip>
+            )}
             {slotsChips(challenge).map((extra) => (
               <Chip key={extra} className="bg-foreground/8 text-dim-foreground">
                 {extra}
@@ -57,9 +87,19 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
           </h1>
         </div>
         <dl className="flex w-fit gap-7 rounded-md bg-background/80 px-5 pt-4 pb-3.5 lg:ml-auto">
-          {daysLeft != null && <Numeral value={daysLeft} label={daysLeft === 1 ? "Day left" : "Days left"} hi />}
-          <Numeral value={runCount} label={runCount === 1 ? "Run" : "Runs"} hi={daysLeft == null && !!page.slotPicture} />
-          {caughtUp ? <Numeral value={page.caughtUp} label="Caught Up" /> : <Numeral value={finished} label="Finished" />}
+          {numerals ? (
+            numerals.map((n) => <Numeral key={n.label} value={n.value} label={n.label} hi={n.hi} />)
+          ) : (
+            <>
+              {daysLeft != null && <Numeral value={daysLeft} label={daysLeft === 1 ? "Day left" : "Days left"} hi />}
+              <Numeral
+                value={runCount}
+                label={runCount === 1 ? "Run" : "Runs"}
+                hi={daysLeft == null && !!page.slotPicture}
+              />
+              {caughtUp ? <Numeral value={page.caughtUp} label="Caught Up" /> : <Numeral value={finished} label="Finished" />}
+            </>
+          )}
         </dl>
       </div>
     </header>
@@ -76,21 +116,5 @@ function Chip({ children, className }: { children: React.ReactNode; className?: 
     >
       {children}
     </span>
-  );
-}
-
-function Numeral({ value, label, hi = false }: { value: number; label: string; hi?: boolean }) {
-  return (
-    <div className="flex flex-col-reverse">
-      <dt className="font-label text-[0.78rem] leading-[1.3] tracking-[0.08em] text-dim-foreground">{label}</dt>
-      <dd
-        className={cn(
-          "font-headline text-[2.6rem] leading-[0.85] sm:text-[3.25rem]",
-          hi ? "text-(--challenge-tint-hi)" : "text-foreground",
-        )}
-      >
-        {value}
-      </dd>
-    </div>
   );
 }

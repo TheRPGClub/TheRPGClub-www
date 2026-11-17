@@ -21,9 +21,20 @@ const MONTHS: Record<string, string> = Object.fromEntries(
 );
 const DAYS_IN = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-// A Season edge as a month and a day (it repeats every year).
-export function DayEditor({ form, edge }: { form: ChallengeFormState; edge: "start" | "end" }) {
-  const field = edge === "start" ? "seasonStart" : "seasonEnd";
+type DayField = "seasonStart" | "seasonEnd" | "signupCutoff" | "pickDeadline" | "reveal";
+
+// A day of the year as a month and a day: a Season edge, or a day of an
+// Assignment's calendar (it repeats every year).
+export function DayEditor({
+  form,
+  edge,
+  field: fieldProp,
+}: {
+  form: ChallengeFormState;
+  edge?: "start" | "end";
+  field?: DayField;
+}) {
+  const field = fieldProp ?? (edge === "start" ? "seasonStart" : "seasonEnd");
   const [month, day] = form.draft[field].split("-");
   const days = Object.fromEntries(
     Array.from({ length: DAYS_IN[Number(month) - 1] ?? 31 }, (_, i) => {

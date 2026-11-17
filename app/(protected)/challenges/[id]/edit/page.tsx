@@ -32,7 +32,7 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
       initial={draftFromChallenge(challenge)}
       edit={{
         id,
-        locked: runCount > 0 || challenge.challenge_format === "assignment",
+        locked: runCount > 0,
         closedForGood: !!challenge.ended_at,
       }}
       staff={isModeratorOrAbove(session.membership)}

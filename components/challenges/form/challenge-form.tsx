@@ -10,6 +10,7 @@ import { MetaFields } from "@/components/challenges/form/meta-fields";
 import { PoolBuilder } from "@/components/challenges/form/pool-builder";
 import { RuleSentence } from "@/components/challenges/form/rule-sentence";
 import { WordEditor } from "@/components/challenges/form/word-editor";
+import { AssignmentRules } from "@/components/challenges/form/assignment-rules";
 import { SlotsSentence } from "@/components/challenges/form/slots-sentence";
 import { YearRuler } from "@/components/challenges/form/year-ruler";
 
@@ -82,6 +83,8 @@ export function ChallengeForm({
           )}
           {form.draft.format === "slots" ? <YearRuler form={form} /> : <PoolBuilder form={form} />}
         </div>
+      ) : form.draft.format === "assignment" ? (
+        <AssignmentRules form={form} runCount={runCount} />
       ) : (
         <p className="flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
           <Lock aria-hidden className="size-4 shrink-0" />

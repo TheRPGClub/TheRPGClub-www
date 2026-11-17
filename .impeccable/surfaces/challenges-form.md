@@ -55,6 +55,7 @@ The Format cards stack. The sentence drops to 24px and wraps naturally; a word's
 ## Choices to confirm
 - An Assignment version of the sentence and a December preview were added (ticket 22 needs it; 5C and 5D drew only Pool and Slots).
 - The duplicate warning is on the new Challenge's page, not the form, because the API warns after creating.
+- (www#110 build) "the next 25 Dec" is plain sentence text, not a word: the year to Clear always ends at the next reveal, so there is nothing to set. On phones the December preview wraps into rows so all three key days show.
 
 ## Direction contract
 THESIS: the rules are a sentence you edit word by word, and the result is shown as the covers or years it covers; it refuses a long stacked form.

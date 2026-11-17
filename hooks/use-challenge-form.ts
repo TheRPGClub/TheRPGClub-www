@@ -23,6 +23,10 @@ export type RuleWordKey =
   | "season-end"
   | "schedule"
   | "ends-on"
+  // Assignment's calendar (www#110).
+  | "signup-cutoff"
+  | "pick-deadline"
+  | "reveal"
   // Slots (www#109): the range's two ends and Counts past play.
   | "slots-first"
   | "slots-last"
@@ -95,6 +99,7 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
           endsOn: errors.endsOn,
           slotsFirst: errors.slotsFirst,
           slotsLast: errors.slotsLast,
+          calendar: errors.calendar,
         },
     error,
     saving,
