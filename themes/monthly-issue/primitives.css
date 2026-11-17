@@ -1234,5 +1234,22 @@
         [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
             @apply font-label rounded-none bg-transparent tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-1 focus-visible:[outline-style:auto] focus-visible:outline-ring data-active:bg-transparent data-active:shadow-none;
         }
+        /* Challenges (www#106). The form's rule sentence: each setting a
+           word underlined in the strong rule, the open one on a yellow wash
+           over a yellow underline, an invalid one underlined in signal
+           orange, a locked one plain dim type; the dashed word that adds a
+           source. A Pool wall cover is a frame whose focus is the yellow
+           ring. */
+        [data-slot="button"] {
+            &[data-variant="rule-word"] {
+                @apply rounded-none border-0 border-b-3 border-border-strong px-1 font-semibold text-foreground transition-colors hover:border-faint-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-expanded:border-highlight aria-expanded:bg-highlight/10 aria-invalid:border-destructive aria-invalid:ring-0 disabled:border-transparent disabled:font-medium disabled:text-dim-foreground disabled:opacity-100;
+            }
+            &[data-variant="rule-add"] {
+                @apply rounded-none border-0 border-b-3 border-dashed border-border-strong px-1 font-medium text-faint-foreground transition-colors hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-expanded:border-highlight aria-expanded:bg-highlight/10 aria-expanded:text-foreground;
+            }
+            &[data-variant="pool-tile"] {
+                @apply rounded-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0;
+            }
+        }
     }
 }

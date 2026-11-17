@@ -80,6 +80,11 @@
     --color-news-hardware: var(--news-hardware);
     --color-news-rumours: var(--news-rumours);
     --color-news-general: var(--news-general);
+    --color-format-slots: var(--format-slots);
+    --color-format-pool: var(--format-pool);
+    --color-format-assignment: var(--format-assignment);
+    --color-holly: var(--holly);
+    --color-tinsel: var(--tinsel);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */

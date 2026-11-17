@@ -20,6 +20,7 @@ export interface CrumbNames {
   game(id: string): Promise<string>;
   member(id: string): Promise<string>;
   set(setId: string, memberId: string): Promise<string>;
+  challenge(id: string): Promise<string>;
 }
 
 const SECTIONS: Record<string, string> = {
@@ -35,6 +36,7 @@ const SECTIONS: Record<string, string> = {
   suggestions: "Suggestion Board",
   journals: "Game Journals",
   settings: "Settings",
+  challenges: "Challenges",
 };
 
 // /admin tool pages, labelled as the desk names them. Sections that live
@@ -109,10 +111,24 @@ async function achievementSetTitle(setId: string, userId: string): Promise<strin
   }
 }
 
+// A Challenge's name, from the Challenge page's own read.
+async function challengeName(id: string): Promise<string> {
+  if (!/^\d+$/.test(id)) return "Challenge";
+  try {
+    const res = await apiFetch(`/api/v1/challenges/${id}`, { cache: "no-store" });
+    if (!res.ok) return "Challenge";
+    const body = (await res.json()) as { data?: { name?: string | null } };
+    return body.data?.name?.trim() || "Challenge";
+  } catch {
+    return "Challenge";
+  }
+}
+
 const API_NAMES: CrumbNames = {
   game: gameTitle,
   member: memberName,
   set: achievementSetTitle,
+  challenge: challengeName,
 };
 
 export async function crumbTrail(
@@ -154,6 +170,16 @@ export async function crumbTrail(
 
   if (section === "suggestions" && id === "new") {
     trail.push({ label: "Suggest something", href: `${root}/new` });
+  }
+
+  if (section === "challenges" && id) {
+    if (id === "new") {
+      trail.push({ label: "New Challenge", href: `${root}/new` });
+    } else {
+      const base = `${root}/${id}`;
+      trail.push({ label: await names.challenge(id), href: base });
+      if (page === "edit") trail.push({ label: "Edit", href: `${base}/edit` });
+    }
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {

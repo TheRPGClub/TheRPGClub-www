@@ -47,6 +47,11 @@ colors:
   news-hardware: "#d4a373"
   news-rumours: "#c0c4d6"
   news-general: "#8d8d87"
+  format-slots: "#46cbe6"
+  format-pool: "#93a3ff"
+  format-assignment: "#52cf98"
+  holly: "#3fbf8a"
+  tinsel: "#e9c46a"
   foil-foreground: "#0b0b0d"
 typography:
   numeral:
@@ -409,6 +414,18 @@ The Achievement Hub adds four roles to the palette. They live on achievement sur
 The Game Journal gives each member a colour of their own, so their run reads at a glance on the game page's chronology plate (the line and dots) and on the /journals shelf (the cap of their spine). It is picked from the member's Discord id, so a member wears the same ink on every journal surface. The six inks are fern #6dd17f, lagoon #43d3cc, orchid #f077c0, sky #86d3f6, peony #fab6ba and cornflower #719def. They are marks, never fills behind type: each clears 6:1 against `card` and `muted`, so a dot or line holds well past the 3:1 non-text minimum.
 
 **The Journal Ink Is a Person Rule.** A journal ink means one member and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a journal line never reads as a track, a call to action or a destructive action, and the yellow ring on a selected dot stays the only interaction mark. They do not borrow the Achievement roles (the member ring colours stay on achievement surfaces), and they never leave journal surfaces.
+
+#### Challenges inks (Challenges surfaces only)
+Challenges are the magazine's fun department, so they bring their own colour, and it stays on Challenges surfaces: the index, the Challenge page (Pool, Slots, Assignment), the create and edit form, the Santa pick page and the Runs section of a profile. The main role is each Challenge's own tint; the Format inks are only small markers.
+- **Challenge tint** (data, not a token): each Challenge has one tint, used as a pair, stored on the Challenge by the API (`tint: { fill, hi }`) so the bot and the site agree, and read through `challengeTint()` in lib/challenges/tint.ts. A surface sets it as `--challenge-tint` and `--challenge-tint-hi` on its card or page root.
+  - **fill**: the flyer, the billboard, the banner's ground behind its art, a Finished stamp, the tint chip. All type on a fill is paper (body copy included, never `dim-foreground`) and clears 4.5:1.
+  - **hi**: the same hue lifted for type and marks on ink: the banner's second headline line and its days-left numeral, the view-switch underline, Run bars, the Finished stamp on ink, open-year numbers and birth-year rings on a Slots Run. It clears 4.5:1 on `background` and `card`.
+  - **Curated tints** (fill / hi): teal #1f6b67 / #6fd6cc, cobalt #2c4f8e / #9ab8f2, holly #1c6545 / #3fbf8a, umber #7a531c / #e0b56e, moss #3b5a2b / #a9cf86, azure #2a5ea6 / #9cc2f5, slate #3a3a52 / #b4b4d6, ochre #8a6417 / #e6c36a. A new Challenge gets one (holly for Secret Santa, the other seven turning by id); the Host or staff may set another pair that keeps its type readable. Paper on fill measures 4.9-10:1, hi on ink 9.8-11.6:1.
+  - **Muted (Closed / Expired):** the fill mixed 35% (a Closed flyer) or 30% (an Expired stamp) into `muted`, with paper titles and `dim-foreground` body.
+- **Format inks** (format-slots, format-pool, format-assignment): small markers only, never a fill behind more than a word. A 9px square beside the Format's name in a flyer's label, in the index's Format filter, on the banner's Format chip, on the form's Format cards and on a profile stamp. They never colour a card, a bar or a heading.
+- **Holly and tinsel** (holly, tinsel; Secret Santa only): holly #3fbf8a is Secret Santa's tint hi (its fill is #1c6545) and marks the Edition's key days. Tinsel #e9c46a is the door edge, the name-tag string and the reel rule. Neither appears on another Challenge.
+
+**The Tint Is the Challenge Rule.** A Challenge tint means that Challenge and nothing else. Like a game tint it is content, so a red or violet tint never means GOTM or NR-GOTM, but the curated tints stay off masthead red, feature violet, highlighter yellow and signal orange. Yellow still means your own business (your Run's ring, Start a Run, Sign up, the word being edited, New Challenge), signal orange still means Abandon and Delete, and red is still only "you are here". The Tint Carries Its Type Rule applies: a tint fill always travels with paper type and is always solid. The only gradient on a Challenge surface is the black legibility scrim over banner art.
 
 #### News inks (news surfaces only)
 The News Hub gives each News Category an ink of its own, so a card's category reads before its headline. The inks live on news surfaces only: the News page, its cards and its filter, and the category switches on /settings. They are marks, chips and bars (a card's 4px foot bar and corner tag, the 16px square beside a category's name), never a panel. Type on an ink is ink, and each ink clears 5:1 against ink, `card` and `muted`. Only five hues fit between the reserved inks (masthead red, feature violet, highlighter yellow and signal orange), so Hardware is a tan and the last two are neutrals told apart by stroke.

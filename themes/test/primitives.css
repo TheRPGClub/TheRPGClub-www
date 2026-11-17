@@ -1865,5 +1865,11 @@
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
         }
+        /* Challenges (www#106). */
+        [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"]) {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }
