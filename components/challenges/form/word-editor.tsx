@@ -5,6 +5,7 @@ import { EDITOR_ID } from "@/components/challenges/form/rule-sentence";
 import { SourceSearch } from "@/components/challenges/form/source-search";
 import { DayEditor } from "@/components/challenges/form/day-editor";
 import { EndDateEditor, ScheduleEditor, TargetEditor } from "@/components/challenges/form/word-controls";
+import { FirstYearEditor, LastYearEditor, PastPlayEditor } from "@/components/challenges/form/slots-word-controls";
 
 const TITLE: Record<RuleWordKey, string> = {
   target: "Games to Clear",
@@ -16,6 +17,9 @@ const TITLE: Record<RuleWordKey, string> = {
   "signup-cutoff": "Sign-up cutoff",
   "pick-deadline": "Pick deadline",
   reveal: "Reveal",
+  "slots-first": "First year",
+  "slots-last": "Last year",
+  "past-play": "Counts past play",
 };
 
 const CALENDAR_FIELD = { "signup-cutoff": "signupCutoff", "pick-deadline": "pickDeadline", reveal: "reveal" } as const;
@@ -37,6 +41,12 @@ const HELP: Record<RuleWordKey, string> = {
     "Santas pick until this day starts; then a missed pick becomes a random game from the backlog.",
   reveal:
     "Every game is revealed on this day, and members have until it comes round again to Clear theirs. The Edition is named by its year.",
+  "slots-first":
+    "Each member's birth year starts every Run at the member's own birth year: they're told it will show on their Run, and the full date never does. Or start every Run at one year.",
+  "slots-last":
+    "The current year keeps the range growing: a new year opens every 1 January, and members are Caught Up rather than Finished. Or end every Run at one year.",
+  "past-play":
+    "Counting past play lets members pick a Game Completion from before their Run started for an open year. Only for Challenges open any time.",
 };
 
 const ERROR_OF: Partial<Record<RuleWordKey, keyof ChallengeFormState["errors"]>> = {
@@ -48,6 +58,8 @@ const ERROR_OF: Partial<Record<RuleWordKey, keyof ChallengeFormState["errors"]>>
   "signup-cutoff": "calendar",
   "pick-deadline": "calendar",
   reveal: "calendar",
+  "slots-first": "slotsFirst",
+  "slots-last": "slotsLast",
 };
 
 // The open word's control, directly under the sentence, with its help line
@@ -79,6 +91,9 @@ export function WordEditor({ form }: { form: ChallengeFormState }) {
         {key in CALENDAR_FIELD && (
           <DayEditor form={form} field={CALENDAR_FIELD[key as keyof typeof CALENDAR_FIELD]} />
         )}
+        {key === "slots-first" && <FirstYearEditor form={form} />}
+        {key === "slots-last" && <LastYearEditor form={form} />}
+        {key === "past-play" && <PastPlayEditor form={form} />}
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}

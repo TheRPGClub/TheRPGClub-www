@@ -138,3 +138,12 @@ describe("stampTilt", () => {
     expect(stampTilt(12)).toBe(stampTilt(12));
   });
 });
+
+// www#109: a Slots stamp opens the member's own years on the Challenge page.
+describe("stamp links", () => {
+  it("opens a Slots Run in the Challenge page's panel, any other Run on its Challenge page", () => {
+    const { current } = profileRuns([run(1), slots], new Map(), today);
+    expect(current.find((s) => s.format === "slots")?.href).toBe("/challenges/2?run=u1#run");
+    expect(current.find((s) => s.format === "pool")?.href).toBe("/challenges/1");
+  });
+});

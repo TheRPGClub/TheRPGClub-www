@@ -13,6 +13,7 @@ import { NoticeSlip } from "@/components/issue/notice-slip";
 import { RunActionButton } from "@/components/challenges/run-action-button";
 import { loadEditionPage } from "@/lib/challenges/edition-page";
 import { EditionView } from "@/components/challenges/assignment/edition-view";
+import { SlotsView } from "@/components/challenges/slots/slots-view";
 
 // A Challenge's page: its rules, Host and schedule, every member's Run, and
 // The Pool (`?view=pool`); an Assignment Challenge's Edition (`?edition=`,
@@ -29,12 +30,13 @@ export default async function ChallengePage({
     all?: string;
     dup?: string;
     edition?: string;
+    run?: string;
   }>;
 }) {
   const session = await requireAuth();
   const features = await requireFeature("challenges");
   const { id: rawId } = await params;
-  const { view, played, all, dup, edition } = await searchParams;
+  const { view, played, all, dup, edition, run } = await searchParams;
   const id = Number(rawId);
   if (!Number.isInteger(id) || id <= 0) notFound();
 
@@ -72,6 +74,9 @@ export default async function ChallengePage({
     </>
   );
 
+  const runAction = (
+    <RunActionButton action={page.runAction} challengeId={challenge.id} challengeName={challenge.name} />
+  );
   const dupNotice = dup !== undefined && (
     <DuplicateNotice
       challengeId={challenge.id}
@@ -79,21 +84,35 @@ export default async function ChallengePage({
       otherId={Number.isInteger(otherId) && otherId > 0 ? otherId : null}
     />
   );
+  const badge = features.preview("challenges") && <PreviewBadge />;
+
+  if (challenge.challenge_format === "slots") {
+    return (
+      <SlotsView
+        page={page}
+        viewerId={viewer.id}
+        memberId={run ?? null}
+        showAll={all === "1"}
+        badge={badge}
+        tools={tools}
+        notice={dupNotice}
+        runAction={runAction}
+      />
+    );
+  }
   if (challenge.challenge_format === "assignment") {
     const data = await loadEditionPage(challenge, Number(edition) || null, viewer.id, page.today);
-    const badge = features.preview("challenges") && <PreviewBadge />;
     return <EditionView page={page} data={data} badge={badge} tools={tools} notice={dupNotice} />;
   }
-
   return (
     <ChallengeView
       page={page}
       view={view === "pool" ? "pool" : "runs"}
       played={parsePlayed(played)}
       showAll={all === "1"}
-      badge={features.preview("challenges") && <PreviewBadge />}
+      badge={badge}
       tools={tools}
-      runAction={<RunActionButton action={page.runAction} challengeId={challenge.id} challengeName={challenge.name} />}
+      runAction={runAction}
       notice={dupNotice}
     />
   );

@@ -74,7 +74,50 @@ export function challengeFacts(challenge: Challenge, today: IsoDay, gameCount: n
   if (finish) facts.push({ term: "Finish", detail: finish });
   const pool = poolLine(challenge, gameCount);
   if (pool) facts.push({ term: "Pool", detail: pool });
+  return [...facts, ...slotsFacts(challenge)];
+}
+
+// A Slots range in words: "Your birth year to now", "1990 to 1999".
+function slotsRange(slots: NonNullable<Challenge["slots"]>, birth: string, now: string): string {
+  const first = slots.first_year === "birth_year" ? birth : String(slots.first_year);
+  const last = slots.last_year === "current_year" ? now : String(slots.last_year);
+  return `${first} to ${last}`;
+}
+
+function slotsFacts(challenge: Pick<Challenge, "challenge_format" | "slots">): Fact[] {
+  const slots = challenge.slots;
+  if (challenge.challenge_format !== "slots" || !slots) return [];
+  const growing = slots.last_year === "current_year";
+  const fixed = typeof slots.first_year === "number" && !growing;
+  const count = fixed ? (slots.last_year as number) - (slots.first_year as number) + 1 : 0;
+  const facts: Fact[] = [
+    { term: "Years", detail: `${slotsRange(slots, "Your birth year", "now")}, one game each` },
+    {
+      term: "Finish",
+      detail: growing
+        ? "Clear every year to be Caught Up; a year opens every 1 January"
+        : fixed
+          ? `Clear all ${count} years`
+          : "Clear every year",
+    },
+  ];
+  if (slots.counts_past_play) {
+    facts.push({
+      term: "Past play",
+      detail: "Counts: pick a Game Completion from before your Run for an open year",
+    });
+  }
   return facts;
+}
+
+// The banner's extra chips on a Slots Challenge: "Counts past play" and its
+// range ("Birth year to now").
+export function slotsChips(challenge: Pick<Challenge, "challenge_format" | "slots">): string[] {
+  const slots = challenge.slots;
+  if (challenge.challenge_format !== "slots" || !slots) return [];
+  return [slots.counts_past_play ? "Counts past play" : null, slotsRange(slots, "Birth year", "now")].filter(
+    (chip): chip is string => chip !== null,
+  );
 }
 
 // The banner's art: the Challenge's key art (the API's pick from its Pool),

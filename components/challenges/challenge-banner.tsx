@@ -1,7 +1,7 @@
-import { FORMAT_NAME, slotSquares } from "@/lib/challenges/board";
+import { FORMAT_NAME } from "@/lib/challenges/board";
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
 import type { BannerNumeral } from "@/lib/challenges/edition";
-import { hostAvatar, hostName } from "@/lib/challenges/facts";
+import { hostAvatar, hostName, slotsChips } from "@/lib/challenges/facts";
 import { tintStyle } from "@/lib/challenges/tint";
 import { cn } from "@/lib/utils";
 import { splitGameTitle } from "@/components/issue/game-cover";
@@ -9,6 +9,7 @@ import { FormatSquare } from "@/components/challenges/format-mark";
 import { SlotRow } from "@/components/challenges/format-picture";
 import { DoorsPicture } from "@/components/challenges/assignment/doors-picture";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { Numeral } from "@/components/challenges/banner-numeral";
 
 // The Challenge banner, shared by every Challenge page (surface brief
 // challenges-pool, 2D): the key art over the tint, under the black
@@ -30,8 +31,10 @@ export function ChallengeBanner({
   numerals?: BannerNumeral[];
   hostChip?: boolean;
 }) {
-  const { challenge, art, daysLeft, runCount, finished, tint, today } = page;
+  const { challenge, art, daysLeft, runCount, finished, tint } = page;
   const chip = chipOverride ?? page.chip;
+  // A growing Slots range counts its Caught Up Runs rather than Finished ones.
+  const caughtUp = challenge.slots?.last_year === "current_year";
   const [first, second] = splitGameTitle(challenge.name);
   return (
     <header
@@ -43,9 +46,7 @@ export function ChallengeBanner({
         <img src={art} alt="" className="absolute inset-0 size-full object-cover" />
       ) : (
         <div className="absolute top-6 right-6 hidden w-[270px] opacity-90 sm:block sm:right-10">
-          {challenge.challenge_format === "slots" && (
-            <SlotRow squares={slotSquares(challenge, undefined, today)} size="lg" />
-          )}
+          {page.slotPicture && <SlotRow squares={page.slotPicture} size="lg" />}
           {challenge.challenge_format === "assignment" && <DoorsPicture />}
         </div>
       )}
@@ -73,6 +74,11 @@ export function ChallengeBanner({
                 {challenge.hosted_by_club ? "Hosted by the club" : `Hosted by ${hostName(challenge)}`}
               </Chip>
             )}
+            {slotsChips(challenge).map((extra) => (
+              <Chip key={extra} className="bg-foreground/8 text-dim-foreground">
+                {extra}
+              </Chip>
+            ))}
             {challenge.hidden && <Chip className="bg-foreground text-background">Hidden</Chip>}
           </div>
           <h1 className="font-headline mt-2.5 text-[3rem] leading-[0.86] text-balance break-words text-foreground sm:text-[4.2rem] xl:text-[5.375rem]">
@@ -86,8 +92,12 @@ export function ChallengeBanner({
           ) : (
             <>
               {daysLeft != null && <Numeral value={daysLeft} label={daysLeft === 1 ? "Day left" : "Days left"} hi />}
-              <Numeral value={runCount} label={runCount === 1 ? "Run" : "Runs"} />
-              <Numeral value={finished} label="Finished" />
+              <Numeral
+                value={runCount}
+                label={runCount === 1 ? "Run" : "Runs"}
+                hi={daysLeft == null && !!page.slotPicture}
+              />
+              {caughtUp ? <Numeral value={page.caughtUp} label="Caught Up" /> : <Numeral value={finished} label="Finished" />}
             </>
           )}
         </dl>
@@ -106,21 +116,5 @@ function Chip({ children, className }: { children: React.ReactNode; className?: 
     >
       {children}
     </span>
-  );
-}
-
-function Numeral({ value, label, hi = false }: { value: number; label: string; hi?: boolean }) {
-  return (
-    <div className="flex flex-col-reverse">
-      <dt className="font-label text-[0.78rem] leading-[1.3] tracking-[0.08em] text-dim-foreground">{label}</dt>
-      <dd
-        className={cn(
-          "font-headline text-[2.6rem] leading-[0.85] sm:text-[3.25rem]",
-          hi ? "text-(--challenge-tint-hi)" : "text-foreground",
-        )}
-      >
-        {value}
-      </dd>
-    </div>
   );
 }

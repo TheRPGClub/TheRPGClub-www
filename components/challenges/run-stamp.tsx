@@ -49,7 +49,7 @@ export function StampTitle({ stamp, className }: { stamp: StampView; className?:
   return (
     <h3 className={cn("font-headline text-balance break-words", className)}>
       <Link
-        href={`/challenges/${stamp.challengeId}`}
+        href={stamp.href}
         className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:outline-3 focus-visible:after:outline-offset-2 focus-visible:after:outline-highlight"
       >
         {stamp.name}

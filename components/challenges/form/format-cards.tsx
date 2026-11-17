@@ -8,9 +8,9 @@ import { FormatSquare } from "@/components/challenges/format-mark";
 
 // The Format, picked from three cards (surface brief challenges-form): each
 // its name in Anton beside its ink square and one line on what it is; the
-// chosen card carries the yellow ring. Assignment is for staff. Slots and
-// Assignment settings come to the website with www#109 and www#110; until
-// then they are set up from Discord.
+// chosen card carries the yellow ring. Assignment is for staff. Assignment
+// settings come to the website with www#110; until then it is set up from
+// Discord.
 
 const LINE: Record<ChallengeFormat, string> = {
   slots: "One game for every year in a range",
@@ -19,7 +19,7 @@ const LINE: Record<ChallengeFormat, string> = {
 };
 
 // The Formats this form can set up so far.
-const ON_THE_WEBSITE: readonly ChallengeFormat[] = ["pool", "assignment"];
+const ON_THE_WEBSITE: readonly ChallengeFormat[] = ["pool", "slots", "assignment"];
 
 export function FormatCards({
   value,

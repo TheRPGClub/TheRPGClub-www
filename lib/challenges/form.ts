@@ -1,11 +1,13 @@
 import { calendarError, SECRET_SANTA_CALENDAR } from "@/lib/challenges/edition-calendar";
-import type { Challenge, ChallengeFormat, ChallengeSchedule, PoolSource } from "@/lib/challenges/types";
+import { clubToday } from "@/lib/challenges/dates";
+import { slotsDraftFrom, slotsErrors, slotsRequest, SLOTS_DEFAULTS, type SlotsDraft } from "@/lib/challenges/slots-form";
+import type { Challenge, ChallengeFormat, ChallengeSchedule, ChallengeSlots, PoolSource } from "@/lib/challenges/types";
 
 // The create and edit form (surface brief challenges-form) as plain data: the
 // draft the form edits, its checks, and the request bodies the API takes
-// (`POST /api/v1/challenges`, `PATCH /api/v1/challenges/:id`). This ticket
-// covers the Pool and the schedule; Slots (www#109) and Assignment (www#110)
-// add their settings here. Client-safe and pure.
+// (`POST /api/v1/challenges`, `PATCH /api/v1/challenges/:id`): the Pool and
+// the schedule, and the Slots range (./slots-form, www#109). Client-safe and
+// pure.
 
 export interface DraftGame {
   game_id: number;
@@ -38,6 +40,8 @@ export interface ChallengeDraft {
   signupCutoff: string;
   pickDeadline: string;
   reveal: string;
+  // Slots: the range and Counts past play.
+  slots: SlotsDraft;
 }
 
 export function emptyDraft(): ChallengeDraft {
@@ -57,6 +61,7 @@ export function emptyDraft(): ChallengeDraft {
     signupCutoff: SECRET_SANTA_CALENDAR.cutoff,
     pickDeadline: SECRET_SANTA_CALENDAR.deadline,
     reveal: SECRET_SANTA_CALENDAR.reveal,
+    slots: { ...SLOTS_DEFAULTS },
   };
 }
 
@@ -96,6 +101,7 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
     signupCutoff: challenge.assignment?.signup_cutoff ?? SECRET_SANTA_CALENDAR.cutoff,
     pickDeadline: challenge.assignment?.pick_deadline ?? SECRET_SANTA_CALENDAR.deadline,
     reveal: challenge.assignment?.reveal ?? SECRET_SANTA_CALENDAR.reveal,
+    slots: slotsDraftFrom(challenge.slots),
   };
 }
 
@@ -123,14 +129,20 @@ export function hasPoolDefinition(draft: ChallengeDraft): boolean {
   return draft.sources.length > 0 || draft.included.length > 0;
 }
 
-export type DraftErrors = Partial<Record<"name" | "target" | "sources" | "season" | "endsOn" | "calendar", string>>;
+export type DraftErrors = Partial<
+  Record<"name" | "target" | "sources" | "season" | "endsOn" | "slotsFirst" | "slotsLast" | "calendar", string>
+>;
 
 const MONTH_DAY = /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 // What stops the draft from saving, by the sentence word it belongs to.
 // `poolSize` is the previewed Pool's game count, when known.
-export function validateDraft(draft: ChallengeDraft, poolSize: number | null): DraftErrors {
+export function validateDraft(
+  draft: ChallengeDraft,
+  poolSize: number | null,
+  currentYear: number = Number(clubToday().slice(0, 4)),
+): DraftErrors {
   const errors: DraftErrors = {};
   const name = draft.name.trim();
   if (!name) errors.name = "Give the Challenge a name.";
@@ -148,6 +160,7 @@ export function validateDraft(draft: ChallengeDraft, poolSize: number | null): D
     if (calendar) errors.calendar = calendar;
     return errors;
   }
+  if (draft.format === "slots") Object.assign(errors, slotsErrors(draft.slots, currentYear));
   if (draft.schedule === "seasonal") {
     if (!MONTH_DAY.test(draft.seasonStart) || !MONTH_DAY.test(draft.seasonEnd))
       errors.season = "Pick the Season's days.";
@@ -168,6 +181,7 @@ type RequestData = {
   hosted_by_club?: boolean;
   pool?: PoolDefinition & { target: number | "all" };
   assignment?: { signup_cutoff: string; pick_deadline: string; reveal: string };
+  slots?: ChallengeSlots;
 };
 
 function assignmentCalendar(draft: ChallengeDraft) {
@@ -200,6 +214,7 @@ function ruleFields(draft: ChallengeDraft): RequestData {
     season: seasonal ? { start: draft.seasonStart, end: draft.seasonEnd } : null,
     ends_on: seasonal ? null : draft.endsOn,
     ...(draft.format === "pool" ? { pool: { ...poolDefinition(draft), target: draft.target } } : {}),
+    ...(draft.format === "slots" ? { slots: slotsRequest(draft.slots, draft.schedule) } : {}),
   };
 }
 

@@ -26,7 +26,11 @@ export type RuleWordKey =
   // Assignment's calendar (www#110).
   | "signup-cutoff"
   | "pick-deadline"
-  | "reveal";
+  | "reveal"
+  // Slots (www#109): the range's two ends and Counts past play.
+  | "slots-first"
+  | "slots-last"
+  | "past-play";
 
 export interface EditTarget {
   id: number;
@@ -82,13 +86,21 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     update,
     open,
     toggleWord,
+    openWord: setOpen,
     closeWord: () => setOpen(null),
     preview,
     // Words go orange as soon as they're wrong; what's missing waits for a
     // save.
     errors: tried
       ? errors
-      : { target: errors.target, season: errors.season, endsOn: errors.endsOn, calendar: errors.calendar },
+      : {
+          target: errors.target,
+          season: errors.season,
+          endsOn: errors.endsOn,
+          slotsFirst: errors.slotsFirst,
+          slotsLast: errors.slotsLast,
+          calendar: errors.calendar,
+        },
     error,
     saving,
     locked,

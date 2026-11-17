@@ -11,11 +11,14 @@ import { PoolBuilder } from "@/components/challenges/form/pool-builder";
 import { RuleSentence } from "@/components/challenges/form/rule-sentence";
 import { WordEditor } from "@/components/challenges/form/word-editor";
 import { AssignmentRules } from "@/components/challenges/form/assignment-rules";
+import { SlotsSentence } from "@/components/challenges/form/slots-sentence";
+import { YearRuler } from "@/components/challenges/form/year-ruler";
 
 // Create or edit a Challenge (surface brief challenges-form, 5D's sentence
 // with 5C's covers): the Format as three cards, the rules as one sentence of
 // underlined words whose controls open beneath it, the Pool it means as a
-// cover wall, then the name, description and Host. Once a Run exists the
+// cover wall (Slots: its years on a ruler), then the name, description and
+// Host. Once a Run exists the
 // rules are locked and only the name, description and end date change.
 export function ChallengeForm({
   initial,
@@ -66,9 +69,9 @@ export function ChallengeForm({
         staff={staff}
         locked={form.locked}
       />
-      {form.draft.format === "pool" ? (
+      {form.draft.format === "pool" || form.draft.format === "slots" ? (
         <div>
-          <RuleSentence form={form} />
+          {form.draft.format === "slots" ? <SlotsSentence form={form} /> : <RuleSentence form={form} />}
           <WordEditor form={form} />
           {edit?.locked && (
             <p className="mt-3 flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
@@ -78,7 +81,7 @@ export function ChallengeForm({
                 : "The rules are locked. The name, description and end date can still change."}
             </p>
           )}
-          <PoolBuilder form={form} />
+          {form.draft.format === "slots" ? <YearRuler form={form} /> : <PoolBuilder form={form} />}
         </div>
       ) : form.draft.format === "assignment" ? (
         <AssignmentRules form={form} runCount={runCount} />
