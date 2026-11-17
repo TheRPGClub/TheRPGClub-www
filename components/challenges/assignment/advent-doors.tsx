@@ -17,7 +17,7 @@ export function AdventDoors({ doors, yourSeat, label }: { doors: Door[]; yourSea
     <div className="@container self-start">
       <ol
         aria-label={label}
-        className="grid grid-cols-3 gap-2 @md:grid-cols-4 @md:gap-2.5 @[36rem]:grid-cols-5 @[50rem]:grid-cols-6"
+        className="grid grid-cols-3 gap-2 @md:grid-cols-4 @md:gap-2.5 @[34rem]:grid-cols-5 @[40rem]:grid-cols-6"
       >
         {doors.map((door) => (
           <AdventDoor key={door.key} door={door} />

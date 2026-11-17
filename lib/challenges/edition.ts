@@ -119,7 +119,7 @@ function runTag(a: EditionAssignment, ended: boolean): Door["tag"] {
 function footOf(a: EditionAssignment, ended: boolean): string {
   const santa = ended && a.santa ? memberName(a.santa) : null;
   if (a.picked_randomly) return santa ? `Random pick · Santa: ${santa}` : "Random pick";
-  return santa ? `From ${santa}` : "Santa revealed when the Edition ends";
+  return santa ? `From ${santa}` : "Santa revealed at the end";
 }
 
 export function editionDoors(

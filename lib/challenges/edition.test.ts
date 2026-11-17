@@ -145,7 +145,7 @@ describe("editionDoors", () => {
     ];
     const { doors } = editionDoors(edition({ phase: "revealed", assignments }), "1", "2027-03-03");
     expect(doors.map((d) => [d.name, d.state, d.game?.title, d.tag?.label ?? null, d.foot])).toEqual([
-      ["Night Owl", "open", "Game 1", "Finished", "Santa revealed when the Edition ends"],
+      ["Night Owl", "open", "Game 1", "Finished", "Santa revealed at the end"],
       ["Dice Goblin", "open", "Game 2", null, "Random pick"],
     ]);
   });
