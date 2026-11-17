@@ -106,7 +106,8 @@ export function ChallengeBanner({
   );
 }
 
-function Chip({ children, className }: { children: React.ReactNode; className?: string }) {
+// A banner chip (also the pick page header's): label type on its own ground.
+export function Chip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <span
       className={cn(

@@ -179,6 +179,8 @@ export async function crumbTrail(
       const base = `${root}/${id}`;
       trail.push({ label: await names.challenge(id), href: base });
       if (page === "edit") trail.push({ label: "Edit", href: `${base}/edit` });
+      // A Santa's private pick page (www#111).
+      if (page === "pick") trail.push({ label: "Your pick", href: `${base}/pick` });
     }
   }
 

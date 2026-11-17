@@ -49,6 +49,8 @@ The card becomes a stack: cover with its tag (tag below the cover, not overlappi
 
 ## Choices to confirm
 - 6A's Confirm button moves out of the tag onto the card (Pick this one); the tag only shows the result.
+- Built (www#111): the API serves HowLongToBeat hours but no per-game genre, "members Cleared it", club rating or backlog date, so the card shows one Anton line ("About 62 hours", "To beat · HowLongToBeat") and year and platform chips; the recipient's taste (top platform and genres) sits under the privacy line as "To help you choose". The note says "without the games they've Cleared" (no count served).
+- Built (www#111): a non-Santa, a closed Edition or an empty list gets a notice slip with the way back rather than a bare 404, so the API's refusal reads as a sentence.
 
 ## Direction contract
 THESIS: dealing one game at a time and writing the choice on a gift tag; it refuses a table of the backlog.

@@ -150,6 +150,18 @@ describe("editionDoors", () => {
     ]);
   });
 
+  it("keeps Santas off the doors until the Edition ends, even when staff are served them", () => {
+    const assignments = [
+      assignment(MEMBERS[0], { santa: MEMBERS[1], run: { id: 1, status: "active", progress: { in_progress: 1 } } }),
+      assignment(MEMBERS[1], { santa: MEMBERS[0], picked_randomly: true }),
+    ];
+    const { doors } = editionDoors(edition({ phase: "revealed", assignments }), "1", "2027-03-03");
+    expect(doors.map((d) => [d.foot, d.tag?.label ?? null])).toEqual([
+      [null, "In Progress"],
+      ["Random pick", null],
+    ]);
+  });
+
   it("signs each door with its Santa when the Edition ends", () => {
     const assignments = [
       assignment(MEMBERS[0], { santa: MEMBERS[1], run: { id: 1, status: "expired", progress: {} } }),

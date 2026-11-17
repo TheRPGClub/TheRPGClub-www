@@ -59,7 +59,7 @@ export function YourBusiness({
       >
         {!closed && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <ButtonLink href={`/challenges/${edition.challenge.id}/pick`} variant="inverse" size="sm">
+            <ButtonLink href={`/challenges/${edition.challenge.id}/pick?edition=${edition.id}`} variant="inverse" size="sm">
               Open your pick page <ArrowRight aria-hidden />
             </ButtonLink>
             <LeaveAfterDraw edition={edition} recipient={recipient} />
