@@ -4,6 +4,7 @@ import { refresh, revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { readApiError } from "@/lib/api/errors";
 import { runRefusal, runRequest, type RunChange } from "@/lib/challenges/run-action";
+import { runNotices, type RunNotice } from "@/lib/challenges/slot-requests";
 
 // Starting, abandoning and deleting the signed-in member's Runs. The API owns
 // every rule (one Active Run, one per Season, a Closed Challenge, a Birth
@@ -15,6 +16,9 @@ export interface RunActionResult {
   error?: string;
   // The refusal's code (`season_run_exists`, `birth_date_required`...).
   code?: string;
+  // What a new Run's member should know (a birth-year Slots Run's "your birth
+  // year shows").
+  notices?: RunNotice[];
 }
 
 async function change(change: RunChange): Promise<RunActionResult> {
@@ -30,11 +34,12 @@ async function change(change: RunChange): Promise<RunActionResult> {
     const err = await readApiError(res);
     return { ok: false, error: runRefusal(err), code: err.code };
   }
+  const notices = change.kind === "start" ? runNotices(await res.json().catch(() => null)) : [];
   // The index, the Challenge page and every profile show Runs.
   revalidatePath("/challenges", "layout");
   revalidatePath("/members/[id]", "page");
   refresh();
-  return { ok: true };
+  return { ok: true, notices };
 }
 
 export async function startRunAction(challengeId: number): Promise<RunActionResult> {

@@ -170,21 +170,23 @@ export function slotSquares(
   challenge: Pick<Challenge, "slots">,
   run: ChallengeRun | undefined,
   today: string,
+  // How many squares at most (a Challenge banner draws 40).
+  max: number = MAX_SQUARES,
 ): SlotSquares {
   const years = run?.slots?.years;
   if (years && years.length > 0) {
     const filled = years.map((y) => y.game_id != null);
     return {
-      filled: filled.slice(0, MAX_SQUARES),
-      more: Math.max(filled.length - MAX_SQUARES, 0),
+      filled: filled.slice(0, max),
+      more: Math.max(filled.length - max, 0),
     };
   }
   const slots = challenge.slots;
   const last = slots?.last_year === "current_year" ? Number(today.slice(0, 4)) : slots?.last_year;
   const count =
-    typeof slots?.first_year === "number" && typeof last === "number" ? last - slots.first_year + 1 : MAX_SQUARES;
+    typeof slots?.first_year === "number" && typeof last === "number" ? last - slots.first_year + 1 : max;
   return {
-    filled: Array(Math.min(Math.max(count, 0), MAX_SQUARES)).fill(false),
-    more: Math.max(count - MAX_SQUARES, 0),
+    filled: Array(Math.min(Math.max(count, 0), max)).fill(false),
+    more: Math.max(count - max, 0),
   };
 }

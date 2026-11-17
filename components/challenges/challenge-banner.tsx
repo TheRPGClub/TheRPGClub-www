@@ -1,4 +1,5 @@
-import { FORMAT_NAME, slotSquares } from "@/lib/challenges/board";
+import { FORMAT_NAME } from "@/lib/challenges/board";
+import { slotsChips } from "@/lib/challenges/facts";
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
 import { tintStyle } from "@/lib/challenges/tint";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,9 @@ import { NameTag, SlotRow } from "@/components/challenges/format-picture";
 // name as a two-line Anton headline whose second line takes the tint's hi;
 // and the numbers on an ink plate, days left first in the tint's hi.
 export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: React.ReactNode }) {
-  const { challenge, art, chip, daysLeft, runCount, finished, tint, today } = page;
+  const { challenge, art, chip, daysLeft, runCount, finished, tint } = page;
+  // A growing Slots range counts its Caught Up Runs rather than Finished ones.
+  const caughtUp = challenge.slots?.last_year === "current_year";
   const [first, second] = splitGameTitle(challenge.name);
   return (
     <header
@@ -24,9 +27,7 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
         <img src={art} alt="" className="absolute inset-0 size-full object-cover" />
       ) : (
         <div className="absolute top-6 right-6 hidden w-[270px] opacity-90 sm:block sm:right-10">
-          {challenge.challenge_format === "slots" && (
-            <SlotRow squares={slotSquares(challenge, undefined, today)} size="lg" />
-          )}
+          {page.slotPicture && <SlotRow squares={page.slotPicture} size="lg" />}
           {challenge.challenge_format === "assignment" && <NameTag size="lg" />}
         </div>
       )}
@@ -43,6 +44,11 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
               <FormatSquare format={challenge.challenge_format} />
               {FORMAT_NAME[challenge.challenge_format]}
             </Chip>
+            {slotsChips(challenge).map((extra) => (
+              <Chip key={extra} className="bg-foreground/8 text-dim-foreground">
+                {extra}
+              </Chip>
+            ))}
             {challenge.hidden && <Chip className="bg-foreground text-background">Hidden</Chip>}
           </div>
           <h1 className="font-headline mt-2.5 text-[3rem] leading-[0.86] text-balance break-words text-foreground sm:text-[4.2rem] xl:text-[5.375rem]">
@@ -52,8 +58,8 @@ export function ChallengeBanner({ page, badge }: { page: ChallengePage; badge?: 
         </div>
         <dl className="flex w-fit gap-7 rounded-md bg-background/80 px-5 pt-4 pb-3.5 lg:ml-auto">
           {daysLeft != null && <Numeral value={daysLeft} label={daysLeft === 1 ? "Day left" : "Days left"} hi />}
-          <Numeral value={runCount} label={runCount === 1 ? "Run" : "Runs"} />
-          <Numeral value={finished} label="Finished" />
+          <Numeral value={runCount} label={runCount === 1 ? "Run" : "Runs"} hi={daysLeft == null && !!page.slotPicture} />
+          {caughtUp ? <Numeral value={page.caughtUp} label="Caught Up" /> : <Numeral value={finished} label="Finished" />}
         </dl>
       </div>
     </header>

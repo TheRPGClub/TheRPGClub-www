@@ -29,6 +29,9 @@ export interface StampView {
   // A sign-up waiting for its Edition's draw: no score yet.
   signedUp: boolean;
   challengeId: number;
+  // Where the stamp links: the Challenge page, opened on the member's own
+  // years for a Slots Run (www#109).
+  href: string;
   name: string;
   format: ChallengeFormat;
   status: RunStatus;
@@ -108,6 +111,10 @@ function stampView(run: ChallengeRun, tints: ReadonlyMap<number, ChallengeTint>,
     id: run.id,
     signedUp: false,
     challengeId: challenge.id,
+    href:
+      challenge.challenge_format === "slots"
+        ? `/challenges/${challenge.id}?run=${encodeURIComponent(run.user.user_id)}#run`
+        : `/challenges/${challenge.id}`,
     name: challenge.name,
     format: challenge.challenge_format,
     status: run.status,
@@ -132,6 +139,7 @@ function signupView(signup: ChallengeOpenSignup, tints: ReadonlyMap<number, Chal
     id: signup.edition_id,
     signedUp: true,
     challengeId: challenge.id,
+    href: `/challenges/${challenge.id}`,
     name: challenge.name,
     format: "assignment",
     status: "active",
