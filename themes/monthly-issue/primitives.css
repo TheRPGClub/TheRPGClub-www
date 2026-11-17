@@ -402,6 +402,22 @@
             }
         }
 
+        /* www#109: a Slots range on the form's year ruler. No track of its
+           own (the ruler's ticks are the scale); the range is a paper band
+           at 12% inside a paper hairline; each handle a paper bar with a
+           halo in the card colour, yellow while dragged or focused. */
+        [data-slot="slider"][data-tone="year-ruler"] {
+            [data-slot="slider-track"] {
+                @apply overflow-visible bg-transparent;
+            }
+            [data-slot="slider-range"] {
+                @apply bg-foreground/12 shadow-[inset_0_0_0_1.5px_var(--color-foreground)];
+            }
+            [data-slot="slider-thumb"] {
+                @apply cursor-grab rounded-xs border-0 bg-foreground shadow-[0_0_0_3px_var(--color-card)] focus-visible:bg-highlight focus-visible:ring-3 focus-visible:ring-highlight/30 data-dragging:cursor-grabbing data-dragging:bg-highlight data-dragging:ring-3 data-dragging:ring-highlight/30;
+            }
+        }
+
         /* Avatar: round, with a hairline ring blended into the picture. */
         [data-slot="avatar"] {
             @apply rounded-full after:rounded-full after:border-border after:mix-blend-darken dark:after:mix-blend-lighten;

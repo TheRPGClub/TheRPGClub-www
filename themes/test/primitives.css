@@ -506,6 +506,15 @@
                 border-radius: 0;
             }
         }
+        [data-slot="slider"][data-tone="year-ruler"] {
+            [data-slot="slider-track"],
+            [data-slot="slider-range"],
+            [data-slot="slider-thumb"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border: 2px dashed var(--gotm);
+            }
+        }
         [data-slot="slider"][data-tone="gotm"] {
             [data-slot="slider-track"] {
                 background-color: var(--card);

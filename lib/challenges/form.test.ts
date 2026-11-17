@@ -238,3 +238,51 @@ describe("draftFromChallenge", () => {
     });
   });
 });
+
+// www#109: the Slots range rides with the rule fields.
+describe("a Slots Challenge", () => {
+  const slots = (over: Partial<ChallengeDraft> = {}) =>
+    draft({ format: "slots", sources: [], slots: { first: "birth_year", last: "current_year", countsPastPlay: true }, ...over });
+
+  it("creates with its range and Counts past play, and no Pool", () => {
+    expect(createRequest(slots()).data).toEqual({
+      name: "Fall of Final Fantasy",
+      description: "Any Final Fantasy.",
+      challenge_format: "slots",
+      schedule: "always_open",
+      season: null,
+      ends_on: null,
+      hosted_by_club: false,
+      slots: { first_year: "birth_year", last_year: "current_year", counts_past_play: true },
+    });
+  });
+
+  it("edits its range while no Run has started", () => {
+    const body = editRequest(slots({ slots: { first: 1990, last: 1999, countsPastPlay: false } }), {
+      locked: false,
+      closedForGood: false,
+    });
+    expect(body.data.slots).toEqual({ first_year: 1990, last_year: 1999, counts_past_play: false });
+  });
+
+  it("needs no Pool, and checks its years", () => {
+    expect(validateDraft(slots(), null, 2026)).toEqual({});
+    expect(validateDraft(slots({ slots: { first: 2001, last: 1999, countsPastPlay: false } }), null, 2026)).toEqual({
+      slotsFirst: "The first year can't come after the last year.",
+    });
+  });
+
+  it("reads a saved Slots Challenge back", () => {
+    const challenge = {
+      id: 4,
+      name: "Nineties Kid",
+      description: "",
+      challenge_format: "slots",
+      hosted_by_club: false,
+      schedule: "always_open",
+      ends_on: null,
+      slots: { first_year: 1990, last_year: 1999, counts_past_play: false },
+    } as unknown as Challenge;
+    expect(draftFromChallenge(challenge).slots).toEqual({ first: 1990, last: 1999, countsPastPlay: false });
+  });
+});

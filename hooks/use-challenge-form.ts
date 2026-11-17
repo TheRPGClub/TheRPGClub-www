@@ -16,7 +16,17 @@ import {
 import { usePoolPreview } from "@/hooks/use-pool-preview";
 
 // The words of the rule sentence a member can open, one at a time.
-export type RuleWordKey = "target" | "sources" | "season-start" | "season-end" | "schedule" | "ends-on";
+export type RuleWordKey =
+  | "target"
+  | "sources"
+  | "season-start"
+  | "season-end"
+  | "schedule"
+  | "ends-on"
+  // Slots (www#109): the range's two ends and Counts past play.
+  | "slots-first"
+  | "slots-last"
+  | "past-play";
 
 export interface EditTarget {
   id: number;
@@ -72,11 +82,20 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     update,
     open,
     toggleWord,
+    openWord: setOpen,
     closeWord: () => setOpen(null),
     preview,
     // Words go orange as soon as they're wrong; what's missing waits for a
     // save.
-    errors: tried ? errors : { target: errors.target, season: errors.season, endsOn: errors.endsOn },
+    errors: tried
+      ? errors
+      : {
+          target: errors.target,
+          season: errors.season,
+          endsOn: errors.endsOn,
+          slotsFirst: errors.slotsFirst,
+          slotsLast: errors.slotsLast,
+        },
     error,
     saving,
     locked,

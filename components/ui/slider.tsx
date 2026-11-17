@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 // What the slider rates, drawn by each Theme by [data-slot="slider"][data-tone]
 // and [data-size] (api ADR-0008). A toned slider is a rating: its track and
 // fill read as a ramp in the track's ink.
-type SliderTone = "default" | "gotm" | "nr" | "neutral"
+type SliderTone = "default" | "gotm" | "nr" | "neutral" | "year-ruler"
 
 function Slider({
   className,

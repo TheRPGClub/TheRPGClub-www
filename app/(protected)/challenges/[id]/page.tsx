@@ -11,6 +11,7 @@ import { HostTools } from "@/components/challenges/host-tools";
 import { StaffMenu } from "@/components/challenges/staff-menu";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { RunActionButton } from "@/components/challenges/run-action-button";
+import { SlotsView } from "@/components/challenges/slots/slots-view";
 
 // A Challenge's page: its rules, Host and schedule, every member's Run, and
 // The Pool (`?view=pool`). `dup` names the Challenges that already had this
@@ -25,12 +26,13 @@ export default async function ChallengePage({
     played?: string;
     all?: string;
     dup?: string;
+    run?: string;
   }>;
 }) {
   const session = await requireAuth();
   const features = await requireFeature("challenges");
   const { id: rawId } = await params;
-  const { view, played, all, dup } = await searchParams;
+  const { view, played, all, dup, run } = await searchParams;
   const id = Number(rawId);
   if (!Number.isInteger(id) || id <= 0) notFound();
 
@@ -68,24 +70,42 @@ export default async function ChallengePage({
     </>
   );
 
+  const runAction = (
+    <RunActionButton action={page.runAction} challengeId={challenge.id} challengeName={challenge.name} />
+  );
+  const dupNotice = dup !== undefined && (
+    <DuplicateNotice
+      challengeId={challenge.id}
+      name={challenge.name}
+      otherId={Number.isInteger(otherId) && otherId > 0 ? otherId : null}
+    />
+  );
+  const badge = features.preview("challenges") && <PreviewBadge />;
+
+  if (challenge.challenge_format === "slots") {
+    return (
+      <SlotsView
+        page={page}
+        viewerId={viewer.id}
+        memberId={run ?? null}
+        showAll={all === "1"}
+        badge={badge}
+        tools={tools}
+        notice={dupNotice}
+        runAction={runAction}
+      />
+    );
+  }
   return (
     <ChallengeView
       page={page}
       view={view === "pool" ? "pool" : "runs"}
       played={parsePlayed(played)}
       showAll={all === "1"}
-      badge={features.preview("challenges") && <PreviewBadge />}
+      badge={badge}
       tools={tools}
-      runAction={<RunActionButton action={page.runAction} challengeId={challenge.id} challengeName={challenge.name} />}
-      notice={
-        dup !== undefined && (
-          <DuplicateNotice
-            challengeId={challenge.id}
-            name={challenge.name}
-            otherId={Number.isInteger(otherId) && otherId > 0 ? otherId : null}
-          />
-        )
-      }
+      runAction={runAction}
+      notice={dupNotice}
     />
   );
 }

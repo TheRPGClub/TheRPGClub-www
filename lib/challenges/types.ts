@@ -92,7 +92,13 @@ export interface ChallengeRunEntry {
   title: string;
   state: "in_progress" | "cleared";
   cleared_on?: string | null;
+  // The member placed it themselves (a slot move or a past-play pick).
   picked_by_hand: boolean;
+  // Slots: the year it fills (null while In Progress or waiting for an open
+  // year), and every year the game was released in (null for other Formats).
+  slot_year?: number | null;
+  release_years?: number[] | null;
+  completion_id?: number | null;
   // The game's cover; a Run from an older API without it takes covers from
   // the Pool preview.
   cover_url?: string | null;
@@ -105,6 +111,9 @@ export interface ChallengeRun {
     name: string;
     challenge_format: ChallengeFormat;
     schedule: ChallengeSchedule;
+    // Slots only (false / null otherwise, absent from an older API).
+    counts_past_play?: boolean;
+    slots?: ChallengeSlots | null;
   };
   user: ChallengeMember;
   status: RunStatus;
