@@ -66,7 +66,7 @@ export function santaCircle(assignments: readonly EditionAssignment[], viewerId:
     if (!a.santa) continue;
     const from = angle.get(a.santa.user_id) as number;
     const sweep = ((angle.get(a.recipient.user_id) as number) - from + 360) % 360 || 360;
-    const pad = sweep * 0.35;
+    const pad = sweep * 0.24;
     const [x1, y1] = point(ARROW_RADIUS, from + pad);
     const [x2, y2] = point(ARROW_RADIUS, from + sweep - pad);
     const status = a.run?.status;

@@ -54,6 +54,9 @@ Banner 240px. The December strip scrolls horizontally with today (or the next ke
 - Today on the strip is a paper ring (4A used red, which is reserved for GOTM and "you are here").
 - This page opens with the shared Challenge banner in holly (4A had a plain header).
 - The circle appears only when the Edition ends.
+- (www#110 build) Before the Edition ends, revealed doors carry no Santa line ("Santa revealed when the Edition ends" didn't fit a 99px door and the side panel already says when Santas are revealed); only "Random pick" shows. The ended "Your game" yellow panel is dropped: the circle is the news.
+- (www#110 build) A drawn Santa may "Leave this Edition" until the pick deadline, behind a confirm (it drops their pick and Abandons their Run): the API's #384 withdrawal, asked for by the ticket's coordinator; the brief only showed Leave before the cutoff.
+- (www#110 build) While picking, members see plain drawn doors: the API serves who has been picked for only to staff before the reveal, so the Picked/Waiting seals show for staff (and for everyone after the deadline). API follow-up recorded.
 
 ## Direction contract
 THESIS: an advent calendar of member doors that opens as the Edition moves on; it refuses a roster table with phase badges.

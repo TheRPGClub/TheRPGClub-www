@@ -80,7 +80,8 @@ export function YourBusiness({
     return <p className="text-[0.92rem] text-faint-foreground">You left this Edition after the draw.</p>;
   }
   const yours = edition.assignments?.find((a) => a.recipient.user_id === viewerId);
-  if ((edition.phase === "revealed" || edition.phase === "ended") && yours?.game) {
+  // Once the Edition ends, the Santa circle is the news, not the viewer's game.
+  if (edition.phase === "revealed" && yours?.game) {
     return (
       <YellowPanel label="Your game" title={yours.game.title}>
         <ButtonLink href={`/members/${viewerId}#runs`} variant="inverse" size="sm">

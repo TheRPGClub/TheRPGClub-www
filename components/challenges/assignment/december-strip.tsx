@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 // ink type and a holly caption below; while the Edition runs, the days gone
 // are holly at 18% and today wears a paper ring. Too narrow for every tile,
 // it scrolls sideways with today (or the next key day) brought into view.
-export function DecemberStrip({ tiles, label }: { tiles: StripTile[]; label: string }) {
+// `wrap` (the form's preview) wraps the tiles into rows on phones instead,
+// so every key day shows.
+export function DecemberStrip({ tiles, label, wrap = false }: { tiles: StripTile[]; label: string; wrap?: boolean }) {
   const scroller = useRef<HTMLOListElement>(null);
   useEffect(() => {
     const list = scroller.current;
@@ -22,7 +24,10 @@ export function DecemberStrip({ tiles, label }: { tiles: StripTile[]; label: str
     <ol
       ref={scroller}
       aria-label={label}
-      className="flex snap-x gap-[3px] overflow-x-auto pb-5 [scrollbar-width:thin] md:grid md:grid-flow-col md:auto-cols-fr md:overflow-visible"
+      className={cn(
+        "flex gap-[3px] pb-5 md:grid md:auto-cols-fr md:grid-flow-col md:overflow-visible",
+        wrap ? "flex-wrap gap-y-5" : "snap-x overflow-x-auto [scrollbar-width:thin]",
+      )}
     >
       {tiles.map((tile) =>
         tile.kind === "gap" ? (

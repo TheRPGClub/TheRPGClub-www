@@ -116,10 +116,13 @@ function runTag(a: EditionAssignment, ended: boolean): Door["tag"] {
   return null;
 }
 
-function footOf(a: EditionAssignment, ended: boolean): string {
+// Who picked, once the Edition ends ("From Lore Keeper"; a random pick
+// names its Santa on a second line); before that only a random pick says so
+// (the side panel says when Santas are revealed).
+function footOf(a: EditionAssignment, ended: boolean): string | null {
   const santa = ended && a.santa ? memberName(a.santa) : null;
-  if (a.picked_randomly) return santa ? `Random pick · Santa: ${santa}` : "Random pick";
-  return santa ? `From ${santa}` : "Santa revealed at the end";
+  if (a.picked_randomly) return santa ? `Random pick\nSanta: ${santa}` : "Random pick";
+  return santa ? `From ${santa}` : null;
 }
 
 export function editionDoors(

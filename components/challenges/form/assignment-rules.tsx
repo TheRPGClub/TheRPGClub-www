@@ -45,7 +45,7 @@ export function AssignmentRules({ form, runCount }: { form: ChallengeFormState; 
           {formatMonthDay(draft.reveal)}
         </RuleWord>
         . They have until{" "}
-        <span className={locked ? undefined : "font-semibold text-foreground"}>the next {formatMonthDay(draft.reveal)}</span>{" "}
+        the next {formatMonthDay(draft.reveal)}{" "}
         to Clear it.
       </p>
       <WordEditor form={form} />
@@ -59,7 +59,7 @@ export function AssignmentRules({ form, runCount }: { form: ChallengeFormState; 
       )}
       <section aria-label={preview.title} className="mt-4 rounded-md bg-card px-5 pt-4 pb-3 sm:px-7">
         <p className="font-label mb-3 text-[0.8rem] tracking-[0.08em] text-faint-foreground">{preview.title}</p>
-        <DecemberStrip tiles={preview.tiles} label={preview.title} />
+        <DecemberStrip tiles={preview.tiles} label={preview.title} wrap />
         <p className="text-[0.9rem] leading-[1.45] text-faint-foreground">
           Members need at least {BACKLOG_MINIMUM} games in their backlog to sign up and at the draw. A missed pick
           becomes a random game on the deadline.

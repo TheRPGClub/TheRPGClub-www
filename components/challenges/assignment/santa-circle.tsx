@@ -46,7 +46,7 @@ export function SantaCircle({ assignments, viewerId }: { assignments: EditionAss
               fill="none"
               strokeWidth={2.5}
               pathLength={arrow.dashed ? undefined : 1}
-              strokeDasharray={arrow.dashed ? "4 3" : 1}
+              strokeDasharray={arrow.dashed ? "2 2" : 1}
               markerEnd={`url(#santa-arrow-${arrow.tone === "finished" ? "finished" : "other"})`}
               className={cn(
                 STROKE[arrow.tone],

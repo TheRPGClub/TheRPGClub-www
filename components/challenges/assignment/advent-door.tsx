@@ -29,12 +29,16 @@ export function AdventDoor({ door }: { door: Door }) {
           fallbackClassName="text-base p-2 items-start"
         />
         {door.tag && <Tag tag={door.tag} />}
-        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background from-45% to-background/0 px-2 pt-8 pb-2">
+        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background from-30% to-background/0 px-2 pt-5 pb-2">
           <b className="font-label block text-[0.82rem] leading-[1.1] tracking-[0.06em] text-foreground">
             {door.name}
           </b>
-          <small className="line-clamp-2 text-[0.75rem] leading-[1.25] text-foreground/85">{door.game.title}</small>
-          <small className="mt-0.5 line-clamp-2 text-[0.68rem] leading-[1.2] text-dim-foreground">{door.foot}</small>
+          <small className="line-clamp-3 text-[0.75rem] leading-[1.25] text-foreground/85">{door.game.title}</small>
+          {door.foot && (
+            <small className="mt-0.5 line-clamp-3 text-[0.68rem] leading-[1.2] whitespace-pre-line text-dim-foreground">
+              {door.foot}
+            </small>
+          )}
         </div>
       </li>
     );
