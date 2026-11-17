@@ -1,5 +1,6 @@
 import {
   Award,
+  Flag,
   BellRing,
   ClipboardCheck,
   Gift,
@@ -37,6 +38,7 @@ export const NAV_MAIN: {
   { href: "/news", icon: Newspaper, label: "News", feature: "news_hub" },
   { href: "/voting", icon: Vote, label: "Voting", feature: "voting_gotm" },
   { href: "/giveaways", icon: Gift, label: "Giveaways", feature: "giveaways" },
+  { href: "/challenges", icon: Flag, label: "Challenges", feature: "challenges" },
   // The board, open to every signed-in member; its "Suggest something"
   // button leads Members role holders and staff on to the form.
   {

@@ -8,6 +8,7 @@ const names = {
   game: async (id: string) => `Game ${id}`,
   member: async (id: string) => `Member ${id}`,
   set: async (setId: string, memberId: string) => `Set ${setId} of ${memberId}`,
+  challenge: async (id: string) => `Challenge ${id}`,
 };
 const trail = (path: string) => crumbTrail(path.split("/").filter(Boolean), names);
 
@@ -49,6 +50,15 @@ describe("crumbTrail", () => {
       label: "Suggest something",
       href: "/suggestions/new",
     });
+  });
+
+  it("names a Challenge, its edit page and a new one", async () => {
+    expect(await trail("/challenges/4/edit")).toEqual([
+      { label: "Challenges", href: "/challenges" },
+      { label: "Challenge 4", href: "/challenges/4" },
+      { label: "Edit", href: "/challenges/4/edit" },
+    ]);
+    expect((await trail("/challenges/new")).at(-1)).toEqual({ label: "New Challenge", href: "/challenges/new" });
   });
 
   it("names a staff desk page, a round's edit page and a new live event", async () => {
