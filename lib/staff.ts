@@ -129,6 +129,7 @@ export type StaffSectionKey =
   | "presence"
   | "presence-history"
   | "live-events"
+  | "birth-dates"
   | "reminders"
   | "say"
   | "memberscan"
@@ -255,6 +256,15 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     hint: "Thread + event",
     nav: true,
     jobKinds: ["live_event_create"],
+  },
+  {
+    key: "birth-dates",
+    href: "/admin/birth-dates",
+    label: "Set a Birth Date",
+    tier: "moderator",
+    area: "mod",
+    blurb: "Set or remove a member's Birth Date. Staff changes don't count toward their two a month.",
+    hint: "Any time",
   },
   {
     key: "reminders",
