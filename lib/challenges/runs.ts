@@ -1,5 +1,6 @@
+import { discordAvatarUrl } from "@/lib/auth-types";
 import { clubDayOf, formatDay, seasonAround, type IsoDay } from "@/lib/challenges/dates";
-import type { Challenge, ChallengeRun, PoolGame } from "@/lib/challenges/types";
+import type { Challenge, ChallengeMember, ChallengeRun, PoolGame } from "@/lib/challenges/types";
 
 // A Challenge page's Runs (surface brief challenges-pool, the Runs view): one
 // card per member's Run with their progress. Pure and client-safe.
@@ -55,7 +56,11 @@ export interface RunCardView {
   id: number;
   name: string;
   userId: string;
+  // Their Discord avatar, or null for the initials mark.
+  avatarUrl: string | null;
   you: boolean;
+  // The viewer's own Run once it has ended (Finished, Expired, Abandoned).
+  canDelete: boolean;
   status: ChallengeRun["status"];
   cleared: number;
   target: number;
@@ -101,14 +106,16 @@ export function runCardView(
       .map((e) => ({
         game_id: e.game_id,
         title: e.title,
-        cover_url: covers.get(e.game_id) ?? null,
+        cover_url: e.cover_url ?? covers.get(e.game_id) ?? null,
       }));
   const endedAt = run.status === "active" ? null : run.ended_at;
   return {
     id: run.id,
     name: memberName(run.user),
     userId: run.user.user_id,
+    avatarUrl: memberAvatar(run.user),
     you: run.user.user_id === viewerId,
+    canDelete: run.user.user_id === viewerId && run.status !== "active",
     status: run.status,
     cleared: run.progress.cleared,
     target: run.progress.target,
@@ -120,6 +127,17 @@ export function runCardView(
       ? `${ENDED[run.status as keyof typeof ENDED]} ${formatDay(clubDayOf(endedAt), today)}`
       : `Started ${formatDay(clubDayOf(run.started_at), today)}`,
   };
+}
+
+// A member's picture: their Discord avatar from its hash, else the API's path
+// to the one the bot stores (which may 404; the mark then keeps the
+// initials). Null with neither, for the initials mark.
+export function memberAvatar(
+  member: Pick<ChallengeMember, "user_id" | "discord_avatar" | "avatar_url">,
+  apiBase: string = process.env.API_URL ?? "http://localhost:3000",
+): string | null {
+  if (member.discord_avatar) return discordAvatarUrl(member.user_id, member.discord_avatar, 64);
+  return member.avatar_url ? `${apiBase}${member.avatar_url}` : null;
 }
 
 // Pool games by id, for the covers on Run cards.

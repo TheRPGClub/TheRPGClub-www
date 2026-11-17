@@ -7,6 +7,7 @@ import {
 } from "@/lib/api/challenges";
 import { clubToday, daysLeft, type IsoDay } from "@/lib/challenges/dates";
 import { bannerArt, challengeFacts, scheduleChip, type Fact } from "@/lib/challenges/facts";
+import { runActionFor, yourRunsOf, type RunAction } from "@/lib/challenges/run-action";
 import { coverMap, runCardView, seasonRuns, sortRuns, type RunCardView } from "@/lib/challenges/runs";
 import { challengeTint } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeTint } from "@/lib/challenges/types";
@@ -28,6 +29,8 @@ export interface ChallengePage {
   finished: number;
   pool: PoolPreview | null;
   viewerHasRun: boolean;
+  // What the viewer can do about their Run (start, abandon, or why not).
+  runAction: RunAction;
 }
 
 export type ChallengePageRead = { ok: true; page: ChallengePage } | { ok: false; status: number };
@@ -59,6 +62,8 @@ export async function loadChallengePage(id: number, viewerId: string): Promise<C
       finished: shown?.filter((run) => run.status === "finished").length ?? 0,
       pool,
       viewerHasRun: shown?.some((run) => run.user.user_id === viewerId) ?? false,
+      // Without the Runs there is no knowing; the API still refuses a second.
+      runAction: runActionFor(challenge, yourRunsOf(runs ?? [], id, viewerId), today),
     },
   };
 }

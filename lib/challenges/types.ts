@@ -11,6 +11,10 @@ export interface ChallengeMember {
   user_id: string;
   username: string;
   global_name?: string | null;
+  // The Discord avatar hash from their last website login (null if unknown),
+  // and the API path of the picture the bot stores (it may 404).
+  discord_avatar?: string | null;
+  avatar_url?: string | null;
 }
 
 // A Challenge's colour as a pair (DESIGN.md "Challenges inks"): `fill` sits
@@ -67,8 +71,12 @@ export interface Challenge {
   pool?: ChallengePool | null;
   slots?: ChallengeSlots | null;
   assignment?: ChallengeAssignment | null;
-  // Null in lists; every Run whatever its status on the show.
+  // Every Run whatever its status (null in lists from an older API).
   run_count?: number | null;
+  // Its Finished Runs in any Season, and up to 4 Pool games for a flyer
+  // (absent from an older API, when the index reads them per Challenge).
+  finished_count?: number | null;
+  pool_games?: { game_id: number; title: string; cover_url?: string | null }[] | null;
   hidden: boolean;
   ended_at?: string | null;
   // Added by the API's tint change (www#106 follow-up): absent until it
@@ -85,6 +93,9 @@ export interface ChallengeRunEntry {
   state: "in_progress" | "cleared";
   cleared_on?: string | null;
   picked_by_hand: boolean;
+  // The game's cover; a Run from an older API without it takes covers from
+  // the Pool preview.
+  cover_url?: string | null;
 }
 
 export interface ChallengeRun {
@@ -99,6 +110,10 @@ export interface ChallengeRun {
   status: RunStatus;
   started_at: string;
   ended_at?: string | null;
+  // Assignment only: the Edition the Run was drawn in, and the game picked
+  // for the member (null before the reveal).
+  edition?: { id: number; year: number } | null;
+  assignment?: { game?: GameSummary | null } | null;
   window: { starts_on: string; ends_on?: string | null };
   progress: {
     in_progress: number;
@@ -129,3 +144,17 @@ export interface ChallengeWarning {
 }
 
 export type PoolGame = GameSummary;
+
+// A member's Secret Santa sign-up whose Edition is still in sign-up (no Run
+// until the draw), from `meta.signups` on their Runs list.
+export interface ChallengeOpenSignup {
+  edition_id: number;
+  year: number;
+  phase: "signup";
+  challenge: { id: number; name: string };
+  signed_up_at: string;
+  // The draw day: sign-up closes as it starts.
+  signup_cutoff_on: string;
+  pick_deadline_on: string;
+  reveal_on: string;
+}

@@ -10,6 +10,7 @@ import { DuplicateNotice } from "@/components/challenges/duplicate-notice";
 import { HostTools } from "@/components/challenges/host-tools";
 import { StaffMenu } from "@/components/challenges/staff-menu";
 import { NoticeSlip } from "@/components/issue/notice-slip";
+import { RunActionButton } from "@/components/challenges/run-action-button";
 
 // A Challenge's page: its rules, Host and schedule, every member's Run, and
 // The Pool (`?view=pool`). `dup` names the Challenges that already had this
@@ -75,6 +76,7 @@ export default async function ChallengePage({
       showAll={all === "1"}
       badge={features.preview("challenges") && <PreviewBadge />}
       tools={tools}
+      runAction={<RunActionButton action={page.runAction} challengeId={challenge.id} challengeName={challenge.name} />}
       notice={
         dup !== undefined && (
           <DuplicateNotice

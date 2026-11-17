@@ -1,5 +1,5 @@
 import { formatDay, formatFullDay, seasonAround, seasonRange, type IsoDay } from "@/lib/challenges/dates";
-import { memberName } from "@/lib/challenges/runs";
+import { memberAvatar, memberName } from "@/lib/challenges/runs";
 import type { Challenge, PoolGame } from "@/lib/challenges/types";
 
 // What a Challenge page says about its rules: the banner's chip and the fact
@@ -8,6 +8,12 @@ import type { Challenge, PoolGame } from "@/lib/challenges/types";
 export function hostName(challenge: Pick<Challenge, "hosted_by_club" | "host">): string {
   if (challenge.hosted_by_club || !challenge.host) return "The RPG Club";
   return memberName(challenge.host);
+}
+
+// The Host's Discord avatar, when the API sends it; null for the club and
+// for the initials mark.
+export function hostAvatar(challenge: Pick<Challenge, "hosted_by_club" | "host">): string | null {
+  return challenge.hosted_by_club || !challenge.host ? null : memberAvatar(challenge.host);
 }
 
 // The banner's tint chip: "Season 2026 · 22 Sep – 20 Dec", "Always Open",

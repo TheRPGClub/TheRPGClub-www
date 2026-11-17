@@ -1,11 +1,13 @@
 import type { FlyerExtras, Clock } from "@/lib/challenges/board";
 import { whenLabel } from "@/lib/challenges/dates";
-import { hostName } from "@/lib/challenges/facts";
+import type { RunAction } from "@/lib/challenges/run-action";
+import { hostAvatar, hostName } from "@/lib/challenges/facts";
 import { challengeTint, tintStyle } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 import { FormatLabel } from "@/components/challenges/format-mark";
 import { HostLine } from "@/components/challenges/host-badge";
 import { Count, FlyerTitle, FormatPicture, Tape, YourRunChip } from "@/components/challenges/flyer-parts";
+import { StartRunButton } from "@/components/challenges/start-run-button";
 
 // A running Challenge pasted up as a billboard (surface brief
 // challenges-index, 1A's lead card in flyer language): a straight flyer at
@@ -17,12 +19,14 @@ export function ChallengeBillboard({
   clock,
   extras,
   run,
+  action,
   today,
 }: {
   challenge: Challenge;
   clock: Clock;
   extras: FlyerExtras | undefined;
   run: ChallengeRun | undefined;
+  action?: RunAction;
   today: string;
 }) {
   const edition = challenge.assignment?.edition;
@@ -54,12 +58,13 @@ export function ChallengeBillboard({
         <FormatPicture challenge={challenge} extras={extras} run={run} today={today} size="lg" />
       </div>
       <footer className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-3 border-t border-(--challenge-type)/35 pt-3.5 text-[0.9rem] sm:col-span-2">
-        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} />
+        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-3" />
         <Count value={extras?.finished ?? null} label="Finished" className="ml-3" />
-        {run && (
-          <div className="sm:ml-auto">
-            <YourRunChip run={run} bar={challenge.challenge_format === "pool"} />
+        {(run || action?.kind === "start") && (
+          <div className="flex flex-wrap items-center gap-2.5 sm:ml-auto">
+            {run && <YourRunChip run={run} bar={challenge.challenge_format === "pool"} />}
+            {action?.kind === "start" && <StartRunButton challengeId={challenge.id} again={action.again} />}
           </div>
         )}
       </footer>

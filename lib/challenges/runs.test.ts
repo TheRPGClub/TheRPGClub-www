@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { initials, runCardView, runSegments, seasonRuns, sortRuns } from "@/lib/challenges/runs";
+import { initials, memberAvatar, runCardView, runSegments, seasonRuns, sortRuns } from "@/lib/challenges/runs";
 import type { ChallengeRun } from "@/lib/challenges/types";
 
 const run = (id: number, over: Partial<ChallengeRun> = {}): ChallengeRun =>
@@ -114,7 +114,52 @@ describe("runCardView", () => {
   });
 });
 
+describe("runCardView with the API's clients pass", () => {
+  it("takes an entry's own cover before the Pool preview's", () => {
+    const view = runCardView(
+      run(2, {
+        entries: [
+          { game_id: 10, title: "FF X", state: "cleared", picked_by_hand: false, cover_url: "https://img/own.jpg" },
+        ],
+      }),
+      "x",
+      new Map([[10, "https://img/pool.jpg"]]),
+      "2026-11-17",
+    );
+    expect(view.clearedGames[0].cover_url).toBe("https://img/own.jpg");
+  });
+
+  it("carries the member's Discord avatar when the API sends one", () => {
+    const view = runCardView(
+      run(3, { user: { user_id: "42", username: "owl", discord_avatar: "abc" } }),
+      "x",
+      new Map(),
+      "2026-11-17",
+    );
+    expect(view.avatarUrl).toBe("https://cdn.discordapp.com/avatars/42/abc.png?size=64");
+    expect(runCardView(run(4), "x", new Map(), "2026-11-17").avatarUrl).toBeNull();
+  });
+
+  it("lets the viewer delete their own Run once it has ended", () => {
+    const ended = run(5, { user: { user_id: "me", username: "me" }, status: "abandoned" });
+    expect(runCardView(ended, "me", new Map(), "2026-11-17").canDelete).toBe(true);
+    expect(runCardView({ ...ended, status: "active" }, "me", new Map(), "2026-11-17").canDelete).toBe(false);
+    expect(runCardView(ended, "someone", new Map(), "2026-11-17").canDelete).toBe(false);
+  });
+});
+
 describe("helpers", () => {
+  it("has no avatar without a hash", () => {
+    expect(memberAvatar({ user_id: "1", discord_avatar: null })).toBeNull();
+    expect(memberAvatar({ user_id: "1" })).toBeNull();
+  });
+
+  it("falls back to the picture the bot stores", () => {
+    expect(memberAvatar({ user_id: "1", avatar_url: "/api/v1/users/1/avatar" }, "https://api.test")).toBe(
+      "https://api.test/api/v1/users/1/avatar",
+    );
+  });
+
   it("caps segments at twenty, each a share of a long target", () => {
     expect(runSegments(5, 3)).toEqual([true, true, true]);
     expect(runSegments(20, 40).filter(Boolean)).toHaveLength(10);

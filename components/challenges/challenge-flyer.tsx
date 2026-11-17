@@ -1,28 +1,33 @@
 import type { CSSProperties } from "react";
 import type { FlyerExtras } from "@/lib/challenges/board";
+import type { RunAction } from "@/lib/challenges/run-action";
 import { closedNote, whenLabel } from "@/lib/challenges/dates";
-import { hostName } from "@/lib/challenges/facts";
+import { hostAvatar, hostName } from "@/lib/challenges/facts";
 import { challengeTint, flyerTilt, tintStyle } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 import { cn } from "@/lib/utils";
 import { FormatLabel } from "@/components/challenges/format-mark";
 import { HostLine } from "@/components/challenges/host-badge";
 import { Count, FlyerTitle, FormatPicture, Tape, YourRunChip } from "@/components/challenges/flyer-parts";
+import { StartRunButton } from "@/components/challenges/start-run-button";
 
 // A Challenge pinned to the board (surface brief challenges-index, 1C): a
 // card in the Challenge's tint, paper type, resting at its stable tilt and
 // straightening on hover or focus. A Closed one is muted into the ink with
 // its opening date taped across the top; a hidden one (staff and its Host
-// see it) is taped "Hidden". The whole card links to the Challenge page.
+// see it) is taped "Hidden". The whole card links to the Challenge page;
+// Start a Run sits above that link.
 export function ChallengeFlyer({
   challenge,
   extras,
   run,
+  action,
   today,
 }: {
   challenge: Challenge;
   extras: FlyerExtras | undefined;
   run: ChallengeRun | undefined;
+  action?: RunAction;
   today: string;
 }) {
   const tilt = flyerTilt(challenge.id);
@@ -51,12 +56,13 @@ export function ChallengeFlyer({
         </p>
       )}
       <footer className="flex items-center gap-2 border-t border-(--challenge-type)/30 pt-3 text-sm">
-        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} />
+        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-auto" />
       </footer>
-      {run && (
-        <div className="mt-3">
-          <YourRunChip run={run} />
+      {(run || action?.kind === "start") && (
+        <div className="mt-3 flex flex-col items-start gap-2.5">
+          {run && <YourRunChip run={run} />}
+          {action?.kind === "start" && <StartRunButton challengeId={challenge.id} again={action.again} />}
         </div>
       )}
     </article>
