@@ -158,3 +158,55 @@ export interface ChallengeOpenSignup {
   pick_deadline_on: string;
   reveal_on: string;
 }
+
+// An Edition (one yearly cycle of an Assignment Challenge) as
+// `GET /api/v1/challenge_editions/:id` and the Challenge's Editions list
+// serve it (swagger `ChallengeEdition`, tickets api#383 and api#384).
+export type EditionPhase = ChallengeEditionSummary["phase"];
+
+export interface EditionMember extends ChallengeMember {
+  // The draw left them out: fewer than 5 games in their backlog by then.
+  left_out: boolean;
+  // They withdrew after the draw; their recipient gets a random pick.
+  withdrawn: boolean;
+}
+
+export interface EditionAssignment {
+  recipient: ChallengeMember;
+  // The game picked (null while nothing is).
+  game?: GameSummary | null;
+  picked_randomly: boolean;
+  // Null before the Edition ends, except to staff.
+  santa?: ChallengeMember | null;
+  run?: {
+    id: number;
+    status: RunStatus;
+    progress: { in_progress?: number; cleared?: number; target?: number };
+  } | null;
+}
+
+export interface ChallengeEdition extends ChallengeEditionSummary {
+  challenge: { id: number; name: string };
+  // Members may sign up and withdraw today.
+  signup_open: boolean;
+  signed_up_count: number;
+  // The member reading is signed up (withdrawn after the draw included).
+  signed_up: boolean;
+  // Everyone who signed up, first first.
+  members?: EditionMember[];
+  drawn_at?: string | null;
+  // Every assignment by recipient, from the reveal on (and to staff from the
+  // draw on); null otherwise.
+  assignments?: EditionAssignment[] | null;
+  picks_closed_at?: string | null;
+}
+
+// The signed-in Santa's side of an Edition (`GET .../santa`), as much of it
+// as the Edition page needs: who they pick for and what they picked.
+export interface SantaView {
+  edition_id: number;
+  recipient: ChallengeMember;
+  pick?: { game: GameSummary; picked_randomly: boolean } | null;
+  pick_deadline_on?: string;
+  picks_open?: boolean;
+}

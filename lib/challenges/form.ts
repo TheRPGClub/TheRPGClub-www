@@ -1,3 +1,4 @@
+import { calendarError, SECRET_SANTA_CALENDAR } from "@/lib/challenges/edition-calendar";
 import type { Challenge, ChallengeFormat, ChallengeSchedule, PoolSource } from "@/lib/challenges/types";
 
 // The create and edit form (surface brief challenges-form) as plain data: the
@@ -33,6 +34,10 @@ export interface ChallengeDraft {
   sources: DraftSource[];
   included: DraftGame[];
   excluded: DraftGame[];
+  // Assignment only: the Edition calendar as MM-DD (www#110).
+  signupCutoff: string;
+  pickDeadline: string;
+  reveal: string;
 }
 
 export function emptyDraft(): ChallengeDraft {
@@ -49,6 +54,9 @@ export function emptyDraft(): ChallengeDraft {
     sources: [],
     included: [],
     excluded: [],
+    signupCutoff: SECRET_SANTA_CALENDAR.cutoff,
+    pickDeadline: SECRET_SANTA_CALENDAR.deadline,
+    reveal: SECRET_SANTA_CALENDAR.reveal,
   };
 }
 
@@ -85,6 +93,9 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
       game_id: g.game_id,
       title: g.title,
     })),
+    signupCutoff: challenge.assignment?.signup_cutoff ?? SECRET_SANTA_CALENDAR.cutoff,
+    pickDeadline: challenge.assignment?.pick_deadline ?? SECRET_SANTA_CALENDAR.deadline,
+    reveal: challenge.assignment?.reveal ?? SECRET_SANTA_CALENDAR.reveal,
   };
 }
 
@@ -112,7 +123,7 @@ export function hasPoolDefinition(draft: ChallengeDraft): boolean {
   return draft.sources.length > 0 || draft.included.length > 0;
 }
 
-export type DraftErrors = Partial<Record<"name" | "target" | "sources" | "season" | "endsOn", string>>;
+export type DraftErrors = Partial<Record<"name" | "target" | "sources" | "season" | "endsOn" | "calendar", string>>;
 
 const MONTH_DAY = /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -130,6 +141,12 @@ export function validateDraft(draft: ChallengeDraft, poolSize: number | null): D
       if (!Number.isInteger(draft.target) || draft.target < 1) errors.target = "Clear at least 1 game.";
       else if (poolSize !== null && draft.target > poolSize) errors.target = `The Pool has only ${poolSize} games.`;
     }
+  }
+  if (draft.format === "assignment") {
+    // Always Open with no end date: the Editions set its time.
+    const calendar = calendarError(assignmentCalendar(draft));
+    if (calendar) errors.calendar = calendar;
+    return errors;
   }
   if (draft.schedule === "seasonal") {
     if (!MONTH_DAY.test(draft.seasonStart) || !MONTH_DAY.test(draft.seasonEnd))
@@ -150,9 +167,30 @@ type RequestData = {
   ends_on?: string | null;
   hosted_by_club?: boolean;
   pool?: PoolDefinition & { target: number | "all" };
+  assignment?: { signup_cutoff: string; pick_deadline: string; reveal: string };
 };
 
+function assignmentCalendar(draft: ChallengeDraft) {
+  return { cutoff: draft.signupCutoff, deadline: draft.pickDeadline, reveal: draft.reveal };
+}
+
 function ruleFields(draft: ChallengeDraft): RequestData {
+  if (draft.format === "assignment") {
+    // An Assignment Challenge runs in Editions: Always Open, no end date.
+    return {
+      name: draft.name.trim(),
+      description: draft.description.trim(),
+      challenge_format: draft.format,
+      schedule: "always_open",
+      season: null,
+      ends_on: null,
+      assignment: {
+        signup_cutoff: draft.signupCutoff,
+        pick_deadline: draft.pickDeadline,
+        reveal: draft.reveal,
+      },
+    };
+  }
   const seasonal = draft.schedule === "seasonal";
   return {
     name: draft.name.trim(),

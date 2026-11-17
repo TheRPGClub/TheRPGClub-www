@@ -19,7 +19,7 @@ const LINE: Record<ChallengeFormat, string> = {
 };
 
 // The Formats this form can set up so far.
-const ON_THE_WEBSITE: readonly ChallengeFormat[] = ["pool"];
+const ON_THE_WEBSITE: readonly ChallengeFormat[] = ["pool", "assignment"];
 
 export function FormatCards({
   value,

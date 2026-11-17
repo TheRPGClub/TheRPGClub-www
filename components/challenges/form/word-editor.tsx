@@ -13,7 +13,12 @@ const TITLE: Record<RuleWordKey, string> = {
   "season-end": "Season ends",
   schedule: "When it's open",
   "ends-on": "Last Open day",
+  "signup-cutoff": "Sign-up cutoff",
+  "pick-deadline": "Pick deadline",
+  reveal: "Reveal",
 };
+
+const CALENDAR_FIELD = { "signup-cutoff": "signupCutoff", "pick-deadline": "pickDeadline", reveal: "reveal" } as const;
 
 const HELP: Record<RuleWordKey, string> = {
   target:
@@ -26,6 +31,12 @@ const HELP: Record<RuleWordKey, string> = {
     "“Every year” makes it Seasonal: only play inside the Season counts. “Any time” keeps it Always Open, with an optional end date.",
   "ends-on":
     "The last day it's Open, in the club's time zone. It can still change after Runs start, until that day has passed.",
+  "signup-cutoff":
+    "Sign-up closes as this day starts, and the draw happens on it. A change applies from the next Edition (or this one, while nobody has signed up).",
+  "pick-deadline":
+    "Santas pick until this day starts; then a missed pick becomes a random game from the backlog.",
+  reveal:
+    "Every game is revealed on this day, and members have until it comes round again to Clear theirs. The Edition is named by its year.",
 };
 
 const ERROR_OF: Partial<Record<RuleWordKey, keyof ChallengeFormState["errors"]>> = {
@@ -34,6 +45,9 @@ const ERROR_OF: Partial<Record<RuleWordKey, keyof ChallengeFormState["errors"]>>
   "season-start": "season",
   "season-end": "season",
   "ends-on": "endsOn",
+  "signup-cutoff": "calendar",
+  "pick-deadline": "calendar",
+  reveal: "calendar",
 };
 
 // The open word's control, directly under the sentence, with its help line
@@ -62,6 +76,9 @@ export function WordEditor({ form }: { form: ChallengeFormState }) {
         )}
         {key === "schedule" && <ScheduleEditor form={form} />}
         {key === "ends-on" && <EndDateEditor form={form} />}
+        {key in CALENDAR_FIELD && (
+          <DayEditor form={form} field={CALENDAR_FIELD[key as keyof typeof CALENDAR_FIELD]} />
+        )}
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}

@@ -250,3 +250,24 @@
         transform: scaleX(1);
     }
 }
+
+/* An arrow of the Santa circle draws itself in once, from its Santa to the
+   member they picked for (pathLength 1). */
+@keyframes arrow-draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* A dashed (random pick) arrow can't draw its dashes in, so it fades. */
+@keyframes arrow-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

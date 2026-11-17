@@ -16,7 +16,17 @@ import {
 import { usePoolPreview } from "@/hooks/use-pool-preview";
 
 // The words of the rule sentence a member can open, one at a time.
-export type RuleWordKey = "target" | "sources" | "season-start" | "season-end" | "schedule" | "ends-on";
+export type RuleWordKey =
+  | "target"
+  | "sources"
+  | "season-start"
+  | "season-end"
+  | "schedule"
+  | "ends-on"
+  // Assignment's calendar (www#110).
+  | "signup-cutoff"
+  | "pick-deadline"
+  | "reveal";
 
 export interface EditTarget {
   id: number;
@@ -76,7 +86,9 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     preview,
     // Words go orange as soon as they're wrong; what's missing waits for a
     // save.
-    errors: tried ? errors : { target: errors.target, season: errors.season, endsOn: errors.endsOn },
+    errors: tried
+      ? errors
+      : { target: errors.target, season: errors.season, endsOn: errors.endsOn, calendar: errors.calendar },
     error,
     saving,
     locked,

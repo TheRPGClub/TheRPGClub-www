@@ -10,6 +10,7 @@ import { MetaFields } from "@/components/challenges/form/meta-fields";
 import { PoolBuilder } from "@/components/challenges/form/pool-builder";
 import { RuleSentence } from "@/components/challenges/form/rule-sentence";
 import { WordEditor } from "@/components/challenges/form/word-editor";
+import { AssignmentRules } from "@/components/challenges/form/assignment-rules";
 
 // Create or edit a Challenge (surface brief challenges-form, 5D's sentence
 // with 5C's covers): the Format as three cards, the rules as one sentence of
@@ -79,6 +80,8 @@ export function ChallengeForm({
           )}
           <PoolBuilder form={form} />
         </div>
+      ) : form.draft.format === "assignment" ? (
+        <AssignmentRules form={form} runCount={runCount} />
       ) : (
         <p className="flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
           <Lock aria-hidden className="size-4 shrink-0" />
