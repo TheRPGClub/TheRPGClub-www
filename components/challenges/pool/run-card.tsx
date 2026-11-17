@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { DeleteRunButton } from "@/components/challenges/delete-run-button";
 
 // One member's Run as a card (surface brief challenges-pool, 2D): their mark
 // and name, the score with the target muted, their Cleared covers then the
@@ -21,7 +22,7 @@ export function RunCard({ run }: { run: RunCardView }) {
       )}
     >
       <header className="flex items-center gap-2.5 pr-24">
-        <MemberMark name={run.name} size={34} />
+        <MemberMark name={run.name} src={run.avatarUrl} size={34} />
         <h3 className="font-headline min-w-0 text-[1.375rem] leading-[0.95] break-words">
           <Link
             href={`/members/${run.userId}`}
@@ -60,14 +61,15 @@ export function RunCard({ run }: { run: RunCardView }) {
           />
         ))}
       </div>
-      <footer className="flex justify-between gap-3 text-[0.85rem] text-faint-foreground">
-        <span>{run.dateLine}</span>
+      <footer className="flex items-center justify-between gap-3 text-[0.85rem] text-faint-foreground">
+        <span className="mr-auto">{run.dateLine}</span>
         {run.status === "active" && run.inProgress > 0 && <span>{run.inProgress} In Progress</span>}
         {faded && (
           <Badge tone="status" className="h-5 border-0">
             {run.status === "abandoned" ? "Abandoned" : "Expired"}
           </Badge>
         )}
+        {run.canDelete && <DeleteRunButton runId={run.id} />}
       </footer>
       {run.status === "finished" && (
         <span className="font-headline absolute right-4 bottom-11 -rotate-5 rounded-xs bg-card px-[9px] pt-1.5 pb-1 text-[1.06rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]">

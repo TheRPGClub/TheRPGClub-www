@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { PoolDefinition } from "@/lib/challenges/form";
-import type { Challenge, ChallengeRun, PoolGame } from "@/lib/challenges/types";
+import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame } from "@/lib/challenges/types";
 
 // Server-only reads for the Challenges pages (they read the session cookie).
 // Each answers null when the API can't be read, so a page can say so rather
@@ -62,6 +62,17 @@ export async function fetchMemberRuns(userId: string): Promise<ChallengeRun[] | 
     `/api/v1/users/${encodeURIComponent(userId)}/challenge_runs?per=${MAX_PER}`,
   );
   return body?.data ?? null;
+}
+
+// A member's Runs with their Secret Santa sign-ups still waiting for a draw
+// (`meta.signups`; empty from an API without it).
+export async function fetchMemberRunSheet(
+  userId: string,
+): Promise<{ runs: ChallengeRun[]; signups: ChallengeOpenSignup[] } | null> {
+  const body = await readJson<ApiCollection<ChallengeRun> & { meta?: { signups?: ChallengeOpenSignup[] } }>(
+    `/api/v1/users/${encodeURIComponent(userId)}/challenge_runs?per=${MAX_PER}`,
+  );
+  return body ? { runs: body.data, signups: body.meta?.signups ?? [] } : null;
 }
 
 export interface PoolPreview {

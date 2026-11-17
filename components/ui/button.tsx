@@ -165,6 +165,10 @@ const buttonVariants = cva(
         // A cover on the form's Pool wall that is tapped to leave its game
         // out or put it back: the cover is the look, the focus ring kept.
         "pool-tile": "",
+        // www#107: the stamp-sized ink-2 tile ("+2 more") that opens the
+        // rest of a profile's current Runs in place. Pair with size="bare"
+        // and lay it out as a stamp.
+        "stamp-more": "",
       },
       size: {
         default:

@@ -1,5 +1,5 @@
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
-import { hostName } from "@/lib/challenges/facts";
+import { hostAvatar, hostName } from "@/lib/challenges/facts";
 import { MemberMark } from "@/components/challenges/host-badge";
 
 // The rules row under the banner: the Host's description of the Challenge on
@@ -26,7 +26,12 @@ export function ChallengeRules({ page, tools }: { page: ChallengePage; tools?: R
               </dt>
               <dd className="m-0 flex min-w-0 items-center gap-2">
                 {fact.term === "Host" && (
-                  <MemberMark name={hostName(challenge)} club={challenge.hosted_by_club} size={20} />
+                  <MemberMark
+                    name={hostName(challenge)}
+                    src={hostAvatar(challenge)}
+                    club={challenge.hosted_by_club}
+                    size={20}
+                  />
                 )}
                 <span className="min-w-0">{fact.detail}</span>
               </dd>

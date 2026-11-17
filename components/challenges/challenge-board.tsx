@@ -59,7 +59,7 @@ export function ChallengeBoard({
 }
 
 function Board({ page }: { page: BoardPage }) {
-  const { board, extras, yourRuns, today } = page;
+  const { board, extras, yourRuns, actions, today } = page;
   return (
     <>
       {board.billboards.length > 0 && (
@@ -71,6 +71,7 @@ function Board({ page }: { page: BoardPage }) {
                 clock={billboardClock(c, today)!}
                 extras={extras.get(c.id)}
                 run={yourRuns.get(c.id)}
+                action={actions.get(c.id)}
                 today={today}
               />
             </div>
@@ -81,7 +82,13 @@ function Board({ page }: { page: BoardPage }) {
         <ul className="mt-10 grid grid-cols-1 items-start gap-x-[22px] gap-y-[30px] sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {board.flyers.map((c) => (
             <li key={c.id}>
-              <ChallengeFlyer challenge={c} extras={extras.get(c.id)} run={yourRuns.get(c.id)} today={today} />
+              <ChallengeFlyer
+                challenge={c}
+                extras={extras.get(c.id)}
+                run={yourRuns.get(c.id)}
+                action={actions.get(c.id)}
+                today={today}
+              />
             </li>
           ))}
         </ul>

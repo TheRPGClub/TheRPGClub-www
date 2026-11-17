@@ -6,6 +6,7 @@ import { ChallengeRules } from "@/components/challenges/challenge-rules";
 import { ViewSwitch, type ChallengeViewKey } from "@/components/challenges/view-switch";
 import { RunCards } from "@/components/challenges/pool/run-cards";
 import { PoolWall } from "@/components/challenges/pool/pool-wall";
+import { RunNoticeProvider, RunNoticeSlot } from "@/components/challenges/run-notice";
 
 // A Pool Challenge's page (surface brief challenges-pool, 2B + 2D): the
 // banner, the rules row, then the switch between every member's Runs and The
@@ -46,26 +47,29 @@ export function ChallengeView({
       <ChallengeBanner page={page} badge={badge} />
       {notice}
       <ChallengeRules page={page} tools={tools} />
-      <ViewSwitch
-        challengeId={challenge.id}
-        current={current}
-        views={[
-          { key: "runs", label: "Runs", count: runs?.length ?? null },
-          ...(hasPool ? [{ key: "pool" as const, label: "The Pool", count: pool.total }] : []),
-        ]}
-        action={runAction}
-      />
-      {current === "pool" && hasPool ? (
-        <PoolWall
-          tiles={tiles}
-          filter={played}
-          showAll={showAll || filterWall(tiles, played).length <= 40}
-          hrefFor={hrefFor}
-          leftOut={(challenge.pool?.excluded_games ?? []).map((g) => g.title)}
+      <RunNoticeProvider>
+        <ViewSwitch
+          challengeId={challenge.id}
+          current={current}
+          views={[
+            { key: "runs", label: "Runs", count: runs?.length ?? null },
+            ...(hasPool ? [{ key: "pool" as const, label: "The Pool", count: pool.total }] : []),
+          ]}
+          action={runAction}
         />
-      ) : (
-        <RunCards runs={runs} />
-      )}
+        <RunNoticeSlot className="mt-2 mb-7 max-w-md" />
+        {current === "pool" && hasPool ? (
+          <PoolWall
+            tiles={tiles}
+            filter={played}
+            showAll={showAll || filterWall(tiles, played).length <= 40}
+            hrefFor={hrefFor}
+            leftOut={(challenge.pool?.excluded_games ?? []).map((g) => g.title)}
+          />
+        ) : (
+          <RunCards runs={runs} emptyAction={page.runAction.kind === "start" ? runAction : null} />
+        )}
+      </RunNoticeProvider>
     </div>
   );
 }

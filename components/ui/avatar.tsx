@@ -17,6 +17,9 @@ type AvatarVariant =
   | "byline"
   // A nomination's credit line.
   | "credit"
+  // www#107: a member's mark on a Challenge (a Run card, the Host): the
+  // picture, else their initials in the label voice on dim paper.
+  | "member-mark"
 
 function Avatar({
   className,

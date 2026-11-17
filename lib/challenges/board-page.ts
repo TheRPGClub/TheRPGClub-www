@@ -15,6 +15,7 @@ import {
   type FlyerExtras,
 } from "@/lib/challenges/board";
 import { clubToday, type IsoDay } from "@/lib/challenges/dates";
+import { runActionFor, yourRunsOf, type RunAction } from "@/lib/challenges/run-action";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 
 // The Challenges index's data (server only): every Challenge the viewer may
@@ -28,12 +29,22 @@ export interface BoardPage {
   board: Board;
   extras: Map<number, FlyerExtras>;
   yourRuns: Map<number, ChallengeRun>;
+  // What the viewer can do about each shown Challenge (Start a Run...).
+  actions: Map<number, RunAction>;
   today: IsoDay;
 }
 
-// The list carries no Run count or Pool games, so each shown Challenge is
-// read once more (an API follow-up would put them on the list).
+// The list carries each Challenge's Run and Finished counts and its first
+// Pool games. From an older API without them, each shown Challenge is read
+// once more instead.
 async function extrasFor(challenge: Challenge, billboard: boolean): Promise<FlyerExtras> {
+  if (challenge.run_count != null && challenge.finished_count != null && challenge.pool_games != null) {
+    return {
+      runCount: challenge.run_count,
+      finished: challenge.finished_count,
+      covers: challenge.pool_games.slice(0, 3),
+    };
+  }
   const definition = savedPoolDefinition(challenge);
   const [show, finished, preview] = await Promise.all([
     fetchChallenge(challenge.id),
@@ -63,6 +74,13 @@ export async function loadBoardPage(filters: BoardFilters, viewerId: string): Pr
     board: arrangeBoard(shown, today, runCounts),
     extras,
     yourRuns: viewerRuns(runs ?? []),
+    // Without the viewer's Runs nothing is offered, rather than a Start the
+    // API would refuse.
+    actions: new Map(
+      runs
+        ? shown.map((c) => [c.id, runActionFor(c, yourRunsOf(runs, c.id, viewerId), today)] as const)
+        : [],
+    ),
     today,
   };
 }
