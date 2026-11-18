@@ -1931,7 +1931,7 @@
             border: 2px dashed var(--gotm);
         }
         /* Club History (www#126). */
-        [data-slot="button"]:is([data-variant="kind-chip"], [data-variant="quiet-delete"]),
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"]):is([data-variant="kind-chip"], [data-variant="quiet-delete"]),
         [data-slot="label"][data-variant="kind-tile"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
