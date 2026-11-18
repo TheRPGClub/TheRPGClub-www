@@ -1805,11 +1805,21 @@
             color: var(--destructive-foreground);
             border-color: var(--destructive-foreground);
         }
-        [data-slot="input"][data-variant="headline"] {
+        [data-slot="input"][data-variant="headline"],
+        [data-slot="textarea"][data-variant="headline"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border-color: var(--accent-foreground);
             box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-trigger"][data-variant="bare"] {
+            background-color: transparent;
+            border-color: transparent;
+            color: inherit;
+            font: inherit;
+        }
+        [data-slot="select-trigger"][data-variant="bare"] [data-slot="select-trigger-icon"] {
+            display: none;
         }
         [data-slot="textarea"][data-variant="inset"] {
             background-color: var(--accent);

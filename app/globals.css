@@ -277,6 +277,17 @@
     }
 }
 
+/* A photo uploading on the Lore desk: a short bar runs across its track
+   (a server action reports no progress, so it can't fill to a percent). */
+@keyframes codex-upload {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(300%);
+    }
+}
+
 /* A dashed (random pick) arrow can't draw its dashes in, so it fades. */
 @keyframes arrow-fade {
     from {

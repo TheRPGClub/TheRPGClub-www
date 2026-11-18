@@ -28,6 +28,7 @@ export function ConfirmDialog({
   confirmLabel,
   pendingLabel,
   confirmIcon,
+  cancelLabel = "Keep it",
   onConfirm,
 }: {
   // The Button that opens the dialog.
@@ -39,6 +40,7 @@ export function ConfirmDialog({
   confirmLabel: string;
   pendingLabel: string;
   confirmIcon?: ReactNode;
+  cancelLabel?: string;
   onConfirm: () => Promise<string | null>;
 }) {
   const [ownOpen, setOwnOpen] = useState(false);
@@ -80,7 +82,7 @@ export function ConfirmDialog({
           </p>
         )}
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Keep it</AlertDialogCancel>
+          <AlertDialogCancel disabled={pending}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction variant="destructive-solid" onClick={confirm} disabled={pending}>
             {confirmIcon}
             {pending ? pendingLabel : confirmLabel}

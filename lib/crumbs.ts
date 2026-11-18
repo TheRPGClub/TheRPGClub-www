@@ -21,6 +21,7 @@ export interface CrumbNames {
   member(id: string): Promise<string>;
   set(setId: string, memberId: string): Promise<string>;
   challenge(id: string): Promise<string>;
+  loreEntry(id: string): Promise<string>;
 }
 
 const SECTIONS: Record<string, string> = {
@@ -133,11 +134,25 @@ async function challengeName(id: string): Promise<string> {
   }
 }
 
+// A Lore Entry's title, from the Lore Entry page's own read.
+async function loreEntryTitle(id: string): Promise<string> {
+  if (!/^\d+$/.test(id)) return "Lore Entry";
+  try {
+    const res = await apiFetch(`/api/v1/codex/lore_entries/${id}`, { cache: "no-store" });
+    if (!res.ok) return "Lore Entry";
+    const body = (await res.json()) as { data?: { title?: string | null } };
+    return body.data?.title?.trim() || "Lore Entry";
+  } catch {
+    return "Lore Entry";
+  }
+}
+
 const API_NAMES: CrumbNames = {
   game: gameTitle,
   member: memberName,
   set: achievementSetTitle,
   challenge: challengeName,
+  loreEntry: loreEntryTitle,
 };
 
 export async function crumbTrail(
@@ -195,6 +210,14 @@ export async function crumbTrail(
 
   if (section === "codex" && id && Object.hasOwn(CODEX_PAGES, id)) {
     trail.push({ label: CODEX_PAGES[id], href: `${root}/${id}` });
+    // Club Lore's pages (www#125): a Lore Entry, its edit page, a new one.
+    if (id === "lore" && page === "new") {
+      trail.push({ label: "New", href: `${root}/${id}/new` });
+    } else if (id === "lore" && page && /^\d+$/.test(page)) {
+      const base = `${root}/${id}/${page}`;
+      trail.push({ label: await names.loreEntry(page), href: base });
+      if (sub === "edit") trail.push({ label: "Edit", href: `${base}/edit` });
+    }
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {

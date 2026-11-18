@@ -7,8 +7,17 @@ import { cn } from "@/lib/utils";
 
 // The @ mention picker's list under the Fun Fact field (5D): "Mention a
 // member", the matching members with the lit one ringed in yellow, and the
-// keys. The field keeps focus; it points at the lit option.
-export function MentionList({ picker, id }: { picker: MentionPicker; id: string }) {
+// keys. The field keeps focus; it points at the lit option. The Lore desk's
+// story editor (www#125) shows the same list at its caret.
+export function MentionList({
+  picker,
+  id,
+  footer = "Enter to mention · nobody is pinged",
+}: {
+  picker: Pick<MentionPicker, "open" | "results" | "lit" | "settled" | "error" | "pick">;
+  id: string;
+  footer?: string;
+}) {
   if (!picker.open) return null;
   const { results, lit, settled, error } = picker;
   return (
@@ -46,7 +55,7 @@ export function MentionList({ picker, id }: { picker: MentionPicker; id: string 
         ))}
       </div>
       <p className="border-t border-border px-1.5 pt-1.5 text-[0.8rem] text-faint-foreground">
-        Enter to mention · nobody is pinged
+        {footer}
       </p>
     </div>
   );

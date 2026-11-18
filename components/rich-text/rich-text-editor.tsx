@@ -29,17 +29,24 @@ export interface RichTextEditorProps {
   toolbarExtras?: React.ReactNode;
 }
 
-export function RichTextEditor({
+export interface RichTextProviderProps
+  extends Pick<RichTextEditorProps, "schema" | "initialValue" | "onChange" | "disabled" | "plugins" | "components"> {
+  children: React.ReactNode;
+}
+
+// The editor without its frame, for a feature that lays the toolbar and the
+// writing area out itself (the Club Codex's writing desk): children render
+// inside Plate, so they can place a `RichTextToolbar` and a `PlateContent`
+// where they like and use Plate's hooks.
+export function RichTextProvider({
   schema,
   initialValue,
   onChange,
   disabled,
-  placeholder,
-  toolbar = "full",
   plugins = richTextEditorPlugins,
   components,
-  toolbarExtras,
-}: RichTextEditorProps) {
+  children,
+}: RichTextProviderProps) {
   const editor = usePlateEditor({
     plugins,
     components: { ...richTextEditorComponents, ...components },
@@ -54,6 +61,31 @@ export function RichTextEditor({
       editor={editor}
       readOnly={disabled}
       onValueChange={({ value }) => onChange(value)}
+    >
+      {children}
+    </Plate>
+  );
+}
+
+export function RichTextEditor({
+  schema,
+  initialValue,
+  onChange,
+  disabled,
+  placeholder,
+  toolbar = "full",
+  plugins,
+  components,
+  toolbarExtras,
+}: RichTextEditorProps) {
+  return (
+    <RichTextProvider
+      schema={schema}
+      initialValue={initialValue}
+      onChange={onChange}
+      disabled={disabled}
+      plugins={plugins}
+      components={components}
     >
       <div
         className={cn(
@@ -80,6 +112,6 @@ export function RichTextEditor({
           )}
         />
       </div>
-    </Plate>
+    </RichTextProvider>
   );
 }

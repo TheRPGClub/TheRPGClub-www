@@ -900,6 +900,12 @@
         [data-slot="select-trigger"][data-variant="blank"] {
             @apply font-headline cursor-pointer rounded-none border-0 border-b-4 border-highlight bg-transparent text-[length:inherit] leading-[1] text-highlight transition-colors hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground focus-visible:ring-0 data-placeholder:text-highlight hover:data-placeholder:text-foreground focus-visible:data-placeholder:text-foreground;
         }
+        [data-slot="select-trigger"][data-variant="bare"] {
+            @apply h-auto cursor-pointer rounded-none border-0 bg-transparent p-0 [font:inherit] text-[length:inherit] leading-[inherit] text-inherit transition-colors hover:text-highlight focus-visible:text-highlight focus-visible:ring-0 data-[size=default]:h-auto;
+        }
+        [data-slot="select-trigger"][data-variant="bare"] [data-slot="select-trigger-icon"] {
+            @apply hidden;
+        }
         [data-slot="select-trigger"][data-variant="blank"] [data-slot="select-trigger-icon"] {
             @apply mt-1 size-[0.5em] text-highlight [stroke-width:3];
         }
@@ -1118,7 +1124,7 @@
                 @apply underline decoration-gotm underline-offset-3 hover:text-highlight focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
             }
         }
-        [data-slot="input"][data-variant="headline"] {
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="headline"] {
             @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;
         }
         [data-slot="textarea"][data-variant="inset"] {

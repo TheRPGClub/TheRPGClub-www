@@ -28,6 +28,10 @@ export interface RichTextSchema {
   blocks: Readonly<Record<string, BlockRule>>;
   // Inline element types, mapped to their rule.
   inlines: Readonly<Record<string, InlineRule>>;
+  // Blocks that carry properties of their own (the Club Codex's image),
+  // mapped to the rule vetting them. A block listed here that fails its rule
+  // is dropped; its type must be in `blocks` too.
+  blockProps?: Readonly<Record<string, InlineRule>>;
   // Plain-text length limit (see `richTextPlainText`). The editor enforces it
   // while typing; a server action checks it again.
   maxLength: number;
