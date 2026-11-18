@@ -3,29 +3,50 @@
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import type { LoreDesk } from "@/hooks/use-lore-desk";
-import { LORE_PATH } from "@/lib/codex/paths";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { LoreDelete } from "@/components/codex/lore/lore-delete";
+
+// What the top bar reads of a desk (the Lore desk's, the History Event
+// desk's). `unplaced` is the Lore desk's photos left out of the story.
+export interface TopBarDesk {
+  entryId: number | null;
+  dirty: boolean;
+  missing: string | null;
+  saving: boolean;
+  unplaced?: readonly unknown[];
+  save: () => Promise<unknown>;
+}
 
 // The desk's top bar (5D): Back, the "goes live" note, Delete, Cancel and
 // Save. On phones Cancel and Save stick to the foot of the screen and
-// Delete moves to the foot of the page (LoreDeskFoot).
-export function DeskTopBar({ desk, canDelete, badge }: { desk: LoreDesk; canDelete: boolean; badge?: ReactNode }) {
+// Delete moves to the foot of the page (the desk renders it there).
+export function DeskTopBar({
+  desk,
+  back,
+  backLabel,
+  deleteButton,
+  badge,
+}: {
+  desk: TopBarDesk;
+  // Where Back and Cancel go.
+  back: string;
+  backLabel: string;
+  // Delete for wide screens, when the viewer may.
+  deleteButton?: ReactNode;
+  badge?: ReactNode;
+}) {
   const router = useRouter();
   const [leaving, setLeaving] = useState<string | null>(null);
   const [confirmSave, setConfirmSave] = useState(false);
-  const back = desk.entryId ? `${LORE_PATH}/${desk.entryId}` : LORE_PATH;
   const go = (href: string) => (desk.dirty ? setLeaving(href) : router.push(href));
-  const extra = desk.unplaced.length;
+  const extra = desk.unplaced?.length ?? 0;
   const save = () => (extra > 0 ? setConfirmSave(true) : void desk.save());
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <Button type="button" variant="ghost" size="sm" onClick={() => go(back)}>
         <ArrowLeft aria-hidden />
-        {desk.entryId ? "Back to the Lore Entry" : "Back to Club Lore"}
+        {backLabel}
       </Button>
       <p className="font-label text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">Changes go live when you save</p>
       {badge}
@@ -35,7 +56,7 @@ export function DeskTopBar({ desk, canDelete, badge }: { desk: LoreDesk; canDele
             {desk.missing}
           </p>
         )}
-        {canDelete && desk.entryId && <LoreDelete id={desk.entryId} className="hidden sm:inline-flex" />}
+        {deleteButton}
         <Button type="button" variant="outline" onClick={() => go(back)}>
           Cancel
         </Button>

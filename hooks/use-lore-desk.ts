@@ -35,6 +35,16 @@ export interface DeskPhoto {
   error?: string;
 }
 
+// What the manuscript sheet (and its photo drop) reads of a desk: the Lore
+// desk's and the History Event desk's (www#126).
+export interface SheetDesk {
+  title: string;
+  setTitle: (title: string) => void;
+  count: number;
+  dirty: boolean;
+  photos: DeskPhoto[];
+}
+
 export function photoKey(photo: DeskPhoto) {
   return photo.id !== undefined ? { id: photo.id } : { pendingKey: photo.key };
 }

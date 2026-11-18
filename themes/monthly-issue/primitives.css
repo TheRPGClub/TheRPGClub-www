@@ -1333,5 +1333,21 @@
                 @apply font-label rounded-sm bg-clip-padding font-extrabold border-faint-foreground/60 bg-transparent text-foreground;
             }
         }
+        /* Club History (www#126). A Kind chip in the timeline's filter:
+           26px of label type outlined 1.5px in its Kind ink (--ink) with
+           ink-coloured type; the current one fills with the ink and takes
+           the page's ink as type. A quiet Delete beside the quiet Edit on
+           a History Event: label type in signal orange. A Kind tile on the
+           History Event desk: outlined in its ink with ink caps; the
+           checked one fills, lifts 4px and tilts -2deg. */
+        [data-slot="button"][data-variant="kind-chip"] {
+            @apply font-label h-6.5 rounded-xs border-0 bg-transparent px-2.25 text-[0.8125rem] font-bold tracking-[0.06em] text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-colors hover:bg-(--ink)/12 focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0 aria-[current=true]:bg-(--ink) aria-[current=true]:text-background;
+        }
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="quiet-delete"] {
+            @apply font-label rounded-sm border-0 bg-transparent text-destructive transition-colors hover:text-destructive/80 hover:underline;
+        }
+        [data-slot="label"][data-variant="kind-tile"] {
+            @apply font-label cursor-pointer rounded-xs text-[0.625rem] leading-none font-extrabold tracking-normal text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-[translate,rotate,background-color,box-shadow] duration-200 hover:bg-(--ink)/10 has-data-checked:-translate-y-1 has-data-checked:-rotate-2 has-data-checked:bg-(--ink) has-data-checked:text-background has-data-checked:shadow-[0_6px_14px_rgb(0_0_0/0.45)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
+        }
     }
 }

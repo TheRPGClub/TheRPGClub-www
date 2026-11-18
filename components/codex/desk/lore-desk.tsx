@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { Value } from "platejs";
 import { useLoreDesk } from "@/hooks/use-lore-desk";
+import { LORE_PATH } from "@/lib/codex/paths";
 import { LORE_SCHEMA } from "@/lib/codex/story-schema";
 import type { CodexEntry } from "@/lib/codex/types";
 import { RichTextProvider } from "@/components/rich-text/rich-text-editor";
@@ -40,7 +41,13 @@ export function LoreDesk({
       plugins={storyEditorPlugins}
     >
       <div className="pb-24 sm:pb-0">
-        <DeskTopBar desk={desk} canDelete={canDelete} badge={badge} />
+        <DeskTopBar
+          desk={desk}
+          back={desk.entryId ? `${LORE_PATH}/${desk.entryId}` : LORE_PATH}
+          backLabel={desk.entryId ? "Back to the Lore Entry" : "Back to Club Lore"}
+          deleteButton={canDelete && desk.entryId && <LoreDelete id={desk.entryId} className="hidden sm:inline-flex" />}
+          badge={badge}
+        />
         {desk.error && (
           <p role="alert" className="mt-3 rounded-sm border border-destructive/60 px-3.5 py-2.5 text-sm text-destructive">
             {desk.error}

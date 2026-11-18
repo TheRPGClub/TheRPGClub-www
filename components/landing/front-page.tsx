@@ -9,6 +9,7 @@ import { LandingClose } from "@/components/landing/landing-close";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { TwoTracks } from "@/components/landing/two-tracks";
 import { YourShelf } from "@/components/landing/your-shelf";
+import { EstBand } from "@/components/codex/history/est-band";
 
 // The front page: the club pitched as its own magazine, for everyone. With
 // public winners, this round's Game of the Month is the cover, the two
@@ -21,6 +22,7 @@ export function FrontPage({
   signInHref,
   profileHref,
   authFailed,
+  historyYear,
 }: {
   winners: PublicWinner[];
   signInHref: string;
@@ -28,6 +30,9 @@ export function FrontPage({
   profileHref: string | null;
   // The API sent a failed sign-in back here (/?error=auth_failed).
   authFailed: boolean;
+  // The year the Club History starts (its earliest History Event), for the
+  // band under the hero; null hides it (www#126).
+  historyYear: number | null;
 }) {
   const notice = authFailed ? <SignInFailedSlip signInHref={signInHref} /> : null;
   const cover = coverLead(winners);
@@ -46,6 +51,7 @@ export function FrontPage({
         ) : (
           <FlatHero signInHref={signInHref} profileHref={profileHref} notice={notice} />
         )}
+        {historyYear !== null && <EstBand year={historyYear} />}
         <HowItWorks />
         <TwoTracks winners={winners} />
         <YourShelf />

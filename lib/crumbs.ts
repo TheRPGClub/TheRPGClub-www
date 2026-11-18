@@ -22,6 +22,7 @@ export interface CrumbNames {
   set(setId: string, memberId: string): Promise<string>;
   challenge(id: string): Promise<string>;
   loreEntry(id: string): Promise<string>;
+  historyEvent(id: string): Promise<string>;
 }
 
 const SECTIONS: Record<string, string> = {
@@ -134,17 +135,20 @@ async function challengeName(id: string): Promise<string> {
   }
 }
 
-// A Lore Entry's title, from the Lore Entry page's own read.
-async function loreEntryTitle(id: string): Promise<string> {
-  if (!/^\d+$/.test(id)) return "Lore Entry";
-  try {
-    const res = await apiFetch(`/api/v1/codex/lore_entries/${id}`, { cache: "no-store" });
-    if (!res.ok) return "Lore Entry";
-    const body = (await res.json()) as { data?: { title?: string | null } };
-    return body.data?.title?.trim() || "Lore Entry";
-  } catch {
-    return "Lore Entry";
-  }
+// A Club Codex entry's title, from its page's own read: a Lore Entry's, or
+// a History Event's on its desk.
+function codexTitle(part: "lore_entries" | "history_events", fallback: string) {
+  return async (id: string): Promise<string> => {
+    if (!/^\d+$/.test(id)) return fallback;
+    try {
+      const res = await apiFetch(`/api/v1/codex/${part}/${id}`, { cache: "no-store" });
+      if (!res.ok) return fallback;
+      const body = (await res.json()) as { data?: { title?: string | null } };
+      return body.data?.title?.trim() || fallback;
+    } catch {
+      return fallback;
+    }
+  };
 }
 
 const API_NAMES: CrumbNames = {
@@ -152,7 +156,8 @@ const API_NAMES: CrumbNames = {
   member: memberName,
   set: achievementSetTitle,
   challenge: challengeName,
-  loreEntry: loreEntryTitle,
+  loreEntry: codexTitle("lore_entries", "Lore Entry"),
+  historyEvent: codexTitle("history_events", "History Event"),
 };
 
 export async function crumbTrail(
@@ -217,6 +222,14 @@ export async function crumbTrail(
       const base = `${root}/${id}/${page}`;
       trail.push({ label: await names.loreEntry(page), href: base });
       if (sub === "edit") trail.push({ label: "Edit", href: `${base}/edit` });
+    }
+    // Club History's desk (www#126): a new History Event, or one's edit
+    // page. A History Event reads on the timeline, at its anchor.
+    if (id === "history" && page === "new") {
+      trail.push({ label: "New", href: `${root}/${id}/new` });
+    } else if (id === "history" && page && /^\d+$/.test(page) && sub === "edit") {
+      trail.push({ label: await names.historyEvent(page), href: `${root}/${id}#history-event-${page}` });
+      trail.push({ label: "Edit", href: `${root}/${id}/${page}/edit` });
     }
   }
 
