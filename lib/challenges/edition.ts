@@ -1,3 +1,4 @@
+import type { ApiErrorBody } from "@/lib/api/errors";
 import type { GameSummary } from "@/lib/api/types";
 import { daysBetween, type IsoDay } from "@/lib/challenges/dates";
 import { BACKLOG_MINIMUM } from "@/lib/challenges/edition-calendar";
@@ -210,16 +211,17 @@ const FALLBACK: Record<string, string> = {
   not_drawn: "The draw left you out, so there's nothing to leave.",
 };
 
-// How a refused sign-up or withdrawal reads, from the response's status and
-// body (`backlog_too_small` carries `minimum` and `backlog_count`).
-export function editionRefusal(status: number, body: unknown): string {
+// How a refused sign-up or withdrawal reads, from the API's error
+// (`backlog_too_small` carries `minimum` and `backlog_count` in its body).
+export function editionRefusal(err: ApiErrorBody): string {
+  const { status } = err;
   if (status === 401) return "Your session has ended. Sign in again.";
-  const b = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
-  if (b.error === "backlog_too_small" && typeof b.minimum === "number" && typeof b.backlog_count === "number") {
+  const b = err.body ?? {};
+  if (err.code === "backlog_too_small" && typeof b.minimum === "number" && typeof b.backlog_count === "number") {
     return `You need at least ${b.minimum} games in your backlog to sign up (you have ${b.backlog_count}).`;
   }
-  if (typeof b.message === "string" && b.message) return b.message;
-  if (typeof b.error === "string" && Object.hasOwn(FALLBACK, b.error)) return FALLBACK[b.error];
+  if (err.message) return err.message;
+  if (err.code && Object.hasOwn(FALLBACK, err.code)) return FALLBACK[err.code];
   if (status === 403) return "Challenges aren't open to you just now.";
   if (status === 404) return "This Edition no longer exists, or is hidden.";
   return "That didn't work. Try again in a moment.";

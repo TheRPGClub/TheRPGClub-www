@@ -2,6 +2,7 @@
 
 import { refresh, revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { readApiError } from "@/lib/api/errors";
 import type { ApiSingle } from "@/lib/api/types";
 import { editionRefusal } from "@/lib/challenges/edition";
 import { pickRefusal } from "@/lib/challenges/santa-pick";
@@ -30,14 +31,8 @@ async function change(editionId: number, method: "POST" | "DELETE"): Promise<Edi
     return { ok: false, error: "Couldn't reach the club's server. Try again." };
   }
   if (!res.ok) {
-    let body: unknown = null;
-    try {
-      body = await res.json();
-    } catch {
-      // non-JSON error body
-    }
-    const code = body && typeof body === "object" ? (body as { error?: unknown }).error : undefined;
-    return { ok: false, error: editionRefusal(res.status, body), code: typeof code === "string" ? code : undefined };
+    const err = await readApiError(res);
+    return { ok: false, error: editionRefusal(err), code: err.code };
   }
   // The index, the Challenge page and every profile show sign-ups and Runs.
   revalidatePath("/challenges", "layout");
@@ -75,15 +70,15 @@ export async function pickGameAction(editionId: number, gameId: number): Promise
   } catch {
     return { ok: false, error: "Couldn't reach the club's server. Try again." };
   }
+  if (!res.ok) {
+    const err = await readApiError(res);
+    return { ok: false, error: pickRefusal(err), code: err.code };
+  }
   let body: unknown = null;
   try {
     body = await res.json();
   } catch {
-    // non-JSON body
-  }
-  if (!res.ok) {
-    const code = body && typeof body === "object" ? (body as { error?: unknown }).error : undefined;
-    return { ok: false, error: pickRefusal(res.status, body), code: typeof code === "string" ? code : undefined };
+    // non-JSON body: the pick is in, the page revalidates
   }
   // The Edition page's yellow panel says what was picked.
   revalidatePath("/challenges/[id]", "page");

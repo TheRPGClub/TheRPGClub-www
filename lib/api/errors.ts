@@ -7,6 +7,9 @@ export interface ApiErrorBody {
   code?: string;
   message?: string;
   errors?: unknown;
+  // The whole JSON body, for codes that carry more (`backlog_too_small`'s
+  // `minimum` and `backlog_count`).
+  body?: Record<string, unknown>;
 }
 
 export async function readApiError(res: Response): Promise<ApiErrorBody> {
@@ -18,6 +21,7 @@ export async function readApiError(res: Response): Promise<ApiErrorBody> {
       if (typeof error === "string" && error) parsed.code = error;
       if (typeof message === "string" && message) parsed.message = message;
       if (errors !== undefined) parsed.errors = errors;
+      parsed.body = body as Record<string, unknown>;
     }
   } catch {
     // non-JSON error body

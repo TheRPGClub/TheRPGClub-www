@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { readApiError } from "@/lib/api/errors";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { SantaRead } from "@/lib/challenges/santa-pick";
 import type { ChallengeEdition, SantaView } from "@/lib/challenges/types";
@@ -37,17 +38,9 @@ export async function fetchSantaView(editionId: number): Promise<SantaView | nul
 export async function readSantaView(editionId: number): Promise<SantaRead> {
   try {
     const res = await apiFetch(`/api/v1/challenge_editions/${editionId}/santa`, { cache: "no-store" });
-    if (!res.ok) {
-      let body: unknown = null;
-      try {
-        body = await res.json();
-      } catch {
-        // non-JSON error body
-      }
-      return { ok: false, status: res.status, body };
-    }
+    if (!res.ok) return { ok: false, error: await readApiError(res) };
     return { ok: true, view: ((await res.json()) as ApiSingle<SantaView>).data };
   } catch {
-    return { ok: false, status: 0, body: null };
+    return { ok: false, error: { status: 0 } };
   }
 }

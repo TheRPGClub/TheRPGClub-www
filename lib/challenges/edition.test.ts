@@ -223,17 +223,17 @@ describe("pickEdition", () => {
 
 describe("editionRefusal", () => {
   it("says how many games a member is short", () => {
-    expect(editionRefusal(422, { error: "backlog_too_small", minimum: 5, backlog_count: 3 })).toBe(
+    expect(editionRefusal({ status: 422, code: "backlog_too_small", body: { error: "backlog_too_small", minimum: 5, backlog_count: 3 } })).toBe(
       "You need at least 5 games in your backlog to sign up (you have 3).",
     );
   });
 
   it("shows the API's own words, else a sentence per code", () => {
-    expect(editionRefusal(409, { error: "signup_closed", message: "Sign-up closed on 1 December 2026." })).toBe(
+    expect(editionRefusal({ status: 409, code: "signup_closed", message: "Sign-up closed on 1 December 2026." })).toBe(
       "Sign-up closed on 1 December 2026.",
     );
-    expect(editionRefusal(409, { error: "picks_closed" })).toMatch(/Picks have closed/);
-    expect(editionRefusal(401, null)).toMatch(/Sign in again/);
-    expect(editionRefusal(500, null)).toMatch(/Try again/);
+    expect(editionRefusal({ status: 409, code: "picks_closed" })).toMatch(/Picks have closed/);
+    expect(editionRefusal({ status: 401 })).toMatch(/Sign in again/);
+    expect(editionRefusal({ status: 500 })).toMatch(/Try again/);
   });
 });
