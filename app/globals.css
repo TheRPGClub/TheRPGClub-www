@@ -89,6 +89,10 @@
     --color-region-eu: var(--region-eu);
     --color-region-jp: var(--region-jp);
     --color-region-foreground: var(--region-foreground);
+    --color-codex-history: var(--codex-history);
+    --color-codex-lore: var(--codex-lore);
+    --color-codex-fact: var(--codex-fact);
+    --color-codex-fact-soft: var(--codex-fact-soft);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */

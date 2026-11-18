@@ -106,6 +106,14 @@
         --region-eu: #8fe0a6;
         --region-jp: #ffa3c9;
         --region-foreground: #0b0b0d;
+        /* Club Codex inks, on Codex surfaces only: one per part (Club
+           History parchment, Club Lore jade, Fun Facts pink), as a door's
+           or a card's fill with ink type, or a small mark. fact-soft is
+           the lighter index card every third card on the Fun Facts wall. */
+        --codex-history: #eadcb8;
+        --codex-lore: #52d6a4;
+        --codex-fact: #ff8ad8;
+        --codex-fact-soft: #ffb3e6;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */

@@ -75,4 +75,12 @@ describe("crumbTrail", () => {
     // Presence history is a #hash on the presence desk, not a page.
     expect(await trail("/admin/presence")).toHaveLength(2);
   });
+
+  it("names the Club Codex and its parts", async () => {
+    expect(await trail("/codex/fun-facts")).toEqual([
+      { label: "Club Codex", href: "/codex" },
+      { label: "Fun Facts", href: "/codex/fun-facts" },
+    ]);
+    expect(await trail("/codex/constructor")).toEqual([{ label: "Club Codex", href: "/codex" }]);
+  });
 });

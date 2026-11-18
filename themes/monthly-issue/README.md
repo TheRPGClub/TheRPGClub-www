@@ -55,6 +55,10 @@ colors:
   region-eu: "#8fe0a6"
   region-jp: "#ffa3c9"
   region-foreground: "#0b0b0d"
+  codex-history: "#eadcb8"
+  codex-lore: "#52d6a4"
+  codex-fact: "#ff8ad8"
+  codex-fact-soft: "#ffb3e6"
   foil-foreground: "#0b0b0d"
 typography:
   numeral:
@@ -592,6 +596,16 @@ A Release is one platform in one region, and the region chip beside its date car
 - **Date Precision is never a hue.** A vague date carries the `precision` Badge tone, a dashed `faint-foreground` outline with dim type, saying what is still unknown: "Day TBA" beside "Dec 2026", "Month TBA" beside "Q3 2027" or "2027", and "No date yet" for TBA. An exact day takes no chip.
 
 **The Region Ink Is a Place Rule.** A region ink means one release region and nothing else. It never marks a platform, a Date Precision or a game, and the inks stay off masthead red, feature violet and highlighter yellow, so a region never reads as a track or a call to action.
+
+#### Club Codex inks (Codex surfaces only)
+The Club Codex is the club's story about itself, kept in three parts, and each part has an ink so a reader knows which part they are in before they read a word. The inks live on Codex surfaces only (the /codex contents page and the part pages). As fills they always carry ink type (`background`), never paper, and each clears 9:1 against it.
+- **Club History** (codex-history): parchment. Its door on the contents page, and its square in the "Lately in the Codex" list.
+- **Club Lore** (codex-lore): jade. Its door, its square, and Club Lore's accents (the Lore shelf, a Lore Entry's second headline line).
+- **Fun Facts** (codex-fact): pink. Its door, its square, the Fun Fact band's top rule and label on the contents page, the add panel's top rule and label, and the Fun Facts wall's index cards. Every third card is the lighter **codex-fact-soft**, so the wall reads as a stack of cards and not a grid of tiles.
+
+The Fun Facts wall is a corkboard of index cards: each card in the Fun Facts ink with ink type, ruled like an index card (faint ink rules every 28px under a 2px ink rule beneath "No. 42" in Anton and the date in label type), a strip of paper tape at its top, and a slight tilt picked from the Fun Fact's id so it never moves between visits (`motion-safe` straightens and lifts it on hover). The Fun Fact reads in Barlow 500 at 17px on the rules, mentions as underlined member names linking to their profiles, the author as "— Name" in label type, an ink "Read the story" chip when the Fun Fact tells a Lore Entry's story, and Edit and Delete as underlined label-type links for the member who may.
+
+**The Codex Ink Is a Part Rule.** A Codex ink means one part of the Club Codex and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a part never reads as a track, a call to action or a destructive action: adding a Fun Fact is still a yellow button, deleting one is still signal orange.
 
 ### Typography
 
