@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import type { YourBusinessProps } from "@/lib/challenges/edition-client";
 import { panelFacts } from "@/lib/challenges/edition-panel";
 import type { EditionPage } from "@/lib/challenges/edition-page";
 import type { ChallengeEdition } from "@/lib/challenges/types";
@@ -13,10 +14,12 @@ import { YourBusiness } from "@/components/challenges/assignment/your-business";
 export function EditionPanel({
   data,
   edition,
+  business,
   className,
 }: {
   data: EditionPage;
   edition: ChallengeEdition;
+  business: YourBusinessProps;
   className?: string;
 }) {
   const facts = panelFacts(edition, data.today);
@@ -37,14 +40,7 @@ export function EditionPanel({
         {facts.big === null && facts.caption && (
           <p className="font-label -mt-1 text-[0.86rem] tracking-[0.08em] text-dim-foreground">{facts.caption}</p>
         )}
-        <YourBusiness
-          edition={edition}
-          part={data.part}
-          backlogCount={data.backlogCount}
-          santa={data.santa}
-          viewerId={data.viewerId}
-          today={data.today}
-        />
+        <YourBusiness {...business} />
         {facts.lines.map((line) => (
           <p key={line} className="text-[0.92rem] leading-[1.45] text-dim-foreground">
             {line}

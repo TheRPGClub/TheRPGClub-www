@@ -1,11 +1,9 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { formatDay, type IsoDay } from "@/lib/challenges/dates";
-import { picksClosed, type YourPart } from "@/lib/challenges/edition";
+import { formatDay } from "@/lib/challenges/dates";
+import type { YourBusinessProps } from "@/lib/challenges/edition-client";
 import { BACKLOG_MINIMUM } from "@/lib/challenges/edition-calendar";
-import { memberName } from "@/lib/challenges/runs";
-import type { ChallengeEdition, SantaView } from "@/lib/challenges/types";
 import { ButtonLink } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { LeaveAfterDraw } from "@/components/challenges/assignment/leave-after-draw";
@@ -15,41 +13,33 @@ import { YellowPanel } from "@/components/challenges/assignment/yellow-panel";
 // The viewer's own business in the side panel (surface brief
 // challenges-assignment): sign up or leave while sign-up is open, go and
 // pick while they are a Santa (or leave, which drops their pick and Abandons
-// their Run), their game once it's revealed.
-export function YourBusiness({
-  edition,
-  part,
-  backlogCount,
-  santa,
-  viewerId,
-  today,
-}: {
-  edition: ChallengeEdition;
-  part: YourPart;
-  backlogCount: number | null;
-  santa: SantaView | null;
-  viewerId: string;
-  today: IsoDay;
-}) {
-  if (edition.phase === "signup") {
-    if (!edition.signup_open) return null;
+// their Run), their game once it's revealed. It gets only the plain words
+// lib/challenges/edition-client picks, never the picks themselves.
+export function YourBusiness(props: YourBusinessProps) {
+  const { phase, part, today } = props;
+  if (phase === "signup") {
+    if (!props.signupOpen) return null;
     return (
       <SignupPanel
-        edition={edition}
+        editionId={props.editionId}
+        challengeName={props.challengeName}
+        signupCutoffOn={props.signupCutoffOn}
         joined={part !== "out"}
-        backlogCount={backlogCount}
-        viewerId={viewerId}
+        backlogCount={props.backlogCount}
+        eligible={props.eligible}
+        viewerId={props.viewerId}
         today={today}
       />
     );
   }
-  if (edition.phase === "picking" && part === "drawn") {
-    const closed = picksClosed(edition, today);
-    const recipient = santa ? memberName(santa.recipient) : null;
+  if (phase === "picking" && part === "drawn") {
+    const closed = props.picksClosed;
+    const recipient = props.pickFor?.recipient ?? null;
+    const picked = props.pickFor?.picked;
     const note = closed
-      ? `Every game is revealed on ${formatDay(edition.reveal_on, today)}.`
-      : santa?.pick
-        ? `You picked ${santa.pick.game.title}. You can change it until picks close on ${formatDay(edition.pick_deadline_on, today)}.`
+      ? `Every game is revealed on ${formatDay(props.revealOn, today)}.`
+      : picked
+        ? `You picked ${picked}. You can change it until picks close on ${formatDay(props.pickDeadlineOn, today)}.`
         : null;
     return (
       <YellowPanel
@@ -59,10 +49,10 @@ export function YourBusiness({
       >
         {!closed && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <ButtonLink href={`/challenges/${edition.challenge.id}/pick?edition=${edition.id}`} variant="inverse" size="sm">
+            <ButtonLink href={`/challenges/${props.challengeId}/pick?edition=${props.editionId}`} variant="inverse" size="sm">
               Open your pick page <ArrowRight aria-hidden />
             </ButtonLink>
-            <LeaveAfterDraw edition={edition} recipient={recipient} />
+            <LeaveAfterDraw editionId={props.editionId} year={props.year} recipient={recipient} />
           </div>
         )}
       </YellowPanel>
@@ -72,19 +62,18 @@ export function YourBusiness({
     return (
       <NoticeSlip title="Not this year" role="status">
         You weren&apos;t drawn: under {BACKLOG_MINIMUM} games in your backlog on{" "}
-        {formatDay(edition.signup_cutoff_on, today)}.
+        {formatDay(props.signupCutoffOn, today)}.
       </NoticeSlip>
     );
   }
   if (part === "withdrawn") {
     return <p className="text-[0.92rem] text-faint-foreground">You left this Edition after the draw.</p>;
   }
-  const yours = edition.assignments?.find((a) => a.recipient.user_id === viewerId);
   // Once the Edition ends, the Santa circle is the news, not the viewer's game.
-  if (edition.phase === "revealed" && yours?.game) {
+  if (phase === "revealed" && props.yourGame) {
     return (
-      <YellowPanel label="Your game" title={yours.game.title}>
-        <ButtonLink href={`/members/${viewerId}#runs`} variant="inverse" size="sm">
+      <YellowPanel label="Your game" title={props.yourGame}>
+        <ButtonLink href={`/members/${props.viewerId}#runs`} variant="inverse" size="sm">
           See your Run
         </ButtonLink>
       </YellowPanel>
