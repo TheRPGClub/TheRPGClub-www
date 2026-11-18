@@ -1,4 +1,4 @@
-import { clubToday } from "@/lib/birth-date";
+import { clubToday } from "@/lib/challenges/dates";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection, TIER_SHORT } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";

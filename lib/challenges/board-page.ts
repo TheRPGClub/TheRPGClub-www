@@ -2,7 +2,7 @@ import {
   fetchChallenge,
   fetchChallenges,
   fetchFinishedCount,
-  fetchMemberRuns,
+  fetchMemberRunSheet,
   fetchPoolPreview,
   savedPoolDefinition,
 } from "@/lib/api/challenges";
@@ -21,7 +21,7 @@ import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 // The Challenges index's data (server only): every Challenge the viewer may
 // see, arranged as the pinboard, with what each flyer shows beyond the list
 // (its Runs, the first Pool covers, a billboard's Finished count) and the
-// viewer's own Runs.
+// viewer's own Runs and Edition sign-ups.
 
 export interface BoardPage {
   all: Challenge[];
@@ -59,7 +59,8 @@ async function extrasFor(challenge: Challenge, billboard: boolean): Promise<Flye
 }
 
 export async function loadBoardPage(filters: BoardFilters, viewerId: string): Promise<BoardPage | null> {
-  const [all, runs] = await Promise.all([fetchChallenges(), fetchMemberRuns(viewerId)]);
+  const [all, sheet] = await Promise.all([fetchChallenges(), fetchMemberRunSheet(viewerId)]);
+  const runs = sheet?.runs ?? null;
   if (!all) return null;
   const today = clubToday();
   const shown = applyFilters(all, filters);
@@ -75,10 +76,12 @@ export async function loadBoardPage(filters: BoardFilters, viewerId: string): Pr
     extras,
     yourRuns: viewerRuns(runs ?? []),
     // Without the viewer's Runs nothing is offered, rather than a Start the
-    // API would refuse.
+    // API would refuse. Their Edition sign-ups say Sign up or Signed up.
     actions: new Map(
       runs
-        ? shown.map((c) => [c.id, runActionFor(c, yourRunsOf(runs, c.id, viewerId), today)] as const)
+        ? shown.map(
+            (c) => [c.id, runActionFor(c, yourRunsOf(runs, c.id, viewerId), today, sheet?.signups ?? [])] as const,
+          )
         : [],
     ),
     today,

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { ChallengeEdition } from "@/lib/challenges/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Previous Editions (surface brief challenges-assignment): an outline select
@@ -12,7 +11,7 @@ export function EditionSwitcher({
   current,
 }: {
   challengeId: number;
-  editions: Pick<ChallengeEdition, "id" | "year">[];
+  editions: { id: number; year: number }[];
   current: number;
 }) {
   const router = useRouter();

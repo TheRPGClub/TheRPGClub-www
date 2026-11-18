@@ -50,7 +50,7 @@ function DmsRow({ initial, preview }: { initial: ChallengeSettings; preview: boo
         id={ROW}
         name="Challenge DMs"
         badge={preview ? <PreviewBadge /> : null}
-        where="The bot DMs you a week before a Season ends while you have a Run in it."
+        where="The bot DMs you a week before a Season ends while you have a Run in it, and two days before Secret Santa picks close if you haven't picked. Off stops both. The DM saying the draw left you out still comes."
         dim={!state.dms}
         error={errors[ROW]}
       >

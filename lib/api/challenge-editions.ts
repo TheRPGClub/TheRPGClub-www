@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { paginationOf } from "@/lib/api/pagination";
+import { readApiError } from "@/lib/api/errors";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { SantaRead } from "@/lib/challenges/santa-pick";
 import type { ChallengeEdition, SantaView } from "@/lib/challenges/types";
@@ -24,12 +24,6 @@ export async function fetchEditions(challengeId: number): Promise<ChallengeEditi
   return body?.data ?? null;
 }
 
-// How many games are in a member's backlog (one row read, its count kept).
-export async function fetchBacklogCount(userId: string): Promise<number | null> {
-  const body = await readJson<ApiCollection<unknown>>(`/api/v1/users/${encodeURIComponent(userId)}/backlog?per=1`);
-  return body ? paginationOf(body.meta, body.data.length).total : null;
-}
-
 // The signed-in member's side as a Santa: who they pick for and their pick.
 // Null for anyone the draw didn't make a Santa (the API's 403).
 export async function fetchSantaView(editionId: number): Promise<SantaView | null> {
@@ -44,17 +38,9 @@ export async function fetchSantaView(editionId: number): Promise<SantaView | nul
 export async function readSantaView(editionId: number): Promise<SantaRead> {
   try {
     const res = await apiFetch(`/api/v1/challenge_editions/${editionId}/santa`, { cache: "no-store" });
-    if (!res.ok) {
-      let body: unknown = null;
-      try {
-        body = await res.json();
-      } catch {
-        // non-JSON error body
-      }
-      return { ok: false, status: res.status, body };
-    }
+    if (!res.ok) return { ok: false, error: await readApiError(res) };
     return { ok: true, view: ((await res.json()) as ApiSingle<SantaView>).data };
   } catch {
-    return { ok: false, status: 0, body: null };
+    return { ok: false, error: { status: 0 } };
   }
 }

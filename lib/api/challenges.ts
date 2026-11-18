@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { PoolDefinition } from "@/lib/challenges/form";
-import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame } from "@/lib/challenges/types";
+import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame, PoolProgressGame } from "@/lib/challenges/types";
 
 // Server-only reads for the Challenges pages (they read the session cookie).
 // Each answers null when the API can't be read, so a page can say so rather
@@ -56,14 +56,6 @@ export async function fetchFinishedCount(id: number): Promise<number | null> {
   return body ? paginationOf(body.meta, body.data.length).total : null;
 }
 
-// A member's Runs of every Challenge, newest first.
-export async function fetchMemberRuns(userId: string): Promise<ChallengeRun[] | null> {
-  const body = await readJson<ApiCollection<ChallengeRun>>(
-    `/api/v1/users/${encodeURIComponent(userId)}/challenge_runs?per=${MAX_PER}`,
-  );
-  return body?.data ?? null;
-}
-
 // A member's Runs with their Secret Santa sign-ups still waiting for a draw
 // (`meta.signups`; empty from an API without it).
 export async function fetchMemberRunSheet(
@@ -92,6 +84,13 @@ export async function fetchPoolPreview(definition: PoolDefinition, per: number =
         total: paginationOf(body.meta, body.data.length).total,
       }
     : null;
+}
+
+// A Pool Challenge's games with who Cleared each and who has it In
+// Progress (the Pool view), oldest release first, up to 500.
+export async function fetchPoolProgress(id: number): Promise<PoolProgressGame[] | null> {
+  const body = await readJson<ApiCollection<PoolProgressGame>>(`/api/v1/challenges/${id}/pool_progress?per=${MAX_PER}`);
+  return body?.data ?? null;
 }
 
 // A saved Challenge's Pool as a definition the preview takes.

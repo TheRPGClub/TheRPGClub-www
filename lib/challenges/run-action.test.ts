@@ -72,6 +72,51 @@ describe("runActionFor", () => {
   });
 });
 
+describe("runActionFor an Assignment Challenge on the board", () => {
+  const santa = challenge({
+    challenge_format: "assignment",
+    assignment: {
+      signup_cutoff: "12-01",
+      pick_deadline: "12-15",
+      reveal: "12-25",
+      edition: {
+        id: 4,
+        year: 2026,
+        phase: "signup",
+        signup_opens_on: "2025-12-26",
+        signup_cutoff_on: "2026-12-01",
+        pick_deadline_on: "2026-12-15",
+        reveal_on: "2026-12-25",
+        ends_on: "2027-12-25",
+      },
+    },
+  });
+  const signup = {
+    edition_id: 4,
+    year: 2026,
+    phase: "signup" as const,
+    challenge: { id: 7, name: "Secret Santa" },
+    signed_up_at: "2026-11-02T10:00:00Z",
+    signup_cutoff_on: "2026-12-01",
+    pick_deadline_on: "2026-12-15",
+    reveal_on: "2026-12-25",
+  };
+
+  it("offers Sign up while the Edition's sign-up is open, even beside last year's Active Run", () => {
+    const lastYear = run(3, { status: "active", challenge: { ...run(3).challenge, challenge_format: "assignment" } });
+    expect(runActionFor(santa, [lastYear], today, [])).toEqual({ kind: "signup", editionId: 4 });
+  });
+
+  it("says the viewer is signed up once they are", () => {
+    expect(runActionFor(santa, [], today, [signup])).toEqual({ kind: "signed-up", drawOn: "2026-12-01" });
+  });
+
+  it("offers nothing from the draw day on, or without the viewer's sign-ups", () => {
+    expect(runActionFor(santa, [], "2026-12-01", [])).toEqual({ kind: "none" });
+    expect(runActionFor(santa, [], today)).toEqual({ kind: "none" });
+  });
+});
+
 describe("yourRunsOf", () => {
   it("keeps the viewer's Runs of the Challenge", () => {
     const other = run(2, { user: { user_id: "them", username: "them" } });

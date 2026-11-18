@@ -9,6 +9,7 @@ import {
   slotMoveRequest,
   slotRefusal,
   type PastPlay,
+  type PastPlayResult,
   type SlotRequest,
 } from "@/lib/challenges/slot-requests";
 
@@ -48,7 +49,6 @@ export async function pastPickAction(runId: number, completionId: number, year: 
   return send(pastPickRequest(runId, completionId, year));
 }
 
-export type PastPlayResult = { ok: true; data: PastPlay[] } | { ok: false; error: string };
 
 // The member's Game Completions from before their Run that fit an open year,
 // oldest first and undated last, narrowed by title.

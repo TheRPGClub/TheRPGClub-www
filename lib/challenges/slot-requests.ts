@@ -37,10 +37,25 @@ export interface PastPlay {
   completion_id: number;
   game_id: number;
   title: string;
+  // The game's cover; null without one (absent from an older API).
+  cover_url?: string | null;
   // YYYY-MM-DD, null when undated.
   completed_at: string | null;
   // The Run's open years its game was released in.
   open_years: number[];
+}
+
+export type PastPlayResult = { ok: true; data: PastPlay[] } | { ok: false; error: string };
+
+// The picker's read, settled: a call that throws (the server action
+// unreachable, a body that isn't JSON) reads as an error the picker shows,
+// so it never waits forever.
+export async function settlePastPlay(read: () => Promise<PastPlayResult>): Promise<PastPlayResult> {
+  try {
+    return await read();
+  } catch {
+    return { ok: false, error: "Couldn't load your past games. Try again." };
+  }
 }
 
 // Used only when the API sends no message of its own.

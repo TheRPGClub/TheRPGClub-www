@@ -1,3 +1,4 @@
+import type { ApiErrorBody } from "@/lib/api/errors";
 import { daysBetween, formatDay, type IsoDay } from "@/lib/challenges/dates";
 import { memberName } from "@/lib/challenges/runs";
 import type { ChallengeEdition, SantaBacklogEntry, SantaTaste, SantaView } from "@/lib/challenges/types";
@@ -129,17 +130,18 @@ const FALLBACK: Record<string, string> = {
 };
 
 // How a refused pick (or Santa view) reads, from the response.
-export function pickRefusal(status: number, body: unknown): string {
+export function pickRefusal(err: ApiErrorBody): string {
+  const { status } = err;
   if (status === 401) return "Your session has ended. Sign in again.";
-  const b = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
-  if (typeof b.message === "string" && b.message) return b.message;
-  if (typeof b.error === "string" && Object.hasOwn(FALLBACK, b.error)) return FALLBACK[b.error];
+  if (err.message) return err.message;
+  if (err.code && Object.hasOwn(FALLBACK, err.code)) return FALLBACK[err.code];
   if (status === 404) return "This Edition no longer exists, or is hidden.";
   if (status === 403) return FALLBACK.not_a_santa;
   return "That didn't work. Try again in a moment.";
 }
 
-export type SantaRead = { ok: true; view: SantaView } | { ok: false; status: number; body: unknown };
+// The Santa view, or the API's refusal (status 0: unreachable).
+export type SantaRead = { ok: true; view: SantaView } | { ok: false; error: ApiErrorBody };
 
 export type PickPageState =
   | { kind: "open" }
@@ -149,8 +151,8 @@ export type PickPageState =
 // (picks closed, nothing to pick, not this Edition's Santa, unreadable).
 export function pickPageState(read: SantaRead): PickPageState {
   if (!read.ok) {
-    if (read.status === 403 || read.status === 404 || read.status === 401) {
-      return { kind: "refused", title: "Not your pick", message: pickRefusal(read.status, read.body) };
+    if ([401, 403, 404].includes(read.error.status)) {
+      return { kind: "refused", title: "Not your pick", message: pickRefusal(read.error) };
     }
     return { kind: "unread", title: "Not just now", message: "Your pick page couldn't be read. Try again in a moment." };
   }

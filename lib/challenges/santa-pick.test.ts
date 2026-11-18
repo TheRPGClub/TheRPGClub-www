@@ -148,20 +148,20 @@ describe("tasteHints", () => {
 
 describe("pickRefusal", () => {
   it("shows the API's own sentence", () => {
-    expect(pickRefusal(422, { error: "not_eligible", message: "Pick a game from your recipient's backlog that they haven't Cleared." })).toBe(
+    expect(pickRefusal({ status: 422, code: "not_eligible", message: "Pick a game from your recipient's backlog that they haven't Cleared." })).toBe(
       "Pick a game from your recipient's backlog that they haven't Cleared.",
     );
   });
 
   it("falls back to a sentence per refusal", () => {
-    expect(pickRefusal(409, { error: "picks_closed" })).toBe("Picks have closed for this Edition, so your pick can't change now.");
-    expect(pickRefusal(422, { error: "not_eligible" })).toBe(
+    expect(pickRefusal({ status: 409, code: "picks_closed" })).toBe("Picks have closed for this Edition, so your pick can't change now.");
+    expect(pickRefusal({ status: 422, code: "not_eligible" })).toBe(
       "That game has left their backlog or been Cleared. Pick another one.",
     );
-    expect(pickRefusal(403, { error: "not_a_santa" })).toBe("You aren't a Santa in this Edition.");
-    expect(pickRefusal(404, { error: "not_found" })).toBe("This Edition no longer exists, or is hidden.");
-    expect(pickRefusal(401, null)).toBe("Your session has ended. Sign in again.");
-    expect(pickRefusal(500, "oops")).toBe("That didn't work. Try again in a moment.");
+    expect(pickRefusal({ status: 403, code: "not_a_santa" })).toBe("You aren't a Santa in this Edition.");
+    expect(pickRefusal({ status: 404, code: "not_found" })).toBe("This Edition no longer exists, or is hidden.");
+    expect(pickRefusal({ status: 401 })).toBe("Your session has ended. Sign in again.");
+    expect(pickRefusal({ status: 500 })).toBe("That didn't work. Try again in a moment.");
   });
 });
 
@@ -201,12 +201,12 @@ describe("pickPageState", () => {
 
   it("turns away anyone who isn't this Edition's Santa with the API's reason", () => {
     expect(
-      pickPageState({ ok: false, status: 403, body: { error: "not_a_santa", message: "You aren't a Santa in the 2026 Edition." } }),
+      pickPageState({ ok: false, error: { status: 403, code: "not_a_santa", message: "You aren't a Santa in the 2026 Edition." } }),
     ).toEqual({ kind: "refused", title: "Not your pick", message: "You aren't a Santa in the 2026 Edition." });
   });
 
   it("says when the page couldn't be read", () => {
-    expect(pickPageState({ ok: false, status: 502, body: null })).toEqual({
+    expect(pickPageState({ ok: false, error: { status: 502 } })).toEqual({
       kind: "unread",
       title: "Not just now",
       message: "Your pick page couldn't be read. Try again in a moment.",

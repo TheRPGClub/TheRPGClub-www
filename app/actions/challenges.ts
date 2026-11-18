@@ -40,8 +40,10 @@ async function send(path: string, init: RequestInit): Promise<ChallengeActionRes
   }
   if (!res.ok) return { ok: false, error: await refusal(res) };
   revalidatePath("/challenges", "layout");
-  refresh();
+  // A deleted Challenge's page is gone: its callers navigate away, so
+  // refreshing it here would only re-render a 404 first.
   if (init.method === "DELETE") return { ok: true };
+  refresh();
   const body = (await res.json()) as {
     data: Challenge;
     meta?: { warnings?: ChallengeWarning[] };

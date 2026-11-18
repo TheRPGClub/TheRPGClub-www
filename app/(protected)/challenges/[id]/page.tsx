@@ -44,7 +44,7 @@ export default async function ChallengePage({
     id: session.principal.discord_id,
     membership: session.membership,
   };
-  const read = await loadChallengePage(id, viewer.id);
+  const read = await loadChallengePage(id, viewer.id, { poolView: view === "pool" });
   if (!read.ok) {
     if (read.status === 404) notFound();
     return (

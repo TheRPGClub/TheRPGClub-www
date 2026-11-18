@@ -75,7 +75,7 @@ export function santaCircle(assignments: readonly EditionAssignment[], viewerId:
       to: a.recipient.user_id,
       d: `M${x1},${y1} A${ARROW_RADIUS},${ARROW_RADIUS} 0 ${sweep - 2 * pad > 180 ? 1 : 0} 1 ${x2},${y2}`,
       tone: status === "finished" ? "finished" : status === "expired" ? "expired" : "other",
-      dashed: a.picked_randomly,
+      dashed: a.picked_randomly === true,
     });
   }
   arrows.sort((p, q) => (angle.get(p.from) as number) - (angle.get(q.from) as number));

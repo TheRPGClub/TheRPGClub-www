@@ -93,8 +93,12 @@ function whenLine(run: ChallengeRun, today: IsoDay): string {
   return `${lead} · ${ends ? `until ${formatDay(ends, today)}` : "Always Open"}`;
 }
 
-function coverOf(run: ChallengeRun): StampCover | null {
+// An Assignment Run's window opens on its Edition's reveal; staff are served
+// the game from the draw on, so before that day it stays off the stamp (a
+// staff recipient would see their own gift).
+function coverOf(run: ChallengeRun, today: IsoDay): StampCover | null {
   const assigned = run.assignment?.game;
+  if (run.edition && today < run.window.starts_on) return null;
   if (assigned) {
     return { gameId: assigned.game_id, title: assigned.title, coverUrl: assigned.cover_url ?? null, label: "Assigned" };
   }
@@ -103,7 +107,7 @@ function coverOf(run: ChallengeRun): StampCover | null {
   return { gameId: playing.game_id, title: playing.title, coverUrl: playing.cover_url ?? null, label: "In Progress" };
 }
 
-function stampView(run: ChallengeRun, tints: ReadonlyMap<number, ChallengeTint>, today: IsoDay): StampView {
+function stampView(run: ChallengeRun, today: IsoDay): StampView {
   const { challenge, progress } = run;
   const ended = run.status === "active" ? null : OUTCOME[run.status];
   return {
@@ -118,20 +122,20 @@ function stampView(run: ChallengeRun, tints: ReadonlyMap<number, ChallengeTint>,
     name: challenge.name,
     format: challenge.challenge_format,
     status: run.status,
-    tint: tints.get(challenge.id) ?? challengeTint({ id: challenge.id, challenge_format: challenge.challenge_format }),
+    tint: challengeTint({ id: challenge.id, challenge_format: challenge.challenge_format, tint: challenge.tint }),
     tilt: stampTilt(run.id),
     cleared: progress.cleared,
     target: progress.target,
     segments: challenge.challenge_format === "slots" ? null : runSegments(progress.cleared, progress.target),
     caughtUp: progress.caught_up === true,
     whenLine: whenLine(run, today),
-    cover: coverOf(run),
+    cover: coverOf(run, today),
     formatLine: `${FORMAT_NAME[challenge.challenge_format]} · ${periodOf(run)}`,
     outcomeLine: ended && run.ended_at ? `${ended} ${formatFullDay(clubDayOf(run.ended_at))}` : (ended ?? ""),
   };
 }
 
-function signupView(signup: ChallengeOpenSignup, tints: ReadonlyMap<number, ChallengeTint>, today: IsoDay): StampView {
+function signupView(signup: ChallengeOpenSignup, runs: readonly ChallengeRun[], today: IsoDay): StampView {
   const { challenge } = signup;
   const days = Math.max(daysBetween(today, signup.signup_cutoff_on), 0);
   return {
@@ -143,7 +147,13 @@ function signupView(signup: ChallengeOpenSignup, tints: ReadonlyMap<number, Chal
     name: challenge.name,
     format: "assignment",
     status: "active",
-    tint: tints.get(challenge.id) ?? challengeTint({ id: challenge.id, challenge_format: "assignment" }),
+    // A sign-up names its Challenge without a tint: another Run of it lends
+    // one, else the curated tint.
+    tint: challengeTint({
+      id: challenge.id,
+      challenge_format: "assignment",
+      tint: runs.find((r) => r.challenge.id === challenge.id && r.challenge.tint)?.challenge.tint,
+    }),
     tilt: stampTilt(signup.edition_id + 3),
     cleared: 0,
     target: 0,
@@ -207,22 +217,21 @@ function withSignups(
 
 export function profileRuns(
   runs: readonly ChallengeRun[],
-  tints: ReadonlyMap<number, ChallengeTint>,
   today: IsoDay,
   signups: readonly ChallengeOpenSignup[] = [],
 ): ProfileRuns {
   const current = runs.filter((r) => r.status === "active").sort(byDeadline);
   const past = runs.filter((r) => r.status !== "active").sort(byNewestOutcome);
-  const signed = signups.map((s) => signupView(s, tints, today));
+  const signed = signups.map((s) => signupView(s, runs, today));
   const waiting = signups.length > 0 ? ` · ${signups.length} signed up` : "";
   return {
     current: withSignups(
-      current.map((r) => stampView(r, tints, today)),
+      current.map((r) => stampView(r, today)),
       current.map((r) => r.window.ends_on ?? null),
       signups,
       signed,
     ),
-    past: past.map((r) => stampView(r, tints, today)),
+    past: past.map((r) => stampView(r, today)),
     finished: past.filter((r) => r.status === "finished").length,
     countLine: `${current.length} current${waiting} · ${past.length} past`,
   };

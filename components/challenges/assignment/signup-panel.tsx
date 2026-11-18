@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { leaveEditionAction, signUpAction } from "@/app/actions/challenge-editions";
 import { formatDay, type IsoDay } from "@/lib/challenges/dates";
 import { BACKLOG_MINIMUM } from "@/lib/challenges/edition-calendar";
-import type { ChallengeEdition } from "@/lib/challenges/types";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { YellowPanel } from "@/components/challenges/assignment/yellow-panel";
@@ -14,15 +13,21 @@ import { YellowPanel } from "@/components/challenges/assignment/yellow-panel";
 // they're in; a dashed panel instead when their backlog is under the
 // minimum. A refusal (the API's words) shows in a notice slip under it.
 export function SignupPanel({
-  edition,
+  editionId,
+  challengeName,
+  signupCutoffOn,
   joined,
   backlogCount,
+  eligible,
   viewerId,
   today,
 }: {
-  edition: ChallengeEdition;
+  editionId: number;
+  challengeName: string;
+  signupCutoffOn: IsoDay;
   joined: boolean;
   backlogCount: number | null;
+  eligible: boolean | null;
   viewerId: string;
   today: IsoDay;
 }) {
@@ -31,11 +36,11 @@ export function SignupPanel({
   const send = () =>
     startTransition(async () => {
       setError(null);
-      const result = await (joined ? leaveEditionAction : signUpAction)(edition.id);
+      const result = await (joined ? leaveEditionAction : signUpAction)(editionId);
       if (!result.ok) setError(result.error ?? "That didn't work. Try again.");
     });
 
-  if (!joined && backlogCount !== null && backlogCount < BACKLOG_MINIMUM) {
+  if (!joined && backlogCount !== null && eligible === false) {
     return (
       <div className="rounded-sm border border-dashed border-border-strong px-4 py-3.5 text-[0.92rem] leading-[1.45] text-dim-foreground">
         You need at least {BACKLOG_MINIMUM} games in your backlog to sign up (you have {backlogCount}).{" "}
@@ -56,8 +61,8 @@ export function SignupPanel({
         label={label}
         title={
           joined
-            ? `You're in the draw on ${formatDay(edition.signup_cutoff_on, today)}`
-            : `Sign up for ${edition.challenge.name}`
+            ? `You're in the draw on ${formatDay(signupCutoffOn, today)}`
+            : `Sign up for ${challengeName}`
         }
       >
         <Button

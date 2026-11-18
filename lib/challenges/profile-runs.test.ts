@@ -38,7 +38,7 @@ const santa = run(3, {
 describe("profileRuns", () => {
   it("puts Active Runs on top, nearest deadline first, and counts the rest as past", () => {
     const past = run(9, { status: "finished", ended_at: "2026-08-30T15:00:00Z" });
-    const view = profileRuns([slots, santa, run(1), past], new Map(), today);
+    const view = profileRuns([slots, santa, run(1), past], today);
     expect(view.current.map((s) => s.id)).toEqual([1, 3, 2]);
     expect(view.past.map((s) => s.id)).toEqual([9]);
     expect(view.countLine).toBe("3 current · 1 past");
@@ -53,30 +53,52 @@ describe("profileRuns", () => {
       started_at: "2025-01-01T10:00:00Z",
       entries: [{ game_id: 1, title: "A", state: "cleared", cleared_on: "2026-11-10", picked_by_hand: false }],
     });
-    expect(profileRuns([quiet, busy], new Map(), today).current.map((s) => s.id)).toEqual([5, 4]);
+    expect(profileRuns([quiet, busy], today).current.map((s) => s.id)).toEqual([5, 4]);
   });
 
   it("lists past Runs newest outcome first", () => {
     const older = run(6, { status: "expired", ended_at: "2025-09-22T04:00:00Z" });
     const newer = run(7, { status: "abandoned", ended_at: "2026-03-02T15:00:00Z" });
-    expect(profileRuns([older, newer], new Map(), today).past.map((s) => s.id)).toEqual([7, 6]);
+    expect(profileRuns([older, newer], today).past.map((s) => s.id)).toEqual([7, 6]);
   });
 
   it("writes the when-line each Format and schedule prints", () => {
-    const [pool, gift, years] = profileRuns([run(1), santa, slots], new Map(), today).current;
+    const [pool, gift, years] = profileRuns([run(1), santa, slots], today).current;
     expect(pool.whenLine).toBe("Season 2026 · 34 days left");
     expect(gift.whenLine).toBe("Edition 2025 · until 24 Dec · 38 days left");
     expect(years.whenLine).toBe("from 1988 · Always Open");
   });
 
   it("shows the In Progress game or the assigned one beside the score", () => {
-    const [, gift, years] = profileRuns([run(1), santa, slots], new Map(), today).current;
+    const [, gift, years] = profileRuns([run(1), santa, slots], today).current;
     expect(years.cover).toEqual({ gameId: 40, title: "Yakuza: Like a Dragon", coverUrl: null, label: "In Progress" });
     expect(gift.cover).toEqual({ gameId: 50, title: "Lost Odyssey", coverUrl: "https://x/lo.jpg", label: "Assigned" });
   });
 
+  it("keeps the assigned game off the stamp until the Edition's reveal, even when staff are served it", () => {
+    const drawn = run(8, {
+      ...santa,
+      id: 8,
+      edition: { id: 2, year: 2026 },
+      window: { starts_on: "2026-12-25", ends_on: "2027-12-24" },
+    });
+    expect(profileRuns([drawn], today).current[0].cover).toBeNull();
+    expect(profileRuns([drawn], "2026-12-25").current[0].cover?.title).toBe("Lost Odyssey");
+  });
+
+  it("keeps the gift hidden on a Run that ended before the reveal", () => {
+    const left = run(8, {
+      ...santa,
+      id: 8,
+      status: "abandoned",
+      ended_at: "2026-12-05T15:00:00Z",
+      window: { starts_on: "2026-12-25", ends_on: "2027-12-24" },
+    });
+    expect(profileRuns([left], today).past[0].cover).toBeNull();
+  });
+
   it("gives Slots the score only and other Formats a bar", () => {
-    const [pool, , years] = profileRuns([run(1), santa, slots], new Map(), today).current;
+    const [pool, , years] = profileRuns([run(1), santa, slots], today).current;
     expect(years.segments).toBeNull();
     expect(pool.segments).toEqual([true, true, false]);
   });
@@ -84,21 +106,22 @@ describe("profileRuns", () => {
   it("labels a past stamp with its Format, its Season or Edition, and its outcome date", () => {
     const done = run(9, { status: "finished", ended_at: "2026-08-30T15:00:00Z" });
     const gift = { ...santa, status: "finished" as const, ended_at: "2025-06-09T15:00:00Z" };
-    const [pool, assigned] = profileRuns([done, gift], new Map(), today).past;
+    const [pool, assigned] = profileRuns([done, gift], today).past;
     expect(pool.formatLine).toBe("Pool · Season 2026");
     expect(pool.outcomeLine).toBe("Finished 30 Aug 2026");
     expect(assigned.formatLine).toBe("Assignment · Edition 2025");
   });
 
-  it("takes the Challenge's stored tint, else its curated one", () => {
+  it("takes the tint the Run's Challenge carries, else its curated one", () => {
     const stored = { fill: "#123456", hi: "#abcdef" };
-    const view = profileRuns([run(1), santa], new Map([[1, stored]]), today);
+    const tinted = run(1, { challenge: { ...run(1).challenge, tint: stored } });
+    const view = profileRuns([tinted, santa], today);
     expect(view.current.map((s) => s.tint)).toEqual([stored, { fill: "#1c6545", hi: "#3fbf8a" }]);
   });
 
   it("marks a Slots Run that is Caught Up", () => {
     const caught = { ...slots, progress: { ...slots.progress, caught_up: true } };
-    expect(profileRuns([caught], new Map(), today).current[0].caughtUp).toBe(true);
+    expect(profileRuns([caught], today).current[0].caughtUp).toBe(true);
   });
 });
 
@@ -115,13 +138,13 @@ describe("profileRuns with sign-ups", () => {
   };
 
   it("sets a sign-up among the current stamps by its draw day", () => {
-    const view = profileRuns([run(1), slots], new Map(), today, [signup]);
+    const view = profileRuns([run(1), slots], today, [signup]);
     expect(view.current.map((s) => s.key)).toEqual(["signup-4", "run-1", "run-2"]);
     expect(view.countLine).toBe("2 current · 1 signed up · 0 past");
   });
 
   it("says when the draw is", () => {
-    const [stamp] = profileRuns([], new Map(), today, [signup]).current;
+    const [stamp] = profileRuns([], today, [signup]).current;
     expect(stamp).toMatchObject({
       signedUp: true,
       name: "Secret Santa",
@@ -129,6 +152,13 @@ describe("profileRuns with sign-ups", () => {
       whenLine: "Edition 2026 · draw on 1 Dec · 14 days to go",
       tint: { fill: "#1c6545", hi: "#3fbf8a" },
     });
+  });
+
+  it("borrows the tint of another Run of the same Challenge", () => {
+    const stored = { fill: "#123456", hi: "#abcdef" };
+    const earlier = { ...santa, status: "finished" as const, challenge: { ...santa.challenge, tint: stored } };
+    const [stamp] = profileRuns([earlier], today, [signup]).current;
+    expect(stamp.tint).toEqual(stored);
   });
 });
 
@@ -142,7 +172,7 @@ describe("stampTilt", () => {
 // www#109: a Slots stamp opens the member's own years on the Challenge page.
 describe("stamp links", () => {
   it("opens a Slots Run in the Challenge page's panel, any other Run on its Challenge page", () => {
-    const { current } = profileRuns([run(1), slots], new Map(), today);
+    const { current } = profileRuns([run(1), slots], today);
     expect(current.find((s) => s.format === "slots")?.href).toBe("/challenges/2?run=u1#run");
     expect(current.find((s) => s.format === "pool")?.href).toBe("/challenges/1");
   });

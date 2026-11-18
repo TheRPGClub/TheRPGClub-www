@@ -81,6 +81,11 @@ describe("editionNumerals", () => {
     });
   });
 
+  it("counts the picks from the API's picked_count, for every member", () => {
+    const picking = edition({ phase: "picking", picked_count: 1 });
+    expect(editionNumerals(picking, "2026-12-08")[1]).toEqual({ value: 1, label: "Picked" });
+  });
+
   it("counts down to the reveal once picks are closed", () => {
     const closed = edition({ phase: "picking", picks_closed_at: "2026-12-15T05:00:00Z" });
     expect(editionNumerals(closed, "2026-12-20")[0]).toEqual({ value: 5, label: "Days to the reveal", hi: true });
@@ -133,6 +138,15 @@ describe("editionDoors", () => {
     ]);
   });
 
+  it("seals a door from the member's picked flag, without the picks themselves", () => {
+    const members = [member("1", "Night Owl", { picked: true }), member("2", "Dice Goblin", { picked: false })];
+    const { doors } = editionDoors(edition({ phase: "picking", members, picked_count: 1 }), "1", "2026-12-08");
+    expect(doors.map((d) => [d.state, d.caption, d.game])).toEqual([
+      ["picked", "Picked for", null],
+      ["waiting", "Waiting", null],
+    ]);
+  });
+
   it("seals every door once picks are closed", () => {
     const closed = edition({ phase: "picking", picks_closed_at: "2026-12-15T05:00:00Z" });
     expect(editionDoors(closed, "1", "2026-12-20").doors.every((d) => d.state === "picked")).toBe(true);
@@ -160,6 +174,12 @@ describe("editionDoors", () => {
       [null, "In Progress"],
       ["Random pick", null],
     ]);
+  });
+
+  it("reads a hidden random-pick flag (null) as no random pick", () => {
+    const assignments = [assignment(MEMBERS[0], { picked_randomly: null })];
+    const { doors } = editionDoors(edition({ phase: "revealed", assignments }), "1", "2027-01-10");
+    expect(doors[0].foot).toBeNull();
   });
 
   it("signs each door with its Santa when the Edition ends", () => {
@@ -203,17 +223,17 @@ describe("pickEdition", () => {
 
 describe("editionRefusal", () => {
   it("says how many games a member is short", () => {
-    expect(editionRefusal(422, { error: "backlog_too_small", minimum: 5, backlog_count: 3 })).toBe(
+    expect(editionRefusal({ status: 422, code: "backlog_too_small", body: { error: "backlog_too_small", minimum: 5, backlog_count: 3 } })).toBe(
       "You need at least 5 games in your backlog to sign up (you have 3).",
     );
   });
 
   it("shows the API's own words, else a sentence per code", () => {
-    expect(editionRefusal(409, { error: "signup_closed", message: "Sign-up closed on 1 December 2026." })).toBe(
+    expect(editionRefusal({ status: 409, code: "signup_closed", message: "Sign-up closed on 1 December 2026." })).toBe(
       "Sign-up closed on 1 December 2026.",
     );
-    expect(editionRefusal(409, { error: "picks_closed" })).toMatch(/Picks have closed/);
-    expect(editionRefusal(401, null)).toMatch(/Sign in again/);
-    expect(editionRefusal(500, null)).toMatch(/Try again/);
+    expect(editionRefusal({ status: 409, code: "picks_closed" })).toMatch(/Picks have closed/);
+    expect(editionRefusal({ status: 401 })).toMatch(/Sign in again/);
+    expect(editionRefusal({ status: 500 })).toMatch(/Try again/);
   });
 });

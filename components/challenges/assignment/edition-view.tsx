@@ -1,6 +1,7 @@
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
 import { editionDoors, editionNumerals } from "@/lib/challenges/edition";
-import { calendarStrip, editionRules } from "@/lib/challenges/edition-calendar";
+import { editionRules } from "@/lib/challenges/edition-calendar";
+import { editionClientProps } from "@/lib/challenges/edition-client";
 import type { EditionPage } from "@/lib/challenges/edition-page";
 import { tintStyle } from "@/lib/challenges/tint";
 import { NoticeSlip } from "@/components/issue/notice-slip";
@@ -38,6 +39,8 @@ export function EditionView({
       }
     : data.calendar;
   const { doors, yourSeat } = edition ? editionDoors(edition, data.viewerId, data.today) : { doors: [], yourSeat: false };
+  // What the client components get: never the picks themselves.
+  const client = edition ? editionClientProps({ ...data, edition }) : null;
   return (
     <div style={tintStyle(page.tint)} className="pb-12">
       <ChallengeBanner
@@ -53,21 +56,24 @@ export function EditionView({
           <p>{editionRules(calendar)}</p>
           {challenge.description && <p className="whitespace-pre-line">{challenge.description}</p>}
         </div>
-        {(tools || data.editions.length > 1) && (
+        {(tools || client?.switcher) && (
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             {tools}
-            {edition && data.editions.length > 1 && (
-              <EditionSwitcher challengeId={challenge.id} editions={data.editions} current={edition.id} />
-            )}
+            {client?.switcher && <EditionSwitcher {...client.switcher} />}
           </div>
         )}
       </section>
-      {edition ? (
+      {edition && client ? (
         <div className="mt-8">
-          <DecemberStrip tiles={calendarStrip(edition, data.today)} label={`Edition ${edition.year} calendar`} />
+          <DecemberStrip tiles={client.strip} label={`Edition ${edition.year} calendar`} />
           <div className="mt-2 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
             <AdventDoors doors={doors} yourSeat={yourSeat} label={`Members of Edition ${edition.year}`} />
-            <EditionPanel data={data} edition={edition} className="order-first lg:order-none" />
+            <EditionPanel
+              data={data}
+              edition={edition}
+              business={client.business}
+              className="order-first lg:order-none"
+            />
           </div>
         </div>
       ) : (
