@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { PoolDefinition } from "@/lib/challenges/form";
-import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame } from "@/lib/challenges/types";
+import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame, PoolProgressGame } from "@/lib/challenges/types";
 
 // Server-only reads for the Challenges pages (they read the session cookie).
 // Each answers null when the API can't be read, so a page can say so rather
@@ -84,6 +84,13 @@ export async function fetchPoolPreview(definition: PoolDefinition, per: number =
         total: paginationOf(body.meta, body.data.length).total,
       }
     : null;
+}
+
+// A Pool Challenge's games with who Cleared each and who has it In
+// Progress (the Pool view), oldest release first, up to 500.
+export async function fetchPoolProgress(id: number): Promise<PoolProgressGame[] | null> {
+  const body = await readJson<ApiCollection<PoolProgressGame>>(`/api/v1/challenges/${id}/pool_progress?per=${MAX_PER}`);
+  return body?.data ?? null;
 }
 
 // A saved Challenge's Pool as a definition the preview takes.

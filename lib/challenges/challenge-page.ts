@@ -2,6 +2,7 @@ import {
   fetchChallenge,
   fetchChallengeRuns,
   fetchPoolPreview,
+  fetchPoolProgress,
   savedPoolDefinition,
   type PoolPreview,
 } from "@/lib/api/challenges";
@@ -13,11 +14,16 @@ import { bannerArt, challengeFacts, scheduleChip, type Fact } from "@/lib/challe
 import { runActionFor, yourRunsOf, type RunAction } from "@/lib/challenges/run-action";
 import { coverMap, runCardView, seasonRuns, sortRuns, type RunCardView } from "@/lib/challenges/runs";
 import { challengeTint } from "@/lib/challenges/tint";
+import { poolWall, type WallTile } from "@/lib/challenges/pool-wall";
 import type { Challenge, ChallengeRun, ChallengeTint } from "@/lib/challenges/types";
 
 // A Challenge page's data (server only): the Challenge, its Runs of the
-// Season shown, and its Pool's games (for the covers on Run cards and the
-// Pool view).
+// Season shown, the first of its Pool's games (the banner's art, the Pool's
+// size, covers for an older API's Run cards) and, for The Pool view, the
+// Pool's progress (who Cleared or plays each game) in one read.
+
+// Enough Pool games to find one with key art for the banner.
+const PREVIEW_GAMES = 24;
 
 export interface ChallengePage {
   challenge: Challenge;
@@ -31,6 +37,9 @@ export interface ChallengePage {
   runCount: number;
   finished: number;
   pool: PoolPreview | null;
+  // The Pool view's cover wall, from the Pool's progress: read only for
+  // that view (null otherwise, or when it couldn't be read).
+  poolWall: WallTile[] | null;
   viewerHasRun: boolean;
   // What the viewer can do about their Run (start, abandon, or why not).
   runAction: RunAction;
@@ -47,15 +56,23 @@ export interface ChallengePage {
 
 export type ChallengePageRead = { ok: true; page: ChallengePage } | { ok: false; status: number };
 
-export async function loadChallengePage(id: number, viewerId: string): Promise<ChallengePageRead> {
+// The games the Host added to the Pool by hand (tagged "Added").
+const addedGames = (challenge: Challenge) => new Set((challenge.pool?.included_games ?? []).map((g) => g.game_id));
+
+export async function loadChallengePage(
+  id: number,
+  viewerId: string,
+  { poolView = false }: { poolView?: boolean } = {},
+): Promise<ChallengePageRead> {
   const read = await fetchChallenge(id);
   if (!read.ok) return read;
   const challenge = read.data;
   const definition = savedPoolDefinition(challenge);
   const slots = challenge.challenge_format === "slots";
-  const [runs, pool, birth] = await Promise.all([
+  const [runs, pool, poolProgress, birth] = await Promise.all([
     fetchChallengeRuns(id),
-    definition ? fetchPoolPreview(definition) : Promise.resolve(null),
+    definition ? fetchPoolPreview(definition, PREVIEW_GAMES) : Promise.resolve(null),
+    definition && poolView ? fetchPoolProgress(id) : Promise.resolve(null),
     slots && challenge.slots?.first_year === "birth_year" ? fetchBirthDate(viewerId) : Promise.resolve(null),
   ]);
   const today = clubToday();
@@ -75,6 +92,7 @@ export async function loadChallengePage(id: number, viewerId: string): Promise<C
       runCount: shown?.length ?? 0,
       finished: shown?.filter((run) => run.status === "finished").length ?? 0,
       pool,
+      poolWall: poolProgress ? poolWall(poolProgress, viewerId, addedGames(challenge)) : null,
       viewerHasRun: shown?.some((run) => run.user.user_id === viewerId) ?? false,
       // Without the Runs there is no knowing; the API still refuses a second.
       runAction: runActionFor(challenge, yourRunsOf(runs ?? [], id, viewerId), today),

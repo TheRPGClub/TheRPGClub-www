@@ -156,6 +156,19 @@ export interface ChallengeWarning {
 
 export type PoolGame = GameSummary;
 
+// A Pool game with who played it (`GET /challenges/:id/pool_progress`,
+// swagger `ChallengePoolGameProgress`): the Runs of the Season shown (or of
+// every Run while Always Open), each member once per list.
+export interface PoolProgressGame {
+  game_id: number;
+  title: string;
+  initial_release_date?: string | null;
+  cover_url?: string | null;
+  // Earliest Clear first; a member here isn't also In Progress for it.
+  cleared_by: (ChallengeMember & { run_id: number; cleared_on?: string | null })[];
+  in_progress: (ChallengeMember & { run_id: number })[];
+}
+
 // A member's Secret Santa sign-up whose Edition is still in sign-up (no Run
 // until the draw), from `meta.signups` on their Runs list.
 export interface ChallengeOpenSignup {
