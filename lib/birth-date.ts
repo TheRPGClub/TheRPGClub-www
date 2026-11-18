@@ -220,3 +220,33 @@ export function birthdayShareSwitch(doc: BirthDate): BirthdayShareSwitch {
     line: "Members see the day and month on your profile and in Upcoming Birthdays, and the bot greets you with a Birthday Post on the day. Never your year or age. Switch it whenever you like.",
   };
 }
+
+export interface BirthDateFormControls {
+  canSave: boolean;
+  canRemove: boolean;
+  // The "Share my Birthday" switch waits ("Saving") and ignores flips.
+  switchBusy: boolean;
+}
+
+// What /settings allows while a save is out. The date and the share switch
+// never save at once: answering out of order, one would show a document the
+// other has since changed (a share landing after a Remove shows the date
+// still set), and a refused share would roll back to a stale value.
+export function birthDateFormControls(s: {
+  // The fields differ from the stored Birth Date.
+  changed: boolean;
+  // Day and Month are both picked.
+  picked: boolean;
+  // Both changes this month are used.
+  locked: boolean;
+  hasDate: boolean;
+  savingDate: boolean;
+  savingShare: boolean;
+}): BirthDateFormControls {
+  const busy = s.savingDate || s.savingShare;
+  return {
+    canSave: s.changed && s.picked && !s.locked && !busy,
+    canRemove: s.hasDate && !s.locked && !busy,
+    switchBusy: busy,
+  };
+}

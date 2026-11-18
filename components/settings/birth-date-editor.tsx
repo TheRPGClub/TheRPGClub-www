@@ -77,7 +77,7 @@ export function BirthDateEditor({
           {f.saved}
         </p>
       </form>
-      <ShareBirthdayRow state={f.shareSwitch} pending={f.sharePending} error={f.shareError} onChange={f.share} />
+      <ShareBirthdayRow state={f.shareSwitch} pending={f.switchBusy} error={f.shareError} onChange={f.share} />
     </div>
   );
 }

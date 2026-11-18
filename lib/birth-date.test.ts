@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   birthDateFields,
+  birthDateFormControls,
   birthDateFromFields,
   birthDateLimit,
   birthDateRefusal,
@@ -285,5 +286,40 @@ describe("birthdayShareSwitch", () => {
   it("keeps working when the Birth Date is locked at the limit", () => {
     const locked = doc({ birthday_shared: true, changes_left_this_month: 0, next_change_on: "2026-12-01" });
     expect(birthdayShareSwitch(locked)).toEqual({ checked: true, unavailable: false, line: SHARE_LINE });
+  });
+});
+
+describe("birthDateFormControls", () => {
+  const idle = { changed: true, picked: true, locked: false, hasDate: true, savingDate: false, savingShare: false };
+
+  it("allows Save and Remove when nothing is saving", () => {
+    expect(birthDateFormControls(idle)).toEqual({ canSave: true, canRemove: true, switchBusy: false });
+  });
+
+  it("holds Save and Remove while the share switch saves, so the answers can't cross", () => {
+    expect(birthDateFormControls({ ...idle, savingShare: true })).toEqual({
+      canSave: false,
+      canRemove: false,
+      switchBusy: true,
+    });
+  });
+
+  it("holds the switch while the date saves", () => {
+    expect(birthDateFormControls({ ...idle, savingDate: true })).toEqual({
+      canSave: false,
+      canRemove: false,
+      switchBusy: true,
+    });
+  });
+
+  it("needs a changed, picked date to save and a stored one to remove, and not at the limit", () => {
+    expect(birthDateFormControls({ ...idle, changed: false }).canSave).toBe(false);
+    expect(birthDateFormControls({ ...idle, picked: false }).canSave).toBe(false);
+    expect(birthDateFormControls({ ...idle, hasDate: false }).canRemove).toBe(false);
+    expect(birthDateFormControls({ ...idle, locked: true })).toEqual({
+      canSave: false,
+      canRemove: false,
+      switchBusy: false,
+    });
   });
 });

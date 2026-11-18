@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { saveBirthDateAction, shareBirthdayAction } from "@/app/actions/birth-date";
 import {
   birthDateFields,
+  birthDateFormControls,
   birthDateFromFields,
   birthDateLimit,
   birthdayShareSwitch,
@@ -42,6 +43,14 @@ export function useBirthDateForm({
   const current = birthDateFields(doc.birth_date);
   const changed =
     fields.day !== current.day || fields.month !== current.month || fields.year.trim() !== current.year;
+  const controls = birthDateFormControls({
+    changed,
+    picked: fields.day !== "" && fields.month !== "",
+    locked: limit.locked,
+    hasDate: doc.birth_date !== null,
+    savingDate: pending,
+    savingShare: sharePending,
+  });
 
   function send(birthDate: string | null) {
     setError(null);
@@ -109,13 +118,15 @@ export function useBirthDateForm({
     pending,
     limit,
     // Save is off until the day and month are picked and differ from the
-    // saved Birth Date, and while the member is at the limit.
-    canSave: changed && fields.day !== "" && fields.month !== "" && !limit.locked && !pending,
-    canRemove: doc.birth_date !== null && !limit.locked && !pending,
+    // saved Birth Date, while the member is at the limit, and while either
+    // the date or the switch is saving.
+    canSave: controls.canSave,
+    canRemove: controls.canRemove,
     save,
     remove: () => send(null),
     shareSwitch: birthdayShareSwitch(doc),
-    sharePending,
+    // The switch shows "Saving" while either save is out.
+    switchBusy: controls.switchBusy,
     shareError,
     share,
   };
