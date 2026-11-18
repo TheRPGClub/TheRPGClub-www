@@ -576,6 +576,35 @@ export interface Release {
   region_name: string;
 }
 
+// One Release inside an Upcoming Release: a platform and a region.
+export interface UpcomingReleaseRelease {
+  release_id: number;
+  platform_id: number;
+  platform_name: string;
+  platform_abbreviation: string | null;
+  region_id: number;
+  region_code: string;
+  region_name: string;
+  format: string | null;
+  source: "igdb" | "manual";
+}
+
+// One entry of `GET /upcoming_releases` (the glossary's Upcoming Release):
+// a game with every Release it has on the same date at the same Date
+// Precision. `date` is the first day of its period, null when TBA; `section`
+// is the heading the API lists it under ("July 2027", "Q3 2027", "2027",
+// "TBA"). `first_released_on` is set only when an earlier Release's whole
+// period has ended, with its own Date Precision beside it.
+export interface UpcomingRelease {
+  game: { game_id: number; title: string; cover_url: string | null };
+  date: string | null;
+  date_precision: DatePrecision;
+  section: string;
+  first_released_on: string | null;
+  first_released_precision: Exclude<DatePrecision, "tba"> | null;
+  releases: UpcomingReleaseRelease[];
+}
+
 // `meta` of `POST /games/:id/refresh-releases`: how many releases the refresh
 // added (never negative) and the new total.
 export interface ReleaseRefreshMeta {
