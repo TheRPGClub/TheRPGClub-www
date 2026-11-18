@@ -7,6 +7,7 @@ import {
   type PoolPreview,
 } from "@/lib/api/challenges";
 import { fetchBirthDate } from "@/lib/api/birth-date";
+import { birthYearOf } from "@/lib/birth-date";
 import { clubToday, daysLeft, type IsoDay } from "@/lib/challenges/dates";
 import { slotSquares, type SlotSquares } from "@/lib/challenges/board";
 import { yourSlotsRun } from "@/lib/challenges/slots";
@@ -99,7 +100,7 @@ export async function loadChallengePage(
       slotRuns: slots ? shown : null,
       slotPicture: slots ? slotSquares(challenge, yourSlotsRun(shown ?? [], viewerId) ?? undefined, today, 40) : null,
       caughtUp: shown?.filter((run) => run.progress.caught_up).length ?? 0,
-      birthYear: birth?.birth_date ? Number(birth.birth_date.slice(0, 4)) : null,
+      birthYear: birthYearOf(birth?.birth_date ?? null),
     },
   };
 }

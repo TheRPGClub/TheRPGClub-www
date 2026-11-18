@@ -1,32 +1,56 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveBirthDateAction } from "@/app/actions/birth-date";
-import { birthDateLimit, formatBirthDate, type BirthDate } from "@/lib/birth-date";
+import { saveBirthDateAction, shareBirthdayAction } from "@/app/actions/birth-date";
+import {
+  birthDateFields,
+  birthDateFormControls,
+  birthDateFromFields,
+  birthDateLimit,
+  birthdayShareSwitch,
+  formatBirthDate,
+  type BirthDate,
+  type BirthDateFields,
+} from "@/lib/birth-date";
 
-// The Birth Date field's state: the date being typed, the API's document
-// (which carries the changes left this month), and the save. Each save
-// answers with the whole document, so the limit line follows it. A refusal
-// at the limit locks the field and shows the API's words, which name the
-// date it opens again. `userId` is the member staff are setting it for;
-// without it the field is the signed-in member's own.
+// The Birth Date form's state: the Day, Month and optional Year being
+// picked, the API's document (which carries the changes left this month and
+// whether the Birthday is shared), the save, and the "Share my Birthday"
+// switch. Each save answers with the whole document, so the limit line and
+// the switch follow it. A refusal at the limit locks the date and shows the
+// API's words, which name the date it opens again; the switch never locks.
+// Always the signed-in member's own (staff set others' with
+// useMemberBirthDate).
 export function useBirthDateForm({
   initial,
   staff,
-  userId,
+  today,
 }: {
   initial: BirthDate;
   staff: boolean;
-  userId?: string;
+  // The club's date (YYYY-MM-DD): the latest a dated Birth Date may be.
+  today: string;
 }) {
   const [doc, setDoc] = useState(initial);
-  const [value, setValue] = useState(initial.birth_date ?? "");
+  const [fields, setFields] = useState(() => birthDateFields(initial.birth_date));
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [sharePending, startSharing] = useTransition();
 
   const limit = birthDateLimit(doc, staff);
-  const changed = value !== (doc.birth_date ?? "");
+  const current = birthDateFields(doc.birth_date);
+  const changed =
+    fields.day !== current.day || fields.month !== current.month || fields.year.trim() !== current.year;
+  const controls = birthDateFormControls({
+    changed,
+    picked: fields.day !== "" && fields.month !== "",
+    locked: limit.locked,
+    hasDate: doc.birth_date !== null,
+    savingDate: pending,
+    savingShare: sharePending,
+  });
 
   function send(birthDate: string | null) {
     setError(null);
@@ -34,13 +58,13 @@ export function useBirthDateForm({
     startTransition(async () => {
       let result: Awaited<ReturnType<typeof saveBirthDateAction>>;
       try {
-        result = await saveBirthDateAction({ userId, birthDate });
+        result = await saveBirthDateAction({ birthDate });
       } catch {
         result = { ok: false, error: "Couldn't save the Birth Date. Try again." };
       }
       if (result.ok) {
         setDoc(result.data);
-        setValue(result.data.birth_date ?? "");
+        setFields(birthDateFields(result.data.birth_date));
         setSaved(result.data.birth_date ? `Saved: ${formatBirthDate(result.data.birth_date)}.` : "Removed.");
         return;
       }
@@ -50,21 +74,60 @@ export function useBirthDateForm({
     });
   }
 
+  function save() {
+    const parsed = birthDateFromFields(fields, today);
+    if (!parsed.ok) {
+      setSaved(null);
+      setError(parsed.error);
+      return;
+    }
+    send(parsed.value);
+  }
+
+  // The switch moves at once and springs back with the reason if the API
+  // refuses. Sharing is the member's own: it isn't counted toward the limit.
+  function share(next: boolean) {
+    const before = doc.birthday_shared;
+    setShareError(null);
+    setDoc((d) => ({ ...d, birthday_shared: next }));
+    startSharing(async () => {
+      let result: Awaited<ReturnType<typeof shareBirthdayAction>>;
+      try {
+        result = await shareBirthdayAction(next);
+      } catch {
+        result = { ok: false, error: "Couldn't save that switch. Try again." };
+      }
+      if (result.ok) {
+        setDoc(result.data);
+        return;
+      }
+      setDoc((d) => ({ ...d, birthday_shared: before }));
+      setShareError(result.error);
+    });
+  }
+
   return {
     doc,
-    value,
-    setValue: (next: string) => {
-      setValue(next);
+    fields,
+    setField: (field: keyof BirthDateFields, value: string) => {
+      setFields((f) => ({ ...f, [field]: value }));
       setSaved(null);
     },
     error,
     saved,
     pending,
     limit,
-    // Save is off while nothing changed or the member is at the limit.
-    canSave: changed && value !== "" && !limit.locked && !pending,
-    canRemove: doc.birth_date !== null && !limit.locked && !pending,
-    save: () => send(value),
+    // Save is off until the day and month are picked and differ from the
+    // saved Birth Date, while the member is at the limit, and while either
+    // the date or the switch is saving.
+    canSave: controls.canSave,
+    canRemove: controls.canRemove,
+    save,
     remove: () => send(null),
+    shareSwitch: birthdayShareSwitch(doc),
+    // The switch shows "Saving" while either save is out.
+    switchBusy: controls.switchBusy,
+    shareError,
+    share,
   };
 }

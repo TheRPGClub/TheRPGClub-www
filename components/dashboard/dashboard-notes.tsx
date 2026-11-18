@@ -22,14 +22,19 @@ export function NoRound() {
 }
 
 // Voting & GOTM is hidden from this viewer: nothing to put on the cover.
-export function NoVoting() {
+// Upcoming Birthdays belong to no Feature, so their line (`birthdays`, or
+// nothing) still sits under the note.
+export function NoVoting({ birthdays }: { birthdays?: React.ReactNode }) {
   return (
-    <section className={NOTE}>
-      <h2 className="font-headline text-4xl">Nothing on the cover</h2>
-      <p className="max-w-[48ch] text-dim-foreground">
-        Game of the Month is taking a break. The rounds and their winners will
-        be back here when it returns.
-      </p>
-    </section>
+    <div className="space-y-10">
+      <section className={NOTE}>
+        <h2 className="font-headline text-4xl">Nothing on the cover</h2>
+        <p className="max-w-[48ch] text-dim-foreground">
+          Game of the Month is taking a break. The rounds and their winners will
+          be back here when it returns.
+        </p>
+      </section>
+      {birthdays}
+    </div>
   );
 }

@@ -1,14 +1,17 @@
 import type { Membership, UserSocial } from "@/lib/api/types";
+import type { ProfileBirthday } from "@/lib/birthday";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import { BannerOwnerActions } from "@/components/issue/member-banner-actions";
+import { BannerByline, BirthdayTape } from "@/components/issue/member-banner-byline";
 import { joinedLabel, roleList } from "@/components/issue/member-banner-labels";
 import { BannerRoles } from "@/components/issue/member-banner-roles";
 import { BannerSocials } from "@/components/issue/member-banner-socials";
 import { cn } from "@/lib/utils";
 
 // The member feature at the top of a profile: the name in monumental caps
-// over key art, the handle and join date, Discord roles as chips, socials,
-// and the owner's own actions top-right. The art is the member's own pick
+// over key art, the handle, join date and shared Birthday, Discord roles as
+// chips, socials, and the owner's own actions top-right. On the Birthday a
+// paper day tape is pinned to the banner's top-left corner. The art is the member's own pick
 // (their #1 favorite, else what they're playing); without one the banner is
 // plain ink.
 
@@ -20,6 +23,7 @@ export function MemberBanner({
   membership,
   socials,
   art,
+  birthday = null,
   owner,
 }: {
   userId: string;
@@ -29,12 +33,15 @@ export function MemberBanner({
   membership: Membership | undefined | null;
   socials: UserSocial[];
   art: string | null;
+  // The member's shared Birthday; null when they don't share it.
+  birthday?: ProfileBirthday | null;
   // The viewer's own profile: edit and imports.
   // importsHref: null when the viewer has nothing to import (no import
   // kind's Feature is shown).
   owner?: { editHref: string; importsHref: string | null } | null;
 }) {
   const roles = roleList(membership);
+  const tape = birthday?.today ? birthday.label : null;
   const joined = joinedLabel(joinedAt);
   const handle =
     username && username !== displayName ? `@${username}` : null;
@@ -76,7 +83,8 @@ export function MemberBanner({
       <div
         className={cn(
           "grid items-end gap-4 px-4.5 pb-5 sm:grid-cols-[auto_1fr] sm:gap-7 sm:px-8.5 sm:pb-7.5",
-          owner ? "pt-16 sm:pt-9" : "pt-6 sm:pt-9",
+          owner ? (tape ? "pt-[6.75rem]" : "pt-16") : tape ? "pt-16" : "pt-6",
+          tape ? "sm:pt-20" : "sm:pt-9",
           "sm:min-h-[21rem]",
         )}
       >
@@ -95,21 +103,13 @@ export function MemberBanner({
           >
             {displayName}
           </h1>
-          {(handle || joined) && (
-            <p className="font-label mt-3 text-[1.05rem] font-bold tracking-[0.06em] text-dim-foreground">
-              {handle}
-              {handle && joined && (
-                <span aria-hidden className="mx-2 text-faint-foreground">
-                  ·
-                </span>
-              )}
-              {joined && <>In the club since {joined}</>}
-            </p>
-          )}
+          <BannerByline handle={handle} joined={joined} birthday={birthday} />
           {roles.length > 0 && <BannerRoles roles={roles} />}
           {socials.length > 0 && <BannerSocials socials={socials} />}
         </div>
       </div>
+
+      {tape && <BirthdayTape label={tape} owner={!!owner} />}
     </section>
   );
 }

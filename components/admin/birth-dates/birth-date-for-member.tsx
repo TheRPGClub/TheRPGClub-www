@@ -1,20 +1,21 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import { readMemberBirthDateAction } from "@/app/actions/birth-date";
+import { readMemberBirthDateAction } from "@/app/actions/member-birth-date";
 import type { User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
-import { memberChangesLine, type BirthDate } from "@/lib/birth-date";
+import type { BirthDate } from "@/lib/birth-date";
 import { MemberPicker } from "@/components/admin/member-picker";
-import { BirthDateEditor } from "@/components/settings/birth-date-editor";
+import { MemberBirthDateEditor } from "@/components/admin/birth-dates/member-birth-date-editor";
 
 const LABEL = "font-label block text-[0.82rem] tracking-[0.08em] text-faint-foreground";
 
 type Loaded = { member: User; doc: BirthDate } | { member: User; error: string };
 
 // Staff set a member's Birth Date: pick the member (the desk's member
-// picker), their Birth Date is read, then the same field members have on
-// /settings, never limited. "Change" clears the pick for the next member.
+// picker), their Birth Date is read, then its Day, Month and optional Year,
+// never limited, and whether they share their Birthday (staff can switch it
+// off, never on). "Change" clears the pick for the next member.
 export function BirthDateForMember({ today }: { today: string }) {
   const memberLabelId = useId();
   const [member, setMember] = useState<User | null>(null);
@@ -53,14 +54,12 @@ export function BirthDateForMember({ today }: { today: string }) {
         </p>
       )}
       {current && "doc" in current && (
-        <BirthDateEditor
+        <MemberBirthDateEditor
           key={current.member.user_id}
           initial={current.doc}
-          staff
-          today={today}
           userId={current.member.user_id}
-          label={`${memberName(current.member)}'s Birth Date`}
-          note={memberChangesLine}
+          name={memberName(current.member)}
+          today={today}
         />
       )}
     </div>

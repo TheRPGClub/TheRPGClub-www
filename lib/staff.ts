@@ -263,7 +263,8 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     label: "Set a Birth Date",
     tier: "moderator",
     area: "mod",
-    blurb: "Set or remove a member's Birth Date. Staff changes don't count toward their two a month.",
+    blurb:
+      "Set or remove a member's Birth Date, with or without the year, or stop them sharing their Birthday. Staff changes don't count toward their two a month.",
     hint: "Any time",
   },
   {

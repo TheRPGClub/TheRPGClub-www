@@ -1,14 +1,13 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { BIRTHDAYS_TAG } from "@/lib/api/birthdays";
 import { birthDateRefusal, birthDateRequest, type BirthDate } from "@/lib/birth-date";
 import { clubToday } from "@/lib/challenges/dates";
 import { getSession } from "@/lib/session";
-import { isModeratorOrAbove } from "@/lib/staff";
 
 const UNREACHABLE = "Couldn't reach the club's server. Nothing was saved; try again.";
-const NOT_STAFF = "Only staff can set another member's Birth Date.";
 
 export type BirthDateResult =
   | { ok: true; data: BirthDate }
@@ -22,20 +21,13 @@ async function readJson(res: Response): Promise<unknown> {
   }
 }
 
-// Set or remove (`birthDate: null`) a Birth Date. Without `userId` it is the
-// signed-in member's own, under the two-a-month limit; with one it is staff
-// setting another member's, which the API never counts. The API decides
-// both; the staff check here only words the refusal before the round trip.
-export async function saveBirthDateAction(input: {
-  userId?: string;
-  birthDate: string | null;
-}): Promise<BirthDateResult> {
+// Set or remove (`birthDate: null`) the signed-in member's own Birth Date,
+// under the two-a-month limit, which the API decides. Staff set another
+// member's from the desk (app/actions/member-birth-date.ts).
+export async function saveBirthDateAction(input: { birthDate: string | null }): Promise<BirthDateResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "Sign in again to change a Birth Date." };
-  const own = session.principal.discord_id;
-  const userId = input.userId ?? own;
-  if (!/^\d+$/.test(userId)) return { ok: false, error: "Pick a member first." };
-  if (userId !== own && !isModeratorOrAbove(session.membership)) return { ok: false, error: NOT_STAFF };
+  const userId = session.principal.discord_id;
 
   const request = birthDateRequest(input.birthDate, clubToday());
   if (!request.ok) return { ok: false, error: request.error };
@@ -51,27 +43,38 @@ export async function saveBirthDateAction(input: {
   }
   if (!res.ok) return { ok: false, ...birthDateRefusal(res.status, await readJson(res)) };
   const body = (await res.json()) as { data: BirthDate };
-  // A member's own date shows only on their /settings: refresh their router
-  // so the page re-reads it. Staff read the member's afresh on each pick.
-  if (userId === own) refresh();
+  // A member's own date shows on their /settings: refresh their router so
+  // the page re-reads it. A changed or removed date also moves (or drops) a
+  // shared Birthday in everyone's Upcoming Birthdays.
+  updateTag(BIRTHDAYS_TAG);
+  refresh();
   return { ok: true, data: body.data };
 }
 
-// Staff read a member's Birth Date on the desk once they pick the member.
-export async function readMemberBirthDateAction(userId: string): Promise<BirthDateResult> {
+// Share the signed-in member's Birthday (the day and month of their Birth
+// Date) or stop sharing it. Only the member can turn it on, and only with a
+// Birth Date: the API refuses sharing without one in its own words. Switching
+// never counts toward the twice-a-month limit.
+export async function shareBirthdayAction(shared: boolean): Promise<BirthDateResult> {
+  // A server action is a public endpoint: the type isn't checked at runtime.
+  if (typeof shared !== "boolean") return { ok: false, error: "Couldn't save that switch. Try again." };
   const session = await getSession();
-  if (!session) return { ok: false, error: "Sign in again to see a Birth Date." };
-  if (!isModeratorOrAbove(session.membership)) return { ok: false, error: NOT_STAFF };
-  if (!/^\d+$/.test(userId)) return { ok: false, error: "Pick a member first." };
+  if (!session) return { ok: false, error: "Sign in again to share your Birthday." };
+  const userId = session.principal.discord_id;
 
   let res: Response;
   try {
-    res = await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/birth_date`, { cache: "no-store" });
+    res = await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/birth_date`, {
+      method: "PUT",
+      body: JSON.stringify({ data: { birthday_shared: shared } }),
+    });
   } catch {
-    return { ok: false, error: "Couldn't reach the club's server. Pick the member again to retry." };
+    return { ok: false, error: UNREACHABLE };
   }
-  if (res.status === 403) return { ok: false, error: NOT_STAFF };
-  if (!res.ok) return { ok: false, error: `Couldn't read their Birth Date (HTTP ${res.status}).` };
+  if (res.status === 403) return { ok: false, error: "Only you can share your Birthday." };
+  if (!res.ok) return { ok: false, error: birthDateRefusal(res.status, await readJson(res)).error };
   const body = (await res.json()) as { data: BirthDate };
+  updateTag(BIRTHDAYS_TAG);
+  refresh();
   return { ok: true, data: body.data };
 }

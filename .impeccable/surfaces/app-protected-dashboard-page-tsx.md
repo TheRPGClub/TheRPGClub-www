@@ -25,6 +25,7 @@ FIRST VIEWPORT: Dashboard. Sidebar on the left; top bar with the current route a
 - 0 NR-GOTM: the right column is the full-height yellow panel.
 - 0 GOTM: NR-GOTM is promoted to a violet cover.
 - Back-issues strip below.
+- Upcoming Birthdays (Birthdays spec api#396, pick C, www#120): one ruled contents line below the back-issues strip, Previous rounds (the mock had it above; the owner moved it below), or under the "Nothing on the cover" note when Voting & GOTM is hidden; absent when nobody's Birthday falls in the next 30 days. See DESIGN.md, Birthdays.
 
 FORM: Monthly Issue (Impeccable's pick, original single-cover hierarchy, multi-winner rules from the combos round); seed key 9060494c. Signature move: the winner starburst plus the monumental round numeral. Motion: starburst stamps in once on load, art scales gently on hover.
 
