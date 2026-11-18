@@ -7,8 +7,12 @@
 
 export interface BirthDate {
   user_id: string;
-  // YYYY-MM-DD; null until the member enters it.
+  // YYYY-MM-DD, or MM-DD when the member gave only the day and month
+  // (api#398); null until the member enters it.
   birth_date: string | null;
+  // Whether the member shares their Birthday, the day and month (api#399).
+  // Off until they turn it on; removing the Birth Date turns it off.
+  birthday_shared: boolean;
   // 0 to 2: how many more times the member may set or change it this
   // calendar month (US Eastern). Staff changes don't count.
   changes_left_this_month: number;
@@ -32,20 +36,28 @@ function isCalendarDate(value: string): boolean {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-// The PUT body for a date field's value, or why it can't be sent. `null`
-// removes the Birth Date. `today` is the club's date (YYYY-MM-DD), so the
-// field refuses what the API would before the round trip.
+// A real month and day in MM-DD, checked against leap year 2000 as the API
+// does, so 29 February passes and 30 February doesn't.
+function isMonthDay(value: string): boolean {
+  return /^\d{2}-\d{2}$/.test(value) && isCalendarDate(`2000-${value}`);
+}
+
+// The PUT body for a Birth Date ("1990-05-04", or "05-04" without the year),
+// or why it can't be sent. `null` removes the Birth Date. `today` is the
+// club's date (YYYY-MM-DD), so the form refuses what the API would before
+// the round trip.
 export function birthDateRequest(value: string | null, today: string): BirthDateRequest {
   if (value === null) return { ok: true, body: { data: { birth_date: null } } };
   const date = value.trim();
   if (date === "") return { ok: false, error: "Enter your Birth Date first." };
+  if (isMonthDay(date)) return { ok: true, body: { data: { birth_date: date } } };
   if (!isCalendarDate(date)) return { ok: false, error: "That isn't a date. Pick one from the calendar." };
   if (date > today) return { ok: false, error: "A Birth Date can't be after today." };
   if (date < FIRST_DAY) return { ok: false, error: "A Birth Date must be in 1900 or later." };
   return { ok: true, body: { data: { birth_date: date } } };
 }
 
-const MONTHS = [
+export const MONTHS = [
   "January",
   "February",
   "March",
@@ -61,10 +73,69 @@ const MONTHS = [
 ];
 
 // "4 May 1990": a date-only value written the way the API's refusal writes
-// one. Read from the digits, so no time zone can move it a day.
+// one, or "4 May" for a year-less Birth Date ("05-04"). Read from the
+// digits, so no time zone can move it a day.
 export function formatBirthDate(date: string): string {
-  const [year, month, day] = date.split("-").map(Number);
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  const parts = date.split("-");
+  const [month, day] = parts.slice(-2).map(Number);
+  const dayMonth = `${day} ${MONTHS[month - 1]}`;
+  return parts.length === 3 ? `${dayMonth} ${parts[0]}` : dayMonth;
+}
+
+// The birth year a birth-year Run starts at: none for a year-less Birth
+// Date, which Challenges count as having no birth year.
+export function birthYearOf(date: string | null): number | null {
+  const match = date?.match(/^(\d{4})-/);
+  return match ? Number(match[1]) : null;
+}
+
+// The Birth Date form's three fields: the Day and Month selects ("1" to
+// "31", "1" to "12", "" until picked) and the optional Year, as typed.
+export interface BirthDateFields {
+  day: string;
+  month: string;
+  year: string;
+}
+
+function ordinal(n: number): string {
+  const tens = n % 100;
+  if (tens >= 11 && tens <= 13) return `${n}th`;
+  return `${n}${({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th"}`;
+}
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// The form's fields as a Birth Date ("05-04", or "1990-05-04" with a year),
+// or why they can't be one. The day and month are required; an empty year
+// leaves it out. A dated one keeps the API's range (1900 to `today`).
+export function birthDateFromFields(
+  fields: BirthDateFields,
+  today: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const day = Number(fields.day);
+  const month = Number(fields.month);
+  if (!fields.day || !fields.month || !(month >= 1 && month <= 12) || !(day >= 1 && day <= 31)) {
+    return { ok: false, error: "Pick the day and the month." };
+  }
+  const year = fields.year.trim();
+  if (year !== "" && !/^\d{4}$/.test(year)) {
+    return { ok: false, error: "Enter the year as four digits, or leave it empty." };
+  }
+  const value = `${year ? `${year}-` : ""}${pad(month)}-${pad(day)}`;
+  const valid = year ? isCalendarDate(value) : isMonthDay(value);
+  if (!valid) {
+    return { ok: false, error: `${MONTHS[month - 1]}${year ? ` ${year}` : ""} has no ${ordinal(day)} day.` };
+  }
+  const request = birthDateRequest(value, today);
+  return request.ok ? { ok: true, value } : request;
+}
+
+// A served Birth Date ("1990-05-04", "05-04" or none) as the form's fields.
+export function birthDateFields(value: string | null): BirthDateFields {
+  if (!value) return { day: "", month: "", year: "" };
+  const parts = value.split("-");
+  const [month, day] = parts.slice(-2).map(Number);
+  return { day: String(day), month: String(month), year: parts.length === 3 ? parts[0] : "" };
 }
 
 export interface BirthDateRefusal {
@@ -78,7 +149,10 @@ export interface BirthDateRefusal {
 // too. `body` is the parsed JSON body, or null when there was none.
 export function birthDateRefusal(status: number, body: unknown): BirthDateRefusal {
   const fields = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
-  const text = typeof fields.error === "string" && fields.error ? fields.error : null;
+  // `birth_date_required` (sharing without a Birth Date) carries its words in
+  // `message`; the other refusals' `error` is the prose.
+  const message = typeof fields.message === "string" && fields.message ? fields.message : null;
+  const text = message ?? (typeof fields.error === "string" && fields.error ? fields.error : null);
   const nextChangeOn = typeof fields.next_change_on === "string" ? fields.next_change_on : null;
 
   if (status === 401) return { error: "Sign in again to change a Birth Date.", nextChangeOn: null };
@@ -123,4 +197,26 @@ export function memberChangesLine(doc: BirthDate): string {
   }
   const until = doc.next_change_on ? `, until ${formatBirthDate(doc.next_change_on)}` : "";
   return `${none}They've used both of their own changes this month${until}.`;
+}
+
+export interface BirthdayShareSwitch {
+  checked: boolean;
+  // No Birth Date: the switch stays in place but does nothing, and `line`
+  // says what to do first.
+  unavailable: boolean;
+  line: string;
+}
+
+// The "Share my Birthday" switch on /settings. It needs a Birth Date (the API
+// refuses sharing without one) but not its year, and it isn't held by the
+// twice-a-month limit: switching sharing never counts toward it.
+export function birthdayShareSwitch(doc: BirthDate): BirthdayShareSwitch {
+  if (doc.birth_date === null) {
+    return { checked: false, unavailable: true, line: "Add your Birth Date's day and month first." };
+  }
+  return {
+    checked: doc.birthday_shared,
+    unavailable: false,
+    line: "Members see the day and month on your profile and in Upcoming Birthdays, and the bot greets you with a Birthday Post on the day. Never your year or age. Switch it whenever you like.",
+  };
 }
