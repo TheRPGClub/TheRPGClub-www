@@ -4,7 +4,6 @@ import {
   birthDateLimit,
   birthDateRefusal,
   birthDateRequest,
-  clubToday,
   formatBirthDate,
   memberChangesLine,
   type BirthDate,
@@ -117,13 +116,6 @@ describe("birthDateLimit", () => {
       locked: false,
       line: "Staff changes don't count toward the two a month.",
     });
-  });
-});
-
-describe("clubToday", () => {
-  it("is the club's date (US Eastern), not UTC's", () => {
-    expect(clubToday(new Date("2026-11-18T03:00:00Z"))).toBe("2026-11-17");
-    expect(clubToday(new Date("2026-11-18T06:00:00Z"))).toBe("2026-11-18");
   });
 });
 

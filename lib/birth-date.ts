@@ -2,9 +2,8 @@
 // `GET`/`PUT /api/v1/users/:user_id/birth_date` serves, and the helpers
 // /settings and the staff desk share to set it. The API owns the rules (the
 // two-a-month limit, who may set whose); these only shape the request and
-// the words. Client-safe: no server imports here.
-
-import { CLUB_TIME_ZONE } from "@/lib/public-reminders";
+// the words. Client-safe: no server imports here. The club's today is
+// `clubToday` in lib/challenges/dates.
 
 export interface BirthDate {
   user_id: string;
@@ -25,17 +24,6 @@ export type BirthDateRequest = { ok: true; body: BirthDateBody } | { ok: false; 
 
 // The API's own range: from 1900 to today.
 const FIRST_DAY = "1900-01-01";
-
-// Today in the club's time zone (US Eastern), as YYYY-MM-DD: the API's
-// "today" for the latest Birth Date it takes.
-export function clubToday(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: CLUB_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-}
 
 // A real calendar date in YYYY-MM-DD (not 30 February).
 function isCalendarDate(value: string): boolean {

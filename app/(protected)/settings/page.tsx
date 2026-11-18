@@ -2,7 +2,7 @@ import { fetchNewsCategoryPreferences } from "@/lib/api/news";
 import { fetchFeaturePreferences } from "@/lib/api/feature-preferences";
 import { fetchBirthDate } from "@/lib/api/birth-date";
 import { fetchChallengeSettings } from "@/lib/api/challenge-settings";
-import { clubToday } from "@/lib/birth-date";
+import { clubToday } from "@/lib/challenges/dates";
 import { CHALLENGES_FEATURE, challengeDmsShown } from "@/lib/challenge-settings";
 import { featureView } from "@/lib/features";
 import { requireAuth } from "@/lib/session";

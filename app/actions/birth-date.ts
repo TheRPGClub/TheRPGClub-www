@@ -2,7 +2,8 @@
 
 import { refresh } from "next/cache";
 import { apiFetch } from "@/lib/api";
-import { birthDateRefusal, birthDateRequest, clubToday, type BirthDate } from "@/lib/birth-date";
+import { birthDateRefusal, birthDateRequest, type BirthDate } from "@/lib/birth-date";
+import { clubToday } from "@/lib/challenges/dates";
 import { getSession } from "@/lib/session";
 import { isModeratorOrAbove } from "@/lib/staff";
 

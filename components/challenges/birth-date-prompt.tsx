@@ -3,7 +3,7 @@
 import { useId, useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { saveBirthDateAction } from "@/app/actions/birth-date";
-import { clubToday } from "@/lib/birth-date";
+import { clubToday } from "@/lib/challenges/dates";
 import type { BirthPrompt } from "@/hooks/use-start-run";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
