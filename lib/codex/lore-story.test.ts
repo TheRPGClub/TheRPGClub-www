@@ -3,7 +3,7 @@ import type { Value } from "platejs";
 
 import { dateFields, dateStamp, spineDate } from "./lore-date";
 import { paragraphBefore, resolvePending, spreadLayout, storyImageIds, storyOpening } from "./lore-story";
-import { spineBinding, spineHeight, spineWidth } from "./shelf";
+import { shelfScale, spineBinding, spineBindings, spineHeight, spineWidth } from "./shelf";
 
 const p = (text: string) => ({ type: "p", children: [{ text }] });
 const img = (id: number, caption?: string) => ({ type: "img", id, url: `https://cdn/${id}`, caption, children: [{ text: "" }] });
@@ -111,5 +111,15 @@ describe("spreadTail", () => {
     const many = [p("a"), img(1), p("b"), p("c"), p("d"), p("e"), p("f")];
     expect(spreadTail(spreadLayout(many, images))).toBe(0);
     expect(spreadTail(spreadLayout([p("a"), p("b"), img(2)], images))).toBe(252);
+  });
+});
+
+describe("shelf rhythm and scale", () => {
+  it("never repeats a binding next to itself, and fits a row down to 0.7", () => {
+    const row = spineBindings([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    row.forEach((b, i) => i > 0 && expect(b).not.toBe(row[i - 1]));
+    expect(shelfScale([100, 100], 10, 420)).toBe(1);
+    expect(shelfScale([100, 100], 10, 168)).toBe(0.8);
+    expect(shelfScale([100, 100], 10, 50)).toBe(0.7);
   });
 });

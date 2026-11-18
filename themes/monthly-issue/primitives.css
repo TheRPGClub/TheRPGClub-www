@@ -1127,6 +1127,11 @@
         :is([data-slot="input"], [data-slot="textarea"])[data-variant="headline"] {
             @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;
         }
+        /* www#125: the Lore desk's title sits on the page's 2px paper rule
+           (yellow while focused). */
+        [data-slot="textarea"][data-variant="headline"] {
+            @apply border-foreground;
+        }
         [data-slot="textarea"][data-variant="inset"] {
             @apply bg-background;
         }

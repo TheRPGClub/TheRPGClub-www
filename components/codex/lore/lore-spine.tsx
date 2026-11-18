@@ -1,7 +1,7 @@
 import type { CodexEntry } from "@/lib/codex/types";
 import { initials } from "@/lib/challenges/runs";
 import { spineDate } from "@/lib/codex/lore-date";
-import { spineBinding, spineHeight, spineWidth } from "@/lib/codex/shelf";
+import { spineHeight, spineWidth, type SpineBinding } from "@/lib/codex/shelf";
 import { cn } from "@/lib/utils";
 
 // The three bindings: jade with ink type; ink (`muted`) with paper type
@@ -16,8 +16,17 @@ const BINDING = {
 // its date and its author's initials; as wide as its story is long, at a
 // stable, slightly uneven height. The picked one lifts and takes the yellow
 // ring; the viewer's own carry the yellow "Yours" tag.
-export function LoreSpine({ entry, picked, yours }: { entry: CodexEntry; picked: boolean; yours: boolean }) {
-  const binding = spineBinding(entry.id);
+export function LoreSpine({
+  entry,
+  binding,
+  picked,
+  yours,
+}: {
+  entry: CodexEntry;
+  binding: SpineBinding;
+  picked: boolean;
+  yours: boolean;
+}) {
   return (
     <span
       style={{

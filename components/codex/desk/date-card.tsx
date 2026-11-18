@@ -28,7 +28,7 @@ function Part({ kept, children }: { kept: boolean; children: React.ReactNode }) 
   return (
     <span className={cn("relative inline-flex", !kept && "text-faint-foreground opacity-45")}>
       {children}
-      {!kept && <span aria-hidden className="pointer-events-none absolute inset-x-0 top-[48%] h-1 bg-current" />}
+      {!kept && <span aria-hidden className="pointer-events-none absolute inset-x-0 top-[46%] z-10 h-1 bg-current" />}
     </span>
   );
 }

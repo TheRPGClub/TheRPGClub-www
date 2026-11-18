@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { CodexEntry } from "@/lib/codex/types";
+import { shelfScale, spineBindings, spineWidth } from "@/lib/codex/shelf";
 import { cn } from "@/lib/utils";
 import { LoreSpine } from "./lore-spine";
 
@@ -25,6 +26,24 @@ export function LoreShelf({
   const [picked, setPicked] = useState(initial);
   const spines = useRef<Record<number, HTMLDivElement | null>>({});
   const slide = useRef<HTMLDivElement>(null);
+  const row = useRef<HTMLDivElement>(null);
+  const bindings = spineBindings(entries.map((e) => e.id));
+  // From sm the spines shrink (to 0.7 at most) to stand in the panel's width;
+  // past that, and on phones, the shelf scrolls sideways inside its panel.
+  const [scale, setScale] = useState<number | null>(null);
+  const widths = entries.map((e) => spineWidth(e.body?.length ?? 0)).join(",");
+  useEffect(() => {
+    const box = row.current;
+    if (!box) return;
+    const fit = () => {
+      const wide = window.matchMedia("(min-width: 640px)").matches;
+      setScale(wide ? shelfScale(widths.split(",").map(Number), 6, box.clientWidth - 8) : null);
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [widths]);
 
   function pick(id: number, focus = false) {
     setPicked(id);
@@ -50,7 +69,11 @@ export function LoreShelf({
   return (
     <div className="grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_440px]">
       <div className="min-w-0 rounded-md bg-card px-4 pt-6.5 sm:px-7">
-        <div className="overflow-x-auto overflow-y-hidden [--spine-scale:0.7] sm:[--spine-scale:1]">
+        <div
+          ref={row}
+          style={scale ? ({ "--spine-scale": scale } as React.CSSProperties) : undefined}
+          className="overflow-x-auto overflow-y-hidden [--spine-scale:0.7] sm:[--spine-scale:1]"
+        >
           <div
             role="listbox"
             aria-label="Lore Entries, newest first"
@@ -58,7 +81,7 @@ export function LoreShelf({
             onKeyDown={onKeyDown}
             className="flex h-[calc(540px*var(--spine-scale))] w-max min-w-full items-end gap-1.5 px-1 pt-6"
           >
-            {entries.map((entry) => (
+            {entries.map((entry, i) => (
               <div
                 key={entry.id}
                 ref={(el) => {
@@ -74,7 +97,12 @@ export function LoreShelf({
                   entry.id !== picked && "motion-safe:transition-transform motion-safe:hover:-translate-y-2",
                 )}
               >
-                <LoreSpine entry={entry} picked={entry.id === picked} yours={entry.author.user_id === viewerId} />
+                <LoreSpine
+                  entry={entry}
+                  binding={bindings[i]}
+                  picked={entry.id === picked}
+                  yours={entry.author.user_id === viewerId}
+                />
               </div>
             ))}
           </div>

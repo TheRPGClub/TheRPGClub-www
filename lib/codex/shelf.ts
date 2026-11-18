@@ -31,3 +31,24 @@ const BINDINGS: SpineBinding[] = ["jade", "ink", "paper"];
 export function spineBinding(id: number): SpineBinding {
   return BINDINGS[hash(id) % BINDINGS.length];
 }
+
+// A page's bindings, left to right: each from its id, moved on to the next
+// binding when it would repeat its left neighbour, so a shelf keeps the
+// comp's alternating rhythm and each spine its binding for that page.
+export function spineBindings(ids: readonly number[]): SpineBinding[] {
+  const out: SpineBinding[] = [];
+  for (const id of ids) {
+    let binding = spineBinding(id);
+    if (binding === out.at(-1)) binding = BINDINGS[(BINDINGS.indexOf(binding) + 1) % BINDINGS.length];
+    out.push(binding);
+  }
+  return out;
+}
+
+// The scale that fits a row of spines into `available` px, never below 0.7
+// (the phone scale) nor above 1.
+export function shelfScale(widths: readonly number[], gap: number, available: number): number {
+  const natural = widths.reduce((sum, w) => sum + w, 0) + gap * Math.max(widths.length - 1, 0);
+  if (natural <= 0) return 1;
+  return Math.min(1, Math.max(0.7, available / natural));
+}

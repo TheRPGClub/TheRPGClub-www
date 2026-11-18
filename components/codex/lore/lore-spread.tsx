@@ -37,7 +37,7 @@ export function LoreSpread({ entry, story }: { entry: CodexEntry; story: readonl
   return (
     <div
       style={{ "--rows": blocks.length, "--tail": `${spreadTail(blocks)}px` } as React.CSSProperties}
-      className="grid grid-cols-1 lg:grid-cols-[250px_minmax(0,600px)_minmax(0,1fr)] lg:[grid-template-rows:repeat(var(--rows),auto)] lg:gap-x-11 lg:pb-(--tail)"
+      className="grid grid-cols-1 lg:grid-cols-[minmax(200px,250px)_minmax(0,600px)_minmax(200px,1fr)] lg:[grid-template-rows:repeat(var(--rows),auto)] lg:gap-x-11 lg:pb-(--tail)"
     >
       {blocks.map((block) => (
         <div key={block.row} className="contents" style={{ "--row": block.row } as React.CSSProperties}>
