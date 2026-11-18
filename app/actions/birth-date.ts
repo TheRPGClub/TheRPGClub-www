@@ -56,6 +56,8 @@ export async function saveBirthDateAction(input: { birthDate: string | null }): 
 // Birth Date: the API refuses sharing without one in its own words. Switching
 // never counts toward the twice-a-month limit.
 export async function shareBirthdayAction(shared: boolean): Promise<BirthDateResult> {
+  // A server action is a public endpoint: the type isn't checked at runtime.
+  if (typeof shared !== "boolean") return { ok: false, error: "Couldn't save that switch. Try again." };
   const session = await getSession();
   if (!session) return { ok: false, error: "Sign in again to share your Birthday." };
   const userId = session.principal.discord_id;

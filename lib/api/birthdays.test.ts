@@ -70,3 +70,11 @@ describe("Birth Date actions invalidate Upcoming Birthdays", () => {
     expect(updateTag).not.toHaveBeenCalled();
   });
 });
+
+describe("shareBirthdayAction", () => {
+  it.each([null, undefined, "true", 1])("refuses %j without asking the API", async (shared) => {
+    const result = await shareBirthdayAction(shared as unknown as boolean);
+    expect(result.ok).toBe(false);
+    expect(calls).toHaveLength(0);
+  });
+});
