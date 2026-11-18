@@ -3,15 +3,7 @@
 // sharing their Birthday but never start it (spec api#396); the API refuses
 // `birthday_shared: true` from staff with 403, and the desk has no control
 // for it. Client-safe.
-import type { BirthDate } from "@/lib/birth-date";
-import { birthDateWords } from "@/lib/birth-date-parts";
-
-// The document as api#399 serves it. Once BirthDate itself carries
-// `birthday_shared` (www#117), this is BirthDate.
-export type StaffBirthDate = BirthDate & {
-  // The member shares their Birthday (the day and month, never the year).
-  birthday_shared: boolean;
-};
+import { formatBirthDate, type BirthDate } from "@/lib/birth-date";
 
 export interface StaffSharing {
   // What the switch shows.
@@ -23,7 +15,7 @@ export interface StaffSharing {
 }
 
 // The sharing row for the member called `name`.
-export function staffSharing(doc: StaffBirthDate, name: string): StaffSharing {
+export function staffSharing(doc: BirthDate, name: string): StaffSharing {
   if (!doc.birth_date) {
     return { shared: false, canTurnOff: false, line: `${name} has no Birth Date, so there's no Birthday to share.` };
   }
@@ -34,7 +26,7 @@ export function staffSharing(doc: StaffBirthDate, name: string): StaffSharing {
       line: `Not shared. Only ${name} can turn it on, from their settings or /profile birth-date in Discord.`,
     };
   }
-  const dayMonth = birthDateWords(doc.birth_date.slice(-5));
+  const dayMonth = formatBirthDate(doc.birth_date.slice(-5));
   return {
     shared: true,
     canTurnOff: true,
@@ -44,9 +36,9 @@ export function staffSharing(doc: StaffBirthDate, name: string): StaffSharing {
 
 // The status line after a save: `before` and `after` are the documents
 // either side of it.
-export function staffSavedLine(before: StaffBirthDate, after: StaffBirthDate): string {
+export function staffSavedLine(before: BirthDate, after: BirthDate): string {
   const stopped = before.birthday_shared && !after.birthday_shared;
   if (!after.birth_date) return stopped ? "Removed. Their Birthday is no longer shared." : "Removed.";
   if (stopped && before.birth_date === after.birth_date) return "Their Birthday is no longer shared.";
-  return `Saved: ${birthDateWords(after.birth_date)}.`;
+  return `Saved: ${formatBirthDate(after.birth_date)}.`;
 }

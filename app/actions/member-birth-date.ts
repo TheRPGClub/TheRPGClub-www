@@ -1,8 +1,8 @@
 "use server";
 
 import { apiFetch } from "@/lib/api";
-import { birthDateRefusal } from "@/lib/birth-date";
-import type { StaffBirthDate } from "@/lib/staff-birth-date";
+import { birthDateRefusal, birthDateRequest, type BirthDate } from "@/lib/birth-date";
+import { clubToday } from "@/lib/challenges/dates";
 import { getSession } from "@/lib/session";
 import { isModeratorOrAbove } from "@/lib/staff";
 
@@ -13,7 +13,7 @@ import { isModeratorOrAbove } from "@/lib/staff";
 const NOT_STAFF = "Only staff can set another member's Birth Date.";
 const UNREACHABLE = "Couldn't reach the club's server. Nothing was saved; try again.";
 
-export type MemberBirthDateResult = { ok: true; data: StaffBirthDate } | { ok: false; error: string };
+export type MemberBirthDateResult = { ok: true; data: BirthDate } | { ok: false; error: string };
 
 type Change = { birth_date: string | null } | { birthday_shared: false };
 
@@ -47,7 +47,7 @@ async function put(userId: string, change: Change): Promise<MemberBirthDateResul
     return { ok: false, error: UNREACHABLE };
   }
   if (!res.ok) return { ok: false, error: birthDateRefusal(res.status, await readJson(res)).error };
-  const body = (await res.json()) as { data: StaffBirthDate };
+  const body = (await res.json()) as { data: BirthDate };
   return { ok: true, data: body.data };
 }
 
@@ -64,20 +64,20 @@ export async function readMemberBirthDateAction(userId: string): Promise<MemberB
   }
   if (res.status === 403) return { ok: false, error: NOT_STAFF };
   if (!res.ok) return { ok: false, error: `Couldn't read their Birth Date (HTTP ${res.status}).` };
-  const body = (await res.json()) as { data: StaffBirthDate };
+  const body = (await res.json()) as { data: BirthDate };
   return { ok: true, data: body.data };
 }
 
-// Set ("1990-05-04" or "05-04", from `birthDateValue`) or remove (null) a
-// member's Birth Date. Removing it also stops sharing their Birthday.
+// Set ("1990-05-04" or "05-04", from `birthDateFromFields`) or remove
+// (null) a member's Birth Date. Removing it also stops sharing their
+// Birthday.
 export async function saveMemberBirthDateAction(input: {
   userId: string;
   birthDate: string | null;
 }): Promise<MemberBirthDateResult> {
-  if (input.birthDate !== null && !/^(\d{4}-)?\d{2}-\d{2}$/.test(input.birthDate)) {
-    return { ok: false, error: "Pick the day and the month. The year is optional." };
-  }
-  return put(input.userId, { birth_date: input.birthDate });
+  const request = birthDateRequest(input.birthDate, clubToday());
+  if (!request.ok) return { ok: false, error: request.error };
+  return put(input.userId, request.body.data);
 }
 
 // Stop a member sharing their Birthday. Only the member can turn it back on.

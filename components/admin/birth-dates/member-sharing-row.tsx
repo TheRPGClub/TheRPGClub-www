@@ -1,6 +1,7 @@
 "use client";
 
-import { staffSharing, type StaffBirthDate } from "@/lib/staff-birth-date";
+import type { BirthDate } from "@/lib/birth-date";
+import { staffSharing } from "@/lib/staff-birth-date";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { PreferenceRow } from "@/components/feature/preference-row";
 
@@ -18,7 +19,7 @@ export function MemberSharingRow({
   saved,
   onStop,
 }: {
-  doc: StaffBirthDate;
+  doc: BirthDate;
   name: string;
   pending: boolean;
   error: string | null;

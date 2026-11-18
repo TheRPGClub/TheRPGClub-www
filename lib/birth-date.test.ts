@@ -70,6 +70,10 @@ describe("birthDateFromFields", () => {
     expect(birthDateFromFields(fields("29", "2"), today)).toEqual({ ok: true, value: "02-29" });
   });
 
+  it("leaves the year out when the Year field holds only spaces", () => {
+    expect(birthDateFromFields(fields("4", "5", " "), today)).toEqual({ ok: true, value: "05-04" });
+  });
+
   it("adds the year when one is entered, ignoring spaces around it", () => {
     expect(birthDateFromFields(fields("4", "5", " 1990 "), today)).toEqual({ ok: true, value: "1990-05-04" });
   });
@@ -106,6 +110,8 @@ describe("birthDateFromFields", () => {
       ok: false,
       error: "A Birth Date must be in 1900 or later.",
     });
+    expect(birthDateFromFields(fields("17", "11", "2026"), today)).toEqual({ ok: true, value: "2026-11-17" });
+    expect(birthDateFromFields(fields("1", "1", "1900"), today)).toEqual({ ok: true, value: "1900-01-01" });
   });
 });
 

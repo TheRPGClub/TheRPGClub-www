@@ -1,76 +1,61 @@
 "use client";
 
 import { useId } from "react";
-import { daysInMonth, MONTH_NAMES, type BirthDateParts } from "@/lib/birth-date-parts";
+import { MONTHS, type BirthDateFields as Fields } from "@/lib/birth-date";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// The caption type of the desk's own fields ("Member").
-const CAPTION = "font-label block text-[0.82rem] tracking-[0.08em]";
-
-const MONTHS: Record<string, string> = Object.fromEntries(
-  MONTH_NAMES.map((name, i) => [String(i + 1).padStart(2, "0"), name]),
+const DAY_ITEMS: Record<string, string> = Object.fromEntries(
+  Array.from({ length: 31 }, (_, i) => [String(i + 1), String(i + 1)]),
 );
+// The field captions in the label voice, as the /settings mock sets them.
+const CAPTION = "font-label text-[0.82rem] font-bold tracking-[0.08em]";
+const MONTH_ITEMS: Record<string, string> = Object.fromEntries(MONTHS.map((name, i) => [String(i + 1), name]));
 
-// A Birth Date as Day and Month selects and an optional Year field (spec
-// api#396; a browser date field can't leave the year out), each with its
-// caption above it. Controlled: the parts and their parsing live in
-// lib/birth-date-parts. Built for the staff desk (www#118), for /settings to
-// share (www#117).
+// A Birth Date as Day and Month selects and an optional four-digit Year,
+// each captioned above (pick A): a browser date field can't leave the year
+// out. Controlled; parsing lives in lib/birth-date, and Save checks the day
+// fits the month. Shared by /settings and the staff desk (own captions).
 export function BirthDateFields({
-  parts,
+  fields,
   onChange,
   disabled,
-  invalid,
   describedBy,
+  invalid,
+  captionClassName = CAPTION,
 }: {
-  parts: BirthDateParts;
-  onChange: (field: keyof BirthDateParts, value: string) => void;
-  disabled?: boolean;
-  invalid?: boolean;
+  fields: Fields;
+  onChange: (field: keyof Fields, value: string) => void;
+  disabled: boolean;
   describedBy?: string;
+  invalid: boolean;
+  captionClassName?: string;
 }) {
   const id = useId();
-  const days = Object.fromEntries(
-    Array.from({ length: daysInMonth(parts.month) }, (_, i) => [String(i + 1).padStart(2, "0"), String(i + 1)]),
-  );
-  const field = { "aria-describedby": describedBy, "aria-invalid": invalid || undefined };
-
+  const shared = { disabled, describedBy, invalid, captionClassName };
   return (
     <>
-      <div className="flex flex-col gap-1.5">
-        <Label variant="field" className={CAPTION} id={`${id}-day`}>
-          Day
-        </Label>
-        <PartSelect
-          items={days}
-          value={parts.day}
-          placeholder="Day"
-          onChange={(v) => onChange("day", v)}
-          disabled={disabled}
-          labelledBy={`${id}-day`}
-          className="w-[5.25rem]"
-          {...field}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label variant="field" className={CAPTION} id={`${id}-month`}>
-          Month
-        </Label>
-        <PartSelect
-          items={MONTHS}
-          value={parts.month}
-          placeholder="Month"
-          onChange={(v) => onChange("month", v)}
-          disabled={disabled}
-          labelledBy={`${id}-month`}
-          className="w-[9.5rem]"
-          {...field}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label variant="field" className={CAPTION} htmlFor={`${id}-year`}>
+      <PickField
+        id={`${id}-day`}
+        label="Day"
+        items={DAY_ITEMS}
+        value={fields.day}
+        onChange={(v) => onChange("day", v)}
+        {...shared}
+        width="w-21"
+      />
+      <PickField
+        id={`${id}-month`}
+        label="Month"
+        items={MONTH_ITEMS}
+        value={fields.month}
+        onChange={(v) => onChange("month", v)}
+        {...shared}
+        width="w-37.5"
+      />
+      <div className="flex flex-col gap-2">
+        <Label variant="field" htmlFor={`${id}-year`} className={captionClassName}>
           Year
         </Label>
         <Input
@@ -79,50 +64,62 @@ export function BirthDateFields({
           autoComplete="bday-year"
           maxLength={4}
           placeholder="Year"
-          value={parts.year}
-          onChange={(e) => onChange("year", e.target.value.replace(/\D/g, ""))}
+          value={fields.year}
+          onChange={(e) => onChange("year", e.target.value)}
           disabled={disabled}
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
           className="w-24"
-          {...field}
         />
       </div>
     </>
   );
 }
 
-function PartSelect({
+type Shared = { disabled: boolean; describedBy?: string; invalid: boolean; captionClassName: string };
+
+function PickField({
+  id,
+  label,
   items,
   value,
-  placeholder,
   onChange,
   disabled,
-  labelledBy,
-  className,
-  ...aria
-}: Pick<React.ComponentProps<"button">, "aria-describedby" | "aria-invalid" | "disabled"> & {
+  describedBy,
+  invalid,
+  captionClassName,
+  width,
+}: Shared & {
+  id: string;
+  label: string;
   items: Record<string, string>;
   value: string;
-  placeholder: string;
   onChange: (value: string) => void;
-  labelledBy: string;
-  className: string;
+  width: string;
 }) {
-  // Wrapped: the Select's hidden input is a sibling of its trigger.
   return (
-    <div>
+    <div className="flex flex-col gap-2">
+      <Label variant="field" id={`${id}-label`} className={captionClassName}>
+        {label}
+      </Label>
       <Select
         items={items}
-        value={value || null}
-        onValueChange={(next) => onChange(next == null ? "" : String(next))}
+        value={value === "" ? null : value}
+        onValueChange={(v) => onChange(v == null ? "" : String(v))}
         disabled={disabled}
       >
-        <SelectTrigger aria-labelledby={labelledBy} {...aria} className={`${className} data-[size=default]:h-9`}>
-          <SelectValue placeholder={placeholder} />
+        <SelectTrigger
+          aria-labelledby={`${id}-label`}
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
+          className={`${width} data-[size=default]:h-9`}
+        >
+          <SelectValue placeholder={label} />
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(items).map(([v, label]) => (
+          {Object.entries(items).map(([v, name]) => (
             <SelectItem key={v} value={v}>
-              {label}
+              {name}
             </SelectItem>
           ))}
         </SelectContent>

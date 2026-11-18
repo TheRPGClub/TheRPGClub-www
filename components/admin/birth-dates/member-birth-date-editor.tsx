@@ -2,13 +2,15 @@
 
 import { useId } from "react";
 import { X } from "lucide-react";
-import { memberChangesLine } from "@/lib/birth-date";
-import type { StaffBirthDate } from "@/lib/staff-birth-date";
+import { memberChangesLine, type BirthDate } from "@/lib/birth-date";
 import { useMemberBirthDate } from "@/hooks/use-member-birth-date";
 import { Button } from "@/components/ui/button";
 import { BirthDateFields } from "@/components/birth-date/birth-date-fields";
 import { MemberSharingRow } from "@/components/admin/birth-dates/member-sharing-row";
 import { cn } from "@/lib/utils";
+
+// The Day/Month/Year captions in the desk's own caption type ("Member").
+const CAPTION = "font-label block text-[0.82rem] tracking-[0.08em]";
 
 // Staff set one member's Birth Date: Day, Month and an optional Year, Save,
 // and Remove while one is set, with the member's own changes left under
@@ -20,7 +22,7 @@ export function MemberBirthDateEditor({
   name,
   today,
 }: {
-  initial: StaffBirthDate;
+  initial: BirthDate;
   userId: string;
   // The member's name, for the caption and the sharing row.
   name: string;
@@ -47,11 +49,12 @@ export function MemberBirthDateEditor({
         </p>
         <div className="flex flex-wrap items-end gap-x-3 gap-y-3">
           <BirthDateFields
-            parts={f.parts}
-            onChange={f.setPart}
+            fields={f.fields}
+            onChange={f.setField}
             disabled={f.pending === "date"}
             invalid={Boolean(f.error)}
             describedBy={cn(lineId, f.error && errorId)}
+            captionClassName={CAPTION}
           />
           <div className="flex items-center gap-1">
             <Button type="submit" variant="highlight" disabled={!f.canSave}>

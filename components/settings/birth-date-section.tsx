@@ -26,7 +26,7 @@ export function BirthDateSection({
       </p>
       {birthDate ? (
         <div className="mt-5">
-          <BirthDateEditor initial={birthDate} staff={staff} today={today} share />
+          <BirthDateEditor initial={birthDate} staff={staff} today={today} />
         </div>
       ) : (
         <SettingsReadFailed>

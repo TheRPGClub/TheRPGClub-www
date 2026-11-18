@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { staffSavedLine, staffSharing, type StaffBirthDate } from "@/lib/staff-birth-date";
+import type { BirthDate } from "@/lib/birth-date";
+import { staffSavedLine, staffSharing } from "@/lib/staff-birth-date";
 
-const doc = (birth_date: string | null, birthday_shared = false): StaffBirthDate => ({
+const doc = (birth_date: string | null, birthday_shared = false): BirthDate => ({
   user_id: "1",
   birth_date,
   birthday_shared,

@@ -4,13 +4,13 @@ import { useId, useState, useTransition } from "react";
 import { readMemberBirthDateAction } from "@/app/actions/member-birth-date";
 import type { User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
-import type { StaffBirthDate } from "@/lib/staff-birth-date";
+import type { BirthDate } from "@/lib/birth-date";
 import { MemberPicker } from "@/components/admin/member-picker";
 import { MemberBirthDateEditor } from "@/components/admin/birth-dates/member-birth-date-editor";
 
 const LABEL = "font-label block text-[0.82rem] tracking-[0.08em] text-faint-foreground";
 
-type Loaded = { member: User; doc: StaffBirthDate } | { member: User; error: string };
+type Loaded = { member: User; doc: BirthDate } | { member: User; error: string };
 
 // Staff set a member's Birth Date: pick the member (the desk's member
 // picker), their Birth Date is read, then its Day, Month and optional Year,

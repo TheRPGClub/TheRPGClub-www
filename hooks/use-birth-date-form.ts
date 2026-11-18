@@ -18,19 +18,17 @@ import {
 // switch. Each save answers with the whole document, so the limit line and
 // the switch follow it. A refusal at the limit locks the date and shows the
 // API's words, which name the date it opens again; the switch never locks.
-// `userId` is the member staff are setting it for; without it the form is
-// the signed-in member's own.
+// Always the signed-in member's own (staff set others' with
+// useMemberBirthDate).
 export function useBirthDateForm({
   initial,
   staff,
   today,
-  userId,
 }: {
   initial: BirthDate;
   staff: boolean;
   // The club's date (YYYY-MM-DD): the latest a dated Birth Date may be.
   today: string;
-  userId?: string;
 }) {
   const [doc, setDoc] = useState(initial);
   const [fields, setFields] = useState(() => birthDateFields(initial.birth_date));
@@ -51,7 +49,7 @@ export function useBirthDateForm({
     startTransition(async () => {
       let result: Awaited<ReturnType<typeof saveBirthDateAction>>;
       try {
-        result = await saveBirthDateAction({ userId, birthDate });
+        result = await saveBirthDateAction({ birthDate });
       } catch {
         result = { ok: false, error: "Couldn't save the Birth Date. Try again." };
       }
