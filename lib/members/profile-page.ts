@@ -14,6 +14,7 @@ import type {
 } from "@/lib/api/types";
 import { NO_ROWS, paginationOf, type ListPage } from "@/lib/api/pagination";
 import { shownImportKinds } from "@/lib/imports/kinds";
+import { loadMemberRuns } from "@/lib/challenges/member-runs";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { fetchMember } from "@/lib/members/member-page";
 import { memberCounts } from "@/lib/members/member-lists";
@@ -78,10 +79,11 @@ export async function loadMemberProfile(id: string) {
     achievements: features.shown("achievement_hub"),
     reviews: features.shown("reviews"),
     journal: features.shown("journals"),
+    challenges: features.shown("challenges"),
     imports: shownImportKinds(features).length > 0,
   }));
   const users = `/api/v1/users/${id}`;
-  const [user, session, favorites, show, [nowPlaying, completed, backlog, collection, reviews, achievements]] =
+  const [user, session, favorites, show, [nowPlaying, completed, backlog, collection, reviews, achievements, runs]] =
     await Promise.all([
       fetchMember<UserProfile & { journal?: JournaledGame[] }>(id),
       getSession(),
@@ -95,6 +97,7 @@ export async function loadMemberProfile(id: string) {
           fetchPreview<GameCollection>(`${users}/collections?per=${SHELF_LIMIT}`, show.collection),
           fetchPreview<Review>(`${users}/reviews?per=3`, show.reviews),
           show.achievements ? fetchAchievementSummary(id) : null,
+          show.challenges ? loadMemberRuns(id) : null,
         ]),
       ),
     ]);
@@ -118,6 +121,7 @@ export async function loadMemberProfile(id: string) {
     counts,
     lists: { favorites, nowPlaying, completed, backlog, collection, reviews },
     achievements,
+    runs,
     journal: journalPreview(user, aggregated.journal),
   };
 }

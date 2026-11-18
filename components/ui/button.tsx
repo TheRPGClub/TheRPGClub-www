@@ -153,6 +153,26 @@ const buttonVariants = cva(
         // view (a News Category on the News page's rail, aria-pressed): the
         // label voice and no ground; the row's parts carry its ink.
         "filter-option": "",
+        // www#106: Challenges.
+        // A setting written as a word in a sentence (the Challenge form's
+        // rules): underlined, yellow while its control is open
+        // (aria-expanded), signal orange when invalid (aria-invalid), and
+        // plain once the rules are locked (disabled). Pair with
+        // size="inline".
+        "rule-word": "",
+        // The sentence's dashed "+ franchise or collection" that adds one.
+        "rule-add": "",
+        // A cover on the form's Pool wall that is tapped to leave its game
+        // out or put it back: the cover is the look, the focus ring kept.
+        "pool-tile": "",
+        // www#107: the stamp-sized ink-2 tile ("+2 more") that opens the
+        // rest of a profile's current Runs in place. Pair with size="bare"
+        // and lay it out as a stamp.
+        "stamp-more": "",
+        // www#111: an action already taken, standing where its button was
+        // (the Santa's "Picked"): the outline's look, at full strength
+        // though it can't be pressed. Pair with disabled.
+        done: "disabled:opacity-100",
       },
       size: {
         default:

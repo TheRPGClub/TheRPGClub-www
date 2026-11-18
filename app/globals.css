@@ -80,6 +80,11 @@
     --color-news-hardware: var(--news-hardware);
     --color-news-rumours: var(--news-rumours);
     --color-news-general: var(--news-general);
+    --color-format-slots: var(--format-slots);
+    --color-format-pool: var(--format-pool);
+    --color-format-assignment: var(--format-assignment);
+    --color-holly: var(--holly);
+    --color-tinsel: var(--tinsel);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */
@@ -243,5 +248,26 @@
     }
     to {
         transform: scaleX(1);
+    }
+}
+
+/* An arrow of the Santa circle draws itself in once, from its Santa to the
+   member they picked for (pathLength 1). */
+@keyframes arrow-draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* A dashed (random pick) arrow can't draw its dashes in, so it fades. */
+@keyframes arrow-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }

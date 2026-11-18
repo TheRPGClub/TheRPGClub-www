@@ -29,6 +29,7 @@ export const FEATURE_KEYS = [
   "journals",
   "suggestions",
   "news_hub",
+  "challenges",
 ] as const;
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];

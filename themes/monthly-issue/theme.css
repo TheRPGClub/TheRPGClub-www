@@ -90,6 +90,15 @@
         --news-hardware: #d4a373;
         --news-rumours: #c0c4d6;
         --news-general: #8d8d87;
+        /* Challenges inks, on Challenges surfaces only: a Format's 9px
+           marker square (never a fill behind more than a word), and Secret
+           Santa's holly and tinsel. A Challenge's own tint is data
+           (--challenge-tint, --challenge-tint-hi on its card or page). */
+        --format-slots: #46cbe6;
+        --format-pool: #93a3ff;
+        --format-assignment: #52cf98;
+        --holly: #3fbf8a;
+        --tinsel: #e9c46a;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */

@@ -17,8 +17,12 @@ import {
 // entry): `trigger` opens it, the destructive action runs `onConfirm`, which
 // answers with an error to show in place (the dialog stays open) or null once
 // it is done (the dialog closes). Keep it closes without doing anything.
+// Without a trigger, the caller opens it (`open`, `onOpenChange`), as from a
+// menu item.
 export function ConfirmDialog({
   trigger,
+  open: openProp,
+  onOpenChange,
   title,
   description,
   confirmLabel,
@@ -27,7 +31,9 @@ export function ConfirmDialog({
   onConfirm,
 }: {
   // The Button that opens the dialog.
-  trigger: ReactElement;
+  trigger?: ReactElement;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   title: ReactNode;
   description: ReactNode;
   confirmLabel: string;
@@ -35,7 +41,12 @@ export function ConfirmDialog({
   confirmIcon?: ReactNode;
   onConfirm: () => Promise<string | null>;
 }) {
-  const [open, setOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const open = openProp ?? ownOpen;
+  const setOpen = (next: boolean) => {
+    setOwnOpen(next);
+    onOpenChange?.(next);
+  };
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -57,7 +68,7 @@ export function ConfirmDialog({
         if (!next) setError(null);
       }}
     >
-      <AlertDialogTrigger render={trigger} />
+      {trigger && <AlertDialogTrigger render={trigger} />}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

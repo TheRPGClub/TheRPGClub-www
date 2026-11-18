@@ -402,6 +402,22 @@
             }
         }
 
+        /* www#109: a Slots range on the form's year ruler. No track of its
+           own (the ruler's ticks are the scale); the range is a paper band
+           at 12% inside a paper hairline; each handle a paper bar with a
+           halo in the card colour, yellow while dragged or focused. */
+        [data-slot="slider"][data-tone="year-ruler"] {
+            [data-slot="slider-track"] {
+                @apply overflow-visible bg-transparent;
+            }
+            [data-slot="slider-range"] {
+                @apply bg-foreground/12 shadow-[inset_0_0_0_1.5px_var(--color-foreground)];
+            }
+            [data-slot="slider-thumb"] {
+                @apply cursor-grab rounded-xs border-0 bg-foreground shadow-[0_0_0_3px_var(--color-card)] focus-visible:bg-highlight focus-visible:ring-3 focus-visible:ring-highlight/30 data-dragging:cursor-grabbing data-dragging:bg-highlight data-dragging:ring-3 data-dragging:ring-highlight/30;
+            }
+        }
+
         /* Avatar: round, with a hairline ring blended into the picture. */
         [data-slot="avatar"] {
             @apply rounded-full after:rounded-full after:border-border after:mix-blend-darken dark:after:mix-blend-lighten;
@@ -435,6 +451,14 @@
         }
         [data-slot="avatar"][data-variant="byline"] [data-slot="avatar-fallback"] {
             @apply text-foreground;
+        }
+        /* www#107: a member's mark on a Challenge: no ring, the initials
+           in the label voice on dim paper until the picture loads. */
+        [data-slot="avatar"][data-variant="member-mark"] {
+            @apply after:hidden;
+            [data-slot="avatar-fallback"] {
+                @apply font-label leading-none font-extrabold tracking-[0.02em] bg-dim-foreground text-background;
+            }
         }
         [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
             @apply text-dim-foreground;
@@ -1233,6 +1257,33 @@
            slide; no ground, and the browser's own focus ring. */
         [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
             @apply font-label rounded-none bg-transparent tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-1 focus-visible:[outline-style:auto] focus-visible:outline-ring data-active:bg-transparent data-active:shadow-none;
+        }
+        /* Challenges (www#106). The form's rule sentence: each setting a
+           word underlined in the strong rule, the open one on a yellow wash
+           over a yellow underline, an invalid one underlined in signal
+           orange, a locked one plain dim type; the dashed word that adds a
+           source. A Pool wall cover is a frame whose focus is the yellow
+           ring. */
+        [data-slot="button"] {
+            &[data-variant="rule-word"] {
+                @apply rounded-none border-0 border-b-3 border-border-strong px-1 font-semibold text-foreground transition-colors hover:border-faint-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-expanded:border-highlight aria-expanded:bg-highlight/10 aria-invalid:border-destructive aria-invalid:ring-0 disabled:border-transparent disabled:font-medium disabled:text-dim-foreground disabled:opacity-100;
+            }
+            &[data-variant="rule-add"] {
+                @apply rounded-none border-0 border-b-3 border-dashed border-border-strong px-1 font-medium text-faint-foreground transition-colors hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight aria-expanded:border-highlight aria-expanded:bg-highlight/10 aria-expanded:text-foreground;
+            }
+            &[data-variant="pool-tile"] {
+                @apply rounded-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0;
+            }
+            /* www#107: a profile's "+2 more" current-Run tile, stamp-sized:
+               ink-2 on a strong-rule inset edge, Anton, lifting to muted. */
+            &[data-variant="stamp-more"] {
+                @apply font-headline flex-col items-center justify-center gap-1 rounded-md bg-card text-[2.6rem] leading-[0.9] text-foreground shadow-[inset_0_0_0_2px_var(--color-border-strong),0_10px_20px_rgb(0_0_0/0.5)] transition-colors hover:bg-muted focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-3 focus-visible:outline-highlight;
+            }
+            /* www#111: the Santa's "Picked" where Pick this one stood: the
+               outline at full strength, inert. */
+            &[data-variant="done"] {
+                @apply font-label rounded-sm bg-clip-padding font-extrabold border-faint-foreground/60 bg-transparent text-foreground;
+            }
         }
     }
 }
