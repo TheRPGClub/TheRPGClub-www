@@ -1,4 +1,5 @@
 import type { ReviewFacets } from "@/lib/reviews/facets";
+import type { Birthday } from "@/lib/birthday";
 
 // Pagy-backed pagination meta, from ApplicationController#pagy_meta. It is
 // page-native, not offset-native: `count` is the total across every page,
@@ -111,6 +112,9 @@ export interface UserProfilePreviews {
 export interface UserProfile extends User {
   counts: UserProfileCounts;
   previews: UserProfilePreviews;
+  // The member's shared Birthday, day and month only (api#399); null when
+  // they don't share it.
+  birthday?: Birthday | null;
 }
 
 export interface SocialPlatform {
