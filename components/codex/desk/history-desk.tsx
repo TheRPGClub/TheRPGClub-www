@@ -15,21 +15,20 @@ import { DeskTopBar } from "./desk-top-bar";
 import { GalleryCard } from "./gallery-card";
 import { KindCard } from "./kind-card";
 import { ManuscriptSheet } from "./manuscript-sheet";
+import { SeeAlsoCard } from "./see-also-card";
 
 // The History Event desk (www#126, design 5D): the Lore desk with its cards
 // swapped. The sheet holds the title and an optional description (mentions
 // as on the Lore desk); the drawer holds Kind, the required Date and a plain
-// gallery of images. `seeAlso` is the drawer's See also card (www#127).
+// gallery of images, then See also (www#127).
 export function HistoryDesk({
   entry,
   initialValue,
   badge,
-  seeAlso,
 }: {
   entry: CodexEntry | null;
   initialValue: Value;
   badge?: ReactNode;
-  seeAlso?: ReactNode;
 }) {
   const desk = useHistoryDesk(entry, initialValue);
   const canDelete = !!entry?.viewer.can_delete && desk.entryId !== null;
@@ -61,11 +60,11 @@ export function HistoryDesk({
             textLabel="The description"
             placeholder="Describe what happened, if you like. Type @ to mention a member."
           />
-          <div className="grid gap-5.5 pt-1.5">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-5.5 pt-1.5">
             <KindCard desk={desk} tilt={-1} />
             <DateCard desk={desk} tilt={0.8} required />
             <GalleryCard desk={desk} tilt={-0.6} />
-            {seeAlso}
+            <SeeAlsoCard links={desk.links} self={desk.entryId} tilt={0.6} />
           </div>
         </div>
         {canDelete && (

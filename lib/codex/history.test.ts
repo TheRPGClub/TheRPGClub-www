@@ -3,12 +3,16 @@ import {
   bookPage,
   chapterDate,
   chapterPhotos,
+  eventPage,
+  focusQuery,
+  historyEventParam,
   historyHref,
   historyQuery,
   kindCounts,
   kindInk,
   orderedEvents,
   readDescription,
+  timelineHref,
 } from "./history";
 import type { CodexEntry } from "./types";
 
@@ -148,5 +152,45 @@ describe("readDescription", () => {
     const value = readDescription(event(1, "2018-01-01", "staff", { body: "First.\n\nSecond." }));
     expect(value).toHaveLength(2);
     expect(readDescription(null)).toHaveLength(1);
+  });
+});
+
+describe("See also on the timeline (www#127)", () => {
+  const q = historyQuery({});
+
+  it("reads ?event= as a History Event id", () => {
+    expect(historyEventParam("7")).toBe(7);
+    expect(historyEventParam("0")).toBeNull();
+    expect(historyEventParam("x")).toBeNull();
+    expect(historyEventParam(undefined)).toBeNull();
+  });
+
+  it("finds the page holding a History Event", () => {
+    expect(eventPage(book, 1, 2)).toBe(1);
+    expect(eventPage(book, 3, 2)).toBe(2);
+    expect(eventPage(book, 99, 2)).toBeNull();
+  });
+
+  it("moves the page to the one holding ?event=, in the order shown", () => {
+    expect(focusQuery(q, book, 5, 2)).toEqual({ ...q, page: 3 });
+    expect(focusQuery({ ...q, order: "newest" }, book, 5, 2)).toEqual({ ...q, order: "newest", page: 1 });
+    expect(focusQuery({ ...q, page: 2 }, book, null, 2)).toEqual({ ...q, page: 2 });
+    expect(focusQuery({ ...q, page: 2 }, book, 99, 2)).toEqual({ ...q, page: 2 });
+  });
+
+  it("links to the anchor on this page, else the page holding it", () => {
+    expect(timelineHref(book, q, 2, 2)).toBe("#history-event-2");
+    expect(timelineHref(book, q, 5, 2)).toBe("/codex/history?page=3#history-event-5");
+    expect(timelineHref(book, { ...q, order: "newest" }, 1, 2)).toBe("/codex/history?order=newest&page=3#history-event-1");
+  });
+
+  it("drops a Kind filter that hides the linked History Event", () => {
+    expect(timelineHref(book, { ...q, kind: "staff" }, 5, 2)).toBe("#history-event-5");
+    expect(timelineHref(book, { ...q, kind: "staff" }, 1, 2)).toBe("/codex/history#history-event-1");
+    expect(timelineHref(book, { ...q, kind: "staff" }, 4, 2)).toBe("/codex/history?page=2#history-event-4");
+  });
+
+  it("sends one the timeline doesn't hold through ?event=", () => {
+    expect(timelineHref(book, q, 99, 2)).toBe("/codex/history?event=99#history-event-99");
   });
 });

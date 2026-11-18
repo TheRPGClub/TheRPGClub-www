@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button";
 import { FunFactText } from "@/components/codex/fun-fact-text";
 import { FunFactDelete } from "./fun-fact-delete";
 import { FunFactEdit } from "./fun-fact-edit";
+import { FunFactLinks } from "./fun-fact-links";
 
 // One Fun Fact on the wall (4D): an index card in the Fun Facts ink, taped
 // up at its own tilt, ruled, numbered and dated, with its author, its story
-// when it tells one, and Edit and Delete for whoever may. Editing turns the
+// when it tells one, its other See also (www#127), and Edit and Delete for
+// whoever may. Editing turns the
 // card over into the Fun Fact field, in place.
 export function FunFactCard({
   fact,
@@ -33,6 +35,7 @@ export function FunFactCard({
 }) {
   const [editing, setEditing] = useState(false);
   const story = storyOf(fact.links);
+  const others = fact.links.filter((link) => link.id !== story?.id);
   const anchor = funFactAnchor(fact.id);
 
   if (editing) {
@@ -76,6 +79,7 @@ export function FunFactCard({
             Read the story
           </Link>
         )}
+        <FunFactLinks links={others} />
         {(fact.viewer.can_edit || fact.viewer.can_delete) && (
           <span className="flex gap-3">
             {fact.viewer.can_edit && (

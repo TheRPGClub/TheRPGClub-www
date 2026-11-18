@@ -15,6 +15,7 @@ import { LORE_PATH } from "@/lib/codex/paths";
 import { IMAGES_MAX, STORY_MAX, storyPlainText } from "@/lib/codex/story-schema";
 import type { CodexEntry } from "@/lib/codex/types";
 import { imageFileProblem } from "@/lib/live-events";
+import { useDeskLinks } from "./use-desk-links";
 
 // The Lore desk's state and its save (www#125, design 5D): the title, the
 // story (the editor's value), the Date card, and the drawer's photos.
@@ -23,8 +24,9 @@ import { imageFileProblem } from "@/lib/live-events";
 // (`file`, shown from a local preview until it is uploaded). Saving runs the
 // steps in app/actions/codex-lore.ts: create the entry if it is new, delete
 // the images the story no longer places, upload the placed photos, then save
-// the story with their ids and urls. A photo that fails keeps its slot with
-// the reason; saving again picks up where it stopped.
+// the story with their ids and urls, then its See also links (www#127). A
+// photo that fails keeps its slot with the reason; saving again picks up
+// where it stopped.
 
 export interface DeskPhoto {
   key: string;
@@ -64,6 +66,7 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const links = useDeskLinks(entry?.links ?? [], () => setDirty(true));
 
   const count = storyPlainText(value).length;
   const dateResult = dateFields(date);
@@ -141,6 +144,8 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
         const result = await saveLoreEntryAction(id, draftOf(resolvePending(value, uploaded)));
         if (!result.ok) return setError(result.error ?? "That didn't save. Try again.");
       }
+      const linkError = await links.save(id);
+      if (linkError) return setError(`The Lore Entry is saved, but See also isn't: ${linkError}`);
       if (failed) return setError("The Lore Entry is saved, but a photo didn't upload. Retry it or remove it, then save again.");
       setDirty(false);
       router.push(`${LORE_PATH}/${id}`);
@@ -161,6 +166,7 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
     photos,
     addFiles,
     removePhoto,
+    links,
     count,
     missing,
     unplaced,

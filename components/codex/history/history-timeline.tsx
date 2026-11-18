@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import {
+  HISTORY_PER_PAGE,
   KIND_NAME,
   bookPage,
   eventCount,
@@ -19,7 +20,6 @@ import { HistoryTools } from "./kind-filter";
 import { YearChapter } from "./year-chapter";
 import { YearGap } from "./year-gap";
 
-export const HISTORY_PER_PAGE = 40;
 const SLIP = "mt-7 rounded-md border border-dashed border-border-strong px-4 py-5 text-dim-foreground";
 
 // The Club History timeline (www#126, design 2B): the header and intro, the

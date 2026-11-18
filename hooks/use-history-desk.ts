@@ -16,6 +16,7 @@ import { HISTORY_PATH } from "@/lib/codex/paths";
 import { IMAGES_MAX, STORY_MAX, storyPlainText } from "@/lib/codex/story-schema";
 import type { CodexEntry } from "@/lib/codex/types";
 import { imageFileProblem } from "@/lib/live-events";
+import { useDeskLinks } from "./use-desk-links";
 
 // The History Event desk's state and its save (www#126, design 5D): the
 // title, the description (the editor's value), the Kind, the date (always
@@ -23,8 +24,9 @@ import { imageFileProblem } from "@/lib/live-events";
 //
 // Saving runs the steps in app/actions/codex-history.ts: create or edit the
 // History Event, remove the images taken off the gallery (so a full one has
-// room), then upload each new photo. A photo that fails keeps its slot with
-// the reason; saving again picks up where it stopped.
+// room), then upload each new photo, then save its See also links (www#127).
+// A photo that fails keeps its slot with the reason; saving again picks up
+// where it stopped.
 
 let counter = 0;
 
@@ -47,6 +49,7 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const links = useDeskLinks(entry?.links ?? [], () => setDirty(true));
 
   const count = storyPlainText(value).length;
   const dateResult = dateFields(date);
@@ -130,6 +133,8 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
           mark(photo.key, { state: "failed", error: result.error });
         }
       }
+      const linkError = await links.save(id);
+      if (linkError) return setError(`The History Event is saved, but See also isn't: ${linkError}`);
       if (failed) return setError("The History Event is saved, but an image didn't upload. Retry it or remove it.");
       setDirty(false);
       router.push(`${HISTORY_PATH}#${historyEventAnchor(id)}`);
@@ -152,6 +157,7 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
     photos,
     addFiles,
     removePhoto,
+    links,
     count,
     missing,
     dirty,
