@@ -35,16 +35,9 @@ async function DashboardContent() {
     voting ? loadDashboard(features) : null,
     fetchUpcomingBirthdays(),
   ]);
-  const line = birthdayLine(upcoming, clubToday());
-  const birthdays = line && <UpcomingBirthdays entries={line} />;
+  const entries = birthdayLine(upcoming, clubToday());
+  const birthdays = entries && <UpcomingBirthdays entries={entries} />;
 
-  if (!issue) {
-    return (
-      <div className="space-y-10">
-        <NoVoting />
-        {birthdays}
-      </div>
-    );
-  }
+  if (!issue) return <NoVoting birthdays={birthdays} />;
   return <DashboardIssueView issue={issue} viewerId={session.principal.id} birthdays={birthdays} />;
 }
