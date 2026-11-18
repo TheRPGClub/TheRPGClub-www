@@ -5,6 +5,7 @@ import type { User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
 import { encodeFunFact, insertMention, mentionQuery, type PickedMention } from "@/lib/codex/fun-fact-text";
 import { useMemberSearch } from "@/hooks/use-member-search";
+import { listboxKey } from "@/lib/listbox";
 
 // The Fun Fact field's text and its @ mention picker (www#124). Typing "@"
 // and two letters of a name searches the club's members; arrow keys move
@@ -49,17 +50,12 @@ export function useMentionPicker(
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (!open) return;
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setDismissed(query.start);
-    } else if (results.length > 0 && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
-      event.preventDefault();
-      const step = event.key === "ArrowDown" ? 1 : -1;
-      setLit((i) => (i + step + results.length) % results.length);
-    } else if (results.length > 0 && (event.key === "Enter" || event.key === "Tab")) {
-      event.preventDefault();
-      pick(results[Math.min(lit, results.length - 1)]);
-    }
+    const key = listboxKey(event.key, lit, results.length, ["Enter", "Tab"]);
+    if (!key) return;
+    event.preventDefault();
+    if (key.action === "close") setDismissed(query.start);
+    else if (key.action === "move") setLit(key.index);
+    else pick(results[key.index]);
   }
 
   function reset(next = { text: "", picked: [] as PickedMention[] }) {

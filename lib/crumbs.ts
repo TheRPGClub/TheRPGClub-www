@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { historyEventAnchor } from "@/lib/codex/paths";
 import { setDetailPath } from "@/lib/member-achievements";
 import { roundEditHref, TRACK_NAME, trackFromSlug } from "@/lib/rounds";
 import { STAFF_SECTIONS } from "@/lib/staff";
@@ -228,7 +229,7 @@ export async function crumbTrail(
     if (id === "history" && page === "new") {
       trail.push({ label: "New", href: `${root}/${id}/new` });
     } else if (id === "history" && page && /^\d+$/.test(page) && sub === "edit") {
-      trail.push({ label: await names.historyEvent(page), href: `${root}/${id}#history-event-${page}` });
+      trail.push({ label: await names.historyEvent(page), href: `${root}/${id}#${historyEventAnchor(Number(page))}` });
       trail.push({ label: "Edit", href: `${root}/${id}/${page}/edit` });
     }
   }

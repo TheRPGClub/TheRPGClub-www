@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { MONTH_SHORT, type DateChoice, type DateDraft } from "@/lib/codex/lore-date";
+import { MONTH_SHORT, type DateChoice, type DateDraft } from "@/lib/codex/codex-date";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

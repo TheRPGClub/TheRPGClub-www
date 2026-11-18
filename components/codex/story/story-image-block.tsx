@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import { PlateElement, useEditorRef, type PlateElementProps } from "platejs/react";
-import type { ImageNode } from "@/lib/codex/story-schema";
+import { CAPTION_MAX, type ImageNode } from "@/lib/codex/story-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -30,7 +30,7 @@ export function StoryImageBlock(props: PlateElementProps) {
             variant="readout"
             aria-label="Caption"
             placeholder="Add a caption"
-            maxLength={160}
+            maxLength={CAPTION_MAX}
             defaultValue={node.caption ?? ""}
             onKeyDown={(e) => e.stopPropagation()}
             onChange={(e) => {

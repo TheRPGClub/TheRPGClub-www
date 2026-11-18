@@ -3,10 +3,10 @@
 import { useRef } from "react";
 import { AtSign } from "lucide-react";
 import { PlateContent, useEditorRef } from "platejs/react";
-import type { SheetDesk } from "@/hooks/use-lore-desk";
+import type { SheetDesk } from "@/hooks/use-desk-photos";
 import type { RichTextSchema } from "@/lib/rich-text/schema";
 import { useStoryMention } from "@/hooks/use-story-mention";
-import { LORE_SCHEMA, STORY_MAX } from "@/lib/codex/story-schema";
+import { LORE_SCHEMA, STORY_MAX, TITLE_MAX } from "@/lib/codex/story-schema";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextToolbar } from "@/components/rich-text/rich-text-toolbar";
@@ -72,7 +72,7 @@ export function ManuscriptSheet({
           variant="headline"
           rows={1}
           value={desk.title}
-          maxLength={100}
+          maxLength={TITLE_MAX}
           aria-label={titleLabel}
           aria-invalid={!desk.title.trim() && desk.dirty ? true : undefined}
           placeholder="Title"

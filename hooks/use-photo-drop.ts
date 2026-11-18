@@ -3,7 +3,7 @@
 import { useState, type DragEvent, type RefObject } from "react";
 import type { PlateEditor } from "platejs/react";
 import { useEditorRef } from "platejs/react";
-import { photoKey, type DeskPhoto, type SheetDesk } from "@/hooks/use-lore-desk";
+import { photoKey, type DeskPhoto, type SheetDesk } from "@/hooks/use-desk-photos";
 import { imageIndex } from "@/lib/codex/lore-story";
 import { IMAGE_TYPE, type ImageNode } from "@/lib/codex/story-schema";
 

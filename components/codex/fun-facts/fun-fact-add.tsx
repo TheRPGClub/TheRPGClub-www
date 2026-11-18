@@ -10,7 +10,8 @@ import { useWall } from "./wall-state";
 // Adding a Fun Fact, inline at the top of the wall (5D: Fun Facts skip the
 // writing desk): a panel under the Fun Facts ink's top rule. A new Fun Fact
 // goes to the front of the Daily Fun Fact's queue, and the panel says so.
-// Its See also (www#127) saves once it is added.
+// Its See also (www#127) saves once it is added; if that fails, the links
+// stay on the form to retry.
 export function FunFactAdd() {
   const { setNextDaily } = useWall();
   return (
@@ -29,7 +30,10 @@ export function FunFactAdd() {
         label="Your Fun Fact"
         onSave={async (body, links) => {
           const result = await addFunFactAction(body);
-          if (!result.ok || !result.id) return result;
+          if (!result.ok) return result;
+          if (!result.id) {
+            return links.changed ? { ...result, error: "The Fun Fact is added. Find it on the wall to give it See also." } : result;
+          }
           setNextDaily(result.id);
           const linkError = await links.save(result.id);
           return linkError ? { ...result, error: `The Fun Fact is added, but See also isn't: ${linkError}` } : result;

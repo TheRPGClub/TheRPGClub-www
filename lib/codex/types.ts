@@ -3,6 +3,8 @@
 
 export type CodexPart = "history_event" | "lore_entry" | "fun_fact";
 export type DatePrecision = "day" | "month" | "year";
+// A History Event's Kind (lib/codex/history.ts lists them with their names).
+export type HistoryKind = "founding" | "staff" | "platform" | "rules" | "milestone";
 
 // A member on an entry: its author, or a member its text mentions, by the
 // name they go by now (their last known one once they have left).
@@ -30,7 +32,9 @@ export interface CodexEntry {
   body: string | null;
   occurred_on: string | null;
   date_precision: DatePrecision | null;
-  kind: string | null;
+  // A History Event's; null on the other parts, and for a Kind this site
+  // doesn't know (lib/api/codex.ts narrows it as it reads).
+  kind: HistoryKind | null;
   author: CodexMember;
   // Each known member `body` mentions, keyed by Discord id.
   mentions: Record<string, CodexMember>;

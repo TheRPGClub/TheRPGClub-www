@@ -9,6 +9,7 @@ import type { CodexEntryLink } from "@/lib/codex/types";
 import { Input } from "@/components/ui/input";
 import { SeeAlsoChips } from "./see-also-chips";
 import { SeeAlsoResults } from "./see-also-results";
+import { listboxKey } from "@/lib/listbox";
 
 // See also on a form (www#127, 5D): the linked entries as chips, then a
 // search across the Club Codex's three parts that leaves out the entry being
@@ -49,18 +50,12 @@ export function SeeAlsoPicker({
     // Enter here links an entry; it never sends the form around it.
     if (event.key === "Enter") event.preventDefault();
     if (!open) return;
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setClosed(true);
-    } else if (results.length > 0 && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
-      event.preventDefault();
-      const step = event.key === "ArrowDown" ? 1 : -1;
-      setLit((i) => (i + step + results.length) % results.length);
-    } else if (results.length > 0 && event.key === "Enter") {
-      event.preventDefault();
-      const result = results[Math.min(lit, results.length - 1)];
-      if (!result.linked) pick(result);
-    }
+    const key = listboxKey(event.key, lit, results.length, ["Enter"]);
+    if (!key) return;
+    event.preventDefault();
+    if (key.action === "close") setClosed(true);
+    else if (key.action === "move") setLit(key.index);
+    else if (!results[key.index].linked) pick(results[key.index]);
   }
 
   return (

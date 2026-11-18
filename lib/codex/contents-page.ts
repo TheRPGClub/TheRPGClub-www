@@ -1,15 +1,15 @@
-import { fetchCodexEntry, fetchCodexPage, fetchRecentEntries, type CodexPage } from "@/lib/api/codex";
+import { fetchCodexEntry, fetchCodexPage, fetchRecentEntries, fetchTodayFunFact, type CodexPage } from "@/lib/api/codex";
 import { funFactPlain } from "@/lib/codex/fun-fact-text";
 import type { CodexEntry, CodexEntryLink, CodexPart } from "@/lib/codex/types";
 
-// What the Club Codex contents page shows (design 1C, www#124): a Fun Fact
-// leading, a door per part with its count and its newest entry, and the
-// newest entries across all three parts.
+// What the Club Codex contents page shows (design 1C, www#124): the Daily
+// Fun Fact leading, a door per part with its count and its newest entry, and
+// the newest entries across all three parts.
 //
-// The API has no read for today's Daily Fun Fact, so the page leads with the
-// newest Fun Fact instead, and "Another one" steps through the newest few
-// without touching the Daily Fun Fact's queue (API follow-up in
-// notes/decisions.md).
+// The Daily Fun Fact is the one the bot last posted (`GET /codex/fun_facts/
+// today`, a pure read: it never draws, so the bot's queue never moves). With
+// none posted yet, or that read failing, the page leads with the newest Fun
+// Fact instead. "Another one" steps through the newest few already read.
 
 export interface CodexDoor {
   count: number;
@@ -26,6 +26,9 @@ export interface LatelyItem {
 }
 
 export interface CodexContents {
+  // The Daily Fun Fact last posted and the club day it was posted for;
+  // null when none has been (or it couldn't be read).
+  daily: { fact: CodexEntry; clubDate: string } | null;
   // The newest Fun Facts, newest first, for the lead panel.
   facts: CodexEntry[];
   doors: Record<CodexPart, CodexDoor>;
@@ -45,13 +48,15 @@ function pageOf(r: Read<CodexPage<CodexEntry>>): CodexPage<CodexEntry> {
 }
 
 export async function readCodexContents(): Promise<CodexContents | "not_found"> {
-  const [factsRead, loreRead, historyRead, recentRead] = await Promise.all([
+  const [todayRead, factsRead, loreRead, historyRead, recentRead] = await Promise.all([
+    fetchTodayFunFact(),
     fetchCodexPage("fun_fact", 1, LATELY),
     fetchCodexPage("lore_entry", 1, LATELY),
     fetchCodexPage("history_event", 1, 1),
     fetchRecentEntries(LATELY),
   ]);
-  if (![factsRead, loreRead, historyRead, recentRead].every(isFound)) return "not_found";
+  if (todayRead === "not_found" || ![factsRead, loreRead, historyRead, recentRead].every(isFound)) return "not_found";
+  const daily = todayRead?.funFact && todayRead.clubDate ? { fact: todayRead.funFact, clubDate: todayRead.clubDate } : null;
   const facts = pageOf(factsRead);
   const lore = pageOf(loreRead);
   const history = pageOf(historyRead);
@@ -68,6 +73,7 @@ export async function readCodexContents(): Promise<CodexContents | "not_found"> 
   for (const r of historyReads) if (r && r !== "not_found") known.set(r.id, r);
 
   return {
+    daily,
     facts: facts.data,
     doors: {
       history_event: { count: history.total, entry: pageOf(latestRead).data[0] ?? null },

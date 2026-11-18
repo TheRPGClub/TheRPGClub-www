@@ -1,7 +1,7 @@
 import type { TElement, TText, Value } from "platejs";
 
 import type { RichTextSchema } from "./schema";
-import { nodeText, paragraph, richTextPlainText } from "./text";
+import { isRichTextEmpty, nodeText, paragraph } from "./text";
 
 // Guards against a hand-crafted payload nesting lists thousands deep; the
 // editor cannot produce anything close to this.
@@ -29,7 +29,7 @@ export function sanitizeRichText(
   }
 
   if (blocks.length === 0) return null;
-  if (richTextPlainText(blocks).length === 0) return null;
+  if ((schema.isEmpty ?? isRichTextEmpty)(blocks)) return null;
   return blocks;
 }
 

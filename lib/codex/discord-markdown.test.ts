@@ -46,9 +46,14 @@ describe("storyToDiscord", () => {
 
   it("escapes text that would read as markdown or a token", () => {
     expect(convert([p(t("2*3 is_6 | `x` <@1> [y]"))])).toBe("2\\*3 is\\_6 \\| \\`x\\` \\<@1> \\[y\\]");
-    expect(convert([p(t("# not a heading")), p(t("> nor a quote")), p(t("1. nor a list"))])).toBe(
-      "\\# not a heading\n\n\\> nor a quote\n\n\\1. nor a list",
+    expect(convert([p(t("# not a heading")), p(t("> nor a quote")), p(t("1. nor a list")), p(t("-# nor subtext"))])).toBe(
+      "\\# not a heading\n\n\\> nor a quote\n\n1\\. nor a list\n\n\\-# nor subtext",
     );
+    expect(convert([p(t("12. Twelve\n  3. three"))])).toBe("12\\. Twelve\n  3\\. three");
+  });
+
+  it("escapes a slash command token, and leaves @everyone as written (the bot never pings)", () => {
+    expect(convert([p(t("Run </codex lore:123> @everyone @here"))])).toBe("Run \\</codex lore:123> @everyone @here");
   });
 
   it("writes quotes and nested lists line by line", () => {

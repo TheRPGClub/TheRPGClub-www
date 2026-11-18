@@ -1,12 +1,14 @@
 "use client";
 
-import { useId, useRef, useState, useTransition, type ReactNode } from "react";
-import { useMentionPicker } from "@/hooks/use-mention-picker";
-import { useDeskLinks, type DeskLinks } from "@/hooks/use-desk-links";
+import { useId, type ReactNode } from "react";
+import { RotateCcw } from "lucide-react";
+import { useFunFactComposer } from "@/hooks/use-fun-fact-composer";
+import type { DeskLinks } from "@/hooks/use-desk-links";
 import { FUN_FACT_MAX, type PickedMention } from "@/lib/codex/fun-fact-text";
 import type { FunFactActionResult } from "@/app/actions/codex-fun-facts";
 import type { CodexEntryLink } from "@/lib/codex/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MentionList } from "./mention-list";
 import { FunFactSeeAlsoPanel, SeeAlsoToggle } from "./fun-fact-see-also";
@@ -15,9 +17,8 @@ import { FunFactSeeAlsoPanel, SeeAlsoToggle } from "./fun-fact-see-also";
 // 300 characters the API keeps (mentions counted as they're stored), and a
 // row of actions led by See also (www#127), whose picker opens under the
 // field. `actions` gets whether the text can be sent and whether it's being
-// sent; the submit button inside it submits the form. `onSave` gets the
-// links too, to save once the Fun Fact is; a result that is ok with an
-// `error` saved the Fun Fact but not all of the rest, and says so.
+// sent; the submit button inside it submits the form. The state and the
+// sending live in hooks/use-fun-fact-composer.ts.
 export function FunFactComposer({
   label,
   initial = { text: "", picked: [] },
@@ -39,31 +40,8 @@ export function FunFactComposer({
   actions: (state: { ready: boolean; pending: boolean }) => ReactNode;
 }) {
   const id = useId();
-  const field = useRef<HTMLTextAreaElement>(null);
-  const picker = useMentionPicker(initial, field);
-  const [error, setError] = useState<string | null>(null);
-  const links = useDeskLinks(initialLinks);
-  const [seeAlso, setSeeAlso] = useState(false);
-  const [pending, startTransition] = useTransition();
-  const length = picker.encoded.trim().length;
-  const over = length > FUN_FACT_MAX;
-  const ready = length > 0 && !over && !pending;
-
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!ready) return;
-    setError(null);
-    startTransition(async () => {
-      const result = await onSave(picker.encoded.trim(), links);
-      if (!result.ok) return setError(result.error ?? "That didn't save. Try again.");
-      if (resetOnSave) {
-        picker.reset();
-        links.reset();
-        setSeeAlso(false);
-      }
-      if (result.error) setError(result.error);
-    });
-  }
+  const { field, picker, links, length, over, ready, pending, error, seeAlso, toggleSeeAlso, submit, retryLinks } =
+    useFunFactComposer({ initial, initialLinks, onSave, resetOnSave });
 
   return (
     <form onSubmit={submit} aria-label={label}>
@@ -101,13 +79,19 @@ export function FunFactComposer({
         </span>
       </div>
       {error && (
-        <p role="alert" className="mt-2 text-sm text-destructive">
+        <p role="alert" className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-destructive">
           {error}
+          {retryLinks && (
+            <Button type="button" variant="ghost" size="xs" disabled={pending} onClick={retryLinks}>
+              <RotateCcw aria-hidden />
+              Retry See also
+            </Button>
+          )}
         </p>
       )}
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <SeeAlsoToggle links={links} open={seeAlso} onToggle={() => setSeeAlso((v) => !v)} controls={`${id}-see-also`} />
-        {actions({ ready, pending })}
+        <SeeAlsoToggle links={links} open={seeAlso} onToggle={toggleSeeAlso} controls={`${id}-see-also`} />
+        {actions({ ready: ready, pending: pending })}
       </div>
       {seeAlso && <FunFactSeeAlsoPanel id={`${id}-see-also`} links={links} self={self} />}
     </form>

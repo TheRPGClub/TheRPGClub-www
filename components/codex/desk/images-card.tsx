@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { ImagePlus } from "lucide-react";
 import { useEditorRef } from "platejs/react";
-import { photoKey, type LoreDesk } from "@/hooks/use-lore-desk";
+import { photoKey } from "@/hooks/use-desk-photos";
+import type { LoreDesk } from "@/hooks/use-lore-desk";
 import { placeAtCaret } from "@/hooks/use-photo-drop";
 import { imageIndex } from "@/lib/codex/lore-story";
 import { IMAGES_MAX } from "@/lib/codex/story-schema";

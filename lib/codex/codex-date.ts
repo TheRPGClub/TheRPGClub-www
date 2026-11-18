@@ -1,15 +1,23 @@
 import type { DatePrecision } from "./types";
 
-// A Codex date at its precision, as the Club Lore surfaces show it and as
-// the desk's Date card writes it (designs 3D, 4D and 5D).
+// A Codex date at its precision (a Lore Entry's, a History Event's), as the
+// Club Codex surfaces show it and as the desks' Date card writes it (designs
+// 2B, 3D, 4D and 5D).
+
+export const DATE_PRECISIONS: readonly DatePrecision[] = ["day", "month", "year"];
+
+export function isDatePrecision(value: unknown): value is DatePrecision {
+  return typeof value === "string" && (DATE_PRECISIONS as readonly string[]).includes(value);
+}
 
 const SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const LONG_MONTHS = [
+export const LONG_MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
 
-function parts(occurredOn: string | null): { y: number; m: number; d: number } | null {
+// A stored `YYYY-MM-DD` as numbers, or null when it isn't one.
+export function dateParts(occurredOn: string | null): { y: number; m: number; d: number } | null {
   const match = occurredOn ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(occurredOn) : null;
   return match ? { y: Number(match[1]), m: Number(match[2]), d: Number(match[3]) } : null;
 }
@@ -20,7 +28,7 @@ export function dateStamp(
   occurredOn: string | null,
   precision: DatePrecision | null,
 ): { lines: string[]; note: string } | null {
-  const date = parts(occurredOn);
+  const date = dateParts(occurredOn);
   if (!date || !precision) return null;
   const month = SHORT_MONTHS[date.m - 1];
   if (precision === "year") return { lines: [String(date.y)], note: "That year" };
@@ -30,7 +38,7 @@ export function dateStamp(
 
 // A spine's date: "12 Aug 2020", "March 2019", "2021" or "Undated".
 export function spineDate(occurredOn: string | null, precision: DatePrecision | null): string {
-  const date = parts(occurredOn);
+  const date = dateParts(occurredOn);
   if (!date || !precision) return "Undated";
   if (precision === "year") return String(date.y);
   if (precision === "month") return `${LONG_MONTHS[date.m - 1]} ${date.y}`;
@@ -51,7 +59,7 @@ export interface DateDraft {
 }
 
 export function dateDraft(occurredOn: string | null, precision: DatePrecision | null, today = new Date()): DateDraft {
-  const date = parts(occurredOn);
+  const date = dateParts(occurredOn);
   if (!date || !precision) {
     return { choice: "none", day: String(today.getDate()), month: today.getMonth() + 1, year: String(today.getFullYear()) };
   }

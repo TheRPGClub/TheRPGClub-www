@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { CollectionMeta } from "./types";
+import { isHistoryKind } from "@/lib/codex/history";
 import type { CodexEntry, CodexEntryLink, CodexPart } from "@/lib/codex/types";
 
 // The Club Codex reads (spec api#397, `/api/v1/codex`). Every part belongs to
@@ -47,15 +48,45 @@ const PART_PATH: Record<CodexPart, string> = {
   history_event: "/api/v1/codex/history_events",
 };
 
+// An entry as the site uses it: a Kind it doesn't know reads as none.
+function entryOf(entry: CodexEntry): CodexEntry {
+  return entry.kind === null || isHistoryKind(entry.kind) ? entry : { ...entry, kind: null };
+}
+
 // A page of one part's entries: Fun Facts and Lore Entries newest first,
 // History Events in date order.
-export function fetchCodexPage(part: CodexPart, page: number, per: number): Promise<Read<CodexPage<CodexEntry>>> {
-  return readPage<CodexEntry>(PART_PATH[part], { page, per });
+export async function fetchCodexPage(part: CodexPart, page: number, per: number): Promise<Read<CodexPage<CodexEntry>>> {
+  const result = await readPage<CodexEntry>(PART_PATH[part], { page, per });
+  return result === null || result === "not_found" ? result : { ...result, data: result.data.map(entryOf) };
 }
 
 export async function fetchCodexEntry(part: CodexPart, id: number): Promise<Read<CodexEntry>> {
   const body = await read<CodexEntry>(`${PART_PATH[part]}/${id}`);
-  return body === null || body === "not_found" ? body : body.data;
+  return body === null || body === "not_found" ? body : entryOf(body.data);
+}
+
+// The Fun Fact the Daily Fun Fact posted for the club's latest posting day
+// (`GET /codex/fun_facts/today`): before 15:00 New York that is an earlier
+// day's, so `clubDate` says which. A pure read: the bot's queue never moves.
+// Null (inside the result) when nothing has been posted yet or that Fun Fact
+// is gone; null for the whole read when it failed.
+export interface TodayFunFact {
+  funFact: CodexEntry | null;
+  clubDate: string | null;
+}
+
+export async function fetchTodayFunFact(): Promise<Read<TodayFunFact>> {
+  try {
+    const res = await apiFetch("/api/v1/codex/fun_facts/today", FETCH);
+    if (res.status === 404) return "not_found";
+    if (!res.ok) return null;
+    const body = (await res.json()) as { fun_fact?: CodexEntry | null; club_date?: unknown };
+    const fact = body.fun_fact && typeof body.fun_fact === "object" && body.fun_fact.part === "fun_fact" ? entryOf(body.fun_fact) : null;
+    const clubDate = typeof body.club_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(body.club_date) ? body.club_date : null;
+    return { funFact: fact, clubDate: fact ? clubDate : null };
+  } catch {
+    return null;
+  }
 }
 
 // The newest entries across the three parts, in the short link shape.

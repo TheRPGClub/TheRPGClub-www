@@ -34,14 +34,22 @@ const MARKS: [string, string][] = [
 ];
 
 // Markdown characters anywhere in a line, and `<` where it would start a
-// mention, channel, emoji or timestamp token.
+// mention, channel, emoji, timestamp or slash command token.
+//
+// `@everyone` and `@here` are left as written: the bot posts every Club
+// Codex message with allowed mentions set to none (bot#1562, bot#1563), so
+// they never ping.
 function escapeText(text: string): string {
-  return text.replace(/[\\*_~|`[\]]/g, "\\$&").replace(/<(?=[@#:at])/g, "\\<");
+  return text.replace(/[\\*_~|`[\]]/g, "\\$&").replace(/<(?=[@#:at/])/g, "\\<");
 }
 
-// A line that would read as a heading, quote or list item.
+// A line that would read as a heading, subtext, quote or list item. A
+// backslash only escapes punctuation in Discord, so an ordered list's
+// number keeps its digits and its dot is escaped ("1\. ").
 function escapeLineStart(line: string): string {
-  return line.replace(/^(\s*)(#{1,3} |>|[-+*] |\d+\. )/, "$1\\$2");
+  return line
+    .replace(/^(\s*)(#{1,3} |-# |>|[-+*] )/, "$1\\$2")
+    .replace(/^(\s*)(\d+)\. /, "$1$2\\. ");
 }
 
 function children(node: Node): Node[] {

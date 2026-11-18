@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { CodexEntry } from "@/lib/codex/types";
-import { dateStamp } from "@/lib/codex/lore-date";
+import { dateStamp } from "@/lib/codex/codex-date";
 import { titleLines } from "@/lib/codex/lore-story";
 import { addedOn } from "@/lib/codex/wall";
 import { LoreAuthor } from "./lore-author";

@@ -3,6 +3,7 @@ import {
   bookPage,
   chapterDate,
   chapterPhotos,
+  clubYears,
   eventPage,
   focusQuery,
   historyEventParam,
@@ -14,9 +15,9 @@ import {
   readDescription,
   timelineHref,
 } from "./history";
-import type { CodexEntry } from "./types";
+import type { CodexEntry, HistoryKind } from "./types";
 
-function event(id: number, occurred_on: string, kind = "milestone", extra: Partial<CodexEntry> = {}): CodexEntry {
+function event(id: number, occurred_on: string, kind: HistoryKind | null = "milestone", extra: Partial<CodexEntry> = {}): CodexEntry {
   return {
     id,
     part: "history_event",
@@ -74,9 +75,9 @@ describe("kinds", () => {
     expect(kindCounts(book)).toEqual({ founding: 1, staff: 2, platform: 1, rules: 0, milestone: 1 });
   });
 
-  it("reads a Kind's ink, an unknown one as Milestone's", () => {
+  it("reads a Kind's ink, none as Milestone's", () => {
     expect(kindInk("staff")).toBe("var(--color-kind-staff)");
-    expect(kindInk("bogus")).toBe("var(--color-kind-milestone)");
+    expect(kindInk(null)).toBe("var(--color-kind-milestone)");
   });
 });
 
@@ -151,6 +152,8 @@ describe("readDescription", () => {
   it("reads one without rich text from its Discord text, else an empty page", () => {
     const value = readDescription(event(1, "2018-01-01", "staff", { body: "First.\n\nSecond." }));
     expect(value).toHaveLength(2);
+    const mentioned = readDescription(event(1, "2018-01-01", "staff", { body: "<@7> \\*joins\\*", mentions: { "7": { user_id: "7", name: "Mog", avatar_url: "" } } }));
+    expect(mentioned).toEqual([{ type: "p", children: [{ type: "mention", userId: "7", value: "Mog", children: [{ text: "" }] }, { text: " *joins*" }] }]);
     expect(readDescription(null)).toHaveLength(1);
   });
 });
@@ -192,5 +195,14 @@ describe("See also on the timeline (www#127)", () => {
 
   it("sends one the timeline doesn't hold through ?event=", () => {
     expect(timelineHref(book, q, 99, 2)).toBe("/codex/history?event=99#history-event-99");
+  });
+});
+
+describe("clubYears", () => {
+  it("counts the years since the first History Event in words", () => {
+    expect(clubYears(2016, 2026)).toBe("Ten years");
+    expect(clubYears(2016, 2027)).toBe("Eleven years");
+    expect(clubYears(2025, 2026)).toBe("One year");
+    expect(clubYears(1990, 2026)).toBe("36 years");
   });
 });

@@ -1,6 +1,7 @@
 import { ArrowRight, Link2, Pencil } from "lucide-react";
 import type { CodexEntry } from "@/lib/codex/types";
-import { spineDate } from "@/lib/codex/lore-date";
+import { spineDate } from "@/lib/codex/codex-date";
+import { discordToStory } from "@/lib/codex/discord-story";
 import { storyOpening } from "@/lib/codex/lore-story";
 import { LORE_PATH } from "@/lib/codex/paths";
 import { ButtonLink } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { LoreDelete } from "./lore-delete";
 // the story's opening lines, up to three of its images, who told it, and
 // Read it; Edit and Delete for its author or a Moderator.
 export function LoreSlideOut({ entry }: { entry: CodexEntry }) {
-  const opening = storyOpening(entry.rich_body) || storyOpening([{ type: "p", children: [{ text: entry.body?.split(/\n{2,}/)[0] ?? "" }] }]);
+  const opening = storyOpening(entry.rich_body) || storyOpening(entry.body ? discordToStory(entry.body) : null);
   const date = entry.occurred_on ? spineDate(entry.occurred_on, entry.date_precision) : null;
   const href = `${LORE_PATH}/${entry.id}`;
   return (

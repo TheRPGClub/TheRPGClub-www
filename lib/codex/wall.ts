@@ -1,5 +1,6 @@
 import { clubDayOf, clubToday, formatDay, type IsoDay } from "@/lib/challenges/dates";
-import type { DatePrecision } from "@/lib/codex/types";
+import { LONG_MONTHS, dateParts } from "@/lib/codex/codex-date";
+import type { CodexEntry, DatePrecision } from "@/lib/codex/types";
 
 // Small rules shared by the Codex contents page and the Fun Facts wall
 // (www#124).
@@ -43,20 +44,45 @@ export function addedOn(createdAt: string): string {
   return `${formatDay(day)} ${day.slice(0, 4)}`;
 }
 
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// When the Daily Fun Fact went out, in the date label style (1C): "Wed 18
+// Nov · 15:00", the bot's posting time in New York on that club day.
+export const DAILY_FUN_FACT_TIME = "15:00";
+
+export function dailyLabel(clubDate: string): string {
+  const date = dateParts(clubDate);
+  if (!date) return DAILY_FUN_FACT_TIME;
+  const weekday = WEEKDAYS[new Date(Date.UTC(date.y, date.m - 1, date.d)).getUTCDay()];
+  return `${weekday} ${date.d} ${SHORT_MONTHS[date.m - 1]} · ${DAILY_FUN_FACT_TIME}`;
+}
+
+// The contents page's lead panel (1C): the Daily Fun Fact last posted under
+// its heading and day, then the newest Fun Facts for "Another one"; or, with
+// none posted, the newest Fun Facts "From the wall".
+export interface FactPanel {
+  heading: "Daily Fun Fact" | "Fun Fact";
+  label: string;
+  facts: CodexEntry[];
+}
+
+export function factPanel(daily: { fact: CodexEntry; clubDate: string } | null, newest: readonly CodexEntry[]): FactPanel {
+  if (daily) {
+    const rest = newest.filter((fact) => fact.id !== daily.fact.id);
+    return { heading: "Daily Fun Fact", label: dailyLabel(daily.clubDate), facts: [daily.fact, ...rest] };
+  }
+  return { heading: "Fun Fact", label: newest.length > 0 ? "From the wall" : "None on the wall yet", facts: [...newest] };
+}
 
 // When something happened, at the precision the club remembers it: "18
 // November 2026", "March 2018" or "2016". Null when it has no date.
 export function occurredLabel(occurredOn: string | null, precision: DatePrecision | null): string | null {
-  const match = occurredOn ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(occurredOn) : null;
-  if (!match || !precision) return null;
-  const [, y, m, d] = match;
-  if (precision === "year") return y;
-  const month = MONTH_NAMES[Number(m) - 1];
-  return precision === "month" ? `${month} ${y}` : `${Number(d)} ${month} ${y}`;
+  const date = dateParts(occurredOn);
+  if (!date || !precision) return null;
+  if (precision === "year") return String(date.y);
+  const month = LONG_MONTHS[date.m - 1];
+  return precision === "month" ? `${month} ${date.y}` : `${date.d} ${month} ${date.y}`;
 }
 
 // The wall's `?page=`: a whole number from 1, else the first page.

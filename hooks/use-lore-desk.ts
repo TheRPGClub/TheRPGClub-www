@@ -9,49 +9,24 @@ import {
   uploadLoreImageAction,
   type LoreDraft,
 } from "@/app/actions/codex-lore";
-import { dateDraft, dateFields, type DateDraft } from "@/lib/codex/lore-date";
-import { imageIndex, resolvePending, storyPendingKeys } from "@/lib/codex/lore-story";
+import { dateDraft, dateFields, type DateDraft } from "@/lib/codex/codex-date";
+import { runLoreSave } from "@/lib/codex/lore-save";
+import { imageIndex, storyPendingKeys } from "@/lib/codex/lore-story";
 import { LORE_PATH } from "@/lib/codex/paths";
 import { IMAGES_MAX, STORY_MAX, storyPlainText } from "@/lib/codex/story-schema";
 import type { CodexEntry } from "@/lib/codex/types";
-import { imageFileProblem } from "@/lib/live-events";
+import { photoKey, useDeskPhotos } from "./use-desk-photos";
 import { useDeskLinks } from "./use-desk-links";
 
 // The Lore desk's state and its save (www#125, design 5D): the title, the
 // story (the editor's value), the Date card, and the drawer's photos.
 //
-// A photo is one the entry already has (`id`) or one picked on this visit
-// (`file`, shown from a local preview until it is uploaded). Saving runs the
-// steps in app/actions/codex-lore.ts: create the entry if it is new, delete
-// the images the story no longer places, upload the placed photos, then save
-// the story with their ids and urls, then its See also links (www#127). A
-// photo that fails keeps its slot with the reason; saving again picks up
+// Saving runs the actions in app/actions/codex-lore.ts in the order
+// lib/codex/lore-save.ts sets: no photo is deleted before a story without it
+// has saved. A failed step keeps what the desk holds; saving again picks up
 // where it stopped.
 
-export interface DeskPhoto {
-  key: string;
-  url: string;
-  id?: number;
-  file?: File;
-  state: "ready" | "uploading" | "failed";
-  error?: string;
-}
-
-// What the manuscript sheet (and its photo drop) reads of a desk: the Lore
-// desk's and the History Event desk's (www#126).
-export interface SheetDesk {
-  title: string;
-  setTitle: (title: string) => void;
-  count: number;
-  dirty: boolean;
-  photos: DeskPhoto[];
-}
-
-export function photoKey(photo: DeskPhoto) {
-  return photo.id !== undefined ? { id: photo.id } : { pendingKey: photo.key };
-}
-
-let counter = 0;
+const UNREACHED = "Couldn't reach the site. Check your connection and save again.";
 
 export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
   const router = useRouter();
@@ -59,20 +34,29 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
   const [title, setTitle] = useState(entry?.title ?? "");
   const [value, setValue] = useState<Value>(initialValue);
   const [date, setDate] = useState<DateDraft>(() => dateDraft(entry?.occurred_on ?? null, entry?.date_precision ?? null));
-  const [photos, setPhotos] = useState<DeskPhoto[]>(
-    () => entry?.images.map((image) => ({ key: `image-${image.id}`, id: image.id, url: image.url, state: "ready" as const })) ?? [],
-  );
-  const [uploaded] = useState(() => new Map<string, { id: number; url: string }>());
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A create that may have gone through without saying so: publishing again
+  // could make a second Lore Entry, so the desk stops here.
+  const [unsure, setUnsure] = useState(false);
+  const photos = useDeskPhotos(entry?.images ?? [], () => setDirty(true));
   const links = useDeskLinks(entry?.links ?? [], () => setDirty(true));
 
   const count = storyPlainText(value).length;
   const dateResult = dateFields(date);
-  const missing =
-    !title.trim() ? "Give it a title." : count === 0 ? "Write the story." : count > STORY_MAX ? `Over ${STORY_MAX} characters.` : "error" in dateResult ? dateResult.error : null;
-  const unplaced = photos.filter((photo) => imageIndex(value, photoKey(photo)) < 0);
+  const missing = unsure
+    ? "Check Club Lore first."
+    : !title.trim()
+      ? "Give it a title."
+      : count === 0
+        ? "Write the story."
+        : count > STORY_MAX
+          ? `Over ${STORY_MAX} characters.`
+          : "error" in dateResult
+            ? dateResult.error
+            : null;
+  const unplaced = photos.photos.filter((photo) => imageIndex(value, photoKey(photo)) < 0);
 
   function touch<T>(set: (v: T) => void) {
     return (v: T) => {
@@ -82,25 +66,7 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
   }
 
   function addFiles(files: File[]) {
-    const room = Math.max(IMAGES_MAX - photos.length, 0);
-    const problems = files.map((file) => imageFileProblem(file)).filter(Boolean);
-    const usable = files.filter((file) => !imageFileProblem(file));
-    const added = usable.slice(0, room).map((file): DeskPhoto => {
-      counter += 1;
-      return { key: `new-${Date.now()}-${counter}`, url: URL.createObjectURL(file), file, state: "ready" };
-    });
-    if (added.length > 0) touch(setPhotos)([...photos, ...added]);
-    if (problems.length > 0) setError(problems[0]!.replace(", or link it by URL", ""));
-    else if (usable.length > room) setError(`A Lore Entry holds ${IMAGES_MAX} photos.`);
-    else setError(null);
-  }
-
-  function removePhoto(key: string) {
-    touch(setPhotos)(photos.filter((photo) => photo.key !== key));
-  }
-
-  function mark(key: string, patch: Partial<DeskPhoto>) {
-    setPhotos((list) => list.map((photo) => (photo.key === key ? { ...photo, ...patch } : photo)));
+    setError(photos.addFiles(files, `A Lore Entry holds ${IMAGES_MAX} photos.`));
   }
 
   function draftOf(story: Value): LoreDraft {
@@ -113,43 +79,30 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
     setSaving(true);
     setError(null);
     try {
-      let id = entryId;
-      const created = id === null;
-      if (id === null) {
-        const result = await saveLoreEntryAction(null, draftOf(value));
-        if (!result.ok || !result.id) return setError(result.error ?? "That didn't save. Try again.");
-        id = result.id;
-        setEntryId(id);
-      } else {
-        const pruned = await pruneLoreImagesAction(id, resolvePending(value, uploaded));
-        if (!pruned.ok) return setError(pruned.error ?? "That didn't save. Try again.");
-      }
-      let failed = false;
-      for (const key of storyPendingKeys(value)) {
-        const photo = photos.find((p) => p.key === key);
-        if (!photo?.file || uploaded.has(key)) continue;
-        mark(key, { state: "uploading", error: undefined });
-        const form = new FormData();
-        form.append("file", photo.file, photo.file.name);
-        const result = await uploadLoreImageAction(id, form);
-        if (result.ok && result.image) {
-          uploaded.set(key, result.image);
-          mark(key, { state: "ready" });
-        } else {
-          failed = true;
-          mark(key, { state: "failed", error: result.error });
-        }
-      }
-      if (!created || uploaded.size > 0) {
-        const result = await saveLoreEntryAction(id, draftOf(resolvePending(value, uploaded)));
-        if (!result.ok) return setError(result.error ?? "That didn't save. Try again.");
-      }
-      const linkError = await links.save(id);
-      if (linkError) return setError(`The Lore Entry is saved, but See also isn't: ${linkError}`);
-      if (failed) return setError("The Lore Entry is saved, but a photo didn't upload. Retry it or remove it, then save again.");
+      const plan = {
+        entryId,
+        existing: entry !== null,
+        value,
+        adding: photos.waiting(storyPendingKeys(value)),
+        uploaded: photos.uploaded,
+      };
+      const outcome = await runLoreSave(plan, {
+        save: (id, story) => saveLoreEntryAction(id, draftOf(story)),
+        prune: (id, story) => pruneLoreImagesAction(id, story),
+        uploadEach: (id, keys) => photos.uploadEach(keys, (form) => uploadLoreImageAction(id, form)),
+        saveLinks: (id) => links.save(id),
+        onEntry: setEntryId,
+      });
+      if (outcome.id !== null) setEntryId(outcome.id);
+      if (outcome.unsure) setUnsure(true);
+      if (outcome.error !== null) return setError(outcome.error);
       setDirty(false);
-      router.push(`${LORE_PATH}/${id}`);
+      router.push(`${LORE_PATH}/${outcome.id}`);
       router.refresh();
+    } catch {
+      // The request itself failed (the site unreachable): what saved so far
+      // stays saved, and saving again picks up from there.
+      setError(UNREACHED);
     } finally {
       setSaving(false);
     }
@@ -163,9 +116,9 @@ export function useLoreDesk(entry: CodexEntry | null, initialValue: Value) {
     setValue: touch(setValue),
     date,
     setDate: touch(setDate),
-    photos,
+    photos: photos.photos,
     addFiles,
-    removePhoto,
+    removePhoto: photos.remove,
     links,
     count,
     missing,

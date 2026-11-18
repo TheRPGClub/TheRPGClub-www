@@ -2,7 +2,7 @@
 
 import { CornerDownRight, RotateCcw, X } from "lucide-react";
 import type { Value } from "platejs";
-import { photoKey, type DeskPhoto } from "@/hooks/use-lore-desk";
+import { photoKey, type DeskPhoto } from "@/hooks/use-desk-photos";
 import { PHOTO_DRAG_TYPE } from "@/hooks/use-photo-drop";
 import { paragraphBefore } from "@/lib/codex/lore-story";
 import { cn } from "@/lib/utils";

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { addedDay, cardNumber, cardTilt, occurredLabel, pageParam, pageRange } from "@/lib/codex/wall";
+import { addedDay, cardNumber, cardTilt, dailyLabel, factPanel, occurredLabel, pageParam, pageRange } from "@/lib/codex/wall";
+import type { CodexEntry } from "@/lib/codex/types";
 
 describe("cardTilt", () => {
   it("is stable per id and stays a slight tilt", () => {
@@ -66,5 +67,30 @@ describe("pageParam", () => {
     expect(pageParam("0")).toBe(1);
     expect(pageParam("2.5")).toBe(1);
     expect(pageParam("abc")).toBe(1);
+  });
+});
+
+describe("dailyLabel", () => {
+  it("names the club day the Daily Fun Fact went out, at 15:00", () => {
+    expect(dailyLabel("2026-11-18")).toBe("Wed 18 Nov · 15:00");
+    expect(dailyLabel("2027-01-03")).toBe("Sun 3 Jan · 15:00");
+    expect(dailyLabel("not a day")).toBe("15:00");
+  });
+});
+
+describe("factPanel", () => {
+  const fact = (id: number) => ({ id, part: "fun_fact", body: `Fact ${id}` }) as CodexEntry;
+
+  it("leads with the Daily Fun Fact, then the newest others", () => {
+    expect(factPanel({ fact: fact(2), clubDate: "2026-11-18" }, [fact(3), fact(2), fact(1)])).toEqual({
+      heading: "Daily Fun Fact",
+      label: "Wed 18 Nov · 15:00",
+      facts: [fact(2), fact(3), fact(1)],
+    });
+  });
+
+  it("falls back to the newest Fun Facts when none has been posted", () => {
+    expect(factPanel(null, [fact(3), fact(2)])).toEqual({ heading: "Fun Fact", label: "From the wall", facts: [fact(3), fact(2)] });
+    expect(factPanel(null, [])).toEqual({ heading: "Fun Fact", label: "None on the wall yet", facts: [] });
   });
 });

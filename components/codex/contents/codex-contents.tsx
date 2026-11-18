@@ -9,15 +9,16 @@ import {
   NEW_LORE_PATH,
   PART_NAME,
 } from "@/lib/codex/paths";
-import { occurredLabel } from "@/lib/codex/wall";
+import { factPanel, occurredLabel } from "@/lib/codex/wall";
 import { PageHeader } from "@/components/templates/page-header";
 import { FunFactText } from "@/components/codex/fun-fact-text";
 import { CodexDoor } from "./codex-door";
 import { FactBand } from "./fact-band";
 import { LatelyList } from "./lately-list";
 
-// The Club Codex contents page (design 1C, www#124): a Fun Fact leads, then a
-// door per part in its ink, then the newest entries across all three.
+// The Club Codex contents page (design 1C, www#124): the Daily Fun Fact
+// leads, then a door per part in its ink, then the newest entries across all
+// three.
 export function CodexContents({
   contents,
   canAdd,
@@ -36,7 +37,6 @@ export function CodexContents({
   const history = doors.history_event.entry;
   const lore = doors.lore_entry.entry;
   const fact = doors.fun_fact.entry;
-  const facts = contents.facts;
   const historyDate = history && occurredLabel(history.occurred_on, history.date_precision);
 
   return (
@@ -48,7 +48,7 @@ export function CodexContents({
         description="The club's story about itself, in three parts. Club History is the record; Club Lore is the stories we still tell; Fun Facts are the small things."
       />
       <div className="mt-6">
-        <FactBand facts={facts} canAdd={canAdd} />
+        <FactBand panel={factPanel(contents.daily, contents.facts)} canAdd={canAdd} />
       </div>
       <div className="mt-7 grid gap-5 lg:grid-cols-3">
         <CodexDoor
