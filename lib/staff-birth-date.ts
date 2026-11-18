@@ -53,3 +53,8 @@ export function staffFieldsAfterSave(
   return kind === "date" ? birthDateFields(after.birth_date) : fields;
 }
 
+// The one-line confirm before staff stop a member sharing, which they
+// can't undo.
+export function staffStopConfirm(name: string): string {
+  return `Turn it off? Only ${name} can turn it back on.`;
+}

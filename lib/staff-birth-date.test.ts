@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { BirthDate } from "@/lib/birth-date";
-import { staffFieldsAfterSave, staffSavedLine, staffSharing } from "@/lib/staff-birth-date";
+import { staffFieldsAfterSave, staffSavedLine, staffSharing, staffStopConfirm } from "@/lib/staff-birth-date";
 
 const doc = (birth_date: string | null, birthday_shared = false): BirthDate => ({
   user_id: "1",
@@ -66,5 +66,11 @@ describe("staffFieldsAfterSave", () => {
 
   it("keeps an unsaved date edit when sharing is stopped", () => {
     expect(staffFieldsAfterSave("sharing", editing, doc("1990-05-04"))).toBe(editing);
+  });
+});
+
+describe("staffStopConfirm", () => {
+  it("asks once, naming who can turn it back on", () => {
+    expect(staffStopConfirm("Mira")).toBe("Turn it off? Only Mira can turn it back on.");
   });
 });
