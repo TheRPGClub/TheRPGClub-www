@@ -111,6 +111,8 @@ export interface ChallengeRun {
     name: string;
     challenge_format: ChallengeFormat;
     schedule: ChallengeSchedule;
+    // The Challenge's tint (absent from an older API: the curated one then).
+    tint?: ChallengeTint | null;
     // Slots only (false / null otherwise, absent from an older API).
     counts_past_play?: boolean;
     slots?: ChallengeSlots | null;
