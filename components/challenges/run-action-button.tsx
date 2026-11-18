@@ -30,7 +30,8 @@ export function RunActionButton({
       notices.length > 0 && setNotice({ title: "Your Run has started", message: notices.map((n) => n.message).join(" ") }),
   });
 
-  if (action.kind === "none") return null;
+  // Sign-up actions belong to the board and the Edition page.
+  if (action.kind === "none" || action.kind === "signup" || action.kind === "signed-up") return null;
   if (action.kind === "abandon") {
     return (
       <ConfirmDialog

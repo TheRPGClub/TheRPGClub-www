@@ -1,13 +1,13 @@
 import type { FlyerExtras, Clock } from "@/lib/challenges/board";
 import { whenLabel } from "@/lib/challenges/dates";
-import type { RunAction } from "@/lib/challenges/run-action";
+import { onBoard, type RunAction } from "@/lib/challenges/run-action";
 import { hostAvatar, hostName } from "@/lib/challenges/facts";
 import { challengeTint, tintStyle } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 import { FormatLabel } from "@/components/challenges/format-mark";
 import { HostLine } from "@/components/challenges/host-badge";
 import { Count, FlyerTitle, FormatPicture, Tape, YourRunChip } from "@/components/challenges/flyer-parts";
-import { StartRunButton } from "@/components/challenges/start-run-button";
+import { BoardAction } from "@/components/challenges/board-action";
 
 // A running Challenge pasted up as a billboard (surface brief
 // challenges-index, 1A's lead card in flyer language): a straight flyer at
@@ -61,10 +61,10 @@ export function ChallengeBillboard({
         <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-3" />
         <Count value={extras?.finished ?? null} label="Finished" className="ml-3" />
-        {(run || action?.kind === "start") && (
+        {(run || onBoard(action)) && (
           <div className="flex flex-wrap items-center gap-2.5 sm:ml-auto">
             {run && <YourRunChip run={run} bar={challenge.challenge_format === "pool"} />}
-            {action?.kind === "start" && <StartRunButton challengeId={challenge.id} again={action.again} />}
+            <BoardAction action={action} challengeId={challenge.id} today={today} />
           </div>
         )}
       </footer>

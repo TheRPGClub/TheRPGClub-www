@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { FlyerExtras } from "@/lib/challenges/board";
-import type { RunAction } from "@/lib/challenges/run-action";
+import { onBoard, type RunAction } from "@/lib/challenges/run-action";
 import { closedNote, whenLabel } from "@/lib/challenges/dates";
 import { hostAvatar, hostName } from "@/lib/challenges/facts";
 import { challengeTint, flyerTilt, tintStyle } from "@/lib/challenges/tint";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { FormatLabel } from "@/components/challenges/format-mark";
 import { HostLine } from "@/components/challenges/host-badge";
 import { Count, FlyerTitle, FormatPicture, Tape, YourRunChip } from "@/components/challenges/flyer-parts";
-import { StartRunButton } from "@/components/challenges/start-run-button";
+import { BoardAction } from "@/components/challenges/board-action";
 
 // A Challenge pinned to the board (surface brief challenges-index, 1C): a
 // card in the Challenge's tint, paper type, resting at its stable tilt and
@@ -59,10 +59,10 @@ export function ChallengeFlyer({
         <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-auto" />
       </footer>
-      {(run || action?.kind === "start") && (
+      {(run || onBoard(action)) && (
         <div className="mt-3 flex flex-col items-start gap-2.5">
           {run && <YourRunChip run={run} />}
-          {action?.kind === "start" && <StartRunButton challengeId={challenge.id} again={action.again} />}
+          <BoardAction action={action} challengeId={challenge.id} today={today} />
         </div>
       )}
     </article>

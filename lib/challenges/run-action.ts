@@ -1,6 +1,6 @@
 import type { ApiErrorBody } from "@/lib/api/errors";
 import { closedNote, seasonAround, type IsoDay } from "@/lib/challenges/dates";
-import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
+import type { Challenge, ChallengeOpenSignup, ChallengeRun } from "@/lib/challenges/types";
 
 // What the viewer can do about their Run of a Challenge (surface brief
 // challenges-pool: the action at the right of the switch; challenges-index:
@@ -15,23 +15,49 @@ export type RunAction =
   | { kind: "start"; again: boolean }
   // Start a Run, disabled, with the reason ("Opens 22 Sep").
   | { kind: "closed"; reason: string }
-  // Nothing to offer: this Season's Run is had, or an Assignment Challenge,
-  // whose Runs come from an Edition's sign-up (www#110).
+  // An Assignment Challenge on the board: "Sign up" (yellow) for its
+  // Edition while sign-up is open, or "Signed up" once the viewer is.
+  | { kind: "signup"; editionId: number }
+  | { kind: "signed-up"; drawOn: IsoDay }
+  // Nothing to offer: this Season's Run is had, or an Assignment Challenge
+  // outside its sign-up (or without the viewer's sign-ups to go on).
   | { kind: "none" };
+
+// The actions a flyer or billboard shows (BoardAction).
+export function onBoard(action: RunAction | undefined): boolean {
+  return action?.kind === "start" || action?.kind === "signup" || action?.kind === "signed-up";
+}
 
 // The viewer's Runs of one Challenge, whatever their status.
 export function yourRunsOf(runs: readonly ChallengeRun[], challengeId: number, viewerId: string): ChallengeRun[] {
   return runs.filter((r) => r.challenge.id === challengeId && r.user.user_id === viewerId);
 }
 
-export function runActionFor(
-  challenge: Pick<Challenge, "challenge_format" | "schedule" | "season" | "ends_on" | "open">,
-  yourRuns: readonly ChallengeRun[],
+// An Assignment Challenge's Runs come from an Edition's sign-up, one a
+// year, so last year's Active Run doesn't stand in the way. `signups` are
+// the viewer's (`meta.signups`); without them nothing is offered.
+function signupAction(
+  challenge: Pick<Challenge, "assignment">,
+  signups: readonly ChallengeOpenSignup[] | null,
   today: IsoDay,
 ): RunAction {
+  const edition = challenge.assignment?.edition;
+  if (!signups || !edition || edition.phase !== "signup") return { kind: "none" };
+  if (today < edition.signup_opens_on || today >= edition.signup_cutoff_on) return { kind: "none" };
+  return signups.some((s) => s.edition_id === edition.id)
+    ? { kind: "signed-up", drawOn: edition.signup_cutoff_on }
+    : { kind: "signup", editionId: edition.id };
+}
+
+export function runActionFor(
+  challenge: Pick<Challenge, "challenge_format" | "schedule" | "season" | "ends_on" | "open" | "assignment">,
+  yourRuns: readonly ChallengeRun[],
+  today: IsoDay,
+  signups: readonly ChallengeOpenSignup[] | null = null,
+): RunAction {
+  if (challenge.challenge_format === "assignment") return signupAction(challenge, signups, today);
   const active = yourRuns.find((r) => r.status === "active");
   if (active) return { kind: "abandon", runId: active.id };
-  if (challenge.challenge_format === "assignment") return { kind: "none" };
   if (!challenge.open) return { kind: "closed", reason: closedNote(challenge, today) ?? "Closed" };
   // One Run per Season, whatever became of it.
   if (challenge.schedule === "seasonal" && challenge.season) {

@@ -56,14 +56,6 @@ export async function fetchFinishedCount(id: number): Promise<number | null> {
   return body ? paginationOf(body.meta, body.data.length).total : null;
 }
 
-// A member's Runs of every Challenge, newest first.
-export async function fetchMemberRuns(userId: string): Promise<ChallengeRun[] | null> {
-  const body = await readJson<ApiCollection<ChallengeRun>>(
-    `/api/v1/users/${encodeURIComponent(userId)}/challenge_runs?per=${MAX_PER}`,
-  );
-  return body?.data ?? null;
-}
-
 // A member's Runs with their Secret Santa sign-ups still waiting for a draw
 // (`meta.signups`; empty from an API without it).
 export async function fetchMemberRunSheet(
