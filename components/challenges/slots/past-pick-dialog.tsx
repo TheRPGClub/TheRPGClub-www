@@ -7,14 +7,15 @@ import { formatFullDay } from "@/lib/challenges/dates";
 import { usePastPlay } from "@/hooks/use-past-play";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { GameCover } from "@/components/issue/game-cover";
 import { useRunNotice } from "@/components/challenges/run-notice";
 import { YearChoices } from "@/components/challenges/slots/year-choices";
 
 // Pick a past Game Completion (Counts past play, surface brief
 // challenges-slots): the member's Game Completions from before their Run
 // that fit an open year, searchable by title, each with the years it can
-// fill. From an open year's tile it lists only what fits that year. A
-// refusal goes to the panel's notice slip.
+// fill, beside its cover. From an open year's tile it lists only what fits
+// that year. A refusal goes to the panel's notice slip.
 export function PastPickDialog({
   runId,
   year,
@@ -74,20 +75,28 @@ export function PastPickDialog({
           )}
           <ul className="divide-y divide-border">
             {shown.map((p) => (
-              <li key={p.completion_id} className="space-y-2 py-3">
-                <p className="leading-tight">
-                  <span className="font-semibold">{p.title}</span>
-                  <span className="block text-sm text-dim-foreground">
-                    {p.completed_at ? `Cleared ${formatFullDay(p.completed_at)}` : "Cleared, no date"}
-                  </span>
-                </p>
-                <YearChoices
-                  label="Pick it for"
-                  years={year ? [year] : p.open_years}
-                  pending={pending}
-                  empty=""
-                  onPick={(slotYear) => pick(p.completion_id, slotYear)}
+              <li key={p.completion_id} className="flex gap-3 py-3">
+                <GameCover
+                  title={p.title}
+                  coverUrl={p.cover_url ?? null}
+                  className="w-12 shrink-0"
+                  fallbackClassName="text-[0.55rem] p-0.5"
                 />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <p className="leading-tight">
+                    <span className="font-semibold">{p.title}</span>
+                    <span className="block text-sm text-dim-foreground">
+                      {p.completed_at ? `Cleared ${formatFullDay(p.completed_at)}` : "Cleared, no date"}
+                    </span>
+                  </p>
+                  <YearChoices
+                    label="Pick it for"
+                    years={year ? [year] : p.open_years}
+                    pending={pending}
+                    empty=""
+                    onPick={(slotYear) => pick(p.completion_id, slotYear)}
+                  />
+                </div>
               </li>
             ))}
           </ul>
