@@ -82,3 +82,34 @@ export async function fetchHistoryEvents(): Promise<Read<CodexEntry[]>> {
   }
   return events;
 }
+
+// An entry's See also with each linked entry read in full, for the Lore
+// Entry page's band (www#127), which shows a History Event's Kind and date
+// and a Fun Fact's text and author: the short link shape carries only the
+// title. A linked entry that can't be read keeps its short shape (`entry`
+// null). Reads at most LINKED_READS_MAX; any further links stay short.
+const LINKED_READS_MAX = 12;
+
+export async function fetchLinkedEntries(
+  links: readonly CodexEntryLink[],
+): Promise<{ link: CodexEntryLink; entry: CodexEntry | null }[]> {
+  return Promise.all(
+    links.map(async (link, i) => {
+      if (i >= LINKED_READS_MAX) return { link, entry: null };
+      const entry = await fetchCodexEntry(link.part, link.id);
+      return { link, entry: entry === null || entry === "not_found" ? null : entry };
+    }),
+  );
+}
+
+// The wall's page holding Fun Fact `id` (www#127's links to one Fun Fact),
+// counted from the newest Fun Facts, read in one go. Null when it isn't
+// among them or they couldn't be read.
+const FUN_FACT_FIND_MAX = 500;
+
+export async function fetchFunFactPage(id: number, per: number): Promise<number | null> {
+  const read = await readPage<CodexEntryLink>(PART_PATH.fun_fact, { page: 1, per: FUN_FACT_FIND_MAX });
+  if (read === null || read === "not_found") return null;
+  const index = read.data.findIndex((fact) => fact.id === id);
+  return index < 0 ? null : Math.floor(index / per) + 1;
+}

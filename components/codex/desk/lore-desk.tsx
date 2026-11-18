@@ -13,23 +13,22 @@ import { DateCard } from "./date-card";
 import { DeskTopBar } from "./desk-top-bar";
 import { ImagesCard } from "./images-card";
 import { ManuscriptSheet } from "./manuscript-sheet";
+import { SeeAlsoCard } from "./see-also-card";
 
 // The Lore desk (www#125, design 5D): a manuscript sheet for the title and
-// the story, and a drawer of cards beside it for the date and the photos.
-// `seeAlso` is the drawer's See also card, which www#127 adds.
+// the story, and a drawer of cards beside it for the date, the photos and
+// See also (www#127).
 export function LoreDesk({
   entry,
   initialValue,
   author,
   badge,
-  seeAlso,
 }: {
   entry: CodexEntry | null;
   initialValue: Value;
   // "by Mog Whisperer" with their avatar: the author, not the editor.
   author: ReactNode;
   badge?: ReactNode;
-  seeAlso?: ReactNode;
 }) {
   const desk = useLoreDesk(entry, initialValue);
   const canDelete = !!entry?.viewer.can_delete;
@@ -55,10 +54,10 @@ export function LoreDesk({
         )}
         <div className="mt-4.5 grid grid-cols-[minmax(0,1fr)] items-start gap-8.5 lg:grid-cols-[minmax(0,1fr)_360px]">
           <ManuscriptSheet desk={desk} author={author} />
-          <div className="grid gap-5.5 pt-1.5">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-5.5 pt-1.5">
             <DateCard desk={desk} tilt={-1} />
             <ImagesCard desk={desk} tilt={0.8} />
-            {seeAlso}
+            <SeeAlsoCard links={desk.links} self={desk.entryId} tilt={-0.6} />
           </div>
         </div>
         {canDelete && entry && (

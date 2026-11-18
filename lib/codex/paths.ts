@@ -35,12 +35,13 @@ export function funFactAnchor(id: number): string {
   return `fun-fact-${id}`;
 }
 
-// Where an entry reads. A Fun Fact opens the wall at its card (the newest
-// are on the first page, which is where the contents page points).
+// Where an entry reads. A History Event opens the timeline at the page
+// holding it (`?event=`, www#127), and a Fun Fact the wall at the page
+// holding its card (`?fact=`).
 export function entryHref(entry: Pick<CodexEntryLink, "id" | "part">): string {
   if (entry.part === "lore_entry") return `${LORE_PATH}/${entry.id}`;
-  if (entry.part === "history_event") return `${HISTORY_PATH}#history-event-${entry.id}`;
-  return `${FUN_FACTS_PATH}#${funFactAnchor(entry.id)}`;
+  if (entry.part === "history_event") return `${HISTORY_PATH}?event=${entry.id}#history-event-${entry.id}`;
+  return `${FUN_FACTS_PATH}?fact=${entry.id}#${funFactAnchor(entry.id)}`;
 }
 
 // The Lore Entry a Fun Fact tells the story of: its first Club Lore "See

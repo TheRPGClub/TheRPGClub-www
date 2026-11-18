@@ -2,19 +2,27 @@
 
 import { useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { useMentionPicker } from "@/hooks/use-mention-picker";
+import { useDeskLinks, type DeskLinks } from "@/hooks/use-desk-links";
 import { FUN_FACT_MAX, type PickedMention } from "@/lib/codex/fun-fact-text";
 import type { FunFactActionResult } from "@/app/actions/codex-fun-facts";
+import type { CodexEntryLink } from "@/lib/codex/types";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { MentionList } from "./mention-list";
+import { FunFactSeeAlsoPanel, SeeAlsoToggle } from "./fun-fact-see-also";
 
 // The Fun Fact field (5D): plain text with @ mentions, its count against the
 // 300 characters the API keeps (mentions counted as they're stored), and a
-// row of actions. `actions` gets whether the text can be sent and whether
-// it's being sent; the submit button inside it submits the form.
+// row of actions led by See also (www#127), whose picker opens under the
+// field. `actions` gets whether the text can be sent and whether it's being
+// sent; the submit button inside it submits the form. `onSave` gets the
+// links too, to save once the Fun Fact is; a result that is ok with an
+// `error` saved the Fun Fact but not all of the rest, and says so.
 export function FunFactComposer({
   label,
   initial = { text: "", picked: [] },
+  initialLinks = [],
+  self = null,
   onSave,
   resetOnSave = false,
   autoFocus,
@@ -22,7 +30,10 @@ export function FunFactComposer({
 }: {
   label: string;
   initial?: { text: string; picked: PickedMention[] };
-  onSave: (body: string) => Promise<FunFactActionResult>;
+  initialLinks?: readonly CodexEntryLink[];
+  // The Fun Fact being edited, which the See also search leaves out.
+  self?: number | null;
+  onSave: (body: string, links: DeskLinks) => Promise<FunFactActionResult>;
   resetOnSave?: boolean;
   autoFocus?: boolean;
   actions: (state: { ready: boolean; pending: boolean }) => ReactNode;
@@ -31,6 +42,8 @@ export function FunFactComposer({
   const field = useRef<HTMLTextAreaElement>(null);
   const picker = useMentionPicker(initial, field);
   const [error, setError] = useState<string | null>(null);
+  const links = useDeskLinks(initialLinks);
+  const [seeAlso, setSeeAlso] = useState(false);
   const [pending, startTransition] = useTransition();
   const length = picker.encoded.trim().length;
   const over = length > FUN_FACT_MAX;
@@ -41,9 +54,14 @@ export function FunFactComposer({
     if (!ready) return;
     setError(null);
     startTransition(async () => {
-      const result = await onSave(picker.encoded.trim());
-      if (!result.ok) setError(result.error ?? "That didn't save. Try again.");
-      else if (resetOnSave) picker.reset();
+      const result = await onSave(picker.encoded.trim(), links);
+      if (!result.ok) return setError(result.error ?? "That didn't save. Try again.");
+      if (resetOnSave) {
+        picker.reset();
+        links.reset();
+        setSeeAlso(false);
+      }
+      if (result.error) setError(result.error);
     });
   }
 
@@ -87,7 +105,11 @@ export function FunFactComposer({
           {error}
         </p>
       )}
-      <div className="mt-3 flex flex-wrap items-center gap-2">{actions({ ready, pending })}</div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <SeeAlsoToggle links={links} open={seeAlso} onToggle={() => setSeeAlso((v) => !v)} controls={`${id}-see-also`} />
+        {actions({ ready, pending })}
+      </div>
+      {seeAlso && <FunFactSeeAlsoPanel id={`${id}-see-also`} links={links} self={self} />}
     </form>
   );
 }

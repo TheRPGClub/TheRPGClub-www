@@ -1,6 +1,7 @@
 import type { Value } from "platejs";
 import { emptyRichTextValue, paragraph } from "@/lib/rich-text/text";
 import { withCurrentNames } from "./lore-story";
+import { HISTORY_PATH } from "./paths";
 import { DESCRIPTION_SCHEMA, sanitizeStory } from "./story-schema";
 import type { CodexEntry } from "./types";
 
@@ -34,6 +35,9 @@ export function kindName(kind: string | null): string {
 
 export type HistoryOrder = "oldest" | "newest";
 
+// The timeline's page size: History Events a page of the book.
+export const HISTORY_PER_PAGE = 40;
+
 // The timeline's URL: `?kind=staff&order=newest&page=2`, each left out at
 // its default.
 export interface HistoryQuery {
@@ -49,6 +53,51 @@ export function historyQuery(params: { kind?: string; order?: string; page?: str
     order: params.order === "newest" ? "newest" : "oldest",
     page: Number.isInteger(page) && page >= 1 && page <= 10_000 ? page : 1,
   };
+}
+
+// `?event=<id>` (www#127): a link to one History Event from elsewhere in
+// the Club Codex (a See also, the contents page), which opens the page of
+// the book holding it whatever `page` says.
+export function historyEventParam(value: string | undefined): number | null {
+  const id = Number(value);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+// The page of `events` (as shown) holding History Event `id`, or null.
+export function eventPage(events: readonly Pick<CodexEntry, "id">[], id: number, per: number): number | null {
+  const index = events.findIndex((event) => event.id === id);
+  return index < 0 ? null : Math.floor(index / per) + 1;
+}
+
+// The query with its page moved to the one holding `event`, when it is shown.
+export function focusQuery(
+  query: HistoryQuery,
+  events: readonly CodexEntry[],
+  event: number | null,
+  per = HISTORY_PER_PAGE,
+): HistoryQuery {
+  if (event === null) return query;
+  const page = eventPage(orderedEvents(events, query.kind, query.order), event, per);
+  return page === null ? query : { ...query, page };
+}
+
+// Where a See also on the timeline takes the reader to History Event `id`:
+// its anchor when it is on this page, else the page holding it under the
+// same Kind filter and order (without the filter when the filter hides it).
+// One the timeline doesn't hold goes through `?event=`.
+export function timelineHref(
+  events: readonly CodexEntry[],
+  query: HistoryQuery,
+  id: number,
+  per = HISTORY_PER_PAGE,
+): string {
+  const anchor = `#${historyEventAnchor(id)}`;
+  const page = eventPage(orderedEvents(events, query.kind, query.order), id, per);
+  if (page === query.page) return anchor;
+  if (page !== null) return `${historyHref(HISTORY_PATH, { ...query, page })}${anchor}`;
+  const unfiltered = eventPage(orderedEvents(events, null, query.order), id, per);
+  if (unfiltered !== null) return `${historyHref(HISTORY_PATH, { order: query.order, page: unfiltered })}${anchor}`;
+  return `${HISTORY_PATH}?event=${id}${anchor}`;
 }
 
 export function historyHref(base: string, query: Partial<HistoryQuery>): string {
