@@ -2,7 +2,7 @@
 
 import { PlateElement, type PlateElementProps } from "platejs/react";
 
-// How the review editor draws its lists, nested lists stepping to a
+// How the rich-text editor draws its lists, nested lists stepping to a
 // different marker.
 
 export function BulletedList(props: PlateElementProps) {

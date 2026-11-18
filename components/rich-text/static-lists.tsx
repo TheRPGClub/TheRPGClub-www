@@ -2,8 +2,8 @@ import { SlateElement, type SlateElementProps } from "platejs/static";
 
 import { cn } from "@/lib/utils";
 
-// The lists of a read-only review body (ReviewBodyContent in review-body.tsx),
-// in the compact or the article voice.
+// The lists of a read-only rich-text value (RichTextContent in
+// rich-text-content.tsx), in the compact or the article voice.
 
 export function makeBulletedList(article: boolean) {
   return function BulletedList(props: SlateElementProps) {

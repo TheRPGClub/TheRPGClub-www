@@ -4,10 +4,10 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Click-to-reveal spoiler text, for the read-only render of a review.
+ * Click-to-reveal spoiler text, for the read-only render of a rich-text value.
  *
  * A client island inside the otherwise server-rendered body (see
- * ./review-body.tsx) — the reveal is the only part of a review that needs
+ * ./rich-text-content.tsx): the reveal is the only part of it that needs
  * JavaScript.
  *
  * Hidden, this is a `span[role="button"]`; revealed, the role and tabstop go
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
  * anchor inside a focusable button is invalid, and the revealed state is
  * exactly when the link becomes usable.
  */
-export function ReviewSpoiler({ children }: { children: React.ReactNode }) {
+export function RichTextSpoiler({ children }: { children: React.ReactNode }) {
   const [revealed, setRevealed] = useState(false);
 
   if (revealed) {

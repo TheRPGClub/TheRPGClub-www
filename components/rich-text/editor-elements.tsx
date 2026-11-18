@@ -2,8 +2,8 @@
 
 import { PlateElement, type PlateElementProps } from "platejs/react";
 
-// How the review editor draws its text blocks. Node types and looks match
-// ../review-body.tsx, which reads back what the editor writes.
+// How the rich-text editor draws its text blocks. Node types match
+// ./static-elements.tsx, which reads back what the editor writes.
 
 export function Paragraph(props: PlateElementProps) {
   return (

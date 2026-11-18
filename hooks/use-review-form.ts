@@ -11,7 +11,8 @@ import {
   type ActionResult,
 } from "@/app/actions/reviews";
 import type { Review } from "@/lib/api/types";
-import { emptyReviewValue, reviewBodyValue } from "@/lib/api/review-body";
+import { reviewBodyValue } from "@/lib/api/review-body";
+import { emptyRichTextValue } from "@/lib/rich-text/text";
 import {
   ensureWeights,
   sanitizeReviewFacets,
@@ -45,7 +46,7 @@ export function useReviewForm({
   // A legacy plain-text or imported review is normalized into blocks here, so
   // editing one silently upgrades it to rich text on the next save.
   const [initialValue] = useState<Value>(() =>
-    existing ? reviewBodyValue(existing.body) : emptyReviewValue(),
+    existing ? reviewBodyValue(existing.body) : emptyRichTextValue(),
   );
   const [body, setBody] = useState<Value>(initialValue);
   // null is the quick take — no scorecard — which is what every review

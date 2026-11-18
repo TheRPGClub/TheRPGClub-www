@@ -27,9 +27,16 @@ import {
   ListPlugin,
   NumberedListPlugin,
 } from "@platejs/list-classic/react";
-import { Key, PlateLeaf, toPlatePlugin, type PlateLeafProps } from "platejs/react";
+import type { AnyPluginConfig, NodeComponents } from "platejs";
+import {
+  Key,
+  PlateLeaf,
+  toPlatePlugin,
+  type PlateLeafProps,
+  type PlatePlugin,
+} from "platejs/react";
 
-import { BaseSpoilerPlugin } from "@/lib/reviews/spoiler-plugin";
+import { BaseSpoilerPlugin } from "@/lib/rich-text/spoiler-plugin";
 import {
   Blockquote,
   Heading1,
@@ -37,21 +44,25 @@ import {
   Heading3,
   Link,
   Paragraph,
-} from "./review-composer/review-elements";
+} from "./editor-elements";
 import {
   BulletedList,
   ListItem,
   ListItemContent,
   NumberedList,
-} from "./review-composer/review-list-elements";
+} from "./editor-lists";
 
-// The editing half of the review schema. Node types here must match
-// ./review-body.tsx, which reads back what this writes.
+// The editing half of the shared rich-text set. Node types here must match
+// ./static-kit.tsx, which reads back what this writes.
+//
+// A feature with an extra node type (a mention, say) spreads
+// `richTextEditorPlugins` and adds its own plugin, then passes the result to
+// RichTextEditor.
 
 /**
- * Spoilers stay legible while editing — you cannot write what you cannot see.
+ * Spoilers stay legible while editing: you cannot write what you cannot see.
  * A dashed underline and a tinted ground mark the range instead; the blur only
- * applies to readers, in ./review-spoiler.tsx.
+ * applies to readers, in ./spoiler.tsx.
  */
 function SpoilerLeaf(props: PlateLeafProps) {
   return (
@@ -73,7 +84,7 @@ const SpoilerPlugin = toPlatePlugin(BaseSpoilerPlugin, {
 // Markdown-style shortcuts while typing (`**bold**`, `## `, `- `, `> `).
 // Plate ships the rules but wires none of them by default, so each plugin
 // opts in.
-export const reviewPlugins = [
+export const richTextEditorPlugins: PlatePlugin<AnyPluginConfig>[] = [
   H1Plugin.withComponent(Heading1),
   H2Plugin.withComponent(Heading2).configure({
     inputRules: [HeadingRules.markdown()],
@@ -100,4 +111,4 @@ export const reviewPlugins = [
   ListItemContentPlugin.withComponent(ListItemContent),
 ];
 
-export const reviewComponents = { p: Paragraph };
+export const richTextEditorComponents: NodeComponents = { p: Paragraph };

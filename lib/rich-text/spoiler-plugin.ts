@@ -6,7 +6,7 @@ export const SPOILER_KEY = "spoiler";
  * A mark that hides plot talk until the reader asks for it.
  *
  * Framework-agnostic half, so the static renderer can use it on the server —
- * `SpoilerPlugin` in ../../components/member/review-plugins.ts adds the React
+ * `SpoilerPlugin` in ../../components/rich-text/editor-kit.tsx adds the React
  * component and the keyboard shortcut. Modelled on Plate's own mark plugins:
  * a leaf node with a `toggle` transform, which is what makes
  * `editor.tf.spoiler.toggle()` and `useMarkToolbarButton` work for it.
