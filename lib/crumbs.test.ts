@@ -9,6 +9,7 @@ const names = {
   member: async (id: string) => `Member ${id}`,
   set: async (setId: string, memberId: string) => `Set ${setId} of ${memberId}`,
   challenge: async (id: string) => `Challenge ${id}`,
+  loreEntry: async (id: string) => `Lore Entry ${id}`,
 };
 const trail = (path: string) => crumbTrail(path.split("/").filter(Boolean), names);
 
@@ -82,5 +83,18 @@ describe("crumbTrail", () => {
       { label: "Fun Facts", href: "/codex/fun-facts" },
     ]);
     expect(await trail("/codex/constructor")).toEqual([{ label: "Club Codex", href: "/codex" }]);
+  });
+
+  it("names a Lore Entry, its edit page and a new one", async () => {
+    const lore = [
+      { label: "Club Codex", href: "/codex" },
+      { label: "Club Lore", href: "/codex/lore" },
+    ];
+    expect(await trail("/codex/lore/7/edit")).toEqual([
+      ...lore,
+      { label: "Lore Entry 7", href: "/codex/lore/7" },
+      { label: "Edit", href: "/codex/lore/7/edit" },
+    ]);
+    expect(await trail("/codex/lore/new")).toEqual([...lore, { label: "New", href: "/codex/lore/new" }]);
   });
 });

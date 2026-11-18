@@ -38,7 +38,8 @@ function sanitizeText(
   schema: RichTextSchema,
 ): TText | null {
   if (typeof node.text !== "string") return null;
-  const text: TText = { text: node.text };
+  // A NUL can't be stored in a Postgres text or jsonb value.
+  const text: TText = { text: node.text.replaceAll("\u0000", "") };
   for (const mark of schema.marks) {
     if (node[mark] === true) text[mark] = true;
   }
@@ -113,7 +114,10 @@ function sanitizeBlock(
 
   if (allowed === "inline") {
     const inline = sanitizeInline(children, depth + 1, schema);
-    return { type, children: ensureInline(inline) };
+    const rule = schema.blockProps && Object.hasOwn(schema.blockProps, type) ? schema.blockProps[type] : null;
+    if (!rule) return { type, children: ensureInline(inline) };
+    const props = rule.props(record);
+    return props ? { type, ...props, children: ensureInline(inline) } : null;
   }
 
   if (depth >= MAX_DEPTH) {

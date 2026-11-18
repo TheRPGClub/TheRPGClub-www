@@ -44,6 +44,10 @@ type SelectTriggerVariant =
   // www#100: a filter chip beside a search (the journal catalogue's Any
   // member).
   | "chip"
+  // www#125: a part of a value set big inside something that already draws
+  // it (the month in the Lore desk's Anton date): no rule, no ground, the
+  // type it sits in; yellow on hover and focus.
+  | "bare"
 
 function SelectTrigger({
   className,
