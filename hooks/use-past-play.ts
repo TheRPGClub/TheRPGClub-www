@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { pastPlayAction } from "@/app/actions/challenge-slots";
-import type { PastPlay } from "@/lib/challenges/slot-requests";
+import { settlePastPlay, type PastPlay } from "@/lib/challenges/slot-requests";
 
 // The past-play picker's list: the member's Game Completions from before
 // their Run that fit an open year, read when the picker opens and again
 // (debounced) as the title search changes. A newer read wins over a slower
-// older one.
+// older one; a read that fails or throws shows its error and always ends
+// the loading state.
 export function usePastPlay(runId: number, open: boolean) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<PastPlay[] | null>(null);
@@ -20,14 +21,17 @@ export function usePastPlay(runId: number, open: boolean) {
     const timer = setTimeout(
       async () => {
         setLoading(true);
-        const result = await pastPlayAction(runId, query);
-        if (!current) return;
-        setLoading(false);
-        if (result.ok) {
-          setItems(result.data);
-          setError(null);
-        } else {
-          setError(result.error);
+        try {
+          const result = await settlePastPlay(() => pastPlayAction(runId, query));
+          if (!current) return;
+          if (result.ok) {
+            setItems(result.data);
+            setError(null);
+          } else {
+            setError(result.error);
+          }
+        } finally {
+          if (current) setLoading(false);
         }
       },
       query ? 250 : 0,

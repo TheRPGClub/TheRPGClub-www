@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { pastPickRequest, pastPlayPath, runNotices, slotMoveRequest, slotRefusal } from "@/lib/challenges/slot-requests";
+import {
+  pastPickRequest,
+  pastPlayPath,
+  runNotices,
+  settlePastPlay,
+  slotMoveRequest,
+  slotRefusal,
+} from "@/lib/challenges/slot-requests";
 
 describe("slotMoveRequest", () => {
   it("moves a game to a year of the Run", () => {
@@ -58,5 +65,19 @@ describe("runNotices", () => {
     ).toEqual([{ code: "birth_year_shown", message: "Your birth year, 1988, shows." }]);
     expect(runNotices({ data: {} })).toEqual([]);
     expect(runNotices(null)).toEqual([]);
+  });
+});
+
+describe("settlePastPlay", () => {
+  it("passes a read's result through", async () => {
+    const data = [{ completion_id: 1, game_id: 2, title: "Ico", cover_url: null, completed_at: null, open_years: [2001] }];
+    await expect(settlePastPlay(async () => ({ ok: true, data }))).resolves.toEqual({ ok: true, data });
+  });
+
+  it("turns a read that throws into an error the picker shows", async () => {
+    const failed = await settlePastPlay(async () => {
+      throw new Error("network down");
+    });
+    expect(failed).toEqual({ ok: false, error: "Couldn't load your past games. Try again." });
   });
 });
