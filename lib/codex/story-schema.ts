@@ -23,7 +23,10 @@ export const IMAGE_TYPE = "img";
 export const STORY_MAX = 4000;
 // The API's cap on a History Event's or Lore Entry's images.
 export const IMAGES_MAX = 4;
-const CAPTION_MAX = 160;
+// A Lore Entry's or History Event's title, as the API caps it.
+export const TITLE_MAX = 100;
+// A photo's caption in a Lore Entry's story.
+export const CAPTION_MAX = 160;
 const NAME_MAX = 100;
 
 // A mention: `{ type: "mention", userId, value, children: [{ text: "" }] }`.
@@ -84,6 +87,8 @@ const BASE: Omit<RichTextSchema, "blocks" | "blockProps"> = {
   marks: RICH_TEXT_MARKS,
   inlines: { ...RICH_TEXT_INLINES, [MENTION_TYPE]: mentionRule },
   maxLength: STORY_MAX,
+  // A story of mentions alone still says something.
+  isEmpty: (value) => storyPlainText(value).length === 0,
 };
 
 // A Lore Entry's story.

@@ -18,6 +18,11 @@ export function editHistoryPath(id: number): string {
   return `${HISTORY_PATH}/${id}/edit`;
 }
 
+// A History Event's place on the timeline: its anchor.
+export function historyEventAnchor(id: number): string {
+  return `history-event-${id}`;
+}
+
 // Each part as the copy names it, one entry and many.
 export const PART_NAME: Record<CodexPart, { one: string; many: string; section: string }> = {
   history_event: { one: "History Event", many: "History Events", section: "Club History" },
@@ -40,7 +45,7 @@ export function funFactAnchor(id: number): string {
 // holding its card (`?fact=`).
 export function entryHref(entry: Pick<CodexEntryLink, "id" | "part">): string {
   if (entry.part === "lore_entry") return `${LORE_PATH}/${entry.id}`;
-  if (entry.part === "history_event") return `${HISTORY_PATH}?event=${entry.id}#history-event-${entry.id}`;
+  if (entry.part === "history_event") return `${HISTORY_PATH}?event=${entry.id}#${historyEventAnchor(entry.id)}`;
   return `${FUN_FACTS_PATH}?fact=${entry.id}#${funFactAnchor(entry.id)}`;
 }
 

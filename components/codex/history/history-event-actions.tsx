@@ -1,11 +1,7 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { deleteHistoryEventAction } from "@/app/actions/codex-history";
 import { editHistoryPath } from "@/lib/codex/paths";
 import { cn } from "@/lib/utils";
-import { Button, ButtonLink } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ButtonLink } from "@/components/ui/button";
+import { HistoryDelete } from "./history-delete";
 
 // A History Event's quiet Edit and Delete (2B), from its `viewer` flags, at
 // the right of its date line: shown on hover or focus where there is a
@@ -21,7 +17,6 @@ export function HistoryEventActions({
   canEdit: boolean;
   canDelete: boolean;
 }) {
-  const router = useRouter();
   if (!canEdit && !canDelete) return null;
   return (
     <div
@@ -35,25 +30,7 @@ export function HistoryEventActions({
           Edit
         </ButtonLink>
       )}
-      {canDelete && (
-        <ConfirmDialog
-          trigger={
-            <Button type="button" variant="quiet-delete" size="xs" aria-label={`Delete ${title}`}>
-              Delete
-            </Button>
-          }
-          title="Delete this History Event?"
-          description="Its images and See also links go too. This can't be undone."
-          confirmLabel="Delete History Event"
-          pendingLabel="Deleting…"
-          onConfirm={async () => {
-            const result = await deleteHistoryEventAction(id);
-            if (!result.ok) return result.error ?? "That didn't delete. Try again.";
-            router.refresh();
-            return null;
-          }}
-        />
-      )}
+      {canDelete && <HistoryDelete id={id} quiet={{ title }} />}
     </div>
   );
 }

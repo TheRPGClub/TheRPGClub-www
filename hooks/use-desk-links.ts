@@ -35,7 +35,8 @@ export function useDeskLinks(initial: readonly CodexEntryLink[], onChange?: () =
   // the reason.
   async function save(id: number): Promise<string | null> {
     if (!changed) return null;
-    const result = await saveCodexLinksAction(id, linkIds(links));
+    const result = await saveCodexLinksAction(id, linkIds(links)).catch(() => null);
+    if (!result) return "Couldn't reach the site. Try again.";
     if (!result.ok) return result.error ?? "See also didn't save. Try again.";
     setSaved(links);
     return null;

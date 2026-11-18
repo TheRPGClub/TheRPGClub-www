@@ -8,6 +8,7 @@ import { memberName } from "@/lib/achievements";
 import { mentionQuery } from "@/lib/codex/fun-fact-text";
 import { MENTION_TYPE, type MentionNode } from "@/lib/codex/story-schema";
 import { useMemberSearch } from "@/hooks/use-member-search";
+import { listboxKey } from "@/lib/listbox";
 
 // The @ mention picker in a Club Codex story (5D, www#125): typing "@" and
 // two letters of a name, at the start of a line or after a space, searches
@@ -67,17 +68,12 @@ export function useStoryMention(frame: RefObject<HTMLElement | null>) {
 
   function onKeyDown(event: KeyboardEvent) {
     if (!open) return;
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setDismissed(anchorKey);
-    } else if (results.length > 0 && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
-      event.preventDefault();
-      const step = event.key === "ArrowDown" ? 1 : -1;
-      setLit((i) => (i + step + results.length) % results.length);
-    } else if (results.length > 0 && (event.key === "Enter" || event.key === "Tab")) {
-      event.preventDefault();
-      pick(results[Math.min(lit, results.length - 1)]);
-    }
+    const key = listboxKey(event.key, lit, results.length, ["Enter", "Tab"]);
+    if (!key) return;
+    event.preventDefault();
+    if (key.action === "close") setDismissed(anchorKey);
+    else if (key.action === "move") setLit(key.index);
+    else pick(results[key.index]);
   }
 
   // "@" from the toolbar: starts a mention at the caret.

@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { fetchCodexEntry } from "@/lib/api/codex";
-import { historyEventAnchor, readDescription } from "@/lib/codex/history";
-import { HISTORY_PATH } from "@/lib/codex/paths";
+import { readDescription } from "@/lib/codex/history";
+import { HISTORY_PATH, historyEventAnchor } from "@/lib/codex/paths";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { HistoryDesk } from "@/components/codex/desk/history-desk";
 

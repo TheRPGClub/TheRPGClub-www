@@ -10,14 +10,16 @@ import { RichTextProvider } from "@/components/rich-text/rich-text-editor";
 import { storyEditorPlugins } from "@/components/codex/story/story-editor-kit";
 import { LoreDelete } from "@/components/codex/lore/lore-delete";
 import { DateCard } from "./date-card";
-import { DeskTopBar } from "./desk-top-bar";
+import { DeskLayout } from "./desk-layout";
 import { ImagesCard } from "./images-card";
 import { ManuscriptSheet } from "./manuscript-sheet";
 import { SeeAlsoCard } from "./see-also-card";
 
 // The Lore desk (www#125, design 5D): a manuscript sheet for the title and
 // the story, and a drawer of cards beside it for the date, the photos and
-// See also (www#127).
+// See also (www#127). Delete shows where the entry's `viewer` allows, and
+// on a new Lore Entry once it has been created (its author may always
+// delete it), so a publish that stopped half way can be taken back.
 export function LoreDesk({
   entry,
   initialValue,
@@ -31,41 +33,23 @@ export function LoreDesk({
   badge?: ReactNode;
 }) {
   const desk = useLoreDesk(entry, initialValue);
-  const canDelete = !!entry?.viewer.can_delete;
+  const id = desk.entryId;
+  const canDelete = id !== null && (entry ? entry.viewer.can_delete : true);
   return (
-    <RichTextProvider
-      schema={LORE_SCHEMA}
-      initialValue={initialValue}
-      onChange={desk.setValue}
-      plugins={storyEditorPlugins}
-    >
-      <div className="pb-24 sm:pb-0">
-        <DeskTopBar
-          desk={desk}
-          back={desk.entryId ? `${LORE_PATH}/${desk.entryId}` : LORE_PATH}
-          backLabel={desk.entryId ? "Back to the Lore Entry" : "Back to Club Lore"}
-          deleteButton={canDelete && desk.entryId && <LoreDelete id={desk.entryId} className="hidden sm:inline-flex" />}
-          badge={badge}
-        />
-        {desk.error && (
-          <p role="alert" className="mt-3 rounded-sm border border-destructive/60 px-3.5 py-2.5 text-sm text-destructive">
-            {desk.error}
-          </p>
-        )}
-        <div className="mt-4.5 grid grid-cols-[minmax(0,1fr)] items-start gap-8.5 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <ManuscriptSheet desk={desk} author={author} />
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-5.5 pt-1.5">
-            <DateCard desk={desk} tilt={-1} />
-            <ImagesCard desk={desk} tilt={0.8} />
-            <SeeAlsoCard links={desk.links} self={desk.entryId} tilt={-0.6} />
-          </div>
-        </div>
-        {canDelete && entry && (
-          <div className="mt-10 border-t border-border pt-4 sm:hidden">
-            <LoreDelete id={entry.id} />
-          </div>
-        )}
-      </div>
+    <RichTextProvider schema={LORE_SCHEMA} initialValue={initialValue} onChange={desk.setValue} plugins={storyEditorPlugins}>
+      <DeskLayout
+        desk={desk}
+        back={id ? `${LORE_PATH}/${id}` : LORE_PATH}
+        backLabel={id ? "Back to the Lore Entry" : "Back to Club Lore"}
+        badge={badge}
+        error={desk.error}
+        remove={canDelete ? (className) => <LoreDelete id={id} className={className} /> : null}
+        sheet={<ManuscriptSheet desk={desk} author={author} />}
+      >
+        <DateCard desk={desk} tilt={-1} />
+        <ImagesCard desk={desk} tilt={0.8} />
+        <SeeAlsoCard links={desk.links} self={id} tilt={-0.6} />
+      </DeskLayout>
     </RichTextProvider>
   );
 }

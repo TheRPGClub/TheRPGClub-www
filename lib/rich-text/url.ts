@@ -12,14 +12,17 @@ const SCHEME_PREFIX = /^[a-z][a-z0-9+.-]*:/i;
  */
 export function sanitizeUrl(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
-  const url = raw.trim();
+  // A NUL can't be stored in a Postgres text or jsonb value.
+  const url = raw.replaceAll("\u0000", "").trim();
   if (url.length === 0) return null;
 
   // Root-relative links stay relative: a link pointing at /games/123
   // shouldn't be rewritten onto a hardcoded absolute host. `//host` is not
   // relative, it's protocol-relative, so it falls through to be resolved.
+  // Nor is `/\host` (or `/<tab>/host`): browsers read it as `//host`, so a
+  // root-relative link must resolve to this site's own origin to stay one.
   if (url.startsWith("/") && !url.startsWith("//")) {
-    return url;
+    return staysOnSite(url) ? url : null;
   }
 
   // A URL with no scheme is what someone typing "example.com" produces; treat
@@ -41,4 +44,14 @@ export function sanitizeUrl(raw: unknown): string | null {
     return null;
   }
   return parsed.toString();
+}
+
+const PROBE_ORIGIN = "https://probe.invalid";
+
+function staysOnSite(path: string): boolean {
+  try {
+    return new URL(path, PROBE_ORIGIN).origin === PROBE_ORIGIN;
+  } catch {
+    return false;
+  }
 }

@@ -1,6 +1,6 @@
 import type { CodexEntry } from "@/lib/codex/types";
 import { initials } from "@/lib/challenges/runs";
-import { spineDate } from "@/lib/codex/lore-date";
+import { spineDate } from "@/lib/codex/codex-date";
 import { spineHeight, spineWidth, type SpineBinding } from "@/lib/codex/shelf";
 import { cn } from "@/lib/utils";
 

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Value } from "platejs";
 
-import { dateFields, dateStamp, spineDate } from "./lore-date";
-import { paragraphBefore, resolvePending, spreadLayout, storyImageIds, storyOpening } from "./lore-story";
+import { dateFields, dateStamp, spineDate } from "./codex-date";
+import { discordToStory } from "./discord-story";
+import { paragraphBefore, readStory, resolvePending, spreadLayout, storyImageIds, storyOpening } from "./lore-story";
+import type { CodexEntry } from "./types";
 import { shelfScale, spineBinding, spineBindings, spineHeight, spineWidth } from "./shelf";
 
 const p = (text: string) => ({ type: "p", children: [{ text }] });
@@ -56,6 +58,48 @@ describe("storyOpening", () => {
     expect(storyOpening(value, 12)).toBe("Hi <@42>.");
     expect(storyOpening([p("A very long first sentence without an end")], 20)).toBe("A very long first…");
     expect(storyOpening(null)).toBe("");
+  });
+
+  it("keeps spoilers hidden, a run of them as one", () => {
+    const value = [
+      { type: "p", children: [{ text: "The ending: " }, { text: "every", spoiler: true }, { text: "one lived", spoiler: true, bold: true }, { text: "." }] },
+    ];
+    expect(storyOpening(value)).toBe("The ending: [spoiler].");
+  });
+
+  it("reads a story saved as Discord text alone without its markdown or spoilers", () => {
+    expect(storyOpening(discordToStory("The ending: ||everyone **lived**||. 2\\*3"))).toBe("The ending: [spoiler]. 2*3");
+  });
+});
+
+describe("readStory", () => {
+  const entry = (over: Partial<CodexEntry>): CodexEntry => ({
+    id: 1,
+    part: "lore_entry",
+    title: "T",
+    rich_body: null,
+    body: null,
+    occurred_on: null,
+    date_precision: null,
+    kind: null,
+    author: { user_id: "1", name: "A", avatar_url: "" },
+    mentions: {},
+    images: [],
+    links: [],
+    viewer: { can_edit: true, can_delete: true },
+    created_at: "2026-11-18T12:00:00Z",
+    updated_at: "2026-11-18T12:00:00Z",
+    ...over,
+  });
+
+  it("opens a story saved as Discord text alone with its mentions and marks, not its markup", () => {
+    const value = readStory(entry({ body: "<@7> was **big**.", mentions: { "7": { user_id: "7", name: "Mog", avatar_url: "" } } }));
+    expect(value).toEqual([
+      {
+        type: "p",
+        children: [{ type: "mention", userId: "7", value: "Mog", children: [{ text: "" }] }, { text: " was " }, { text: "big", bold: true }, { text: "." }],
+      },
+    ]);
   });
 });
 

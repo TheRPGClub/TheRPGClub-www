@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { chapterDate, eventYear, historyEventAnchor, kindInk, kindName } from "@/lib/codex/history";
+import { chapterDate, eventYear, kindInk, kindName } from "@/lib/codex/history";
+import { historyEventAnchor } from "@/lib/codex/paths";
 import type { CodexEntry } from "@/lib/codex/types";
 import { HistoryDescription } from "./history-description";
 import { HistoryEventActions } from "./history-event-actions";

@@ -29,6 +29,7 @@ Set these in `.env.local` (all server-only, read at request time; `DISCORD_INVIT
 | `API_URL` | no (defaults to `http://localhost:3000`) | Base URL of the TheRPGClub API. |
 | `DISCORD_GUILD_ID` | no | The club's Discord server id. Needed for the "Thread" and "Voting results" links on GOTM cards; without it those links are hidden. |
 | `DISCORD_ANNOUNCEMENTS_CHANNEL_ID` | no | The announcements channel that holds the GOTM voting-results messages (the bot's `ANNOUNCEMENTS_CHANNEL_ID`). Without it the "Voting results" link is hidden. |
+| `SITE_URL` | no (on Vercel, defaults to its production domain) | This site's origin (`https://therpgclub.com`). The Club Codex makes a story's links to this site absolute with it in the Discord text the bot posts. Without it (and off Vercel) those links show as plain text in Discord, except in development, where the request's host stands in. |
 | `DISCORD_INVITE_URL` | **yes** | The club's permanent Discord invite (an https link), the Open the invite button on /join. `next build` and the server fail without it rather than ship a dead button. |
 
 ## Learn More

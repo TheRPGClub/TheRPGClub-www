@@ -1,6 +1,8 @@
 import type { TElement, Value } from "platejs";
 
-import { emptyRichTextValue, paragraph } from "@/lib/rich-text/text";
+import { SPOILER_KEY } from "@/lib/rich-text/spoiler-plugin";
+import { emptyRichTextValue } from "@/lib/rich-text/text";
+import { discordToStory } from "./discord-story";
 import { IMAGE_TYPE, MENTION_TYPE, sanitizeStory, type ImageNode } from "./story-schema";
 import type { CodexEntry, CodexMember } from "./types";
 
@@ -79,13 +81,11 @@ export function withCurrentNames<T>(nodes: T[], mentions: Readonly<Record<string
 
 // The story the desk opens with: the entry's (its photos the entry still
 // has, its mentions under current names), a story saved without one read
-// from `body` a paragraph at a time, or an empty page.
+// back from its Discord markdown `body`, or an empty page.
 export function readStory(entry: CodexEntry | null): Value {
   if (!entry) return emptyRichTextValue();
   const known = new Set(entry.images.map((image) => image.id));
-  const story =
-    sanitizeStory(entry.rich_body) ??
-    (entry.body?.trim() ? entry.body.split(/\n{2,}/).map((text) => paragraph(text.trim())) : null);
+  const story = sanitizeStory(entry.rich_body) ?? (entry.body ? discordToStory(entry.body) : null);
   if (!story) return emptyRichTextValue();
   const kept = story.filter((node) => !isImageNode(node) || (typeof node.id === "number" && known.has(node.id)));
   return withCurrentNames(kept, entry.mentions);
@@ -180,18 +180,30 @@ export function spreadLayout(value: readonly unknown[], images: CodexEntry["imag
 
 // ---- The shelf's slide-out ----
 
+export const SPOILER_HIDDEN = "[spoiler]";
+
+// A node's words for the slide-out. Spoiler text stays hidden: a run of it
+// reads as one SPOILER_HIDDEN.
 function inlineText(node: unknown): string {
   if (node == null || typeof node !== "object") return "";
   const record = node as Node;
   if (record.type === MENTION_TYPE) return typeof record.userId === "string" ? `<@${record.userId}>` : "";
-  if (typeof record.text === "string") return record.text;
-  return Array.isArray(record.children) ? record.children.map(inlineText).join("") : "";
+  if (typeof record.text === "string") return record[SPOILER_KEY] === true ? SPOILER_HIDDEN : record.text;
+  if (!Array.isArray(record.children)) return "";
+  let out = "";
+  let hidden = false;
+  for (const child of record.children) {
+    const spoiler = child != null && typeof child === "object" && (child as Node)[SPOILER_KEY] === true;
+    if (!(spoiler && hidden)) out += inlineText(child);
+    hidden = spoiler;
+  }
+  return out;
 }
 
 // The story's opening for the slide-out: its first paragraph's text, mentions
-// as `<@id>` tokens (the Fun Fact reader shows them as names), cut to whole
-// sentences within about `max` characters (or at a word with "…" when the
-// first sentence alone is longer).
+// as `<@id>` tokens (the Fun Fact reader shows them as names), spoilers
+// hidden, cut to whole sentences within about `max` characters (or at a word
+// with "…" when the first sentence alone is longer).
 export function storyOpening(value: readonly unknown[] | null, max = 240): string {
   const first = (value ?? []).find((node) => (node as Node | null)?.type === "p" && inlineText(node).trim());
   const text = inlineText(first).replace(/\s+/g, " ").trim();

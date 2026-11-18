@@ -9,13 +9,11 @@ import {
   uploadHistoryImageAction,
   type HistoryDraft,
 } from "@/app/actions/codex-history";
-import type { DeskPhoto } from "@/hooks/use-lore-desk";
-import { historyEventAnchor, isHistoryKind, type HistoryKind } from "@/lib/codex/history";
-import { dateDraft, dateFields, type DateDraft } from "@/lib/codex/lore-date";
-import { HISTORY_PATH } from "@/lib/codex/paths";
+import { dateDraft, dateFields, type DateDraft } from "@/lib/codex/codex-date";
+import { HISTORY_PATH, historyEventAnchor } from "@/lib/codex/paths";
 import { IMAGES_MAX, STORY_MAX, storyPlainText } from "@/lib/codex/story-schema";
-import type { CodexEntry } from "@/lib/codex/types";
-import { imageFileProblem } from "@/lib/live-events";
+import type { CodexEntry, HistoryKind } from "@/lib/codex/types";
+import { useDeskPhotos } from "./use-desk-photos";
 import { useDeskLinks } from "./use-desk-links";
 
 // The History Event desk's state and its save (www#126, design 5D): the
@@ -23,45 +21,50 @@ import { useDeskLinks } from "./use-desk-links";
 // given, Day by default), and the gallery's photos.
 //
 // Saving runs the steps in app/actions/codex-history.ts: create or edit the
-// History Event, remove the images taken off the gallery (so a full one has
-// room), then upload each new photo, then save its See also links (www#127).
-// A photo that fails keeps its slot with the reason; saving again picks up
-// where it stopped.
+// History Event, then remove the images taken off the gallery (so a full one
+// has room; the gallery isn't placed in the description, so nothing saved
+// still shows them), then upload each new photo, then save its See also
+// links (www#127). A photo that fails keeps its slot with the reason; saving
+// again picks up where it stopped.
 
-let counter = 0;
+const RETRY = "That didn't save. Try again.";
 
 function startDate(entry: CodexEntry | null): DateDraft {
   const draft = dateDraft(entry?.occurred_on ?? null, entry?.date_precision ?? null);
   return draft.choice === "none" ? { ...draft, choice: "day" } : draft;
 }
 
+const UNREACHED = "Couldn't reach the site. Check your connection and save again.";
+
 export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
   const router = useRouter();
   const [entryId, setEntryId] = useState<number | null>(entry?.id ?? null);
   const [title, setTitle] = useState(entry?.title ?? "");
   const [value, setValue] = useState<Value>(initialValue);
-  const [kind, setKind] = useState<HistoryKind | null>(isHistoryKind(entry?.kind) ? entry.kind : null);
+  const [kind, setKind] = useState<HistoryKind | null>(entry?.kind ?? null);
   const [date, setDate] = useState<DateDraft>(() => startDate(entry));
-  const [photos, setPhotos] = useState<DeskPhoto[]>(
-    () => entry?.images.map((image) => ({ key: `image-${image.id}`, id: image.id, url: image.url, state: "ready" as const })) ?? [],
-  );
-  const [uploaded] = useState(() => new Map<string, { id: number; url: string }>());
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A create that may have gone through without saying so (see the Lore
+  // desk): publishing again could make a second History Event.
+  const [unsure, setUnsure] = useState(false);
+  const photos = useDeskPhotos(entry?.images ?? [], () => setDirty(true));
   const links = useDeskLinks(entry?.links ?? [], () => setDirty(true));
 
   const count = storyPlainText(value).length;
   const dateResult = dateFields(date);
-  const missing = !title.trim()
-    ? "Give it a title."
-    : !kind
-      ? "Pick its Kind."
-      : count > STORY_MAX
-        ? `Over ${STORY_MAX} characters.`
-        : "error" in dateResult
-          ? dateResult.error
-          : null;
+  const missing = unsure
+    ? "Check the Club History first."
+    : !title.trim()
+      ? "Give it a title."
+      : !kind
+        ? "Pick its Kind."
+        : count > STORY_MAX
+          ? `Over ${STORY_MAX} characters.`
+          : "error" in dateResult
+            ? dateResult.error
+            : null;
 
   function touch<T>(set: (v: T) => void) {
     return (v: T) => {
@@ -71,25 +74,7 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
   }
 
   function addFiles(files: File[]) {
-    const room = Math.max(IMAGES_MAX - photos.length, 0);
-    const problems = files.map((file) => imageFileProblem(file)).filter(Boolean);
-    const usable = files.filter((file) => !imageFileProblem(file));
-    const added = usable.slice(0, room).map((file): DeskPhoto => {
-      counter += 1;
-      return { key: `new-${Date.now()}-${counter}`, url: URL.createObjectURL(file), file, state: "ready" };
-    });
-    if (added.length > 0) touch(setPhotos)([...photos, ...added]);
-    if (problems.length > 0) setError(problems[0]!.replace(", or link it by URL", ""));
-    else if (usable.length > room) setError(`A History Event holds ${IMAGES_MAX} images.`);
-    else setError(null);
-  }
-
-  function removePhoto(key: string) {
-    touch(setPhotos)(photos.filter((photo) => photo.key !== key));
-  }
-
-  function mark(key: string, patch: Partial<DeskPhoto>) {
-    setPhotos((list) => list.map((photo) => (photo.key === key ? { ...photo, ...patch } : photo)));
+    setError(photos.addFiles(files, `A History Event holds ${IMAGES_MAX} images.`));
   }
 
   function draft(): HistoryDraft {
@@ -103,42 +88,38 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
     setError(null);
     try {
       const saved = await saveHistoryEventAction(entryId, draft());
-      if (!saved.ok || !saved.id) return setError(saved.error ?? "That didn't save. Try again.");
+      if (!saved.ok || !saved.id) {
+        if (saved.unsure) setUnsure(true);
+        return setError(saved.error ?? RETRY);
+      }
       const id = saved.id;
       setEntryId(id);
       // Off the gallery: the entry's images no longer on the desk, and any
       // uploaded on an earlier try and removed since.
-      const onDesk = new Set(photos.map((photo) => photo.key));
-      const kept = new Set(photos.map((photo) => photo.id).filter((photoId) => photoId !== undefined));
+      const onDesk = new Set(photos.photos.map((photo) => photo.key));
+      const kept = new Set(photos.photos.map((photo) => photo.id).filter((photoId) => photoId !== undefined));
       const removed = [
         ...(entry?.images ?? []).map((image) => image.id).filter((imageId) => !kept.has(imageId)),
-        ...[...uploaded].filter(([key]) => !onDesk.has(key)).map(([, image]) => image.id),
+        ...[...photos.uploaded].filter(([key]) => !onDesk.has(key)).map(([, image]) => image.id),
       ];
       if (removed.length > 0) {
         const result = await removeHistoryImagesAction(id, removed);
-        if (!result.ok) return setError(result.error ?? "An image didn't come off. Try again.");
+        if (!result.ok) return setError(`The History Event is saved, but an image didn't come off: ${result.error ?? RETRY}`);
       }
-      let failed = false;
-      for (const photo of photos) {
-        if (!photo.file || uploaded.has(photo.key)) continue;
-        mark(photo.key, { state: "uploading", error: undefined });
-        const form = new FormData();
-        form.append("file", photo.file, photo.file.name);
-        const result = await uploadHistoryImageAction(id, form);
-        if (result.ok && result.image) {
-          uploaded.set(photo.key, result.image);
-          mark(photo.key, { state: "ready" });
-        } else {
-          failed = true;
-          mark(photo.key, { state: "failed", error: result.error });
-        }
-      }
+      const upload = await photos.uploadEach(
+        photos.waiting(photos.photos.map((photo) => photo.key)),
+        (form) => uploadHistoryImageAction(id, form),
+      );
       const linkError = await links.save(id);
       if (linkError) return setError(`The History Event is saved, but See also isn't: ${linkError}`);
-      if (failed) return setError("The History Event is saved, but an image didn't upload. Retry it or remove it.");
+      if (upload.failed) return setError("The History Event is saved, but an image didn't upload. Retry it or remove it.");
       setDirty(false);
       router.push(`${HISTORY_PATH}#${historyEventAnchor(id)}`);
       router.refresh();
+    } catch {
+      // The request itself failed (the site unreachable): what saved so far
+      // stays saved, and saving again picks up from there.
+      setError(UNREACHED);
     } finally {
       setSaving(false);
     }
@@ -154,9 +135,9 @@ export function useHistoryDesk(entry: CodexEntry | null, initialValue: Value) {
     setKind: touch(setKind),
     date,
     setDate: touch(setDate),
-    photos,
+    photos: photos.photos,
     addFiles,
-    removePhoto,
+    removePhoto: photos.remove,
     links,
     count,
     missing,

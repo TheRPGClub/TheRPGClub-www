@@ -1,15 +1,18 @@
 import type { Value } from "platejs";
-import { emptyRichTextValue, paragraph } from "@/lib/rich-text/text";
+import { emptyRichTextValue } from "@/lib/rich-text/text";
+import { LONG_MONTHS, dateParts } from "./codex-date";
+import { discordToStory } from "./discord-story";
 import { withCurrentNames } from "./lore-story";
-import { HISTORY_PATH } from "./paths";
+import { HISTORY_PATH, historyEventAnchor } from "./paths";
 import { DESCRIPTION_SCHEMA, sanitizeStory } from "./story-schema";
-import type { CodexEntry } from "./types";
+import type { CodexEntry, HistoryKind } from "./types";
+
+export type { HistoryKind } from "./types";
 
 // Club History (www#126, design 2B): the History Event Kinds and their inks,
 // and the timeline laid out as a book of year chapters.
 
-export const HISTORY_KINDS = ["founding", "staff", "platform", "rules", "milestone"] as const;
-export type HistoryKind = (typeof HISTORY_KINDS)[number];
+export const HISTORY_KINDS = ["founding", "staff", "platform", "rules", "milestone"] as const satisfies readonly HistoryKind[];
 
 export const KIND_NAME: Record<HistoryKind, string> = {
   founding: "Founding",
@@ -25,11 +28,11 @@ export function isHistoryKind(value: unknown): value is HistoryKind {
 
 // A History Event Kind's ink (codex-inks.md), as a CSS colour for `--ink`.
 // An unknown kind reads as Milestone parchment, the quietest of them.
-export function kindInk(kind: string | null): string {
+export function kindInk(kind: HistoryKind | null): string {
   return `var(--color-kind-${isHistoryKind(kind) ? kind : "milestone"})`;
 }
 
-export function kindName(kind: string | null): string {
+export function kindName(kind: HistoryKind | null): string {
   return isHistoryKind(kind) ? KIND_NAME[kind] : "History Event";
 }
 
@@ -116,16 +119,6 @@ export function kindCounts(events: readonly CodexEntry[]): Record<HistoryKind, n
   return counts;
 }
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
-function dateParts(occurredOn: string | null): { y: number; m: number; d: number } | null {
-  const match = occurredOn ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(occurredOn) : null;
-  return match ? { y: Number(match[1]), m: Number(match[2]), d: Number(match[3]) } : null;
-}
-
 export function eventYear(event: Pick<CodexEntry, "occurred_on">): number | null {
   return dateParts(event.occurred_on)?.y ?? null;
 }
@@ -136,7 +129,7 @@ export function eventYear(event: Pick<CodexEntry, "occurred_on">): number | null
 export function chapterDate(occurredOn: string | null, precision: CodexEntry["date_precision"]): string | null {
   const date = dateParts(occurredOn);
   if (!date || precision === "year" || !precision) return null;
-  const month = MONTHS[date.m - 1] ?? "";
+  const month = LONG_MONTHS[date.m - 1] ?? "";
   return precision === "month" ? month : `${date.d} ${month}`;
 }
 
@@ -183,6 +176,19 @@ export function bookPage(events: readonly CodexEntry[], page: number, per: numbe
   return items;
 }
 
+const NUMBER_WORDS = [
+  "No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+  "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
+];
+
+// How long the club has been going, from the year of its first History
+// Event to the club's year now, for the front page's band: "Ten years",
+// "One year", "21 years".
+export function clubYears(since: number, thisYear: number): string {
+  const years = Math.max(thisYear - since, 0);
+  return `${NUMBER_WORDS[years] ?? years} year${years === 1 ? "" : "s"}`;
+}
+
 // "1 History Event", "2 History Events".
 export function eventCount(n: number): string {
   return `${n} History Event${n === 1 ? "" : "s"}`;
@@ -197,17 +203,12 @@ export function chapterPhotos(events: readonly CodexEntry[]): { id: number; url:
   return photos.map((photo, i) => ({ ...photo, tilt: i % 2 === 0 ? -2.2 : 1.6 }));
 }
 
-export function historyEventAnchor(id: number): string {
-  return `history-event-${id}`;
-}
-
 // The description the History Event desk opens with: the History Event's
-// (mentions under current names), one saved without rich text read from
-// `body` a paragraph at a time, or an empty page.
+// (mentions under current names), one saved without rich text read back
+// from its Discord markdown `body`, or an empty page.
 export function readDescription(entry: CodexEntry | null): Value {
   if (!entry) return emptyRichTextValue();
   const value =
-    sanitizeStory(entry.rich_body, DESCRIPTION_SCHEMA) ??
-    (entry.body?.trim() ? entry.body.split(/\n{2,}/).map((text) => paragraph(text.trim())) : null);
+    sanitizeStory(entry.rich_body, DESCRIPTION_SCHEMA) ?? (entry.body ? discordToStory(entry.body, DESCRIPTION_SCHEMA) : null);
   return value ? withCurrentNames(value, entry.mentions) : emptyRichTextValue();
 }

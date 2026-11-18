@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
-import { apiErrorMessage, readApiError } from "@/lib/api/errors";
+import { NOT_OPEN, UNREACHABLE, entryId, failure, validId, type CodexActionResult } from "@/lib/api/codex-write";
 import { FUN_FACT_MAX } from "@/lib/codex/fun-fact-text";
 import { CODEX_PATH, FUN_FACTS_PATH } from "@/lib/codex/paths";
 
@@ -10,17 +10,13 @@ import { CODEX_PATH, FUN_FACTS_PATH } from "@/lib/codex/paths";
 // decides who may: Regulars and staff add, the author or a Moderator and above
 // edit and delete. Its refusals are already written for members.
 
-export interface FunFactActionResult {
-  ok: boolean;
-  // The Fun Fact added or edited.
-  id?: number;
-  error?: string;
-}
+// `id` is the Fun Fact added or edited.
+export type FunFactActionResult = CodexActionResult;
 
 type Action = "add" | "edit" | "delete";
 
 const NOT_FOUND: Record<Action, string> = {
-  add: "The Club Codex isn't open to you right now.",
+  add: NOT_OPEN,
   edit: "That Fun Fact is gone. Someone may have deleted it.",
   delete: "That Fun Fact is gone already.",
 };
@@ -30,40 +26,24 @@ function revalidate() {
   revalidatePath(FUN_FACTS_PATH);
 }
 
-// The text as the API takes it, or why not.
+// The text as the API takes it (NUL dropped: the API refuses one), or why
+// not.
 function checkBody(body: unknown): string | { error: string } {
   if (typeof body !== "string") return { error: "Write the Fun Fact first." };
-  const text = body.trim();
+  const text = body.replaceAll("\u0000", "").trim();
   if (!text) return { error: "Write the Fun Fact first." };
   if (text.length > FUN_FACT_MAX) return { error: `A Fun Fact fits in ${FUN_FACT_MAX} characters, mentions included.` };
   return text;
 }
 
-function validId(id: unknown): id is number {
-  return typeof id === "number" && Number.isInteger(id) && id > 0;
-}
-
-async function entryId(res: Response): Promise<number | undefined> {
-  try {
-    const body = (await res.json()) as { data?: { id?: unknown } };
-    return typeof body.data?.id === "number" ? body.data.id : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 async function send(path: string, init: RequestInit, action: Action): Promise<FunFactActionResult> {
   try {
     const res = await apiFetch(path, { ...init, cache: "no-store" });
-    if (res.ok) {
-      revalidate();
-      return { ok: true, id: await entryId(res) };
-    }
-    if (res.status === 401) return { ok: false, error: "Your session has ended. Sign in again." };
-    if (res.status === 404) return { ok: false, error: NOT_FOUND[action] };
-    return { ok: false, error: apiErrorMessage(await readApiError(res)) };
+    if (!res.ok) return failure(res, NOT_FOUND[action]);
+    revalidate();
+    return { ok: true, id: await entryId(res) };
   } catch {
-    return { ok: false, error: "Couldn't reach the club's server. Try again." };
+    return { ok: false, error: UNREACHABLE };
   }
 }
 

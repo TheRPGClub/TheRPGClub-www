@@ -2,16 +2,21 @@ import { headers } from "next/headers";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { imageFileProblem } from "@/lib/live-events";
+import { siteOrigin } from "@/lib/site-origin";
 
 // The Club Codex's writes shared by its server actions (app/actions/codex-
-// lore.ts, codex-history.ts): the result shapes, the refusals as words, an
-// entry's image upload and removal (api#410), and this site's origin for the
-// Discord conversion's links.
+// lore.ts, codex-history.ts, codex-fun-facts.ts, codex-links.ts): the result
+// shapes, the refusals as words, an entry's save and delete, its image
+// upload and removal (api#410), and this site's origin for the Discord
+// conversion's links.
 
 export interface CodexActionResult {
   ok: boolean;
   id?: number;
   error?: string;
+  // A create the API answered as done but without the new entry's id: it
+  // may well exist, so the desk must not create it again.
+  unsure?: boolean;
 }
 
 export interface CodexImageResult {
@@ -21,7 +26,17 @@ export interface CodexImageResult {
 }
 
 export const UNREACHABLE = "Couldn't reach the club's server. Try again.";
-export const TITLE_MAX = 100;
+export const NOT_OPEN = "The Club Codex isn't open to you right now.";
+
+// The words for one part's refusals.
+export interface EntryWords {
+  // An entry that no longer exists, on edit.
+  gone: string;
+  // An entry that no longer exists, on delete.
+  goneAlready: string;
+  // A create without the new entry's id (see `unsure`).
+  unsure: string;
+}
 
 const ERRORS: Record<string, string> = {
   backblaze_not_configured: "Image uploads aren't set up on the club's server yet.",
@@ -37,13 +52,10 @@ export function cleanTitle(title: unknown): string {
   return typeof title === "string" ? title.replaceAll("\u0000", "").replace(/\s+/g, " ").trim() : "";
 }
 
-// This site's origin, so a link to one of its pages works from Discord.
+// This site's origin, so a link to one of its pages works from Discord
+// (lib/site-origin.ts says where it comes from).
 export async function siteUrl(): Promise<string | null> {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  if (!host) return null;
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto.split(",")[0].trim()}://${host}`;
+  return siteOrigin(process.env, process.env.NODE_ENV === "development" ? await headers() : null);
 }
 
 export async function failure(res: Response, notFound: string): Promise<CodexActionResult> {
@@ -58,6 +70,41 @@ export async function entryId(res: Response): Promise<number | undefined> {
     return validId(body.data?.id) ? body.data.id : undefined;
   } catch {
     return undefined;
+  }
+}
+
+// Creates an entry in `collection` (no `id`) or edits it, with `data` as the
+// request's `data`.
+export async function saveEntry(
+  collection: "lore_entries" | "history_events",
+  id: number | null,
+  data: Record<string, unknown>,
+  words: EntryWords,
+): Promise<CodexActionResult> {
+  const path = id === null ? `/api/v1/codex/${collection}` : `/api/v1/codex/${collection}/${id}`;
+  try {
+    const res = await apiFetch(path, { method: id === null ? "POST" : "PATCH", body: JSON.stringify({ data }), cache: "no-store" });
+    if (!res.ok) return failure(res, id === null ? NOT_OPEN : words.gone);
+    if (id !== null) return { ok: true, id };
+    const created = await entryId(res);
+    return created ? { ok: true, id: created } : { ok: false, unsure: true, error: words.unsure };
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
+}
+
+export async function deleteEntry(
+  collection: "lore_entries" | "history_events",
+  id: number,
+  words: EntryWords,
+): Promise<CodexActionResult> {
+  if (!validId(id)) return { ok: false, error: words.goneAlready };
+  try {
+    const res = await apiFetch(`/api/v1/codex/${collection}/${id}`, { method: "DELETE", cache: "no-store" });
+    if (!res.ok) return failure(res, words.goneAlready);
+    return { ok: true, id };
+  } catch {
+    return { ok: false, error: UNREACHABLE };
   }
 }
 

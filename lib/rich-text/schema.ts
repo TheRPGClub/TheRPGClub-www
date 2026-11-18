@@ -1,3 +1,5 @@
+import type { Value } from "platejs";
+
 import { sanitizeUrl } from "./url";
 
 // What a rich-text field may hold. Every feature that stores a Plate value
@@ -35,6 +37,10 @@ export interface RichTextSchema {
   // Plain-text length limit (see `richTextPlainText`). The editor enforces it
   // while typing; a server action checks it again.
   maxLength: number;
+  // Whether a sanitized value holds nothing worth keeping. By default, no
+  // text (`isRichTextEmpty`); a schema whose inline elements stand for words
+  // without holding text (the Club Codex's mentions) counts those too.
+  isEmpty?: (value: Value) => boolean;
 }
 
 export const PARAGRAPH_TYPE = "p";

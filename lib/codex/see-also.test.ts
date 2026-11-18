@@ -61,7 +61,7 @@ describe("showing See also", () => {
   });
 
   it("labels a link on the jade band", () => {
-    const at = { kind: "milestone", occurred_on: "2020-08-09", date_precision: "day" as const };
+    const at = { kind: "milestone" as const, occurred_on: "2020-08-09", date_precision: "day" as const };
     expect(bandLabel(history, at)).toEqual({ chip: "Milestone", meta: "History Event · 9 August 2020" });
     expect(bandLabel(history, null)).toEqual({ chip: "History Event", meta: null });
     expect(bandLabel(lore, { kind: null, occurred_on: "2019-03-01", date_precision: "month" })).toEqual({ chip: "Lore Entry", meta: "March 2019" });

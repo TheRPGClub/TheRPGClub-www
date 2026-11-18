@@ -69,7 +69,7 @@ export function LoreShelfPage({
               ) : (
                 <>
                   <p className="font-headline text-2xl text-foreground">No Lore Entries yet.</p>
-                  <p className="mt-1">Tell the first story.</p>
+                  <p className="mt-1">Write the first Lore Entry.</p>
                   {add && <div className="mt-4">{add}</div>}
                 </>
               )}
