@@ -7,19 +7,19 @@ import { cn } from "@/lib/utils";
 // An Upcoming Release's platforms by region: each region chip in its ink
 // (www#115's tones), then the platforms released there. `compact` is the
 // grid and band form, the platforms as one line of small type; the list
-// gives each platform its own chip. A past entry's chips drop to outlines.
+// gives each platform its own chip. A past one's chips drop to outlines.
 export function RegionChips({
-  entry,
+  upcoming,
   past = false,
   compact = false,
 }: {
-  entry: UpcomingRelease;
+  upcoming: UpcomingRelease;
   past?: boolean;
   compact?: boolean;
 }) {
   return (
     <div className={cn("flex flex-wrap", compact ? "gap-[3px_8px]" : "gap-[6px_12px]")}>
-      {regionGroups(entry).map((group) => (
+      {regionGroups(upcoming).map((group) => (
         <span
           key={group.code}
           className={cn(

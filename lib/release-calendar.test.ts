@@ -5,8 +5,11 @@ import {
   calendarHref,
   calendarSections,
   calendarView,
+  dayAnchor,
   firstReleasedLabel,
+  fullDayLabel,
   listNote,
+  monthCount,
   monthGrid,
   monthNote,
   parseCalendarFilters,
@@ -20,7 +23,7 @@ import {
 
 const TODAY = "2026-11-17";
 
-function entry(
+function upcomingRelease(
   gameId: number,
   date: string | null,
   precision: DatePrecision,
@@ -63,6 +66,11 @@ describe("parseCalendarFilters", () => {
 
   it("drops a malformed month", () => {
     expect(parseCalendarFilters({ month: "2026-13" }, TODAY).month).toBe("2026-11");
+    expect(parseCalendarFilters({ month: "0000-05" }, TODAY).month).toBe("2026-11");
+  });
+
+  it("keeps a month before 1970", () => {
+    expect(parseCalendarFilters({ month: "1969-12" }, TODAY).month).toBe("1969-12");
   });
 });
 
@@ -84,6 +92,18 @@ describe("months", () => {
   it("steps across years", () => {
     expect(shiftMonth("2026-01", -1)).toBe("2025-12");
     expect(shiftMonth("2026-12", 1)).toBe("2027-01");
+    expect(shiftMonth("1970-01", -1)).toBe("1969-12");
+  });
+
+  it("lays out a month before 1970", () => {
+    const grid = monthGrid("1969-07");
+    expect(grid[0].day).toBe("1969-06-30");
+    expect(grid.filter((d) => d.inMonth)).toHaveLength(31);
+  });
+
+  it("names a day in full for a screen reader, and its anchor", () => {
+    expect(fullDayLabel(TODAY)).toBe("Tuesday 17 November");
+    expect(dayAnchor(TODAY)).toBe("rc-day-2026-11-17");
   });
 
   it("lays a month out Monday first in whole weeks", () => {
@@ -101,13 +121,13 @@ describe("months", () => {
 
 describe("regionGroups", () => {
   it("lists each region once with its platforms by short name", () => {
-    const e = entry(1, "2026-11-19", "day", "November 2026", [
+    const u = upcomingRelease(1, "2026-11-19", "day", "November 2026", [
       [1, "Switch", "EU"],
       [1, "Switch", "NA"],
       [2, "Switch 2", "EU"],
       [2, "Switch 2", "NA"],
     ]);
-    expect(regionGroups(e).map((g) => [g.code, g.platforms])).toEqual([
+    expect(regionGroups(u).map((g) => [g.code, g.platforms])).toEqual([
       ["EU", ["Switch", "Switch 2"]],
       ["NA", ["Switch", "Switch 2"]],
     ]);
@@ -116,51 +136,51 @@ describe("regionGroups", () => {
 
 describe("firstReleasedLabel", () => {
   it("is null unless the API set it", () => {
-    expect(firstReleasedLabel(entry(1, null, "tba", "TBA"))).toBeNull();
+    expect(firstReleasedLabel(upcomingRelease(1, null, "tba", "TBA"))).toBeNull();
   });
 
   it("reads a day as its month and a vague date at its precision", () => {
-    expect(firstReleasedLabel(entry(1, null, "tba", "TBA", undefined, ["2025-09-25", "day"]))).toBe("Sep 2025");
-    expect(firstReleasedLabel(entry(1, null, "tba", "TBA", undefined, ["2027-07-01", "quarter"]))).toBe(
+    expect(firstReleasedLabel(upcomingRelease(1, null, "tba", "TBA", undefined, ["2025-09-25", "day"]))).toBe("Sep 2025");
+    expect(firstReleasedLabel(upcomingRelease(1, null, "tba", "TBA", undefined, ["2027-07-01", "quarter"]))).toBe(
       "Q3 2027",
     );
   });
 });
 
 describe("calendarSections", () => {
-  const entries = [
-    entry(1, "2026-12-01", "month", "December 2026"),
-    entry(2, "2026-12-03", "day", "December 2026"),
-    entry(3, "2026-12-03", "day", "December 2026"),
-    entry(4, "2027-07-01", "quarter", "Q3 2027"),
-    entry(5, "2027-01-01", "year", "2027"),
-    entry(6, null, "tba", "TBA"),
+  const upcomingReleases = [
+    upcomingRelease(1, "2026-12-01", "month", "December 2026"),
+    upcomingRelease(2, "2026-12-03", "day", "December 2026"),
+    upcomingRelease(3, "2026-12-03", "day", "December 2026"),
+    upcomingRelease(4, "2027-07-01", "quarter", "Q3 2027"),
+    upcomingRelease(5, "2027-01-01", "year", "2027"),
+    upcomingRelease(6, null, "tba", "TBA"),
   ];
 
   it("groups by section, then by date", () => {
-    const sections = calendarSections(entries);
+    const sections = calendarSections(upcomingReleases);
     expect(sections.map((s) => [s.title, s.precision, s.month, s.count])).toEqual([
       ["December 2026", "month", "2026-12", 3],
       ["Q3 2027", "quarter", null, 1],
       ["2027", "year", null, 1],
       ["TBA", "tba", null, 1],
     ]);
-    expect(sections[0].groups.map((g) => g.entries.length)).toEqual([1, 2]);
+    expect(sections[0].groups.map((g) => g.upcomingReleases.length)).toEqual([1, 2]);
   });
 
   it("notes what a vague section spans", () => {
-    expect(sectionNote("quarter", "Q3 2027")).toBe("July to September");
-    expect(sectionNote("year", "2027")).toBe("any month");
-    expect(sectionNote("tba", "TBA")).toBe("no date announced");
-    expect(sectionNote("month", "December 2026")).toBeNull();
+    expect(sectionNote({ precision: "quarter", date: "2027-07-01" })).toBe("July to September");
+    expect(sectionNote({ precision: "year", date: "2027-01-01" })).toBe("any month");
+    expect(sectionNote({ precision: "tba", date: null })).toBe("no date announced");
+    expect(sectionNote({ precision: "month", date: "2026-12-04" })).toBeNull();
   });
 });
 
 describe("todayRuleAt", () => {
   const groups = calendarSections([
-    entry(1, "2026-11-01", "month", "November 2026"),
-    entry(2, "2026-11-05", "day", "November 2026"),
-    entry(3, "2026-11-19", "day", "November 2026"),
+    upcomingRelease(1, "2026-11-01", "month", "November 2026"),
+    upcomingRelease(2, "2026-11-05", "day", "November 2026"),
+    upcomingRelease(3, "2026-11-19", "day", "November 2026"),
   ])[0].groups;
 
   it("sits before the first day from today in today's month", () => {
@@ -175,33 +195,33 @@ describe("todayRuleAt", () => {
 
 describe("calendarView", () => {
   const grid = [
-    entry(1, "2026-11-01", "month", "November 2026", [[1, "PS5", "WW"]]),
-    entry(2, "2026-11-19", "day", "November 2026", [[2, "Switch 2", "NA"]]),
+    upcomingRelease(1, "2026-11-01", "month", "November 2026", [[1, "PS5", "WW"]]),
+    upcomingRelease(2, "2026-11-19", "day", "November 2026", [[2, "Switch 2", "NA"]]),
   ];
-  const window = [
+  const fromToday = [
     ...grid,
-    entry(3, "2026-12-03", "day", "December 2026", [[2, "Switch 2", "WW"]]),
-    entry(4, null, "tba", "TBA", [[1, "PS5", "JP"]]),
+    upcomingRelease(3, "2026-12-03", "day", "December 2026", [[2, "Switch 2", "WW"]]),
+    upcomingRelease(4, null, "tba", "TBA", [[1, "PS5", "JP"]]),
   ];
 
   it("leaves what the grid shows out of the list", () => {
-    const view = calendarView(grid, window, []);
+    const view = calendarView(grid, fromToday, []);
     expect(view.list.map((e) => e.game.game_id)).toEqual([3, 4]);
-    expect(view.fromToday).toBe(4);
+    expect(view.fromTodayCount).toBe(4);
     expect([...view.byDay.keys()]).toEqual(["2026-11-19"]);
     expect(view.options.map((o) => o.id)).toEqual([1, 2]);
   });
 
   it("narrows the grid and the list to the platforms", () => {
-    const view = calendarView(grid, window, [2]);
+    const view = calendarView(grid, fromToday, [2]);
     expect(view.grid.map((e) => e.game.game_id)).toEqual([2]);
     expect(view.list.map((e) => e.game.game_id)).toEqual([3]);
-    expect(view.fromToday).toBe(2);
-    expect(view.gridAll).toBe(2);
+    expect(view.fromTodayCount).toBe(2);
+    expect(view.gridUnfilteredCount).toBe(2);
   });
 
   it("says why the grid or the list is empty", () => {
-    const filtered = calendarView(grid, window, [9]);
+    const filtered = calendarView(grid, fromToday, [9]);
     expect(monthNote(filtered, { month: "2026-11", platforms: [9] }, TODAY)?.body).toBe(
       "The 2 Upcoming Releases in November 2026 are all on other platforms.",
     );
@@ -210,6 +230,16 @@ describe("calendarView", () => {
     expect(monthNote(none, { month: "2025-06", platforms: [] }, TODAY)?.title).toBe("No Releases in June 2025");
     expect(monthNote(none, { month: "2027-06", platforms: [] }, TODAY)?.title).toBe(
       "No Releases in June 2027 yet",
+    );
+  });
+
+  it("speaks of Releases in a month before today's", () => {
+    expect(monthCount(1, "2026-11", TODAY)).toBe("1 Upcoming Release");
+    expect(monthCount(8, "2027-01", TODAY)).toBe("8 Upcoming Releases");
+    expect(monthCount(8, "2026-10", TODAY)).toBe("8 Releases");
+    const filtered = calendarView(grid, fromToday, [9]);
+    expect(monthNote(filtered, { month: "2026-03", platforms: [9] }, TODAY)?.body).toBe(
+      "The 2 Releases in March 2026 are all on other platforms.",
     );
   });
 

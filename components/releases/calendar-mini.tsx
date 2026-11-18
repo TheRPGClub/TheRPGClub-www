@@ -1,13 +1,11 @@
 import Link from "next/link";
 import type { UpcomingRelease } from "@/lib/api/types";
-import { monthGrid } from "@/lib/release-calendar";
+import { GRID_WEEKDAYS, dayAnchor, fullDayLabel, monthCount, monthGrid } from "@/lib/release-calendar";
 import { cn } from "@/lib/utils";
-
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
 // The month grid on a phone: each day a tile with a dot per Upcoming
 // Release (three at most), and a day with any links down to it in the list
-// beneath.
+// beneath, named by its full date and count.
 export function CalendarMini({
   month,
   byDay,
@@ -19,13 +17,13 @@ export function CalendarMini({
 }) {
   return (
     <div className="mt-4 grid grid-cols-7 gap-[3px]">
-      {WEEKDAYS.map((name, i) => (
+      {GRID_WEEKDAYS.map((name, i) => (
         <div
           key={i}
           aria-hidden
           className="font-label pt-1 pb-1.5 text-center text-[0.72rem] leading-none font-extrabold tracking-[0.08em] text-faint-foreground"
         >
-          {name}
+          {name.charAt(0)}
         </div>
       ))}
       {monthGrid(month).map(({ day, inMonth }) => {
@@ -41,7 +39,7 @@ export function CalendarMini({
         );
         const body = (
           <>
-            {Number(day.slice(8))}
+            <span aria-hidden>{Number(day.slice(8))}</span>
             <span aria-hidden className="flex h-[5px] gap-[3px]">
               {Array.from({ length: Math.min(count, 3) }, (_, i) => (
                 <span
@@ -55,14 +53,15 @@ export function CalendarMini({
         return count > 0 ? (
           <Link
             key={day}
-            href={`#rc-day-${day}`}
-            aria-label={`${Number(day.slice(8))}: ${count} Upcoming ${count === 1 ? "Release" : "Releases"}`}
+            href={`#${dayAnchor(day)}`}
+            aria-label={`${fullDayLabel(day)}: ${monthCount(count, month, today)}`}
             className={cn(tile, "transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-highlight")}
           >
             {body}
           </Link>
         ) : (
           <div key={day} aria-hidden={!inMonth} className={tile}>
+            {inMonth && <span className="sr-only">{fullDayLabel(day)}</span>}
             {body}
           </div>
         );

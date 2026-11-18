@@ -10,17 +10,19 @@ import type { CollectionMeta, UpcomingRelease } from "./types";
 // below it, and offer only the platforms that are on the calendar. The
 // platform filter is applied here rather than by the API's `platform_id`,
 // because the filter's options and the "all on other platforms" note need
-// the unfiltered entries anyway.
+// the unfiltered Upcoming Releases anyway.
 
 const PER = 100;
-// A guard, not a limit the calendar is expected to reach: 1,000 entries.
+// A guard, not a limit the calendar is expected to reach.
 const MAX_PAGES = 10;
+// The most Upcoming Releases one read returns (1,000).
+export const READ_CAP = PER * MAX_PAGES;
 // Data Cache keys include the member's Authorization, so this stays per
 // member. IGDB dates move weekly; a minute is plenty fresh.
 const FETCH: RequestInit = { next: { revalidate: 60 } };
 
 export interface UpcomingReleasesRead {
-  entries: UpcomingRelease[];
+  upcomingReleases: UpcomingRelease[];
   // True when the guard stopped the read before the last page.
   truncated: boolean;
 }
@@ -32,16 +34,18 @@ export async function fetchUpcomingReleases(
 ): Promise<UpcomingReleasesRead | "not_found" | null> {
   const first = await readPage(month, 1);
   if (first === "not_found" || first === null) return first;
-  const pages = Math.min(first.meta?.pages ?? 1, MAX_PAGES);
+  // Pagy always says at least 1; the floor keeps a 0 from breaking the read.
+  const total = Math.max(1, first.meta?.pages ?? 1);
+  const pages = Math.min(total, MAX_PAGES);
   const rest = await Promise.all(
     Array.from({ length: pages - 1 }, (_, i) => readPage(month, i + 2)),
   );
-  const entries = [...first.data];
+  const upcomingReleases = [...first.data];
   for (const page of rest) {
     if (page === null || page === "not_found") return null;
-    entries.push(...page.data);
+    upcomingReleases.push(...page.data);
   }
-  return { entries, truncated: (first.meta?.pages ?? 1) > MAX_PAGES };
+  return { upcomingReleases, truncated: total > MAX_PAGES };
 }
 
 async function readPage(

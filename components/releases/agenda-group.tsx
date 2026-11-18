@@ -1,20 +1,21 @@
-import { isPastEntry, type DateGroup } from "@/lib/release-calendar";
-import { AgendaEntry } from "./agenda-entry";
+import { dayAnchor, type DateGroup } from "@/lib/release-calendar";
+import { isPast } from "@/lib/releases";
+import { AgendaUpcomingRelease } from "./agenda-upcoming-release";
 import { DateColumn } from "./date-column";
 
 // One date in the list: the date column beside every Upcoming Release on
 // it. A day group carries an anchor the phone's month grid links to.
 export function AgendaGroup({ group, today }: { group: DateGroup; today: string }) {
-  const past = isPastEntry(group.entries[0], today);
+  const past = isPast(group.date, group.precision, today);
   return (
     <div
-      id={group.precision === "day" && group.date ? `rc-day-${group.date}` : undefined}
+      id={group.precision === "day" && group.date ? dayAnchor(group.date) : undefined}
       className="grid scroll-mt-20 grid-cols-[78px_minmax(0,1fr)] border-b border-border py-3.5 sm:grid-cols-[104px_minmax(0,1fr)] sm:py-4"
     >
       <DateColumn date={group.date} precision={group.precision} past={past} />
       <ul className="flex flex-col gap-4">
-        {group.entries.map((entry) => (
-          <AgendaEntry key={`${entry.game.game_id}|${entry.date}`} entry={entry} past={past} />
+        {group.upcomingReleases.map((upcoming) => (
+          <AgendaUpcomingRelease key={upcoming.game.game_id} upcoming={upcoming} past={past} />
         ))}
       </ul>
     </div>

@@ -1,6 +1,7 @@
 import {
   calendarHref,
   dateGroups,
+  isPastMonth,
   monthNote,
   monthOf,
   monthTitle,
@@ -13,20 +14,24 @@ import { CalendarBand } from "./calendar-band";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarMini } from "./calendar-mini";
 import { CalendarNote, type NoteLinks } from "./calendar-note";
+import { ReadCapNote } from "./read-cap-note";
 
 // The grid's month: its Day TBA band, then the wall calendar from lg, or on
 // a phone the tile grid over that month's days as a list. With nothing to
-// show, a note lies over the grid (from lg) or under the tiles.
+// show, a note lies over the grid (from lg) or under the tiles. A read the
+// guard cut short says so under it all.
 export function MonthView({
   view,
   filters,
   today,
   failed,
+  truncated,
 }: {
   view: CalendarView;
   filters: CalendarFilters;
   today: string;
   failed: boolean;
+  truncated: boolean;
 }) {
   const href = (change: Partial<CalendarFilters>) => calendarHref(filters, change, today);
   const prev = shiftMonth(filters.month, -1);
@@ -52,11 +57,11 @@ export function MonthView({
         {copy.body}
       </CalendarNote>
     );
-  const days = view.grid.filter((e) => e.date_precision === "day");
+  const days = view.grid.filter((u) => u.date_precision === "day");
 
   return (
     <>
-      <CalendarBand entries={view.grid} today={today} />
+      <CalendarBand upcomingReleases={view.grid} today={today} />
       <div className="hidden lg:block">
         <CalendarGrid month={filters.month} byDay={view.byDay} today={today}>
           {note(true)}
@@ -71,6 +76,12 @@ export function MonthView({
           </div>
         )}
       </div>
+      {truncated && (
+        <ReadCapNote
+          what={`${isPastMonth(filters.month, today) ? "Releases" : "Upcoming Releases"} in ${monthTitle(filters.month)}`}
+          className="mt-4"
+        />
+      )}
     </>
   );
 }

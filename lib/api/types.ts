@@ -577,7 +577,7 @@ export interface Release {
 }
 
 // One Release inside an Upcoming Release: a platform and a region.
-export interface UpcomingReleaseRelease {
+export interface UpcomingReleaseItem {
   release_id: number;
   platform_id: number;
   platform_name: string;
@@ -589,7 +589,7 @@ export interface UpcomingReleaseRelease {
   source: "igdb" | "manual";
 }
 
-// One entry of `GET /upcoming_releases` (the glossary's Upcoming Release):
+// One Upcoming Release from `GET /upcoming_releases`:
 // a game with every Release it has on the same date at the same Date
 // Precision. `date` is the first day of its period, null when TBA; `section`
 // is the heading the API lists it under ("July 2027", "Q3 2027", "2027",
@@ -602,7 +602,7 @@ export interface UpcomingRelease {
   section: string;
   first_released_on: string | null;
   first_released_precision: Exclude<DatePrecision, "tba"> | null;
-  releases: UpcomingReleaseRelease[];
+  releases: UpcomingReleaseItem[];
 }
 
 // `meta` of `POST /games/:id/refresh-releases`: how many releases the refresh

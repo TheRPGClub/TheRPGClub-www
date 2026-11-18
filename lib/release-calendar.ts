@@ -1,18 +1,23 @@
 import type { DatePrecision, UpcomingRelease } from "@/lib/api/types";
-import { periodEnd, releaseDateLabel } from "@/lib/releases";
+import {
+  MONTH_NAMES,
+  MONTHS,
+  WEEKDAY_NAMES,
+  WEEKDAYS,
+  isoDay,
+  periodTitle,
+  precisionSpan,
+  releaseDateLabel,
+  utcDay,
+} from "@/lib/releases";
 import { firstParam } from "@/lib/search-params";
 
 // The Release Calendar page (www#114): a month grid on top, then every other
 // Upcoming Release from today on, listed by the API's `section`. Dates are
-// plain UTC calendar days, the club's day, as on the game page (www#115).
+// plain UTC calendar days, the club's day, as on the game page (www#115);
+// their wording lives in `lib/releases.ts`.
 
 export const RELEASES_PATH = "/releases";
-
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export interface CalendarFilters {
   // The grid's month, YYYY-MM.
@@ -26,15 +31,20 @@ export function monthOf(day: string): string {
   return day.slice(0, 7);
 }
 
+// A month before today's.
+export function isPastMonth(month: string, today: string): boolean {
+  return month < monthOf(today);
+}
+
 // The page's address: `month` (absent on today's month) and `platform`
-// as a comma list.
+// as a comma list. Any year from 0001 on is a month, as the API reads it.
 export function parseCalendarFilters(
   params: Record<string, string | string[] | undefined>,
   today: string,
 ): CalendarFilters {
   const raw = firstParam(params.month) ?? "";
   const match = /^(\d{4})-(\d{2})$/.exec(raw);
-  const valid = match && +match[2] >= 1 && +match[2] <= 12 && +match[1] >= 1970;
+  const valid = match && +match[2] >= 1 && +match[2] <= 12 && +match[1] >= 1;
   const ids = [params.platform].flat().flatMap((v) => (v ?? "").split(","));
   const platforms = [...new Set(ids.map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   return { month: valid ? raw : monthOf(today), platforms };
@@ -54,31 +64,39 @@ export function calendarHref(
 }
 
 export function shiftMonth(month: string, by: number): string {
-  const [y, m] = month.split("-").map(Number);
-  const d = new Date(Date.UTC(y, m - 1 + by, 1));
-  return d.toISOString().slice(0, 7);
+  const day = utcDay(`${month}-01`);
+  day.setUTCMonth(day.getUTCMonth() + by);
+  return monthOf(isoDay(day));
 }
 
 // "November 2026".
 export function monthTitle(month: string): string {
-  const [y, m] = month.split("-").map(Number);
-  return `${MONTH_NAMES[m - 1]} ${y}`;
-}
-
-function utcDate(day: string): Date {
-  const [y, m, d] = day.slice(0, 10).split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d));
+  return periodTitle(`${month}-01`, "month");
 }
 
 // "Thu".
 export function weekdayOf(day: string): string {
-  return WEEKDAYS[utcDate(day).getUTCDay()];
+  return WEEKDAYS[utcDay(day).getUTCDay()];
+}
+
+// "Tuesday 17 November", what a screen reader hears for a day of the grid.
+export function fullDayLabel(day: string): string {
+  const d = utcDay(day);
+  return `${WEEKDAY_NAMES[d.getUTCDay()]} ${d.getUTCDate()} ${MONTH_NAMES[d.getUTCMonth()]}`;
 }
 
 // "Today · Tue 17 Nov".
 export function todayLabel(today: string): string {
-  const d = utcDate(today);
-  return `Today · ${WEEKDAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTH_NAMES[d.getUTCMonth()].slice(0, 3)}`;
+  const d = utcDay(today);
+  return `Today · ${WEEKDAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
+}
+
+// The grid's weekday headings, Monday first: "Mon" ... "Sun".
+export const GRID_WEEKDAYS = [...WEEKDAYS.slice(1), WEEKDAYS[0]];
+
+// The list's anchor for a day, which the phone's month grid links to.
+export function dayAnchor(day: string): string {
+  return `rc-day-${day}`;
 }
 
 export interface GridDay {
@@ -89,27 +107,27 @@ export interface GridDay {
 
 // The month's weeks, Monday first, padded with the days either side.
 export function monthGrid(month: string): GridDay[] {
-  const first = utcDate(`${month}-01`);
+  const first = utcDay(`${month}-01`);
   const lead = (first.getUTCDay() + 6) % 7;
-  const start = first.getTime() - lead * 86_400_000;
-  const [y, m] = month.split("-").map(Number);
-  const length = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  const cells = Math.ceil((lead + length) / 7) * 7;
+  const last = utcDay(`${month}-01`);
+  last.setUTCMonth(last.getUTCMonth() + 1, 0);
+  const cells = Math.ceil((lead + last.getUTCDate()) / 7) * 7;
   return Array.from({ length: cells }, (_, i) => {
-    const d = new Date(start + i * 86_400_000);
-    const day = d.toISOString().slice(0, 10);
+    const d = utcDay(`${month}-01`);
+    d.setUTCDate(1 - lead + i);
+    const day = isoDay(d);
     return { day, inMonth: monthOf(day) === month, weekend: i % 7 >= 5 };
   });
 }
 
 // One Upcoming Release's identity across the two reads.
-export function entryKey(entry: UpcomingRelease): string {
-  return `${entry.game.game_id}|${entry.date ?? "tba"}|${entry.date_precision}`;
+export function upcomingReleaseKey(upcoming: UpcomingRelease): string {
+  return `${upcoming.game.game_id}|${upcoming.date ?? "tba"}|${upcoming.date_precision}`;
 }
 
 // The API's platform filter: kept when any of its Releases is on one of them.
-export function onPlatforms(entry: UpcomingRelease, platforms: number[]): boolean {
-  return platforms.length === 0 || entry.releases.some((r) => platforms.includes(r.platform_id));
+export function onPlatforms(upcoming: UpcomingRelease, platforms: number[]): boolean {
+  return platforms.length === 0 || upcoming.releases.some((r) => platforms.includes(r.platform_id));
 }
 
 export interface PlatformOption {
@@ -118,9 +136,9 @@ export interface PlatformOption {
 }
 
 // Every platform on the calendar's Upcoming Releases, by name.
-export function calendarPlatforms(entries: UpcomingRelease[]): PlatformOption[] {
+export function calendarPlatforms(upcomingReleases: UpcomingRelease[]): PlatformOption[] {
   const byId = new Map<number, string>();
-  for (const e of entries) for (const r of e.releases) byId.set(r.platform_id, r.platform_name);
+  for (const u of upcomingReleases) for (const r of u.releases) byId.set(r.platform_id, r.platform_name);
   return [...byId].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -137,11 +155,11 @@ export interface RegionGroup {
   platforms: string[];
 }
 
-// An entry's Releases by region, in the API's order, each listing its
-// platforms once by their short name.
-export function regionGroups(entry: UpcomingRelease): RegionGroup[] {
+// An Upcoming Release's Releases by region, in the API's order, each listing
+// its platforms once by their short name.
+export function regionGroups(upcoming: UpcomingRelease): RegionGroup[] {
   const groups = new Map<string, RegionGroup>();
-  for (const r of entry.releases) {
+  for (const r of upcoming.releases) {
     let group = groups.get(r.region_code);
     if (!group) {
       group = { code: r.region_code, name: r.region_name, platforms: [] };
@@ -153,84 +171,68 @@ export function regionGroups(entry: UpcomingRelease): RegionGroup[] {
   return [...groups.values()];
 }
 
-// "First released Sep 2025": a day reads as its month, a vague date at its
-// own Date Precision. Null unless the API set it.
-export function firstReleasedLabel(entry: UpcomingRelease): string | null {
-  const { first_released_on: date, first_released_precision: precision } = entry;
+// "Sep 2025" for "First released Sep 2025": a day reads as its month, a
+// vague date at its own Date Precision. Null unless the API set it.
+export function firstReleasedLabel(upcoming: UpcomingRelease): string | null {
+  const { first_released_on: date, first_released_precision: precision } = upcoming;
   if (!date || !precision) return null;
   return releaseDateLabel(date, precision === "day" ? "month" : precision);
-}
-
-// Its whole period ended before today; TBA never has.
-export function isPastEntry(entry: UpcomingRelease, today: string): boolean {
-  const end = periodEnd(entry.date, entry.date_precision);
-  return end !== null && end < today;
 }
 
 export interface DateGroup {
   key: string;
   date: string | null;
   precision: DatePrecision;
-  entries: UpcomingRelease[];
+  upcomingReleases: UpcomingRelease[];
 }
 
 export interface CalendarSection {
   title: string;
   precision: DatePrecision;
-  // The section's month (YYYY-MM) for day and month entries.
+  // The section's first date; its month (YYYY-MM) for day and month ones.
+  date: string | null;
   month: string | null;
   groups: DateGroup[];
   count: number;
 }
 
-// Consecutive entries under one `section`, each split into its dates (a
-// month's own "Day TBA" group leads, as the API places it).
-export function calendarSections(entries: UpcomingRelease[]): CalendarSection[] {
+// Consecutive Upcoming Releases under one `section`, each split into its
+// dates (a month's own "Day TBA" group leads, as the API places it).
+export function calendarSections(upcomingReleases: UpcomingRelease[]): CalendarSection[] {
   const sections: CalendarSection[] = [];
-  for (const entry of entries) {
+  for (const upcoming of upcomingReleases) {
     let section = sections.at(-1);
-    if (!section || section.title !== entry.section) {
-      const precision = entry.date_precision === "day" ? "month" : entry.date_precision;
-      const month = entry.date && precision === "month" ? monthOf(entry.date) : null;
-      section = { title: entry.section, precision, month, groups: [], count: 0 };
+    if (!section || section.title !== upcoming.section) {
+      const { date } = upcoming;
+      const precision = upcoming.date_precision === "day" ? "month" : upcoming.date_precision;
+      const month = date && precision === "month" ? monthOf(date) : null;
+      section = { title: upcoming.section, precision, date, month, groups: [], count: 0 };
       sections.push(section);
     }
     section.count += 1;
-    addToGroups(section.groups, entry);
+    addToGroups(section.groups, upcoming);
   }
   return sections;
 }
 
-function addToGroups(groups: DateGroup[], entry: UpcomingRelease) {
-  const key = `${entry.date ?? "tba"}|${entry.date_precision}`;
+function addToGroups(groups: DateGroup[], upcoming: UpcomingRelease) {
+  const key = `${upcoming.date ?? "tba"}|${upcoming.date_precision}`;
   const group = groups.at(-1);
-  if (group && group.key === key) group.entries.push(entry);
-  else groups.push({ key, date: entry.date, precision: entry.date_precision, entries: [entry] });
+  if (group && group.key === key) group.upcomingReleases.push(upcoming);
+  else groups.push({ key, date: upcoming.date, precision: upcoming.date_precision, upcomingReleases: [upcoming] });
 }
 
-// Consecutive entries sharing a date and Date Precision.
-export function dateGroups(entries: UpcomingRelease[]): DateGroup[] {
+// Consecutive Upcoming Releases sharing a date and Date Precision.
+export function dateGroups(upcomingReleases: UpcomingRelease[]): DateGroup[] {
   const groups: DateGroup[] = [];
-  for (const entry of entries) addToGroups(groups, entry);
+  for (const upcoming of upcomingReleases) addToGroups(groups, upcoming);
   return groups;
 }
 
-// What the grid's band names a vague group by: "November 2026", "Q3 2027",
-// "2027".
-export function periodTitle(date: string, precision: DatePrecision): string {
-  return precision === "month" ? monthTitle(monthOf(date)) : (releaseDateLabel(date, precision) ?? "");
-}
-
-// What a section heading adds after its count.
-export function sectionNote(precision: DatePrecision, title: string): string | null {
-  if (precision === "quarter") {
-    const q = Number(/^Q(\d)/.exec(title)?.[1] ?? 0);
-    if (q < 1 || q > 4) return null;
-    return `${MONTH_NAMES[(q - 1) * 3]} to ${MONTH_NAMES[(q - 1) * 3 + 2]}`;
-  }
-  if (precision === "year") return "any month";
-  if (precision === "tba") return "no date announced";
-  return null;
+// What a section heading adds after its count: "July to September", "any
+// month", "no date announced".
+export function sectionNote(section: Pick<CalendarSection, "date" | "precision">): string | null {
+  return precisionSpan(section.date, section.precision);
 }
 
 // Where the Today rule goes in a month's groups: before the first day on or
@@ -241,49 +243,62 @@ export function todayRuleAt(groups: DateGroup[], month: string | null, today: st
   return at === -1 ? groups.length : at;
 }
 
+const releasesNoun = (n: number) => (n === 1 ? "Release" : "Releases");
+
 // "1 Upcoming Release", "42 Upcoming Releases".
 export function upcomingCount(n: number): string {
-  return `${n} Upcoming ${n === 1 ? "Release" : "Releases"}`;
+  return `${n} Upcoming ${releasesNoun(n)}`;
+}
+
+// A month's count: "8 Upcoming Releases" from today's month on, "8 Releases"
+// for a month before it, which is all out.
+export function monthCount(n: number, month: string, today: string): string {
+  return isPastMonth(month, today) ? `${n} ${releasesNoun(n)}` : upcomingCount(n);
 }
 
 export interface CalendarView {
-  // The grid month's Upcoming Releases after the filter, and before it.
+  // The grid month's Upcoming Releases after the filter.
   grid: UpcomingRelease[];
-  gridAll: number;
-  // Day entries by date, for the grid.
+  // How many the grid month has before the filter.
+  gridUnfilteredCount: number;
+  // Day Upcoming Releases by date, for the grid.
   byDay: Map<string, UpcomingRelease[]>;
-  // The list: the window from today, less what the grid shows, filtered.
+  // The list: everything from today on, less what the grid shows, filtered.
   list: UpcomingRelease[];
-  listAll: number;
+  // How many the list has before the filter.
+  listUnfilteredCount: number;
   // Everything from today on after the filter (the header's count).
-  fromToday: number;
+  fromTodayCount: number;
   options: PlatformOption[];
 }
 
-// Both reads, shaped for the page. Either may be null (it failed): the page
-// says so in that place and draws the rest.
+// Both reads (the grid's month, and everything from today on), shaped for
+// the page. Either may be null (it failed): the page says so in that place
+// and draws the rest.
 export function calendarView(
-  grid: UpcomingRelease[] | null,
-  window: UpcomingRelease[] | null,
+  monthRead: UpcomingRelease[] | null,
+  fromTodayRead: UpcomingRelease[] | null,
   platforms: number[],
 ): CalendarView {
-  const inGrid = new Set((grid ?? []).map(entryKey));
-  const rest = (window ?? []).filter((e) => !inGrid.has(entryKey(e)));
-  const keep = (e: UpcomingRelease) => onPlatforms(e, platforms);
-  const shown = (grid ?? []).filter(keep);
+  const month = monthRead ?? [];
+  const fromToday = fromTodayRead ?? [];
+  const inGrid = new Set(month.map(upcomingReleaseKey));
+  const rest = fromToday.filter((u) => !inGrid.has(upcomingReleaseKey(u)));
+  const keep = (u: UpcomingRelease) => onPlatforms(u, platforms);
+  const shown = month.filter(keep);
   const byDay = new Map<string, UpcomingRelease[]>();
-  for (const e of shown) {
-    if (e.date_precision !== "day" || !e.date) continue;
-    byDay.set(e.date, [...(byDay.get(e.date) ?? []), e]);
+  for (const u of shown) {
+    if (u.date_precision !== "day" || !u.date) continue;
+    byDay.set(u.date, [...(byDay.get(u.date) ?? []), u]);
   }
   return {
     grid: shown,
-    gridAll: grid?.length ?? 0,
+    gridUnfilteredCount: month.length,
     byDay,
     list: rest.filter(keep),
-    listAll: rest.length,
-    fromToday: (window ?? []).filter(keep).length,
-    options: calendarPlatforms([...(grid ?? []), ...(window ?? [])]),
+    listUnfilteredCount: rest.length,
+    fromTodayCount: fromToday.filter(keep).length,
+    options: calendarPlatforms([...month, ...fromToday]),
   };
 }
 
@@ -295,25 +310,29 @@ export interface CalendarNoteCopy {
 }
 
 // What the grid says when its month shows nothing: the filter left nothing,
-// or the month has no Upcoming Releases at all. Null when it shows some.
+// or the month has no Upcoming Releases at all. Null when it shows some. A
+// month before today's speaks of Releases, which are all out by then.
 export function monthNote(
-  view: Pick<CalendarView, "grid" | "gridAll" | "options">,
+  view: Pick<CalendarView, "grid" | "gridUnfilteredCount" | "options">,
   filters: CalendarFilters,
   today: string,
 ): CalendarNoteCopy | null {
   if (view.grid.length > 0) return null;
   const month = monthTitle(filters.month);
-  if (view.gridAll > 0) {
+  const past = isPastMonth(filters.month, today);
+  const unfiltered = view.gridUnfilteredCount;
+  if (unfiltered > 0) {
+    const noun = past ? "Release" : "Upcoming Release";
     return {
       title: `Nothing on ${platformsPhrase(filters.platforms, view.options)} in ${month}`,
       body:
-        view.gridAll === 1
-          ? `The one Upcoming Release in ${month} is on another platform.`
-          : `The ${view.gridAll} Upcoming Releases in ${month} are all on other platforms.`,
+        unfiltered === 1
+          ? `The one ${noun} in ${month} is on another platform.`
+          : `The ${unfiltered} ${noun}s in ${month} are all on other platforms.`,
       clear: true,
     };
   }
-  if (filters.month < monthOf(today)) {
+  if (past) {
     return { title: `No Releases in ${month}`, body: "GameDB has no Releases dated in this month.", clear: false };
   }
   return {
@@ -325,17 +344,18 @@ export function monthNote(
 
 // What the list says when it shows nothing. Null when it shows some.
 export function listNote(
-  view: Pick<CalendarView, "list" | "listAll" | "options">,
+  view: Pick<CalendarView, "list" | "listUnfilteredCount" | "options">,
   filters: CalendarFilters,
 ): CalendarNoteCopy | null {
   if (view.list.length > 0) return null;
-  if (view.listAll > 0) {
+  const unfiltered = view.listUnfilteredCount;
+  if (unfiltered > 0) {
     return {
       title: `Nothing else on ${platformsPhrase(filters.platforms, view.options)} from today`,
       body:
-        view.listAll === 1
+        unfiltered === 1
           ? "The one other Upcoming Release is on another platform."
-          : `The ${view.listAll} other Upcoming Releases are all on other platforms.`,
+          : `The ${unfiltered} other Upcoming Releases are all on other platforms.`,
       clear: true,
     };
   }

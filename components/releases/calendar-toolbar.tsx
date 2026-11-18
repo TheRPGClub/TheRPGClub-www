@@ -1,10 +1,10 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   calendarHref,
+  monthCount,
   monthOf,
   monthTitle,
   shiftMonth,
-  upcomingCount,
   type CalendarFilters,
   type PlatformOption,
 } from "@/lib/release-calendar";
@@ -12,8 +12,9 @@ import { ButtonLink } from "@/components/ui/button";
 import { PlatformFilter } from "./platform-filter";
 
 // Over the grid: ‹ month ›, Today (filled while the grid is on today's
-// month, since pressing it is how you get back), then the month's count and
-// the platform filter, which narrows the grid and the list together.
+// month, since pressing it is how you get back), then the month's count ("8
+// Upcoming Releases", or "8 Releases" for a month before today's) and the
+// platform filter, which narrows the grid and the list together.
 export function CalendarToolbar({
   filters,
   today,
@@ -61,7 +62,7 @@ export function CalendarToolbar({
       <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
         {count !== null && (
           <span className="font-label mr-1.5 hidden text-[0.8125rem] font-bold tracking-[0.08em] text-faint-foreground sm:inline">
-            {upcomingCount(count)}
+            {monthCount(count, filters.month, today)}
           </span>
         )}
         <PlatformFilter filters={filters} today={today} options={options} />

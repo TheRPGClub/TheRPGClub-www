@@ -1,23 +1,12 @@
 import type { DatePrecision } from "@/lib/api/types";
-import { precisionNote } from "@/lib/releases";
 import { weekdayOf } from "@/lib/release-calendar";
+import { precisionNote, shortDateLabel } from "@/lib/releases";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // The big date beside a group in the list: the day and its weekday, or what
 // is known of a vague date ("Dec", "Q3", "2027", "TBA") over the dashed chip
 // saying what is still unknown.
-function bigDate(date: string | null, precision: DatePrecision): string {
-  if (!date || precision === "tba") return "TBA";
-  const [y, m, d] = date.split("-").map(Number);
-  if (precision === "day") return String(d);
-  if (precision === "month") return MONTHS[m - 1];
-  if (precision === "quarter") return `Q${Math.floor((m - 1) / 3) + 1}`;
-  return String(y);
-}
-
 export function DateColumn({
   date,
   precision,
@@ -37,7 +26,7 @@ export function DateColumn({
           past || precision === "tba" ? "text-faint-foreground" : "text-foreground",
         )}
       >
-        {bigDate(date, precision)}
+        {shortDateLabel(date, precision)}
       </b>
       {note ? (
         <Badge tone="precision" className="max-sm:h-5 max-sm:px-1.5">

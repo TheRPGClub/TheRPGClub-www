@@ -1,5 +1,6 @@
 import { calendarHref, listNote, type CalendarFilters, type CalendarView } from "@/lib/release-calendar";
 import { CalendarNote } from "./calendar-note";
+import { ReadCapNote } from "./read-cap-note";
 import { ReleaseList } from "./release-list";
 
 // Below the grid: every other Upcoming Release from today on. It never
@@ -36,13 +37,9 @@ export function ListView({
           {copy.body}
         </CalendarNote>
       ) : (
-        <ReleaseList entries={view.list} today={today} />
+        <ReleaseList upcomingReleases={view.list} today={today} />
       )}
-      {truncated && (
-        <p className="font-label mt-6 text-[0.8125rem] tracking-[0.08em] text-faint-foreground">
-          Showing the first 1,000 Upcoming Releases
-        </p>
-      )}
+      {truncated && <ReadCapNote what="Upcoming Releases from today" className="mt-6" />}
     </div>
   );
 }

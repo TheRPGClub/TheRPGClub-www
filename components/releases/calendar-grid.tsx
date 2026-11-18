@@ -1,14 +1,13 @@
 import type { UpcomingRelease } from "@/lib/api/types";
-import { monthGrid } from "@/lib/release-calendar";
+import { GRID_WEEKDAYS, fullDayLabel, monthGrid } from "@/lib/release-calendar";
 import { cn } from "@/lib/utils";
-import { GridEntry } from "./grid-entry";
-
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { GridUpcomingRelease } from "./grid-upcoming-release";
 
 // The month as a wall calendar (from lg): Monday first, each day listing its
 // Upcoming Releases. Days before today step back; today is outlined in red,
-// "you are here". The days either side of the month stay blank. `children`
-// is laid over the grid (the empty and no-match notes).
+// "you are here". The days either side of the month stay blank. A screen
+// reader hears each day's full date ("Tuesday 17 November") before its
+// games. `children` is laid over the grid (the empty and no-match notes).
 export function CalendarGrid({
   month,
   byDay,
@@ -22,7 +21,7 @@ export function CalendarGrid({
 }) {
   return (
     <div className="relative mt-4 grid grid-cols-7 border-t border-l border-border">
-      {WEEKDAYS.map((name) => (
+      {GRID_WEEKDAYS.map((name) => (
         <div
           key={name}
           aria-hidden
@@ -32,7 +31,7 @@ export function CalendarGrid({
         </div>
       ))}
       {monthGrid(month).map(({ day, inMonth, weekend }) => {
-        const entries = inMonth ? (byDay.get(day) ?? []) : [];
+        const upcomingReleases = inMonth ? (byDay.get(day) ?? []) : [];
         const past = day < today;
         const isToday = day === today;
         return (
@@ -44,8 +43,14 @@ export function CalendarGrid({
               isToday && inMonth && "shadow-[inset_0_0_0_2px_var(--color-gotm)]",
             )}
           >
+            {inMonth && (
+              <span className="sr-only">
+                {isToday ? "Today, " : ""}
+                {fullDayLabel(day)}
+              </span>
+            )}
             <span
-              aria-hidden={!inMonth}
+              aria-hidden
               className={cn(
                 "font-headline grid h-7 min-w-7 place-items-center self-start rounded-xs text-[1.2rem] leading-none",
                 !inMonth && "invisible",
@@ -58,10 +63,10 @@ export function CalendarGrid({
             >
               {Number(day.slice(8))}
             </span>
-            {entries.length > 0 && (
+            {upcomingReleases.length > 0 && (
               <ul className="flex flex-col gap-2.5">
-                {entries.map((entry) => (
-                  <GridEntry key={entry.game.game_id} entry={entry} past={past} />
+                {upcomingReleases.map((upcoming) => (
+                  <GridUpcomingRelease key={upcoming.game.game_id} upcoming={upcoming} past={past} />
                 ))}
               </ul>
             )}
