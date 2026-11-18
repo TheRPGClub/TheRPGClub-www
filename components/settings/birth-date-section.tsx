@@ -22,7 +22,8 @@ export function BirthDateSection({
       <SectionHeading title={<span id="settings-birth-date">Birth Date</span>} />
       <p className="mt-3 max-w-[60ch] text-dim-foreground">
         Only you and staff see your full Birth Date. The year is optional; it&apos;s only used by Challenges
-        that start at your birth year. You can set or change the date twice a month.
+        that start at your birth year. Other members see it only on a Run that starts from it. You can set
+        or change the date twice a month.
       </p>
       {birthDate ? (
         <div className="mt-5">
