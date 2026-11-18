@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { DashboardIssue } from "@/lib/dashboard/issue";
 import { CoverStory } from "@/components/issue/cover-story";
 import { NrFeature } from "@/components/issue/nr-feature";
@@ -9,7 +10,17 @@ import { cn } from "@/lib/utils";
 // The current issue (lib/dashboard/issue). A round missing one track gives
 // its column away: with no NR-GOTM the nominations panel takes the whole
 // right column; with no GOTM the NR-GOTM is promoted to the cover.
-export function DashboardIssueView({ issue, viewerId }: { issue: DashboardIssue; viewerId: string }) {
+// `birthdays` (the Upcoming Birthdays line, when shown) goes under the
+// previous rounds.
+export function DashboardIssueView({
+  issue,
+  viewerId,
+  birthdays,
+}: {
+  issue: DashboardIssue;
+  viewerId: string;
+  birthdays?: ReactNode;
+}) {
   const { round, voting, gotm, nrGotm, counts, previous } = issue;
 
   const panel = voting && (
@@ -30,6 +41,7 @@ export function DashboardIssueView({ issue, viewerId }: { issue: DashboardIssue;
           {panel}
         </div>
         <PreviousRounds rounds={previous} />
+        {birthdays}
       </div>
     );
   }
@@ -68,6 +80,7 @@ export function DashboardIssueView({ issue, viewerId }: { issue: DashboardIssue;
         {rail}
       </div>
       <PreviousRounds rounds={previous} />
+      {birthdays}
     </div>
   );
 }
