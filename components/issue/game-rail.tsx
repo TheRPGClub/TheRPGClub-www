@@ -90,15 +90,8 @@ export function RailMembers({
   );
 }
 
-export function RailFacts({
-  facts,
-  children,
-}: {
-  facts: { label: string; value: React.ReactNode }[];
-  // Under the facts: the Refresh release info control.
-  children?: React.ReactNode;
-}) {
-  if (facts.length === 0 && !children) return null;
+export function RailFacts({ facts }: { facts: { label: string; value: React.ReactNode }[] }) {
+  if (facts.length === 0) return null;
   return (
     <section>
       <RailHeading title="Details" />
@@ -112,7 +105,6 @@ export function RailFacts({
           </div>
         ))}
       </dl>
-      {children}
     </section>
   );
 }

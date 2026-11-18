@@ -6,6 +6,7 @@ import type {
   Game,
   GameAchievementSet,
   GameRelations,
+  Release,
   Review,
   UserSummary,
 } from "@/lib/api/types";
@@ -63,6 +64,9 @@ export async function loadGamePage(gameId: number) {
     reviews: features.shown("reviews"),
     journals: features.shown("journals"),
     achievements: features.shown("achievement_hub"),
+    // The Releases section always shows (it is the game index's); only its
+    // link to the Release Calendar follows that Feature.
+    releaseCalendar: features.shown("release_calendar"),
   };
   return { game, session, features, show, reviews, reviewTotal };
 }
@@ -105,6 +109,18 @@ export const fetchGameRelations = cache(
     return ((await res.json()) as ApiSingle<GameRelations>).data;
   },
 );
+
+// The game's Releases in Release Calendar placement order, or null when the
+// read fails. Never cached, so the section shows a refresh's result at once.
+export async function fetchGameReleases(gameId: number): Promise<Release[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/games/${gameId}/releases`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as { data?: Release[] }).data ?? [];
+  } catch {
+    return null;
+  }
+}
 
 // The game's Achievement Sets, or null when the read fails.
 export async function fetchGameAchievementSets(

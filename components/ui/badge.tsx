@@ -48,6 +48,16 @@ const badgeVariants = cva(
         picked: "",
         // A status beside a heading (not saved yet), drawn as a hairline.
         status: "",
+        // What a vague Release date still leaves unknown ("Day TBA", "Month
+        // TBA", "No date yet").
+        precision: "",
+        // A Release's region code beside its date: the three region inks,
+        // Worldwide, and any other region. A past Release's is data-past.
+        "region-na": "",
+        "region-eu": "",
+        "region-jp": "",
+        "region-ww": "",
+        region: "",
       },
       size: {
         default: "",
@@ -70,6 +80,7 @@ function Badge({
   tone = "neutral",
   size = "default",
   unpicked = false,
+  past = false,
   render,
   ...props
 }: useRender.ComponentProps<"span"> &
@@ -77,6 +88,8 @@ function Badge({
     // A Provider filter chip that is not picked while another one is
     // (data-unpicked).
     unpicked?: boolean
+    // A Release's region chip once its date has passed (data-past).
+    past?: boolean
   }) {
   return useRender({
     defaultTagName: "span",
@@ -91,6 +104,7 @@ function Badge({
       slot: "badge",
       tone,
       unpicked,
+      past,
       size,
     },
   })

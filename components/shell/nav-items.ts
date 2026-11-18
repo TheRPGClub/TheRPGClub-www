@@ -2,6 +2,7 @@ import {
   Award,
   Flag,
   BellRing,
+  CalendarDays,
   ClipboardCheck,
   Gift,
   LayoutDashboard,
@@ -19,6 +20,7 @@ import {
 import type { VotingPhase } from "@/lib/api/voting-round";
 import type { FeatureKey } from "@/lib/features";
 import type { StaffSection } from "@/lib/staff";
+import { RELEASES_PATH } from "@/lib/release-calendar";
 
 // The sidebar's items. Each item names the Feature it belongs to
 // (lib/features.ts); the session says whether this viewer is shown it.
@@ -36,6 +38,7 @@ export const NAV_MAIN: {
   { href: "/journals", icon: NotebookPen, label: "Game Journals", feature: "journals" },
   { href: "/achievements", icon: Award, label: "Achievements", feature: "achievement_hub" },
   { href: "/news", icon: Newspaper, label: "News", feature: "news_hub" },
+  { href: RELEASES_PATH, icon: CalendarDays, label: "Releases", feature: "release_calendar" },
   { href: "/voting", icon: Vote, label: "Voting", feature: "voting_gotm" },
   { href: "/giveaways", icon: Gift, label: "Giveaways", feature: "giveaways" },
   { href: "/challenges", icon: Flag, label: "Challenges", feature: "challenges" },

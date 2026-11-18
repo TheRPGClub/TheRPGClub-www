@@ -99,6 +99,13 @@
         --format-assignment: #52cf98;
         --holly: #3fbf8a;
         --tinsel: #e9c46a;
+        /* Region inks, on release surfaces only (the game page's Releases,
+           the Release Calendar): a Release's region chip, with ink type.
+           Worldwide and the other regions are paper strokes. */
+        --region-na: #8fb4ff;
+        --region-eu: #8fe0a6;
+        --region-jp: #ffa3c9;
+        --region-foreground: #0b0b0d;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */

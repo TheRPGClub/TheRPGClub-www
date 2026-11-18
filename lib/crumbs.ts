@@ -29,6 +29,7 @@ const SECTIONS: Record<string, string> = {
   gotm: "GOTM history",
   achievements: "Achievements",
   news: "News",
+  releases: "Release Calendar",
   members: "Members",
   voting: "Voting",
   giveaways: "Giveaways",

@@ -86,6 +86,10 @@
         --format-assignment: #0000ff;
         --holly: #ff00ff;
         --tinsel: #00ffff;
+        --region-na: #00ffff;
+        --region-eu: #ff00ff;
+        --region-jp: #ffee00;
+        --region-foreground: #ff0000;
         --foil-conic: repeating-linear-gradient(45deg, #ff00ff 0 6px, #00ff66 6px 12px);
         --foil-sheen: linear-gradient(transparent, transparent);
         --foil-foreground: #0033ff;
