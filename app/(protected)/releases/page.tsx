@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { requireFeature } from "@/lib/session";
-import { utcToday } from "@/lib/games/releases";
+import { utcToday } from "@/lib/releases";
 import { parseCalendarFilters } from "@/lib/release-calendar";
 import type { RawSearchParams } from "@/lib/search-params";
 import { PreviewBadge } from "@/components/feature/preview-badge";

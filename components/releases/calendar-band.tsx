@@ -1,5 +1,5 @@
 import type { UpcomingRelease } from "@/lib/api/types";
-import { precisionNote } from "@/lib/games/releases";
+import { precisionNote } from "@/lib/releases";
 import { dateGroups, isPastEntry, periodTitle } from "@/lib/release-calendar";
 import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";

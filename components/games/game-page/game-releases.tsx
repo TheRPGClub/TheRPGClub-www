@@ -1,13 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { fetchGameReleases } from "@/lib/games/game-page";
-import {
-  isPastRelease,
-  releaseDateLabel,
-  releasesByPlatform,
-  releasesCount,
-  utcToday,
-} from "@/lib/games/releases";
+import { releasesByPlatform, releasesCount } from "@/lib/games/releases";
+import { RELEASES_PATH } from "@/lib/release-calendar";
+import { isPast, releaseDateLabel, utcToday } from "@/lib/releases";
 import { RailHeading } from "@/components/issue/game-rail";
 import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { ReleaseLine } from "@/components/games/game-page/release-line";
@@ -33,7 +29,7 @@ export async function GameReleases({
   const releases = await fetchGameReleases(gameId);
   const today = utcToday();
   const rows = releasesByPlatform(releases ?? []);
-  const upcoming = (releases ?? []).some((r) => !isPastRelease(r, today));
+  const upcoming = (releases ?? []).some((r) => !isPast(r.release_date, r.date_precision, today));
 
   return (
     <section>
@@ -64,7 +60,7 @@ export async function GameReleases({
       )}
       {calendarShown && upcoming && (
         <Link
-          href="/releases"
+          href={RELEASES_PATH}
           className="font-label mt-3.5 inline-flex items-center gap-1.5 text-[0.84rem] font-extrabold tracking-[0.06em] text-foreground underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight"
         >
           On the Release Calendar

@@ -1,22 +1,8 @@
-import type { DatePrecision, Release } from "@/lib/api/types";
-import {
-  countdown,
-  isPastRelease,
-  precisionNote,
-  regionTone,
-  releaseDateLabel,
-} from "@/lib/games/releases";
+import type { Release } from "@/lib/api/types";
+import { countdown } from "@/lib/games/releases";
+import { isPast, machineDate, precisionNote, regionTone, releaseDateLabel } from "@/lib/releases";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-// A machine-readable date where HTML has one: a day, a month ("2026-12") or a
-// year. A quarter has none.
-function machineDate(date: string, precision: DatePrecision): string | undefined {
-  if (precision === "day") return date.slice(0, 10);
-  if (precision === "month") return date.slice(0, 7);
-  if (precision === "year") return date.slice(0, 4);
-  return undefined;
-}
 
 // One region and date pair in a platform's row: the region chip in its ink,
 // the date at its Date Precision, then the dashed chip saying what is still
@@ -27,7 +13,7 @@ export function ReleaseLine({ release, today }: { release: Release; today: strin
   const label = releaseDateLabel(date, precision);
   const note = precisionNote(precision);
   const soon = countdown(release, today);
-  const past = isPastRelease(release, today);
+  const past = isPast(date, precision, today);
 
   return (
     <li

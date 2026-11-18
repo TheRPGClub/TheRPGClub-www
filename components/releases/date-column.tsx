@@ -1,5 +1,5 @@
 import type { DatePrecision } from "@/lib/api/types";
-import { precisionNote } from "@/lib/games/releases";
+import { precisionNote } from "@/lib/releases";
 import { weekdayOf } from "@/lib/release-calendar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";

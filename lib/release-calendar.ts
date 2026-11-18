@@ -1,5 +1,5 @@
 import type { DatePrecision, UpcomingRelease } from "@/lib/api/types";
-import { periodEnd, releaseDateLabel } from "@/lib/games/releases";
+import { periodEnd, releaseDateLabel } from "@/lib/releases";
 import { firstParam } from "@/lib/search-params";
 
 // The Release Calendar page (www#114): a month grid on top, then every other

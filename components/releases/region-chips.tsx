@@ -1,5 +1,5 @@
 import type { UpcomingRelease } from "@/lib/api/types";
-import { regionTone } from "@/lib/games/releases";
+import { regionTone } from "@/lib/releases";
 import { regionGroups } from "@/lib/release-calendar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
