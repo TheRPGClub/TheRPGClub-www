@@ -58,7 +58,14 @@ colors:
   codex-history: "#eadcb8"
   codex-lore: "#52d6a4"
   codex-fact: "#ff8ad8"
-  codex-fact-soft: "#ffb3e6"
+  codex-fact-light: "#ffb3e6"
+  codex-lore-deep: "#123b2e"
+  codex-lore-print: "#1f5c48"
+  kind-founding: "#f59ac0"
+  kind-staff: "#3fd0c9"
+  kind-platform: "#7cb6ff"
+  kind-rules: "#b7dd5e"
+  kind-milestone: "#eadcb8"
   foil-foreground: "#0b0b0d"
 typography:
   numeral:
@@ -597,15 +604,24 @@ A Release is one platform in one region, and the region chip beside its date car
 
 **The Region Ink Is a Place Rule.** A region ink means one release region and nothing else. It never marks a platform, a Date Precision or a game, and the inks stay off masthead red, feature violet and highlighter yellow, so a region never reads as a track or a call to action.
 
-#### Club Codex inks (Codex surfaces only)
-The Club Codex is the club's story about itself, kept in three parts, and each part has an ink so a reader knows which part they are in before they read a word. The inks live on Codex surfaces only (the /codex contents page and the part pages). As fills they always carry ink type (`background`), never paper, and each clears 9:1 against it.
-- **Club History** (codex-history): parchment. Its door on the contents page, and its square in the "Lately in the Codex" list.
-- **Club Lore** (codex-lore): jade. Its door, its square, and Club Lore's accents (the Lore shelf, a Lore Entry's second headline line).
-- **Fun Facts** (codex-fact): pink. Its door, its square, the Fun Fact band's top rule and label on the contents page, the add panel's top rule and label, and the Fun Facts wall's index cards. Every third card is the lighter **codex-fact-soft**, so the wall reads as a stack of cards and not a grid of tiles.
+#### Club Codex inks (Club Codex surfaces only)
+The Club Codex has two small ink sets, and each set answers one question. The **part inks** say which part of the Club Codex something belongs to (Club History, Club Lore, Fun Facts). The **History Event Kind inks** say what sort of History Event it is. They live on Club Codex surfaces only: /codex, /codex/history (and its front-page band), /codex/lore and each Lore Entry page, /codex/fun-facts, and the Lore Entry and History Event forms. The bot's posts use the same hexes, so a colour means the same thing in Discord and on the site.
+- **Club History parchment** (codex-history): the Club History door on /codex and a History Event's square in its contents list.
+- **Club Lore jade** (codex-lore): the Club Lore door; a Lore Entry page's second headline line, date stamp, drop cap, heading underbar, pull quote and See also band; jade spines, an ink spine's 6px cap and the slide-out's top tab on the shelf.
+- **Fun Facts pink** (codex-fact): the Fun Facts door; the Fun Fact panel's 4px top rule and heading on /codex; the index cards on the wall; the inline add panel's 3px top rule and label, and the "Next Daily Fun Fact" tag.
+- **Fun Facts pale pink** (codex-fact-light): every third index card on the wall, so the wall is not one flat pink. Nowhere else.
+- **Jade deep** (codex-lore-deep) and **jade print** (codex-lore-print): small dark type on the jade See also band and on a taped photo's paper mount.
+- **Kind inks** (kind-founding rose, kind-staff lagoon, kind-platform sky, kind-rules lime, kind-milestone parchment): only where a History Event shows its Kind: the 10px dot and Kind label on the timeline, the Kind filter chips (an outline in the ink, filled when selected), the Kind tiles on the History Event form, the front page's founding-year numeral, and in Discord the accent of each History Event in `/codex history`. A Kind ink is a dot, a label, an outline, a selected chip or a selected tile, never the ground of a card or a chapter.
 
-The Fun Facts wall is a corkboard of index cards: each card in the Fun Facts ink with ink type, ruled like an index card (faint ink rules every 28px under a 2px ink rule beneath "No. 42" in Anton and the date in label type), a strip of paper tape at its top, and a slight tilt picked from the Fun Fact's id so it never moves between visits (`motion-safe` straightens and lifts it on hover). The Fun Fact reads in Barlow 500 at 17px on the rules, mentions as underlined member names linking to their profiles, the author as "— Name" in label type, an ink "Read the story" chip when the Fun Fact tells a Lore Entry's story, and Edit and Delete as underlined label-type links for the member who may.
+Ink type on every part and Kind fill clears 9.3:1 or more; each ink as type or a mark clears 9.3:1 on `background`, 8.6:1 on `card` and 7.9:1 on `muted`.
 
-**The Codex Ink Is a Part Rule.** A Codex ink means one part of the Club Codex and nothing else. The inks stay off masthead red, feature violet, highlighter yellow and signal orange, so a part never reads as a track, a call to action or a destructive action: adding a Fun Fact is still a yellow button, deleting one is still signal orange.
+The Fun Facts wall is a corkboard of index cards: each card in the Fun Facts ink with ink type, ruled like an index card (a 1px ink line at 13% every 28px, starting 46px down, under "No. 42" in Anton and the date in label type over a 2px ink rule), a strip of paper tape across its top, and a slight tilt picked from the Fun Fact's id so it never moves between visits. The Fun Fact reads in Barlow 500 at 17px on the rules, mentions as linked member names with a 55% ink underline; the foot holds "by Name" in label type, an ink "Read the story" chip when the Fun Fact tells a Lore Entry's story, and underlined Edit and Delete for whoever may.
+
+**The Part Ink Is the Part Rule.** A part ink means that part of the Club Codex and nothing else. Club History parchment shares its hex with Milestone parchment on purpose: they never meet as different meanings, because the timeline uses Kind inks only and the part inks never appear on it.
+
+**The Kind Ink Is the Kind Rule.** Kind inks appear only where a History Event shows its Kind.
+
+**The Fill Carries Ink Type Rule.** Every part-ink and Kind-ink fill (door, spine, index card, See also band, selected chip, selected tile) carries `background` ink type, body copy included (a door's body at ink 82%, its small labels at ink 70%). Paper type never sits on these fills. On ink grounds the inks are type, rules and marks. Yellow is still yours (Add, Save changes, the picked spine's ring, the lit mention row, focus and the caret), signal orange is still only Delete, and masthead red is still "you are here": no Codex ink borrows red, violet, yellow or orange. Fun Facts pink sits near `news-announcements` and `rarity-ultra`, and Staff lagoon near the Journal ink lagoon and `news-emulation`; they never share a surface, so neither is misread, and one is never reused for the other.
 
 ### Typography
 

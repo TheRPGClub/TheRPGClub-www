@@ -9,8 +9,9 @@ export const LORE_PATH = `${CODEX_PATH}/lore`;
 export const FUN_FACTS_PATH = `${CODEX_PATH}/fun-facts`;
 // The Fun Fact add panel at the top of the wall, as a link target.
 export const ADD_FUN_FACT_ID = "add-fun-fact";
-// Writing a Lore Entry (www#125's form).
+// Writing a Lore Entry (www#125's form) and a History Event (www#126's).
 export const NEW_LORE_PATH = `${LORE_PATH}/new`;
+export const NEW_HISTORY_PATH = `${HISTORY_PATH}/new`;
 
 // Each part as the copy names it, one entry and many.
 export const PART_NAME: Record<CodexPart, { one: string; many: string; section: string }> = {

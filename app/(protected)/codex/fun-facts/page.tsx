@@ -8,9 +8,9 @@ import { PreviewBadge } from "@/components/feature/preview-badge";
 import { FunFactsWall } from "@/components/codex/fun-facts/fun-facts-wall";
 
 // The Fun Facts wall (spec api#397, designs 4D and 5D, www#124): every Fun
-// Fact, newest first, twelve to a page, added and edited in place.
+// Fact, newest first, eight to a page, added and edited in place.
 
-const PER = 12;
+const PER = 8;
 
 export default async function FunFactsPage({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
   const features = await requireFeature("club_codex");

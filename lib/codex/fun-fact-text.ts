@@ -42,10 +42,11 @@ export function funFactSegments(
   return out;
 }
 
-// The text as plain words: each known member as "@Name".
-export function funFactPlain(body: string, mentions: Readonly<Record<string, CodexMember>>): string {
+// The text as plain words: each known member as "@Name" (or with another
+// mark before the name, or none).
+export function funFactPlain(body: string, mentions: Readonly<Record<string, CodexMember>>, at = "@"): string {
   return funFactSegments(body, mentions)
-    .map((s) => (s.kind === "text" ? s.text : `@${s.member.name}`))
+    .map((s) => (s.kind === "text" ? s.text : `${at}${s.member.name}`))
     .join("");
 }
 

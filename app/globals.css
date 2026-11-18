@@ -92,7 +92,14 @@
     --color-codex-history: var(--codex-history);
     --color-codex-lore: var(--codex-lore);
     --color-codex-fact: var(--codex-fact);
-    --color-codex-fact-soft: var(--codex-fact-soft);
+    --color-codex-fact-light: var(--codex-fact-light);
+    --color-codex-lore-deep: var(--codex-lore-deep);
+    --color-codex-lore-print: var(--codex-lore-print);
+    --color-kind-founding: var(--kind-founding);
+    --color-kind-staff: var(--kind-staff);
+    --color-kind-platform: var(--kind-platform);
+    --color-kind-rules: var(--kind-rules);
+    --color-kind-milestone: var(--kind-milestone);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */

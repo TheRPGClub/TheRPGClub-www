@@ -12,6 +12,8 @@ import { CODEX_PATH, FUN_FACTS_PATH } from "@/lib/codex/paths";
 
 export interface FunFactActionResult {
   ok: boolean;
+  // The Fun Fact added or edited.
+  id?: number;
   error?: string;
 }
 
@@ -41,12 +43,21 @@ function validId(id: unknown): id is number {
   return typeof id === "number" && Number.isInteger(id) && id > 0;
 }
 
+async function entryId(res: Response): Promise<number | undefined> {
+  try {
+    const body = (await res.json()) as { data?: { id?: unknown } };
+    return typeof body.data?.id === "number" ? body.data.id : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 async function send(path: string, init: RequestInit, action: Action): Promise<FunFactActionResult> {
   try {
     const res = await apiFetch(path, { ...init, cache: "no-store" });
     if (res.ok) {
       revalidate();
-      return { ok: true };
+      return { ok: true, id: await entryId(res) };
     }
     if (res.status === 401) return { ok: false, error: "Your session has ended. Sign in again." };
     if (res.status === 404) return { ok: false, error: NOT_FOUND[action] };

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BookOpen, Pencil } from "lucide-react";
 import type { CodexEntry } from "@/lib/codex/types";
 import { funFactAnchor, LORE_PATH, storyOf } from "@/lib/codex/paths";
-import { addedOn, cardTilt } from "@/lib/codex/wall";
+import { addedOn } from "@/lib/codex/wall";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FunFactText } from "@/components/codex/fun-fact-text";
@@ -16,7 +16,21 @@ import { FunFactEdit } from "./fun-fact-edit";
 // up at its own tilt, ruled, numbered and dated, with its author, its story
 // when it tells one, and Edit and Delete for whoever may. Editing turns the
 // card over into the Fun Fact field, in place.
-export function FunFactCard({ fact, number, soft }: { fact: CodexEntry; number: number; soft: boolean }) {
+export function FunFactCard({
+  fact,
+  number,
+  light,
+  tilt,
+  next,
+}: {
+  fact: CodexEntry;
+  number: number;
+  // Every third card is the pale pink.
+  light: boolean;
+  tilt: number;
+  // The Fun Fact this member just added: it goes out next.
+  next: boolean;
+}) {
   const [editing, setEditing] = useState(false);
   const story = storyOf(fact.links);
   const anchor = funFactAnchor(fact.id);
@@ -28,11 +42,11 @@ export function FunFactCard({ fact, number, soft }: { fact: CodexEntry; number: 
   return (
     <article
       id={anchor}
-      style={{ "--tilt": `${cardTilt(fact.id)}deg` } as React.CSSProperties}
+      style={{ "--tilt": `${tilt}deg` } as React.CSSProperties}
       className={cn(
-        "relative flex min-h-40 scroll-mt-24 sm:min-h-[14.4rem] flex-col rounded-xs px-4.5 pt-5 pb-3.5 text-background shadow-[0_10px_22px_rgb(0_0_0/0.5)] [transform:rotate(var(--tilt))] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:[transform:rotate(0deg)_translateY(-3px)]",
+        "relative flex min-h-40 scroll-mt-24 sm:min-h-[14.4rem] flex-col rounded-xs px-4.5 pt-5 pb-3.5 text-background shadow-[0_10px_22px_rgb(0_0_0/0.5)] [transform:rotate(calc(var(--tilt)/2))] sm:[transform:rotate(var(--tilt))] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:[transform:rotate(0deg)_translateY(-3px)] motion-safe:sm:hover:[transform:rotate(0deg)_translateY(-3px)]",
         "bg-[repeating-linear-gradient(transparent_0_27px,rgb(11_11_13/0.13)_27px_28px)] bg-position-[0_46px]",
-        soft ? "bg-codex-fact-soft" : "bg-codex-fact",
+        light ? "bg-codex-fact-light" : "bg-codex-fact",
       )}
     >
       <i
@@ -43,11 +57,16 @@ export function FunFactCard({ fact, number, soft }: { fact: CodexEntry; number: 
         <h3 className="font-headline text-2xl leading-[0.9]">No. {number}</h3>
         <span className="font-label text-[0.75rem] font-bold tracking-[0.06em]">{addedOn(fact.created_at)}</span>
       </header>
-      <p className="mb-3 text-[1.0625rem] leading-7 font-medium text-pretty">
+      <p className="mb-3 text-[1.0625rem] leading-7 font-medium text-pretty [&_a]:decoration-background/55">
         <FunFactText body={fact.body ?? ""} mentions={fact.mentions} />
       </p>
       <footer className="font-label mt-auto flex flex-col items-start gap-1.5 text-[0.8125rem] font-bold tracking-[0.06em]">
-        <span>— {fact.author.name}</span>
+        {next && (
+          <span className="rounded-xs px-1.5 py-1 text-[0.72rem] font-bold tracking-[0.08em] shadow-[inset_0_0_0_1.5px_currentColor]">
+            Next Daily Fun Fact
+          </span>
+        )}
+        <span>by {fact.author.name}</span>
         {story && (
           <Link
             href={`${LORE_PATH}/${story.id}`}

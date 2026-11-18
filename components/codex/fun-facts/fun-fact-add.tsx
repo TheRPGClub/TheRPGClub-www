@@ -5,11 +5,13 @@ import { addFunFactAction } from "@/app/actions/codex-fun-facts";
 import { ADD_FUN_FACT_ID } from "@/lib/codex/paths";
 import { Button } from "@/components/ui/button";
 import { FunFactComposer } from "./fun-fact-composer";
+import { useWall } from "./wall-state";
 
 // Adding a Fun Fact, inline at the top of the wall (5D: Fun Facts skip the
 // writing desk): a panel under the Fun Facts ink's top rule. A new Fun Fact
 // goes to the front of the Daily Fun Fact's queue, and the panel says so.
 export function FunFactAdd() {
+  const { setNextDaily } = useWall();
   return (
     <section
       id={ADD_FUN_FACT_ID}
@@ -24,7 +26,11 @@ export function FunFactAdd() {
       </h2>
       <FunFactComposer
         label="Your Fun Fact"
-        onSave={addFunFactAction}
+        onSave={async (body) => {
+          const result = await addFunFactAction(body);
+          if (result.ok && result.id) setNextDaily(result.id);
+          return result;
+        }}
         resetOnSave
         actions={({ ready, pending }) => (
           <>

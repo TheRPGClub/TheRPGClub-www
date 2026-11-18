@@ -106,14 +106,23 @@
         --region-eu: #8fe0a6;
         --region-jp: #ffa3c9;
         --region-foreground: #0b0b0d;
-        /* Club Codex inks, on Codex surfaces only: one per part (Club
-           History parchment, Club Lore jade, Fun Facts pink), as a door's
-           or a card's fill with ink type, or a small mark. fact-soft is
-           the lighter index card every third card on the Fun Facts wall. */
+        /* Club Codex inks, on Club Codex surfaces only. The part inks say
+           which part something belongs to (Club History parchment, Club
+           Lore jade, Fun Facts pink; fact-light is every third index card
+           on the Fun Facts wall), the Kind inks what sort of History Event
+           it is. Fills always carry ink type. lore-deep and lore-print are
+           dark type on the jade band and on a photo's paper mount. */
         --codex-history: #eadcb8;
         --codex-lore: #52d6a4;
         --codex-fact: #ff8ad8;
-        --codex-fact-soft: #ffb3e6;
+        --codex-fact-light: #ffb3e6;
+        --codex-lore-deep: #123b2e;
+        --codex-lore-print: #1f5c48;
+        --kind-founding: #f59ac0;
+        --kind-staff: #3fd0c9;
+        --kind-platform: #7cb6ff;
+        --kind-rules: #b7dd5e;
+        --kind-milestone: #eadcb8;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getSession, requireFeature } from "@/lib/session";
 import { readCodexContents } from "@/lib/codex/contents-page";
-import { isRegularOrStaff } from "@/lib/staff";
+import { isAdminOrAbove, isRegularOrStaff } from "@/lib/staff";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { CodexContents } from "@/components/codex/contents/codex-contents";
 
@@ -17,7 +17,8 @@ export default async function CodexPage() {
   return (
     <CodexContents
       contents={contents}
-      canAdd={isRegularOrStaff(session?.membership ?? null)}
+      canAdd={isRegularOrStaff(session?.membership)}
+      canAddHistory={isAdminOrAbove(session?.membership)}
       badge={features.preview("club_codex") && <PreviewBadge />}
     />
   );

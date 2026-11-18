@@ -1,12 +1,15 @@
 import { fetchCodexEntry, fetchCodexPage, fetchRecentEntries, type CodexPage } from "@/lib/api/codex";
+import { funFactPlain } from "@/lib/codex/fun-fact-text";
 import type { CodexEntry, CodexEntryLink, CodexPart } from "@/lib/codex/types";
 
 // What the Club Codex contents page shows (design 1C, www#124): a Fun Fact
 // leading, a door per part with its count and its newest entry, and the
 // newest entries across all three parts.
 //
-// The API has no read for today's Daily Fun Fact, so the page leads with a
-// Fun Fact picked at random instead (API follow-up in notes/decisions.md).
+// The API has no read for today's Daily Fun Fact, so the page leads with the
+// newest Fun Fact instead, and "Another one" steps through the newest few
+// without touching the Daily Fun Fact's queue (API follow-up in
+// notes/decisions.md).
 
 export interface CodexDoor {
   count: number;
@@ -15,6 +18,7 @@ export interface CodexDoor {
 }
 
 export interface LatelyItem {
+  // A Fun Fact's title is its opening words, members named as they are now.
   link: CodexEntryLink;
   // From the entry's full read; null when that read failed.
   author: string | null;
@@ -22,7 +26,8 @@ export interface LatelyItem {
 }
 
 export interface CodexContents {
-  fact: CodexEntry | null;
+  // The newest Fun Facts, newest first, for the lead panel.
+  facts: CodexEntry[];
   doors: Record<CodexPart, CodexDoor>;
   // Null when the read failed.
   lately: LatelyItem[] | null;
@@ -39,7 +44,7 @@ function pageOf(r: Read<CodexPage<CodexEntry>>): CodexPage<CodexEntry> {
   return r && r !== "not_found" ? r : { data: [], total: 0, pages: 1 };
 }
 
-export async function readCodexContents(random: () => number = Math.random): Promise<CodexContents | "not_found"> {
+export async function readCodexContents(): Promise<CodexContents | "not_found"> {
   const [factsRead, loreRead, historyRead, recentRead] = await Promise.all([
     fetchCodexPage("fun_fact", 1, LATELY),
     fetchCodexPage("lore_entry", 1, LATELY),
@@ -54,17 +59,16 @@ export async function readCodexContents(random: () => number = Math.random): Pro
 
   const known = new Map<number, CodexEntry>([...facts.data, ...lore.data].map((e) => [e.id, e]));
   const historyIds = (recent ?? []).filter((l) => l.part === "history_event").map((l) => l.id);
-  const factPage = facts.total > 0 ? 1 + Math.floor(random() * facts.total) : 0;
 
-  const [factRead, latestRead, ...historyReads] = await Promise.all([
-    factPage > 0 ? fetchCodexPage("fun_fact", factPage, 1) : Promise.resolve(null),
+  // The latest History Event by date is the last of the date-ordered list.
+  const [latestRead, ...historyReads] = await Promise.all([
     history.total > 1 ? fetchCodexPage("history_event", history.total, 1) : Promise.resolve(historyRead),
     ...historyIds.map((id) => fetchCodexEntry("history_event", id)),
   ]);
   for (const r of historyReads) if (r && r !== "not_found") known.set(r.id, r);
 
   return {
-    fact: factRead && factRead !== "not_found" ? (factRead.data[0] ?? facts.data[0] ?? null) : (facts.data[0] ?? null),
+    facts: facts.data,
     doors: {
       history_event: { count: history.total, entry: pageOf(latestRead).data[0] ?? null },
       lore_entry: { count: lore.total, entry: lore.data[0] ?? null },
@@ -72,7 +76,15 @@ export async function readCodexContents(random: () => number = Math.random): Pro
     },
     lately: recent?.map((link) => {
       const entry = known.get(link.id);
-      return { link, author: entry?.author.name ?? null, createdAt: entry?.created_at ?? null };
+      const title = entry?.part === "fun_fact" && entry.body ? openingWords(funFactPlain(entry.body, entry.mentions, "")) : link.title;
+      return { link: { ...link, title }, author: entry?.author.name ?? null, createdAt: entry?.created_at ?? null };
     }) ?? null,
   };
+}
+
+// A Fun Fact's first words for a one-line title: the list cuts it with an
+// ellipsis, so this only keeps the line short.
+function openingWords(text: string): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  return flat.length > 120 ? `${flat.slice(0, 119)}…` : flat;
 }
