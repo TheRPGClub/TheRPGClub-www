@@ -56,22 +56,3 @@ export async function saveBirthDateAction(input: {
   if (userId === own) refresh();
   return { ok: true, data: body.data };
 }
-
-// Staff read a member's Birth Date on the desk once they pick the member.
-export async function readMemberBirthDateAction(userId: string): Promise<BirthDateResult> {
-  const session = await getSession();
-  if (!session) return { ok: false, error: "Sign in again to see a Birth Date." };
-  if (!isModeratorOrAbove(session.membership)) return { ok: false, error: NOT_STAFF };
-  if (!/^\d+$/.test(userId)) return { ok: false, error: "Pick a member first." };
-
-  let res: Response;
-  try {
-    res = await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/birth_date`, { cache: "no-store" });
-  } catch {
-    return { ok: false, error: "Couldn't reach the club's server. Pick the member again to retry." };
-  }
-  if (res.status === 403) return { ok: false, error: NOT_STAFF };
-  if (!res.ok) return { ok: false, error: `Couldn't read their Birth Date (HTTP ${res.status}).` };
-  const body = (await res.json()) as { data: BirthDate };
-  return { ok: true, data: body.data };
-}
