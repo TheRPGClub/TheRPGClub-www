@@ -38,6 +38,14 @@ const SECTIONS: Record<string, string> = {
   journals: "Game Journals",
   settings: "Settings",
   challenges: "Challenges",
+  codex: "Club Codex",
+};
+
+// The Club Codex's parts, each a page under /codex.
+const CODEX_PAGES: Record<string, string> = {
+  "fun-facts": "Fun Facts",
+  lore: "Club Lore",
+  history: "Club History",
 };
 
 // /admin tool pages, labelled as the desk names them. Sections that live
@@ -183,6 +191,10 @@ export async function crumbTrail(
       // A Santa's private pick page (www#111).
       if (page === "pick") trail.push({ label: "Your pick", href: `${base}/pick` });
     }
+  }
+
+  if (section === "codex" && id && Object.hasOwn(CODEX_PAGES, id)) {
+    trail.push({ label: CODEX_PAGES[id], href: `${root}/${id}` });
   }
 
   if (section === "admin" && id && ADMIN_PAGES[id]) {

@@ -12,6 +12,7 @@ import {
   NotebookPen,
   Radio,
   Replace,
+  ScrollText,
   ShieldCheck,
   Trophy,
   Users,
@@ -21,6 +22,7 @@ import type { VotingPhase } from "@/lib/api/voting-round";
 import type { FeatureKey } from "@/lib/features";
 import type { StaffSection } from "@/lib/staff";
 import { RELEASES_PATH } from "@/lib/release-calendar";
+import { CODEX_PATH } from "@/lib/codex/paths";
 
 // The sidebar's items. Each item names the Feature it belongs to
 // (lib/features.ts); the session says whether this viewer is shown it.
@@ -35,6 +37,7 @@ export const NAV_MAIN: {
   { href: "/games", icon: Library, label: "Games", feature: "game_index" },
   { href: "/gotm", icon: Trophy, label: "GOTM history", feature: "voting_gotm" },
   { href: "/members", icon: Users, label: "Members" },
+  { href: CODEX_PATH, icon: ScrollText, label: "Codex", feature: "club_codex" },
   { href: "/journals", icon: NotebookPen, label: "Game Journals", feature: "journals" },
   { href: "/achievements", icon: Award, label: "Achievements", feature: "achievement_hub" },
   { href: "/news", icon: Newspaper, label: "News", feature: "news_hub" },
