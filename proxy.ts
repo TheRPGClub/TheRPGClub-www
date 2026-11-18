@@ -12,6 +12,10 @@ const PUBLIC_PATHS = new Set([
   "/join",
   // The join page's Continue (restarts sign-in with the return-to).
   "/join/continue",
+  // Club History, the public part of the Club Codex (www#126): the page
+  // itself decides who reads it (Visitors only while the Feature is Live).
+  // Writing it stays for Members (/codex/history/new and edit).
+  "/codex/history",
 ]);
 const PUBLIC_PREFIXES = ["/auth/"];
 

@@ -3,7 +3,7 @@
 import { useState, type DragEvent, type RefObject } from "react";
 import type { PlateEditor } from "platejs/react";
 import { useEditorRef } from "platejs/react";
-import { photoKey, type DeskPhoto, type LoreDesk } from "@/hooks/use-lore-desk";
+import { photoKey, type DeskPhoto, type SheetDesk } from "@/hooks/use-lore-desk";
 import { imageIndex } from "@/lib/codex/lore-story";
 import { IMAGE_TYPE, type ImageNode } from "@/lib/codex/story-schema";
 
@@ -43,7 +43,7 @@ export function placeAtCaret(editor: PlateEditor, photo: DeskPhoto) {
 
 // Dragging a photo from the drawer onto the sheet: the yellow line shows
 // below the block it would follow, `line` px down `frame`.
-export function usePhotoDrop(desk: LoreDesk, frame: RefObject<HTMLElement | null>) {
+export function usePhotoDrop(desk: Pick<SheetDesk, "photos">, frame: RefObject<HTMLElement | null>) {
   const editor = useEditorRef();
   const [target, setTarget] = useState<{ after: number; line: number } | null>(null);
 

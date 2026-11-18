@@ -13,6 +13,11 @@ export const ADD_FUN_FACT_ID = "add-fun-fact";
 export const NEW_LORE_PATH = `${LORE_PATH}/new`;
 export const NEW_HISTORY_PATH = `${HISTORY_PATH}/new`;
 
+// A History Event's desk (www#126), for Admins and above.
+export function editHistoryPath(id: number): string {
+  return `${HISTORY_PATH}/${id}/edit`;
+}
+
 // Each part as the copy names it, one entry and many.
 export const PART_NAME: Record<CodexPart, { one: string; many: string; section: string }> = {
   history_event: { one: "History Event", many: "History Events", section: "Club History" },

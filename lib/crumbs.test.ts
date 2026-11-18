@@ -10,6 +10,7 @@ const names = {
   set: async (setId: string, memberId: string) => `Set ${setId} of ${memberId}`,
   challenge: async (id: string) => `Challenge ${id}`,
   loreEntry: async (id: string) => `Lore Entry ${id}`,
+  historyEvent: async (id: string) => `History Event ${id}`,
 };
 const trail = (path: string) => crumbTrail(path.split("/").filter(Boolean), names);
 
@@ -96,5 +97,19 @@ describe("crumbTrail", () => {
       { label: "Edit", href: "/codex/lore/7/edit" },
     ]);
     expect(await trail("/codex/lore/new")).toEqual([...lore, { label: "New", href: "/codex/lore/new" }]);
+  });
+
+  it("names Club History's desk: a new History Event and one's edit page", async () => {
+    const history = [
+      { label: "Club Codex", href: "/codex" },
+      { label: "Club History", href: "/codex/history" },
+    ];
+    expect(await trail("/codex/history")).toEqual(history);
+    expect(await trail("/codex/history/new")).toEqual([...history, { label: "New", href: "/codex/history/new" }]);
+    expect(await trail("/codex/history/4/edit")).toEqual([
+      ...history,
+      { label: "History Event 4", href: "/codex/history#history-event-4" },
+      { label: "Edit", href: "/codex/history/4/edit" },
+    ]);
   });
 });

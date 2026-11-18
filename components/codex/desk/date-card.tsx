@@ -1,8 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { LoreDesk } from "@/hooks/use-lore-desk";
-import { MONTH_SHORT, type DateChoice } from "@/lib/codex/lore-date";
+import { MONTH_SHORT, type DateChoice, type DateDraft } from "@/lib/codex/lore-date";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,17 +33,24 @@ function Part({ kept, children }: { kept: boolean; children: React.ReactNode }) 
 }
 
 // The Date card (5D): the date set big in Anton, each part editable in place,
-// over No date | Year | Month | Day.
-export function DateCard({ desk, tilt }: { desk: LoreDesk; tilt: number }) {
+// over No date | Year | Month | Day. A History Event's date is required
+// (www#126): its card loses No date.
+export function DateCard({
+  desk,
+  tilt,
+  required = false,
+}: {
+  desk: { date: DateDraft; setDate: (date: DateDraft) => void };
+  tilt: number;
+  required?: boolean;
+}) {
   const id = useId();
   const { date, setDate } = desk;
+  const choices = required ? CHOICES.filter(([value]) => value !== "none") : CHOICES;
   const keeps = KEEPS[date.choice];
-  const months = MONTH_SHORT.map((label, i) => ({
-    value: String(i + 1),
-    label,
-  }));
+  const months = MONTH_SHORT.map((label, i) => ({ value: String(i + 1), label }));
   return (
-    <DrawerCard title="Date" note="Optional" tilt={tilt}>
+    <DrawerCard title="Date" note={required ? "Required" : "Optional"} tilt={tilt}>
       <div
         className="font-headline flex items-baseline gap-x-2.5 text-[2.875rem] leading-[1] uppercase"
         aria-describedby={`${id}-help`}
@@ -57,12 +63,7 @@ export function DateCard({ desk, tilt }: { desk: LoreDesk; tilt: number }) {
             value={date.day}
             maxLength={2}
             disabled={!keeps.day}
-            onChange={(e) =>
-              setDate({
-                ...date,
-                day: e.currentTarget.value.replace(/\D/g, ""),
-              })
-            }
+            onChange={(e) => setDate({ ...date, day: e.currentTarget.value.replace(/\D/g, "") })}
             className="font-headline h-auto w-auto min-w-[1ch] border-0 p-0 [field-sizing:content] text-[length:inherit] leading-[1] md:text-[length:inherit]"
           />
         </Part>
@@ -93,12 +94,7 @@ export function DateCard({ desk, tilt }: { desk: LoreDesk; tilt: number }) {
             value={date.year}
             maxLength={4}
             disabled={!keeps.year}
-            onChange={(e) =>
-              setDate({
-                ...date,
-                year: e.currentTarget.value.replace(/\D/g, ""),
-              })
-            }
+            onChange={(e) => setDate({ ...date, year: e.currentTarget.value.replace(/\D/g, "") })}
             className="font-headline h-auto w-auto min-w-[2ch] border-0 p-0 [field-sizing:content] text-[length:inherit] leading-[1] md:text-[length:inherit]"
           />
         </Part>
@@ -108,9 +104,9 @@ export function DateCard({ desk, tilt }: { desk: LoreDesk; tilt: number }) {
         aria-label="How precise the date is"
         value={[date.choice]}
         onValueChange={(value: string[]) => value[0] && setDate({ ...date, choice: value[0] as DateChoice })}
-        className="mt-3.5 grid w-full grid-cols-4"
+        className={cn("mt-3.5 grid w-full", required ? "grid-cols-3" : "grid-cols-4")}
       >
-        {CHOICES.map(([value, label]) => (
+        {choices.map(([value, label]) => (
           <ToggleGroupItem key={value} value={value} variant="switcher" size="sm" className="w-full">
             {label}
           </ToggleGroupItem>

@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { AtSign } from "lucide-react";
 import { PlateContent, useEditorRef } from "platejs/react";
-import type { LoreDesk } from "@/hooks/use-lore-desk";
+import type { SheetDesk } from "@/hooks/use-lore-desk";
+import type { RichTextSchema } from "@/lib/rich-text/schema";
 import { useStoryMention } from "@/hooks/use-story-mention";
 import { LORE_SCHEMA, STORY_MAX } from "@/lib/codex/story-schema";
 import { cn } from "@/lib/utils";
@@ -23,8 +24,24 @@ const STORY = cn(
 // The manuscript sheet (5D): the shared editor's toolbar sticky across its
 // top with Mention a member at the end, the plain-text counter, the title
 // written in place in Anton, the byline, then the story. Photos dragged from
-// the drawer land between paragraphs, after a yellow insertion line.
-export function ManuscriptSheet({ desk, author }: { desk: LoreDesk; author: React.ReactNode }) {
+// the drawer land between paragraphs, after a yellow insertion line. The
+// History Event desk (www#126) writes a title and a description on it, with
+// no byline and no photos placed.
+export function ManuscriptSheet({
+  desk,
+  author,
+  schema = LORE_SCHEMA,
+  titleLabel = "Lore Entry title",
+  textLabel = "The story",
+  placeholder = "Tell the story. Type @ to mention a member.",
+}: {
+  desk: SheetDesk;
+  author?: React.ReactNode;
+  schema?: RichTextSchema;
+  titleLabel?: string;
+  textLabel?: string;
+  placeholder?: string;
+}) {
   const editor = useEditorRef();
   const frame = useRef<HTMLDivElement>(null);
   const mention = useStoryMention(frame);
@@ -37,7 +54,7 @@ export function ManuscriptSheet({ desk, author }: { desk: LoreDesk; author: Reac
       className="relative rounded-[4px] bg-card pb-6.5 shadow-[inset_0_0_0_1px_var(--color-border),0_18px_40px_rgb(0_0_0/0.45)]"
     >
       <div className="sticky top-[60px] z-20 flex items-center gap-3 rounded-t-[4px] bg-muted px-3 py-2 sm:px-12">
-        <RichTextToolbar schema={LORE_SCHEMA} className="min-w-0 flex-1 flex-nowrap overflow-x-auto">
+        <RichTextToolbar schema={schema} className="min-w-0 flex-1 flex-nowrap overflow-x-auto">
           <ToolbarButton label="Mention a member" onClick={mention.begin}>
             <AtSign className="size-4" strokeWidth={1.75} />
           </ToolbarButton>
@@ -56,7 +73,7 @@ export function ManuscriptSheet({ desk, author }: { desk: LoreDesk; author: Reac
           rows={1}
           value={desk.title}
           maxLength={100}
-          aria-label="Lore Entry title"
+          aria-label={titleLabel}
           aria-invalid={!desk.title.trim() && desk.dirty ? true : undefined}
           placeholder="Title"
           onChange={(e) => desk.setTitle(e.currentTarget.value.replace(/\n/g, " "))}
@@ -67,12 +84,12 @@ export function ManuscriptSheet({ desk, author }: { desk: LoreDesk; author: Reac
           }}
           className="font-headline min-h-0 resize-none border-x-0 border-t-0 border-b-2 px-0 pt-1.5 pb-2 text-[2.5rem] leading-[0.95] uppercase sm:text-[4.125rem] md:text-[4.125rem]"
         />
-        <div className="mt-3 flex items-center gap-2 text-[0.9rem] text-dim-foreground">{author}</div>
+        {author && <div className="mt-3 flex items-center gap-2 text-[0.9rem] text-dim-foreground">{author}</div>}
       </div>
       <div ref={frame} className="relative">
         <PlateContent
-          aria-label="The story"
-          placeholder="Tell the story. Type @ to mention a member."
+          aria-label={textLabel}
+          placeholder={placeholder}
           disableDefaultStyles
           onKeyDown={mention.onKeyDown}
           onDragOver={drop.onDragOver}

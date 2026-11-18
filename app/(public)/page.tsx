@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { fetchPublicWinners } from "@/lib/api/public-winners";
+import { fetchCodexPage } from "@/lib/api/codex";
+import { eventYear } from "@/lib/codex/history";
 import { getSession } from "@/lib/session";
 import { featureView } from "@/lib/features";
 import { firstParam } from "@/lib/search-params";
@@ -26,9 +28,12 @@ export default async function Home({ searchParams }: HomeProps) {
     redirect(callbackPath(token, firstParam(params?.return_to)));
   }
 
-  const [session, allWinners] = await Promise.all([
+  const [session, allWinners, history] = await Promise.all([
     getSession(),
     fetchPublicWinners(),
+    // The earliest History Event, for the Club History band. Signed out
+    // this is the public read, found only while the Club Codex is Live.
+    fetchCodexPage("history_event", 1, 1),
   ]);
   // The winners follow Voting & GOTM. A signed-in viewer's session says
   // whether they're shown it; for a visitor the API's public read decides
@@ -38,8 +43,18 @@ export default async function Home({ searchParams }: HomeProps) {
       ? []
       : allWinners;
 
+  // The Club History band shows while the Club Codex is Live (a Member's
+  // read also finds it in Preview when they're staff, so the session says
+  // Live: shown, and not shown only for being staff) and the viewer hasn't
+  // hidden it, and only once there is a History Event.
+  const codex = featureView(session?.features);
+  const first = history && history !== "not_found" ? history.data[0] : undefined;
+  const historyYear =
+    first && (!session || (codex.shown("club_codex") && !codex.preview("club_codex"))) ? eventYear(first) : null;
+
   return (
     <FrontPage
+      historyYear={historyYear}
       winners={winners}
       signInHref={discordSignInUrl()}
       profileHref={session ? `/members/${session.principal.discord_id}` : null}

@@ -62,3 +62,23 @@ export async function fetchCodexEntry(part: CodexPart, id: number): Promise<Read
 export function fetchRecentEntries(per: number): Promise<Read<CodexPage<CodexEntryLink>>> {
   return readPage<CodexEntryLink>("/api/v1/codex/entries", { page: 1, per });
 }
+
+// The whole Club History, oldest first (www#126). The timeline counts each
+// History Event Kind, orders newest first and pages itself, none of which
+// the API's list does, and the club's history runs to tens of History
+// Events, so it reads every page at the API's largest size. Signed out, this
+// is the public read: "not_found" unless the Feature is Live.
+const HISTORY_PER = 500;
+const HISTORY_PAGES_MAX = 20;
+
+export async function fetchHistoryEvents(): Promise<Read<CodexEntry[]>> {
+  const first = await fetchCodexPage("history_event", 1, HISTORY_PER);
+  if (first === null || first === "not_found") return first;
+  const events = [...first.data];
+  for (let page = 2; page <= Math.min(first.pages, HISTORY_PAGES_MAX); page++) {
+    const next = await fetchCodexPage("history_event", page, HISTORY_PER);
+    if (next === null || next === "not_found") return next;
+    events.push(...next.data);
+  }
+  return events;
+}

@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 // remove x, the line saying where it sits in the story, and Place at the
 // caret. While it uploads it wears the ink overlay; when the upload fails it
 // keeps its slot, outlined in signal orange, with the reason, Retry and
-// Remove.
+// Remove. In a plain gallery (a History Event's, www#126: no `onPlace`) it
+// has no place in the text, so no story line, no Place at the caret and no
+// drag.
 export function PinnedPhoto({
   photo,
   number,
@@ -26,25 +28,26 @@ export function PinnedPhoto({
   photo: DeskPhoto;
   number: number;
   tilt: number;
-  value: Value;
+  value?: Value;
   disabled: boolean;
-  onPlace: () => void;
+  onPlace?: () => void;
   onRemove: () => void;
   onRetry: () => void;
 }) {
-  const after = paragraphBefore(value, photoKey(photo));
+  const after = value ? paragraphBefore(value, photoKey(photo)) : null;
   const failed = photo.state === "failed";
   return (
     <div>
       <div
-        draggable={!disabled}
+        draggable={!disabled && !!onPlace}
         onDragStart={(e) => {
           e.dataTransfer.setData(PHOTO_DRAG_TYPE, photo.key);
           e.dataTransfer.effectAllowed = "move";
         }}
         style={{ "--tilt": `${tilt}deg` } as React.CSSProperties}
         className={cn(
-          "relative aspect-[4/3] cursor-grab overflow-hidden rounded-[2px] bg-background shadow-[0_6px_14px_rgb(0_0_0/0.45)] active:cursor-grabbing lg:rotate-(--tilt)",
+          "relative aspect-[4/3] overflow-hidden rounded-[2px] bg-background shadow-[0_6px_14px_rgb(0_0_0/0.45)] lg:rotate-(--tilt)",
+          onPlace && "cursor-grab active:cursor-grabbing",
           failed && "outline-2 outline-offset-2 outline-destructive",
         )}
       >
@@ -86,7 +89,7 @@ export function PinnedPhoto({
             </Button>
           </div>
         </div>
-      ) : (
+      ) : onPlace ? (
         <>
           <p
             className={cn(
@@ -101,7 +104,7 @@ export function PinnedPhoto({
             Place at the caret
           </Button>
         </>
-      )}
+      ) : null}
     </div>
   );
 }

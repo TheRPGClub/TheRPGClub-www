@@ -36,6 +36,10 @@ const labelVariants = cva("", {
       switch: "",
       // A file picker drawn as a field (the hidden file input inside).
       file: "",
+      // www#126: a History Event Kind's tile on the History Event desk,
+      // around its (visually hidden) radio, in the ink of --ink: outlined
+      // with ink type; the checked one fills, lifts and tilts.
+      "kind-tile": "",
     },
   },
   defaultVariants: { variant: "default" },
