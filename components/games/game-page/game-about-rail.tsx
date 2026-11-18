@@ -8,10 +8,14 @@ import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import { RailHeading, RailMembers } from "@/components/issue/game-rail";
 import { GameThreads } from "@/components/game-links/game-threads";
 import { GameDetails } from "@/components/games/game-page/game-details";
-import { RailDetailsSkeleton } from "@/components/games/game-page/game-page-skeleton";
+import { GameReleases } from "@/components/games/game-page/game-releases";
+import {
+  RailDetailsSkeleton,
+  RailReleasesSkeleton,
+} from "@/components/games/game-page/game-page-skeleton";
 
 // The game page's rail, "About this game": its HowLongToBeat times, who's
-// playing it, who finished it, the facts, its Discord threads, and the
+// playing it, who finished it, its Releases, the facts, its Discord threads, and the
 // admins' image upload. Beside the Reviews it stacks; without them its
 // sections lay out across the page instead of hugging one edge.
 export function GameAboutRail({
@@ -56,12 +60,16 @@ export function GameAboutRail({
           empty="No one has finished it yet."
         />
       )}
-      <Suspense fallback={<RailDetailsSkeleton />}>
-        <GameDetails
+      <Suspense fallback={<RailReleasesSkeleton />}>
+        <GameReleases
           gameId={gameId}
-          releaseDate={game.initial_release_date}
-          canRefreshReleases={gates.canRefreshReleases}
+          firstReleased={game.initial_release_date}
+          canRefresh={gates.canRefreshReleases}
+          calendarShown={show.releaseCalendar}
         />
+      </Suspense>
+      <Suspense fallback={<RailDetailsSkeleton />}>
+        <GameDetails gameId={gameId} />
       </Suspense>
       <Suspense fallback={null}>
         <GameThreads gameId={gameId} canEdit={gates.canEditThreads} />

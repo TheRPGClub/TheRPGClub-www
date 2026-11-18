@@ -333,6 +333,41 @@
                 color: var(--background);
                 border-color: var(--background);
             }
+            &[data-tone="region-na"] {
+                background-color: var(--region-na);
+                color: var(--region-foreground);
+                border-color: var(--region-foreground);
+            }
+            &[data-tone="region-eu"] {
+                background-color: var(--region-eu);
+                color: var(--region-foreground);
+                border-color: var(--region-foreground);
+            }
+            &[data-tone="region-jp"] {
+                background-color: var(--region-jp);
+                color: var(--region-foreground);
+                border-color: var(--region-foreground);
+            }
+            &:is([data-tone="region-na"], [data-tone="region-eu"], [data-tone="region-jp"], [data-tone="region-ww"], [data-tone="region"])[data-past] {
+                background-color: var(--background);
+                color: var(--chart-5);
+                outline: 2px dotted var(--chart-5);
+            }
+            &[data-tone="region-ww"] {
+                background-color: var(--chart-1);
+                color: var(--background);
+                border-color: var(--background);
+            }
+            &[data-tone="region"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-color: var(--accent-foreground);
+            }
+            &[data-tone="precision"] {
+                background-color: var(--background);
+                color: var(--chart-5);
+                outline: 2px dashed var(--chart-5);
+            }
             &[data-size="nav"] {
                 font-family: var(--typeface-display);
                 text-decoration: underline;

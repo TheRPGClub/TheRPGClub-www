@@ -85,6 +85,10 @@
     --color-format-assignment: var(--format-assignment);
     --color-holly: var(--holly);
     --color-tinsel: var(--tinsel);
+    --color-region-na: var(--region-na);
+    --color-region-eu: var(--region-eu);
+    --color-region-jp: var(--region-jp);
+    --color-region-foreground: var(--region-foreground);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */

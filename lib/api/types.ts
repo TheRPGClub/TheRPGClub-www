@@ -552,6 +552,30 @@ export interface IgdbSearchCandidate extends ImportIgdbCandidate {
   matched_query?: string | null;
 }
 
+// How exactly a Release's date is known (the glossary's Date Precision).
+export type DatePrecision = "day" | "month" | "quarter" | "year" | "tba";
+
+// One Release from `GET /games/:id/releases`: the game on one platform in one
+// region. `release_date` is a plain YYYY-MM-DD at its Date Precision (the
+// first day of its month, quarter or year), null when TBA. The endpoint lists
+// them in Release Calendar placement order, then platform and region.
+export interface Release {
+  release_id: number;
+  game_id: number;
+  platform_id: number;
+  region_id: number;
+  format: string | null;
+  notes: string | null;
+  release_date: string | null;
+  date_precision: DatePrecision;
+  // igdb: kept in step by the IGDB refresh. manual: a Manual Release.
+  source: "igdb" | "manual";
+  platform_code: string;
+  platform_name: string;
+  region_code: string;
+  region_name: string;
+}
+
 // `meta` of `POST /games/:id/refresh-releases`: how many releases the refresh
 // added (never negative) and the new total.
 export interface ReleaseRefreshMeta {

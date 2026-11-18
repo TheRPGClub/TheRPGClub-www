@@ -52,6 +52,10 @@ colors:
   format-assignment: "#52cf98"
   holly: "#3fbf8a"
   tinsel: "#e9c46a"
+  region-na: "#8fb4ff"
+  region-eu: "#8fe0a6"
+  region-jp: "#ffa3c9"
+  region-foreground: "#0b0b0d"
   foil-foreground: "#0b0b0d"
 typography:
   numeral:
@@ -442,6 +446,18 @@ The News Hub gives each News Category an ink of its own, so a card's category re
 
 **The News Inks Stay on News Surfaces Rule.** A News ink means one News Category and nothing else, and it never leaves news surfaces. The inks do not borrow or lend to the Achievement roles or the Journal member inks: magenta sits near rarity-ultra and teal near the RetroAchievements Provider colour, but they never share a surface, so neither can be misread. Read them through `newsInk()` in lib/news.ts, which also says when to dash.
 
+#### Region inks (release surfaces only)
+A Release is one platform in one region, and the region chip beside its date carries the region's ink, so "which date is mine?" reads at a glance. The inks live on release surfaces only: the game page's Releases section and the Release Calendar. They are chip fills with ink type (Badge tones `region-na`, `region-eu`, `region-jp`), each clearing 9:1 against its type and against ink.
+- **North America** (region-na): periwinkle.
+- **Europe** (region-eu): mint.
+- **Japan** (region-jp): pink.
+- **Worldwide** (Badge tone `region-ww`): no ink, a 1.5px paper stroke with paper type.
+- **Any other region** (Badge tone `region`: Australia, New Zealand, China, Asia): a 1.5px dim stroke with paper type, so only the three big release regions wear a colour.
+- **Past:** once a Release's period has ended, its region chip drops to a 1.5px outline in its ink with that ink as type (`data-past`, like an unpicked Provider chip), and Worldwide to a faint stroke and faint type, while the row's type goes faint.
+- **Date Precision is never a hue.** A vague date carries the `precision` Badge tone, a dashed `faint-foreground` outline with dim type, saying what is still unknown: "Day TBA" beside "Dec 2026", "Month TBA" beside "Q3 2027" or "2027", and "No date yet" for TBA. An exact day takes no chip.
+
+**The Region Ink Is a Place Rule.** A region ink means one release region and nothing else. It never marks a platform, a Date Precision or a game, and the inks stay off masthead red, feature violet and highlighter yellow, so a region never reads as a track or a call to action.
+
 ### Typography
 
 **Display Font:** Anton (with Impact, sans-serif), loaded at weight 400 only
@@ -666,6 +682,7 @@ The /admin area is a production desk: the club's staff put the next issue togeth
 - **Do** keep motion to the single starburst stamp, gentle art scale on hover (1.03-1.04, 500-700ms), the landing marquee and, in the Achievement Hub, an icon straightening from its tilt on hover (200ms), all behind `motion-safe`.
 - **Do** keep the Achievement Hub's colour roles (game tint, Rarity inks, Provider colours, foil) on achievement surfaces, and set every tint with its contrast type.
 - **Do** keep foil for Platinum, Mastery and Completion.
+- **Do** keep the region inks on release surfaces, as region chips, and draw Date Precision as the dashed chip, never a hue.
 - **Do** keep the News inks on news surfaces (the News page, its cards and filter, the category switches on /settings), as foot bars, tags and squares with ink type, and always draw Rumours dashed.
 - **Do** use the glossary in achievement copy: Achievement, Achievement Set, Unlock, Highlight, Rarity, Completion, Mastery, Platinum, Provider, Linked Account.
 

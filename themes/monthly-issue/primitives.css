@@ -264,6 +264,43 @@
             &[data-tone="status"] {
                 @apply bg-transparent text-dim-foreground ring-1 ring-border-strong ring-inset;
             }
+            /* A Release's region and date (www#115): the region chip in its
+               ink (Worldwide and other regions as strokes), an outline in
+               that ink once the Release is past, and Date Precision as a
+               dashed chip, never a hue. */
+            &[data-tone="region-na"] {
+                @apply bg-region-na text-region-foreground;
+                &[data-past] {
+                    @apply bg-transparent text-region-na inset-ring-[1.5px] inset-ring-region-na;
+                }
+            }
+            &[data-tone="region-eu"] {
+                @apply bg-region-eu text-region-foreground;
+                &[data-past] {
+                    @apply bg-transparent text-region-eu inset-ring-[1.5px] inset-ring-region-eu;
+                }
+            }
+            &[data-tone="region-jp"] {
+                @apply bg-region-jp text-region-foreground;
+                &[data-past] {
+                    @apply bg-transparent text-region-jp inset-ring-[1.5px] inset-ring-region-jp;
+                }
+            }
+            &[data-tone="region-ww"] {
+                @apply bg-transparent text-foreground inset-ring-[1.5px] inset-ring-foreground;
+                &[data-past] {
+                    @apply text-faint-foreground inset-ring-faint-foreground;
+                }
+            }
+            &[data-tone="region"] {
+                @apply bg-transparent text-foreground inset-ring-[1.5px] inset-ring-dim-foreground/55;
+                &[data-past] {
+                    @apply text-faint-foreground inset-ring-faint-foreground/55;
+                }
+            }
+            &[data-tone="precision"] {
+                @apply bg-transparent text-dim-foreground outline-[1.5px] outline-offset-[-1.5px] outline-faint-foreground outline-dashed;
+            }
             &[data-size="nav"] {
                 @apply font-extrabold;
             }

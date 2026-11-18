@@ -12,6 +12,19 @@ export function RailDetailsSkeleton() {
   );
 }
 
+// The rail's Releases while they stream in: the heading, then a few platform
+// rows.
+export function RailReleasesSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton variant="control" className="h-7 w-28" />
+      {Array.from({ length: 3 }, (_, i) => (
+        <Skeleton variant="control" key={i} className="h-6 w-full" />
+      ))}
+    </div>
+  );
+}
+
 // The whole game page while the game is read: the hero plate, then the
 // reviews column beside the rail.
 export function GamePageSkeleton() {
