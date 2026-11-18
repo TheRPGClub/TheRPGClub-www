@@ -1,7 +1,8 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { BIRTHDAYS_TAG } from "@/lib/api/birthdays";
 import { birthDateRefusal, birthDateRequest, type BirthDate } from "@/lib/birth-date";
 import { clubToday } from "@/lib/challenges/dates";
 import { getSession } from "@/lib/session";
@@ -42,8 +43,10 @@ export async function saveBirthDateAction(input: { birthDate: string | null }): 
   }
   if (!res.ok) return { ok: false, ...birthDateRefusal(res.status, await readJson(res)) };
   const body = (await res.json()) as { data: BirthDate };
-  // A member's own date shows only on their /settings: refresh their router
-  // so the page re-reads it.
+  // A member's own date shows on their /settings: refresh their router so
+  // the page re-reads it. A changed or removed date also moves (or drops) a
+  // shared Birthday in everyone's Upcoming Birthdays.
+  updateTag(BIRTHDAYS_TAG);
   refresh();
   return { ok: true, data: body.data };
 }
@@ -69,6 +72,7 @@ export async function shareBirthdayAction(shared: boolean): Promise<BirthDateRes
   if (res.status === 403) return { ok: false, error: "Only you can share your Birthday." };
   if (!res.ok) return { ok: false, error: birthDateRefusal(res.status, await readJson(res)).error };
   const body = (await res.json()) as { data: BirthDate };
+  updateTag(BIRTHDAYS_TAG);
   refresh();
   return { ok: true, data: body.data };
 }

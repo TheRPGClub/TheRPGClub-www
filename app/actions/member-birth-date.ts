@@ -1,6 +1,8 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { BIRTHDAYS_TAG } from "@/lib/api/birthdays";
 import { birthDateRefusal, birthDateRequest, type BirthDate } from "@/lib/birth-date";
 import { clubToday } from "@/lib/challenges/dates";
 import { getSession } from "@/lib/session";
@@ -48,6 +50,9 @@ async function put(userId: string, change: Change): Promise<MemberBirthDateResul
   }
   if (!res.ok) return { ok: false, error: birthDateRefusal(res.status, await readJson(res)).error };
   const body = (await res.json()) as { data: BirthDate };
+  // A stopped, moved or removed Birthday leaves everyone's Upcoming
+  // Birthdays now, not when their cached copy runs out.
+  updateTag(BIRTHDAYS_TAG);
   return { ok: true, data: body.data };
 }
 
