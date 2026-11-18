@@ -7,7 +7,7 @@ import {
   type MemberBirthDateResult,
 } from "@/app/actions/member-birth-date";
 import { birthDateFields, birthDateFromFields, type BirthDate, type BirthDateFields } from "@/lib/birth-date";
-import { staffSavedLine } from "@/lib/staff-birth-date";
+import { staffFieldsAfterSave, staffSavedLine } from "@/lib/staff-birth-date";
 
 const FAILED = "Couldn't save. Try again.";
 
@@ -46,9 +46,10 @@ export function useMemberBirthDate({ initial, userId, today }: { initial: BirthD
         (kind === "date" ? setError : setSharingError)(result.error);
         return;
       }
-      setSaved({ kind, line: staffSavedLine(doc, result.data) });
-      setDoc(result.data);
-      setFields(birthDateFields(result.data.birth_date));
+      const after = result.data;
+      setSaved({ kind, line: staffSavedLine(doc, after) });
+      setDoc(after);
+      setFields((f) => staffFieldsAfterSave(kind, f, after));
     });
   }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { BirthDate } from "@/lib/birth-date";
-import { staffSavedLine, staffSharing } from "@/lib/staff-birth-date";
+import { staffFieldsAfterSave, staffSavedLine, staffSharing } from "@/lib/staff-birth-date";
 
 const doc = (birth_date: string | null, birthday_shared = false): BirthDate => ({
   user_id: "1",
@@ -50,5 +50,21 @@ describe("staffSavedLine", () => {
 
   it("confirms sharing was turned off", () => {
     expect(staffSavedLine(doc("05-04", true), doc("05-04"))).toBe("Their Birthday is no longer shared.");
+  });
+});
+
+describe("staffFieldsAfterSave", () => {
+  const editing = { day: "21", month: "11", year: "" };
+
+  it("shows the saved date after a date save", () => {
+    expect(staffFieldsAfterSave("date", editing, doc("1990-05-04", true))).toEqual({
+      day: "4",
+      month: "5",
+      year: "1990",
+    });
+  });
+
+  it("keeps an unsaved date edit when sharing is stopped", () => {
+    expect(staffFieldsAfterSave("sharing", editing, doc("1990-05-04"))).toBe(editing);
   });
 });

@@ -3,7 +3,7 @@
 // sharing their Birthday but never start it (spec api#396); the API refuses
 // `birthday_shared: true` from staff with 403, and the desk has no control
 // for it. Client-safe.
-import { formatBirthDate, type BirthDate } from "@/lib/birth-date";
+import { birthDateFields, formatBirthDate, type BirthDate, type BirthDateFields } from "@/lib/birth-date";
 
 export interface StaffSharing {
   // What the switch shows.
@@ -42,3 +42,14 @@ export function staffSavedLine(before: BirthDate, after: BirthDate): string {
   if (stopped && before.birth_date === after.birth_date) return "Their Birthday is no longer shared.";
   return `Saved: ${formatBirthDate(after.birth_date)}.`;
 }
+
+// The Day/Month/Year fields after a save on the desk: a date save shows
+// what was stored; stopping sharing leaves a date edit not yet saved alone.
+export function staffFieldsAfterSave(
+  kind: "date" | "sharing",
+  fields: BirthDateFields,
+  after: BirthDate,
+): BirthDateFields {
+  return kind === "date" ? birthDateFields(after.birth_date) : fields;
+}
+
