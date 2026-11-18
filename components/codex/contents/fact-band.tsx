@@ -1,19 +1,19 @@
 import { BookOpen, Plus } from "lucide-react";
-import type { CodexEntry } from "@/lib/codex/types";
 import { ADD_FUN_FACT_ID, FUN_FACTS_PATH, LORE_PATH, storyOf } from "@/lib/codex/paths";
-import { addedOn } from "@/lib/codex/wall";
+import { addedOn, type FactPanel } from "@/lib/codex/wall";
 import { ButtonLink } from "@/components/ui/button";
 import { CodexMemberMark } from "@/components/codex/codex-member-mark";
 import { FunFactText } from "@/components/codex/fun-fact-text";
 import { FactCycler } from "./fact-cycler";
 
-// The Fun Fact panel leading the contents page (1C): the Fun Facts ink as its
-// top rule and heading, the Fun Fact set large with its author, and the way
-// to its story when it tells one. The API can't say which Fun Fact the bot
-// posted today, so the panel shows the newest, and "Another one" steps
-// through the newest few on the page, never through the bot's queue.
-export function FactBand({ facts, canAdd }: { facts: CodexEntry[]; canAdd: boolean }) {
-  const slides = facts.map((fact) => {
+// The Daily Fun Fact panel leading the contents page (1C): the Fun Facts ink
+// as its top rule and heading, the day it went out, the Fun Fact set large
+// with its author, and the way to its story when it tells one. "Another one"
+// steps through the newest few on the page, never through the bot's queue.
+// With no Daily Fun Fact posted yet, the newest Fun Fact leads instead
+// (`factPanel`).
+export function FactBand({ panel, canAdd }: { panel: FactPanel; canAdd: boolean }) {
+  const slides = panel.facts.map((fact) => {
     const story = storyOf(fact.links);
     return {
       id: fact.id,
@@ -46,11 +46,9 @@ export function FactBand({ facts, canAdd }: { facts: CodexEntry[]; canAdd: boole
     >
       <div>
         <h2 id="codex-fact-band" className="font-headline text-[2.5rem] leading-[0.9] text-codex-fact">
-          Fun Fact
+          {panel.heading}
         </h2>
-        <p className="font-label mt-2.5 text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">
-          {slides.length > 0 ? "From the wall" : "None on the wall yet"}
-        </p>
+        <p className="font-label mt-2.5 text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">{panel.label}</p>
       </div>
       {slides.length > 0 ? (
         <FactCycler slides={slides} />
