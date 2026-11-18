@@ -75,3 +75,28 @@ export async function readMemberBirthDateAction(userId: string): Promise<BirthDa
   const body = (await res.json()) as { data: BirthDate };
   return { ok: true, data: body.data };
 }
+
+// Share the signed-in member's Birthday (the day and month of their Birth
+// Date) or stop sharing it. Only the member can turn it on, and only with a
+// Birth Date: the API refuses sharing without one in its own words. Switching
+// never counts toward the twice-a-month limit.
+export async function shareBirthdayAction(shared: boolean): Promise<BirthDateResult> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sign in again to share your Birthday." };
+  const userId = session.principal.discord_id;
+
+  let res: Response;
+  try {
+    res = await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/birth_date`, {
+      method: "PUT",
+      body: JSON.stringify({ data: { birthday_shared: shared } }),
+    });
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
+  if (res.status === 403) return { ok: false, error: "Only you can share your Birthday." };
+  if (!res.ok) return { ok: false, error: birthDateRefusal(res.status, await readJson(res)).error };
+  const body = (await res.json()) as { data: BirthDate };
+  refresh();
+  return { ok: true, data: body.data };
+}
