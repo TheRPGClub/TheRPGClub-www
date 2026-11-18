@@ -1805,11 +1805,21 @@
             color: var(--destructive-foreground);
             border-color: var(--destructive-foreground);
         }
-        [data-slot="input"][data-variant="headline"] {
+        [data-slot="input"][data-variant="headline"],
+        [data-slot="textarea"][data-variant="headline"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border-color: var(--accent-foreground);
             box-shadow: 3px 3px 0 var(--foreground);
+        }
+        [data-slot="select-trigger"][data-variant="bare"] {
+            background-color: transparent;
+            border-color: transparent;
+            color: inherit;
+            font: inherit;
+        }
+        [data-slot="select-trigger"][data-variant="bare"] [data-slot="select-trigger-icon"] {
+            display: none;
         }
         [data-slot="textarea"][data-variant="inset"] {
             background-color: var(--accent);
@@ -1916,6 +1926,13 @@
         }
         /* Challenges (www#106). */
         [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="stamp-more"], [data-variant="done"]) {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Club History (www#126). */
+        :is([data-slot="button"], [data-slot="alert-dialog-trigger"]):is([data-variant="kind-chip"], [data-variant="quiet-delete"]),
+        [data-slot="label"][data-variant="kind-tile"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

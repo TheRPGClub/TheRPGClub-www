@@ -16,6 +16,10 @@ type TextareaVariant =
   // www#100: the prose of a journal entry in its open editor: the page's
   // ink, the strong rule and the yellow focus.
   | "entry"
+  // www#125: a form's lead field set big in the headline face and free to
+  // wrap (a Lore Entry's title on the writing desk): no box, a strong rule
+  // under it that turns yellow on focus.
+  | "headline"
 
 function Textarea({
   className,

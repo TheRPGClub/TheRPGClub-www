@@ -90,6 +90,17 @@
         --region-eu: #ff00ff;
         --region-jp: #ffee00;
         --region-foreground: #ff0000;
+        --codex-history: #00ff66;
+        --codex-lore: #ff00ff;
+        --codex-fact: #ffee00;
+        --codex-fact-light: #00ffff;
+        --codex-lore-deep: #ff0000;
+        --codex-lore-print: #0000ff;
+        --kind-founding: #00ff66;
+        --kind-staff: #ff00ff;
+        --kind-platform: #ffee00;
+        --kind-rules: #00ffff;
+        --kind-milestone: #ff6a00;
         --foil-conic: repeating-linear-gradient(45deg, #ff00ff 0 6px, #00ff66 6px 12px);
         --foil-sheen: linear-gradient(transparent, transparent);
         --foil-foreground: #0033ff;

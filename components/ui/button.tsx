@@ -173,6 +173,14 @@ const buttonVariants = cva(
         // (the Santa's "Picked"): the outline's look, at full strength
         // though it can't be pressed. Pair with disabled.
         done: "disabled:opacity-100",
+        // www#126: Club History.
+        // A History Event Kind in the timeline's filter (a link, its ink
+        // from --ink): outlined in the ink with ink type; the current one
+        // (aria-current) fills with it. "All" takes the paper as its ink.
+        "kind-chip": "",
+        // A quiet Delete beside a quiet Edit (a History Event's date line):
+        // the label voice in signal orange, no ground.
+        "quiet-delete": "",
       },
       size: {
         default:

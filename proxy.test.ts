@@ -33,6 +33,8 @@ describe("proxy", () => {
       "/join/continue?return_to=%2Fgames",
       "/auth/callback?token=abc",
       "/auth/sign-in?return_to=%2Fgames",
+      "/codex/history",
+      "/codex/history?kind=staff&order=newest",
     ])("passes %s through", (path) => {
       expect(passesThrough(proxy(request(path)))).toBe(true);
     });
@@ -57,6 +59,7 @@ describe("proxy", () => {
         "https://api.rpgclub.test/auth/discord?return_to=%2Fbrand-new-page",
       ],
       ["/joined", "https://api.rpgclub.test/auth/discord?return_to=%2Fjoined"],
+      ["/codex/history/new", "https://api.rpgclub.test/auth/discord?return_to=%2Fcodex%2Fhistory%2Fnew"],
       ["/authors", "https://api.rpgclub.test/auth/discord?return_to=%2Fauthors"],
     ])("redirects %s to Discord sign-in with the return-to", (path, signIn) => {
       expect(getRedirectUrl(proxy(request(path)))).toBe(signIn);

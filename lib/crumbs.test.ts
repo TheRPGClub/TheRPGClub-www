@@ -9,6 +9,8 @@ const names = {
   member: async (id: string) => `Member ${id}`,
   set: async (setId: string, memberId: string) => `Set ${setId} of ${memberId}`,
   challenge: async (id: string) => `Challenge ${id}`,
+  loreEntry: async (id: string) => `Lore Entry ${id}`,
+  historyEvent: async (id: string) => `History Event ${id}`,
 };
 const trail = (path: string) => crumbTrail(path.split("/").filter(Boolean), names);
 
@@ -74,5 +76,40 @@ describe("crumbTrail", () => {
     });
     // Presence history is a #hash on the presence desk, not a page.
     expect(await trail("/admin/presence")).toHaveLength(2);
+  });
+
+  it("names the Club Codex and its parts", async () => {
+    expect(await trail("/codex/fun-facts")).toEqual([
+      { label: "Club Codex", href: "/codex" },
+      { label: "Fun Facts", href: "/codex/fun-facts" },
+    ]);
+    expect(await trail("/codex/constructor")).toEqual([{ label: "Club Codex", href: "/codex" }]);
+  });
+
+  it("names a Lore Entry, its edit page and a new one", async () => {
+    const lore = [
+      { label: "Club Codex", href: "/codex" },
+      { label: "Club Lore", href: "/codex/lore" },
+    ];
+    expect(await trail("/codex/lore/7/edit")).toEqual([
+      ...lore,
+      { label: "Lore Entry 7", href: "/codex/lore/7" },
+      { label: "Edit", href: "/codex/lore/7/edit" },
+    ]);
+    expect(await trail("/codex/lore/new")).toEqual([...lore, { label: "New", href: "/codex/lore/new" }]);
+  });
+
+  it("names Club History's desk: a new History Event and one's edit page", async () => {
+    const history = [
+      { label: "Club Codex", href: "/codex" },
+      { label: "Club History", href: "/codex/history" },
+    ];
+    expect(await trail("/codex/history")).toEqual(history);
+    expect(await trail("/codex/history/new")).toEqual([...history, { label: "New", href: "/codex/history/new" }]);
+    expect(await trail("/codex/history/4/edit")).toEqual([
+      ...history,
+      { label: "History Event 4", href: "/codex/history#history-event-4" },
+      { label: "Edit", href: "/codex/history/4/edit" },
+    ]);
   });
 });
