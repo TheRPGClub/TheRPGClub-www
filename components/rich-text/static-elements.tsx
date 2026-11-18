@@ -6,11 +6,12 @@ import {
 } from "platejs/static";
 
 import { cn } from "@/lib/utils";
-import { ReviewSpoiler } from "./review-spoiler";
+import { RichTextSpoiler } from "./spoiler";
 
-// The elements a read-only review body renders (ReviewBodyContent in
-// review-body.tsx), each in the compact or the article voice: paragraphs,
-// headings, pull quotes, links and spoilers. Lists are in review-body-lists.
+// The elements a read-only rich-text value renders (RichTextContent in
+// rich-text-content.tsx), each in the compact or the article voice:
+// paragraphs, headings, pull quotes, links and spoilers. Lists are in
+// static-lists.tsx.
 
 // Article typography follows the Monthly Issue: prose in Barlow at a reading
 // measure, headings in the condensed label voice, set in caps. The accent no
@@ -18,8 +19,8 @@ import { ReviewSpoiler } from "./review-spoiler";
 // marks — so `accent` is accepted for compatibility and otherwise unused.
 //
 // Paragraphs keep `whitespace-pre-wrap` because a legacy plain-text review is
-// normalized into paragraphs that still carry their single newlines — see
-// `reviewBodyValue`. Without it, those reviews would reflow.
+// normalized into paragraphs that still carry their single newlines (see
+// `reviewBodyValue`). Without it, those reviews would reflow.
 export function makeParagraph(article: boolean) {
   return function Paragraph(props: SlateElementProps) {
     return (
@@ -91,15 +92,15 @@ export function makeBlockquote(article: boolean) {
 
 export function Link(props: SlateElementProps) {
   const url = (props.element as { url?: string }).url;
-  // `sanitizeReviewValue` keeps root-relative links relative, so those point
-  // back into this site and stay in the tab.
+  // `sanitizeUrl` keeps root-relative links relative, so those point back
+  // into this site and stay in the tab.
   const external = !url?.startsWith("/");
 
   return (
     <SlateElement
       {...props}
       as="a"
-      // Link targets come from whoever wrote the review, so an outbound one
+      // Link targets come from whoever wrote the text, so an outbound one
       // never carries our referrer and never gets a handle on this window.
       attributes={{
         ...props.attributes,
@@ -118,7 +119,7 @@ export function Link(props: SlateElementProps) {
 export function SpoilerLeaf(props: SlateLeafProps) {
   return (
     <SlateLeaf {...props}>
-      <ReviewSpoiler>{props.children}</ReviewSpoiler>
+      <RichTextSpoiler>{props.children}</RichTextSpoiler>
     </SlateLeaf>
   );
 }

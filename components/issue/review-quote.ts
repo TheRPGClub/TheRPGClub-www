@@ -1,6 +1,6 @@
 import { reviewBodyValue } from "@/lib/api/review-body";
 import type { ReviewBody } from "@/lib/api/types";
-import { SPOILER_KEY } from "@/lib/reviews/spoiler-plugin";
+import { SPOILER_KEY } from "@/lib/rich-text/spoiler-plugin";
 
 // A pull quote lifted from a review, for the "In their words" row. It is
 // always the writer's own words, verbatim: a blockquote they set themselves

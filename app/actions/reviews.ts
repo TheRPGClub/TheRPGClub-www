@@ -3,14 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { MAX_RATING, MIN_RATING, isValidRating } from "@/lib/api/rating";
-import {
-  MAX_REVIEW_LENGTH,
-  reviewValueText,
-  sanitizeReviewValue,
-} from "@/lib/api/review-body";
+import { MAX_REVIEW_LENGTH, sanitizeReviewValue } from "@/lib/api/review-body";
 import { MAX_REVIEW_TITLE_LENGTH, sanitizeReviewTitle } from "@/lib/api/review-title";
 import { WEIGHT_TOTAL, sanitizeReviewFacets } from "@/lib/reviews/facets";
 import type { Review } from "@/lib/api/types";
+import { richTextPlainText } from "@/lib/rich-text/text";
 
 export interface ActionResult<T> {
   ok: boolean;
@@ -84,7 +81,7 @@ function prepare(input: ReviewInput): Prepared {
   // column wants instead of an empty document.
   const body = sanitizeReviewValue(input.body);
 
-  if (body && reviewValueText(body).length > MAX_REVIEW_LENGTH) {
+  if (body && richTextPlainText(body).length > MAX_REVIEW_LENGTH) {
     return {
       ok: false,
       error: `Review is too long (max ${MAX_REVIEW_LENGTH} chars).`,

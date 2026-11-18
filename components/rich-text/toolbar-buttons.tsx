@@ -101,8 +101,8 @@ export function LinkButtons() {
         pressed={inLink}
         onClick={() => {
           // A prompt keeps this to one dependency-free button. Plate's
-          // floating link input is a whole UI surface, and a review needs the
-          // occasional citation, not link management.
+          // floating link input is a whole UI surface, and a review (or an
+          // entry) needs the occasional citation, not link management.
           const url = window.prompt("Link URL");
           if (!url) return;
           upsertLink(editor, { url });
