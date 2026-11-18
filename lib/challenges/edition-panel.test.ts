@@ -49,6 +49,12 @@ describe("panelFacts", () => {
     });
   });
 
+  it("says how many are picked for while picking", () => {
+    expect(panelFacts(edition({ phase: "picking", picked_count: 0 }), "2026-12-08").lines[0]).toBe(
+      "1 in the draw, 0 picked.",
+    );
+  });
+
   it("counts down to the reveal once the picks are in", () => {
     expect(panelFacts(edition({ phase: "picking" }), "2026-12-20")).toMatchObject({
       label: "Revealed Fri 25 Dec",

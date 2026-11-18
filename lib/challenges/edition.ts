@@ -33,9 +33,9 @@ export function editionCounts(edition: ChallengeEdition) {
   const status = (s: string) => assignments.filter((a) => a.run?.status === s).length;
   return {
     drawn: drawnMembers(edition).length,
-    // Known only once the picks can be read (staff from the draw, everyone
-    // from the reveal).
-    picked: edition.assignments ? assignments.filter((a) => a.game).length : null,
+    // Served to everyone while Santas pick; else known only once the picks
+    // can be read (staff from the draw, everyone from the reveal).
+    picked: edition.picked_count ?? (edition.assignments ? assignments.filter((a) => a.game).length : null),
     finished: status("finished"),
     inProgress: assignments.filter((a) => a.run?.status === "active" && (a.run.progress.in_progress ?? 0) > 0)
       .length,
@@ -148,11 +148,12 @@ export function editionDoors(
     };
   }
   if (edition.phase === "picking") {
+    // The member's own flag (served to everyone), else staff's assignments.
     const picks = new Map((edition.assignments ?? []).map((a) => [a.recipient.user_id, !!a.game]));
     const closed = picksClosed(edition, today);
     const doors = drawnMembers(edition).map((m, i): Door => {
-      const picked = closed || picks.get(m.user_id);
-      const state = picked ? "picked" : edition.assignments ? "waiting" : "drawn";
+      const known = m.picked ?? picks.get(m.user_id);
+      const state = closed || known ? "picked" : known === false ? "waiting" : "drawn";
       // A plain drawn door says nothing more: the picks are secret.
       const caption = { picked: "Picked for", waiting: "Waiting", drawn: null }[state];
       return { ...base(m, i), state, caption: m.withdrawn ? [caption, "Withdrew"].filter(Boolean).join(" · ") : caption };

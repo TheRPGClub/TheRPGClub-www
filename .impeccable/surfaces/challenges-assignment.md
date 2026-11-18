@@ -56,7 +56,7 @@ Banner 240px. The December strip scrolls horizontally with today (or the next ke
 - The circle appears only when the Edition ends.
 - (www#110 build) Before the Edition ends, revealed doors carry no Santa line ("Santa revealed when the Edition ends" didn't fit a 99px door and the side panel already says when Santas are revealed); only "Random pick" shows. The ended "Your game" yellow panel is dropped: the circle is the news.
 - (www#110 build) A drawn Santa may "Leave this Edition" until the pick deadline, behind a confirm (it drops their pick and Abandons their Run): the API's #384 withdrawal, asked for by the ticket's coordinator; the brief only showed Leave before the cutoff.
-- (www#110 build) While picking, members see plain drawn doors: the API serves who has been picked for only to staff before the reveal, so the Picked/Waiting seals show for staff (and for everyone after the deadline). API follow-up recorded.
+- (www review) While picking, every member sees the Picked/Waiting seals and the "Picked" numeral, from the API's per-member `picked` flag and `picked_count` (never who picks or what). Plain drawn doors remain only as the fallback for an API without them. (Was www#110's staff-only seals.)
 
 ## Direction contract
 THESIS: an advent calendar of member doors that opens as the Edition moves on; it refuses a roster table with phase badges.

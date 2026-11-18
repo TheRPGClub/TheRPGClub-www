@@ -180,14 +180,18 @@ export interface EditionMember extends ChallengeMember {
   left_out: boolean;
   // They withdrew after the draw; their recipient gets a random pick.
   withdrawn: boolean;
+  // While Santas pick: a game is picked for them (never who picked or what).
+  // Null in other phases, for members left out, and from an older API.
+  picked?: boolean | null;
 }
 
 export interface EditionAssignment {
   recipient: ChallengeMember;
   // The game picked (null while nothing is).
   game?: GameSummary | null;
-  picked_randomly: boolean;
-  // Null before the Edition ends, except to staff.
+  // Null while hidden with the game (a staff participant before the reveal).
+  picked_randomly: boolean | null;
+  // Null before the Edition ends, except to staff who aren't drawn in it.
   santa?: ChallengeMember | null;
   run?: {
     id: number;
@@ -210,6 +214,11 @@ export interface ChallengeEdition extends ChallengeEditionSummary {
   // draw on); null otherwise.
   assignments?: EditionAssignment[] | null;
   picks_closed_at?: string | null;
+  // While Santas pick: how many members have a game picked for them.
+  picked_count?: number | null;
+  // The member reading: their backlog size and whether it meets the
+  // minimum to sign up (null without a member; absent from an older API).
+  viewer?: { backlog_count: number; eligible: boolean } | null;
 }
 
 // The signed-in Santa's side of an Edition (`GET .../santa`, swagger
