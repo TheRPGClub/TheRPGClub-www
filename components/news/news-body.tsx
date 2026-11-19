@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchNews, fetchNewsCategories, fetchNewsNeighbours } from "@/lib/api/news";
+import { fetchNews, fetchNewsCategories, fetchNewsNeighbours, fetchNewsStamp } from "@/lib/api/news";
 import { paginationOf } from "@/lib/api/pagination";
 import {
   categoryNames,
@@ -15,6 +15,7 @@ import { ListPagination } from "@/components/list-pagination";
 import { NewsCategoryRail } from "./news-category-rail";
 import { NewsDayBand } from "./news-day-band";
 import { NewsEmpty, NewsNote } from "./news-empty";
+import { NewsLiveRefresh } from "./news-live-refresh";
 
 // The News page's body once the member is let in: the feed, the category
 // list and the items either side of this page, read together, set as day
@@ -29,10 +30,13 @@ export async function NewsBody({
   userId: string;
   badge: React.ReactNode;
 }) {
+  // The stamp first: an item recorded between it and the feed only makes the
+  // page's next poll re-read it, never leaves it behind.
+  const stamp = await fetchNewsStamp();
   const [result, categories, neighbours] = await Promise.all([
-    fetchNews(filters, userId),
+    fetchNews(filters, userId, stamp),
     fetchNewsCategories(),
-    fetchNewsNeighbours(filters, userId),
+    fetchNewsNeighbours(filters, userId, stamp),
   ]);
   // The flag changed after the page's gate ran.
   if (result === "not_found") notFound();
@@ -56,6 +60,7 @@ export async function NewsBody({
 
   return (
     <div className="space-y-6">
+      <NewsLiveRefresh stamp={stamp} page={filters.page} />
       <PageHeader
         title="News"
         badge={badge}
