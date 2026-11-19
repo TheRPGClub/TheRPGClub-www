@@ -34,3 +34,24 @@ export async function savePinnedPagesAction(pages: string[]): Promise<PinnedPage
   refresh();
   return { ok: true };
 }
+
+// Reset the member's Pinned Pages to the club default (ticket api#419): the
+// API drops their saved list, so they follow the default again. Settings
+// shows the one message for any failure.
+export async function resetPinnedPagesAction(): Promise<PinnedPagesResult> {
+  const session = await getSession();
+  if (!session) return { ok: false };
+  const userId = session.principal.discord_id;
+
+  try {
+    const res = await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/pinned_pages`, {
+      method: "DELETE",
+    });
+    if (!res.ok) return { ok: false };
+  } catch {
+    return { ok: false };
+  }
+  // The sidebar's list and Settings' reset row both read the session.
+  refresh();
+  return { ok: true };
+}
