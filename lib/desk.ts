@@ -27,7 +27,8 @@ export const DICTIONARY_LETTERS: readonly string[] = [
   "#",
 ];
 
-// Items sorted by headword (case and accents ignored) and grouped under
+// Items sorted by headword (case and accents ignored, numbers by value:
+// 2 before 10) and grouped under
 // their letter, letters in A to Z order with "#" last. Empty letters are
 // left out.
 export function groupByLetter<T>(
@@ -35,7 +36,7 @@ export function groupByLetter<T>(
   headword: (item: T) => string,
 ): { letter: string; items: T[] }[] {
   const sorted = [...items].sort((a, b) =>
-    headword(a).localeCompare(headword(b), "en", { sensitivity: "base" }),
+    headword(a).localeCompare(headword(b), "en", { sensitivity: "base", numeric: true }),
   );
   const groups = new Map<string, T[]>();
   for (const item of sorted) {
