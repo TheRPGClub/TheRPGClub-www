@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  PINS_FULL,
   PIN_LIMIT,
   clubDefaultNames,
   isPinKeyList,
   memberPins,
+  pageMenuItems,
   pinsCustomised,
   pinsFull,
   togglePin,
@@ -56,6 +58,33 @@ describe("isPinKeyList", () => {
     expect(isPinKeyList(["dashboard"])).toBe(false);
     expect(isPinKeyList("voting")).toBe(false);
     expect(isPinKeyList([1])).toBe(false);
+  });
+});
+
+describe("pageMenuItems", () => {
+  it("offers Pin to sidebar for an unpinned page", () => {
+    expect(pageMenuItems(["voting"], "games")).toEqual([
+      { action: "pin", label: "Pin to sidebar", disabled: false },
+    ]);
+  });
+
+  it("offers Unpin for a pinned page", () => {
+    expect(pageMenuItems(["voting", "games"], "games")).toEqual([
+      { action: "unpin", label: "Unpin", disabled: false },
+    ]);
+  });
+
+  it("disables Pin to sidebar at the limit and says why", () => {
+    const full = ["voting", "games", "members", "news", "releases", "achievements"];
+    expect(full).toHaveLength(PIN_LIMIT);
+    expect(pageMenuItems(full, "challenges")).toEqual([
+      { action: "pin", label: "Pin to sidebar", disabled: true, hint: PINS_FULL },
+    ]);
+  });
+
+  it("still offers Unpin at the limit", () => {
+    const full = ["voting", "games", "members", "news", "releases", "achievements"];
+    expect(pageMenuItems(full, "news")[0]).toMatchObject({ action: "unpin", disabled: false });
   });
 });
 

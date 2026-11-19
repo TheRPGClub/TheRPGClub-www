@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import type { SidebarGroupKey } from "@/lib/sidebar";
 import {
@@ -23,6 +24,7 @@ import {
   type SidebarNavModel,
 } from "@/components/shell/sidebar-page";
 import { PinnedRowUnpin } from "@/components/shell/sidebar-pin";
+import { SidebarPageItem } from "@/components/shell/sidebar-page-item";
 
 // The two headings sit 38px tall with their caps on the baseline, so the
 // rows under them start on the same 40px rhythm.
@@ -40,6 +42,9 @@ export function SidebarMain({
   onOpenGroup: (key: SidebarGroupKey) => void;
 }) {
   const pathname = usePathname();
+  const { state, isMobile } = useSidebar();
+  // No pinning on the icon rail.
+  const railed = state === "collapsed" && !isMobile;
 
   return (
     <SidebarGroup className="pt-3">
@@ -62,7 +67,7 @@ export function SidebarMain({
         {nav.pinned.map((page) => {
           const Icon = PAGE_ICON[page.key];
           return (
-            <SidebarMenuItem key={page.key}>
+            <SidebarPageItem key={page.key} page={page} nav={nav} pressable={!railed}>
               <SidebarMenuButton
                 render={<Link href={page.href} />}
                 isActive={nav.current?.key === page.key}
@@ -74,7 +79,7 @@ export function SidebarMain({
                 <PageBadges page={page} nav={nav} />
               </SidebarMenuButton>
               <PinnedRowUnpin page={page} nav={nav} />
-            </SidebarMenuItem>
+            </SidebarPageItem>
           );
         })}
       </SidebarMenu>

@@ -54,3 +54,25 @@ export function togglePin(keys: readonly string[], key: string): string[] | null
 export function isPinKeyList(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((k) => typeof k === "string" && PIN_KEYS.has(k));
 }
+
+// What a page's long-press menu can do (www#136, touch). www#137 adds
+// Move up and Move down for pinned rows.
+export type PageMenuAction = "pin" | "unpin";
+
+export interface PageMenuItem {
+  action: PageMenuAction;
+  label: string;
+  disabled: boolean;
+  // Why a disabled item can't be used, said under it (touch has no tooltip).
+  hint?: string;
+}
+
+// The items of the menu a long press opens on a group's entry or a Pinned
+// row, for the member's visible list `keys`: Unpin while the page is
+// pinned, else Pin to sidebar, disabled at the limit with the full-list
+// message.
+export function pageMenuItems(keys: readonly string[], key: string): PageMenuItem[] {
+  if (keys.includes(key)) return [{ action: "unpin", label: "Unpin", disabled: false }];
+  const full = pinsFull(keys);
+  return [{ action: "pin", label: "Pin to sidebar", disabled: full, ...(full && { hint: PINS_FULL }) }];
+}

@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton } from "@/components/ui/sidebar";
 import type { SidebarGroup } from "@/lib/sidebar";
 import { PAGE_ICON } from "@/components/shell/nav-items";
 import { PageBadges, hasBadges, pageLabel, type SidebarNavModel } from "@/components/shell/sidebar-page";
 import { EntryPin } from "@/components/shell/sidebar-pin";
+import { SidebarPageItem } from "@/components/shell/sidebar-page-item";
 
 // A group's view, slid in beside the main one: the way back, the group's
 // name on the paper rule, then each page with its one-line note. The icon
 // rail's slide-out panel draws the same view without the way back, and
-// without pin controls (`pinnable`: pinning is for the expanded sidebar).
+// without pin controls or the long-press menu (`pinnable`: pinning is for
+// the expanded sidebar).
 export function SidebarGroupView({
   group,
   nav,
@@ -45,7 +47,7 @@ export function SidebarGroupView({
           const Icon = PAGE_ICON[page.key];
           const label = pageLabel(page, nav.votingPhase);
           return (
-            <SidebarMenuItem key={page.key}>
+            <SidebarPageItem key={page.key} page={page} nav={nav} pressable={pinnable}>
               <SidebarMenuButton
                 variant="entry"
                 render={<Link href={page.href} />}
@@ -60,7 +62,7 @@ export function SidebarGroupView({
                 <span className="col-start-2 text-[0.78rem] leading-[1.3]">{page.note}</span>
               </SidebarMenuButton>
               {pinnable && <EntryPin page={page} nav={nav} badged={hasBadges(page, nav)} />}
-            </SidebarMenuItem>
+            </SidebarPageItem>
           );
         })}
       </SidebarMenu>
