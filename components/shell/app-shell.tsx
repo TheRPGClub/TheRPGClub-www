@@ -13,6 +13,7 @@ export function AppShell({
   membership,
   votingPhase,
   features,
+  pinnedPages,
   crumbs,
   children,
 }: {
@@ -20,6 +21,8 @@ export function AppShell({
   membership: SessionMembership | null;
   votingPhase: VotingPhase | null;
   features: SessionFeature[] | undefined;
+  // The session's Pinned Pages; undefined before the API sends them.
+  pinnedPages?: string[];
   // The current route's trail for the top bar.
   crumbs: React.ReactNode;
   children: React.ReactNode;
@@ -32,6 +35,7 @@ export function AppShell({
           membership={membership}
           votingPhase={votingPhase}
           features={features}
+          pinnedPages={pinnedPages}
         />
         {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
             not widen the column past the window. @container: the bleed

@@ -27,6 +27,10 @@ export interface AppSession {
   // What this viewer may see (lib/features.ts). Optional only so a session
   // from an API without Feature Flags still reads as "everything shown".
   features?: SessionFeature[];
+  // The member's Pinned Pages they can see right now, in their order (spec
+  // api#416). Optional so a session from an API without them still reads as
+  // the club default.
+  pinned_pages?: string[];
 }
 
 export function discordAvatarUrl(

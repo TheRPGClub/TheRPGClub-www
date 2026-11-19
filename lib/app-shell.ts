@@ -18,5 +18,6 @@ export async function appShellProps(session: AppSession) {
     membership: session.membership,
     votingPhase,
     features: session.features,
+    pinnedPages: session.pinned_pages,
   };
 }

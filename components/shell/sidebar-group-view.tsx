@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import type { SidebarGroup } from "@/lib/sidebar";
 import { PAGE_ICON } from "@/components/shell/nav-items";
-import { PageBadges, pageLabel, type SidebarNavModel } from "@/components/shell/sidebar-page";
+import { PageBadges, hasBadges, pageLabel, type SidebarNavModel } from "@/components/shell/sidebar-page";
+import { EntryPin } from "@/components/shell/sidebar-pin";
 
 // A group's view, slid in beside the main one: the way back, the group's
 // name on the paper rule, then each page with its one-line note.
@@ -52,6 +53,7 @@ export function SidebarGroupView({
                 <PageBadges page={page} nav={nav} className="col-start-3 row-start-1 flex gap-1 self-center" />
                 <span className="col-start-2 text-[0.78rem] leading-[1.3]">{page.note}</span>
               </SidebarMenuButton>
+              <EntryPin page={page} nav={nav} badged={hasBadges(page, nav)} />
             </SidebarMenuItem>
           );
         })}
