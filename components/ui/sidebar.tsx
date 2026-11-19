@@ -478,9 +478,14 @@ const sidebarMenuButtonVariants = cva(
   "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden p-2 text-left text-sm outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
   {
     variants: {
+      // What the row is; each Theme draws it by data-variant.
       variant: {
         default: "",
         outline: "",
+        // A Browse group's row: it opens the group's pages (aria-expanded).
+        group: "",
+        // A page in a group's view: its name over a one-line note.
+        entry: "",
       },
       size: {
         default: "h-8 text-sm",

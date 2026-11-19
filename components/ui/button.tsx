@@ -51,6 +51,8 @@ const buttonVariants = cva(
         "sidebar-toggle": "",
         // A small icon action in the sidebar's footer (sign out).
         "sidebar-action": "",
+        // The back link out of a sidebar group's view ("All sections").
+        "sidebar-back": "",
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",

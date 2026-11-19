@@ -1,35 +1,47 @@
 "use client";
 
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { Sidebar } from "@/components/ui/sidebar";
 import type { SessionMembership, SessionPrincipal } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
-import type { SessionFeature } from "@/lib/features";
+import { featureView, type SessionFeature } from "@/lib/features";
+import { CLUB_DEFAULT_PINS, currentPage, pinnedPages, sidebarGroups } from "@/lib/sidebar";
 import { SidebarAccount } from "@/components/shell/sidebar-account";
 import { SidebarBrand } from "@/components/shell/sidebar-brand";
-import { SidebarNav } from "@/components/shell/sidebar-nav";
-import { SidebarStaffNav } from "@/components/shell/sidebar-staff-nav";
+import { SidebarBrowse } from "@/components/shell/sidebar-browse";
+import type { SidebarNavModel } from "@/components/shell/sidebar-page";
 
 interface AppSidebarProps {
   principal: SessionPrincipal;
   membership: SessionMembership | null;
-  // null when no round is scheduled or the read failed — the item keeps its
+  // null when no round is scheduled or the read failed: the item keeps its
   // plain name rather than the nav breaking.
   votingPhase?: VotingPhase | null;
-  // The session's `features`: items for Features this viewer isn't shown are
+  // The session's `features`: pages for Features this viewer isn't shown are
   // left out, and staff see a Preview badge on Preview ones.
   features?: SessionFeature[];
 }
 
-// The signed-in site's sidebar: the club's mark, its sections, the staff
-// tools this member's role can use, and the member's own corner.
+// The signed-in site's sidebar: the club's mark, Dashboard, the member's
+// Pinned Pages and the Browse groups (Play, Games, Club, and Staff for the
+// tools this member's role can use), and the member's own corner.
 export function AppSidebar({ principal, membership, votingPhase, features }: AppSidebarProps) {
+  const pathname = usePathname();
+  const groups = useMemo(() => sidebarGroups(features, membership), [features, membership]);
+  const nav: SidebarNavModel = {
+    groups,
+    // Everyone has the club default until Pinned Pages are saved per member.
+    pinned: pinnedPages(groups, CLUB_DEFAULT_PINS),
+    current: currentPage(groups, pathname),
+    votingPhase: votingPhase ?? null,
+    view: featureView(features),
+  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarBrand />
-      <SidebarContent>
-        <SidebarNav votingPhase={votingPhase} features={features} />
-        <SidebarStaffNav membership={membership} />
-      </SidebarContent>
+      <SidebarBrowse nav={nav} />
       <SidebarAccount principal={principal} />
     </Sidebar>
   );
