@@ -10,9 +10,31 @@ import type { SessionMembership } from "@/lib/auth-types";
 
 export type SidebarGroupKey = "play" | "games" | "club" | "staff";
 
+// The Pinned Page keys the website has a place for (the API's
+// PinnedPages::PAGES).
+export type PinnedPageKey =
+  | "voting"
+  | "gotm_history"
+  | "challenges"
+  | "games"
+  | "releases"
+  | "achievements"
+  | "journals"
+  | "members"
+  | "news"
+  | "codex"
+  | "giveaways"
+  | "suggestions"
+  | "staff_desk"
+  | "voting_console"
+  | "synonyms"
+  | "live_events"
+  | "public_reminders"
+  | "suggestion_review";
+
 export interface SidebarPage {
   // The Pinned Page key the API knows it by.
-  key: string;
+  key: PinnedPageKey;
   href: string;
   label: string;
   note: string;
@@ -53,7 +75,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
 ];
 
 // The staff sections lib/staff.ts marks `nav`, under their Pinned Page keys.
-export const STAFF_PAGE: Partial<Record<StaffSectionKey, { key: string; note: string }>> = {
+export const STAFF_PAGE: Partial<Record<StaffSectionKey, { key: PinnedPageKey; note: string }>> = {
   overview: { key: "staff_desk", note: "All staff tools" },
   voting: { key: "voting_console", note: "Run the round" },
   synonyms: { key: "synonyms", note: "Search aliases" },
@@ -61,9 +83,6 @@ export const STAFF_PAGE: Partial<Record<StaffSectionKey, { key: string; note: st
   reminders: { key: "public_reminders", note: "Scheduled posts" },
   suggestions: { key: "suggestion_review", note: "Triage the board" },
 };
-
-// The club's default Pinned Pages, until the member's own come from the API.
-export const CLUB_DEFAULT_PINS: readonly string[] = ["voting", "games", "members", "news"];
 
 // The groups this viewer is shown, in order: pages for Features they aren't
 // shown are left out, a group with none left is dropped, Staff by role.
@@ -87,7 +106,7 @@ export function sidebarGroups(
 // The Pinned Pages the viewer can see, in the member's order; keys for pages
 // they can't see are skipped, not lost.
 export function pinnedPages(groups: readonly SidebarGroup[], keys: readonly string[]): SidebarPage[] {
-  const byKey = new Map(groups.flatMap((g) => g.pages).map((p) => [p.key, p]));
+  const byKey = new Map<string, SidebarPage>(groups.flatMap((g) => g.pages).map((p) => [p.key, p]));
   return keys.flatMap((k) => byKey.get(k) ?? []);
 }
 

@@ -1,6 +1,7 @@
 import type { VotingPhase } from "@/lib/api/voting-round";
 import type { FeatureView } from "@/lib/features";
 import type { SidebarGroup, SidebarPage } from "@/lib/sidebar";
+import type { PinRules } from "@/lib/pinned-pages";
 import { NavBadge } from "@/components/feature/preview-badge";
 import { PHASE_LABEL } from "@/components/shell/nav-items";
 
@@ -21,7 +22,9 @@ export interface SidebarNavModel {
 // controls, api#418).
 export interface SidebarPins {
   keys: readonly string[];
-  // The visible list is at the limit: pinning another is refused.
+  // The session's limit and the room left for visible pins.
+  rules: PinRules;
+  // No room for another visible pin: pinning another is refused.
   full: boolean;
   toggle: (key: string) => void;
   // A pin one place up (-1) or down (1), and a dragged pin dropped before
@@ -29,8 +32,10 @@ export interface SidebarPins {
   // keeps hidden pins where they were.
   move: (key: string, by: -1 | 1) => void;
   place: (key: string, before: string | null) => void;
-  // The last save failed and the list sprang back.
+  // The last save failed and the list sprang back; `reason` is the API's
+  // when it refused the list.
   failed: boolean;
+  reason: string | null;
   dismiss: () => void;
 }
 

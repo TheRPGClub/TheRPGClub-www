@@ -34,6 +34,13 @@ export interface AppSession {
   // Whether the member saved their own Pinned Pages rather than following
   // the club default (ticket api#419). Optional: missing reads as false.
   pinned_pages_customised?: boolean;
+  // How many visible Pinned Pages the member has room for: the limit less
+  // the pins they can't see right now, which the API keeps and counts.
+  pinned_pages_room?: number;
+  // The club default Pinned Pages and the limit; the API owns both (ADR
+  // 0012). All three optional: an older API gets lib/pinned-pages' fallback.
+  pinned_pages_default?: string[];
+  pinned_pages_limit?: number;
 }
 
 export function discordAvatarUrl(

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import type { AppSession } from "@/lib/auth-types";
 import { featureView } from "@/lib/features";
 import { fetchCurrentPhase } from "@/lib/api/voting-round";
+import { pinRules } from "@/lib/pinned-pages";
 import { SIDEBAR_COOKIE, sidebarOpenFromCookie } from "@/lib/sidebar-state";
 
 // What the signed-in site's frame (components/shell/app-shell) shows for a
@@ -21,6 +22,7 @@ export async function appShellProps(session: AppSession) {
     votingPhase,
     features: session.features,
     pinnedPages: session.pinned_pages,
+    pinRules: pinRules(session),
     // The member's collapsed/expanded sidebar, as they left it.
     sidebarOpen: sidebarOpenFromCookie((await cookies()).get(SIDEBAR_COOKIE)?.value),
   };

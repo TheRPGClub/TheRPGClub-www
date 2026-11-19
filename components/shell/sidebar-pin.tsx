@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { SidebarPage } from "@/lib/sidebar";
-import { PINS_FULL } from "@/lib/pinned-pages";
+import { pinsFullMessage } from "@/lib/pinned-pages";
 import { cn } from "@/lib/utils";
 import {
   pageLabel,
@@ -14,7 +14,7 @@ import {
 } from "@/components/shell/sidebar-page";
 
 // The pin beside a group's entry, shown on hover or keyboard focus: grey to
-// pin, yellow while pinned (pressing it unpins). At the limit an unpinned
+// pin, yellow while pinned (pressing it unpins). With no room left an unpinned
 // page's pin is disabled and says why; nothing is dropped. Centered on the
 // entry, or on its note line when badges hold the right of its name.
 export function EntryPin({
@@ -29,11 +29,12 @@ export function EntryPin({
   const pinned = nav.pins.keys.includes(page.key);
   const blocked = !pinned && nav.pins.full;
   const name = pageLabel(page, nav.votingPhase);
-  const tip = blocked ? PINS_FULL : pinned ? "Unpin" : "Pin to sidebar";
+  const full = pinsFullMessage(nav.pins.rules);
+  const tip = blocked ? full : pinned ? "Unpin" : "Pin to sidebar";
   return (
     <PinAction
       tip={tip}
-      label={blocked ? PINS_FULL : `${pinned ? "Unpin" : "Pin"} ${name}`}
+      label={blocked ? full : `${pinned ? "Unpin" : "Pin"} ${name}`}
       pressed={pinned}
       blocked={blocked}
       onPress={() => nav.pins.toggle(page.key)}

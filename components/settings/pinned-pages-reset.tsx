@@ -2,7 +2,6 @@
 
 import { RotateCcw } from "lucide-react";
 import { resetPinnedPagesAction } from "@/app/actions/pinned-pages";
-import { clubDefaultNames } from "@/lib/pinned-pages";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PreferenceRow } from "@/components/feature/preference-row";
@@ -12,9 +11,9 @@ const ID = "pinned_pages";
 // Under the Feature switches, for a member whose Pinned Pages are their own
 // (ticket api#419): one row in the switches' style, its Reset asking first.
 // Once reset, the session says the member follows the club default, so the
-// refreshed page drops this row and the sidebar shows the default.
-export function PinnedPagesReset() {
-  const names = clubDefaultNames();
+// refreshed page drops this row and the sidebar shows the default. `names`
+// are the club default's pages, as the session gives them.
+export function PinnedPagesReset({ names }: { names: string }) {
   return (
     <ul className="mt-8 border-t border-border">
       <PreferenceRow

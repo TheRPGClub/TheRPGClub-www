@@ -88,7 +88,9 @@ export function SidebarBrowse({ nav }: { nav: SidebarNavModel }) {
         </div>
         <div
           inert={!group}
-          onKeyDown={(e) => e.key === "Escape" && back()}
+          // Only Esc from the group's own view: a row menu is portalled, but
+          // its keys still bubble here through React.
+          onKeyDown={(e) => e.key === "Escape" && e.currentTarget.contains(e.target as Node) && back()}
           className={cn("no-scrollbar h-full w-1/2 overflow-y-auto transition-opacity", SLIDE, !group && "opacity-0")}
         >
           {drawn && <SidebarGroupView group={drawn} nav={nav} backRef={backRef} onBack={back} pinnable />}
@@ -104,7 +106,7 @@ export function SidebarBrowse({ nav }: { nav: SidebarNavModel }) {
           }}
         />
       )}
-      {nav.pins.failed && !railed && <SidebarPinNotice onDismiss={nav.pins.dismiss} />}
+      {nav.pins.failed && <SidebarPinNotice reason={nav.pins.reason} railed={railed} onDismiss={nav.pins.dismiss} />}
     </SidebarContent>
   );
 }

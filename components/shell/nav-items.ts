@@ -19,7 +19,7 @@ import {
   Vote,
 } from "lucide-react";
 import type { VotingPhase } from "@/lib/api/voting-round";
-import type { SidebarGroupKey } from "@/lib/sidebar";
+import type { PinnedPageKey, SidebarGroupKey } from "@/lib/sidebar";
 
 export { isCurrent } from "@/lib/sidebar";
 
@@ -28,8 +28,9 @@ export type NavIcon = typeof LayoutDashboard;
 export const DASHBOARD_HREF = "/dashboard";
 export const SETTINGS_HREF = "/settings";
 
-// Each page's icon, by its Pinned Page key (lib/sidebar.ts).
-export const PAGE_ICON: Record<string, NavIcon> = {
+// Each page's icon, by its Pinned Page key (lib/sidebar.ts): a key without
+// one is a type error.
+export const PAGE_ICON: Record<PinnedPageKey, NavIcon> = {
   voting: Vote,
   gotm_history: Trophy,
   challenges: Flag,
