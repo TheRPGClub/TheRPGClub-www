@@ -39,8 +39,10 @@ export function SidebarAccount({ principal }: { principal: SessionPrincipal }) {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <div className="flex items-center gap-2 px-1 py-1.5">
-            {/* The avatar and name open the viewer's own member page, where
+          <div className="flex h-12 items-center gap-2 px-2">
+            {/* A fixed 48px row, with px-2 centering the avatar on the icon
+                rail: the name and sign-out folding away don't move it.
+                The avatar and name open the viewer's own member page, where
                 their lists, imports and profile edit live. Sign-out stays a
                 sibling because a form can't nest inside a link. */}
             <Link

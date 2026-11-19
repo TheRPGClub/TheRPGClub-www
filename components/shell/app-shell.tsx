@@ -13,6 +13,7 @@ export function AppShell({
   membership,
   votingPhase,
   features,
+  sidebarOpen,
   pinnedPages,
   crumbs,
   children,
@@ -21,6 +22,8 @@ export function AppShell({
   membership: SessionMembership | null;
   votingPhase: VotingPhase | null;
   features: SessionFeature[] | undefined;
+  // Expanded or collapsed to the icon rail, from the member's cookie.
+  sidebarOpen: boolean;
   // The session's Pinned Pages; undefined before the API sends them.
   pinnedPages?: string[];
   // The current route's trail for the top bar.
@@ -29,7 +32,7 @@ export function AppShell({
 }) {
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={sidebarOpen}>
         <AppSidebar
           principal={principal}
           membership={membership}

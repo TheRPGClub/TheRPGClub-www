@@ -603,6 +603,9 @@
         /* A group's label is set in the tracked caps label voice. */
         [data-slot="sidebar-group-label"] {
             @apply rounded-md font-label font-medium tracking-[0.08em] text-faint-foreground uppercase ring-sidebar-ring;
+            /* On the icon rail the heading keeps its height and turns into a
+               thin rule, so the rows under it don't move. */
+            @apply transition-colors after:pointer-events-none after:absolute after:inset-x-1.5 after:bottom-3 after:h-px after:bg-sidebar-border after:opacity-0 after:transition-opacity group-data-[collapsible=icon]:text-transparent group-data-[collapsible=icon]:after:opacity-100 motion-reduce:transition-none motion-reduce:after:transition-none;
         }
         [data-slot="sidebar-group-action"] {
             @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
