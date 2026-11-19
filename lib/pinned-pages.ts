@@ -1,8 +1,9 @@
-// A member's Pinned Pages (spec api#416, ticket api#418): the keys the
+// A member's Pinned Pages (spec api#416, tickets api#418, api#419): the keys the
 // session carries, in the member's order. The API keeps the list, decides
 // which keys a member can see and keeps the hidden ones through a save; the
 // website only adds, removes and sends the visible list back whole.
 // Client-safe: no server imports.
+import type { AppSession } from "@/lib/auth-types";
 import { CLUB_DEFAULT_PINS, CLUB_PAGES, STAFF_PAGE } from "@/lib/sidebar";
 
 export const PIN_LIMIT = 6;
@@ -19,6 +20,19 @@ const PIN_KEYS = new Set<string>([
 // everyone has the club default.
 export function memberPins(sessionPins: readonly string[] | undefined): readonly string[] {
   return sessionPins ?? CLUB_DEFAULT_PINS;
+}
+
+// Whether the member saved their own list (Settings offers a reset then).
+// An API that doesn't say reads as following the club default.
+export function pinsCustomised(session: Pick<AppSession, "pinned_pages_customised">): boolean {
+  return session.pinned_pages_customised === true;
+}
+
+// The club default's pages by name, in order: "Voting, Games, Members and
+// News".
+export function clubDefaultNames(): string {
+  const names = CLUB_DEFAULT_PINS.map((key) => CLUB_PAGES.find((p) => p.key === key)?.label ?? key);
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names.at(-1)}` : names.join("");
 }
 
 // Whether the visible list is at the limit. The API also counts pins the

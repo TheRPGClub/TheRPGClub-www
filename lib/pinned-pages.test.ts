@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   PINS_FULL,
   PIN_LIMIT,
+  clubDefaultNames,
   isPinKeyList,
   memberPins,
   pageMenuItems,
+  pinsCustomised,
   pinsFull,
   togglePin,
 } from "@/lib/pinned-pages";
@@ -83,5 +85,25 @@ describe("pageMenuItems", () => {
   it("still offers Unpin at the limit", () => {
     const full = ["voting", "games", "members", "news", "releases", "achievements"];
     expect(pageMenuItems(full, "news")[0]).toMatchObject({ action: "unpin", disabled: false });
+  });
+});
+
+describe("pinsCustomised", () => {
+  it("is true when the session says the member saved their own list", () => {
+    expect(pinsCustomised({ pinned_pages_customised: true })).toBe(true);
+  });
+
+  it("is false while the member follows the club default", () => {
+    expect(pinsCustomised({ pinned_pages_customised: false })).toBe(false);
+  });
+
+  it("is false when the API doesn't say, so there is nothing to reset", () => {
+    expect(pinsCustomised({})).toBe(false);
+  });
+});
+
+describe("clubDefaultNames", () => {
+  it("names the club default's pages in order", () => {
+    expect(clubDefaultNames()).toBe("Voting, Games, Members and News");
   });
 });
