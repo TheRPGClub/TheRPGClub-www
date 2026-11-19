@@ -14,7 +14,6 @@ export function LandingCover({
   lead,
   issueNumber,
   signInHref,
-  profileHref,
   notice,
 }: {
   // This round's lead Game of the Month.
@@ -22,7 +21,6 @@ export function LandingCover({
   // The latest round's number: rounds are the club's issues, numbered from 1.
   issueNumber: number;
   signInHref: string;
-  profileHref: string | null;
   // A notice slip (sign-in failed), pinned over the cover art.
   notice?: React.ReactNode;
 }) {
@@ -56,7 +54,6 @@ export function LandingCover({
 
       <LandingPitch
         signInHref={signInHref}
-        profileHref={profileHref}
         className={cn(
           "relative z-[2] flex-1 px-4 pt-21 pb-8 md:px-10 md:pt-26 md:pb-14 [&>h1]:mt-[13rem] md:[&>h1]:mt-auto md:[&>h1]:pt-12",
           // On a phone the slip sits between the masthead and the headline.

@@ -9,11 +9,9 @@ const ctaClass = "h-13 px-6 text-lg max-sm:w-full";
 
 export function LandingPitch({
   signInHref,
-  profileHref,
   className,
 }: {
   signInHref: string;
-  profileHref: string | null;
   className?: string;
 }) {
   return (
@@ -49,26 +47,15 @@ export function LandingPitch({
           Sign in with Discord
           <ArrowRight data-icon="inline-end" />
         </ButtonLink>
-        {profileHref ? (
-          <ButtonLink
-            href={profileHref}
-            variant="outline"
-            size="lg"
-            className={ctaClass}
-          >
-            My Profile
-          </ButtonLink>
-        ) : (
-          <ButtonLink
-            render={<a />}
-            href="#how"
-            variant="outline"
-            size="lg"
-            className={ctaClass}
-          >
-            How the club works
-          </ButtonLink>
-        )}
+        <ButtonLink
+          render={<a />}
+          href="#how"
+          variant="outline"
+          size="lg"
+          className={ctaClass}
+        >
+          How the club works
+        </ButtonLink>
       </div>
     </div>
   );

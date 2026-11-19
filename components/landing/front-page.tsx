@@ -11,7 +11,7 @@ import { TwoTracks } from "@/components/landing/two-tracks";
 import { YourShelf } from "@/components/landing/your-shelf";
 import { EstBand } from "@/components/codex/history/est-band";
 
-// The front page: the club pitched as its own magazine, for everyone. With
+// The front page: the club pitched as its own magazine, for Visitors. With
 // public winners, this round's Game of the Month is the cover, the two
 // tracks show their latest picks and the winners marquee runs at the foot.
 // Without them (the read failed or came back empty), the page describes the
@@ -20,14 +20,11 @@ import { EstBand } from "@/components/codex/history/est-band";
 export function FrontPage({
   winners,
   signInHref,
-  profileHref,
   authFailed,
   historyYear,
 }: {
   winners: PublicWinner[];
   signInHref: string;
-  // The signed-in viewer's own member page; null for a Visitor.
-  profileHref: string | null;
   // The API sent a failed sign-in back here (/?error=auth_failed).
   authFailed: boolean;
   // The year the Club History starts (its earliest History Event), for the
@@ -45,11 +42,10 @@ export function FrontPage({
             lead={cover.lead}
             issueNumber={cover.roundNumber}
             signInHref={signInHref}
-            profileHref={profileHref}
             notice={notice}
           />
         ) : (
-          <FlatHero signInHref={signInHref} profileHref={profileHref} notice={notice} />
+          <FlatHero signInHref={signInHref} notice={notice} />
         )}
         {historyYear !== null && <EstBand year={historyYear} />}
         <HowItWorks />
