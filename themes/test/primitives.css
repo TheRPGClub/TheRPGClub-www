@@ -160,6 +160,11 @@
                 color: var(--sidebar-accent-foreground);
                 border-color: var(--sidebar-ring);
             }
+            &[data-variant="sidebar-back"] {
+                background-color: var(--muted);
+                color: var(--sidebar-ring);
+                border-color: var(--sidebar-ring);
+            }
             &[data-variant="sidebar-action"] {
                 background-color: var(--muted);
                 color: var(--destructive);
@@ -949,6 +954,16 @@
                 background-color: var(--accent);
                 color: var(--accent-foreground);
                 border-color: var(--accent-foreground);
+            }
+            &[data-variant="group"] {
+                background-color: var(--secondary);
+                color: var(--secondary-foreground);
+                border-color: var(--secondary-foreground);
+            }
+            &[data-variant="entry"] {
+                background-color: var(--card);
+                color: var(--card-foreground);
+                border-color: var(--border-strong);
             }
         }
         [data-slot="sidebar-menu-action"] {

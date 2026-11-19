@@ -18,6 +18,5 @@ export async function appShellProps(session: AppSession) {
     membership: session.membership,
     votingPhase,
     features: session.features,
-    search: features.canOpen("game_index"),
   };
 }

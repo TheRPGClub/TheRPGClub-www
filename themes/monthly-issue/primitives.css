@@ -136,6 +136,11 @@
             &[data-variant="sidebar-action"] {
                 @apply rounded-sm border-0 text-faint-foreground transition-colors hover:bg-muted hover:text-foreground;
             }
+            /* The way back out of a sidebar group: tracked caps in faint ink
+               that go paper on hover. */
+            &[data-variant="sidebar-back"] {
+                @apply font-label rounded-sm border-0 font-semibold tracking-[0.08em] text-faint-foreground uppercase transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
             &[data-variant="add"] {
                 @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
             }
@@ -607,6 +612,16 @@
                masthead red. */
             &[data-variant="default"] {
                 @apply ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground font-label rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground data-active:bg-gotm data-active:font-bold data-active:text-gotm-foreground;
+            }
+            /* A Browse group's row: the nav's voice, lit while its pages
+               are open. */
+            &[data-variant="group"] {
+                @apply ring-sidebar-ring font-label rounded-sm text-dim-foreground transition-colors hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground;
+            }
+            /* A page in a group's view: paper name over a faint note; the
+               name turns yellow on hover; you are here in masthead red. */
+            &[data-variant="entry"] {
+                @apply ring-sidebar-ring rounded-sm text-faint-foreground transition-colors hover:not-data-active:bg-muted data-active:bg-gotm data-active:text-gotm-foreground;
             }
             &[data-variant="outline"] {
                 @apply rounded-md ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))];

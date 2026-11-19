@@ -1,9 +1,9 @@
 import {
   Award,
-  Flag,
   BellRing,
   CalendarDays,
   ClipboardCheck,
+  Flag,
   Gift,
   LayoutDashboard,
   Library,
@@ -19,55 +19,46 @@ import {
   Vote,
 } from "lucide-react";
 import type { VotingPhase } from "@/lib/api/voting-round";
-import type { FeatureKey } from "@/lib/features";
-import type { StaffSection } from "@/lib/staff";
-import { RELEASES_PATH } from "@/lib/release-calendar";
-import { CODEX_PATH } from "@/lib/codex/paths";
+import type { SidebarGroupKey } from "@/lib/sidebar";
 
-// The sidebar's items. Each item names the Feature it belongs to
-// (lib/features.ts); the session says whether this viewer is shown it.
-// Dashboard and Members are never flagged.
-export const NAV_MAIN: {
-  href: string;
-  icon: typeof LayoutDashboard;
-  label: string;
-  feature?: FeatureKey;
-}[] = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/games", icon: Library, label: "Games", feature: "game_index" },
-  { href: "/gotm", icon: Trophy, label: "GOTM history", feature: "voting_gotm" },
-  { href: "/members", icon: Users, label: "Members" },
-  { href: CODEX_PATH, icon: ScrollText, label: "Codex", feature: "club_codex" },
-  { href: "/journals", icon: NotebookPen, label: "Game Journals", feature: "journals" },
-  { href: "/achievements", icon: Award, label: "Achievements", feature: "achievement_hub" },
-  { href: "/news", icon: Newspaper, label: "News", feature: "news_hub" },
-  { href: RELEASES_PATH, icon: CalendarDays, label: "Releases", feature: "release_calendar" },
-  { href: "/voting", icon: Vote, label: "Voting", feature: "voting_gotm" },
-  { href: "/giveaways", icon: Gift, label: "Giveaways", feature: "giveaways" },
-  { href: "/challenges", icon: Flag, label: "Challenges", feature: "challenges" },
-  // The board, open to every signed-in member; its "Suggest something"
-  // button leads Members role holders and staff on to the form.
-  {
-    href: "/suggestions",
-    icon: Lightbulb,
-    label: "Suggestion Board",
-    feature: "suggestions",
-  },
-];
+export { isCurrent } from "@/lib/sidebar";
 
-export const VOTING_HREF = "/voting";
+export type NavIcon = typeof LayoutDashboard;
+
+export const DASHBOARD_HREF = "/dashboard";
 export const SETTINGS_HREF = "/settings";
 
-// Icons for the sections marked `nav` in lib/staff.ts.
-export const STAFF_ICON: Partial<Record<StaffSection["key"], typeof ShieldCheck>> = {
-  overview: ShieldCheck,
+// Each page's icon, by its Pinned Page key (lib/sidebar.ts).
+export const PAGE_ICON: Record<string, NavIcon> = {
   voting: Vote,
+  gotm_history: Trophy,
+  challenges: Flag,
+  games: Library,
+  releases: CalendarDays,
+  achievements: Award,
+  journals: NotebookPen,
+  members: Users,
+  news: Newspaper,
+  codex: ScrollText,
+  giveaways: Gift,
+  suggestions: Lightbulb,
+  staff_desk: ShieldCheck,
+  voting_console: Vote,
   synonyms: Replace,
-  "live-events": Radio,
-  reminders: BellRing,
-  suggestions: ClipboardCheck,
+  live_events: Radio,
+  public_reminders: BellRing,
+  suggestion_review: ClipboardCheck,
 };
 
+export const GROUP_ICON: Record<SidebarGroupKey, NavIcon> = {
+  play: Trophy,
+  games: Library,
+  club: Users,
+  staff: ShieldCheck,
+};
+
+// A 40px row in label type with an 18px icon: Dashboard, the Pinned Pages,
+// the Browse groups and Settings share it, so nothing moves between them.
 export const NAV_BUTTON_CLASS = "h-10 gap-3 px-2.5 text-[1.05rem] [&_svg]:size-[18px]";
 
 // The voting item is named for what the club is doing right now, so the nav
@@ -82,8 +73,3 @@ export const PHASE_LABEL: Record<VotingPhase, string> = {
   tie: "Voting",
   decided: "Voting",
 };
-
-// The item for this path or one below it.
-export function isCurrent(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(href + "/");
-}
