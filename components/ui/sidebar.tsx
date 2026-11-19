@@ -578,10 +578,11 @@ function SidebarMenuAction({
       {
         className: cn(
           "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center p-0 outline-hidden transition-transform group-data-[collapsible=icon]:hidden peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0",
-          // Hidden until its row is hovered or holds focus, at every width
-          // (touch gets its own way in, not a hover control).
+          // Hidden until its row is hovered or holds focus, at every width,
+          // and gone on devices without hover: touch opens the row's long
+          // press menu instead (www#136).
           showOnHover &&
-            "opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100",
+            "opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100 [@media(hover:none)]:hidden",
           className
         ),
       },

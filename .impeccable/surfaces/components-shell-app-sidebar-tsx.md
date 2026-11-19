@@ -28,7 +28,7 @@ FORM: Pinned and Browse (option A+C of the round). Signature interaction: the 32
 - On the rail a group opens a slide-out panel (the group's view without the back link) over a scrim; picking a page, Esc, the group's icon or a click/focus outside closes it.
 - No auto-drill: a page load always shows the main view; client navigation inside the open group keeps it open, anywhere else returns to the main view.
 - Groups leave out pages for Features the viewer isn't shown; an empty group is dropped; Staff follows `lib/staff.ts` nav sections by tier.
-- Pin controls (api#418, www#136) appear only on hover or keyboard focus; not on the rail.
+- Pin controls (api#418) appear only on hover or keyboard focus, never on touch (`(hover: none)`); touch pins through a long-press menu on the row (www#136). Neither on the rail.
 - Page keys, groups and notes live in `lib/sidebar.ts`; icons in `components/shell/nav-items.ts`.
 
 ## Verdict
@@ -38,3 +38,5 @@ Built in www#133 against stub session data (staff and member, round open and clo
 The icon rail (www#135) was checked the same way: element positions measured in both states match (logo, every row icon, both headings, Settings, avatar), the two screenshots overlaid line up, and the slide-out panel follows the prototype's flyout (no back link, scrim, soft shadow) with its pin controls left out per the spec.
 
 api#418: hover pin and unpin built per the prototype's `.entry .pin` and `.it .unpin` (SidebarMenuAction variant `pin`, both Themes); the full-list message is the disabled pin's tooltip; a failed save shows a Notice Slip over the sidebar content's foot. Verified against a local API at 1440 and 390 wide, expanded and on the rail.
+
+www#136: touch long-press menu (the site's dropdown menu under the row: page name label, Pin to sidebar / Unpin, full-list hint under a disabled pin) checked with touch emulation at 390 and 1280 wide against a local API.
