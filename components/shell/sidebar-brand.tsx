@@ -29,14 +29,15 @@ export function SidebarBrand() {
             onClick={toggleSidebar}
             aria-label="Expand sidebar"
             title="Expand sidebar"
-            className="group/logo relative hidden group-data-[collapsible=icon]:flex"
+            className="group/logo relative hidden size-10 group-data-[collapsible=icon]:flex"
           >
+            {/* The same 40px logo in the same place as the expanded one. */}
             <Image
               src="/logo.png"
               alt=""
-              width={32}
-              height={32}
-              className="size-8 transition-opacity group-hover/logo:opacity-0"
+              width={40}
+              height={40}
+              className="size-10 transition-opacity group-hover/logo:opacity-0"
             />
             <PanelLeftOpen className="absolute size-4 opacity-0 transition-opacity group-hover/logo:opacity-100" />
           </Button>

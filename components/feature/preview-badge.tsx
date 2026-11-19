@@ -13,11 +13,12 @@ export function PreviewBadge({ className }: { className?: string }) {
 }
 
 // The same mark at the sidebar's badge scale, beside the nav item's label
-// (the voting "Open" badge shares it). Hidden on the icon rail, where the
-// tooltip says it instead.
+// (the voting "Open" badge shares it). On the icon rail the row clips it
+// with the label, and the tooltip says it instead; the rail's slide-out
+// panel shows it.
 export function NavBadge({ children }: { children: React.ReactNode }) {
   return (
-    <Badge tone="highlight" size="nav" className="border-0 group-data-[collapsible=icon]:hidden">
+    <Badge tone="highlight" size="nav" className="border-0">
       {children}
     </Badge>
   );

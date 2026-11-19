@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import type { AppSession } from "@/lib/auth-types";
 import { featureView } from "@/lib/features";
 import { fetchCurrentPhase } from "@/lib/api/voting-round";
+import { SIDEBAR_COOKIE, sidebarOpenFromCookie } from "@/lib/sidebar-state";
 
 // What the signed-in site's frame (components/shell/app-shell) shows for a
 // Member: the protected layout's, and a public page's when a Member reads it
@@ -18,5 +20,7 @@ export async function appShellProps(session: AppSession) {
     membership: session.membership,
     votingPhase,
     features: session.features,
+    // The member's collapsed/expanded sidebar, as they left it.
+    sidebarOpen: sidebarOpenFromCookie((await cookies()).get(SIDEBAR_COOKIE)?.value),
   };
 }

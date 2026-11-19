@@ -39,7 +39,8 @@ export function AppSidebar({ principal, membership, votingPhase, features }: App
   };
 
   return (
-    <Sidebar collapsible="icon">
+    // z-30: the rail's slide-out panel and its scrim cover the top bar (z-20).
+    <Sidebar collapsible="icon" className="z-30">
       <SidebarBrand />
       <SidebarBrowse nav={nav} />
       <SidebarAccount principal={principal} />

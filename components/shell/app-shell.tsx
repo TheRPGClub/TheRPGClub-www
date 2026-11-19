@@ -13,6 +13,7 @@ export function AppShell({
   membership,
   votingPhase,
   features,
+  sidebarOpen,
   crumbs,
   children,
 }: {
@@ -20,13 +21,15 @@ export function AppShell({
   membership: SessionMembership | null;
   votingPhase: VotingPhase | null;
   features: SessionFeature[] | undefined;
+  // Expanded or collapsed to the icon rail, from the member's cookie.
+  sidebarOpen: boolean;
   // The current route's trail for the top bar.
   crumbs: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={sidebarOpen}>
         <AppSidebar
           principal={principal}
           membership={membership}
