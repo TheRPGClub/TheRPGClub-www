@@ -2,12 +2,20 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { ESLint, type Linter } from "eslint";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 // These tests lint deliberately bad samples through the real eslint.config.mjs,
 // so they prove each structure rule fires where the spec says, and only there.
 const root = path.resolve(__dirname, "..");
 const eslint = new ESLint({ cwd: root });
+
+// The first lint loads the config, its plugins and the TypeScript parser,
+// which can take longer than a test's 5s on a busy machine; that cost was
+// landing on whichever test ran first and timing it out now and then. Pay
+// it here, with room to spare.
+beforeAll(async () => {
+  await eslint.lintText("export const warm = 1;\n", { filePath: path.join(root, "components/warm-up.tsx") });
+}, 60_000);
 
 async function warningsFor(
   ruleId: string,

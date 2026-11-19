@@ -7,7 +7,7 @@ import type { SessionMembership, SessionPrincipal } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import { featureView, type SessionFeature } from "@/lib/features";
 import { currentPage, pinnedPages, sidebarGroups } from "@/lib/sidebar";
-import { memberPins } from "@/lib/pinned-pages";
+import { memberPins, type PinRules } from "@/lib/pinned-pages";
 import { usePinnedPages } from "@/hooks/use-pinned-pages";
 import { SidebarAccount } from "@/components/shell/sidebar-account";
 import { SidebarBrand } from "@/components/shell/sidebar-brand";
@@ -26,15 +26,17 @@ interface AppSidebarProps {
   // The session's Pinned Pages; undefined (an API without them) reads as the
   // club default.
   pinnedPages?: string[];
+  // The session's Pinned Pages limit, room and club default.
+  pinRules: PinRules;
 }
 
 // The signed-in site's sidebar: the club's mark, Dashboard, the member's
 // Pinned Pages and the Browse groups (Play, Games, Club, and Staff for the
 // tools this member's role can use), and the member's own corner.
-export function AppSidebar({ principal, membership, votingPhase, features, pinnedPages: sessionPins }: AppSidebarProps) {
+export function AppSidebar({ principal, membership, votingPhase, features, pinnedPages: sessionPins, pinRules }: AppSidebarProps) {
   const pathname = usePathname();
   const groups = useMemo(() => sidebarGroups(features, membership), [features, membership]);
-  const pins = usePinnedPages(memberPins(sessionPins));
+  const pins = usePinnedPages(memberPins(sessionPins, pinRules), pinRules);
   const nav: SidebarNavModel = {
     groups,
     pinned: pinnedPages(groups, pins.keys),

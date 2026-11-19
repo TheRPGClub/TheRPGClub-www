@@ -1,6 +1,7 @@
 import type { SessionMembership, SessionPrincipal } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import type { SessionFeature } from "@/lib/features";
+import type { PinRules } from "@/lib/pinned-pages";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/shell/app-sidebar";
@@ -15,6 +16,7 @@ export function AppShell({
   features,
   sidebarOpen,
   pinnedPages,
+  pinRules,
   crumbs,
   children,
 }: {
@@ -26,6 +28,8 @@ export function AppShell({
   sidebarOpen: boolean;
   // The session's Pinned Pages; undefined before the API sends them.
   pinnedPages?: string[];
+  // The session's Pinned Pages limit, room and club default.
+  pinRules: PinRules;
   // The current route's trail for the top bar.
   crumbs: React.ReactNode;
   children: React.ReactNode;
@@ -39,6 +43,7 @@ export function AppShell({
           votingPhase={votingPhase}
           features={features}
           pinnedPages={pinnedPages}
+          pinRules={pinRules}
         />
         {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
             not widen the column past the window. @container: the bleed

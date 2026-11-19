@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import type { SessionMembership } from "@/lib/auth-types";
 import type { SessionFeature } from "@/lib/features";
 import {
-  CLUB_DEFAULT_PINS,
   currentPage,
   pinnedPages,
   sidebarGroups,
@@ -70,7 +69,7 @@ describe("sidebarGroups", () => {
 describe("pinnedPages", () => {
   it("keeps the member's order and skips pages they can't see", () => {
     const groups = sidebarGroups([feature("game_index"), feature("news_hub", false)], flags());
-    expect(pinnedPages(groups, CLUB_DEFAULT_PINS).map((p) => p.key)).toEqual(["games", "members"]);
+    expect(pinnedPages(groups, ["voting", "games", "members", "news"]).map((p) => p.key)).toEqual(["games", "members"]);
   });
 });
 

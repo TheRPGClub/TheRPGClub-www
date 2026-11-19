@@ -59,7 +59,7 @@ export function SidebarPageMenu({
       <DropdownMenuContent anchor={anchor} finalFocus={finalFocus} align="start" sideOffset={2} className="min-w-52">
         <DropdownMenuGroup>
           <DropdownMenuLabel>{pageLabel(page, nav.votingPhase)}</DropdownMenuLabel>
-          {pageMenuItems(nav.pins.keys, page.key, { reorder }).map((item) => {
+          {pageMenuItems(nav.pins.keys, page.key, nav.pins.rules, { reorder }).map((item) => {
             const Icon = ICON[item.action];
             return (
               <div key={item.action}>

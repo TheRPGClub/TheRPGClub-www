@@ -3,20 +3,23 @@
 import { refresh } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import { isPinKeyList, PIN_LIMIT } from "@/lib/pinned-pages";
+import { isPinKeyList, pinRules } from "@/lib/pinned-pages";
 
 export interface PinnedPagesResult {
   ok: boolean;
+  // Why the API refused the list (its 422 `error`), for the sidebar's
+  // notice; absent for any other failure.
+  reason?: string;
 }
 
 // Save the member's whole visible Pinned Pages list, in order, as the
-// signed-in member. The API keeps the pins they can't see right now. The
-// sidebar shows one message for any failure, so the reason isn't returned.
+// signed-in member. The API keeps the pins they can't see right now and
+// counts them toward the limit; a list it refuses comes back with its
+// reason.
 export async function savePinnedPagesAction(pages: string[]): Promise<PinnedPagesResult> {
-  if (!isPinKeyList(pages) || pages.length > PIN_LIMIT) return { ok: false };
-
   const session = await getSession();
   if (!session) return { ok: false };
+  if (!isPinKeyList(pages) || pages.length > pinRules(session).limit) return { ok: false };
   const userId = session.principal.discord_id;
 
   try {
@@ -24,6 +27,7 @@ export async function savePinnedPagesAction(pages: string[]): Promise<PinnedPage
       method: "PUT",
       body: JSON.stringify({ data: { pages } }),
     });
+    if (res.status === 422) return { ok: false, reason: await refusal(res) };
     if (!res.ok) return { ok: false };
   } catch {
     return { ok: false };
@@ -33,6 +37,13 @@ export async function savePinnedPagesAction(pages: string[]): Promise<PinnedPage
   // their router is enough.
   refresh();
   return { ok: true };
+}
+
+// The API's reason for a refused list, when it gave one.
+async function refusal(res: Response): Promise<string | undefined> {
+  const body: unknown = await res.json().catch(() => null);
+  const error = body && typeof body === "object" && "error" in body ? body.error : null;
+  return typeof error === "string" && error.trim() ? error.trim() : undefined;
 }
 
 // Reset the member's Pinned Pages to the club default (ticket api#419): the

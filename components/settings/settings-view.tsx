@@ -26,6 +26,7 @@ export interface ChallengeDmsData {
 export function SettingsView({
   prefs,
   pinsCustomised,
+  pinsDefault,
   newsCategories,
   birthDate,
   staff,
@@ -36,6 +37,8 @@ export function SettingsView({
   prefs: FeaturePreferences | null;
   // The member saved their own Pinned Pages: offer the reset.
   pinsCustomised: boolean;
+  // The club default Pinned Pages by name ("Voting, Games, Members and News").
+  pinsDefault: string;
   // Null for a member who can't open the News Hub, or when the read failed.
   newsCategories: NewsCategoryPreferences | null;
   // Null when the Birth Date couldn't be read.
@@ -63,7 +66,7 @@ export function SettingsView({
             Couldn&apos;t load your settings from the club&apos;s server. Reload the page to try again.
           </SettingsReadFailed>
         )}
-        {pinsCustomised && <PinnedPagesReset />}
+        {pinsCustomised && <PinnedPagesReset names={pinsDefault} />}
       </section>
 
       {challengeDms && <ChallengeDmsSection settings={challengeDms.settings} preview={challengeDms.preview} />}
