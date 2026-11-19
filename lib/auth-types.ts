@@ -31,6 +31,9 @@ export interface AppSession {
   // api#416). Optional so a session from an API without them still reads as
   // the club default.
   pinned_pages?: string[];
+  // Whether the member saved their own Pinned Pages rather than following
+  // the club default (ticket api#419). Optional: missing reads as false.
+  pinned_pages_customised?: boolean;
 }
 
 export function discordAvatarUrl(

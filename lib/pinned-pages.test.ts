@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   PIN_LIMIT,
+  clubDefaultNames,
   isPinKeyList,
   memberPins,
+  pinsCustomised,
   pinsFull,
   togglePin,
 } from "@/lib/pinned-pages";
@@ -54,5 +56,25 @@ describe("isPinKeyList", () => {
     expect(isPinKeyList(["dashboard"])).toBe(false);
     expect(isPinKeyList("voting")).toBe(false);
     expect(isPinKeyList([1])).toBe(false);
+  });
+});
+
+describe("pinsCustomised", () => {
+  it("is true when the session says the member saved their own list", () => {
+    expect(pinsCustomised({ pinned_pages_customised: true })).toBe(true);
+  });
+
+  it("is false while the member follows the club default", () => {
+    expect(pinsCustomised({ pinned_pages_customised: false })).toBe(false);
+  });
+
+  it("is false when the API doesn't say, so there is nothing to reset", () => {
+    expect(pinsCustomised({})).toBe(false);
+  });
+});
+
+describe("clubDefaultNames", () => {
+  it("names the club default's pages in order", () => {
+    expect(clubDefaultNames()).toBe("Voting, Games, Members and News");
   });
 });
