@@ -7,6 +7,7 @@ import { CHALLENGES_FEATURE, challengeDmsShown } from "@/lib/challenge-settings"
 import { featureView } from "@/lib/features";
 import { requireAuth } from "@/lib/session";
 import { isModeratorOrAbove } from "@/lib/staff";
+import { clubDefaultNames, pinRules, pinsCustomised } from "@/lib/pinned-pages";
 import { SettingsView } from "@/components/settings/settings-view";
 
 export const metadata = { title: "Settings" };
@@ -32,6 +33,8 @@ export default async function SettingsPage() {
   return (
     <SettingsView
       prefs={prefs}
+      pinsCustomised={pinsCustomised(session)}
+      pinsDefault={clubDefaultNames(pinRules(session).clubDefault)}
       newsCategories={newsCategories}
       birthDate={birthDate}
       staff={isModeratorOrAbove(session.membership)}

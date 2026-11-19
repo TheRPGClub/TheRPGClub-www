@@ -136,6 +136,11 @@
             &[data-variant="sidebar-action"] {
                 @apply rounded-sm border-0 text-faint-foreground transition-colors hover:bg-muted hover:text-foreground;
             }
+            /* The way back out of a sidebar group: tracked caps in faint ink
+               that go paper on hover. */
+            &[data-variant="sidebar-back"] {
+                @apply font-label rounded-sm border-0 font-semibold tracking-[0.08em] text-faint-foreground uppercase transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
             &[data-variant="add"] {
                 @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
             }
@@ -598,6 +603,9 @@
         /* A group's label is set in the tracked caps label voice. */
         [data-slot="sidebar-group-label"] {
             @apply rounded-md font-label font-medium tracking-[0.08em] text-faint-foreground uppercase ring-sidebar-ring;
+            /* On the icon rail the heading keeps its height and turns into a
+               thin rule, so the rows under it don't move. */
+            @apply transition-colors after:pointer-events-none after:absolute after:inset-x-1.5 after:bottom-3 after:h-px after:bg-sidebar-border after:opacity-0 after:transition-opacity group-data-[collapsible=icon]:text-transparent group-data-[collapsible=icon]:after:opacity-100 motion-reduce:transition-none motion-reduce:after:transition-none;
         }
         [data-slot="sidebar-group-action"] {
             @apply rounded-md text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
@@ -608,6 +616,16 @@
             &[data-variant="default"] {
                 @apply ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground font-label rounded-sm text-dim-foreground hover:bg-muted hover:text-foreground data-active:bg-gotm data-active:font-bold data-active:text-gotm-foreground;
             }
+            /* A Browse group's row: the nav's voice, lit while its pages
+               are open. */
+            &[data-variant="group"] {
+                @apply ring-sidebar-ring font-label rounded-sm text-dim-foreground transition-colors hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground;
+            }
+            /* A page in a group's view: paper name over a faint note; the
+               name turns yellow on hover; you are here in masthead red. */
+            &[data-variant="entry"] {
+                @apply ring-sidebar-ring rounded-sm text-faint-foreground transition-colors hover:not-data-active:bg-muted data-active:bg-gotm data-active:text-gotm-foreground;
+            }
             &[data-variant="outline"] {
                 @apply rounded-md ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))];
             }
@@ -616,6 +634,12 @@
             @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
             &[data-show-on-hover] {
                 @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+            }
+            /* Pin and unpin (Pinned Pages): a faint pin that goes paper on a
+               rule-grey square under the pointer; yellow while the page is
+               pinned; white on the red you-are-here row. */
+            &[data-variant="pin"] {
+                @apply rounded-xs text-faint-foreground ring-sidebar-ring transition-[opacity,color,background-color] hover:bg-border hover:text-foreground aria-pressed:text-highlight aria-disabled:cursor-not-allowed aria-disabled:hover:bg-transparent aria-disabled:hover:text-faint-foreground peer-hover/menu-button:text-faint-foreground peer-data-active/menu-button:text-gotm-foreground;
             }
         }
         [data-slot="sidebar-menu-badge"] {
