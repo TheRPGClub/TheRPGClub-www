@@ -5,7 +5,7 @@ import { AgendaGroups } from "./agenda-groups";
 
 // Below the grid: every other Upcoming Release from today on, under the
 // API's sections ("December 2026", "Q3 2027", "2027", "TBA"), each a run
-// of date groups, set in two or three columns from sm.
+// of date groups.
 export function ReleaseList({
   upcomingReleases,
   today,
@@ -21,11 +21,7 @@ export function ReleaseList({
           title={section.title}
           count={note ? `${upcomingCount(section.count)} · ${note}` : upcomingCount(section.count)}
         />
-        {/* Newspaper columns, read down then across: a long section no
-            longer runs on in one narrow strip under the grid. */}
-        <div className="gap-x-10 sm:columns-2 xl:columns-3">
-          <AgendaGroups groups={section.groups} month={section.month} today={today} />
-        </div>
+        <AgendaGroups groups={section.groups} month={section.month} today={today} />
       </section>
     );
   });

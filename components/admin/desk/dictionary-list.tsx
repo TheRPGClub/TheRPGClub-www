@@ -32,7 +32,8 @@ export interface DictionaryListProps<T, K extends string | number> {
   className?: string;
 }
 
-// A dictionary-style list: entries filed under big letters in two columns,
+// A dictionary-style list: entries filed under big letters, each letter's
+// entries in up to five columns across the page,
 // an A to Z jump bar, and edit and delete on each entry. Delete strikes the
 // entry through and holds it behind an Undo bar; the request is sent only
 // when the bar runs out. A refused delete brings the entry back with the
@@ -79,20 +80,20 @@ export function DictionaryList<T, K extends string | number>({
       {groups.length === 0 ? (
         <div className="mt-5 text-dim-foreground">{empty ?? "Nothing here yet."}</div>
       ) : (
-        <div className="mt-5 gap-x-11 md:columns-2">
+        <div className="mt-5">
           {groups.map((group) => (
-            <section key={group.letter} id={`dict-${group.letter}`} className="mb-4.5 scroll-mt-20 break-inside-avoid">
+            <section key={group.letter} id={`dict-${group.letter}`} className="mb-6 scroll-mt-20">
               <h2 className="font-headline mb-1 border-b-2 border-foreground pb-1 text-[3.4rem] leading-[0.85]">
                 {group.letter}
               </h2>
-              <ul>
+              <ul className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                 {group.items.map((item) => {
                   const key = getKey(item);
                   if (editingKey === key && renderEditor) {
                     return (
                       <li
                         key={key}
-                        className="-mx-3 my-1.5 break-inside-avoid rounded-md bg-card p-3 ring-1 ring-highlight ring-inset"
+                        className="col-span-full -mx-3 my-1.5 rounded-md bg-card p-3 ring-1 ring-highlight ring-inset"
                       >
                         {renderEditor(item)}
                       </li>

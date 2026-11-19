@@ -30,7 +30,7 @@ export function DictionaryEntry({
 }) {
   const struck = held && "text-faint-foreground line-through decoration-destructive";
   return (
-    <li className="grid break-inside-avoid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-border py-2.5">
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-0.5 border-b border-border py-2.5">
       <span className={cn("text-[1.05rem] font-bold break-words", struck)}>{word}</span>
       {others.length > 0 && (
         <span className={cn("col-start-1 text-[0.93rem] break-words text-dim-foreground italic", struck)}>

@@ -9,9 +9,9 @@ import { ChallengeBillboard } from "@/components/challenges/challenge-billboard"
 import { ChallengeFlyer } from "@/components/challenges/challenge-flyer";
 
 // The Challenges index (surface brief challenges-index): a pinboard of club
-// flyers on a dotted ground, with the running Challenges pasted up as
-// billboards above the board. Members see what is on, how long is left and
-// where they already have a Run.
+// flyers, with the running Challenges pasted up as billboards above the
+// board. Members see what is on, how long is left and where they already
+// have a Run.
 export function ChallengeBoard({
   page,
   filters,
@@ -29,35 +29,31 @@ export function ChallengeBoard({
     </ButtonLink>
   );
   return (
-    // The dotted ground bleeds to the edges; the board on it keeps the page
-    // column every other page sits in (max-w-page and the layout's padding).
-    <div className="bleed -mt-6 min-h-full pt-6 bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-foreground)_6%,transparent)_1px,transparent_0)] bg-[length:22px_22px] pb-12">
-      <div className="mx-auto w-full max-w-page px-4 sm:px-7">
-        <PageHeader title="Challenges" badge={badge} count={page ? countLine(page.all) : undefined} actions={create} />
-        <div className="mt-[18px]">
-          <BoardFiltersBar filters={filters} />
-        </div>
-        {!page ? (
-          <Empty>The Challenges couldn&apos;t be read just now. Try again in a moment.</Empty>
-        ) : page.all.length === 0 ? (
-          <Empty action={create}>No Challenges yet.</Empty>
-        ) : page.shown.length === 0 ? (
-          <Empty
-            action={
-              <Link
-                href="/challenges"
-                className="font-label text-sm text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight"
-              >
-                Clear filters
-              </Link>
-            }
-          >
-            {emptyFilterLine(filters)}
-          </Empty>
-        ) : (
-          <Board page={page} />
-        )}
+    <div className="pb-12">
+      <PageHeader title="Challenges" badge={badge} count={page ? countLine(page.all) : undefined} actions={create} />
+      <div className="mt-[18px]">
+        <BoardFiltersBar filters={filters} />
       </div>
+      {!page ? (
+        <Empty>The Challenges couldn&apos;t be read just now. Try again in a moment.</Empty>
+      ) : page.all.length === 0 ? (
+        <Empty action={create}>No Challenges yet.</Empty>
+      ) : page.shown.length === 0 ? (
+        <Empty
+          action={
+            <Link
+              href="/challenges"
+              className="font-label text-sm text-foreground underline decoration-gotm decoration-2 underline-offset-4 hover:text-highlight"
+            >
+              Clear filters
+            </Link>
+          }
+        >
+          {emptyFilterLine(filters)}
+        </Empty>
+      ) : (
+        <Board page={page} />
+      )}
     </div>
   );
 }
