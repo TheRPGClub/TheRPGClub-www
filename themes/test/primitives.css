@@ -936,6 +936,17 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+        /* On the icon rail a heading keeps its height as a dashed rule. */
+        [data-collapsible="icon"] [data-slot="sidebar-group-label"] {
+            color: transparent;
+            &::after {
+                content: "";
+                position: absolute;
+                inset-inline: 0.375rem;
+                bottom: 0.75rem;
+                border-top: 1px dashed var(--border-strong);
+            }
+        }
         [data-slot="sidebar-group-action"] {
             background-color: var(--card);
             color: var(--card-foreground);

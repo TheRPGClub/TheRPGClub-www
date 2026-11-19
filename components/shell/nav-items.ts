@@ -59,7 +59,9 @@ export const GROUP_ICON: Record<SidebarGroupKey, NavIcon> = {
 
 // A 40px row in label type with an 18px icon: Dashboard, the Pinned Pages,
 // the Browse groups and Settings share it, so nothing moves between them.
-export const NAV_BUTTON_CLASS = "h-10 gap-3 px-2.5 text-[1.05rem] [&_svg]:size-[18px]";
+// The 11px inset puts the icon's center 28px from the sidebar's edge, the
+// middle of the icon rail, in both states.
+export const NAV_BUTTON_CLASS = "h-10 gap-3 pr-2.5 pl-[11px] text-[1.05rem] [&_svg]:size-[18px]";
 
 // The voting item is named for what the club is doing right now, so the nav
 // says whether nominations or the vote are what's live without opening the
