@@ -44,3 +44,13 @@ export function GamesGridSkeleton() {
     </div>
   );
 }
+
+export function FacetFiltersSkeleton() {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton variant="control" key={i} className="h-9 w-36" />
+      ))}
+    </div>
+  );
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { gamesIndexHref } from "@/lib/games/index-href";
+import type { Facets } from "@/lib/games/index-facets";
 import {
   InputGroup,
   InputGroupAddon,
@@ -14,15 +15,17 @@ import { Label } from "@/components/ui/label";
 const DEBOUNCE_MS = 500;
 
 // The index's search field: searches as you type (debounced) and on Enter.
-// A winner filter in the URL survives a new search, since the filter sits
-// right beside the field and still reads as on.
+// A winner filter or a facet in the URL survives a new search, since the
+// filters sit right by the field and still read as on.
 export function GamesSearchForm({
   defaultQuery,
   winner,
+  facets,
   placeholder,
 }: {
   defaultQuery: string;
   winner: string | null;
+  facets: Facets;
   placeholder: string;
 }) {
   const router = useRouter();
@@ -37,7 +40,7 @@ export function GamesSearchForm({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function navigate(q: string) {
-    router.push(gamesIndexHref({ q, winner }));
+    router.push(gamesIndexHref({ q, winner, facets }));
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {

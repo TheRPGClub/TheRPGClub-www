@@ -51,9 +51,11 @@ function PaginationLink({
       variant="ghost"
       size={size}
       // The current page is set in paper like a selected tab; the rest are
-      // quiet condensed numerals.
+      // quiet condensed numerals. Only a numeral is a fixed square: Previous
+      // and Next size to their label, or "Next" spills onto the last page.
       className={cn(
-        "size-9 text-base",
+        "text-base",
+        size === "icon" && "size-9",
         className,
       )}
       // data-slot goes on the Button, not the Link: Button sets its own and
