@@ -12,6 +12,9 @@ import type { CollectionMeta } from "./types";
 // Authorization), so a short revalidate is still per member. The default
 // view leaves out the member's switched-off News Categories, so the feed is
 // tagged per member and a settings save expires it at once (newsFeedTag).
+// Each feed read also carries the News Feed Stamp (`v`, which the API
+// ignores), so a cached feed never outlives a change to the News Items: an
+// open page that sees the stamp move re-reads the page and gets a new one.
 
 const NEWS_PER = 30;
 // The list is fixed in code on the API; it changes with an API release.
@@ -39,8 +42,10 @@ export async function fetchNews(
   filters: NewsFilters,
   // The viewer's Discord id, for the feed's cache tag.
   userId: string,
+  // The News Feed Stamp read before the feed, or null.
+  stamp: string | null,
 ): Promise<NewsPage | "not_found" | null> {
-  return readFeed(filters, userId, filters.page, NEWS_PER);
+  return readFeed(filters, userId, stamp, filters.page, NEWS_PER);
 }
 
 // The items just past the page's two edges: the last of the page before
@@ -51,10 +56,11 @@ export async function fetchNews(
 export async function fetchNewsNeighbours(
   filters: NewsFilters,
   userId: string,
+  stamp: string | null,
 ): Promise<{ before: NewsItem | null | undefined; after: NewsItem | null | undefined }> {
   const at = async (position: number) => {
     if (position < 1) return null;
-    const page = await readFeed(filters, userId, position, 1);
+    const page = await readFeed(filters, userId, stamp, position, 1);
     return page && page !== "not_found" ? (page.items[0] ?? null) : undefined;
   };
   const [before, after] = await Promise.all([
@@ -67,6 +73,7 @@ export async function fetchNewsNeighbours(
 async function readFeed(
   filters: NewsFilters,
   userId: string,
+  stamp: string | null,
   page: number,
   per: number,
 ): Promise<NewsPage | "not_found" | null> {
@@ -74,6 +81,7 @@ async function readFeed(
   // No category = the member's default view, which the API works out.
   if (filters.categories.length) ps.set("category", filters.categories.join(","));
   if (filters.q) ps.set("q", filters.q);
+  if (stamp) ps.set("v", stamp);
   try {
     const res = await apiFetch(`/api/v1/news_items?${ps}`, {
       next: { revalidate: 60, tags: [newsFeedTag(userId)] },
@@ -82,6 +90,20 @@ async function readFeed(
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: NewsItem[]; meta?: NewsFeedMeta };
     return { items: body.data ?? [], meta: body.meta ?? null };
+  } catch {
+    return null;
+  }
+}
+
+// The News Feed Stamp (`GET /api/v1/news_items/stamp`): changes whenever a
+// News Item does. Answered from a file on the API machine, never the
+// database, and without the member's session; null when the read failed.
+export async function fetchNewsStamp(): Promise<string | null> {
+  try {
+    const res = await apiFetch("/api/v1/news_items/stamp", { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: { stamp?: string } };
+    return body.data?.stamp ?? null;
   } catch {
     return null;
   }

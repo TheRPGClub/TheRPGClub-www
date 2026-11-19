@@ -74,6 +74,11 @@ function isNewsCategoryKey(value: string): value is NewsCategoryKey {
 
 export const NEWS_PATH = "/news";
 
+// How often an open News page asks the API whether the feed changed (the
+// News Feed Stamp). The question never reaches the database, so Neon can
+// sleep while a page sits open; the feed is read again only on a change.
+export const NEWS_STAMP_POLL_SECONDS = 15;
+
 export interface NewsFilters {
   page: number;
   // Chosen News Categories in category order; empty = the member's default
