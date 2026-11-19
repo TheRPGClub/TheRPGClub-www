@@ -13,18 +13,11 @@ import type { SidebarGroupKey } from "@/lib/sidebar";
 import {
   DASHBOARD_HREF,
   NAV_BUTTON_CLASS,
-  PAGE_ICON,
   isCurrent,
 } from "@/components/shell/nav-items";
 import { SidebarGroupRow } from "@/components/shell/sidebar-group-row";
-import {
-  PageBadges,
-  pageLabel,
-  pageTooltip,
-  type SidebarNavModel,
-} from "@/components/shell/sidebar-page";
-import { PinnedRowUnpin } from "@/components/shell/sidebar-pin";
-import { SidebarPageItem } from "@/components/shell/sidebar-page-item";
+import type { SidebarNavModel } from "@/components/shell/sidebar-page";
+import { SidebarPinned } from "@/components/shell/sidebar-pinned";
 
 // The two headings sit 38px tall with their caps on the baseline, so the
 // rows under them start on the same 40px rhythm.
@@ -63,26 +56,7 @@ export function SidebarMain({
       </SidebarMenu>
 
       <SidebarGroupLabel className={HEADING_CLASS}>Pinned</SidebarGroupLabel>
-      <SidebarMenu className="gap-0.5">
-        {nav.pinned.map((page) => {
-          const Icon = PAGE_ICON[page.key];
-          return (
-            <SidebarPageItem key={page.key} page={page} nav={nav} pressable={!railed}>
-              <SidebarMenuButton
-                render={<Link href={page.href} />}
-                isActive={nav.current?.key === page.key}
-                tooltip={pageTooltip(page, nav)}
-                className={NAV_BUTTON_CLASS}
-              >
-                <Icon />
-                <span>{pageLabel(page, nav.votingPhase)}</span>
-                <PageBadges page={page} nav={nav} />
-              </SidebarMenuButton>
-              <PinnedRowUnpin page={page} nav={nav} />
-            </SidebarPageItem>
-          );
-        })}
-      </SidebarMenu>
+      <SidebarPinned nav={nav} railed={railed} />
       {nav.pinned.length === 0 && (
         // One fixed line, kept (but invisible) on the rail so nothing below moves.
         <p className="flex h-8 items-center overflow-hidden px-2.5 text-[0.8125rem] whitespace-nowrap text-faint-foreground group-data-[collapsible=icon]:invisible">

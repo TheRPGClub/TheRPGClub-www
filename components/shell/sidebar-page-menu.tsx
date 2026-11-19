@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { Pin, PinOff, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, Pin, PinOff, type LucideIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,25 +11,35 @@ import type { SidebarPage } from "@/lib/sidebar";
 import { pageMenuItems, type PageMenuAction } from "@/lib/pinned-pages";
 import { pageLabel, type SidebarNavModel } from "@/components/shell/sidebar-page";
 
-const ICON: Record<PageMenuAction, LucideIcon> = { pin: Pin, unpin: PinOff };
+const ICON: Record<PageMenuAction, LucideIcon> = {
+  pin: Pin,
+  unpin: PinOff,
+  "move-up": ArrowUp,
+  "move-down": ArrowDown,
+};
 
-// The small menu a long press opens on a page's row (touch, www#136),
-// under the row: the page's name, then Pin to sidebar or Unpin. At the limit
-// Pin to sidebar is disabled with the full-list message under it. Its items
-// come from `pageMenuItems`, so later actions (www#137's Move up and Move
-// down) are new items there and a case here.
+// The small menu a long press (touch, www#136) or Shift+F10 / the menu key
+// (www#137) opens on a page's row, under the row: the page's name, then Pin
+// to sidebar or Unpin, and on a Pinned row (`reorder`) Move up and Move
+// down. At the limit Pin to sidebar is disabled with the full-list message
+// under it. Its items come from `pageMenuItems`; each action is a case here.
 export function SidebarPageMenu({
   page,
   nav,
   anchor,
+  reorder,
   open,
   onOpenChange,
+  finalFocus,
 }: {
   page: SidebarPage;
   nav: SidebarNavModel;
   anchor: React.RefObject<HTMLElement | null>;
+  reorder: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // Where focus goes when the menu closes (the row, when the keyboard opened it).
+  finalFocus: () => HTMLElement | true;
 }) {
   const hintId = useId();
   const run = (action: PageMenuAction) => {
@@ -37,15 +47,19 @@ export function SidebarPageMenu({
       case "pin":
       case "unpin":
         return nav.pins.toggle(page.key);
+      case "move-up":
+        return nav.pins.move(page.key, -1);
+      case "move-down":
+        return nav.pins.move(page.key, 1);
     }
   };
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
-      <DropdownMenuContent anchor={anchor} align="start" sideOffset={2} className="min-w-52">
+      <DropdownMenuContent anchor={anchor} finalFocus={finalFocus} align="start" sideOffset={2} className="min-w-52">
         <DropdownMenuGroup>
           <DropdownMenuLabel>{pageLabel(page, nav.votingPhase)}</DropdownMenuLabel>
-          {pageMenuItems(nav.pins.keys, page.key).map((item) => {
+          {pageMenuItems(nav.pins.keys, page.key, { reorder }).map((item) => {
             const Icon = ICON[item.action];
             return (
               <div key={item.action}>

@@ -6,7 +6,7 @@ import type { SidebarGroup } from "@/lib/sidebar";
 import { PAGE_ICON } from "@/components/shell/nav-items";
 import { PageBadges, hasBadges, pageLabel, type SidebarNavModel } from "@/components/shell/sidebar-page";
 import { EntryPin } from "@/components/shell/sidebar-pin";
-import { SidebarPageItem } from "@/components/shell/sidebar-page-item";
+import { ROW_MENU_KEYS, SidebarPageItem } from "@/components/shell/sidebar-page-item";
 
 // A group's view, slid in beside the main one: the way back, the group's
 // name on the paper rule, then each page with its one-line note. The icon
@@ -52,6 +52,7 @@ export function SidebarGroupView({
                 variant="entry"
                 render={<Link href={page.href} />}
                 isActive={nav.current?.key === page.key}
+                aria-keyshortcuts={pinnable ? ROW_MENU_KEYS : undefined}
                 className="grid h-auto grid-cols-[18px_minmax(0,1fr)_auto] items-start gap-x-2.5 gap-y-px p-2 [&_svg]:size-[17px]"
               >
                 <Icon className="mt-0.5 text-dim-foreground group-data-active/menu-button:text-gotm-foreground" />
