@@ -22,6 +22,7 @@ import {
   pageTooltip,
   type SidebarNavModel,
 } from "@/components/shell/sidebar-page";
+import { PinnedRowUnpin } from "@/components/shell/sidebar-pin";
 
 // The two headings sit 38px tall with their caps on the baseline, so the
 // rows under them start on the same 40px rhythm.
@@ -72,10 +73,17 @@ export function SidebarMain({
                 <span>{pageLabel(page, nav.votingPhase)}</span>
                 <PageBadges page={page} nav={nav} />
               </SidebarMenuButton>
+              <PinnedRowUnpin page={page} nav={nav} />
             </SidebarMenuItem>
           );
         })}
       </SidebarMenu>
+      {nav.pinned.length === 0 && (
+        // One fixed line, kept (but invisible) on the rail so nothing below moves.
+        <p className="flex h-8 items-center overflow-hidden px-2.5 text-[0.8125rem] whitespace-nowrap text-faint-foreground group-data-[collapsible=icon]:invisible">
+          Pin pages from any group.
+        </p>
+      )}
 
       <SidebarGroupLabel className={HEADING_CLASS}>Browse</SidebarGroupLabel>
       <SidebarMenu className="gap-0.5">

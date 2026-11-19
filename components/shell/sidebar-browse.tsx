@@ -9,6 +9,7 @@ import { SidebarGroupView } from "@/components/shell/sidebar-group-view";
 import { SidebarMain } from "@/components/shell/sidebar-main";
 import { SidebarRailPanel } from "@/components/shell/sidebar-rail-panel";
 import type { SidebarNavModel } from "@/components/shell/sidebar-page";
+import { SidebarPinNotice } from "@/components/shell/sidebar-pin-notice";
 
 const SLIDE = "duration-320 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none";
 
@@ -76,7 +77,7 @@ export function SidebarBrowse({ nav }: { nav: SidebarNavModel }) {
   };
 
   return (
-    <SidebarContent className="overflow-hidden">
+    <SidebarContent className="relative overflow-hidden">
       <div className={cn("flex h-full w-[200%] transition-transform", SLIDE, group && "-translate-x-1/2")}>
         <div
           ref={mainRef}
@@ -90,7 +91,7 @@ export function SidebarBrowse({ nav }: { nav: SidebarNavModel }) {
           onKeyDown={(e) => e.key === "Escape" && back()}
           className={cn("no-scrollbar h-full w-1/2 overflow-y-auto transition-opacity", SLIDE, !group && "opacity-0")}
         >
-          {drawn && <SidebarGroupView group={drawn} nav={nav} backRef={backRef} onBack={back} />}
+          {drawn && <SidebarGroupView group={drawn} nav={nav} backRef={backRef} onBack={back} pinnable />}
         </div>
       </div>
       {railed && (
@@ -103,6 +104,7 @@ export function SidebarBrowse({ nav }: { nav: SidebarNavModel }) {
           }}
         />
       )}
+      {nav.pins.failed && !railed && <SidebarPinNotice onDismiss={nav.pins.dismiss} />}
     </SidebarContent>
   );
 }

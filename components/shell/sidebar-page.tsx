@@ -14,6 +14,19 @@ export interface SidebarNavModel {
   // plain name rather than the nav breaking.
   votingPhase: VotingPhase | null;
   view: FeatureView;
+  pins: SidebarPins;
+}
+
+// The member's Pinned Pages as keys, and the way to change them (www pin
+// controls, api#418).
+export interface SidebarPins {
+  keys: readonly string[];
+  // The visible list is at the limit: pinning another is refused.
+  full: boolean;
+  toggle: (key: string) => void;
+  // The last save failed and the list sprang back.
+  failed: boolean;
+  dismiss: () => void;
 }
 
 // Nominations or the vote are live: the club has open business.
@@ -34,6 +47,12 @@ export function pageTooltip(page: SidebarPage, nav: SidebarNavModel): string {
 
 // The yellow marks beside a page's name: Preview (staff only) and the
 // voting page's Open while the round is.
+// The page carries a Preview or Open badge.
+export function hasBadges(page: SidebarPage, nav: SidebarNavModel): boolean {
+  const preview = page.feature ? nav.view.preview(page.feature) : false;
+  return preview || (page.key === "voting" && votingOpen(nav.votingPhase));
+}
+
 export function PageBadges({
   page,
   nav,
@@ -43,9 +62,9 @@ export function PageBadges({
   nav: SidebarNavModel;
   className?: string;
 }) {
+  if (!hasBadges(page, nav)) return null;
   const preview = page.feature ? nav.view.preview(page.feature) : false;
   const open = page.key === "voting" && votingOpen(nav.votingPhase);
-  if (!preview && !open) return null;
   return (
     <span className={className ?? "ml-auto flex gap-1"}>
       {preview && <NavBadge>Preview</NavBadge>}

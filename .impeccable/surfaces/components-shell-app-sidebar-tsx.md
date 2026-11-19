@@ -36,3 +36,5 @@ FORM: Pinned and Browse (option A+C of the round). Signature interaction: the 32
 Built in www#133 against stub session data (staff and member, round open and closed) at 1440 and 390 wide. Matches the prototype's rows, headings, group rows, drill-in and entries; uses the site's uppercase label voice for entry names where the prototype used sentence case, to stay one voice with the rest of the nav.
 
 The icon rail (www#135) was checked the same way: element positions measured in both states match (logo, every row icon, both headings, Settings, avatar), the two screenshots overlaid line up, and the slide-out panel follows the prototype's flyout (no back link, scrim, soft shadow) with its pin controls left out per the spec.
+
+api#418: hover pin and unpin built per the prototype's `.entry .pin` and `.it .unpin` (SidebarMenuAction variant `pin`, both Themes); the full-list message is the disabled pin's tooltip; a failed save shows a Notice Slip over the sidebar content's foot. Verified against a local API at 1440 and 390 wide, expanded and on the rail.

@@ -992,6 +992,14 @@
                 font-family: var(--typeface-label);
                 box-shadow: 3px 3px 0 var(--foreground);
             }
+            &[data-variant="pin"] {
+                background-color: var(--secondary);
+                color: var(--secondary-foreground);
+                border-color: var(--secondary-foreground);
+                border-radius: calc(var(--radius) * 2);
+                font-family: var(--typeface-label);
+                box-shadow: 3px 3px 0 var(--foreground);
+            }
         }
         [data-slot="sidebar-menu-badge"] {
             background-color: var(--card);

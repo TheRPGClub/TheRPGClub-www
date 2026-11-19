@@ -563,10 +563,14 @@ function SidebarMenuAction({
   className,
   render,
   showOnHover = false,
+  variant = "default",
   ...props
 }: useRender.ComponentProps<"button"> &
   React.ComponentProps<"button"> & {
     showOnHover?: boolean
+    // What the action is; each Theme draws it by data-variant. `pin` pins or
+    // unpins its row's page (aria-pressed while pinned).
+    variant?: "default" | "pin"
   }) {
   return useRender({
     defaultTagName: "button",
@@ -574,8 +578,10 @@ function SidebarMenuAction({
       {
         className: cn(
           "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center p-0 outline-hidden transition-transform group-data-[collapsible=icon]:hidden peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0",
+          // Hidden until its row is hovered or holds focus, at every width
+          // (touch gets its own way in, not a hover control).
           showOnHover &&
-            "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100 md:opacity-0",
+            "opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100",
           className
         ),
       },
@@ -585,6 +591,7 @@ function SidebarMenuAction({
     state: {
       slot: "sidebar-menu-action",
       sidebar: "menu-action",
+      variant,
       // Shown on hover only: the Theme keeps its icon in the active ink.
       "show-on-hover": showOnHover,
     },

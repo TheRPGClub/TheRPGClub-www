@@ -20,6 +20,7 @@ export async function appShellProps(session: AppSession) {
     membership: session.membership,
     votingPhase,
     features: session.features,
+    pinnedPages: session.pinned_pages,
     // The member's collapsed/expanded sidebar, as they left it.
     sidebarOpen: sidebarOpenFromCookie((await cookies()).get(SIDEBAR_COOKIE)?.value),
   };

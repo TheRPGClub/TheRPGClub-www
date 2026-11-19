@@ -635,6 +635,12 @@
             &[data-show-on-hover] {
                 @apply rounded-md text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
             }
+            /* Pin and unpin (Pinned Pages): a faint pin that goes paper on a
+               rule-grey square under the pointer; yellow while the page is
+               pinned; white on the red you-are-here row. */
+            &[data-variant="pin"] {
+                @apply rounded-xs text-faint-foreground ring-sidebar-ring transition-[opacity,color,background-color] hover:bg-border hover:text-foreground aria-pressed:text-highlight aria-disabled:cursor-not-allowed aria-disabled:hover:bg-transparent aria-disabled:hover:text-faint-foreground peer-hover/menu-button:text-faint-foreground peer-data-active/menu-button:text-gotm-foreground;
+            }
         }
         [data-slot="sidebar-menu-badge"] {
             @apply rounded-md font-medium text-sidebar-foreground peer-hover/menu-button:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
