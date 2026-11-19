@@ -7,30 +7,34 @@ import {
   WINNER_LABEL,
 } from "@/lib/games/games-index";
 import { gamesIndexHref, type WinnerFilter } from "@/lib/games/index-href";
+import { anyFacet, type Facets } from "@/lib/games/index-facets";
 import { cn } from "@/lib/utils";
 import { BrowseGameCard } from "@/components/issue/browse-game-card";
 import { ListPagination } from "@/components/list-pagination";
 import { IgdbFallback } from "@/components/igdb/igdb-fallback";
 import { SectionHeading } from "@/components/templates/page-header";
 
-// The full cover grid: every game, a search's results or a winner filter's,
-// a page at a time. A search the GameDB has no match for offers adding the
-// game from IGDB.
+// The full cover grid: every game, a search's results or the filters', a
+// page at a time. A plain search the GameDB has no match for offers adding
+// the game from IGDB.
 export async function GamesGrid({
   q,
   currentPage,
   winner,
+  facets,
   browsing,
 }: {
   q: string;
   currentPage: number;
   winner: WinnerFilter;
+  facets: Facets;
   browsing: boolean;
 }) {
-  const result = await fetchGames({ q, winner, page: currentPage });
+  const result = await fetchGames({ q, winner, facets, page: currentPage });
+  const faceted = anyFacet(facets);
   const games = result?.games ?? [];
   const total = result?.total ?? 0;
-  const offerIgdb = !!result && games.length === 0 && !!q && !winner;
+  const offerIgdb = !!result && games.length === 0 && !!q && !winner && !faceted;
   const session = offerIgdb ? await getSession() : null;
   const igdbBlocked = offerIgdb
     ? igdbAddBlockedReason(!!session, session?.membership)
@@ -40,7 +44,9 @@ export async function GamesGrid({
     ? `Results for “${q}”`
     : winner
       ? WINNER_LABEL[winner]
-      : "All games";
+      : faceted
+        ? "Filtered games"
+        : "All games";
   const count = result
     ? `${numberFormat.format(total)} ${total === 1 ? "game" : "games"}${
         q && winner ? ` · ${WINNER_LABEL[winner]}` : ""
@@ -67,8 +73,10 @@ export async function GamesGrid({
       ) : games.length === 0 ? (
         <EmptyState>
           {q
-            ? `No games match “${q}”${winner ? ` among ${WINNER_LABEL[winner]}` : ""}.`
-            : "No games here yet."}
+            ? `No games match “${q}”${winner ? ` among ${WINNER_LABEL[winner]}` : ""}${faceted ? " with these filters" : ""}.`
+            : winner || faceted
+              ? "No games match these filters."
+              : "No games here yet."}
         </EmptyState>
       ) : (
         <ul className="grid grid-cols-2 gap-x-3.5 gap-y-5 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 xl:gap-x-4.5 xl:gap-y-6">
@@ -83,7 +91,7 @@ export async function GamesGrid({
       <ListPagination
         currentPage={currentPage}
         totalPages={result?.totalPages ?? 1}
-        buildHref={(page) => gamesIndexHref({ q, winner, page })}
+        buildHref={(page) => gamesIndexHref({ q, winner, facets, page })}
       />
     </section>
   );

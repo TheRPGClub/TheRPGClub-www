@@ -17,8 +17,9 @@ export default async function ReleasesPage({
 }: {
   searchParams: Promise<RawSearchParams>;
 }) {
-  // Gate here, outside the Suspense boundary: a not-found streamed from
-  // inside one would answer 200.
+  // Gate here, before the body's Suspense boundary. The section's layout
+  // answers the 404 on a full load; this catches a flag turned off since,
+  // on a soft navigation (see requireFeature).
   const features = await requireFeature("release_calendar");
   const today = utcToday();
   const filters = parseCalendarFilters(await searchParams, today);
