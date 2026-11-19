@@ -40,3 +40,5 @@ The icon rail (www#135) was checked the same way: element positions measured in 
 api#418: hover pin and unpin built per the prototype's `.entry .pin` and `.it .unpin` (SidebarMenuAction variant `pin`, both Themes); the full-list message is the disabled pin's tooltip; a failed save shows a Notice Slip over the sidebar content's foot. Verified against a local API at 1440 and 390 wide, expanded and on the rail.
 
 www#136: touch long-press menu (the site's dropdown menu under the row: page name label, Pin to sidebar / Unpin, full-list hint under a disabled pin) checked with touch emulation at 390 and 1280 wide against a local API.
+
+www#137: reorder. A mouse drags a Pinned row (expanded sidebar only); the drop point is a 2px Highlighter Yellow line in the gap between rows (the manuscript desk's drop line), the dragged row sits at 40% opacity, nothing moves until the drop. The row menu gains Move up / Move down (ArrowUp / ArrowDown icons) on Pinned rows, disabled at the ends, and opens by keyboard (Shift+F10 or the menu key) on any pinnable row. Checked against a local API at 1440 (mouse, keyboard) and 390 (touch).
