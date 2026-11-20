@@ -193,6 +193,10 @@ const buttonVariants = cva(
         // A quiet Delete beside a quiet Edit (a History Event's date line):
         // the label voice in signal orange, no ground.
         "quiet-delete": "",
+        // www#145: the action on a section's heading rule beside its title
+        // (the dashboard's Edit dashboard), in the "Full history" link's
+        // voice: label caps in paper with a red icon, yellow on hover.
+        "heading-action": "",
       },
       size: {
         default:

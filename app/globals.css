@@ -113,6 +113,7 @@
     --color-panel-suggestions: var(--panel-suggestions);
     --color-panel-codex: var(--panel-codex);
     --color-panel-birthdays: var(--panel-birthdays);
+    --color-panel-new: var(--panel-new);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */

@@ -114,6 +114,7 @@
         --panel-suggestions: #0000ff;
         --panel-codex: #00ff66;
         --panel-birthdays: #ff6a00;
+        --panel-new: #00ff00;
         --foil-conic: repeating-linear-gradient(45deg, #ff00ff 0 6px, #00ff66 6px 12px);
         --foil-sheen: linear-gradient(transparent, transparent);
         --foil-foreground: #0033ff;

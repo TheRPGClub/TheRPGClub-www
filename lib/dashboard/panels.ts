@@ -65,6 +65,8 @@ export type PanelInk =
 export interface PanelSpec {
   key: PanelKey;
   title: string;
+  // One line on what it shows, for its card in edit mode's Hidden tray.
+  blurb: string;
   scope: "club" | "mine";
   // Mine and Club versions of one subject carry a scope chip, so the two
   // tell apart; a panel with only one version has none.
@@ -81,23 +83,23 @@ const me = (path: string) => (viewerId: string) => `/members/${viewerId}${path}`
 const page = (path: string) => () => path;
 
 export const PANELS: Readonly<Record<PanelKey, PanelSpec>> = {
-  news: { key: "news", title: "Latest News", scope: "club", chip: false, place: "wide", ink: "news", feature: "news_hub", seeAll: page("/news") },
-  now_playing_club: { key: "now_playing_club", title: "Now Playing", scope: "club", chip: true, place: "wide", ink: "now-playing", feature: "now_playing", seeAll: page("/members") },
-  releases: { key: "releases", title: "Upcoming Releases", scope: "club", chip: false, place: "wide", ink: "releases", feature: "release_calendar", seeAll: page("/releases") },
-  achievements_club: { key: "achievements_club", title: "Latest Achievements", scope: "club", chip: true, place: "wide", ink: "achievements", feature: "achievement_hub", seeAll: page("/achievements") },
-  challenges_club: { key: "challenges_club", title: "Challenge Activity", scope: "club", chip: false, place: "wide", ink: "challenges", feature: "challenges", seeAll: page("/challenges") },
-  now_playing_mine: { key: "now_playing_mine", title: "Now Playing", scope: "mine", chip: true, place: "rail", ink: "now-playing", feature: "now_playing", seeAll: me("/now-playing-games") },
-  achievements_mine: { key: "achievements_mine", title: "Latest Achievements", scope: "mine", chip: true, place: "wide", ink: "achievements", feature: "achievement_hub", seeAll: me("/achievements") },
-  challenge_runs_mine: { key: "challenge_runs_mine", title: "Challenge Runs", scope: "mine", chip: false, place: "rail", ink: "challenges", feature: "challenges", seeAll: page("/challenges") },
-  completions_club: { key: "completions_club", title: "Recent Completions", scope: "club", chip: true, place: "wide", ink: "completions", feature: "game_completions", seeAll: page("/members") },
-  completions_mine: { key: "completions_mine", title: "Recent Completions", scope: "mine", chip: true, place: "wide", ink: "completions", feature: "game_completions", seeAll: me("/completed-games") },
-  backlog_pick: { key: "backlog_pick", title: "Backlog Pick", scope: "mine", chip: false, place: "rail", ink: "backlog", feature: "backlog", seeAll: me("/backlogged-games/pick") },
-  reviews: { key: "reviews", title: "Latest Reviews", scope: "club", chip: false, place: "wide", ink: "reviews", feature: "reviews", seeAll: page("/games") },
-  journals: { key: "journals", title: "Game Journals", scope: "club", chip: false, place: "wide", ink: "journals", feature: "journals", seeAll: page("/journals") },
-  giveaways: { key: "giveaways", title: "Open Giveaways", scope: "club", chip: false, place: "wide", ink: "giveaways", feature: "giveaways", seeAll: page("/giveaways") },
-  suggestions: { key: "suggestions", title: "Suggestion Board", scope: "club", chip: false, place: "wide", ink: "suggestions", feature: "suggestions", seeAll: page("/suggestions") },
-  codex: { key: "codex", title: "Codex fact", scope: "club", chip: false, place: "rail", ink: "codex", feature: "club_codex", seeAll: page("/codex/fun-facts") },
-  birthdays: { key: "birthdays", title: "Upcoming Birthdays", scope: "club", chip: false, place: "rail", ink: "birthdays", feature: null, seeAll: null },
+  news: { key: "news", blurb: "The club's latest news", title: "Latest News", scope: "club", chip: false, place: "wide", ink: "news", feature: "news_hub", seeAll: page("/news") },
+  now_playing_club: { key: "now_playing_club", blurb: "What the club is playing", title: "Now Playing", scope: "club", chip: true, place: "wide", ink: "now-playing", feature: "now_playing", seeAll: page("/members") },
+  releases: { key: "releases", blurb: "Games coming out soon", title: "Upcoming Releases", scope: "club", chip: false, place: "wide", ink: "releases", feature: "release_calendar", seeAll: page("/releases") },
+  achievements_club: { key: "achievements_club", blurb: "The club's newest Unlocks", title: "Latest Achievements", scope: "club", chip: true, place: "wide", ink: "achievements", feature: "achievement_hub", seeAll: page("/achievements") },
+  challenges_club: { key: "challenges_club", blurb: "Runs started, games cleared", title: "Challenge Activity", scope: "club", chip: false, place: "wide", ink: "challenges", feature: "challenges", seeAll: page("/challenges") },
+  now_playing_mine: { key: "now_playing_mine", blurb: "What you're playing", title: "Now Playing", scope: "mine", chip: true, place: "rail", ink: "now-playing", feature: "now_playing", seeAll: me("/now-playing-games") },
+  achievements_mine: { key: "achievements_mine", blurb: "Your newest Unlocks", title: "Latest Achievements", scope: "mine", chip: true, place: "wide", ink: "achievements", feature: "achievement_hub", seeAll: me("/achievements") },
+  challenge_runs_mine: { key: "challenge_runs_mine", blurb: "Your Runs and how far along they are", title: "Challenge Runs", scope: "mine", chip: false, place: "rail", ink: "challenges", feature: "challenges", seeAll: page("/challenges") },
+  completions_club: { key: "completions_club", blurb: "Games the club just finished", title: "Recent Completions", scope: "club", chip: true, place: "wide", ink: "completions", feature: "game_completions", seeAll: page("/members") },
+  completions_mine: { key: "completions_mine", blurb: "Games you just finished", title: "Recent Completions", scope: "mine", chip: true, place: "wide", ink: "completions", feature: "game_completions", seeAll: me("/completed-games") },
+  backlog_pick: { key: "backlog_pick", blurb: "A game from your backlog", title: "Backlog Pick", scope: "mine", chip: false, place: "rail", ink: "backlog", feature: "backlog", seeAll: me("/backlogged-games/pick") },
+  reviews: { key: "reviews", blurb: "The club's newest reviews", title: "Latest Reviews", scope: "club", chip: false, place: "wide", ink: "reviews", feature: "reviews", seeAll: page("/games") },
+  journals: { key: "journals", blurb: "New Game Journal entries", title: "Game Journals", scope: "club", chip: false, place: "wide", ink: "journals", feature: "journals", seeAll: page("/journals") },
+  giveaways: { key: "giveaways", blurb: "Keys up for grabs, newest first", title: "Open Giveaways", scope: "club", chip: false, place: "wide", ink: "giveaways", feature: "giveaways", seeAll: page("/giveaways") },
+  suggestions: { key: "suggestions", blurb: "Latest Suggestion Board activity", title: "Suggestion Board", scope: "club", chip: false, place: "wide", ink: "suggestions", feature: "suggestions", seeAll: page("/suggestions") },
+  codex: { key: "codex", blurb: "Today's Fun Fact", title: "Codex fact", scope: "club", chip: false, place: "rail", ink: "codex", feature: "club_codex", seeAll: page("/codex/fun-facts") },
+  birthdays: { key: "birthdays", blurb: "Shared Birthdays in the next 30 days", title: "Upcoming Birthdays", scope: "club", chip: false, place: "rail", ink: "birthdays", feature: null, seeAll: null },
 };
 
 export function isPanelKey(key: unknown): key is PanelKey {
