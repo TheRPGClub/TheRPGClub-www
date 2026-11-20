@@ -8,6 +8,7 @@ import {
   type CalendarFilters,
   type PlatformOption,
 } from "@/lib/release-calendar";
+import type { HiddenPlatform } from "@/lib/hidden-platforms";
 import { ButtonLink } from "@/components/ui/button";
 import { PlatformFilter } from "./platform-filter";
 
@@ -20,12 +21,15 @@ export function CalendarToolbar({
   today,
   count,
   options,
+  hidden,
 }: {
   filters: CalendarFilters;
   today: string;
   // The grid month's Upcoming Releases after the filter; null when unread.
   count: number | null;
   options: PlatformOption[];
+  // The member's Hidden Platforms; null when they couldn't be read.
+  hidden: HiddenPlatform[] | null;
 }) {
   const prev = shiftMonth(filters.month, -1);
   const next = shiftMonth(filters.month, 1);
@@ -65,7 +69,7 @@ export function CalendarToolbar({
             {monthCount(count, filters.month, today)}
           </span>
         )}
-        <PlatformFilter filters={filters} today={today} options={options} />
+        <PlatformFilter filters={filters} today={today} options={options} hidden={hidden} />
       </div>
     </div>
   );

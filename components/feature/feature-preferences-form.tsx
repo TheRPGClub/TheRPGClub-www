@@ -13,10 +13,12 @@ import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { NewsCategorySwitches } from "@/components/feature/news-category-switches";
 import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import { PreferenceRow } from "@/components/feature/preference-row";
+import { HiddenPlatformsList, type HiddenPlatformsData } from "@/components/settings/hidden-platforms-list";
 import { useSwitchSaves } from "@/hooks/use-switch-saves";
 
 const SHOW_PREVIEW = "show_preview";
 const NEWS_HUB = "news_hub";
+const RELEASE_CALENDAR = "release_calendar";
 
 function changeId(change: PreferenceChange): string {
   return change.kind === "feature" ? change.key : SHOW_PREVIEW;
@@ -28,13 +30,17 @@ function changeId(change: PreferenceChange): string {
 // The News Hub row carries its News Category switches nested under it. They
 // render only when the API lists the News Hub (the member can use it), and
 // go unavailable while the row's own switch, optimistic included, is Hidden.
+// The Release Calendar row carries the member's Hidden Platforms the same way.
 export function FeaturePreferencesForm({
   initial,
   newsCategories,
+  hiddenPlatforms = null,
 }: {
   initial: FeaturePreferences;
   // The member's News Category Preferences; null when the read failed.
   newsCategories: NewsCategoryPreferences | null;
+  // Null when the member can't use the Release Calendar.
+  hiddenPlatforms?: HiddenPlatformsData | null;
 }) {
   const { state: prefs, pending, errors, save } = useSwitchSaves({
     initial,
@@ -65,6 +71,8 @@ export function FeaturePreferencesForm({
                 nested={
                   key === NEWS_HUB ? (
                     <NewsCategorySwitches initial={newsCategories} unavailable={!shown} />
+                  ) : key === RELEASE_CALENDAR && hiddenPlatforms ? (
+                    <HiddenPlatformsList data={hiddenPlatforms} unavailable={!shown} />
                   ) : null
                 }
               >
