@@ -2,46 +2,38 @@
 
 import { Input } from "@/components/ui/input";
 import { MAX_RATING, parseRatingInput } from "@/lib/api/rating";
-import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
 
 // The rating's score readout, which is itself the text field: the number you
 // read is the number you type, which is also why there are no spinner arrows
 // to hide. The "/ 100" is the label: a separate "Rating" heading would say
 // nothing the scale and the slider don't already say.
+//
+// Set as an Anton numeral. On the review desk it is big and circled in yellow
+// pencil, the editor's mark on the one number that matters; in the quick
+// composer it sits smaller beside its ruler.
 export function RatingReadout({
   value,
   onChange,
-  accent,
   live,
+  size = "desk",
   disabled,
 }: {
   value: number | null;
   onChange: (next: number | null) => void;
-  accent: ReviewAccent;
-  // While the slider drives the value, the readout lifts.
   live: boolean;
+  size?: "desk" | "quick";
   disabled?: boolean;
 }) {
-  const style = reviewAccents[accent];
   const unset = value === null;
-  const lifted = live && !unset;
+  const desk = size === "desk";
 
   return (
-    <div className="flex items-baseline gap-1.5">
-      {/* The readout's ink (and, while lifted, the accent's glow) is carried
-          by the box around the field. */}
-      <span
-        className={cn(
-          "relative inline-flex flex-col",
-          unset ? "text-muted-foreground" : style.readout,
-          lifted && style.glow,
-        )}
-      >
+    <div className="flex items-end gap-2">
+      <span className={cn("relative inline-flex", desk && "h-[5.75rem] w-[9rem] items-center justify-center")}>
+        {desk && <PencilRing />}
         <Input
           variant="bare"
-          // A text field rather than a number field: no spinner arrows, and
-          // `parseRatingInput` owns the filtering instead.
           type="text"
           inputMode="numeric"
           autoComplete="off"
@@ -52,35 +44,39 @@ export function RatingReadout({
           value={value ?? ""}
           onChange={(e) => {
             const next = parseRatingInput(e.target.value);
-            // undefined means the keystroke wasn't a digit — ignore it rather
-            // than letting it clear a score already set.
             if (next !== undefined) onChange(next);
           }}
           className={cn(
-            "peer h-auto w-[3ch] border-0 p-0 text-right text-4xl font-semibold tabular-nums tracking-tighter md:text-4xl",
-            "placeholder:font-normal",
-            "origin-right transition-[transform,filter] duration-200 ease-out",
-            "motion-reduce:transition-none",
-            // The whole flourish: while the slider drives the value the
-            // readout lifts, then settles. `motion-reduce:scale-100` and not
-            // just `transition-none`: without it the readout would still jump
-            // to the larger size, it just wouldn't animate there.
-            lifted && "scale-[1.12] motion-reduce:scale-100",
-          )}
-        />
-        {/* Doubles as the focus indicator, since the field carries no border
-            of its own. */}
-        <span
-          aria-hidden
-          className={cn(
-            "mt-0.5 h-px w-full origin-right scale-x-0 rounded-full transition-transform duration-200 ease-out",
-            "peer-hover:scale-x-100 peer-focus:h-0.5 peer-focus:scale-x-100",
-            "motion-reduce:transition-none",
-            style.caret,
+            "font-headline relative h-auto border-0 p-0 text-center leading-[0.8] tabular-nums",
+            desk ? "w-full text-[5.5rem] md:text-[5.5rem]" : "w-[2.2ch] text-[3.4rem] md:text-[3.4rem]",
+            "origin-bottom transition-transform duration-200 ease-out motion-reduce:transition-none",
+            live && !unset && "scale-[1.06] motion-reduce:scale-100",
           )}
         />
       </span>
-      <span className="text-sm text-muted-foreground tabular-nums">/ {MAX_RATING}</span>
+      <span className="font-label mb-1 text-[0.8rem] font-extrabold tracking-[0.08em] text-faint-foreground">
+        / {MAX_RATING}
+      </span>
     </div>
+  );
+}
+
+// A hand-drawn yellow ring, open where the pencil lifted.
+function PencilRing() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 100 60"
+      preserveAspectRatio="none"
+      className="pointer-events-none absolute inset-0 size-full text-highlight"
+    >
+      <path
+        d="M8 34 C 4 12, 40 2, 70 6 S 99 30, 88 46 S 30 60, 12 46 S 6 26, 22 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
   );
 }

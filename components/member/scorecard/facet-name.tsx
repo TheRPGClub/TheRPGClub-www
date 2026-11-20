@@ -5,7 +5,6 @@ import { Check, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MAX_LABEL_LENGTH, facetDef, facetHint, type FacetKey } from "@/lib/reviews/facets";
-import { cn } from "@/lib/utils";
 import { useFacetRename } from "@/hooks/use-facet-rename";
 
 // A row's name. Names are settled until you say otherwise. Most rows keep the
@@ -35,10 +34,9 @@ export function FacetName({
   if (editing) {
     return (
       <span
-        className={cn(
-          "flex w-40 shrink-0 items-center gap-0.5 rounded-md text-foreground sm:w-56",
-          "bg-background ring-1 ring-ring/60",
-        )}
+        // Laid over the whole row while renaming, so the name has the row's
+        // width to be typed in rather than the narrow name column.
+        className="absolute inset-x-0 top-1 z-10 flex items-center gap-0.5 rounded-sm bg-background text-foreground ring-1 ring-highlight/70"
       >
         <Input
           ref={inputRef}
@@ -90,7 +88,7 @@ export function FacetName({
   }
 
   return (
-    <span className="flex w-24 shrink-0 items-center gap-0.5 sm:w-36">
+    <span className="flex min-w-0 items-center gap-0.5">
       {/* Double-click is the shortcut, not the affordance: it duplicates the
           pencil rather than replacing it, so nothing here is reachable only
           by knowing the trick. That is also why the text stays plain text —
@@ -99,7 +97,7 @@ export function FacetName({
           would otherwise leave behind as the field opens. A custom row has no
           catalogue entry behind it, so no hint to offer. */}
       <span
-        className="min-w-0 flex-1 cursor-default truncate text-xs text-muted-foreground select-none"
+        className="font-label min-w-0 cursor-default truncate text-[0.8rem] font-extrabold tracking-[0.07em] text-dim-foreground select-none"
         title={facetHint(facetKey) ?? undefined}
         onDoubleClick={() => {
           if (!disabled) start();
@@ -113,6 +111,7 @@ export function FacetName({
         size="icon-xs"
         ref={pencilRef}
         aria-label={`Rename ${named}`}
+        className="opacity-0 transition-opacity group-focus-within/facet:opacity-100 group-hover/facet:opacity-100 [@media(hover:none)]:opacity-100"
         disabled={disabled}
         onClick={start}
       >

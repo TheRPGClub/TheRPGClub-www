@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { FacetName } from "./facet-name";
 import { FacetRowControls, type FacetRowControlsProps } from "./facet-row-controls";
 
-// The readouts' shared layout: a number set into the row, three characters
+// The weight's readout: a small number set into the row, three characters
 // wide, right-aligned so the digits line up down the card.
 const READOUT = "h-auto w-[3ch] border-0 p-0 text-right text-xs tabular-nums transition-none md:text-xs";
 
@@ -51,19 +51,53 @@ export function FacetRow({
   // where a name can be empty mid-edit.
   const named = label || facetDef(facetKey)?.label || "This category";
 
+  // One line per category, so a full card of twelve stays short beside the
+  // sheet: the name with its share under it, a small ruler, the score in
+  // Anton. The reorder and remove tools sit beside the share and show on
+  // hover or focus (always, on a screen with no hover).
   return (
-    <div className="flex items-center gap-2.5">
-      <FacetName
-        facetKey={facetKey}
-        label={label}
-        named={named}
-        autoEdit={autoEdit}
-        disabled={disabled}
-        onLabel={onLabel}
-      />
+    <div className="group/facet relative grid grid-cols-[7rem_minmax(0,1fr)_2.4rem] items-center gap-x-2.5 border-t border-border-strong py-1.5">
+      <div className="min-w-0">
+        <FacetName
+          facetKey={facetKey}
+          label={label}
+          named={named}
+          autoEdit={autoEdit}
+          disabled={disabled}
+          onLabel={onLabel}
+        />
+        <div className="flex items-center gap-1">
+          {weight !== undefined && (
+            <span className="font-label flex shrink-0 items-baseline text-[0.72rem] font-bold text-faint-foreground">
+              <Input
+                variant="readout"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={3}
+                disabled={disabled}
+                aria-label={`${named}, share of the ${WEIGHT_TOTAL}% weighting`}
+                value={weight}
+                onChange={(e) => {
+                  // Shares the score field's parser: it already filters to
+                  // digits and clamps to 0..100, which is exactly the
+                  // budget's range. Emptying the field reads as 0%, not as
+                  // "no weight": every row has a share, and a share of
+                  // nothing is a real answer.
+                  const next = parseRatingInput(e.target.value);
+                  if (next !== undefined) onWeight(next ?? 0);
+                }}
+                className={READOUT}
+              />
+              <span aria-hidden>%</span>
+            </span>
+          )}
+          {controls && <FacetRowControls {...controls} named={named} disabled={disabled} />}
+        </div>
+      </div>
 
       <Slider
-        className="min-w-0 flex-1"
+        className="min-w-0"
         // An unscored facet rests at the floor with the readout showing "—",
         // so it never passes for a deliberate 0 — which is a real score here.
         value={score ?? MIN_RATING}
@@ -75,14 +109,13 @@ export function FacetRow({
         getAriaLabel={() => `${named}, out of ${MAX_RATING}`}
         getAriaValueText={() => (unset ? "Not scored" : `${score} out of ${MAX_RATING}`)}
         tone={style.sliderTone}
+        variant="ruler"
         size="sm"
-        trackClassName="data-horizontal:h-1"
         indicatorClassName={cn(unset && "opacity-0")}
-        thumbClassName="size-2.5 border"
       />
 
-      {/* The readout's ink, carried by a box that draws nothing. */}
-      <span className={cn("contents", unset ? "text-muted-foreground" : style.readout)}>
+      {/* The score's ink, carried by a box that draws nothing. */}
+      <span className={cn("contents", unset ? "text-faint-foreground" : "text-foreground")}>
         <Input
           // Same contract as the overall's readout: a text field so it
           // carries no spinner arrows, with `parseRatingInput` owning the
@@ -102,39 +135,9 @@ export function FacetRow({
             // than letting it clear a score already given.
             if (next !== undefined) onScore(next);
           }}
-          className={cn(READOUT, "shrink-0 font-semibold")}
+          className="font-headline h-auto w-full border-0 p-0 text-right text-[1.35rem] leading-none tabular-nums transition-none md:text-[1.35rem]"
         />
       </span>
-
-      {weight !== undefined && (
-        <span className="flex shrink-0 items-baseline gap-px text-muted-foreground">
-          <Input
-            variant="readout"
-            type="text"
-            inputMode="numeric"
-            autoComplete="off"
-            maxLength={3}
-            disabled={disabled}
-            aria-label={`${named}, share of the ${WEIGHT_TOTAL}% weighting`}
-            value={weight}
-            onChange={(e) => {
-              // Shares the score field's parser: it already filters to digits
-              // and clamps to 0..100, which is exactly the budget's range.
-              // Emptying the field reads as 0%, not as "no weight": every row
-              // has a share, and a share of nothing is a real answer. It just
-              // has to be made up elsewhere for the split to add up.
-              const next = parseRatingInput(e.target.value);
-              if (next !== undefined) onWeight(next ?? 0);
-            }}
-            className={READOUT}
-          />
-          <span aria-hidden className="text-[10px] text-muted-foreground">
-            %
-          </span>
-        </span>
-      )}
-
-      {controls && <FacetRowControls {...controls} named={named} disabled={disabled} />}
     </div>
   );
 }

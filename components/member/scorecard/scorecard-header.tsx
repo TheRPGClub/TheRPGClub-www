@@ -34,9 +34,7 @@ export function ScorecardHeader({
   return (
     <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <div className="flex items-center gap-2.5">
-        <h3 className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-          Scorecard
-        </h3>
+        <h3 className="font-headline text-[1.45rem] leading-none">Scorecard</h3>
         <ScorecardExplainer accent={accent} />
       </div>
 
@@ -45,7 +43,7 @@ export function ScorecardHeader({
             template is a starting point — but worth saying, since the
             trigger alone would suggest it is still vanilla. */}
         {edited && choice !== "custom" && (
-          <span className="text-xs text-muted-foreground/70">edited</span>
+          <span className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-faint-foreground">Edited</span>
         )}
         <TemplatePicker choice={choice} disabled={disabled} onPick={onTemplate} />
       </div>

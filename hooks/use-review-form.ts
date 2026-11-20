@@ -116,6 +116,7 @@ export function useReviewForm({
     rating,
     setRating,
     initialValue,
+    body,
     setBody,
     facets,
     setFacets,
@@ -126,3 +127,5 @@ export function useReviewForm({
     refresh: () => router.refresh(),
   };
 }
+
+export type ReviewFormState = ReturnType<typeof useReviewForm>;

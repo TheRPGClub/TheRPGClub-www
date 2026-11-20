@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 import type { Review } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
+import type { ReviewDeskGame } from "@/components/member/review-desk/desk-game";
 
 // Same reasoning as the game page's list: the editor is the heaviest thing
 // here and most readers never open it.
@@ -25,14 +25,17 @@ const ReviewForm = dynamic(
 export interface ReviewDetailProps {
   review: Review;
   gameId: number;
+  // The game, for the editor's banner.
+  game: ReviewDeskGame;
   accent: ReviewAccent;
   // Only the author gets the edit affordance.
   canEdit: boolean;
-  // Opens straight into the editor. True both on a fresh navigation — the
-  // writer arrived from the game page's small editor, which has already
-  // saved, so landing them on a read view would make them click straight
-  // back out of it — and on an in-place one, from the banner's own edit
-  // link (`?edit`), which changes this prop without remounting.
+  // Whether the page is in its editing state (`?edit`). The URL owns it, so
+  // the page can put its own banner aside while the editor's banner takes
+  // its place, and so Cancel and Save, which drop `?edit`, bring the page's
+  // banner back with whatever was saved. True on a fresh navigation too: the
+  // writer arriving from the game page's small editor has already saved, so
+  // landing them on a read view would make them click straight back out.
   startEditing?: boolean;
   // The rendered review, passed in already built. It stays a server render
   // that way — the read view is the common one, and it has no business
@@ -43,38 +46,26 @@ export interface ReviewDetailProps {
 export function ReviewDetail({
   review,
   gameId,
+  game,
   accent,
   canEdit,
   startEditing = false,
   children,
 }: ReviewDetailProps) {
   const router = useRouter();
-  const [editing, setEditing] = useState(canEdit && startEditing);
-  // Tracked so the block below can tell "startEditing changed" from
-  // "re-rendered for some other reason" — set (during render, not an
-  // effect) only when it actually needs updating.
-  const [prevStartEditing, setPrevStartEditing] = useState(startEditing);
+  const readView = `/games/${gameId}/reviews/${review.review_id}`;
 
-  // `startEditing` only seeds `editing` at mount by default. The banner's
-  // edit link changes the URL, and therefore this prop, without remounting
-  // the page — this is what makes that in-place navigation open the editor
-  // too, while still leaving Cancel free to turn `editing` back off without
-  // fighting an unchanged prop on the next render.
-  if (startEditing !== prevStartEditing) {
-    setPrevStartEditing(startEditing);
-    if (canEdit && startEditing) setEditing(true);
-  }
-
-  if (editing) {
+  if (canEdit && startEditing) {
     return (
       <ReviewForm
         userId={review.user_id}
         gameId={gameId}
+        game={game}
         existing={review}
         accent={accent}
         showDelete
-        onCancel={() => setEditing(false)}
-        onSaved={() => setEditing(false)}
+        onCancel={() => router.replace(readView, { scroll: false })}
+        onSaved={() => router.replace(readView, { scroll: false })}
         // The review this page is about is gone, so there is nothing to come
         // back to.
         onDeleted={() => router.replace(`/games/${gameId}/reviews`)}

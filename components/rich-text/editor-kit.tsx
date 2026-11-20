@@ -69,6 +69,9 @@ function SpoilerLeaf(props: PlateLeafProps) {
     <PlateLeaf
       {...props}
       as="span"
+      // Lets an editor that styles its own story (a review's sheet) find
+      // the spoiler range.
+      attributes={{ ...props.attributes, "data-spoiler": "" }}
       className="rounded-sm bg-foreground/10 decoration-dotted underline decoration-foreground/40 underline-offset-2"
     >
       {props.children}

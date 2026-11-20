@@ -59,7 +59,7 @@ export function ReviewScorecardEditor({
   const average = facetAverage(value);
 
   return (
-    <section className="space-y-3 rounded-lg border border-border/60 bg-background/40 p-3">
+    <section className="space-y-3">
       <ScorecardHeader
         value={value}
         accent={accent}
@@ -99,7 +99,7 @@ export function ReviewScorecardEditor({
       )}
 
       {value?.order.length === 0 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-faint-foreground">
           Pick the categories you want to grade this one on.
         </p>
       )}

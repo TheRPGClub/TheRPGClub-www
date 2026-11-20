@@ -1,36 +1,33 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { reviewAccents, type ReviewAccent } from "@/lib/reviews/accent";
-import { cn } from "@/lib/utils";
+import type { ReviewAccent } from "@/lib/reviews/accent";
 
 // What the rows average, and the offer to use it as the overall score.
 export function AverageFooter({
   average,
   overall,
-  accent,
   disabled,
   onUseAverage,
 }: {
   average: number;
   overall: number | null;
-  accent: ReviewAccent;
+  // Kept for callers; the average reads in paper on every track.
+  accent?: ReviewAccent;
   disabled?: boolean;
   onUseAverage: (average: number) => void;
 }) {
-  const style = reviewAccents[accent];
-
   return (
-    <footer className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border/60 pt-2.5 text-xs">
-      <p className="text-muted-foreground">
+    <footer className="font-label flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border-strong pt-2.5 text-[0.74rem] font-bold tracking-[0.08em]">
+      <p className="flex items-baseline gap-1.5 text-faint-foreground">
         These average{" "}
-        <span className={cn("font-semibold tabular-nums", style.readout)}>{average}</span>
+        <span className="font-headline text-[1.45rem] leading-none tracking-normal text-foreground tabular-nums">{average}</span>
       </p>
       {/* A suggestion, never a rule. The overall is the reviewer's verdict,
           and the gap between it and the arithmetic is usually the most
           interesting thing on the page. */}
       {overall === average ? (
-        <span className="text-muted-foreground">Matches your overall</span>
+        <span className="text-faint-foreground">Matches your overall</span>
       ) : (
         <Button
           type="button"
