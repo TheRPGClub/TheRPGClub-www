@@ -3,7 +3,8 @@
 import { useState, type ReactNode } from "react";
 import { Check, SlidersHorizontal } from "lucide-react";
 import type { PanelKey, PanelViewer } from "@/lib/dashboard/panels";
-import { hidePanel, movePanel, ordinal, panelName, showPanel, type PanelChange } from "@/lib/dashboard/panel-edit";
+import { hidePanel, movePanel, panelName, showPanel, type PanelChange } from "@/lib/dashboard/panel-edit";
+import { ordinal } from "@/lib/utils";
 import { useDashboardEdit } from "@/hooks/use-dashboard-edit";
 import { usePanelDrag } from "@/hooks/use-panel-drag";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import { SaveNotice } from "./save-notice";
 // Hidden tray below. Changes apply at once and save behind.
 export function PanelBoard({
   saved,
+  apiList,
   available,
   fresh: freshAtLoad,
   customised,
@@ -27,6 +29,8 @@ export function PanelBoard({
   editable,
 }: {
   saved: readonly PanelKey[];
+  // The API's list as read, keys this page doesn't draw included.
+  apiList: readonly string[];
   // Every panel the member can use, in the club's order.
   available: readonly PanelKey[];
   // The panels the API marks new.
@@ -37,7 +41,7 @@ export function PanelBoard({
   // The API's list was read (not the fallback default), so it can be edited.
   editable: boolean;
 }) {
-  const edit = useDashboardEdit(saved, customised);
+  const edit = useDashboardEdit(saved, apiList, customised);
   const { shown, editing, failure } = edit;
   const [said, setSaid] = useState("");
   const [opened, setOpened] = useState(false);
@@ -58,7 +62,9 @@ export function PanelBoard({
   }
   const drag = usePanelDrag(shown, (key, next) => change(next, { kind: "move", key }, `panel-switch-${key}`));
   const hidden = available.filter((key) => !shown.includes(key));
-  const freshLeft = !opened && fresh.length > 0;
+  // Only new panels the member can still switch on: a new one already shown
+  // has no tray card to point at.
+  const freshLeft = !opened && fresh.some((key) => hidden.includes(key));
 
   return (
     <section aria-labelledby="around-the-club" className="space-y-5">
@@ -72,7 +78,7 @@ export function PanelBoard({
             onClick={() => {
               if (editing) return edit.close();
               setOpened(true);
-              edit.open();
+              edit.open([...new Set([...shown, ...available])]);
             }}
           >
             {editing ? <Check aria-hidden /> : <SlidersHorizontal aria-hidden />}
@@ -102,7 +108,7 @@ export function PanelBoard({
           viewer={viewer}
           bodies={bodies}
           editing={editing}
-          failed={failure?.change.key ?? null}
+          failed={failure?.changes.length === 1 ? failure.changes[0].key : null}
           drag={drag}
           onMove={(key, step) => change(movePanel(shown, key, step), { kind: "move", key }, `panel-${step < 0 ? "up" : "down"}-${key}`)}
           onHide={(key) => change(hidePanel(shown, key), { kind: "hide", key }, `tray-switch-${key}`)}
@@ -121,7 +127,7 @@ export function PanelBoard({
           onShow={(key) => change(showPanel(shown, key), { kind: "show", key }, `panel-switch-${key}`)}
         />
       )}
-      {failure && <SaveNotice change={failure.change} onRetry={edit.retry} onDismiss={edit.dismiss} />}
+      {failure && <SaveNotice changes={failure.changes} onRetry={edit.retry} onDismiss={edit.dismiss} />}
     </section>
   );
 }

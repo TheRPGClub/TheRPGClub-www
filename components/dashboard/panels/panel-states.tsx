@@ -15,8 +15,9 @@ export function PanelEmpty({ note = "All quiet. Nothing new yet." }: { note?: st
   );
 }
 
-// The source failed: a short error inside this panel only, with a retry.
-export function PanelError({ title }: { title: string }) {
+// The source failed: a short error inside this panel only, with a retry
+// (`onRetry` from an error boundary; else the dashboard renders again).
+export function PanelError({ title, onRetry }: { title: string; onRetry?: () => void }) {
   return (
     <div
       role="alert"
@@ -27,7 +28,7 @@ export function PanelError({ title }: { title: string }) {
         <p className="font-semibold">Couldn&apos;t load {title}.</p>
         <p className="text-sm text-dim-foreground">The rest of your dashboard is fine.</p>
       </div>
-      <PanelRetry />
+      <PanelRetry onRetry={onRetry} />
     </div>
   );
 }

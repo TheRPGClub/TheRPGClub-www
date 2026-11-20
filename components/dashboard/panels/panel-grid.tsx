@@ -2,9 +2,8 @@
 
 import type { ReactNode } from "react";
 import { PANELS, placePanels, type PanelKey, type PanelViewer, type PlacedPanel } from "@/lib/dashboard/panels";
-import { ordinal } from "@/lib/dashboard/panel-edit";
 import type { usePanelDrag } from "@/hooks/use-panel-drag";
-import { cn } from "@/lib/utils";
+import { cn, ordinal } from "@/lib/utils";
 import { PanelControls } from "./panel-controls";
 import { PanelFrame } from "./panel-frame";
 import { PanelSkeleton } from "./panel-states";

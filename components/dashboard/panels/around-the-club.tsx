@@ -3,6 +3,7 @@ import { PANELS, type PanelKey, type PanelViewer } from "@/lib/dashboard/panels"
 import { hiddenPanels, newPanels, type CatalogueEntry } from "@/lib/dashboard/panel-edit";
 import type { FeatureView } from "@/lib/features";
 import { PanelBody } from "./panel-body";
+import { PanelBoundary } from "./panel-boundary";
 import { PanelBoard } from "./panel-board";
 import { PanelSkeleton } from "./panel-states";
 
@@ -13,12 +14,16 @@ import { PanelSkeleton } from "./panel-states";
 // to turn on gets no section.
 export function AroundTheClub({
   panels,
+  apiList,
   catalogue,
   customised,
   features,
   viewer,
 }: {
   panels: readonly PanelKey[];
+  // The API's list as read (keys this page doesn't draw included), or the
+  // club default when the read failed.
+  apiList: readonly string[];
   // The API's catalogue; empty when the read failed (no edit mode then).
   catalogue: readonly CatalogueEntry[];
   customised: boolean;
@@ -32,15 +37,18 @@ export function AroundTheClub({
   for (const key of panels) {
     const wide = PANELS[key].place === "wide";
     bodies[key] = (
-      <Suspense fallback={<PanelSkeleton wide={wide} />}>
-        <PanelBody panelKey={key} viewer={viewer} wide={wide} />
-      </Suspense>
+      <PanelBoundary title={PANELS[key].title}>
+        <Suspense fallback={<PanelSkeleton wide={wide} />}>
+          <PanelBody panelKey={key} viewer={viewer} wide={wide} />
+        </Suspense>
+      </PanelBoundary>
     );
   }
 
   return (
     <PanelBoard
       saved={panels}
+      apiList={apiList}
       available={available}
       fresh={newPanels(catalogue)}
       customised={customised}

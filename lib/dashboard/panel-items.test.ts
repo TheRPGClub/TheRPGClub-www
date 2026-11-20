@@ -7,7 +7,9 @@ import {
   eventSentence,
   releaseDateBlock,
   releasePlatforms,
+  dailyPickSeed,
   suggestionActivity,
+  suggestionActivityAt,
 } from "@/lib/dashboard/panel-items";
 import type { ChallengeEvent } from "@/lib/dashboard/panel-sources";
 
@@ -92,7 +94,12 @@ describe("eventSentence", () => {
 });
 
 describe("suggestionActivity", () => {
-  const s = { created_at: "2026-11-01T00:00:00Z", reviewed_at: null, status: "pending" as const };
+  const s = {
+    created_at: "2026-11-01T00:00:00Z",
+    updated_at: "2026-11-01T00:00:00Z",
+    reviewed_at: null,
+    status: "pending" as const,
+  };
 
   it("tells a submission, a review, an upvote and a withdrawal apart", () => {
     expect(suggestionActivity({ ...s, last_activity_at: "2026-11-01T00:00:00Z" })).toBe("submitted");
@@ -103,7 +110,39 @@ describe("suggestionActivity", () => {
     expect(suggestionActivity({ ...s, status: "withdrawn", last_activity_at: "2026-11-05T00:00:00Z" })).toBe("withdrawn");
   });
 
-  it("reads an API without the activity time as the submission", () => {
+  it("reads an API without the activity time from the last update", () => {
     expect(suggestionActivity(s)).toBe("submitted");
+    expect(suggestionActivity({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("upvoted");
+    expect(suggestionActivityAt({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("2026-11-04T00:00:00Z");
+  });
+
+  it("counts a review stamped a few milliseconds off the update as the review", () => {
+    expect(
+      suggestionActivity({
+        ...s,
+        status: "approved",
+        reviewed_at: "2026-11-02T00:00:00.120Z",
+        last_activity_at: "2026-11-02T00:00:00.127Z",
+      }),
+    ).toBe("approved");
+    expect(
+      suggestionActivity({ ...s, status: "approved", reviewed_at: "2026-11-02T00:00:00Z", last_activity_at: "2026-11-02T00:00:05Z" }),
+    ).toBe("upvoted");
+  });
+});
+
+describe("dailyPickSeed", () => {
+  it("holds for a member all day, and changes with the day and the member", () => {
+    const today = dailyPickSeed("2026-11-20", "123");
+    expect(dailyPickSeed("2026-11-20", "123")).toBe(today);
+    expect(dailyPickSeed("2026-11-21", "123")).not.toBe(today);
+    expect(dailyPickSeed("2026-11-20", "456")).not.toBe(today);
+  });
+
+  it("stays within the API's seed range", () => {
+    for (const day of ["2026-01-01", "2026-06-15", "2027-12-31"]) {
+      const seed = dailyPickSeed(day, "999999999999999999");
+      expect(Number.isInteger(seed) && seed >= 0 && seed <= 0xffffffff).toBe(true);
+    }
   });
 });

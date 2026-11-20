@@ -3,20 +3,25 @@
 import { useRef, useState } from "react";
 import { markDashboardPanelsSeenAction, saveDashboardPanelsAction } from "@/app/actions/dashboard-panels";
 import type { PanelKey } from "@/lib/dashboard/panels";
-import type { PanelChange } from "@/lib/dashboard/panel-edit";
+import { withUndrawn, type PanelChange } from "@/lib/dashboard/panel-edit";
 
-// A change that didn't save: what to say, and the list to send again.
+// Changes that didn't save: what to say, and the list to send again.
 export interface PanelSaveFailure {
-  change: PanelChange;
+  // Every change since the last list that saved, oldest first.
+  changes: PanelChange[];
+  // The newest list, with all of them.
   panels: PanelKey[];
 }
 
 // The member's panels while they edit them (spec api#421, www#145). Changes
-// apply at once and save behind, one PUT at a time: a change made while one
-// is in flight waits, and the latest list goes next, so the API never gets
+// apply at once and save behind, one PUT at a time: changes made while one
+// is in flight wait, and the newest list goes next, so the API never gets
 // two lists racing. A save that fails puts back the last list that saved and
-// reports the change.
-export function useDashboardEdit(saved: readonly PanelKey[], customised: boolean) {
+// reports every change it undid; Try again sends the newest list again.
+//
+// `apiList` is the API's list as read, so keys this page doesn't draw keep
+// their place on every save (withUndrawn).
+export function useDashboardEdit(saved: readonly PanelKey[], apiList: readonly string[], customised: boolean) {
   const [shown, setShown] = useState<PanelKey[]>([...saved]);
   const [failure, setFailure] = useState<PanelSaveFailure | null>(null);
   const [editing, setEditing] = useState(false);
@@ -25,58 +30,68 @@ export function useDashboardEdit(saved: readonly PanelKey[], customised: boolean
   // after this member's saves (or a Retry), and a Reset happens on /settings,
   // so coming back mounts the dashboard afresh.
 
+  const drawn = useRef<readonly PanelKey[]>([...saved]);
   const confirmed = useRef<PanelKey[]>([...saved]);
   const latest = useRef<PanelKey[]>([...saved]);
-  const lastChange = useRef<PanelChange | null>(null);
-  const queued = useRef<{ rerender: boolean } | null>(null);
+  // The changes in `latest` the API hasn't confirmed yet, oldest first.
+  const unsaved = useRef<PanelChange[]>([]);
+  // A panel switched on since the last PUT went: the next one asks for the
+  // dashboard again, to draw its items.
+  const rerender = useRef(false);
   const inFlight = useRef(false);
   const seen = useRef(false);
 
-  async function flush(rerender: boolean) {
+  async function flush() {
     inFlight.current = true;
-    let next: { rerender: boolean } | null = { rerender };
-    while (next) {
+    for (;;) {
       const sending = latest.current;
-      const ok = await saveDashboardPanelsAction(sending, next.rerender).then(
+      const count = unsaved.current.length;
+      const again = rerender.current;
+      rerender.current = false;
+      const list = withUndrawn(sending, apiList, drawn.current);
+      const ok = await saveDashboardPanelsAction(list, again).then(
         (result) => result.ok,
         () => false,
       );
       if (!ok) {
+        // Everything since the last save goes back, queued changes included,
+        // and the notice, the ring and Try again all speak of that.
+        if (unsaved.current.length > 0) setFailure({ changes: unsaved.current, panels: latest.current });
         latest.current = confirmed.current;
-        queued.current = null;
+        unsaved.current = [];
+        rerender.current = false;
         setShown(confirmed.current);
-        if (lastChange.current) setFailure({ change: lastChange.current, panels: sending });
         break;
       }
       confirmed.current = sending;
+      unsaved.current = unsaved.current.slice(count);
       setMine(true);
-      next = queued.current;
-      queued.current = null;
+      if (latest.current === sending) break;
     }
     inFlight.current = false;
   }
 
-  function apply(next: PanelKey[] | null, change: PanelChange) {
-    if (!next) return;
+  function push(next: PanelKey[], changes: readonly PanelChange[]) {
     latest.current = next;
-    lastChange.current = change;
+    unsaved.current = [...unsaved.current, ...changes];
+    if (changes.some((c) => c.kind === "show")) rerender.current = true;
     setShown(next);
     setFailure(null);
-    const rerender = change.kind === "show";
-    if (inFlight.current) {
-      queued.current = { rerender: rerender || queued.current?.rerender === true };
-    } else {
-      void flush(rerender);
-    }
+    if (!inFlight.current) void flush();
   }
 
-  // Opening edit mode marks every panel seen (the API's `new` clears); the
+  function apply(next: PanelKey[] | null, change: PanelChange) {
+    if (next) push(next, [change]);
+  }
+
+  // Opening edit mode marks the panels it shows (the dashboard's
+  // and the tray's) seen, so the API's `new` clears for those only; the
   // "New" stamps stay up for the rest of this visit.
-  function open() {
+  function open(drawnInEdit: readonly PanelKey[]) {
     setEditing(true);
     if (seen.current) return;
     seen.current = true;
-    markDashboardPanelsSeenAction().catch(() => {});
+    markDashboardPanelsSeenAction([...drawnInEdit]).catch(() => {});
   }
 
   return {
@@ -87,7 +102,7 @@ export function useDashboardEdit(saved: readonly PanelKey[], customised: boolean
     apply,
     failure,
     dismiss: () => setFailure(null),
-    retry: () => failure && apply(failure.panels, failure.change),
+    retry: () => failure && push(failure.panels, failure.changes),
     // The member has their own list (saved before, or in this visit).
     customised: mine,
   };

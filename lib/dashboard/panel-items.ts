@@ -98,11 +98,25 @@ export function eventSentence(event: Pick<ChallengeEvent, "kind" | "user" | "gam
 // submission, its review, a withdrawal, or else an upvote.
 export type SuggestionActivity = "submitted" | "approved" | "rejected" | "withdrawn" | "upvoted";
 
-export function suggestionActivity(s: Pick<PanelSuggestion, "created_at" | "reviewed_at" | "status" | "last_activity_at">): SuggestionActivity {
-  const at = s.last_activity_at ?? s.created_at;
+type ActivityFields = Pick<PanelSuggestion, "created_at" | "updated_at" | "reviewed_at" | "status" | "last_activity_at">;
+
+// When a Suggestion last moved: the API's `last_activity_at`, else its last
+// update. The row's label and its age both read this.
+export function suggestionActivityAt(s: Pick<ActivityFields, "created_at" | "updated_at" | "last_activity_at">): string {
+  return s.last_activity_at ?? s.updated_at ?? s.created_at;
+}
+
+// The API stamps a review (`reviewed_at`) and the row's update apart, so
+// the two can differ by a few milliseconds: within a second is the same
+// moment.
+const SAME_MOMENT_MS = 1000;
+const sameMoment = (a: string, b: string) => Math.abs(Date.parse(a) - Date.parse(b)) <= SAME_MOMENT_MS;
+
+export function suggestionActivity(s: ActivityFields): SuggestionActivity {
+  const at = suggestionActivityAt(s);
   if (s.status === "withdrawn") return "withdrawn";
-  if (s.reviewed_at && Date.parse(at) === Date.parse(s.reviewed_at)) return s.status === "rejected" ? "rejected" : "approved";
-  if (Date.parse(at) === Date.parse(s.created_at)) return "submitted";
+  if (s.reviewed_at && sameMoment(at, s.reviewed_at)) return s.status === "rejected" ? "rejected" : "approved";
+  if (sameMoment(at, s.created_at)) return "submitted";
   return "upvoted";
 }
 
@@ -113,3 +127,15 @@ export const SUGGESTION_ACTIVITY_LABEL: Record<SuggestionActivity, string> = {
   withdrawn: "Withdrawn",
   upvoted: "Upvoted",
 };
+
+// The Backlog Pick's seed for a member on a club day (`YYYY-MM-DD`): the
+// same all day, a new one tomorrow, and not the same as another member's.
+// FNV-1a, within the API's 0..0xffffffff.
+export function dailyPickSeed(day: IsoDay, memberId: string): number {
+  let hash = 0x811c9dc5;
+  for (const char of `${day}:${memberId}`) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash;
+}

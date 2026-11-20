@@ -12,13 +12,20 @@ export function DashboardSkeleton() {
           <Skeleton className="h-40" />
         </div>
       </div>
-      <div className="space-y-4">
-        <Skeleton variant="control" className="h-10 w-72" />
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 3 }, (_, i) => (
-            <Skeleton variant="card" key={i} className="h-40" />
-          ))}
-        </div>
+      <PanelsSkeleton />
+    </div>
+  );
+}
+
+// "Around the club" while the member's panel list is read.
+export function PanelsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton variant="control" className="h-10 w-72" />
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <Skeleton variant="card" key={i} className="h-40" />
+        ))}
       </div>
     </div>
   );

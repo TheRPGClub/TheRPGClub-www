@@ -1,20 +1,20 @@
 "use client";
 
 import { RotateCcw, X } from "lucide-react";
-import { revertNote, type PanelChange } from "@/lib/dashboard/panel-edit";
+import { revertNotes, type PanelChange } from "@/lib/dashboard/panel-edit";
 import { Button } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 
 // A dashboard change that didn't save (the final round's "Not saved",
 // restyled to B): the panels have already gone back; this slip says what
-// went back, offers the change again and stays until dismissed or the next
+// went back, offers the changes again and stays until dismissed or the next
 // change. Pinned over the foot of the page, clear of the phone's tab bar.
 export function SaveNotice({
-  change,
+  changes,
   onRetry,
   onDismiss,
 }: {
-  change: PanelChange;
+  changes: readonly PanelChange[];
   onRetry: () => void;
   onDismiss: () => void;
 }) {
@@ -31,7 +31,7 @@ export function SaveNotice({
           </Button>
         }
       >
-        <strong>Couldn&apos;t save your dashboard.</strong> {revertNote(change)}
+        <strong>Couldn&apos;t save your dashboard.</strong> {revertNotes(changes)}
         <Button
           variant="inverse-ghost"
           size="icon-sm"

@@ -4,12 +4,14 @@ import {
   hiddenPanels,
   movePanel,
   newPanels,
-  ordinal,
   panelName,
   placePanel,
   revertNote,
+  revertNotes,
+  withUndrawn,
   showPanel,
 } from "@/lib/dashboard/panel-edit";
+import { ordinal } from "@/lib/utils";
 import type { PanelKey } from "@/lib/dashboard/panels";
 
 const all = { shown: () => true };
@@ -97,5 +99,30 @@ describe("ordinal", () => {
     expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 103].map(ordinal)).toEqual([
       "1st", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "103rd",
     ]);
+  });
+});
+
+describe("withUndrawn", () => {
+  const drawn = ["news", "releases", "reviews"] as const;
+
+  it("puts keys the page doesn't draw back where they were", () => {
+    const api = ["foo", "news", "bar", "releases", "reviews", "baz"];
+    expect(withUndrawn(["releases", "news", "reviews"], api, drawn)).toEqual(["foo", "releases", "news", "bar", "reviews", "baz"]);
+  });
+
+  it("follows the nearest shown panel when the one before was hidden", () => {
+    const api = ["news", "releases", "foo", "reviews"];
+    expect(withUndrawn(["news", "reviews"], api, drawn)).toEqual(["news", "foo", "reviews"]);
+  });
+
+  it("leaves a list with nothing undrawn as it is", () => {
+    expect(withUndrawn(["reviews", "news", "codex"], ["news", "reviews"], drawn)).toEqual(["reviews", "news", "codex"]);
+  });
+});
+
+describe("revertNotes", () => {
+  it("names one change, and counts several", () => {
+    expect(revertNotes([{ kind: "hide", key: "news" }])).toBe(revertNote({ kind: "hide", key: "news" }));
+    expect(revertNotes([{ kind: "hide", key: "news" }, { kind: "move", key: "codex" }])).toBe("Your last 2 changes went back.");
   });
 });

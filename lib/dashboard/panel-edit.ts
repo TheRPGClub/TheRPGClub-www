@@ -30,8 +30,8 @@ export function hiddenPanels(
   return out;
 }
 
-// The catalogue's panels the API marks new (added since the member last
-// opened edit mode).
+// The catalogue's panels the API marks new (not yet shown to the member in
+// edit mode).
 export function newPanels(catalogue: readonly CatalogueEntry[]): PanelKey[] {
   return catalogue.filter((entry) => entry.new && isPanelKey(entry.key)).map((entry) => entry.key as PanelKey);
 }
@@ -91,9 +91,30 @@ export function revertNote(change: PanelChange): string {
   }
 }
 
-// "3rd": a panel's place, for the drop line and the screen reader.
-export function ordinal(n: number): string {
-  const tens = n % 100;
-  if (tens >= 11 && tens <= 13) return `${n}th`;
-  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
+// The list to save: the member's edited panels with the API's keys this page
+// doesn't draw put back where they were (spec api#421). The API keeps only
+// what it hides from the member, so a panel it shows that this website can't
+// draw yet (the API ships first), or one a Feature hides from this session
+// only, would otherwise drop off their list for good. Each such key follows
+// the nearest drawn panel before it in the API's list that is still shown,
+// or leads the list when there is none.
+export function withUndrawn(edited: readonly PanelKey[], apiList: readonly string[], drawn: readonly PanelKey[]): string[] {
+  const after = new Map<string | null, string[]>();
+  let anchor: string | null = null;
+  for (const key of apiList) {
+    if ((drawn as readonly string[]).includes(key)) {
+      if ((edited as readonly string[]).includes(key)) anchor = key;
+      continue;
+    }
+    after.set(anchor, [...(after.get(anchor) ?? []), key]);
+  }
+  const out = [...(after.get(null) ?? [])];
+  for (const key of edited) out.push(key, ...(after.get(key) ?? []));
+  return [...new Set(out)];
+}
+
+// What went back when changes didn't save: the one change, or how many.
+export function revertNotes(changes: readonly PanelChange[]): string {
+  if (changes.length === 1) return revertNote(changes[0]);
+  return `Your last ${changes.length} changes went back.`;
 }

@@ -1,5 +1,5 @@
-import { SUGGESTION_ACTIVITY_LABEL, ageLabel, suggestionActivity } from "@/lib/dashboard/panel-items";
-import { readSuggestions, type PanelSuggestion } from "@/lib/dashboard/panel-sources";
+import { SUGGESTION_ACTIVITY_LABEL, ageLabel, suggestionActivity, suggestionActivityAt } from "@/lib/dashboard/panel-items";
+import { readSuggestions } from "@/lib/dashboard/panel-sources";
 import { PANELS } from "@/lib/dashboard/panels";
 import { MetaParts, PanelItem, PanelWhen } from "./panel-list";
 import { listBody } from "./body-kit";
@@ -21,13 +21,11 @@ export async function SuggestionsBody({ wide }: BodyProps) {
         title={s.title}
         href="/suggestions"
         meta={<MetaParts parts={[<b key="k">{SUGGESTION_ACTIVITY_LABEL[suggestionActivity(s)]}</b>, s.created_by_name]} />}
-        aside={<PanelWhen>{ageLabel(lastActivity(s), now)}</PanelWhen>}
+        aside={<PanelWhen>{ageLabel(suggestionActivityAt(s), now)}</PanelWhen>}
       />
     ),
   });
 }
-
-const lastActivity = (s: PanelSuggestion) => s.last_activity_at ?? s.updated_at;
 
 // The upvotes as an Anton figure over "votes", in the panel's ink.
 function Votes({ count }: { count: number }) {
