@@ -8,6 +8,7 @@ import { BirthDateSection } from "@/components/settings/birth-date-section";
 import { ChallengeDmsSection } from "@/components/settings/challenge-dms-section";
 import { SettingsReadFailed } from "@/components/settings/settings-read-failed";
 import { PinnedPagesReset } from "@/components/settings/pinned-pages-reset";
+import type { HiddenPlatformsData } from "@/components/settings/hidden-platforms-list";
 
 // The Challenge DM switch's data: null when the Challenges Feature isn't
 // shown to this member, so the section is left out.
@@ -28,6 +29,7 @@ export function SettingsView({
   pinsCustomised,
   pinsDefault,
   newsCategories,
+  hiddenPlatforms,
   birthDate,
   staff,
   today,
@@ -41,6 +43,8 @@ export function SettingsView({
   pinsDefault: string;
   // Null for a member who can't open the News Hub, or when the read failed.
   newsCategories: NewsCategoryPreferences | null;
+  // Null for a member who can't use the Release Calendar.
+  hiddenPlatforms: HiddenPlatformsData | null;
   // Null when the Birth Date couldn't be read.
   birthDate: BirthDate | null;
   // Moderator or above: Birth Date changes aren't limited.
@@ -60,7 +64,11 @@ export function SettingsView({
           pages. Direct links still work.
         </p>
         {prefs ? (
-          <FeaturePreferencesForm initial={prefs} newsCategories={newsCategories} />
+          <FeaturePreferencesForm
+            initial={prefs}
+            newsCategories={newsCategories}
+            hiddenPlatforms={hiddenPlatforms}
+          />
         ) : (
           <SettingsReadFailed>
             Couldn&apos;t load your settings from the club&apos;s server. Reload the page to try again.

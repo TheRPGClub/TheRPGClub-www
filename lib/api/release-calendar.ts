@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { upcomingReleasesTag } from "@/lib/hidden-platforms";
 import type { CollectionMeta, UpcomingRelease } from "./types";
 
 // The Release Calendar's read (spec api#389, `GET /upcoming_releases`): a
@@ -27,18 +28,27 @@ export interface UpcomingReleasesRead {
   truncated: boolean;
 }
 
+// How a read is made for the signed-in member. The API leaves out their
+// Hidden Platforms (ticket api#427) unless `showHidden` ("Show all" for the
+// visit). `userId` tags the cached read, so a Hidden Platforms save expires it.
+export interface UpcomingReleasesOptions {
+  showHidden?: boolean;
+  userId?: string;
+}
+
 // "not_found" when the API says the viewer can't use the Release Calendar,
 // null when the read failed.
 export async function fetchUpcomingReleases(
   month?: string,
+  options: UpcomingReleasesOptions = {},
 ): Promise<UpcomingReleasesRead | "not_found" | null> {
-  const first = await readPage(month, 1);
+  const first = await readPage(month, 1, options);
   if (first === "not_found" || first === null) return first;
   // Pagy always says at least 1; the floor keeps a 0 from breaking the read.
   const total = Math.max(1, first.meta?.pages ?? 1);
   const pages = Math.min(total, MAX_PAGES);
   const rest = await Promise.all(
-    Array.from({ length: pages - 1 }, (_, i) => readPage(month, i + 2)),
+    Array.from({ length: pages - 1 }, (_, i) => readPage(month, i + 2, options)),
   );
   const upcomingReleases = [...first.data];
   for (const page of rest) {
@@ -51,11 +61,14 @@ export async function fetchUpcomingReleases(
 async function readPage(
   month: string | undefined,
   page: number,
+  { showHidden = false, userId }: UpcomingReleasesOptions,
 ): Promise<{ data: UpcomingRelease[]; meta: CollectionMeta | null } | "not_found" | null> {
   const ps = new URLSearchParams({ page: String(page), per: String(PER) });
   if (month) ps.set("month", month);
+  if (showHidden) ps.set("show_hidden", "1");
+  const init: RequestInit = userId ? { next: { ...FETCH.next, tags: [upcomingReleasesTag(userId)] } } : FETCH;
   try {
-    const res = await apiFetch(`/api/v1/upcoming_releases?${ps}`, FETCH);
+    const res = await apiFetch(`/api/v1/upcoming_releases?${ps}`, init);
     if (res.status === 404) return "not_found";
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: UpcomingRelease[]; meta?: CollectionMeta };
