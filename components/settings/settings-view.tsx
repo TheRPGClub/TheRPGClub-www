@@ -8,6 +8,7 @@ import { BirthDateSection } from "@/components/settings/birth-date-section";
 import { ChallengeDmsSection } from "@/components/settings/challenge-dms-section";
 import { SettingsReadFailed } from "@/components/settings/settings-read-failed";
 import { PinnedPagesReset } from "@/components/settings/pinned-pages-reset";
+import { DashboardReset } from "@/components/settings/dashboard-reset";
 import type { HiddenPlatformsData } from "@/components/settings/hidden-platforms-list";
 
 // The Challenge DM switch's data: null when the Challenges Feature isn't
@@ -23,11 +24,13 @@ export interface ChallengeDmsData {
 // (while Challenges is shown to them) their Challenge DMs. The Feature
 // switches only shape the member's own view (nav, dashboard, sections),
 // never what they may open from a link. A member with their own Pinned
-// Pages can reset them to the club default beside the switches.
+// Pages or Dashboard Panels can reset them to the club default under the
+// switches.
 export function SettingsView({
   prefs,
   pinsCustomised,
   pinsDefault,
+  panelsCustomised,
   newsCategories,
   hiddenPlatforms,
   birthDate,
@@ -41,6 +44,8 @@ export function SettingsView({
   pinsCustomised: boolean;
   // The club default Pinned Pages by name ("Voting, Games, Members and News").
   pinsDefault: string;
+  // The member saved their own Dashboard Panels: offer that reset too.
+  panelsCustomised: boolean;
   // Null for a member who can't open the News Hub, or when the read failed.
   newsCategories: NewsCategoryPreferences | null;
   // Null for a member who can't use the Release Calendar.
@@ -74,7 +79,12 @@ export function SettingsView({
             Couldn&apos;t load your settings from the club&apos;s server. Reload the page to try again.
           </SettingsReadFailed>
         )}
-        {pinsCustomised && <PinnedPagesReset names={pinsDefault} />}
+        {(pinsCustomised || panelsCustomised) && (
+          <ul className="mt-8 border-t border-border">
+            {pinsCustomised && <PinnedPagesReset names={pinsDefault} />}
+            {panelsCustomised && <DashboardReset />}
+          </ul>
+        )}
       </section>
 
       {challengeDms && <ChallengeDmsSection settings={challengeDms.settings} preview={challengeDms.preview} />}

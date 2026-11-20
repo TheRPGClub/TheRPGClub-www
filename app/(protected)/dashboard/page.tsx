@@ -38,15 +38,33 @@ async function DashboardContent() {
     avatarUrl: discordAvatarUrl(principal.discord_id, principal.avatar, 64),
   };
 
+  const around = (
+    <AroundTheClub
+      panels={panels}
+      catalogue={saved?.catalogue ?? []}
+      customised={saved?.customised === true}
+      features={features}
+      viewer={viewer}
+    />
+  );
+
   if (!features.shown("voting_gotm")) {
-    return panels.length > 0 ? <AroundTheClub panels={panels} viewer={viewer} /> : <NoVoting />;
+    if (panels.length > 0) return around;
+    // Nothing on the cover and nothing shown under it: say why, and keep
+    // Edit dashboard in reach so the member can bring panels back.
+    return (
+      <div className="space-y-10">
+        <NoVoting />
+        {around}
+      </div>
+    );
   }
   return (
     <div className="space-y-10">
       <Suspense fallback={<DashboardSkeleton />}>
         <Issue features={features} viewerId={principal.id} />
       </Suspense>
-      <AroundTheClub panels={panels} viewer={viewer} />
+      {around}
     </div>
   );
 }

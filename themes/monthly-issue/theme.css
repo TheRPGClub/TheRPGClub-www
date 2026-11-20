@@ -139,6 +139,9 @@
         --panel-suggestions: #d4c48a;
         --panel-codex: #ff8ad8;
         --panel-birthdays: #eadcb8;
+        /* The mint "New" stamp on a panel added since the member last
+           opened edit mode (edit mode only), ink type on it. */
+        --panel-new: #5fdcb0;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */
