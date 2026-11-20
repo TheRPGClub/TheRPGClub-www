@@ -81,23 +81,28 @@ export default async function GameReviewDetailPage({
   const accent = accentForGame(game);
   const ownerId = session?.principal.discord_id ?? null;
   const isMine = ownerId !== null && ownerId === review.user_id;
+  // While the author edits, the editor's own banner takes the page banner's
+  // place, so the game's art shows once.
+  const editing = isMine && edit !== undefined;
   const hasBody = reviewBodyText(review.body) !== null;
 
   return (
     <DetailTemplate
       className="space-y-10 pb-10"
       hero={
-        <ReviewBanner
-          game={game}
-          accent={accent}
-          rating={review.rating}
-          authorId={review.user_id}
-          authorName={authorName}
-          createdAt={review.created_at}
-          canEdit={isMine}
-          title={review.title}
-          badge={features.preview("reviews") && <PreviewBadge />}
-        />
+        !editing && (
+          <ReviewBanner
+            game={game}
+            accent={accent}
+            rating={review.rating}
+            authorId={review.user_id}
+            authorName={authorName}
+            createdAt={review.created_at}
+            canEdit={isMine}
+            title={review.title}
+            badge={features.preview("reviews") && <PreviewBadge />}
+          />
+        )
       }
     >
       {/* Reading and editing share the column. The editor has its own
@@ -106,6 +111,7 @@ export default async function GameReviewDetailPage({
       <ReviewDetail
         review={review}
         gameId={gameId}
+        game={game}
         accent={accent}
         canEdit={isMine}
         startEditing={edit !== undefined}

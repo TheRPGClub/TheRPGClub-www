@@ -46,8 +46,7 @@ export function GameReviewItem({
           existing={review}
           accent={accent}
           showDelete
-          toolbar="compact"
-          scorecard={false}
+          layout="quick"
           onCancel={onDone}
           onSaved={onDone}
           onTransfer={onTransfer}

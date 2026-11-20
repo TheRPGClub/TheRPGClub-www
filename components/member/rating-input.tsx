@@ -48,19 +48,21 @@ export interface RatingInputProps {
   value: number | null;
   onChange: (next: number | null) => void;
   accent?: ReviewAccent;
+  // The review desk stacks the circled numeral over its ruler; the quick
+  // composer sets them side by side.
+  size?: "desk" | "quick";
   disabled?: boolean;
 }
 
 /**
  * The 0..100 rating control: the score readout you can type into, and the
- * ramp beneath it, which runs light to dark across the scale, faint for the
- * part of the scale you haven't given and full strength for the part you
- * have.
+ * printer's ruler beneath (or beside) it, its band in the game's track ink.
  */
 export function RatingInput({
   value,
   onChange,
   accent = "neutral",
+  size = "desk",
   disabled,
 }: RatingInputProps) {
   const style = reviewAccents[accent];
@@ -70,27 +72,19 @@ export function RatingInput({
   const { live, mark, settle } = useLiveFlag(LIVE_TIMEOUT_MS);
 
   return (
-    <div className="space-y-2.5">
-      <div className="flex items-baseline justify-between gap-4">
-        <RatingReadout
-          value={value}
-          onChange={onChange}
-          accent={accent}
-          live={live}
-          disabled={disabled}
-        />
-
-        {style.label && (
-          <span className="truncate text-xs text-muted-foreground">
-            {style.label}
-          </span>
-        )}
-      </div>
-
+    <div className={cn(size === "desk" ? "space-y-4" : "flex items-end gap-5")}>
+      <RatingReadout
+        value={value}
+        onChange={onChange}
+        live={live}
+        size={size}
+        disabled={disabled}
+      />
       <Slider
         // An unset rating still has to put the thumb somewhere; it rests at
-        // the floor, and the readout above shows "—" so it doesn't pass for a
+        // the floor, and the readout shows "—" so it doesn't pass for a
         // score of 0.
+        className={cn(size === "quick" && "mb-1 min-w-0 flex-1")}
         value={value ?? MIN_RATING}
         onValueChange={(next) => {
           mark();
@@ -106,13 +100,9 @@ export function RatingInput({
           unset ? "Not rated" : `${value} out of ${MAX_RATING}`
         }
         tone={style.sliderTone}
-        trackClassName="data-horizontal:h-2"
-        indicatorClassName={live ? "transition-none" : FILL_SLIDING}
-        thumbClassName={cn(
-          "size-4 border-2",
-          live ? THUMB_TRACKING : THUMB_SLIDING,
-          "hover:scale-110 active:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100",
-        )}
+        variant="ruler"
+        indicatorClassName={cn(live ? "transition-none" : FILL_SLIDING, unset && "opacity-0")}
+        thumbClassName={cn(live ? THUMB_TRACKING : THUMB_SLIDING, "motion-reduce:transition-none")}
       />
     </div>
   );

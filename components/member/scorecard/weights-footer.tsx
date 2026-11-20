@@ -23,7 +23,7 @@ export function WeightsFooter({
   const budgetError = weightsError(value);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border/60 pt-2.5 text-xs">
+    <div className="font-label flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border-strong pt-2.5 text-[0.74rem] font-bold tracking-[0.08em]">
       {budgetError ? (
         // Named rather than silently corrected: rewriting a number someone
         // just typed is worse than telling them it doesn't add up yet.
@@ -31,9 +31,9 @@ export function WeightsFooter({
           {budgetError}
         </p>
       ) : (
-        <p className="text-muted-foreground">
+        <p className="text-faint-foreground">
           Weights use all{" "}
-          <span className="font-semibold tabular-nums">{WEIGHT_TOTAL}%</span>
+          <span className="text-foreground tabular-nums">{WEIGHT_TOTAL}%</span>
         </p>
       )}
       <div className="flex items-center gap-1">

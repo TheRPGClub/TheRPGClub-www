@@ -160,10 +160,33 @@
         [data-slot="input"][data-variant="readout"] {
             @apply rounded bg-transparent placeholder:font-normal placeholder:text-muted-foreground/60 hover:bg-muted/60 focus:bg-muted/60 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 dark:disabled:bg-transparent;
         }
-        /* An editor's formatting toggle: muted until hovered, pressed in
-           the muted ground with full ink; focus is an outline. */
+        /* An editor's formatting toggle: mute paper until hovered. Pressed,
+           its icon goes yellow and a yellow pencil ring is drawn round it,
+           the proofreader's circle; focus is an outline. */
         [data-slot="toggle"][data-variant="toolbar"] {
-            @apply rounded-md [font-family:inherit] font-normal tracking-normal normal-case text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:bg-muted aria-pressed:text-foreground data-pressed:bg-muted data-pressed:text-foreground;
+            @apply relative rounded-sm [font-family:inherit] font-normal tracking-normal normal-case text-faint-foreground transition-colors hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:text-highlight data-pressed:text-highlight;
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 1px -3px;
+                border: 1.5px solid var(--color-highlight);
+                border-radius: 50%;
+                opacity: 0;
+                transform: rotate(-6deg) scale(0.7);
+                transition:
+                    opacity 150ms ease-out,
+                    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+                pointer-events: none;
+            }
+            &:is([aria-pressed="true"], [data-pressed])::after {
+                opacity: 1;
+                transform: rotate(-6deg);
+            }
+            @media (prefers-reduced-motion: reduce) {
+                &::after {
+                    transition: none;
+                }
+            }
         }
         /* The carousel's arrows are round. */
         :is([data-slot="carousel-previous"], [data-slot="carousel-next"])[data-size] {
@@ -441,6 +464,73 @@
             }
             [data-slot="slider-thumb"] {
                 @apply bg-foreground ring-foreground/30;
+            }
+        }
+
+        /* A review's scores: a printer's ruler. Ticks every 2, longer every
+           10, over a base band; the fill is a band in the track's ink (paper
+           for a game on no track); the thumb is a pointer on a stem that goes
+           yellow while dragged or focused. */
+        [data-slot="slider"][data-variant="ruler"] {
+            --ruler-ink: var(--color-foreground);
+            --ruler-tick: 10px;
+            --ruler-band: 5px;
+            &[data-tone="gotm"] {
+                --ruler-ink: var(--color-gotm);
+            }
+            &[data-tone="nr"] {
+                --ruler-ink: var(--color-nr);
+            }
+            &[data-size="sm"] {
+                --ruler-tick: 8px;
+                --ruler-band: 4px;
+            }
+            [data-slot="slider-track"] {
+                @apply overflow-visible rounded-none bg-transparent data-horizontal:h-6.5;
+                background-image:
+                    linear-gradient(var(--color-border), var(--color-border)),
+                    linear-gradient(var(--color-faint-foreground), var(--color-faint-foreground)),
+                    repeating-linear-gradient(90deg, var(--color-faint-foreground) 0 1px, transparent 1px 10%),
+                    repeating-linear-gradient(90deg, var(--color-border-strong) 0 1px, transparent 1px 2%);
+                background-size:
+                    100% var(--ruler-band),
+                    1px var(--ruler-tick),
+                    100% var(--ruler-tick),
+                    100% calc(var(--ruler-tick) / 2);
+                background-position:
+                    bottom,
+                    right calc(100% - var(--ruler-band) - 1px),
+                    0 calc(100% - var(--ruler-band) - 1px),
+                    0 calc(100% - var(--ruler-band) - 1px);
+                background-repeat: no-repeat;
+            }
+            &[data-size="sm"] [data-slot="slider-track"] {
+                @apply data-horizontal:h-5;
+            }
+            [data-slot="slider-range"] {
+                @apply rounded-none bg-transparent;
+                background-image: linear-gradient(var(--ruler-ink), var(--ruler-ink));
+                background-size: 100% var(--ruler-band);
+                background-position: bottom;
+                background-repeat: no-repeat;
+            }
+            [data-slot="slider-thumb"] {
+                @apply h-6.5 w-3.5 cursor-grab rounded-none border-0 bg-transparent text-foreground shadow-none ring-0 hover:ring-0 active:ring-0 focus-visible:text-highlight focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight data-dragging:cursor-grabbing data-dragging:text-highlight;
+                background-image: linear-gradient(currentColor, currentColor);
+                background-size: 1px 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0 0 auto;
+                    height: 42%;
+                    background: currentColor;
+                    clip-path: polygon(0 0, 100% 0, 50% 100%);
+                }
+            }
+            &[data-size="sm"] [data-slot="slider-thumb"] {
+                @apply h-5 w-2.75 shadow-none;
             }
         }
 

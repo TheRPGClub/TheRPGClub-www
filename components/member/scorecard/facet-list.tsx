@@ -30,7 +30,7 @@ export function FacetList({
   const last = value.order.length - 1;
 
   return (
-    <div className="space-y-1.5">
+    <div>
       {value.order.map((key, index) => (
         // The wrapper carries the entrance so `FacetRow` stays a control and
         // knows nothing about how it arrived. `backwards` fill keeps a delayed

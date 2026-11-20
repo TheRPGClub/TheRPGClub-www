@@ -7,9 +7,14 @@ import { cn } from "@/lib/utils"
 // fill read as a ramp in the track's ink.
 type SliderTone = "default" | "gotm" | "nr" | "neutral" | "year-ruler"
 
+// How the slider is drawn, by [data-variant]: the plain track, or a printer's
+// ruler (ticks, a band in the tone's ink and a pointer) for a review's scores.
+type SliderVariant = "default" | "ruler"
+
 function Slider({
   className,
   tone = "default",
+  variant = "default",
   size = "default",
   controlClassName,
   trackClassName,
@@ -31,6 +36,7 @@ function Slider({
     indicatorClassName?: string
     thumbClassName?: string
     tone?: SliderTone
+    variant?: SliderVariant
     // A smaller slider (a facet in a scorecard) beside the default one.
     size?: "default" | "sm"
   }) {
@@ -48,12 +54,15 @@ function Slider({
       className={cn("data-horizontal:w-full data-vertical:h-full", className)}
       data-slot="slider"
       data-tone={tone}
+      data-variant={variant}
       data-size={size}
       defaultValue={defaultValue}
       value={value}
       min={min}
       max={max}
-      thumbAlignment="edge"
+      // A ruler's pointer marks the value itself, so it centres on it (and
+      // overhangs the ends); every other thumb stays inside the track.
+      thumbAlignment={variant === "ruler" ? "center" : "edge"}
       {...props}
     >
       <SliderPrimitive.Control

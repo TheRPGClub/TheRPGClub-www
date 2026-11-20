@@ -119,8 +119,7 @@ export function GameReviewsList({
             userId={ownerId}
             gameId={gameId}
             accent={accent}
-            toolbar="compact"
-            scorecard={false}
+            layout="quick"
             onCancel={closeComposer}
             onSaved={closeComposer}
             onTransfer={openFullEditor}

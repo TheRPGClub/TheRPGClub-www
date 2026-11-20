@@ -17,10 +17,10 @@ export interface FacetRowControlsProps {
 // Move a row up or down the card, or take it off.
 export function FacetRowControls({ named, disabled, onUp, onDown, onRemove }: FacetRowControlsProps) {
   return (
-    <div className="flex shrink-0 items-center">
+    <div className="flex shrink-0 items-center opacity-0 transition-opacity group-focus-within/facet:opacity-100 group-hover/facet:opacity-100 [@media(hover:none)]:opacity-100">
       <Button
         type="button"
-        variant="ghost"
+        variant="editor-tool"
         size="icon-xs"
         aria-label={`Move ${named} up`}
         disabled={disabled || !onUp}
@@ -30,7 +30,7 @@ export function FacetRowControls({ named, disabled, onUp, onDown, onRemove }: Fa
       </Button>
       <Button
         type="button"
-        variant="ghost"
+        variant="editor-tool"
         size="icon-xs"
         aria-label={`Move ${named} down`}
         disabled={disabled || !onDown}
@@ -40,7 +40,7 @@ export function FacetRowControls({ named, disabled, onUp, onDown, onRemove }: Fa
       </Button>
       <Button
         type="button"
-        variant="ghost"
+        variant="editor-tool"
         size="icon-xs"
         aria-label={`Remove ${named}`}
         disabled={disabled}
