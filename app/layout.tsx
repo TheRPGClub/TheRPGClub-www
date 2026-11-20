@@ -15,8 +15,13 @@ export const metadata: Metadata = {
 };
 
 // Matches the manifest's theme_color: the default Theme's background.
+// viewportFit "cover": the page runs under a phone's notch and home
+// indicator, so the safe-area insets are real numbers; the body keeps
+// content clear of the notch at the sides, and fixed pieces (the sidebar,
+// the phone tab bar) clear the insets themselves.
 export const viewport: Viewport = {
   themeColor: DEFAULT_THEME.themeColor,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
