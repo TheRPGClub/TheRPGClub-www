@@ -162,13 +162,15 @@
         }
         /* An editor's formatting toggle: mute paper until hovered. Pressed,
            its icon goes yellow and a yellow pencil ring is drawn round it,
-           the proofreader's circle; focus is an outline. */
+           the proofreader's circle; focus is an outline. No fill in any
+           state: the shared toggle rule below fills a pressed toggle with
+           paper, which would sit under the ring. */
         [data-slot="toggle"][data-variant="toolbar"] {
-            @apply relative rounded-sm [font-family:inherit] font-normal tracking-normal normal-case text-faint-foreground transition-colors hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:text-highlight data-pressed:text-highlight;
+            @apply relative rounded-sm bg-transparent [font-family:inherit] font-normal tracking-normal normal-case text-faint-foreground transition-colors hover:bg-transparent hover:text-foreground aria-pressed:bg-transparent data-pressed:bg-transparent focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-solid focus-visible:outline-ring disabled:opacity-40 aria-pressed:text-highlight data-pressed:text-highlight;
             &::after {
                 content: "";
                 position: absolute;
-                inset: 1px -3px;
+                inset: 1px 0;
                 border: 1.5px solid var(--color-highlight);
                 border-radius: 50%;
                 opacity: 0;

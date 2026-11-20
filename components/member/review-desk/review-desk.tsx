@@ -32,21 +32,31 @@ export function ReviewDesk({
   scorecard: React.ReactNode;
   footer: React.ReactNode;
 }) {
+  // The sheet and the notes share a grid of their own, apart from the
+  // footer: a sticky element is held inside its containing block, so with the
+  // footer in the same grid the notes would slide down over Save. A note
+  // column taller than the screen scrolls inside itself rather than hiding
+  // its foot.
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-10 rounded-md border border-border bg-[radial-gradient(color-mix(in_oklab,var(--color-foreground)_5%,transparent)_1px,transparent_1px)] bg-size-[18px_18px] p-4 pt-7 sm:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-      <ReviewSheet form={form} game={game} />
-      <aside aria-label="Scores" className="flex flex-col gap-7 lg:sticky lg:top-[76px] lg:self-start">
-        <DeskNote heading="Overall" aside={TRACK_NOTE[accent]} className="lg:-rotate-[1deg]">
-          <RatingInput
-            value={form.rating}
-            onChange={form.setRating}
-            accent={accent}
-            disabled={form.pending}
-          />
-        </DeskNote>
-        <DeskNote className="lg:rotate-[0.5deg]">{scorecard}</DeskNote>
-      </aside>
-      <div className="space-y-3 lg:col-span-2">{footer}</div>
+    <div className="space-y-10 rounded-md border border-border bg-[radial-gradient(color-mix(in_oklab,var(--color-foreground)_5%,transparent)_1px,transparent_1px)] bg-size-[18px_18px] p-4 pt-7 sm:p-8">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <ReviewSheet form={form} game={game} />
+        <aside
+          aria-label="Scores"
+          className="flex flex-col gap-7 lg:sticky lg:top-[76px] lg:max-h-[calc(100dvh-92px)] lg:self-start lg:overflow-y-auto lg:px-2 lg:pt-3 lg:pb-4 lg:-mx-2 lg:-mt-3"
+        >
+          <DeskNote heading="Overall" aside={TRACK_NOTE[accent]} className="lg:-rotate-[1deg]">
+            <RatingInput
+              value={form.rating}
+              onChange={form.setRating}
+              accent={accent}
+              disabled={form.pending}
+            />
+          </DeskNote>
+          <DeskNote className="lg:rotate-[0.5deg]">{scorecard}</DeskNote>
+        </aside>
+      </div>
+      <div className="space-y-3">{footer}</div>
     </div>
   );
 }
