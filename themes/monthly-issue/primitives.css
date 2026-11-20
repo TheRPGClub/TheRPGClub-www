@@ -894,14 +894,17 @@
 
         /* Select: the member field's look, a strong rule on ink-2; the list
            is an ink-2 card with the object lift. */
-        [data-slot="select-trigger"] {
+        [data-slot="select-trigger"],
+        [data-slot="popover-trigger"][data-variant="field"] {
             @apply rounded-sm border-border-strong bg-card text-foreground hover:border-faint-foreground focus-visible:border-faint-foreground aria-invalid:border-destructive data-placeholder:text-faint-foreground;
         }
         [data-slot="select-trigger-icon"],
+        [data-slot="popover-trigger-icon"],
         [data-slot="combobox-trigger-icon"] {
             @apply text-faint-foreground;
         }
         [data-slot="select-content"],
+        [data-slot="popover-content"],
         [data-slot="combobox-content"] {
             @apply rounded-sm border border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
         }
@@ -909,6 +912,7 @@
             @apply *:data-[slot=input-group]:border-border *:data-[slot=input-group]:bg-background *:data-[slot=input-group]:shadow-none;
         }
         [data-slot="select-label"],
+        [data-slot="popover-title"],
         [data-slot="combobox-label"] {
             @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
         }
