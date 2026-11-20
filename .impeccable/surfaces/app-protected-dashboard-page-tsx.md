@@ -25,7 +25,8 @@ FIRST VIEWPORT: Dashboard. Sidebar on the left; top bar with the current route a
 - 0 NR-GOTM: the right column is the full-height yellow panel.
 - 0 GOTM: NR-GOTM is promoted to a violet cover.
 - Back-issues strip below.
-- Upcoming Birthdays (Birthdays spec api#396, pick C, www#120): one ruled contents line below the back-issues strip, Previous rounds (the mock had it above; the owner moved it below), or under the "Nothing on the cover" note when Voting & GOTM is hidden; absent when nobody's Birthday falls in the next 30 days. See DESIGN.md, Birthdays.
+- Dashboard Panels (spec api#421, www#144; brief `.impeccable/surfaces/dashboard-panels.md`, unify pick B): below Previous rounds, an "Around the club" section heading on the paper rule, then the member's panels on the cover/rail grid (wide panels in the main column, compact ones in the 23rem rail), each an ink card topped by its panel ink. With Voting & GOTM hidden the panels take the issue's place; with no panels either, the "Nothing on the cover" note stands alone. See DESIGN.md, Dashboard Panels.
+- Upcoming Birthdays (Birthdays spec api#396, pick C, www#120) was a ruled contents line under Previous rounds; since www#144 it is the `birthdays` Dashboard Panel in the rail. See DESIGN.md, Birthdays.
 
 FORM: Monthly Issue (Impeccable's pick, original single-cover hierarchy, multi-winner rules from the combos round); seed key 9060494c. Signature move: the winner starburst plus the monumental round numeral. Motion: starburst stamps in once on load, art scales gently on hover.
 
@@ -74,3 +75,7 @@ Option letters refer to the captures in .impeccable/mocks/screens/<screen>-<a|b|
 - **Edit profile:** B's sidebar section toggling, with C's expanded image shelves (covers with remove/add tiles) in the selected section.
 - **Imports:** B. **Import review:** C.
 - Top bar (user, 2026-10-29): the running head shows the current route's trail (e.g. GAMES / <TITLE> / REVIEWS), not "Issue N / Month". It replaces every in-page breadcrumb. Phones keep the page and its parent.
+
+## Dashboard Panels (owner, 2026-11-20)
+- Picks in `specs/dashboard-panels/design/picks.md`: unify option B (`.impeccable/mocks/decision/dashboard-panels-unify/b.html`, `png/b-*.png`) supersedes the first round's colour-tab panels, which clashed with the issue. Empty slip C, load error and Voting-hidden states from `dashboard-panels-final/`, restyled to B.
+- Built in www#144 (every panel of the spec's table); edit mode ("Edit dashboard" at the heading's right, the control strip and Hidden tray) is www#145.

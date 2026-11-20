@@ -100,6 +100,19 @@
     --color-kind-platform: var(--kind-platform);
     --color-kind-rules: var(--kind-rules);
     --color-kind-milestone: var(--kind-milestone);
+    --color-panel-news: var(--panel-news);
+    --color-panel-now-playing: var(--panel-now-playing);
+    --color-panel-releases: var(--panel-releases);
+    --color-panel-achievements: var(--panel-achievements);
+    --color-panel-challenges: var(--panel-challenges);
+    --color-panel-completions: var(--panel-completions);
+    --color-panel-backlog: var(--panel-backlog);
+    --color-panel-reviews: var(--panel-reviews);
+    --color-panel-journals: var(--panel-journals);
+    --color-panel-giveaways: var(--panel-giveaways);
+    --color-panel-suggestions: var(--panel-suggestions);
+    --color-panel-codex: var(--panel-codex);
+    --color-panel-birthdays: var(--panel-birthdays);
     --color-foil-foreground: var(--foil-foreground);
 
     /* Shape. */
