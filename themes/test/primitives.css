@@ -26,6 +26,22 @@
                 [data-slot="tooltip-trigger"],
                 [data-slot="collapsible-trigger"]
             ) {
+            &[data-variant="tab"] {
+                background-color: var(--muted);
+                color: var(--sidebar-ring);
+                &[data-current] {
+                    background-color: var(--sidebar-ring);
+                    color: var(--background);
+                }
+            }
+            &[data-variant="round"] {
+                background-color: var(--muted);
+                border-color: var(--sidebar-ring);
+            }
+            &[data-variant="account"] {
+                background-color: var(--muted);
+                border-color: var(--destructive);
+            }
             &[data-variant="default"] {
                 background-color: var(--primary);
                 color: var(--primary-foreground);
