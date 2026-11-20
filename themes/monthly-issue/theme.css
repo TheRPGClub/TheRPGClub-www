@@ -123,6 +123,25 @@
         --kind-platform: #7cb6ff;
         --kind-rules: #b7dd5e;
         --kind-milestone: #eadcb8;
+        /* Panel inks, on the dashboard's Dashboard Panels only: the 4px top
+           rule of a panel, its "See all" and its small marks. A Mine and a
+           Club panel of one subject share one. Never a fill behind type. */
+        --panel-news: #f58ac0;
+        --panel-now-playing: #86d3f6;
+        --panel-releases: #c4e36a;
+        --panel-achievements: #9ab8f2;
+        --panel-challenges: #52d6c4;
+        --panel-completions: #8fe0a6;
+        --panel-backlog: #e0b56e;
+        --panel-reviews: #c0c4d6;
+        --panel-journals: #f0a9a0;
+        --panel-giveaways: #7fd0e8;
+        --panel-suggestions: #d4c48a;
+        --panel-codex: #ff8ad8;
+        --panel-birthdays: #eadcb8;
+        /* The mint "New" stamp on a panel added since the member last
+           opened edit mode (edit mode only), ink type on it. */
+        --panel-new: #5fdcb0;
         /* Foil: the one sanctioned gradient. A holographic conic edge under
            a soft diagonal sheen, only on Platinum, Mastery and Completion,
            never on text, always with ink type. */

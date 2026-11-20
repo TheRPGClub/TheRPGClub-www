@@ -54,13 +54,14 @@ function upcomingRelease(
 
 describe("parseCalendarFilters", () => {
   it("defaults to today's month and every platform", () => {
-    expect(parseCalendarFilters({}, TODAY)).toEqual({ month: "2026-11", platforms: [] });
+    expect(parseCalendarFilters({}, TODAY)).toEqual({ month: "2026-11", platforms: [], showHidden: false });
   });
 
   it("reads a month and platforms as a comma list or repeats", () => {
     expect(parseCalendarFilters({ month: "2025-09", platform: ["3,5", "5", "x"] }, TODAY)).toEqual({
       month: "2025-09",
       platforms: [3, 5],
+      showHidden: false,
     });
   });
 
@@ -69,13 +70,19 @@ describe("parseCalendarFilters", () => {
     expect(parseCalendarFilters({ month: "0000-05" }, TODAY).month).toBe("2026-11");
   });
 
+  it("reads Show all for the visit", () => {
+    expect(parseCalendarFilters({ show_hidden: "1" }, TODAY).showHidden).toBe(true);
+    expect(parseCalendarFilters({ show_hidden: "true" }, TODAY).showHidden).toBe(true);
+    expect(parseCalendarFilters({ show_hidden: "no" }, TODAY).showHidden).toBe(false);
+  });
+
   it("keeps a month before 1970", () => {
     expect(parseCalendarFilters({ month: "1969-12" }, TODAY).month).toBe("1969-12");
   });
 });
 
 describe("calendarHref", () => {
-  const filters = { month: "2026-11", platforms: [3] };
+  const filters = { month: "2026-11", platforms: [3], showHidden: false };
   it("leaves today's month out of the address", () => {
     expect(calendarHref(filters, {}, TODAY)).toBe("/releases?platform=3");
     expect(calendarHref(filters, { platforms: [] }, TODAY)).toBe("/releases");
@@ -85,6 +92,12 @@ describe("calendarHref", () => {
     expect(calendarHref(filters, { month: "2026-12", platforms: [3, 5] }, TODAY)).toBe(
       "/releases?month=2026-12&platform=3,5",
     );
+  });
+
+  it("keeps Show all while moving between months", () => {
+    const all = { ...filters, platforms: [], showHidden: true };
+    expect(calendarHref(all, { month: "2026-12" }, TODAY)).toBe("/releases?month=2026-12&show_hidden=1");
+    expect(calendarHref(all, { showHidden: false }, TODAY)).toBe("/releases");
   });
 });
 
@@ -212,6 +225,12 @@ describe("calendarView", () => {
     expect(view.options.map((o) => o.id)).toEqual([1, 2]);
   });
 
+  it("marks an Upcoming Release only on Hidden Platforms while Show all is on", () => {
+    const view = calendarView(grid, fromToday, [], [2]);
+    expect(view.list.filter((e) => e.hiddenOnly).map((e) => e.game.game_id)).toEqual([3]);
+    expect(calendarView(grid, fromToday, []).list.some((e) => e.hiddenOnly)).toBe(false);
+  });
+
   it("narrows the grid and the list to the platforms", () => {
     const view = calendarView(grid, fromToday, [2]);
     expect(view.grid.map((e) => e.game.game_id)).toEqual([2]);
@@ -222,13 +241,15 @@ describe("calendarView", () => {
 
   it("says why the grid or the list is empty", () => {
     const filtered = calendarView(grid, fromToday, [9]);
-    expect(monthNote(filtered, { month: "2026-11", platforms: [9] }, TODAY)?.body).toBe(
+    expect(monthNote(filtered, { month: "2026-11", platforms: [9], showHidden: false }, TODAY)?.body).toBe(
       "The 2 Upcoming Releases in November 2026 are all on other platforms.",
     );
-    expect(listNote(filtered, { month: "2026-11", platforms: [9] })?.clear).toBe(true);
+    expect(listNote(filtered, { month: "2026-11", platforms: [9], showHidden: false })?.clear).toBe(true);
     const none = calendarView([], [], []);
-    expect(monthNote(none, { month: "2025-06", platforms: [] }, TODAY)?.title).toBe("No Releases in June 2025");
-    expect(monthNote(none, { month: "2027-06", platforms: [] }, TODAY)?.title).toBe(
+    expect(monthNote(none, { month: "2025-06", platforms: [], showHidden: false }, TODAY)?.title).toBe(
+      "No Releases in June 2025",
+    );
+    expect(monthNote(none, { month: "2027-06", platforms: [], showHidden: false }, TODAY)?.title).toBe(
       "No Releases in June 2027 yet",
     );
   });
@@ -238,7 +259,7 @@ describe("calendarView", () => {
     expect(monthCount(8, "2027-01", TODAY)).toBe("8 Upcoming Releases");
     expect(monthCount(8, "2026-10", TODAY)).toBe("8 Releases");
     const filtered = calendarView(grid, fromToday, [9]);
-    expect(monthNote(filtered, { month: "2026-03", platforms: [9] }, TODAY)?.body).toBe(
+    expect(monthNote(filtered, { month: "2026-03", platforms: [9], showHidden: false }, TODAY)?.body).toBe(
       "The 2 Releases in March 2026 are all on other platforms.",
     );
   });

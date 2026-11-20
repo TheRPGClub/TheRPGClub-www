@@ -1321,7 +1321,8 @@
             font-family: var(--typeface-label);
             box-shadow: 3px 3px 0 var(--foreground);
         }
-        [data-slot="select-trigger"] {
+        [data-slot="select-trigger"],
+        [data-slot="popover-trigger"][data-variant="field"] {
             background-color: var(--card);
             color: var(--card-foreground);
             border-color: var(--border-strong);
@@ -1330,6 +1331,7 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="select-trigger-icon"],
+        [data-slot="popover-trigger-icon"],
         [data-slot="combobox-trigger-icon"] {
             background-color: var(--card);
             color: var(--card-foreground);
@@ -1339,6 +1341,7 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="select-content"],
+        [data-slot="popover-content"],
         [data-slot="combobox-content"] {
             background-color: var(--card);
             color: var(--card-foreground);
@@ -1356,6 +1359,7 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
         [data-slot="select-label"],
+        [data-slot="popover-title"],
         [data-slot="combobox-label"] {
             background-color: var(--card);
             color: var(--card-foreground);
@@ -1988,6 +1992,12 @@
         }
         /* Challenges (www#106). */
         [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="stamp-more"], [data-variant="done"]) {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Dashboard edit mode (www#145). */
+        [data-slot="button"][data-variant="heading-action"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

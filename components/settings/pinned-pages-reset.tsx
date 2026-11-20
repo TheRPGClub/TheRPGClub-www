@@ -10,38 +10,37 @@ const ID = "pinned_pages";
 
 // Under the Feature switches, for a member whose Pinned Pages are their own
 // (ticket api#419): one row in the switches' style, its Reset asking first.
+// It sits in the reset list (SettingsView) beside Reset dashboard.
 // Once reset, the session says the member follows the club default, so the
 // refreshed page drops this row and the sidebar shows the default. `names`
 // are the club default's pages, as the session gives them.
 export function PinnedPagesReset({ names }: { names: string }) {
   return (
-    <ul className="mt-8 border-t border-border">
-      <PreferenceRow
-        id={ID}
-        name="Pinned Pages"
-        badge={null}
-        where={`Your own list, top of your sidebar. Reset to follow the club's: ${names}.`}
-        dim={false}
-      >
-        <ConfirmDialog
-          trigger={
-            <Button variant="outline" aria-describedby={`pref-${ID}-where`}>
-              <RotateCcw aria-hidden />
-              Reset
-            </Button>
-          }
-          title="Reset your Pinned Pages?"
-          description={`Your sidebar goes back to the club's Pinned Pages (${names}) and follows them if the club changes them. Your own list can't be brought back.`}
-          confirmLabel="Reset Pinned Pages"
-          pendingLabel="Resetting…"
-          confirmIcon={<RotateCcw aria-hidden />}
-          cancelLabel="Keep mine"
-          onConfirm={async () => {
-            const result = await resetPinnedPagesAction();
-            return result.ok ? null : "Couldn't reset your Pinned Pages. Try again.";
-          }}
-        />
-      </PreferenceRow>
-    </ul>
+    <PreferenceRow
+      id={ID}
+      name="Pinned Pages"
+      badge={null}
+      where={`Your own list, top of your sidebar. Reset to follow the club's: ${names}.`}
+      dim={false}
+    >
+      <ConfirmDialog
+        trigger={
+          <Button variant="outline" aria-describedby={`pref-${ID}-where`}>
+            <RotateCcw aria-hidden />
+            Reset
+          </Button>
+        }
+        title="Reset your Pinned Pages?"
+        description={`Your sidebar goes back to the club's Pinned Pages (${names}) and follows them if the club changes them. Your own list can't be brought back.`}
+        confirmLabel="Reset Pinned Pages"
+        pendingLabel="Resetting…"
+        confirmIcon={<RotateCcw aria-hidden />}
+        cancelLabel="Keep mine"
+        onConfirm={async () => {
+          const result = await resetPinnedPagesAction();
+          return result.ok ? null : "Couldn't reset your Pinned Pages. Try again.";
+        }}
+      />
+    </PreferenceRow>
   );
 }

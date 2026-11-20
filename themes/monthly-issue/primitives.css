@@ -894,14 +894,17 @@
 
         /* Select: the member field's look, a strong rule on ink-2; the list
            is an ink-2 card with the object lift. */
-        [data-slot="select-trigger"] {
+        [data-slot="select-trigger"],
+        [data-slot="popover-trigger"][data-variant="field"] {
             @apply rounded-sm border-border-strong bg-card text-foreground hover:border-faint-foreground focus-visible:border-faint-foreground aria-invalid:border-destructive data-placeholder:text-faint-foreground;
         }
         [data-slot="select-trigger-icon"],
+        [data-slot="popover-trigger-icon"],
         [data-slot="combobox-trigger-icon"] {
             @apply text-faint-foreground;
         }
         [data-slot="select-content"],
+        [data-slot="popover-content"],
         [data-slot="combobox-content"] {
             @apply rounded-sm border border-border-strong bg-card text-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)];
         }
@@ -909,6 +912,7 @@
             @apply *:data-[slot=input-group]:border-border *:data-[slot=input-group]:bg-background *:data-[slot=input-group]:shadow-none;
         }
         [data-slot="select-label"],
+        [data-slot="popover-title"],
         [data-slot="combobox-label"] {
             @apply font-label font-extrabold tracking-[0.08em] text-faint-foreground;
         }
@@ -1485,6 +1489,11 @@
         }
         :is([data-slot="button"], [data-slot="alert-dialog-trigger"])[data-variant="quiet-delete"] {
             @apply font-label rounded-sm border-0 bg-transparent text-destructive transition-colors hover:text-destructive/80 hover:underline;
+        }
+        /* Dashboard edit mode (www#145): Edit dashboard on the "Around
+           the club" rule, voiced like the heading's "Full history" link. */
+        [data-slot="button"][data-variant="heading-action"] {
+            @apply font-label h-auto gap-1.5 rounded-sm border-0 bg-transparent px-0 text-sm font-extrabold text-foreground transition-colors hover:text-highlight active:not-aria-[haspopup]:translate-y-0 [&_svg]:size-4 [&_svg]:text-gotm;
         }
         [data-slot="label"][data-variant="kind-tile"] {
             @apply font-label cursor-pointer rounded-xs text-[0.625rem] leading-none font-extrabold tracking-normal text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-[translate,rotate,background-color,box-shadow] duration-200 hover:bg-(--ink)/10 has-data-checked:-translate-y-1 has-data-checked:-rotate-2 has-data-checked:bg-(--ink) has-data-checked:text-background has-data-checked:shadow-[0_6px_14px_rgb(0_0_0/0.45)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
