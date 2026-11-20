@@ -1,19 +1,20 @@
 import { Suspense } from "react";
-import { fetchUpcomingBirthdays } from "@/lib/api/birthdays";
-import { birthdayLine } from "@/lib/dashboard/birthdays";
+import { fetchDashboardPanels } from "@/lib/api/dashboard-panels";
+import { memberPanels, type PanelViewer } from "@/lib/dashboard/panels";
 import { loadDashboard } from "@/lib/dashboard/issue";
-import { clubToday } from "@/lib/challenges/dates";
-import { getFeatures, getSession } from "@/lib/session";
+import { discordAvatarUrl, getFeatures, getSession } from "@/lib/session";
+import type { FeatureView } from "@/lib/features";
 import { DashboardIssueView } from "@/components/dashboard/dashboard-issue";
 import { NoVoting } from "@/components/dashboard/dashboard-notes";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
-import { UpcomingBirthdays } from "@/components/dashboard/upcoming-birthdays";
+import { AroundTheClub } from "@/components/dashboard/panels/around-the-club";
 
-// The dashboard is the current issue (lib/dashboard/issue). It is all Voting
-// & GOTM's: with that Feature hidden from the viewer the page says so
-// instead. Each winner's numbers follow their own Features. Upcoming
-// Birthdays belong to no Feature, so their line shows on either page,
-// unless nobody's Birthday is coming up.
+// The dashboard is the member's homepage (spec api#421): the current issue
+// (lib/dashboard/issue), all Voting & GOTM's, then the member's Dashboard
+// Panels in their order. The issue and each panel load on their own, so
+// neither holds the other. With Voting & GOTM hidden from the viewer the
+// panels take the issue's place; with no panels either, the page says why
+// it is empty.
 
 export default function DashboardPage() {
   return (
@@ -28,16 +29,29 @@ async function DashboardContent() {
   // them instead of wasting fetches that can only 401.
   const session = await getSession();
   if (!session) return null;
-  const features = await getFeatures();
-  const voting = features.shown("voting_gotm");
+  const { principal } = session;
+  const [features, saved] = await Promise.all([getFeatures(), fetchDashboardPanels(principal.discord_id)]);
+  const panels = memberPanels(saved?.panels ?? null, features);
+  const viewer: PanelViewer = {
+    id: principal.discord_id,
+    name: principal.global_name ?? principal.username,
+    avatarUrl: discordAvatarUrl(principal.discord_id, principal.avatar, 64),
+  };
 
-  const [issue, upcoming] = await Promise.all([
-    voting ? loadDashboard(features) : null,
-    fetchUpcomingBirthdays(),
-  ]);
-  const entries = birthdayLine(upcoming, clubToday());
-  const birthdays = entries && <UpcomingBirthdays entries={entries} />;
+  if (!features.shown("voting_gotm")) {
+    return panels.length > 0 ? <AroundTheClub panels={panels} viewer={viewer} /> : <NoVoting />;
+  }
+  return (
+    <div className="space-y-10">
+      <Suspense fallback={<DashboardSkeleton />}>
+        <Issue features={features} viewerId={principal.id} />
+      </Suspense>
+      <AroundTheClub panels={panels} viewer={viewer} />
+    </div>
+  );
+}
 
-  if (!issue) return <NoVoting birthdays={birthdays} />;
-  return <DashboardIssueView issue={issue} viewerId={session.principal.id} birthdays={birthdays} />;
+async function Issue({ features, viewerId }: { features: FeatureView; viewerId: string }) {
+  const issue = await loadDashboard(features);
+  return <DashboardIssueView issue={issue} viewerId={viewerId} />;
 }

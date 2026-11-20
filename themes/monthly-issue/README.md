@@ -66,6 +66,19 @@ colors:
   kind-platform: "#7cb6ff"
   kind-rules: "#b7dd5e"
   kind-milestone: "#eadcb8"
+  panel-news: "#f58ac0"
+  panel-now-playing: "#86d3f6"
+  panel-releases: "#c4e36a"
+  panel-achievements: "#9ab8f2"
+  panel-challenges: "#52d6c4"
+  panel-completions: "#8fe0a6"
+  panel-backlog: "#e0b56e"
+  panel-reviews: "#c0c4d6"
+  panel-journals: "#f0a9a0"
+  panel-giveaways: "#7fd0e8"
+  panel-suggestions: "#d4c48a"
+  panel-codex: "#ff8ad8"
+  panel-birthdays: "#eadcb8"
   foil-foreground: "#0b0b0d"
 typography:
   numeral:
@@ -623,6 +636,12 @@ The Fun Facts wall is a corkboard of index cards: each card in the Fun Facts ink
 
 **The Fill Carries Ink Type Rule.** Every part-ink and Kind-ink fill (door, spine, index card, See also band, selected chip, selected tile) carries `background` ink type, body copy included (a door's body at ink 82%, its small labels at ink 70%). Paper type never sits on these fills. On ink grounds the inks are type, rules and marks. Yellow is still yours (Add, Save changes, the picked spine's ring, the lit mention row, focus and the caret), signal orange is still only Delete, and masthead red is still "you are here": no Codex ink borrows red, violet, yellow or orange. Fun Facts pink sits near `news-announcements` and `rarity-ultra`, and Staff lagoon near the Journal ink lagoon and `news-emulation`; they never share a surface, so neither is misread, and one is never reused for the other.
 
+#### Panel inks (Dashboard Panels only)
+Each Dashboard Panel on the dashboard has an ink of its own, so a member finds a panel by colour once they know their page. A Mine and a Club panel of one subject share one ink (Now Playing, Latest Achievements, Recent Completions), and Challenge Activity and Challenge Runs share the Challenges teal. The inks live on the dashboard's panels only and never leave them. They are a panel's 4px top rule, its "See all" link and small marks inside it (the Suggestion Board's upvote figure), never a fill behind type and never a panel's ground. Each clears 8:1 as type on `card`.
+- **Latest News** (panel-news) pink, **Now Playing** (panel-now-playing) sky, **Upcoming Releases** (panel-releases) lime, **Latest Achievements** (panel-achievements) periwinkle, **Challenge Activity and Challenge Runs** (panel-challenges) teal, **Recent Completions** (panel-completions) mint, **Backlog Pick** (panel-backlog) umber, **Latest Reviews** (panel-reviews) steel, **Game Journals** (panel-journals) coral, **Open Giveaways** (panel-giveaways) aqua, **Suggestion Board** (panel-suggestions) wheat, **Codex fact** (panel-codex) Fun Facts pink, **Upcoming Birthdays** (panel-birthdays) parchment.
+
+**The Panel Ink Is the Panel Rule.** A panel ink names a panel and nothing else, so the inks stay off masthead red, feature violet, highlighter yellow and signal orange. Inside a panel the content keeps its own colours: a news thumbnail's foot bar is its News Category's ink, a Challenge event wears its Challenge's tint, an Unlock its Rarity ink, and the Codex fact is a Fun Facts index card. Those are content (the department's colour travelling with it), not decoration; yellow is still hover and focus, red is still "you are here".
+
 ### Typography
 
 **Display Font:** Anton (with Impact, sans-serif), loaded at weight 400 only
@@ -651,7 +670,7 @@ The Fun Facts wall is a corkboard of index cards: each card in the Fun Facts ink
 
 The app shell is a left sidebar (collapsible to icons; below `md` a tab bar along the foot of the screen takes its place) beside a 60px sticky top bar (ink at 95% with a light backdrop blur and a rule beneath), with page content under it. Content gutters are 16px on phones and 28px from `sm`, with 24px top padding. Content spans the area beside the sidebar up to one shared maximum of 120rem (the `--container-page` token, `max-w-page`) and centers past it; the frame owns that width, so pages don't set their own outer width. Full-bleed banners (game hero, game strip, review banner) use the `bleed` utility to break out of the frame to the full width beside the sidebar. Only limits that serve one piece of content (a reading measure, a diagram, a podium, a small callout) cap their own width. Departments stack 40px apart. Grids use 20px gaps; tight clusters (chips, links) use 6-8px.
 
-The dashboard is a two-column issue from `lg`: the cover story fills the flexible column and a 23rem right rail holds the NR feature over the yellow round panel. The previous-rounds strip runs below. Below `lg` everything stacks.
+The dashboard is a two-column issue from `lg`: the cover story fills the flexible column and a 23rem right rail holds the NR feature over the yellow round panel. The previous-rounds strip runs below. The member's Dashboard Panels follow under "Around the club", carrying the same grid on: wide panels in the flexible column, compact ones in the 23rem rail, each column in the member's order. Below `lg` everything stacks, the panels in the member's order.
 
 **The Empty Track Rule.** A track with no winner gives its space away rather than apologising for it. On the dashboard, with no NR-GOTM the yellow round panel takes the whole right column at full height and lists the latest nominations. With no GOTM, the NR-GOTM is promoted to the cover in violet, with one small "No Game of the Month this round" note under the numeral. In the GOTM history ledger, where rows must align, an absent track keeps its column as a dashed `border-strong` box with a short muted label. Under a title search, that box stays silent, because absence there means "no match".
 
@@ -855,10 +874,20 @@ The /releases page (www#114) is a wall calendar over an agenda. Under the page h
 
 #### Birthdays
 A shared Birthday is the day and month only, never the year or age. Lucide Cake marks it everywhere, never an emoji.
-- **Upcoming Birthdays line (dashboard):** one contents line under Previous rounds (under the "Nothing on the cover" note when Voting & GOTM is hidden), between a 2px `foreground` rule and a 1px `border` hairline. A label-type "Birthdays" head with the cake (screen readers hear "Upcoming Birthdays"), then each member in date order, split by `border-strong` slashes: the day in `faint-foreground` label type ("Tomorrow", "Sat 21 Nov") before the name, underlined in `border-strong`. Today's member sits behind a paper "Today" chip with the name in Anton. It wraps rather than truncates; on a phone the head stacks above the list. No line at all when nobody's Birthday falls in the next 30 days.
+- **Upcoming Birthdays panel (dashboard):** the `birthdays` Dashboard Panel in the rail (it replaced the ruled contents line under Previous rounds). One row per member in date order: their avatar, their name, and the day in `faint-foreground` label type at the right ("Tomorrow", "Sat 21 Nov"). Today's member is set in Anton with a paper "Today" chip carrying the cake. With nobody's Birthday in the next 30 days the panel shows its empty note.
 - **Byline Birthday (profile banner):** the cake and "21 Nov" as the byline's last part, after a middot, never wrapping inside itself; on the day it reads "Birthday today" in `foreground`.
 - **Birthday day tape (profile banner):** on the day, a paper day tape ("Birthday today · 18 Nov", label type on `foreground` at 95%) pinned across the banner's top-left corner at -1.2deg, running off the left edge with a torn right end and a drop shadow. On a phone it drops below the owner's Edit and Imports.
 - **Share rows (/settings and the staff desk):** the settings switch row. Members get "Share my Birthday", dimmed and inert until the Birth Date has a day and month. On the staff desk the row reads "Shares their Birthday" and works one way: flipping it off opens a one-line confirm under the row (the question in `foreground`, a destructive-ghost "Stop sharing" and an outline "Keep it", which takes the focus), since only the member can turn it back on.
+
+#### Dashboard Panels (dashboard)
+The member's blocks of recent club and personal activity under the issue (spec api#421, unify pick B). They read as the issue's back half, not a widget board.
+- **Section:** an "Around the club" `SectionHeading` on the 2px paper rule, like Previous rounds, 40px under them (or at the top of the page when Voting & GOTM is hidden, in the issue's place; with no panels either, the "Nothing on the cover" note stands alone).
+- **Grid:** from `lg` the cover/rail grid carries on: wide panels (news, Club Now Playing, releases, achievements, Challenge Activity, completions, reviews, journals, giveaways, suggestions) in the flexible column with their items two across; compact panels (Mine Now Playing, Challenge Runs, Backlog Pick, Codex fact, Upcoming Birthdays) in the 23rem rail. Each column keeps the member's order; with only compact panels they spread two or three across rather than leaving a lone strip. Below `lg` one column in the member's order; a wide panel's items stay two across from `sm`.
+- **Panel:** a `card` block with 3px corners and a 4px inset top rule in its panel ink, 20px padding (16px on phones). The head: the name in Anton at about 1.9rem, a scope chip where a Mine and a Club version exist ("Club" in faint label type; "Mine" as a pill with a 1px `border-strong` ring carrying the member's 22px avatar), and "See all" with an arrow in the panel ink at the right (yellow on hover).
+- **Item row:** a media column (a 40px cover with the member's 20px avatar on its corner for club lists; a 56px news frame on a 3px foot bar in its category's ink, dashed for Rumours; a small die-cut Achievement icon; a Challenge-tint ring round the member; the release date block; an upvote figure), a two-line Barlow 600 title at 15px over one label-type meta line in `faint-foreground` (bold parts `dim-foreground`), and a right column (the age in label type, lowercase: "2h", "3d", "21 Nov"; a Rarity chip; a review's paper score box). Event rows ("**Mara** started a Run") set the sentence in regular weight with its actors bold in paper. Rows split by 1px `border` hairlines; about five items a panel.
+- **Feature rows:** Backlog Pick is a small cover story (an 84px cover, the two-line Anton headline, year and platform chips, "About N hours" over "To beat · HowLongToBeat", an outline "Pick another"). The Codex fact is a Fun Facts index card (ruled pink, ink type, tilted -0.8deg, straightening on hover), headed by the day it went out.
+- **Empty:** a dashed `border-strong` slip inside the panel, "All quiet. Nothing new yet." The panel never vanishes.
+- **Load error:** a ruled `border-strong` box inside that panel only: a signal-orange warning icon, "Couldn't load <Panel>." over "The rest of your dashboard is fine." in `dim-foreground`, and an outline "Try again" (it stacks under the text in the rail). Every panel streams in its own Suspense boundary behind skeleton rows, so a slow or failing source never holds the page.
 
 #### Production desk (staff surfaces)
 The /admin area is a production desk: the club's staff put the next issue together. It is a staff surface only; members never see it. Every desk page opens with the desk header and keeps the Two-Line Headline and paper-rule habits of the rest of the site.
