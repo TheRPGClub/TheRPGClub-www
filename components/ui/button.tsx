@@ -53,6 +53,16 @@ const buttonVariants = cva(
         "sidebar-action": "",
         // The back link out of a sidebar group's view ("All sections").
         "sidebar-back": "",
+        // A tab in the phone's tab bar: an icon over its name. The current
+        // one carries data-current. Pair with size="bare".
+        tab: "",
+        // The round button at the tab bar's middle: its burst is its look,
+        // drawn by the caller; the Theme sets its focus. Pair with
+        // size="bare".
+        round: "",
+        // The member's avatar that opens their account menu (the phone's
+        // top bar). Pair with size="bare".
+        account: "",
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",

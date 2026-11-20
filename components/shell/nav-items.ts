@@ -64,6 +64,9 @@ export const GROUP_ICON: Record<SidebarGroupKey, NavIcon> = {
 // middle of the icon rail, in both states.
 export const NAV_BUTTON_CLASS = "h-10 gap-3 pr-2.5 pl-[11px] text-[1.05rem] [&_svg]:size-[18px]";
 
+// A tab on the phone's tab bar: an icon over its name, filling its cell.
+export const TAB_CLASS = "h-full w-full min-w-0 flex-col items-center justify-center gap-1 px-1 [&_svg]:size-5";
+
 // The voting item is named for what the club is doing right now, so the nav
 // says whether nominations or the vote are what's live without opening the
 // page. Only the nomination window renames the item; a live vote, a finished

@@ -1,13 +1,15 @@
 import { cn } from "@/lib/utils";
 
 // The winner starburst: the Monthly Issue's signature mark. It belongs to GOTM
-// and NR-GOTM wins only, so it never decorates anything else. GOTM wears the
+// and NR-GOTM wins only, so it never decorates anything else. One sanctioned
+// exception: the phone tab bar's round button (components/shell/tab-round),
+// the club's open round in the same yellow. GOTM wears the
 // highlighter yellow with ink type, NR-GOTM its own violet with white type.
 //
 // It is positioned by the caller (absolute inside a relative container) and
 // stamps in once on mount; reduced motion skips the stamp.
 
-const POINTS =
+export const BURST_POINTS =
   "50,0 57,17 73,6 72,25 91,21 82,38 100,43 86,55 98,69 79,71 84,90 66,82 62,100 50,87 38,100 34,82 16,90 21,71 2,69 14,55 0,43 18,38 9,21 28,25 27,6 43,17";
 
 const TRACK = {
@@ -63,7 +65,7 @@ export function Starburst({
         viewBox="0 0 100 100"
         className="absolute inset-0 size-full drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]"
       >
-        <polygon points={POINTS} className={style.fill} />
+        <polygon points={BURST_POINTS} className={style.fill} />
       </svg>
       <span
         className={cn(

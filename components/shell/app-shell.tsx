@@ -6,9 +6,13 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/shell/app-sidebar";
 import { TopBar } from "@/components/issue/top-bar";
+import { AccountMenu } from "@/components/shell/account-menu";
+import { TabBar } from "@/components/shell/tab-bar";
 
 // The signed-in site's frame: the sidebar beside the page, the top bar with
-// the route's trail over it, and the content frame that owns page width.
+// the route's trail over it, and the content frame that owns page width. On
+// phones the tab bar and the top bar's account menu stand in for the
+// sidebar.
 export function AppShell({
   principal,
   membership,
@@ -49,13 +53,18 @@ export function AppShell({
             not widen the column past the window. @container: the bleed
             utility measures this inset to break banners out of the frame. */}
         <SidebarInset className="@container min-w-0">
-          <TopBar trail={crumbs} />
+          <TopBar
+            trail={crumbs}
+            account={<AccountMenu principal={principal} membership={membership} features={features} />}
+          />
           {/* The content frame owns page width: it spans beside the sidebar up
-              to max-w-page and centers past it. */}
-          <div className="mx-auto flex w-full max-w-page flex-1 flex-col px-4 py-6 sm:px-7">
+              to max-w-page and centers past it. On phones its foot clears
+              the tab bar. */}
+          <div className="mx-auto flex w-full max-w-page flex-1 flex-col px-4 pt-6 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-7 md:pb-6">
             {children}
           </div>
         </SidebarInset>
+        <TabBar membership={membership} votingPhase={votingPhase} features={features} />
       </SidebarProvider>
     </TooltipProvider>
   );
