@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import type { ApiCollection, Platform } from "./types";
+import { fetchFacet } from "@/lib/games/games-index";
 import type { HiddenPlatforms, PlatformChoice } from "@/lib/hidden-platforms";
 
 // A member's Hidden Platforms (ticket api#427). They belong to the Release
@@ -22,19 +22,8 @@ export async function fetchHiddenPlatforms(userId: string): Promise<HiddenPlatfo
 
 // Every platform some GameDB game is on, by name: what /settings offers to
 // hide. IGDB knows hundreds more, none of which can be on the calendar.
-// Empty when the read failed.
-export async function fetchPlatformChoices(): Promise<PlatformChoice[]> {
-  try {
-    const res = await apiFetch("/api/v1/platforms?with_games=true&per=500", {
-      next: { revalidate: 86_400, tags: ["game-facets"] },
-    });
-    if (!res.ok) return [];
-    const body = (await res.json()) as ApiCollection<Platform>;
-    return body.data
-      .map((p) => ({ id: p.platform_id, name: p.platform_name }))
-      .filter((c) => c.id > 0 && c.name)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  } catch {
-    return [];
-  }
+// The Game Index's platform facet, so the two can't drift apart. Empty when
+// the read failed.
+export function fetchPlatformChoices(): Promise<PlatformChoice[]> {
+  return fetchFacet("platform");
 }

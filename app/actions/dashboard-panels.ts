@@ -3,7 +3,19 @@
 import { refresh } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import { PANEL_KEYS, isPanelKey } from "@/lib/dashboard/panels";
+
+// A panel key as the API writes them, and a bound well above its catalogue.
+const PANEL_KEY_SHAPE = /^[a-z][a-z0-9_]{0,63}$/;
+const MAX_PANELS = 64;
+
+function isKeyList(panels: unknown): panels is string[] {
+  return (
+    Array.isArray(panels) &&
+    panels.length <= MAX_PANELS &&
+    panels.every((key) => typeof key === "string" && PANEL_KEY_SHAPE.test(key)) &&
+    new Set(panels).size === panels.length
+  );
+}
 
 export interface DashboardPanelsResult {
   ok: boolean;
@@ -28,28 +40,30 @@ async function send(path: string | null, init: RequestInit): Promise<boolean> {
 
 // Save the member's whole shown list, in order (spec api#421, www#145): show,
 // hide and reorder all send it. The API keeps the panels they can't see right
-// now. `rerender` asks for the dashboard again, for a panel just switched on
+// now; the list also carries back, in place, the API's keys this website
+// doesn't draw yet, so they aren't checked against PANEL_KEYS here: only
+// their shape, and the API refuses a key it doesn't know. `rerender` asks for the dashboard again, for a panel just switched on
 // whose items the page hasn't read yet; a move or a hide changes nothing the
 // server draws, so it skips the round trip.
 export async function saveDashboardPanelsAction(
   panels: string[],
   rerender: boolean,
 ): Promise<DashboardPanelsResult> {
-  const valid =
-    Array.isArray(panels) &&
-    panels.length <= PANEL_KEYS.length &&
-    panels.every(isPanelKey) &&
-    new Set(panels).size === panels.length;
-  if (!valid) return { ok: false };
+  if (!isKeyList(panels)) return { ok: false };
   const ok = await send(await panelsPath(), { method: "PUT", body: JSON.stringify({ data: { panels } }) });
   if (ok && rerender) refresh();
   return { ok };
 }
 
-// The member opened edit mode: nothing is new to them any more. Nothing on
-// the page changes until their next visit, so no refresh.
-export async function markDashboardPanelsSeenAction(): Promise<DashboardPanelsResult> {
-  return { ok: await send(await panelsPath("/seen"), { method: "POST" }) };
+// The member opened edit mode: the panels it showed them (on the dashboard
+// and in the tray) are no longer new. Only those: a panel this website
+// can't draw yet stays new until it can. Nothing on the page changes until
+// their next visit, so no refresh.
+export async function markDashboardPanelsSeenAction(panels: string[]): Promise<DashboardPanelsResult> {
+  if (!isKeyList(panels)) return { ok: false };
+  return {
+    ok: await send(await panelsPath("/seen"), { method: "POST", body: JSON.stringify({ data: { panels } }) }),
+  };
 }
 
 // Reset to the club default from /settings: the API drops the saved list, so

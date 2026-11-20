@@ -86,7 +86,9 @@ export async function fetchFacetOptions(): Promise<Record<FacetKey, FacetOption[
   return Object.fromEntries(FACETS.map(({ key }, i) => [key, lists[i]])) as Record<FacetKey, FacetOption[]>;
 }
 
-async function fetchFacet(key: FacetKey): Promise<FacetOption[]> {
+// One facet's options; Settings' Hidden Platforms picker reads `platform`
+// through here too, so the two lists can't drift apart.
+export async function fetchFacet(key: FacetKey): Promise<FacetOption[]> {
   const { path, id, name } = FACET_SOURCES[key];
   try {
     const res = await apiFetch(`${path}${path.includes("?") ? "&" : "?"}per=500`, {

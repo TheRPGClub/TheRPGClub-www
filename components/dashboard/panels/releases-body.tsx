@@ -10,8 +10,8 @@ import type { BodyProps } from "./panel-body";
 
 // Upcoming Releases: each game's next release from today (`per_game=next`),
 // on the platforms the member hasn't hidden (the API leaves those out).
-export async function ReleasesBody({ wide }: BodyProps) {
-  const releases = await readReleases();
+export async function ReleasesBody({ viewer, wide }: BodyProps) {
+  const releases = await readReleases(viewer.id);
   return listBody({
     rows: releases,
     title: PANELS.releases.title,
