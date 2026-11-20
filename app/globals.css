@@ -172,6 +172,9 @@
     body {
         @apply bg-background text-foreground;
         font-variant-numeric: tabular-nums;
+        /* Clear of a landscape phone's notch (viewportFit "cover"). */
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
     }
     html {
         @apply font-sans;

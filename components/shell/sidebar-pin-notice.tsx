@@ -23,7 +23,7 @@ export function SidebarPinNotice({
     <div
       className={cn(
         "pointer-events-none z-10",
-        railed ? "fixed bottom-3 left-[calc(var(--sidebar-width-icon)+0.75rem)] w-[14.5rem]" : "absolute inset-x-3 bottom-3",
+        railed ? "fixed bottom-3 left-[calc(var(--sidebar-width-icon)+0.75rem+env(safe-area-inset-left))] w-[14.5rem]" : "absolute inset-x-3 bottom-3",
       )}
     >
       <NoticeSlip role="alert" title="Not saved" className="pointer-events-auto pr-10">

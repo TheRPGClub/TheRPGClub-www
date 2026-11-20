@@ -47,7 +47,7 @@ export function SidebarRailPanel({
       <div
         aria-hidden
         className={cn(
-          "fixed inset-y-0 right-0 left-(--sidebar-width-icon) bg-background/60 transition-opacity duration-200",
+          "fixed inset-y-0 right-0 left-[calc(var(--sidebar-width-icon)+env(safe-area-inset-left))] bg-background/60 transition-opacity duration-200",
           EASE,
           !group && "pointer-events-none opacity-0",
         )}
@@ -60,7 +60,7 @@ export function SidebarRailPanel({
         onBlur={(e) => outside(e.relatedTarget) && onClose(false)}
         onClick={(e) => (e.target as Element).closest("a") && onClose(false)}
         className={cn(
-          "no-scrollbar fixed inset-y-0 left-(--sidebar-width-icon) w-[19.5rem] overflow-y-auto border-r border-sidebar-border bg-sidebar px-1.5 pt-3.5 text-sidebar-foreground shadow-[24px_0_60px_rgb(0_0_0/0.6)] transition-[translate,opacity] duration-260",
+          "no-scrollbar fixed inset-y-0 left-[calc(var(--sidebar-width-icon)+env(safe-area-inset-left))] w-[19.5rem] overflow-y-auto border-r border-sidebar-border bg-sidebar px-1.5 pt-3.5 text-sidebar-foreground shadow-[24px_0_60px_rgb(0_0_0/0.6)] transition-[translate,opacity] duration-260",
           EASE,
           !group && "pointer-events-none -translate-x-3.5 opacity-0",
         )}
