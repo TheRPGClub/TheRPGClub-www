@@ -16,7 +16,7 @@ import { memberName } from "@/lib/achievements";
 import { draftOfGame } from "@/lib/reviews/drafts";
 import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
-import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
+import { isAdminOrAbove, isRegularOrStaff } from "@/lib/staff";
 import { gameEditViewer } from "@/lib/games/game-edit/tabs";
 
 // The game page's reads. The page itself only gates and fills the detail
@@ -101,8 +101,6 @@ export function gamePageGates(
     isAdmin: isAdminOrAbove(membership),
     // Thread link and unlink: the API's Regulars-or-staff gate.
     canEditThreads: isRegularOrStaff(membership),
-    // Refresh release info needs an IGDB link and the API's member gate.
-    canRefreshReleases: game.igdb_id != null && isMemberOrStaff(membership),
     // The hero's Edit game: the Game Edit page's gates.
     canEdit: gameEditViewer(membership) !== null,
   };

@@ -64,7 +64,6 @@ export function GameAboutRail({
         <GameReleases
           gameId={gameId}
           firstReleased={game.initial_release_date}
-          canRefresh={gates.canRefreshReleases}
           calendarShown={show.releaseCalendar}
         />
       </Suspense>

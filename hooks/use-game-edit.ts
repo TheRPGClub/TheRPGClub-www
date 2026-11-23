@@ -4,6 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateGameTextAction } from "@/app/actions/game-edit";
 import {
+  createReleaseAction,
+  deleteReleaseAction,
+  loadReleasesAction,
+  updateReleaseAction,
+} from "@/app/actions/game-edit-releases";
+import {
   gameEditSave,
   saveSummary,
   type GameEditRecord,
@@ -33,6 +39,9 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "release.create": (call) => createReleaseAction(gameId, call.fields),
+    "release.update": (call) => updateReleaseAction(gameId, call.releaseId, call.fields),
+    "release.delete": (call) => deleteReleaseAction(gameId, call.releaseId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -46,6 +55,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     });
   }
 
+  // Replaces one section's record, e.g. after a refresh or a reload.
+  function reloadSection<K extends GameEditSectionKey>(key: K, value: GameEditRecord[K]) {
+    setRecord((prev) => ({ ...prev, [key]: value }));
+  }
+
   function discard() {
     setStage({});
     setErrors({});
@@ -55,7 +69,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
   function save() {
     startSaving(async () => {
       const outcome = await gameEditSave.run(record, stage, viewer, steps);
-      setRecord(outcome.record);
+      // Sections whose saved calls make new ids are read again.
+      const releases = outcome.sections.some((s) => s.key === "releases")
+        ? await loadReleasesAction(gameId)
+        : null;
+      setRecord(releases ? { ...outcome.record, releases } : outcome.record);
       setStage(outcome.staged);
       const failed = outcome.sections.filter((s) => s.status === "failed");
       setErrors(Object.fromEntries(failed.map((s) => [s.key, s.error])));
@@ -68,6 +86,7 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     record,
     stage,
     stageSection,
+    reloadSection,
     changes,
     errors,
     notice,

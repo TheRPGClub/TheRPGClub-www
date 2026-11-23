@@ -18,6 +18,8 @@ import { PlaceholderTab } from "@/components/games/edit/placeholder-tab";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
 import { TextVideoTab } from "@/components/games/edit/text-video-tab";
+import { ReleasesTab } from "@/components/games/edit/releases-tab";
+import type { ReleaseOptions } from "@/lib/games/game-edit/release-options";
 
 export interface GameEditViewProps {
   gameId: number;
@@ -28,6 +30,10 @@ export interface GameEditViewProps {
   viewer: GameEditViewer;
   // The tab `?tab=` asks for, already checked against the viewer.
   tab: GameEditTab;
+  // The Releases tab's platforms and regions, and whether the game has an
+  // IGDB link to refresh its Releases from.
+  releaseOptions: ReleaseOptions;
+  canRefreshReleases: boolean;
 }
 
 // /games/:id/edit (spec api#437, design www#156 round 3): the band with the
@@ -51,12 +57,23 @@ export function GameEditView(p: GameEditViewProps) {
     ),
     images: <PlaceholderTab title="Images" />,
     threads: <PlaceholderTab title="Game Threads" />,
-    releases: <PlaceholderTab title="Releases" />,
+    releases: (
+      <ReleasesTab
+        gameId={p.gameId}
+        loaded={edit.record.releases}
+        staged={edit.stage.releases}
+        error={edit.errors.releases}
+        options={p.releaseOptions}
+        canRefresh={p.canRefreshReleases}
+        onStage={(next) => edit.stageSection("releases", next)}
+        onReload={(releases) => edit.reloadSection("releases", releases)}
+      />
+    ),
     versions: <PlaceholderTab title="Alternate Versions" />,
     hltb: <PlaceholderTab title="HowLongToBeat" />,
   };
   // The tabs' sections in the save module (the rest arrive with www#158-162).
-  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text" };
+  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", releases: "releases" };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (
     <>

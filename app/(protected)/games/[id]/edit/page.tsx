@@ -3,6 +3,8 @@ import { apiFetch } from "@/lib/api";
 import type { ApiSingle, Game } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
+import { fetchGameReleases } from "@/lib/games/game-page";
+import { fetchReleaseOptions } from "@/lib/games/game-edit/release-options";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
 
 export const metadata = { title: "Edit game" };
@@ -25,6 +27,10 @@ export default async function GameEditPage({
   const res = await apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" });
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
+  // Releases are an Admin's section only.
+  const [releases, releaseOptions] = viewer.admin
+    ? await Promise.all([fetchGameReleases(gameId), fetchReleaseOptions()])
+    : [[], { platforms: [], regions: [] }];
 
   return (
     <GameEditView
@@ -32,7 +38,12 @@ export default async function GameEditPage({
       title={game.title}
       coverUrl={game.cover_url}
       artUrl={game.art_url}
-      record={{ text: { description: game.description, featured_video_url: game.featured_video_url } }}
+      record={{
+        text: { description: game.description, featured_video_url: game.featured_video_url },
+        releases: releases ?? [],
+      }}
+      releaseOptions={releaseOptions}
+      canRefreshReleases={game.igdb_id != null}
       viewer={viewer}
       tab={parseGameEditTab(query.tab, viewer)}
     />
