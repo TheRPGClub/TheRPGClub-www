@@ -12,7 +12,7 @@ vi.mock("@/lib/api", () => ({
 const revalidated: string[] = [];
 vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidated.push(p) }));
 
-const { createReviewAction, saveDraftAction, publishReviewAction } = await import(
+const { createReviewAction, saveDraftAction, publishReviewAction, updateReviewAction } = await import(
   "@/app/actions/reviews"
 );
 
@@ -54,10 +54,30 @@ describe("saveDraftAction", () => {
     expect(revalidated).toEqual([]);
   });
 
-  it("reports a refused save", async () => {
+  it("reports a refused save as refused, so autosave won't retry it", async () => {
     answer = [422, { error: "Validation failed" }];
     const result = await saveDraftAction(5, input);
-    expect(result).toEqual({ ok: false, error: "Validation failed" });
+    expect(result).toMatchObject({ ok: false, error: "Validation failed", refused: true });
+  });
+
+  it("reports a server failure as worth retrying", async () => {
+    answer = [503, { error: "service_unavailable" }];
+    const result = await saveDraftAction(5, input);
+    expect(result).toMatchObject({ ok: false, refused: false });
+  });
+
+  it("refuses a Draft the form's own checks reject, without calling the API", async () => {
+    const result = await saveDraftAction(5, { ...input, rating: 101 });
+    expect(result).toMatchObject({ ok: false, refused: true });
+    expect(calls).toEqual([]);
+  });
+});
+
+describe("updateReviewAction", () => {
+  it("sends the first take's score as original_rating, so a revisited Review keeps it", async () => {
+    await updateReviewAction("111", 5, 7, { ...input, rating: 72 });
+    expect(calls[0]).toMatchObject({ path: "/api/v1/reviews/5", method: "PATCH" });
+    expect(calls[0].body).toMatchObject({ data: { rating: 72, original_rating: 72 } });
   });
 });
 
