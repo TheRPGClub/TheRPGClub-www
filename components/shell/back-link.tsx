@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 // name in label caps, the arrow alone on phones. Its accessible name says
 // where it goes either way. Top-level pages have none. `onArt` is for one
 // laid on a key-art banner.
+//
+// It sits above the title that follows it (relative z-10): an Anton title
+// set tighter than its font's ascent (DeskHeader's leading-[0.85]) has a
+// glyph box reaching up over the link, and as the later sibling it would
+// take the click.
 export function BackLink({
   href,
   label,
@@ -28,7 +33,7 @@ export function BackLink({
       aria-label={`Back to ${label}`}
       title={`Back to ${label}`}
       className={cn(
-        "mb-3 items-center gap-1.5 self-start [&_svg]:size-3.5 max-md:-ml-1.5 max-md:size-8 max-md:justify-center max-md:[&_svg]:size-5",
+        "relative z-10 mb-3 items-center gap-1.5 self-start [&_svg]:size-3.5 max-md:-ml-1.5 max-md:size-8 max-md:justify-center max-md:[&_svg]:size-5",
         className,
       )}
     >
