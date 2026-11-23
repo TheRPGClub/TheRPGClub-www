@@ -59,6 +59,11 @@
             }
             &[data-variant="highlight"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-highlight text-highlight-foreground hover:bg-highlight/85;
+                /* Not yet available (Publish with no score): greyed into
+                   the ground with a strong-rule edge, not a faded yellow. */
+                &:disabled {
+                    @apply bg-muted text-faint-foreground opacity-100 ring-1 ring-border-strong ring-inset;
+                }
             }
             &[data-variant="nr"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
@@ -1266,6 +1271,10 @@
             }
             &[data-variant="inline-link"] {
                 @apply underline decoration-gotm underline-offset-3 hover:text-highlight focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
+            }
+            /* www#148: a pencilled action on the review desk's Draft. */
+            &[data-variant="pencil"] {
+                @apply text-highlight italic decoration-highlight/70 underline-offset-3 hover:underline focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight;
             }
         }
         :is([data-slot="input"], [data-slot="textarea"])[data-variant="headline"] {

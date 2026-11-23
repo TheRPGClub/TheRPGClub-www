@@ -173,6 +173,7 @@ describe("Themes style the staff desk variants", () => {
       "button/variant=destructive-row",
       "button/variant=inline-link",
       "button/variant=poster",
+      "button/variant=pencil",
       "input/variant=headline",
       "textarea/variant=inset",
     ];

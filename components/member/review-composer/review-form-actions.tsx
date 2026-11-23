@@ -12,6 +12,7 @@ export function ReviewFormActions({
   rated,
   onDelete,
   onTransfer,
+  transferNeedsScore = true,
   onCancel,
 }: {
   // Whether this is a saved review being edited rather than a new one.
@@ -21,6 +22,8 @@ export function ReviewFormActions({
   rated: boolean;
   onDelete?: () => void;
   onTransfer?: () => void;
+  // A new review moves to the full editor as a Draft, which needs no score.
+  transferNeedsScore?: boolean;
   onCancel?: () => void;
 }) {
   return (
@@ -39,7 +42,7 @@ export function ReviewFormActions({
             variant="ghost"
             size="sm"
             onClick={onTransfer}
-            disabled={pending || !rated}
+            disabled={pending || (transferNeedsScore && !rated)}
           >
             <Maximize2 />
             Open full review editor

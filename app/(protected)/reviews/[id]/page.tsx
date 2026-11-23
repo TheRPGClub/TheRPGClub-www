@@ -17,6 +17,7 @@ import type {
 } from "@/lib/api/types";
 import { fetchAuthor } from "@/lib/games/reviews-page";
 import { accentForGame } from "@/lib/reviews/accent";
+import { isDraft } from "@/lib/reviews/draft";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { DetailTemplate } from "@/components/templates/detail-template";
@@ -79,9 +80,11 @@ export default async function ReviewPage({
   const accent = accentForGame(game);
   const ownerId = session?.principal.discord_id ?? null;
   const isMine = ownerId !== null && ownerId === review.user_id;
+  // A Draft has no read view for its author: it opens straight in the desk.
+  const draft = isDraft(review);
   // While the author edits, the editor's own banner takes the page banner's
   // place, so the game's art shows once.
-  const editing = isMine && edit !== undefined;
+  const editing = isMine && (edit !== undefined || draft);
   const hasBody = reviewBodyText(review.body) !== null;
 
   return (
@@ -95,7 +98,8 @@ export default async function ReviewPage({
             rating={review.rating}
             authorId={review.user_id}
             authorName={authorName}
-            createdAt={review.created_at}
+            // A Draft finished later reads as reviewed the day it went out.
+            createdAt={review.published_at ?? review.created_at}
             canEdit={isMine}
             title={review.title}
             badge={features.preview("reviews") && <PreviewBadge />}
@@ -112,7 +116,7 @@ export default async function ReviewPage({
         game={game}
         accent={accent}
         canEdit={isMine}
-        startEditing={edit !== undefined}
+        startEditing={editing}
       >
         <div className="space-y-12">
           <article aria-label="Review" className="max-w-[68ch] md:px-1">

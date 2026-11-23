@@ -7,6 +7,7 @@ import { ReviewScorecardEditor } from "./review-scorecard-editor";
 import { ReviewFormActions } from "./review-composer/review-form-actions";
 import type { ReviewDeskGame } from "./review-desk/desk-game";
 import { QuickSheet } from "./review-desk/quick-sheet";
+import { FormDraftStrip } from "./review-desk/form-draft-strip";
 import { ReviewDesk } from "./review-desk/review-desk";
 
 export interface ReviewFormProps {
@@ -16,16 +17,19 @@ export interface ReviewFormProps {
   onCancel?: () => void;
   // Fires after a successful save with the updated review.
   onSaved?: (review: Review) => void;
-  // Fires after a successful delete. A caller whose whole page *is* this
-  // review needs to navigate away rather than refresh into a 404, which is
-  // why this is separate from `onCancel`.
+  // Fires after a successful delete, or a Draft's discard. A caller whose
+  // whole page *is* this review needs to navigate away rather than refresh
+  // into a 404, which is why this is separate from `onCancel`.
   onDeleted?: () => void;
+  // Fires after a Draft is published, with the Published Review.
+  onPublished?: (review: Review) => void;
   // When given, the form offers to move to the full-page editor. Providing it
   // is what makes the button exist at all — the small editor on a game page
   // has somewhere bigger to go, the full page does not.
   //
   // The handover saves first: leaving with unsaved edits would silently drop
-  // them, and the new review has no page to move to until it has an id.
+  // them, and the new review has no page to move to until it has an id. A
+  // new review moves as a Draft, so it needs no score yet.
   onTransfer?: (review: Review) => void;
   // Allow callers to render a delete button inline (only useful when editing).
   showDelete?: boolean;
@@ -54,6 +58,7 @@ export function ReviewForm({
   onCancel,
   onSaved,
   onDeleted,
+  onPublished,
   onTransfer,
   showDelete,
   accent = "neutral",
@@ -65,25 +70,31 @@ export function ReviewForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // A Draft saves itself; only Publish takes it further.
+    if (form.draft) return;
     form.save((review) => {
       onSaved?.(review);
       form.refresh();
     });
   };
 
-  const footer = (
+  const alert = form.error && (
+    <p role="alert" className="text-sm text-destructive">
+      {form.error}
+    </p>
+  );
+  const footer = form.draft ? (
+    alert
+  ) : (
     <>
-      {form.error && (
-        <p role="alert" className="text-sm text-destructive">
-          {form.error}
-        </p>
-      )}
+      {alert}
       <ReviewFormActions
         editing={Boolean(existing)}
         pending={pending}
         rated={form.rating !== null}
         onDelete={showDelete && existing ? form.remove : undefined}
-        onTransfer={onTransfer && (() => form.save(onTransfer))}
+        onTransfer={onTransfer && (() => (existing ? form.save(onTransfer) : form.startDraft(onTransfer)))}
+        transferNeedsScore={Boolean(existing)}
         onCancel={onCancel}
       />
     </>
@@ -97,6 +108,7 @@ export function ReviewForm({
           game={game}
           accent={accent}
           footer={footer}
+          strip={form.draft && <FormDraftStrip form={form} accent={accent} onPublished={onPublished} />}
           scorecard={
             <ReviewScorecardEditor
               value={facets}
@@ -131,3 +143,4 @@ export function ReviewForm({
     </form>
   );
 }
+

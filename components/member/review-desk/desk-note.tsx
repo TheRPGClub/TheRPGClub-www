@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 // `lg`, where the notes sit in the margin; stacked under the sheet on smaller
 // screens they lie flat).
 export function DeskNote({
+  id,
   heading,
   aside,
   className,
   children,
 }: {
+  id?: string;
   heading?: string;
   aside?: string | null;
   className?: string;
@@ -17,6 +19,7 @@ export function DeskNote({
 }) {
   return (
     <section
+      id={id}
       aria-label={heading}
       className={cn(
         "relative rounded-sm bg-muted px-4.5 pt-4.5 pb-4 shadow-[0_10px_24px_rgb(0_0_0/0.45)]",

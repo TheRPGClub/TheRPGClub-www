@@ -726,7 +726,8 @@ export interface Review {
   // backend doesn't send the key at all until it grows a `title` column, so
   // this stays truthful about what a response can actually look like today.
   title?: string | null;
-  rating: number;
+  // Null only on a Draft that has no score yet: publishing needs one.
+  rating: number | null;
   // The per-category scorecard (story, music, combat...), or null for a review
   // written without one — which is every review from before it existed, and
   // still a first-class choice ("quick take"). Never read it directly:
@@ -740,9 +741,9 @@ export interface Review {
   // ./review-body.ts normalizes all three for display, `reviewBodyText` gives
   // plain text for previews and clamps.
   body: ReviewBody;
-  // A write-only input: the review resources never send it back, nor
-  // `updated_at`. Unshared reviews are simply absent for other members.
-  is_shared?: boolean;
+  // When it was published; null while it is a Draft (only its author sees
+  // a Draft). Set once and never cleared. Absent on shapes that predate it.
+  published_at?: string | null;
   created_at: string;
   updated_at?: string;
   user?: User | null;
