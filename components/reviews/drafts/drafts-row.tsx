@@ -29,7 +29,7 @@ export function DraftsRow({
 
   if (total === 1) {
     return (
-      <section aria-label="Your draft">
+      <section aria-label="Your draft" className="mt-4.5">
         <DraftPaper fold={20} className={row}>
           <DraftScoreBox rating={newest.rating} size="sm" />
           <div className="min-w-0 flex-1 basis-[calc(100%-70px)] sm:basis-auto">
@@ -56,7 +56,7 @@ export function DraftsRow({
   const named = drafts.slice(0, NAMED);
   const more = total - named.length;
   return (
-    <section aria-label="Your drafts">
+    <section aria-label="Your drafts" className="mt-4.5">
       <DraftPaper fold={20} edges={total - 1} edgeStep={3.5} className={row}>
         <p className="m-0 flex shrink-0 items-baseline gap-1.5">
           <b className="font-headline text-[2.6rem] leading-[0.85] font-normal">{total}</b>
