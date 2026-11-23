@@ -70,6 +70,7 @@ function YearQuarter({
           <DeskSelect
             groups={[{ options: QUARTERS }]}
             value={q}
+            label={`${label} quarter`}
             onValueChange={(next) => {
               setQ(next);
               emit(year, next);

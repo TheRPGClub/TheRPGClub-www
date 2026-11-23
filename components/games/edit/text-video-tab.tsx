@@ -3,6 +3,7 @@
 import { CirclePlay, Undo2 } from "lucide-react";
 import type { GameText, TextStage } from "@/lib/games/game-edit";
 import { featuredVideoEmbed } from "@/lib/games/featured-video";
+import { textFieldEdited } from "@/lib/games/game-edit/text";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +27,7 @@ export function TextVideoTab({
   onStage: (next: TextStage | undefined) => void;
 }) {
   const value = (f: Field) => (staged && f in staged ? staged[f] : loaded[f]) ?? "";
-  const edited = (f: Field) => !!staged && f in staged && (staged[f] ?? "") !== (loaded[f] ?? "");
+  const edited = (f: Field) => textFieldEdited(loaded, staged, f);
   const set = (f: Field, v: string) => onStage({ ...staged, [f]: v });
   const undo = (f: Field) => {
     const rest = { ...staged };

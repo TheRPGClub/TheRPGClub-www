@@ -34,6 +34,12 @@ function changed(loaded: GameText, staged: TextStage): Partial<GameText> {
   return fields;
 }
 
+// Whether a field's staged value would change the record, by the same
+// tidying Save all uses (trailing spaces in a link don't count).
+export function textFieldEdited(loaded: GameText, staged: TextStage | undefined, field: keyof GameText): boolean {
+  return !!staged && field in changed(loaded, staged);
+}
+
 export function isWebLink(value: string): boolean {
   try {
     const url = new URL(value);

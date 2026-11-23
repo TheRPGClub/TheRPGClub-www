@@ -40,7 +40,10 @@ export type ImageCall =
   | { kind: "image.update"; imageId: number; fields: { is_primary?: true; position?: number } }
   | { kind: "image.delete"; imageId: number };
 
-// Server actions carry at most 5 MB (next.config.ts), multipart included.
+// Server actions carry at most 5 MB (next.config.ts), multipart included,
+// and Vercel refuses a function body over about 4.5 MB before Next sees it,
+// so 4 MB it is, though the API takes 10 MB. Larger images need a direct
+// upload to the API or storage.
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -48,7 +51,7 @@ export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"
 export function imageFileProblem(file: File): string | null {
   if (!IMAGE_TYPES.includes(file.type)) return `${file.name} isn't a JPEG, PNG, WebP or GIF.`;
   if (file.size === 0) return `${file.name} is empty.`;
-  if (file.size > MAX_IMAGE_BYTES) return `${file.name} is larger than 4 MB.`;
+  if (file.size > MAX_IMAGE_BYTES) return `${file.name} is larger than 4 MB, the most the site can upload. Use a smaller copy.`;
   return null;
 }
 
@@ -68,15 +71,16 @@ const deleted = (staged: ImagesStage, id: number) => (staged.deletes ?? []).incl
 const uploadsOf = (staged: ImagesStage, kind: ImageKind) => (staged.uploads ?? []).filter((u) => u.kind === kind);
 
 // The kind's primary once saved: the one starred, else the record's while it
-// stays; with that deleted, or a kind with none getting uploads, the first left.
+// stays; with that deleted, the first left. A kind with no primary keeps its
+// images as they are, and its first upload (if any) becomes primary.
 function primaryOf(loaded: GameImageEntry[], staged: ImagesStage, kind: ImageKind): ImageRef | null {
   const remaining = orderOf(loaded, staged, kind).filter((id) => !deleted(staged, id));
   const uploads = uploadsOf(staged, kind).map((u) => u.key);
   const starred = staged.primary?.[kind];
   if (starred !== undefined && [...remaining, ...uploads].includes(starred)) return starred;
   const current = loadedOfKind(loaded, kind).find((i) => i.is_primary)?.image_id;
-  if (current !== undefined && remaining.includes(current)) return current;
-  if (current === undefined && uploads.length === 0) return null;
+  if (current === undefined) return uploads[0] ?? null;
+  if (remaining.includes(current)) return current;
   return remaining[0] ?? uploads[0] ?? null;
 }
 
@@ -115,7 +119,8 @@ function changes(loaded: GameImageEntry[], staged: ImagesStage): number {
   for (const kind of IMAGE_KINDS) {
     const starred = staged.primary?.[kind];
     const current = loadedOfKind(loaded, kind).find((i) => i.is_primary)?.image_id;
-    if (starred !== undefined && starred !== current && primaryOf(loaded, staged, kind) === starred) n += 1;
+    // Starring a pending upload rides on its upload, already counted.
+    if (typeof starred === "number" && starred !== current && primaryOf(loaded, staged, kind) === starred) n += 1;
     if (reordered(loaded, staged, kind)) n += 1;
   }
   return n;

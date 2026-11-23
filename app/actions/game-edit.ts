@@ -3,8 +3,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { GameText, HltbField, StepResult } from "@/lib/games/game-edit";
-import type { Hltb } from "@/lib/hltb";
+import type { GameText, HltbUpsertFields, StepResult } from "@/lib/games/game-edit";
 
 // The Game Edit page's steps (spec api#437): each saves one planned call of
 // the Game Edit save module and answers { ok } or { ok: false, error }.
@@ -50,7 +49,7 @@ export async function updateGameTextAction(gameId: number, fields: Partial<GameT
 
 // The game's HowLongToBeat times entered by hand: one upsert carrying only
 // the changed fields (Admins; the page never offers it to anyone else).
-export async function upsertHltbAction(gameId: number, fields: Partial<Pick<Hltb, HltbField>>): Promise<StepResult> {
+export async function upsertHltbAction(gameId: number, fields: HltbUpsertFields): Promise<StepResult> {
   if (!validId(gameId)) return { ok: false, error: "That game can't be edited." };
   let res: Response;
   try {

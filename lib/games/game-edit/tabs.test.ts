@@ -48,5 +48,6 @@ describe("Game Edit access", () => {
     expect(gameEditTabNote(2, false)).toEqual({ note: "2 staged", tone: "staged" });
     expect(gameEditTabNote(2, true)).toEqual({ note: "Didn't save", tone: "bad" });
     expect(gameEditTabNote(0, false)).toEqual({ note: "" });
+    expect(gameEditTabNote(0, false, true)).toEqual({ note: "Unavailable", tone: "bad" });
   });
 });

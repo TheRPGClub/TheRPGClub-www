@@ -41,8 +41,14 @@ export function gameEditHref(gameId: number, tab?: GameEditTab): string {
   return tab && tab !== "text" ? `/games/${gameId}/edit?tab=${tab}` : `/games/${gameId}/edit`;
 }
 
-// A tab's state line: "Didn't save" after a failed save, else "2 staged".
-export function gameEditTabNote(staged: number, failed: boolean): { note: string; tone?: "staged" | "bad" } {
+// A tab's state line: "Unavailable" when its section can't be read,
+// "Didn't save" after a failed save, else "2 staged".
+export function gameEditTabNote(
+  staged: number,
+  failed: boolean,
+  unavailable = false,
+): { note: string; tone?: "staged" | "bad" } {
+  if (unavailable) return { note: "Unavailable", tone: "bad" };
   if (failed) return { note: "Didn't save", tone: "bad" };
   if (staged > 0) return { note: `${staged} staged`, tone: "staged" };
   return { note: "" };

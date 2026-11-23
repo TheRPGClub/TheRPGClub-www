@@ -95,7 +95,8 @@ export function HltbTab({
         ))}
         <div className="flex min-w-0 flex-col gap-1.5 sm:col-span-3 lg:col-span-1">
           <HltbField id="hltb-url" label="HowLongToBeat page" value={value("url")} edited={edited("url")} onChange={(v) => set("url", v)} onUndo={() => undo("url")} />
-          {loaded?.name && (
+          {/* The matched name belongs to the saved link: a staged new link clears it on save. */}
+          {loaded?.name && !edited("url") && (
             <p className="flex items-center gap-1.5 text-[0.9rem] text-dim-foreground">
               <Link2 aria-hidden className="size-3.75 text-faint-foreground" />
               Matched <b className="font-semibold text-foreground">{loaded.name}</b>

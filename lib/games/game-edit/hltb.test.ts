@@ -74,9 +74,24 @@ describe("HowLongToBeat section", () => {
     expect(calls).toEqual([
       {
         kind: "hltb.upsert",
-        fields: { main: "40½ Hours", main_sides: null, url: "https://howlongtobeat.com/game/2" },
+        fields: { main: "40½ Hours", main_sides: null, url: "https://howlongtobeat.com/game/2", name: null },
       },
     ]);
+  });
+
+  it("clears the matched name with a changed link, and counts it as one change", async () => {
+    const { calls, run } = steps();
+    const stage = { hltb: { url: "https://howlongtobeat.com/game/9" } };
+    expect(gameEditSave.changes(record, stage, admin).total).toBe(1);
+    const outcome = await gameEditSave.run(record, stage, admin, run);
+    expect(calls).toEqual([{ kind: "hltb.upsert", fields: { url: "https://howlongtobeat.com/game/9", name: null } }]);
+    expect(outcome.record.hltb).toMatchObject({ url: "https://howlongtobeat.com/game/9", name: null });
+  });
+
+  it("keeps the matched name when only the times change", async () => {
+    const { calls, run } = steps();
+    await gameEditSave.run(record, { hltb: { main: "40" } }, admin, run);
+    expect(calls).toEqual([{ kind: "hltb.upsert", fields: { main: "40 Hours" } }]);
   });
 
   it("makes no call when the staged times match the saved ones", async () => {

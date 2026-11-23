@@ -58,7 +58,7 @@ async function GameContent({
   if (!page) notFound();
   const { game, session, features, show, reviews, reviewTotal, ownDraft } = page;
   const viewer = viewerOnGame(game, session?.principal.discord_id ?? null);
-  const gates = gamePageGates(game, session?.membership);
+  const gates = gamePageGates(session?.membership);
 
   return (
     <DetailTemplate

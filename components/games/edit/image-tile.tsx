@@ -46,7 +46,7 @@ export function ImageTile({
         )}
       >
         {src && (
-          // eslint-disable-next-line @next/next/no-img-element -- remote game art and local previews (blob: URLs), which next/image can't take
+          // eslint-disable-next-line @next/next/no-img-element -- remote game art and local previews (data: URLs), which next/image can't take
           <img
             src={src}
             alt=""

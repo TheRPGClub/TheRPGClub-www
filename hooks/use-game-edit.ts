@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { updateGameTextAction, upsertHltbAction } from "@/app/actions/game-edit";
 import {
   linkThreadAction,
@@ -22,9 +22,15 @@ import {
   loadReleasesAction,
   updateReleaseAction,
 } from "@/app/actions/game-edit-releases";
+import { loadGameThreadsAction, loadVersionsAction } from "@/app/actions/game-edit-reads";
 import {
   gameEditSave,
+  recordAfterSave,
   saveSummary,
+  SECTION_NOT_READ_BACK,
+  stageAfterSave,
+  withoutUnavailable,
+  type GameEditUnavailable,
   type GameEditRecord,
   type GameEditSectionKey,
   type GameEditStage,
@@ -43,13 +49,24 @@ export interface GameEditSaveNotice {
 // edits here; the sticky bar counts them, Discard drops them, and Save all
 // runs the Game Edit save module with the server actions as its steps. A
 // failed section keeps its edits and shows its error until the next save.
-export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: GameEditViewer) {
+// While Save all runs nothing stages (the tabs are locked, see `saving`). A
+// section whose read failed is `unavailable`: it shows why and can't stage.
+export function useGameEdit(
+  gameId: number,
+  loaded: GameEditRecord,
+  viewer: GameEditViewer,
+  unreadable: GameEditUnavailable = {},
+) {
   const router = useRouter();
   const [record, setRecord] = useState(loaded);
-  const [stage, setStage] = useState<GameEditStage>({});
+  const [rawStage, setStage] = useState<GameEditStage>({});
   const [errors, setErrors] = useState<Partial<Record<GameEditSectionKey, string>>>({});
   const [notice, setNotice] = useState<GameEditSaveNotice | null>(null);
+  const [unavailable, setUnavailable] = useState<GameEditUnavailable>(unreadable);
   const [saving, startSaving] = useTransition();
+  // Set at the click, before React re-renders with `saving`.
+  const savingRef = useRef(false);
+  const stage = withoutUnavailable(rawStage, unavailable);
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
@@ -66,15 +83,21 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
   };
   // Sections whose saved record only the API knows (new image and release
-  // ids, image URLs): read back after a save, whether it went through or not.
+  // ids, image URLs, a linked thread's jump link, a linked version's cover):
+  // read back after a save, whether it went through or not, since a failed
+  // section may have saved some of its calls.
   const reloads: { [K in GameEditSectionKey]?: () => Promise<GameEditRecord[K] | null> } = {
     images: () => listGameImagesAction(gameId),
+    threads: () => loadGameThreadsAction(gameId),
     releases: () => loadReleasesAction(gameId),
+    versions: () => loadVersionsAction(gameId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
-  // Sets (or, with undefined, drops) one section's staged edits.
+  // Sets (or, with undefined, drops) one section's staged edits. Nothing
+  // stages while Save all runs or into a section that can't be edited.
   function stageSection<K extends GameEditSectionKey>(key: K, staged: GameEditStage[K] | undefined) {
+    if (savingRef.current || unavailable[key]) return;
     setStage((prev) => {
       const next = { ...prev };
       if (staged === undefined) delete next[key];
@@ -84,9 +107,16 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
   }
 
   // Puts a section's fresh record in place: after a save (see `reloads`)
-  // or after a refresh or lookup a tab ran (an action, not an edit).
+  // or after a refresh or lookup a tab ran (an action, not an edit). A
+  // fresh read makes an unavailable section editable again.
   function reloadSection<K extends GameEditSectionKey>(key: K, loaded: GameEditRecord[K]) {
     setRecord((prev) => ({ ...prev, [key]: loaded }));
+    setUnavailable((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   }
 
   function discard() {
@@ -96,24 +126,37 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
   }
 
   function save() {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    const clicked = stage;
     startSaving(async () => {
-      const outcome = await gameEditSave.run(record, stage, viewer, steps);
-      setRecord(outcome.record);
-      setStage(outcome.staged);
-      const failed = outcome.sections.filter((s) => s.status === "failed");
-      setErrors(Object.fromEntries(failed.map((s) => [s.key, s.error])));
-      setNotice(failed.length > 0 ? { title: saveSummary(outcome).split(":")[0], failed: failed.map((s) => s.label) } : null);
-      for (const { key } of outcome.sections) {
-        const fresh = await reloads[key]?.();
-        if (fresh) reloadSection(key, fresh);
+      try {
+        const outcome = await gameEditSave.run(record, clicked, viewer, steps);
+        setRecord((prev) => recordAfterSave(prev, outcome));
+        setStage((prev) => stageAfterSave(prev, clicked, outcome));
+        const failed = outcome.sections.filter((s) => s.status === "failed");
+        setErrors(Object.fromEntries(failed.map((s) => [s.key, s.error])));
+        setNotice(failed.length > 0 ? { title: saveSummary(outcome).split(":")[0], failed: failed.map((s) => s.label) } : null);
+        const fresh = await Promise.all(
+          outcome.sections.map(async ({ key }) => [key, reloads[key] ? await reloads[key]() : undefined] as const),
+        );
+        for (const [key, data] of fresh) {
+          if (data) reloadSection(key, data as GameEditRecord[typeof key]);
+          // Its record may hold guesses (a new Release's placeholder id), so
+          // it can't be edited until the page is read again.
+          else if (data === null) setUnavailable((prev) => ({ ...prev, [key]: SECTION_NOT_READ_BACK }));
+        }
+        router.refresh();
+      } finally {
+        savingRef.current = false;
       }
-      router.refresh();
     });
   }
 
   return {
     record,
     stage,
+    unavailable,
     stageSection,
     reloadSection,
     changes,

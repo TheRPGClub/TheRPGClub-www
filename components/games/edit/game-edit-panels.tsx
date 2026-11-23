@@ -1,4 +1,5 @@
 import type { GameEdit } from "@/hooks/use-game-edit";
+import type { GameEditSectionKey } from "@/lib/games/game-edit";
 import type { GameEditTab } from "@/lib/games/game-edit/tabs";
 import type { GameEditViewProps } from "@/components/games/edit/game-edit-view";
 import { HltbTab } from "@/components/games/edit/hltb-tab";
@@ -7,9 +8,38 @@ import { ReleasesTab } from "@/components/games/edit/releases-tab";
 import { TextVideoTab } from "@/components/games/edit/text-video-tab";
 import { ThreadsTab } from "@/components/games/edit/threads-tab";
 import { VersionsTab } from "@/components/games/edit/versions-tab";
+import { UnavailableTab } from "@/components/games/edit/unavailable-tab";
 
-// The Game Edit page's section a tab, each wired to the save module.
+const TITLES: Record<GameEditSectionKey, string> = {
+  text: "Description & video",
+  images: "Images",
+  threads: "Game Threads",
+  releases: "Releases",
+  versions: "Alternate Versions",
+  hltb: "HowLongToBeat",
+};
+
+// The Game Edit page's section a tab, each wired to the save module. A
+// section that can't be edited says why; while Save all runs every section
+// is locked (inert), so nothing is staged that the save would overwrite.
 export function gameEditPanels(p: GameEditViewProps, edit: GameEdit): Record<GameEditTab, React.ReactNode> {
+  const panels = sections(p, edit);
+  return Object.fromEntries(
+    (Object.keys(panels) as GameEditSectionKey[]).map((key) => {
+      const why = edit.unavailable[key];
+      const panel = why ? (
+        <UnavailableTab title={TITLES[key]} message={why} />
+      ) : (
+        <div inert={edit.saving} aria-busy={edit.saving}>
+          {panels[key]}
+        </div>
+      );
+      return [key, panel];
+    }),
+  ) as Record<GameEditTab, React.ReactNode>;
+}
+
+function sections(p: GameEditViewProps, edit: GameEdit): Record<GameEditSectionKey, React.ReactNode> {
   return {
     text: (
       <TextVideoTab

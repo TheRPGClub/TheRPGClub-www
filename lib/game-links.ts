@@ -1,5 +1,3 @@
-import type { ThreadSearchResult } from "@/lib/api/types";
-
 // The game page's link controls: alternate versions (Admins) and Discord
 // threads (Regulars, or Moderator and up). Pure helpers, shared by the
 // actions and the pickers.
@@ -44,16 +42,4 @@ export function versionPickProblem(
   if (pickedId === gameId) return "That's this game. Pick another one.";
   if (alternateIds.includes(pickedId)) return "Already linked as a version.";
   return null;
-}
-
-// Whether a search result is already linked to `gameId`, and the other games
-// it is linked to (a thread can link to several).
-export function threadLinkState(
-  result: ThreadSearchResult,
-  gameId: number,
-): { linkedHere: boolean; others: string[] } {
-  return {
-    linkedHere: result.games.some((g) => g.game_id === gameId),
-    others: result.games.filter((g) => g.game_id !== gameId).map((g) => g.title),
-  };
 }

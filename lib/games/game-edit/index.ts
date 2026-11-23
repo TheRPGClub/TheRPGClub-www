@@ -48,4 +48,12 @@ export type { GameImageEntry, ImageCall, ImagesStage, ImageKind, PendingImage } 
 export type { GameThreadRef, ThreadRef, ThreadsStage } from "./threads";
 export type { ReleaseCall, ReleaseDraft, ReleaseFields, ReleasesStage } from "./releases";
 export { alternateVersion, type AlternateVersion, type VersionsStage } from "./versions";
-export { hltbFieldValue, type HltbField, type HltbStage, type HltbTimes } from "./hltb";
+export { hltbFieldValue, type HltbField, type HltbStage, type HltbTimes, type HltbUpsertFields } from "./hltb";
+export {
+  recordAfterSave,
+  SECTION_NOT_READ_BACK,
+  SECTION_UNREADABLE,
+  stageAfterSave,
+  withoutUnavailable,
+  type GameEditUnavailable,
+} from "./after-save";

@@ -17,7 +17,6 @@ import { memberName } from "@/lib/achievements";
 import { draftOfGame } from "@/lib/reviews/drafts";
 import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
-import { isAdminOrAbove, isRegularOrStaff } from "@/lib/staff";
 import { gameEditViewer } from "@/lib/games/game-edit/tabs";
 
 // The game page's reads. The page itself only gates and fills the detail
@@ -92,21 +91,11 @@ export async function loadGamePage(gameId: number) {
 
 export type GamePageShow = NonNullable<Awaited<ReturnType<typeof loadGamePage>>>["show"];
 
-// What the viewer may do on the game page, by their membership.
-export function gamePageGates(
-  game: Pick<Game, "igdb_id">,
-  membership: Parameters<typeof isAdminOrAbove>[0],
-) {
-  return {
-    isAdmin: isAdminOrAbove(membership),
-    // Thread link and unlink: the API's Regulars-or-staff gate.
-    canEditThreads: isRegularOrStaff(membership),
-    // The hero's Edit game: the Game Edit page's gates.
-    canEdit: gameEditViewer(membership) !== null,
-  };
+// What the viewer may do on the game page, by their membership: the hero's
+// Edit game, behind the Game Edit page's gates.
+export function gamePageGates(membership: Parameters<typeof gameEditViewer>[0]) {
+  return { canEdit: gameEditViewer(membership) !== null };
 }
-
-export type GamePageGates = ReturnType<typeof gamePageGates>;
 
 export function formatReleaseDate(date: string, month: "short" | "long"): string {
   return new Date(date).toLocaleDateString("en-US", {

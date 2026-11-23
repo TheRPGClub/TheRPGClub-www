@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle, Game, Thread } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
-import { alternateVersion } from "@/lib/games/game-edit";
+import { alternateVersion, SECTION_UNREADABLE, type GameEditUnavailable } from "@/lib/games/game-edit";
 import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { fetchGameRelations, fetchGameReleases } from "@/lib/games/game-page";
@@ -35,11 +35,22 @@ export default async function GameEditPage({
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
   const threads = await fetchGameThreads(gameId);
-  const images = viewer.admin ? ((await listGameImagesAction(gameId)) ?? []) : [];
+  const images = viewer.admin ? await listGameImagesAction(gameId) : [];
   // Releases are an Admin's section only.
   const [releases, releaseOptions] = viewer.admin
     ? await Promise.all([fetchGameReleases(gameId), fetchReleaseOptions()])
     : [[], { platforms: [], regions: [] }];
+  // An Admin's section whose read failed shows as unavailable, rather than
+  // empty and editable; the rest of the page still works.
+  const failed = {
+    images: images === null,
+    releases: releases === null || releaseOptions.platforms.length === 0,
+    versions: relations === null,
+    hltb: hltb === undefined,
+  };
+  const unavailable: GameEditUnavailable = viewer.admin
+    ? Object.fromEntries(Object.entries(failed).flatMap(([key, bad]) => (bad ? [[key, SECTION_UNREADABLE]] : [])))
+    : {};
 
   return (
     <GameEditView
@@ -49,12 +60,13 @@ export default async function GameEditPage({
       artUrl={game.art_url}
       record={{
         text: { description: game.description, featured_video_url: game.featured_video_url },
-        images,
+        images: images ?? [],
         threads,
         releases: releases ?? [],
         versions: (relations?.alternates ?? []).map(alternateVersion),
         hltb: hltb ?? null,
       }}
+      unavailable={unavailable}
       releaseOptions={releaseOptions}
       canRefreshReleases={game.igdb_id != null}
       viewer={viewer}

@@ -17,9 +17,13 @@ export type HltbTimes = Hltb | null;
 // What the editor typed: hours ("37", "52.5") and the link, per field.
 export type HltbStage = Partial<Record<HltbField, string>>;
 
+// The upsert's fields: the edited ones, and `name` cleared with a new link
+// (the matched name belonged to the old page).
+export type HltbUpsertFields = Partial<Pick<Hltb, HltbField | "name">>;
+
 export interface HltbUpsertCall {
   kind: "hltb.upsert";
-  fields: Partial<Pick<Hltb, HltbField>>;
+  fields: HltbUpsertFields;
 }
 
 // A saved time ("52½ Hours", "45 Mins") as the field shows it: "52.5".
@@ -43,8 +47,8 @@ function typedHours(text: string): number | null {
   return /^\d+(\.\d+)?$/.test(value) && Number(value) > 0 ? Number(value) : NaN;
 }
 
-function changed(loaded: HltbTimes, staged: HltbStage): Partial<Pick<Hltb, HltbField>> {
-  const fields: Partial<Pick<Hltb, HltbField>> = {};
+function changed(loaded: HltbTimes, staged: HltbStage): HltbUpsertFields {
+  const fields: HltbUpsertFields = {};
   for (const f of TIMES) {
     const text = staged[f];
     if (text === undefined) continue;
@@ -57,10 +61,17 @@ function changed(loaded: HltbTimes, staged: HltbStage): Partial<Pick<Hltb, HltbF
   }
   if (staged.url !== undefined) {
     const url = staged.url.trim() || null;
-    if (url !== (loaded?.url?.trim() || null)) fields.url = url;
+    if (url !== (loaded?.url?.trim() || null)) {
+      fields.url = url;
+      if (loaded?.name) fields.name = null;
+    }
   }
   return fields;
 }
+
+// The edits the editor made; a cleared name rides on its link.
+const changeCount = (loaded: HltbTimes, staged: HltbStage) =>
+  Object.keys(changed(loaded, staged)).filter((f) => f !== "name").length;
 
 const BLANK: Hltb = {
   name: null,
@@ -80,7 +91,7 @@ const BLANK: Hltb = {
 export const hltbSection: GameEditSection<HltbTimes, HltbStage, HltbUpsertCall> = {
   label: "Time to beat",
   access: "admin",
-  changes: (loaded, staged) => Object.keys(changed(loaded, staged)).length,
+  changes: changeCount,
   check: (staged, loaded) => {
     const fields = changed(loaded, staged);
     if (TIMES.some((f) => f in staged && Number.isNaN(typedHours(staged[f] ?? "")))) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { GameEditRecord, GameEditViewer } from "@/lib/games/game-edit";
+import type { GameEditRecord, GameEditUnavailable, GameEditViewer } from "@/lib/games/game-edit";
 import {
   GAME_EDIT_TAB_LABELS,
   gameEditHref,
@@ -10,7 +10,7 @@ import {
   type GameEditTab,
 } from "@/lib/games/game-edit/tabs";
 import { useGameEdit } from "@/hooks/use-game-edit";
-import { useLeaveGuard } from "@/hooks/use-leave-guard";
+import { guardedHistoryState, useLeaveGuard } from "@/hooks/use-leave-guard";
 import { MastheadTabs } from "@/components/templates/masthead-tabs";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { GameEditBand } from "@/components/games/edit/game-edit-band";
@@ -25,6 +25,8 @@ export interface GameEditViewProps {
   coverUrl: string | null;
   artUrl: string | null;
   record: GameEditRecord;
+  // Sections whose read failed, with why: shown, but not editable.
+  unavailable: GameEditUnavailable;
   viewer: GameEditViewer;
   // The tab `?tab=` asks for, already checked against the viewer.
   tab: GameEditTab;
@@ -39,7 +41,7 @@ export interface GameEditViewProps {
 // staged. A Regular gets Game Threads alone, without tabs. Leaving with
 // staged changes asks first.
 export function GameEditView(p: GameEditViewProps) {
-  const edit = useGameEdit(p.gameId, p.record, p.viewer);
+  const edit = useGameEdit(p.gameId, p.record, p.viewer, p.unavailable);
   const guard = useLeaveGuard(edit.changes.total > 0);
   const [tab, setTab] = useState<GameEditTab>(p.tab);
   const tabs = gameEditTabsFor(p.viewer);
@@ -72,12 +74,16 @@ export function GameEditView(p: GameEditViewProps) {
           value={tab}
           onValueChange={(next) => {
             setTab(next);
-            window.history.replaceState(null, "", gameEditHref(p.gameId, next));
+            window.history.replaceState(guardedHistoryState(), "", gameEditHref(p.gameId, next));
           }}
           frame={band}
           tabs={tabs.map((key) => {
             const section = counted[key];
-            const note = gameEditTabNote(section ? (edit.changes.bySection[section] ?? 0) : 0, !!(section && edit.errors[section]));
+            const note = gameEditTabNote(
+              section ? (edit.changes.bySection[section] ?? 0) : 0,
+              !!(section && edit.errors[section]),
+              !!(section && edit.unavailable[section]),
+            );
             return { key, label: GAME_EDIT_TAB_LABELS[key], ...note, panel: panels[key] };
           })}
         />

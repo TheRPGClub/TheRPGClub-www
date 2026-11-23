@@ -6,6 +6,7 @@ import type { ImageKind } from "@/lib/games/game-edit";
 import { IMAGE_TYPES, imageFileProblem } from "@/lib/games/game-edit/images";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { localKey } from "@/lib/local-key";
 
 // A kind's add: picks a file and stages it, or says why it can't be used.
 export function AddImage(p: { kind: ImageKind; label: string; onPick: (file: File, key: string) => void; onNote: (note: string | null) => void }) {
@@ -24,7 +25,7 @@ export function AddImage(p: { kind: ImageKind; label: string; onPick: (file: Fil
           if (!file) return;
           const problem = imageFileProblem(file);
           p.onNote(problem);
-          if (!problem) p.onPick(file, `${p.kind}-${crypto.randomUUID()}`);
+          if (!problem) p.onPick(file, localKey(p.kind));
         }}
       />
       <Button type="button" variant="outline" size="sm" onClick={() => input.current?.click()}>

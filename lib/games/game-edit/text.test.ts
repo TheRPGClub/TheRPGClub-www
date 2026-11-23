@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { gameEditSave, type GameEditCall, type GameEditRecord, type GameEditSteps } from "./index";
 import type { StepResult } from "./engine";
+import { textFieldEdited } from "./text";
 
 // The Game Edit save module's real sections, through the fake steps the app
 // replaces with server actions. The record and steps hold this section's
@@ -93,5 +94,19 @@ describe("Text & video", () => {
     expect(gameEditSave.plan(record, { text: { description: "New." } }, regular)).toEqual([]);
     await gameEditSave.run(record, { text: { description: "New." } }, regular, run);
     expect(calls).toEqual([]);
+  });
+});
+
+describe("textFieldEdited", () => {
+  const loaded = { description: "A hero sets out.", featured_video_url: "https://youtu.be/abc" };
+
+  it("ignores what Save all would tidy away", () => {
+    expect(textFieldEdited(loaded, { featured_video_url: " https://youtu.be/abc " }, "featured_video_url")).toBe(false);
+    expect(textFieldEdited({ ...loaded, description: null }, { description: "   " }, "description")).toBe(false);
+  });
+
+  it("marks a real change, and nothing when unstaged", () => {
+    expect(textFieldEdited(loaded, { description: "A hero returns." }, "description")).toBe(true);
+    expect(textFieldEdited(loaded, undefined, "description")).toBe(false);
   });
 });

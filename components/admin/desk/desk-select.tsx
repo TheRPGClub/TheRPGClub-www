@@ -36,6 +36,7 @@ export function DeskSelect({
   value,
   onValueChange,
   placeholder,
+  label,
   labelledBy,
   describedBy,
   invalid,
@@ -47,6 +48,8 @@ export function DeskSelect({
   value: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
+  // Names the select for assistive tech when no visible label points at it.
+  label?: string;
   labelledBy?: string;
   describedBy?: string;
   invalid?: boolean;
@@ -73,6 +76,7 @@ export function DeskSelect({
         required={required}
       >
         <SelectTrigger
+          aria-label={label}
           aria-labelledby={labelledBy}
           aria-describedby={describedBy}
           aria-invalid={invalid || undefined}

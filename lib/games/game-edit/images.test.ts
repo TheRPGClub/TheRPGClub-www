@@ -90,6 +90,21 @@ describe("Images", () => {
     ]);
   });
 
+  it("leaves a kind without a primary alone, but makes its first upload primary", async () => {
+    const { calls, run } = steps();
+    const noPrimary = { ...record, images: [img(1, "cover", 1), img(2, "cover", 2)] };
+    const upload = pending("u1", "cover");
+    const outcome = await gameEditSave.run(noPrimary, { images: { uploads: [upload] } }, admin, run);
+    expect(calls).toEqual([{ kind: "image.upload", image: upload, primary: true }]);
+    expect(outcome.record.images.filter((i) => i.is_primary)).toEqual([]);
+    expect(imageKindView(noPrimary.images, { uploads: [upload] }, "cover").map((t) => t.primary)).toEqual([false, false, true]);
+  });
+
+  it("counts a starred pending upload once", () => {
+    const stage: ImagesStage = { uploads: [pending("u1", "cover")], primary: { cover: "u1" } };
+    expect(gameEditSave.changes(record, { images: stage }, admin).total).toBe(1);
+  });
+
   it("uploads a staged upload as primary when it was starred", async () => {
     const { calls, run } = steps();
     const upload = pending("u1", "cover");

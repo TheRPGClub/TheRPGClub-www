@@ -19,6 +19,7 @@ import {
 import { releaseRows, type ReleaseRow as Row } from "@/lib/games/game-edit/release-rows";
 import type { ReleaseOptions } from "@/lib/games/game-edit/release-options";
 import { utcToday } from "@/lib/releases";
+import { localKey } from "@/lib/local-key";
 import { Button } from "@/components/ui/button";
 import { EditSection } from "@/components/games/edit/edit-section";
 import { RefreshReleases } from "@/components/games/edit/refresh-releases";
@@ -63,7 +64,7 @@ export function ReleasesTab({
   const actions = (
     <>
       {canRefresh && <RefreshReleases gameId={gameId} dirty={staged !== undefined} onReload={onReload} />}
-      <Button variant="outline" size="sm" onClick={() => put(addRelease(stage, crypto.randomUUID(), emptyReleaseDraft()))}>
+      <Button variant="outline" size="sm" onClick={() => put(addRelease(stage, localKey("release"), emptyReleaseDraft()))}>
         <Plus data-icon="inline-start" />
         Add a Manual Release
       </Button>
