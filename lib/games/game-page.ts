@@ -13,6 +13,8 @@ import type {
 import { paginationOf } from "@/lib/api/pagination";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { memberName } from "@/lib/achievements";
+import { draftOfGame } from "@/lib/reviews/drafts";
+import { DRAFTS_READ, fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 
@@ -33,9 +35,10 @@ export function firstParam(value: string | string[] | undefined): string | undef
 // session don't wait on the viewer's Features; only the Reviews read does.
 export async function loadGamePage(gameId: number) {
   const featuresRead = requireFeature("game_index");
-  const [gameRes, session, features, reviewsRes] = await Promise.all([
+  const sessionRead = getSession();
+  const [gameRes, session, features, reviewsRes, drafts] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`),
-    getSession(),
+    sessionRead,
     featuresRead,
     featuresRead.then((f) =>
       f.shown("reviews")
@@ -43,6 +46,11 @@ export async function loadGamePage(gameId: number) {
             cache: "no-store",
           })
         : null,
+    ),
+    // The viewer's own Draft of this game takes the compose prompt's place.
+    // The listing has no game filter, so the page looks through the newest.
+    Promise.all([featuresRead, sessionRead]).then(([f, s]) =>
+      f.shown("reviews") && s ? fetchOwnDrafts(s.principal.discord_id, { per: DRAFTS_READ }) : null,
     ),
   ]);
   if (!gameRes.ok) return null;
@@ -68,7 +76,16 @@ export async function loadGamePage(gameId: number) {
     // link to the Release Calendar follows that Feature.
     releaseCalendar: features.shown("release_calendar"),
   };
-  return { game, session, features, show, reviews, reviewTotal };
+  const ownDraft = drafts ? draftOfGame(drafts.drafts, gameId) : null;
+  return {
+    game,
+    session,
+    features,
+    show,
+    reviews,
+    reviewTotal,
+    ownDraft: ownDraft && drafts ? { draft: ownDraft, now: drafts.now } : null,
+  };
 }
 
 export type GamePageShow = NonNullable<Awaited<ReturnType<typeof loadGamePage>>>["show"];

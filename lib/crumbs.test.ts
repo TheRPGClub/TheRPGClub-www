@@ -38,6 +38,13 @@ describe("crumbTrail", () => {
     ]);
   });
 
+  it("files Your drafts under the Review Feed", async () => {
+    expect(await trail("/reviews/drafts")).toEqual([
+      { label: "Reviews", href: "/reviews" },
+      { label: "Your drafts", href: "/reviews/drafts" },
+    ]);
+  });
+
   it("falls back to the section when the review can't be read", async () => {
     expect(await trail("/reviews/404")).toEqual([{ label: "Reviews", href: "/reviews" }]);
   });

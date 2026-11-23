@@ -174,6 +174,7 @@ describe("Themes style the staff desk variants", () => {
       "button/variant=inline-link",
       "button/variant=poster",
       "button/variant=pencil",
+      "button/variant=dog-ear",
       "input/variant=headline",
       "textarea/variant=inset",
     ];

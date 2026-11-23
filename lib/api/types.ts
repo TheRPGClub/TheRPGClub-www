@@ -758,6 +758,16 @@ export interface Review {
   game?: Game | null;
 }
 
+// One of the viewer's own Drafts, from GET /users/:id/reviews/drafts (only
+// its author, or an Admin, may read the listing). `updated_at` is when it was
+// last touched, the listing's order; `kind` is "review" until Draft
+// Revisions join as "revision".
+export interface ReviewDraftEntry extends Omit<Review, "game" | "user" | "updated_at"> {
+  updated_at: string;
+  kind: "review" | "revision";
+  game?: Game | null;
+}
+
 // GOTM
 
 // One winning game from GET /api/v1/public/winners: the latest 24 rounds,

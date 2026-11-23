@@ -185,6 +185,14 @@ export async function crumbTrail(
 ): Promise<Crumb[]> {
   const [section, id, page, sub] = slug;
 
+  // Your drafts sits under the Review Feed.
+  if (section === "reviews" && id === "drafts") {
+    return [
+      { label: SECTIONS.reviews, href: "/reviews" },
+      { label: "Your drafts", href: "/reviews/drafts" },
+    ];
+  }
+
   // A Review's page lives at /reviews/:id but reads under its game:
   // Games > Game > Reviews > Review.
   if (section === "reviews" && id) {

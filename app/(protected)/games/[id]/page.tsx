@@ -12,6 +12,7 @@ import { GameColumns } from "@/components/games/game-page/game-columns";
 import { GamePageHero } from "@/components/games/game-page/game-page-hero";
 import { GamePageSkeleton } from "@/components/games/game-page/game-page-skeleton";
 import { GameReviewsSection } from "@/components/games/game-page/game-reviews-section";
+import { DraftSlot } from "@/components/reviews/drafts/draft-slot";
 import { DetailTemplate } from "@/components/templates/detail-template";
 
 // A game's page is its cover story: the hero with the club's numbers, the
@@ -55,7 +56,7 @@ async function GameContent({
 }) {
   const page = await loadGamePage(gameId);
   if (!page) notFound();
-  const { game, session, features, show, reviews, reviewTotal } = page;
+  const { game, session, features, show, reviews, reviewTotal, ownDraft } = page;
   const viewer = viewerOnGame(game, session?.principal.discord_id ?? null);
   const gates = gamePageGates(game, session?.membership);
 
@@ -79,6 +80,16 @@ async function GameContent({
               reviewTotal={reviewTotal}
               viewer={viewer}
               accent={accentForGame(game)}
+              draftSlot={
+                ownDraft && (
+                  <DraftSlot
+                    draft={ownDraft.draft}
+                    now={ownDraft.now}
+                    gameTitle={game.title}
+                    coverUrl={game.cover_url}
+                  />
+                )
+              }
             />
           )
         }

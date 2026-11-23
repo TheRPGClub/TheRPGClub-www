@@ -1,20 +1,18 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import type {
-  ApiCollection,
-  ApiSingle,
-  Review,
-  User,
-} from "@/lib/api/types";
+import type { ApiCollection, ApiSingle, Review, User } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { MemberListTemplate } from "@/components/templates/member-list-template";
 import { ListPagination } from "@/components/list-pagination";
 import { MemberReviewList } from "@/components/member/member-review-list";
 import { memberCounts } from "@/lib/members/member-lists";
 import { memberName } from "@/lib/achievements";
+import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
+import { MemberDrafts } from "@/components/reviews/drafts/member-drafts";
 
 const PAGE_SIZE = 10;
+const DRAFTS_SHOWN = 6;
 
 export default async function MemberReviewsPage({
   params,
@@ -26,12 +24,23 @@ export default async function MemberReviewsPage({
   const [{ id }, { page = "1" }] = await Promise.all([params, searchParams]);
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
-  const [userRes, session, listRes] = await Promise.all([
+  const sessionRead = getSession();
+  const [userRes, session, listRes, drafts] = await Promise.all([
     apiFetch(`/api/v1/users/${id}`, { cache: "no-store" }),
-    getSession(),
-    apiFetch(`/api/v1/users/${id}/reviews?per=${PAGE_SIZE}&page=${currentPage}`, {
-      cache: "no-store",
-    }),
+    sessionRead,
+    apiFetch(
+      `/api/v1/users/${id}/reviews?per=${PAGE_SIZE}&page=${currentPage}`,
+      {
+        cache: "no-store",
+      },
+    ),
+    // Your own Drafts sit above your Published reviews, on the first page
+    // only. Nobody else's are ever read.
+    sessionRead.then((s) =>
+      s?.principal.discord_id === id && currentPage === 1
+        ? fetchOwnDrafts(id, { per: DRAFTS_SHOWN })
+        : null,
+    ),
   ]);
 
   if (!userRes.ok) notFound();
@@ -63,13 +72,15 @@ export default async function MemberReviewsPage({
       current="reviews"
       counts={memberCounts(user)}
     >
-      <MemberReviewList
-        reviews={reviews}
-        hideUser={isSelf}
-        emptyMessage={
-          isSelf ? "You haven't written any reviews yet." : "No reviews yet."
-        }
-      />
+      <MemberDrafts read={drafts} publishedCount={total}>
+        <MemberReviewList
+          reviews={reviews}
+          hideUser={isSelf}
+          emptyMessage={
+            isSelf ? "You haven't written any reviews yet." : "No reviews yet."
+          }
+        />
+      </MemberDrafts>
 
       <ListPagination
         currentPage={currentPage}
