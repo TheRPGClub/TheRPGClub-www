@@ -14,6 +14,7 @@ import { PANEL_ITEMS } from "@/lib/dashboard/panels";
 import { dailyPickSeed } from "@/lib/dashboard/panel-items";
 import { clubToday } from "@/lib/challenges/dates";
 import { upcomingReleasesTag } from "@/lib/hidden-platforms";
+import type { ReviewFeedEntry } from "@/lib/reviews/feed";
 
 // Each Dashboard Panel's read (spec api#421, "Panel data"): one endpoint a
 // member can call, the newest few items. Every read is null when it failed,
@@ -71,14 +72,9 @@ export interface PanelCompletion {
   user?: UserSummary;
 }
 
-export interface PanelReview {
-  review_id: number;
-  rating: number;
-  title: string | null;
-  created_at: string;
-  game: GameSummary;
-  user: UserSummary;
-}
+// A Review Feed entry (a Published Review or Published Revision), which the
+// feed always serves with its game and author.
+export type PanelReview = ReviewFeedEntry & { game: GameSummary; user: UserSummary };
 
 export interface PanelJournalEntry {
   entry_id: number;

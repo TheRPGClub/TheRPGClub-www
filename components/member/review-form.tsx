@@ -1,31 +1,43 @@
 "use client";
 
 import type { Review } from "@/lib/api/types";
+import type { RevisionTake } from "./review-desk/form-strip";
+
+export type { RevisionTake };
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import { useReviewForm } from "@/hooks/use-review-form";
 import { ReviewScorecardEditor } from "./review-scorecard-editor";
 import { ReviewFormActions } from "./review-composer/review-form-actions";
 import type { ReviewDeskGame } from "./review-desk/desk-game";
 import { QuickSheet } from "./review-desk/quick-sheet";
+import { FormStrip } from "./review-desk/form-strip";
 import { ReviewDesk } from "./review-desk/review-desk";
+import { QuickNotes } from "./review-desk/quick-notes";
 
 export interface ReviewFormProps {
   userId: string;
   gameId: number;
   existing?: Review | null;
+  // Writes this Revision of `existing` instead of its first take: a Draft
+  // Revision with the earlier take taped above Overall, or a Published one
+  // whose Delete says where the score goes ("The score goes back to 85").
+  revisionTake?: RevisionTake | null;
   onCancel?: () => void;
   // Fires after a successful save with the updated review.
   onSaved?: (review: Review) => void;
-  // Fires after a successful delete. A caller whose whole page *is* this
-  // review needs to navigate away rather than refresh into a 404, which is
-  // why this is separate from `onCancel`.
+  // Fires after a successful delete, or a Draft's discard. A caller whose
+  // whole page *is* this review needs to navigate away rather than refresh
+  // into a 404, which is why this is separate from `onCancel`.
   onDeleted?: () => void;
+  // Fires after a Draft is published, with the Published Review.
+  onPublished?: (review: Review) => void;
   // When given, the form offers to move to the full-page editor. Providing it
   // is what makes the button exist at all — the small editor on a game page
   // has somewhere bigger to go, the full page does not.
   //
   // The handover saves first: leaving with unsaved edits would silently drop
-  // them, and the new review has no page to move to until it has an id.
+  // them, and the new review has no page to move to until it has an id. A
+  // new review moves as a Draft, so it needs no score yet.
   onTransfer?: (review: Review) => void;
   // Allow callers to render a delete button inline (only useful when editing).
   showDelete?: boolean;
@@ -51,39 +63,56 @@ export function ReviewForm({
   userId,
   gameId,
   existing,
+  revisionTake,
   onCancel,
   onSaved,
   onDeleted,
+  onPublished,
   onTransfer,
   showDelete,
   accent = "neutral",
   layout = "desk",
   game,
 }: ReviewFormProps) {
-  const form = useReviewForm({ userId, gameId, existing, onCancel, onDeleted });
+  const revision = revisionTake?.revision ?? null;
+  const form = useReviewForm({ userId, gameId, existing, revision, onCancel, onDeleted });
   const { facets, pending } = form;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // A Draft saves itself; only Publish takes it further.
+    if (form.draft) return;
     form.save((review) => {
       onSaved?.(review);
       form.refresh();
     });
   };
 
-  const footer = (
+  const alert = form.error && (
+    <p role="alert" className="text-sm text-destructive">
+      {form.error}
+    </p>
+  );
+  // On the desk a Draft and a Published take each have their strip, which
+  // carries the actions; the footer keeps only the error. The quick sheet
+  // keeps its row of actions.
+  const strip =
+    layout === "desk" && (form.draft || existing) ? (
+      <FormStrip form={form} accent={accent} existing={existing} revisionTake={revisionTake}
+        onCancel={onCancel} onPublished={onPublished} />
+    ) : null;
+  const footer = strip ? (
+    alert
+  ) : (
     <>
-      {form.error && (
-        <p role="alert" className="text-sm text-destructive">
-          {form.error}
-        </p>
-      )}
+      {alert}
       <ReviewFormActions
         editing={Boolean(existing)}
         pending={pending}
         rated={form.rating !== null}
         onDelete={showDelete && existing ? form.remove : undefined}
-        onTransfer={onTransfer && (() => form.save(onTransfer))}
+        onTransfer={onTransfer && (() => (existing ? form.save(onTransfer) : form.startDraft(onTransfer)))}
+        transferNeedsScore={Boolean(existing)}
         onCancel={onCancel}
       />
     </>
@@ -97,6 +126,8 @@ export function ReviewForm({
           game={game}
           accent={accent}
           footer={footer}
+          strip={strip}
+          earlierTake={form.draft ? revisionTake?.earlier : null}
           scorecard={
             <ReviewScorecardEditor
               value={facets}
@@ -114,20 +145,10 @@ export function ReviewForm({
           form={form}
           accent={accent}
           footer={footer}
-          note={
-            facets && (
-              // Says the scorecard is still there and where to change it.
-              // Without this the categories simply vanish from the form,
-              // which reads like the save is about to drop them.
-              <p className="text-xs text-faint-foreground">
-                Scored on {facets.order.length}{" "}
-                {facets.order.length === 1 ? "category" : "categories"}, kept as
-                they are. Open the full review editor to change them.
-              </p>
-            )
-          }
+          note={<QuickNotes existing={existing} facets={facets} />}
         />
       )}
     </form>
   );
 }
+

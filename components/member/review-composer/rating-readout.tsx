@@ -18,12 +18,16 @@ export function RatingReadout({
   live,
   size = "desk",
   disabled,
+  ringed = true,
 }: {
   value: number | null;
   onChange: (next: number | null) => void;
   live: boolean;
   size?: "desk" | "quick";
   disabled?: boolean;
+  // The desk's pencil ring marks the score as there to change; a locked one
+  // has none.
+  ringed?: boolean;
 }) {
   const unset = value === null;
   const desk = size === "desk";
@@ -31,7 +35,7 @@ export function RatingReadout({
   return (
     <div className="flex items-end gap-2">
       <span className={cn("relative inline-flex", desk && "h-[5.75rem] w-[9rem] items-center justify-center")}>
-        {desk && <PencilRing />}
+        {desk && ringed && <PencilRing dashed={unset} />}
         <Input
           variant="bare"
           type="text"
@@ -61,8 +65,9 @@ export function RatingReadout({
   );
 }
 
-// A hand-drawn yellow ring, open where the pencil lifted.
-function PencilRing() {
+// A hand-drawn yellow ring, open where the pencil lifted. Dashed while there
+// is no score yet: the place a score goes, pencilled in.
+function PencilRing({ dashed }: { dashed: boolean }) {
   return (
     <svg
       aria-hidden
@@ -75,6 +80,7 @@ function PencilRing() {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.6"
+        strokeDasharray={dashed ? "4 4" : undefined}
         vectorEffect="non-scaling-stroke"
       />
     </svg>

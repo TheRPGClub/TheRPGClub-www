@@ -59,6 +59,11 @@
             }
             &[data-variant="highlight"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-highlight text-highlight-foreground hover:bg-highlight/85;
+                /* Not yet available (Publish with no score): greyed into
+                   the ground with a strong-rule edge, not a faded yellow. */
+                &:disabled {
+                    @apply bg-muted text-faint-foreground opacity-100 ring-1 ring-border-strong ring-inset;
+                }
             }
             &[data-variant="nr"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
@@ -352,6 +357,10 @@
                 @apply bg-transparent text-dim-foreground outline-[1.5px] outline-offset-[-1.5px] outline-faint-foreground outline-dashed;
             }
             &[data-size="nav"] {
+                @apply font-extrabold;
+            }
+            /* A review's pill: the full label voice, 800 weight. */
+            &[data-size="pill"] {
                 @apply font-extrabold;
             }
             &[data-size="filter"] {
@@ -1267,6 +1276,16 @@
             &[data-variant="inline-link"] {
                 @apply underline decoration-gotm underline-offset-3 hover:text-highlight focus-visible:ring-0 focus-visible:[outline:-webkit-focus-ring-color_auto_1px];
             }
+            /* www#148: a pencilled action on the review desk's Draft. */
+            &[data-variant="pencil"] {
+                @apply text-highlight italic decoration-highlight/70 underline-offset-3 hover:underline focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight;
+            }
+            /* www#151: the drafts pile's yellow action, its top right corner
+               cut like a turned-down page. The cut would clip an outer ring,
+               so focus draws inside. */
+            &[data-variant="dog-ear"] {
+                @apply font-label rounded-sm border-transparent bg-highlight pr-4 font-extrabold tracking-[0.04em] text-highlight-foreground uppercase [clip-path:polygon(0_0,calc(100%-9px)_0,100%_9px,100%_100%,0_100%)] hover:bg-highlight/85 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-highlight-foreground;
+            }
         }
         :is([data-slot="input"], [data-slot="textarea"])[data-variant="headline"] {
             @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;
@@ -1494,6 +1513,28 @@
            the club" rule, voiced like the heading's "Full history" link. */
         [data-slot="button"][data-variant="heading-action"] {
             @apply font-label h-auto gap-1.5 rounded-sm border-0 bg-transparent px-0 text-sm font-extrabold text-foreground transition-colors hover:text-highlight active:not-aria-[haspopup]:translate-y-0 [&_svg]:size-4 [&_svg]:text-gotm;
+        }
+        /* www#149: the Review Feed's Written only, a link that switches
+           the filter: a hairline box in the label voice holding a hollow
+           switch; on (aria-checked), a 2px yellow ring, paper type and the
+           knob slid right and filled yellow. */
+        [data-slot="button"][data-variant="filter-switch"] {
+            @apply font-label h-[34px] gap-2.5 rounded-[2.4px] border-0 px-3 text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-[color,box-shadow] hover:text-foreground hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight;
+            [data-part="switch-track"] {
+                @apply relative h-4 w-[30px] rounded-[2px] shadow-[inset_0_0_0_1.5px_var(--color-faint-foreground)];
+            }
+            [data-part="switch-knob"] {
+                @apply absolute top-[3px] left-[3px] size-2.5 rounded-[1px] bg-faint-foreground motion-safe:transition-[left,background-color] motion-safe:duration-200;
+            }
+            &[aria-checked="true"] {
+                @apply text-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                [data-part="switch-track"] {
+                    @apply shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+                }
+                [data-part="switch-knob"] {
+                    @apply left-[17px] bg-highlight;
+                }
+            }
         }
         [data-slot="label"][data-variant="kind-tile"] {
             @apply font-label cursor-pointer rounded-xs text-[0.625rem] leading-none font-extrabold tracking-normal text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-[translate,rotate,background-color,box-shadow] duration-200 hover:bg-(--ink)/10 has-data-checked:-translate-y-1 has-data-checked:-rotate-2 has-data-checked:bg-(--ink) has-data-checked:text-background has-data-checked:shadow-[0_6px_14px_rgb(0_0_0/0.45)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;

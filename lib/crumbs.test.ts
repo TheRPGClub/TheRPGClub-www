@@ -6,6 +6,7 @@ const { crumbTrail } = await import("@/lib/crumbs");
 // Names as the pages would read them.
 const names = {
   game: async (id: string) => `Game ${id}`,
+  reviewGame: async (id: string) => (id === "404" ? null : `${Number(id) + 100}`),
   member: async (id: string) => `Member ${id}`,
   set: async (setId: string, memberId: string) => `Set ${setId} of ${memberId}`,
   challenge: async (id: string) => `Challenge ${id}`,
@@ -20,13 +21,32 @@ describe("crumbTrail", () => {
     expect(await trail("/elsewhere")).toEqual([{ label: "elsewhere", href: "/elsewhere" }]);
   });
 
-  it("follows a game down to one review", async () => {
-    expect(await trail("/games/7/reviews/9")).toEqual([
+  it("follows a game down to its reviews", async () => {
+    expect(await trail("/games/7/reviews")).toEqual([
       { label: "Games", href: "/games" },
       { label: "Game 7", href: "/games/7" },
       { label: "Reviews", href: "/games/7/reviews" },
-      { label: "Review", href: "/games/7/reviews/9" },
     ]);
+  });
+
+  it("files a review's own page under its game", async () => {
+    expect(await trail("/reviews/9")).toEqual([
+      { label: "Games", href: "/games" },
+      { label: "Game 109", href: "/games/109" },
+      { label: "Reviews", href: "/games/109/reviews" },
+      { label: "Review", href: "/reviews/9" },
+    ]);
+  });
+
+  it("files Your drafts under the Review Feed", async () => {
+    expect(await trail("/reviews/drafts")).toEqual([
+      { label: "Reviews", href: "/reviews" },
+      { label: "Your drafts", href: "/reviews/drafts" },
+    ]);
+  });
+
+  it("falls back to the section when the review can't be read", async () => {
+    expect(await trail("/reviews/404")).toEqual([{ label: "Reviews", href: "/reviews" }]);
   });
 
   it("follows a member's pages, sub-pages and achievement sets", async () => {

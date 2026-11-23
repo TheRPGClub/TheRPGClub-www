@@ -124,6 +124,15 @@ const buttonVariants = cva(
         // An action printed on a poster proof (open the live event's
         // thread): a paper block on the art, yellow on hover.
         poster: "",
+        // www#148: the review desk's Draft.
+        // A pencilled line that is also an action (the Draft strip's
+        // missing score, its Retry now): the desk's yellow pencil, in its
+        // own italic hand, underlined on hover. Pair with size="inline".
+        pencil: "",
+        // www#151: Your drafts. The yellow call to action with its corner
+        // cut away, the dog-ear the drafts pile carries (Continue writing,
+        // Your drafts).
+        "dog-ear": "",
         // www#100: journals, giveaways and the Feature switches.
         // An icon tool on the yellow panel (show the key being donated).
         "inverse-ghost": "focus-visible:ring-background/30",
@@ -197,6 +206,11 @@ const buttonVariants = cva(
         // (the dashboard's Edit dashboard), in the "Full history" link's
         // voice: label caps in paper with a red icon, yellow on hover.
         "heading-action": "",
+        // www#149: a two-state filter that is a link to its other state (the
+        // Review Feed's Written only), role="switch" with aria-checked. It
+        // holds a small switch drawn by the Theme: a span[data-part=
+        // "switch-track"] around a span[data-part="switch-knob"].
+        "filter-switch": "",
       },
       size: {
         default:

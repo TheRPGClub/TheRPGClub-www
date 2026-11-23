@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MAX_RATING } from "@/lib/api/rating";
 import type { Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import {
   ReviewerAvatar,
   formatReviewDate,
@@ -42,7 +43,7 @@ export function ReviewVerdictScore({
             {authorName}
           </Link>
           <small className="text-[0.82rem] text-background/70">
-            Reviewed {formatReviewDate(review.created_at)}
+            Reviewed {formatReviewDate(reviewDate(review))}
           </small>
         </div>
       </div>

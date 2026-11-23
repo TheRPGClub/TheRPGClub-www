@@ -1,9 +1,11 @@
 import Link from "next/link";
 import type { Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import { MAX_RATING } from "@/lib/api/rating";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { MemberCover } from "@/components/issue/member-cover";
 import { shortDate } from "@/lib/members/member-lists";
+import { reviewHref } from "@/lib/reviews/href";
 
 // The profile's latest reviews as magazine rows: the game's cover, "On
 // <game>", the review's headline and opening lines, and the score set big on
@@ -22,12 +24,14 @@ export function MemberReviewRows({ reviews }: { reviews: Review[] }) {
 function ReviewRow({ review }: { review: Review }) {
   const game = review.game;
   const gameTitle = game?.title ?? "Unknown game";
-  const href = `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
+  const href = reviewHref(review.review_id);
   const text = reviewBodyText(review.body);
   // Most reviews have no headline; those lead with the game's title.
   const headline = review.title?.trim() || null;
-  const when = shortDate(review.created_at);
-  const score = Math.max(0, Math.min(MAX_RATING, review.rating));
+  const when = shortDate(reviewDate(review));
+  // A member's list is Published Reviews only, and a Published Review always
+  // has a score; the fallback only satisfies the Draft-wide type.
+  const score = Math.max(0, Math.min(MAX_RATING, review.rating ?? 0));
 
   return (
     <article className="grid grid-cols-[3.75rem_1fr] items-start gap-x-4.5 gap-y-2 border-b border-border py-4.5 sm:grid-cols-[5.125rem_1fr_auto]">

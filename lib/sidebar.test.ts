@@ -36,7 +36,7 @@ describe("sidebarGroups", () => {
   it("groups every page for a member who is shown everything", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "challenges"],
-      games: ["games", "releases", "achievements", "journals"],
+      games: ["games", "reviews", "releases", "achievements", "journals"],
       club: ["members", "news", "codex", "giveaways", "suggestions"],
     });
   });
@@ -81,6 +81,8 @@ describe("currentPage", () => {
     expect(at("/games")).toBe("games");
     expect(at("/games/123/reviews")).toBe("games");
     expect(at("/releases")).toBe("releases");
+    expect(at("/reviews")).toBe("reviews");
+    expect(at("/reviews/42")).toBe("reviews");
   });
 
   it("matches the staff desk only on its own path", () => {

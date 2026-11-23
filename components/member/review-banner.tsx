@@ -26,6 +26,8 @@ export interface ReviewBannerProps {
   authorId?: string | null;
   authorName?: string | null;
   createdAt?: string | null;
+  // The Edit marker's date (`editedAt` in @/lib/reviews/edit-rules).
+  editedAt?: string | null;
   // Only the author gets the edit affordance, and it lives in the byline: this
   // banner is the review, so editing it starts where it's introduced. The
   // link just adds `?edit` to the current URL; ReviewDetail is what actually
@@ -37,6 +39,10 @@ export interface ReviewBannerProps {
   title?: string | null;
   // Leads the chip line, e.g. the staff "Preview" badge.
   badge?: ReactNode;
+  // A revisited Review's score row, under the score.
+  scoreHistory?: ReactNode;
+  // After the byline's date: "· revisited twice".
+  bylineNote?: string | null;
 }
 
 /**
@@ -51,9 +57,12 @@ export function ReviewBanner({
   authorId,
   authorName,
   createdAt,
+  editedAt,
   canEdit,
   title,
   badge,
+  scoreHistory,
+  bylineNote,
 }: ReviewBannerProps) {
   const art = game.art_url ?? game.cover_url;
   // `gotm_won` isn't on every embedded game; a month-year means it won.
@@ -118,12 +127,14 @@ export function ReviewBanner({
               authorId={authorId}
               authorName={authorName}
               createdAt={createdAt}
+              editedAt={editedAt}
               canEdit={canEdit}
+              note={bylineNote}
             />
           )}
         </div>
 
-        {typeof rating === "number" && <ReviewBannerScore rating={rating} />}
+        {typeof rating === "number" && <ReviewBannerScore rating={rating} history={scoreHistory} />}
       </div>
     </section>
   );

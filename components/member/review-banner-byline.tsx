@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, PencilLine } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -15,12 +15,19 @@ export function ReviewBannerByline({
   authorId,
   authorName,
   createdAt,
+  editedAt,
   canEdit,
+  note,
 }: {
   authorId: string;
   authorName: string;
   createdAt?: string | null;
+  // "Edited <date>", shown to every reader once the review was changed
+  // more than an hour after publishing.
+  editedAt?: string | null;
   canEdit?: boolean;
+  // After the date, e.g. "revisited twice".
+  note?: string | null;
 }) {
   return (
     <p className="mt-4.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-dim-foreground">
@@ -38,7 +45,14 @@ export function ReviewBannerByline({
             <time dateTime={createdAt}>{formatReviewDate(createdAt)}</time>
           </>
         )}
+        {note && ` · ${note}`}
       </span>
+      {editedAt && (
+        <span className="font-label inline-flex items-center gap-1.5 text-[0.76rem] font-extrabold tracking-[0.08em] text-faint-foreground uppercase">
+          <PencilLine aria-hidden className="size-3.25" />
+          Edited <time dateTime={editedAt}>{formatReviewDate(editedAt)}</time>
+        </span>
+      )}
       {canEdit && (
         <Link
           href="?edit=1"
@@ -52,16 +66,21 @@ export function ReviewBannerByline({
   );
 }
 
-export function ReviewBannerScore({ rating }: { rating: number }) {
+// `history` is the score row of a revisited Review, under the score (beside
+// it on a phone, where "Out of 100" makes room for it).
+export function ReviewBannerScore({ rating, history }: { rating: number; history?: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 md:block md:text-center">
+    <div className="flex items-center gap-3.5 md:flex-col md:gap-0">
       <ScoreBox
         rating={rating}
         className="size-[76px] text-[3.25rem] md:size-[150px] md:rounded-md md:text-[6.5rem]"
       />
-      <span className="font-label block text-[0.82rem] font-extrabold tracking-[0.1em] text-dim-foreground md:mt-2">
+      <span
+        className={`font-label text-[0.82rem] font-extrabold tracking-[0.1em] text-dim-foreground md:mt-2 md:block ${history ? "hidden" : "block"}`}
+      >
         Out of {MAX_RATING}
       </span>
+      {history}
     </div>
   );
 }

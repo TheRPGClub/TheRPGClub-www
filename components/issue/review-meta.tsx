@@ -15,16 +15,7 @@ export { FacetBars } from "@/components/issue/review-meta-facet-bars";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
-export function formatReviewDate(
-  iso: string,
-  month: "short" | "long" = "short",
-): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month,
-    day: "numeric",
-  });
-}
+export { formatReviewDate } from "@/lib/reviews/review-date";
 
 const AVATAR_SIZE = {
   xs: "size-[18px] text-[9px]",
@@ -72,20 +63,21 @@ export function ScoreBox({
   rating,
   className,
 }: {
-  rating: number;
+  // Null only on a Draft with no score yet: the box shows a dash.
+  rating: number | null;
   // Size and type size, e.g. "size-16 text-4xl".
   className?: string;
 }) {
   return (
     <div
       role="img"
-      aria-label={`Rated ${rating} out of ${MAX_RATING}`}
+      aria-label={rating === null ? "Not scored yet" : `Rated ${rating} out of ${MAX_RATING}`}
       className={cn(
         "font-headline grid shrink-0 place-items-center rounded-sm bg-foreground leading-none text-background",
         className,
       )}
     >
-      {rating}
+      {rating ?? "—"}
     </div>
   );
 }

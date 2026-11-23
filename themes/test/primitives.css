@@ -397,6 +397,10 @@
                 font-family: var(--typeface-display);
                 text-decoration: underline wavy;
             }
+            &[data-size="pill"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline dotted;
+            }
         }
         [data-slot="input"] {
             background-color: var(--card);
@@ -1857,6 +1861,15 @@
             border-color: var(--accent-foreground);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+        [data-slot="button"][data-variant="dog-ear"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--highlight-foreground);
+        }
+        [data-slot="button"][data-variant="pencil"] {
+            color: var(--accent);
+            text-decoration: underline wavy var(--foreground);
+        }
         [data-slot="button"][data-variant="inline-link"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
@@ -1997,6 +2010,20 @@
             border: 2px dashed var(--gotm);
         }
         /* Dashboard edit mode (www#145). */
+        [data-slot="button"][data-variant="filter-switch"] {
+            background-color: var(--muted);
+            color: var(--foreground);
+            border: 2px dotted var(--accent);
+            [data-part="switch-track"] {
+                width: 30px;
+                height: 16px;
+                border: 2px solid var(--foreground);
+            }
+            &[aria-checked="true"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+            }
+        }
         [data-slot="button"][data-variant="heading-action"] {
             background-color: var(--accent);
             color: var(--accent-foreground);

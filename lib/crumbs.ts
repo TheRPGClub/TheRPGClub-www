@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { historyEventAnchor } from "@/lib/codex/paths";
 import { setDetailPath } from "@/lib/member-achievements";
+import { reviewHref } from "@/lib/reviews/href";
 import { roundEditHref, TRACK_NAME, trackFromSlug } from "@/lib/rounds";
 import { STAFF_SECTIONS } from "@/lib/staff";
 
@@ -19,6 +20,8 @@ export interface Crumb {
 // How the trail names what an id points at; the API's reads by default.
 export interface CrumbNames {
   game(id: string): Promise<string>;
+  // The game a Review is of, as its id; null when the Review can't be read.
+  reviewGame(id: string): Promise<string | null>;
   member(id: string): Promise<string>;
   set(setId: string, memberId: string): Promise<string>;
   challenge(id: string): Promise<string>;
@@ -42,6 +45,7 @@ const SECTIONS: Record<string, string> = {
   settings: "Settings",
   challenges: "Challenges",
   codex: "Club Codex",
+  reviews: "Reviews",
 };
 
 // The Club Codex's parts, each a page under /codex.
@@ -94,6 +98,19 @@ async function gameTitle(id: string): Promise<string> {
     return body.data?.title ?? "Game";
   } catch {
     return "Game";
+  }
+}
+
+// The Review page's own read; React shares it with the page.
+async function reviewGameId(id: string): Promise<string | null> {
+  if (!/^\d+$/.test(id)) return null;
+  try {
+    const res = await apiFetch(`/api/v1/reviews/${id}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: { gamedb_game_id?: number } };
+    return body.data?.gamedb_game_id?.toString() ?? null;
+  } catch {
+    return null;
   }
 }
 
@@ -154,6 +171,7 @@ function codexTitle(part: "lore_entries" | "history_events", fallback: string) {
 
 const API_NAMES: CrumbNames = {
   game: gameTitle,
+  reviewGame: reviewGameId,
   member: memberName,
   set: achievementSetTitle,
   challenge: challengeName,
@@ -166,6 +184,30 @@ export async function crumbTrail(
   names: CrumbNames = API_NAMES,
 ): Promise<Crumb[]> {
   const [section, id, page, sub] = slug;
+
+  // Your drafts sits under the Review Feed.
+  if (section === "reviews" && id === "drafts") {
+    return [
+      { label: SECTIONS.reviews, href: "/reviews" },
+      { label: "Your drafts", href: "/reviews/drafts" },
+    ];
+  }
+
+  // A Review's page lives at /reviews/:id but reads under its game:
+  // Games > Game > Reviews > Review.
+  if (section === "reviews" && id) {
+    const gameId = await names.reviewGame(id);
+    if (gameId) {
+      const base = `/games/${gameId}`;
+      return [
+        { label: SECTIONS.games, href: "/games" },
+        { label: await names.game(gameId), href: base },
+        { label: "Reviews", href: `${base}/reviews` },
+        { label: "Review", href: reviewHref(Number(id)) },
+      ];
+    }
+  }
+
   const root = `/${section}`;
   const trail: Crumb[] = [{ label: SECTIONS[section] ?? section, href: root }];
 
@@ -174,7 +216,6 @@ export async function crumbTrail(
     trail.push({ label: await names.game(id), href: base });
     if (page === "reviews") {
       trail.push({ label: "Reviews", href: `${base}/reviews` });
-      if (sub) trail.push({ label: "Review", href: `${base}/reviews/${sub}` });
     }
   }
 
