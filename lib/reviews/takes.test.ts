@@ -8,6 +8,7 @@ import {
   reviewDeleteNote,
   reviewTakes,
   revisionDeleteNote,
+  revisionTakeFor,
   scoreChange,
   scoreRow,
   stopDate,
@@ -116,5 +117,22 @@ describe("isRevisited", () => {
     expect(isRevisited({ revisions: [{ published_at: "2026-11-01T00:00:00Z" } as ReviewRevision] })).toBe(true);
     expect(isRevisited({ revisions: [] })).toBe(false);
     expect(isRevisited({})).toBe(false);
+  });
+});
+
+describe("revisionTakeFor", () => {
+  const takes = reviewTakes(review);
+
+  it("is nothing without a Revision", () => {
+    expect(revisionTakeFor(null, takes)).toBeNull();
+  });
+
+  it("tapes the current take above a Draft Revision", () => {
+    const draft = rev(7, null, 80, null);
+    expect(revisionTakeFor(draft, takes)?.earlier).toBe(takes[takes.length - 1]);
+  });
+
+  it("tapes nothing above a Published Revision", () => {
+    expect(revisionTakeFor(review.revisions[0], takes)?.earlier).toBeNull();
   });
 });

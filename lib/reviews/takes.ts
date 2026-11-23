@@ -193,3 +193,15 @@ export function reviewDeleteNote(takes: Take[]): string {
   if (revisions === 0) return "Every member loses it, score and all.";
   return `Every take goes with it, ${revisions === 1 ? "its Revision" : `all ${revisions} Revisions`} included.`;
 }
+
+// What the desk needs to open a Revision from the review page: a Draft
+// Revision answers the current take (taped above Overall), and either kind
+// carries its own delete note.
+export function revisionTakeFor(revision: ReviewRevision | null, takes: Take[]) {
+  if (!revision) return null;
+  return {
+    revision,
+    earlier: revision.published_at == null ? takes[takes.length - 1] : null,
+    deleteNote: revisionDeleteNote(takes, `revision-${revision.revision_id}`),
+  };
+}

@@ -33,6 +33,8 @@ export interface ReviewBannerProps {
   // link just adds `?edit` to the current URL; ReviewDetail is what actually
   // opens the editor.
   canEdit?: boolean;
+  // Beside "Edit your review" while the Review has a single take.
+  revisit?: { href: string; continuing: boolean } | null;
   // The reviewer's own headline, optional. Present, it is the banner's
   // monumental line and the game steps down to the line above it; absent,
   // the game's name takes the headline.
@@ -59,6 +61,7 @@ export function ReviewBanner({
   createdAt,
   editedAt,
   canEdit,
+  revisit,
   title,
   badge,
   scoreHistory,
@@ -129,6 +132,7 @@ export function ReviewBanner({
               createdAt={createdAt}
               editedAt={editedAt}
               canEdit={canEdit}
+              revisit={revisit}
               note={bylineNote}
             />
           )}
