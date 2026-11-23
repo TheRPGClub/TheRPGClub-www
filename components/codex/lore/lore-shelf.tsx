@@ -112,7 +112,7 @@ export function LoreShelf({
           Newest on the left. A spine&apos;s width is its story&apos;s length.
         </p>
       </div>
-      <div ref={slide} aria-live="polite" className="scroll-mt-20">
+      <div ref={slide} aria-live="polite" className="scroll-mt-5">
         {slides[picked]}
       </div>
     </div>

@@ -20,6 +20,8 @@ type AvatarVariant =
   // www#107: a member's mark on a Challenge (a Run card, the Host): the
   // picture, else their initials in the label voice on dim paper.
   | "member-mark"
+  // www#164: the member on the phone tab bar's You tab.
+  | "tab"
 
 function Avatar({
   className,

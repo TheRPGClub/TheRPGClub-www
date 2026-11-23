@@ -37,6 +37,9 @@ type InputVariant =
   // www#100: a field of a journal entry in its open editor (the title): the
   // page's ink, the strong rule and the yellow focus.
   | "entry"
+  // www#157: a field holding an edit not saved yet (the Game Edit page's
+  // staged changes): the field's look ringed in yellow.
+  | "staged"
 
 function Input({
   className,

@@ -28,7 +28,6 @@ export async function GameJournalSection({
   const journal = await fetchGameJournal(gameId);
   const entries = journal?.data ?? [];
   const chronology = buildChronology(entries, completions ?? []);
-  const members = chronology?.lines.length ?? 0;
   const total = journal?.meta.count ?? 0;
 
   const names = new Map<string, string>();
@@ -65,11 +64,6 @@ export async function GameJournalSection({
     <section aria-labelledby="game-journal" className="mt-10">
       <SectionHeading
         title={<span id="game-journal">Game Journal</span>}
-        count={
-          total > 0
-            ? `${total} ${total === 1 ? "entry" : "entries"} · ${members} ${members === 1 ? "member" : "members"}`
-            : undefined
-        }
         action={
           viewerId && (
             <ButtonLink

@@ -1,7 +1,7 @@
 import { listPresenceAction } from "@/app/actions/presence";
 import { presenceSetter } from "@/lib/presence";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { PresenceForm } from "@/components/admin/presence/presence-form";
 import { PresenceHistory } from "@/components/admin/presence/presence-history";
@@ -24,6 +24,7 @@ export default async function PresencePage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           current ? (

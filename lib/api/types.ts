@@ -404,6 +404,8 @@ export interface Hltb {
   vs: string | null;
   source_query: string | null;
   scraped_at: string | null;
+  searched_at?: string | null;
+  next_forced_search_at?: string | null;
   updated_at: string | null;
 }
 

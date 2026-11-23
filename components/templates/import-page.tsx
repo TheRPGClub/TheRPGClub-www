@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
@@ -17,7 +16,6 @@ import {
   requiredAccount,
 } from "@/lib/imports/linked-account";
 import { PageHeader } from "@/components/templates/page-header";
-import { ButtonLink } from "@/components/ui/button";
 import { ImportReviewLoop } from "@/components/imports/import-review-loop";
 import { LinkAccountDialog } from "@/components/imports/link-account-dialog";
 
@@ -33,7 +31,7 @@ interface ImportPageProps<J extends ImportJob> {
 }
 
 // The page every import kind shares: owner-only, the import template with a
-// link back to the hub, then either the open import's review loop or the
+// way back to the hub, then either the open import's review loop or the
 // kind's start screen.
 export async function ImportPage<J extends ImportJob>({
   kind,
@@ -62,14 +60,9 @@ export async function ImportPage<J extends ImportJob>({
   return (
     <div className="space-y-7">
       <PageHeader
+        back={{ href: importsHubHref(userId), label: "Imports" }}
         title={IMPORT_KINDS[kind].label}
         badge={features.preview(feature) && <PreviewBadge />}
-        actions={
-          <ButtonLink href={importsHubHref(userId)} variant="outline">
-            <ChevronLeft data-icon="inline-start" />
-            All imports
-          </ButtonLink>
-        }
       />
       {active ? (
         <div className="space-y-4">

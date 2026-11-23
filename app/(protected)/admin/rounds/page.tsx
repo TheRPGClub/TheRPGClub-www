@@ -2,7 +2,7 @@ import { fetchAdminRounds } from "@/lib/api/admin-rounds";
 import { paginationOf } from "@/lib/api/pagination";
 import { requireAuth } from "@/lib/session";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { nextRoundDefaults, trackFromSlug } from "@/lib/rounds";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { RoundForm } from "@/components/admin/rounds/round-form";
@@ -49,6 +49,7 @@ export default async function RoundsAdminPage({
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           latest ? (
@@ -64,7 +65,7 @@ export default async function RoundsAdminPage({
         }
       />
 
-      <div id="add" className="mt-6.5 scroll-mt-20">
+      <div id="add" className="mt-6.5 scroll-mt-5">
         <RoundForm
           // A new prefill link starts a fresh form.
           key={`${track ?? ""}-${prefillRound}-${prefillMonth ?? ""}`}

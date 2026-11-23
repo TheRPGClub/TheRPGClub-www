@@ -109,7 +109,7 @@ export function SetSpread({
           className="flex flex-col gap-6 rounded-md bg-card p-5 sm:p-7 xl:rounded-l-none xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)]"
         >
           <PageHead left={`${memberName}’s Unlocks`} right="By Rarity" className="max-xl:hidden" />
-          <div className="hidden xl:sticky xl:top-[84px] xl:flex xl:flex-col xl:gap-6">
+          <div className="hidden xl:sticky xl:top-6 xl:flex xl:flex-col xl:gap-6">
             {selected ? (
               detailFor(selected)
             ) : (

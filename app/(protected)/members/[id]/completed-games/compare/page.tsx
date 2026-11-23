@@ -30,6 +30,7 @@ export default async function CompareCompletionsPage({
       userId={id}
       displayName={left.name}
       title="Compare completions"
+      back={{ href: `/members/${id}/completed-games`, label: "Completed games" }}
       counts={memberCounts(page.user)}
       current="completed"
     >

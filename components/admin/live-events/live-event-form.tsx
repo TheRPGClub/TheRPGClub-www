@@ -82,7 +82,7 @@ export function LiveEventForm({ guildId }: { guildId: string | null }) {
           {tracked && <LiveEventDispatch state={tracked} guildId={guildId} />}
         </form>
 
-        <div className="min-w-0 xl:sticky xl:top-[84px]">
+        <div className="min-w-0 xl:sticky xl:top-6">
           <ProofCard
             jobId={jobId}
             phase={event && jobId == null ? liveEventPhase(event.status) : null}

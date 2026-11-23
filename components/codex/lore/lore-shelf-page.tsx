@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import type { CodexEntry } from "@/lib/codex/types";
-import { LORE_PATH, NEW_LORE_PATH, partCount } from "@/lib/codex/paths";
+import { CODEX_BACK, LORE_PATH, NEW_LORE_PATH, partCount } from "@/lib/codex/paths";
 import { pageRange } from "@/lib/codex/wall";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/templates/page-header";
@@ -48,7 +48,7 @@ export function LoreShelfPage({
   const slides = Object.fromEntries(entries.map((entry) => [entry.id, <LoreSlideOut key={entry.id} entry={entry} />]));
   return (
     <>
-      <PageHeader title="Club Lore" badge={badge} count={failed ? null : partCount("lore_entry", total)} actions={add} />
+      <PageHeader back={CODEX_BACK} title="Club Lore" badge={badge} count={failed ? null : partCount("lore_entry", total)} actions={add} />
       <div className="mt-7">
         {failed && <p className={SLIP}>Club Lore couldn&apos;t be read just now. Try again in a moment.</p>}
         {!failed && initial === undefined && (

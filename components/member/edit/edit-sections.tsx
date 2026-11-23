@@ -48,7 +48,7 @@ export function EditSections({
     <div className="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-9 lg:grid-cols-[15rem_minmax(0,1fr)]">
       <nav
         aria-label="Edit sections"
-        className="md:sticky md:top-20 md:self-start"
+        className="md:sticky md:top-5 md:self-start"
       >
         <ul className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:gap-0.5 md:overflow-visible md:px-0 md:pb-0">
           {sections.map((section) => {

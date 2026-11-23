@@ -25,6 +25,7 @@ export function YourDrafts({
   return (
     <div className="space-y-[26px] pb-10">
       <PageHeader
+        back={{ href: "/reviews", label: "Reviews" }}
         title="Your drafts"
         badge={badge || undefined}
         count={total > 0 ? `${draftCount(total)} · only you see these` : "only you see these"}

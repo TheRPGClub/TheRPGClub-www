@@ -1,23 +1,15 @@
-import { CloudOff, RotateCw, SearchX, Timer } from "lucide-react";
+import { CloudOff, RotateCw, SearchX } from "lucide-react";
 import { HLTB_FAILURE_COPY, hltbSearchUrl, type HltbLookupFailure } from "@/lib/hltb";
 import { Button } from "@/components/ui/button";
 import { SourceLink } from "@/components/issue/game-hltb-card-parts";
 
 // The "Time to beat" card without times: nothing saved yet (with the
-// lookup), or a lookup that didn't find any.
+// lookup at the heading), or a lookup that didn't find any.
 
 const emptyBoxClass =
   "flex flex-col items-start gap-3 rounded-sm border border-dashed border-border-strong px-4 py-4.5";
 
-export function Empty({
-  unloaded,
-  canLookUp,
-  onLookUp,
-}: {
-  unloaded: boolean;
-  canLookUp: boolean;
-  onLookUp: () => void;
-}) {
+export function Empty({ unloaded, canLookUp }: { unloaded: boolean; canLookUp: boolean }) {
   return (
     <div className={emptyBoxClass}>
       <p className="text-[0.9rem] text-dim-foreground">
@@ -25,15 +17,9 @@ export function Empty({
           ? "Saved times couldn't be loaded right now."
           : "No HowLongToBeat times saved yet."}{" "}
         {canLookUp
-          ? "Any member can look them up."
+          ? "Look them up with the reload button beside the heading."
           : "Members with the Members role can look them up."}
       </p>
-      {canLookUp && (
-        <Button variant="highlight" onClick={onLookUp}>
-          <Timer data-icon="inline-start" aria-hidden />
-          Look up on HLTB
-        </Button>
-      )}
     </div>
   );
 }

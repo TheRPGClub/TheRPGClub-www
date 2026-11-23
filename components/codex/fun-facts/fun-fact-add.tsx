@@ -18,7 +18,7 @@ export function FunFactAdd() {
     <section
       id={ADD_FUN_FACT_ID}
       aria-labelledby={`${ADD_FUN_FACT_ID}-label`}
-      className="max-w-3xl scroll-mt-24 rounded-md bg-card px-4 pt-4 pb-3.5 shadow-[inset_0_3px_0_var(--color-codex-fact)]"
+      className="max-w-3xl scroll-mt-9 rounded-md bg-card px-4 pt-4 pb-3.5 shadow-[inset_0_3px_0_var(--color-codex-fact)]"
     >
       <h2
         id={`${ADD_FUN_FACT_ID}-label`}

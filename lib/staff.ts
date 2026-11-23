@@ -327,6 +327,9 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
   },
 ];
 
+// A desk tool's way back to the Staff desk (its BackLink; www#164).
+export const STAFF_DESK_BACK = { href: "/admin", label: "Staff desk" } as const;
+
 export function staffSectionsFor(m: Flags): StaffSection[] {
   return STAFF_SECTIONS.filter((s) => canUseTier(m, s.tier));
 }

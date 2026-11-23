@@ -1,6 +1,6 @@
 import { latestBackfillAction } from "@/app/actions/superadmin-tools";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { ImageBackfillDesk } from "@/components/admin/images/image-backfill-desk";
 import { StaffOnly } from "@/components/staff-only";
@@ -21,6 +21,7 @@ export default async function ImageBackfillPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           <>

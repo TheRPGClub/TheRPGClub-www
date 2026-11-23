@@ -8,6 +8,7 @@ import { MemberAvatar } from "@/components/issue/member-cover";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { SetHeaderStats } from "./set-header-stats";
+import { BackLink } from "@/components/shell/back-link";
 
 // The set page's masthead: the game title on its tint band (with any
 // Completion, Mastery or Platinum stamped on its corner), the Provider and
@@ -33,6 +34,7 @@ export function SetHeader({
 
   return (
     <header className="border-b-2 border-foreground pb-6">
+      <BackLink href={memberAchievementsHref(userId)} label="Achievements" className="mb-5" />
       <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="flex min-w-0 flex-col gap-4">
           <div

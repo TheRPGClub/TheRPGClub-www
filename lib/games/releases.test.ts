@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { DatePrecision, Release } from "@/lib/api/types";
-import { countdown, releasesByPlatform, releasesCount } from "@/lib/games/releases";
+import { countdown, nextRelease, releasesByPlatform } from "@/lib/games/releases";
 
 let nextId = 1;
 function release(
@@ -60,9 +60,18 @@ describe("releasesByPlatform", () => {
   });
 });
 
-describe("releasesCount", () => {
-  it("counts Releases and platforms", () => {
-    expect(releasesCount(14, 6)).toBe("14 Releases · 6 platforms");
-    expect(releasesCount(1, 1)).toBe("1 Release · 1 platform");
+describe("nextRelease", () => {
+  const today = "2026-11-17";
+
+  it("picks the first dated Release that isn't past", () => {
+    const past = release("2024-11-14", "day");
+    const soon = release("2027-04-01", "quarter");
+    const later = release("2027-09-01", "day");
+    const tba = release(null, "tba");
+    expect(nextRelease([past, soon, later, tba], today)).toBe(soon);
+  });
+
+  it("is null when every Release is past or TBA", () => {
+    expect(nextRelease([release("2024-11-14", "day"), release(null, "tba")], today)).toBeNull();
   });
 });

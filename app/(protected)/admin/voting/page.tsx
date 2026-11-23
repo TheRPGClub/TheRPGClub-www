@@ -8,7 +8,7 @@ import {
   VOTING_CATEGORIES,
 } from "@/lib/api/voting-round";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { hasRunoff, tallyLines, totalVotes } from "@/lib/voting-console";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { StaffOnly } from "@/components/staff-only";
@@ -78,7 +78,7 @@ export default async function VotingConsolePage() {
   if (!round) {
     return (
       <div className="space-y-6">
-        <DeskHeader title={SECTION.label} side={<>No round scheduled</>} />
+        <DeskHeader back={STAFF_DESK_BACK} title={SECTION.label} side={<>No round scheduled</>} />
         <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           No voting round is scheduled. Deciding a round schedules the next one.
         </p>

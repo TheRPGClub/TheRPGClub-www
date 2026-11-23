@@ -1,5 +1,5 @@
 import type { Release } from "@/lib/api/types";
-import { daysBetween } from "@/lib/releases";
+import { daysBetween, isPast } from "@/lib/releases";
 
 // A game's Releases as its page shows them (www#115): one row per platform,
 // each listing its region and date pairs at their Date Precision. The date
@@ -41,9 +41,8 @@ export function releasesByPlatform(releases: Release[]): PlatformReleases[] {
   return [...rows.values()];
 }
 
-// "14 Releases · 6 platforms".
-export function releasesCount(releases: number, platforms: number): string {
-  return `${releases} ${releases === 1 ? "Release" : "Releases"} · ${platforms} ${
-    platforms === 1 ? "platform" : "platforms"
-  }`;
+// The game's next Release: the first in the API's placement order (earliest
+// first, TBA last) that has a date and isn't past. A TBA one is never next.
+export function nextRelease(releases: Release[], today: string): Release | null {
+  return releases.find((r) => r.release_date && !isPast(r.release_date, r.date_precision, today)) ?? null;
 }

@@ -53,6 +53,11 @@ const buttonVariants = cva(
         "sidebar-action": "",
         // The back link out of a sidebar group's view ("All sections").
         "sidebar-back": "",
+        // www#164: a nested page's way back to its parent, small above its
+        // title (BackLink): its name in label caps on desktop, the arrow
+        // alone on phones. back-on-art sits on a key-art banner.
+        back: "",
+        "back-on-art": "",
         // A tab in the phone's tab bar: an icon over its name. The current
         // one carries data-current. Pair with size="bare".
         tab: "",
@@ -60,9 +65,6 @@ const buttonVariants = cva(
         // drawn by the caller; the Theme sets its focus. Pair with
         // size="bare".
         round: "",
-        // The member's avatar that opens their account menu (the phone's
-        // top bar). Pair with size="bare".
-        account: "",
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",
@@ -206,6 +208,11 @@ const buttonVariants = cva(
         // (the dashboard's Edit dashboard), in the "Full history" link's
         // voice: label caps in paper with a red icon, yellow on hover.
         "heading-action": "",
+        // www#163: a link or toggle at the right end of a game page section's
+        // heading ("On the Release Calendar", "All Details"): label caps in
+        // the dim ink underlined in GOTM red, yellow on hover. Pair with
+        // size="bare".
+        "rail-link": "",
         // www#149: a two-state filter that is a link to its other state (the
         // Review Feed's Written only), role="switch" with aria-checked. It
         // holds a small switch drawn by the Theme: a span[data-part=

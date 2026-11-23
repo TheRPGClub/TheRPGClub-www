@@ -1,10 +1,8 @@
-import type { ThreadSearchResult } from "@/lib/api/types";
-
 // The game page's link controls: alternate versions (Admins) and Discord
 // threads (Regulars, or Moderator and up). Pure helpers, shared by the
 // actions and the pickers.
 
-export type GameLinkAction = "version" | "thread-link" | "thread-unlink";
+export type GameLinkAction = "version" | "version-unlink" | "thread-link" | "thread-unlink";
 
 // A refusal in the member's words, by HTTP status.
 export function gameLinkErrorMessage(
@@ -13,6 +11,10 @@ export function gameLinkErrorMessage(
   message?: string,
 ): string {
   if (status === 401) return "Your session has ended. Sign in again.";
+  if (action === "version-unlink") {
+    if (status === 403) return "Only Admins and Superadmins can unlink versions.";
+    if (status === 404) return "Those games aren't linked as versions any more.";
+  }
   if (status === 403) {
     return action === "version"
       ? "Only Admins and Superadmins can link versions."
@@ -40,16 +42,4 @@ export function versionPickProblem(
   if (pickedId === gameId) return "That's this game. Pick another one.";
   if (alternateIds.includes(pickedId)) return "Already linked as a version.";
   return null;
-}
-
-// Whether a search result is already linked to `gameId`, and the other games
-// it is linked to (a thread can link to several).
-export function threadLinkState(
-  result: ThreadSearchResult,
-  gameId: number,
-): { linkedHere: boolean; others: string[] } {
-  return {
-    linkedHere: result.games.some((g) => g.game_id === gameId),
-    others: result.games.filter((g) => g.game_id !== gameId).map((g) => g.title),
-  };
 }

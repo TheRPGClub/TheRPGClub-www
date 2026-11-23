@@ -17,7 +17,7 @@ import { discordAvatarUrl, type SessionMembership, type SessionPrincipal } from 
 import type { SessionFeature } from "@/lib/features";
 import { sidebarGroups } from "@/lib/sidebar";
 import { signOut } from "@/app/actions/auth";
-import { PAGE_ICON, SETTINGS_HREF } from "@/components/shell/nav-items";
+import { PAGE_ICON, SETTINGS_HREF, TAB_CLASS } from "@/components/shell/nav-items";
 
 const ITEM_CLASS = "gap-3 py-2.5 [&_svg]:mt-0.5 [&_svg]:size-[18px]";
 const NAME_CLASS = "font-label text-[1.05rem] leading-tight font-bold tracking-[0.04em] uppercase";
@@ -34,9 +34,10 @@ function Entry({ href, icon: Icon, name, note }: { href: string; icon: LucideIco
   );
 }
 
-// The member's own corner on a phone, at the right of the top bar: their
-// avatar opens their profile, Settings, the staff tools their role can use,
-// and sign-out. On wider screens the sidebar's foot holds the same.
+// The member's own corner on a phone, the tab bar's last tab ("You", their
+// avatar; www#164): it opens their profile, Settings, the staff tools their
+// role can use, and sign-out. On wider screens the sidebar's foot holds the
+// same.
 export function AccountMenu({
   principal,
   membership,
@@ -55,13 +56,16 @@ export function AccountMenu({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="account" size="bare" aria-label="Your account" className="size-8" />}>
-        <Avatar>
+      <DropdownMenuTrigger
+        render={<Button variant="tab" size="bare" aria-label="Your account" className={TAB_CLASS} />}
+      >
+        <Avatar variant="tab" className="size-5.5">
           <AvatarImage src={avatarUrl} alt="" />
           <AvatarFallback>{displayName[0]?.toUpperCase() ?? "?"}</AvatarFallback>
         </Avatar>
+        You
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="w-[min(18.5rem,calc(100vw-1.25rem))] pb-1.5">
+      <DropdownMenuContent side="top" align="end" sideOffset={10} className="w-[min(18.5rem,calc(100vw-1.25rem))] pb-1.5">
         <div className="mx-2 mt-2 mb-1 flex items-center gap-3 border-b-2 border-foreground pb-2">
           <Avatar>
             <AvatarImage src={avatarUrl} alt="" />

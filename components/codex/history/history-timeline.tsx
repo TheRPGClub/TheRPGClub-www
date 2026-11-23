@@ -33,6 +33,7 @@ export function HistoryTimeline({
   canAdd,
   badge,
   seeAlso,
+  back,
 }: {
   // The whole Club History, oldest first; null when it couldn't be read.
   events: CodexEntry[] | null;
@@ -41,6 +42,8 @@ export function HistoryTimeline({
   canAdd: boolean;
   badge?: ReactNode;
   seeAlso?: (event: CodexEntry) => ReactNode;
+  // A Member's way back to the Club Codex; a Visitor has no Codex to go to.
+  back?: { href: string; label: string };
 }) {
   const all = events ?? [];
   const shown = orderedEvents(all, query.kind, query.order);
@@ -54,7 +57,7 @@ export function HistoryTimeline({
   );
   return (
     <div className="pb-10">
-      <PageHeader title="Club History" badge={badge} count={events ? eventCount(all.length) : null} actions={add} />
+      <PageHeader back={back} title="Club History" badge={badge} count={events ? eventCount(all.length) : null} actions={add} />
       <p className="mt-3 max-w-[70ch] text-dim-foreground">
         How the club got here, from a subreddit in 2016 to the server today. The staff keep this record, and every date
         is as exact as the club remembers it.

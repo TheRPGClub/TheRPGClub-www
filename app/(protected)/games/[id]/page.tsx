@@ -4,21 +4,21 @@ import { firstParam, gamePageGates, loadGamePage } from "@/lib/games/game-page";
 import { viewerOnGame } from "@/lib/games/viewer";
 import { accentForGame } from "@/lib/reviews/accent";
 import { GameJournalSection } from "@/components/journal/game-journal-section";
-import { AlternateVersions } from "@/components/games/game-page/alternate-versions";
-import { GameAboutRail } from "@/components/games/game-page/game-about-rail";
+import { FeaturedVideo } from "@/components/games/game-page/featured-video";
 import { GameAchievements } from "@/components/games/game-page/game-achievements";
 import { GameBallotSection } from "@/components/games/game-page/game-ballot-section";
-import { GameColumns } from "@/components/games/game-page/game-columns";
+import { GameFactsRow } from "@/components/games/game-page/game-facts-row";
 import { GamePageHero } from "@/components/games/game-page/game-page-hero";
-import { GamePageSkeleton } from "@/components/games/game-page/game-page-skeleton";
+import { FactsRowSkeleton, GamePageSkeleton } from "@/components/games/game-page/game-page-skeleton";
 import { GameReviewsSection } from "@/components/games/game-page/game-reviews-section";
 import { DraftSlot } from "@/components/reviews/drafts/draft-slot";
 import { DetailTemplate } from "@/components/templates/detail-template";
 
-// A game's page is its cover story: the hero with the club's numbers, the
-// round it's on the ballot for, then the reviews beside a rail of who's
-// playing it, who finished it and the facts, its members' journals, its
-// Achievement Sets, and its other versions last.
+// A game's page is its cover story (design www#156, round 3), in a fixed
+// order: the hero with the club's panel over its foot (time to beat, who's
+// playing it, who finished it, its Discord threads); Releases, Details and
+// Alternate Versions; the round it's on the ballot for; its Featured Video;
+// then Reviews, its members' journals and its Achievement Sets, full width.
 
 export default function GamePage({
   params,
@@ -58,43 +58,42 @@ async function GameContent({
   if (!page) notFound();
   const { game, session, features, show, reviews, reviewTotal, ownDraft } = page;
   const viewer = viewerOnGame(game, session?.principal.discord_id ?? null);
-  const gates = gamePageGates(game, session?.membership);
+  const gates = gamePageGates(session?.membership);
 
   return (
     <DetailTemplate
       className="pb-8"
-      hero={<GamePageHero game={game} reviewTotal={reviewTotal} features={features} />}
+      hero={<GamePageHero game={game} features={features} show={show} canEdit={gates.canEdit} />}
     >
-      {/* A live read: streams in separately, never holding up the hero. */}
+      <Suspense fallback={<FactsRowSkeleton />}>
+        <GameFactsRow game={game} calendarShown={show.releaseCalendar} />
+      </Suspense>
+      {/* A live read: streams in separately, never holding up the rest. */}
       {show.ballot && (
         <Suspense fallback={null}>
           <GameBallotSection gameId={gameId} />
         </Suspense>
       )}
-      <GameColumns
-        reviews={
-          show.reviews && (
-            <GameReviewsSection
-              gameId={gameId}
-              reviews={reviews}
-              reviewTotal={reviewTotal}
-              viewer={viewer}
-              accent={accentForGame(game)}
-              draftSlot={
-                ownDraft && (
-                  <DraftSlot
-                    draft={ownDraft.draft}
-                    now={ownDraft.now}
-                    gameTitle={game.title}
-                    coverUrl={game.cover_url}
-                  />
-                )
-              }
-            />
-          )
-        }
-        rail={<GameAboutRail gameId={gameId} game={game} show={show} gates={gates} />}
-      />
+      <FeaturedVideo game={game} />
+      {show.reviews && (
+        <GameReviewsSection
+          gameId={gameId}
+          reviews={reviews}
+          reviewTotal={reviewTotal}
+          viewer={viewer}
+          accent={accentForGame(game)}
+          draftSlot={
+            ownDraft && (
+              <DraftSlot
+                draft={ownDraft.draft}
+                now={ownDraft.now}
+                gameTitle={game.title}
+                coverUrl={game.cover_url}
+              />
+            )
+          }
+        />
+      )}
       {/* Members' Game Journals on this game: one chapter line per member.
           Completions join the timeline only when Game Completions shows. */}
       {show.journals && (
@@ -117,9 +116,6 @@ async function GameContent({
           />
         </Suspense>
       )}
-      <Suspense fallback={null}>
-        <AlternateVersions gameId={gameId} canLink={gates.isAdmin} />
-      </Suspense>
     </DetailTemplate>
   );
 }

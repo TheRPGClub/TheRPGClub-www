@@ -14,17 +14,21 @@ import { TabRound } from "@/components/shell/tab-round";
 
 // The phone's navigation, in place of the sidebar: a tab bar along the foot
 // of the screen with Home, the Browse groups (Play, Games, Club) and the
-// round button between them. A group's tab pops up its pages; Staff lives
-// in the top bar's account menu. The tab holding the current page carries
-// the red you-are-here bar.
+// round button between them, and last the member's own "You" tab (their
+// avatar), which opens the account menu (www#164; there is no top bar). A
+// group's tab pops up its pages; Staff lives in the account menu. The tab
+// holding the current page carries the red you-are-here bar.
 export function TabBar({
   membership,
   votingPhase,
   features,
+  account,
 }: {
   membership: SessionMembership | null;
   votingPhase: VotingPhase | null;
   features: SessionFeature[] | undefined;
+  // The account menu, as the last tab.
+  account: React.ReactNode;
 }) {
   const pathname = usePathname();
   const groups = useMemo(
@@ -68,6 +72,7 @@ export function TabBar({
           </ButtonLink>
         </li>
         {tabs}
+        <li>{account}</li>
       </ul>
     </nav>
   );

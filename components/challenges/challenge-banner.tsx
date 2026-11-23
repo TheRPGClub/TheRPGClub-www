@@ -10,6 +10,7 @@ import { SlotRow } from "@/components/challenges/format-picture";
 import { DoorsPicture } from "@/components/challenges/assignment/doors-picture";
 import { MemberMark } from "@/components/challenges/host-badge";
 import { Numeral } from "@/components/challenges/banner-numeral";
+import { BackLink } from "@/components/shell/back-link";
 
 // The Challenge banner, shared by every Challenge page (surface brief
 // challenges-pool, 2D): the key art over the tint, under the black
@@ -17,7 +18,8 @@ import { Numeral } from "@/components/challenges/banner-numeral";
 // name as a two-line Anton headline whose second line takes the tint's hi;
 // and the numbers on an ink plate, days left first in the tint's hi. An
 // Edition page (www#110) passes its own chip ("Edition 2026"), its phase's
-// numerals and the Host chip.
+// numerals and the Host chip. Its top-left corner holds the way back to
+// the Challenges.
 export function ChallengeBanner({
   page,
   badge,
@@ -54,7 +56,9 @@ export function ChallengeBanner({
         aria-hidden
         className="absolute inset-0 bg-linear-to-r from-background/96 via-background/82 via-45% to-background/15"
       />
-      <div className="relative z-10 flex w-full flex-col gap-4 px-4 pt-8 pb-5 sm:px-7 sm:pb-[26px] lg:flex-row lg:items-end lg:gap-10">
+      {/* The way back to the Challenges, on the banner's top edge. */}
+      <BackLink href="/challenges" label="Challenges" onArt className="absolute top-4 left-4 z-10 mb-0 sm:left-7 md:top-5" />
+      <div className="relative z-10 flex w-full flex-col gap-4 px-4 pt-16 pb-5 sm:px-7 sm:pb-[26px] lg:flex-row lg:items-end lg:gap-10">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             {badge}

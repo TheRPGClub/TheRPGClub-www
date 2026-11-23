@@ -8,6 +8,7 @@ import type {
   GameRelations,
   Release,
   Review,
+  Thread,
   UserSummary,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
@@ -16,7 +17,7 @@ import { memberName } from "@/lib/achievements";
 import { draftOfGame } from "@/lib/reviews/drafts";
 import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
-import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
+import { gameEditViewer } from "@/lib/games/game-edit/tabs";
 
 // The game page's reads. The page itself only gates and fills the detail
 // template; its sections stream their own reads from here.
@@ -90,22 +91,11 @@ export async function loadGamePage(gameId: number) {
 
 export type GamePageShow = NonNullable<Awaited<ReturnType<typeof loadGamePage>>>["show"];
 
-// What the viewer may do on the game page, by their membership.
-export function gamePageGates(
-  game: Pick<Game, "igdb_id">,
-  membership: Parameters<typeof isAdminOrAbove>[0],
-) {
-  return {
-    // Image upload and linking versions.
-    isAdmin: isAdminOrAbove(membership),
-    // Thread link and unlink: the API's Regulars-or-staff gate.
-    canEditThreads: isRegularOrStaff(membership),
-    // Refresh release info needs an IGDB link and the API's member gate.
-    canRefreshReleases: game.igdb_id != null && isMemberOrStaff(membership),
-  };
+// What the viewer may do on the game page, by their membership: the hero's
+// Edit game, behind the Game Edit page's gates.
+export function gamePageGates(membership: Parameters<typeof gameEditViewer>[0]) {
+  return { canEdit: gameEditViewer(membership) !== null };
 }
-
-export type GamePageGates = ReturnType<typeof gamePageGates>;
 
 export function formatReleaseDate(date: string, month: "short" | "long"): string {
   return new Date(date).toLocaleDateString("en-US", {
@@ -171,5 +161,17 @@ export async function fetchRingMemberNames(): Promise<Map<string, string>> {
     return new Map(data.map((user) => [user.user_id, memberName(user)]));
   } catch {
     return new Map();
+  }
+}
+
+// The game's linked Discord threads for the hero panel, or null when the read
+// fails (signed out).
+export async function fetchGameThreads(gameId: number): Promise<Thread[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/games/${gameId}/threads?per=50`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiCollection<Thread>).data;
+  } catch {
+    return null;
   }
 }

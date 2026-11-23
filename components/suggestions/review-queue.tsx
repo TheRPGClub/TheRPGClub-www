@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { SuggestionList } from "@/lib/api/suggestions";
-import type { StaffSection } from "@/lib/staff";
+import { STAFF_DESK_BACK, type StaffSection } from "@/lib/staff";
 import { PageHeader } from "@/components/templates/page-header";
 import { ReviewCard } from "@/components/suggestions/review-card";
 
@@ -18,6 +18,7 @@ export function SuggestionReviewQueue({
   return (
     <div className="space-y-6">
       <PageHeader
+        back={STAFF_DESK_BACK}
         title={section.label}
         description={section.blurb}
         count={queue ? `${queue.total} pending` : undefined}

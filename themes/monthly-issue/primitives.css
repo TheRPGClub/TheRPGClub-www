@@ -49,11 +49,6 @@
             &[data-variant="round"] {
                 @apply rounded-full border-0 transition-transform focus-visible:ring-2 focus-visible:ring-foreground active:scale-95 motion-reduce:transition-none;
             }
-            /* The account avatar: a ring of the rule, yellow while its menu
-               is open. */
-            &[data-variant="account"] {
-                @apply rounded-full border-0 ring-1 ring-border-strong ring-offset-2 ring-offset-background transition-shadow aria-expanded:ring-2 aria-expanded:ring-highlight focus-visible:ring-2 focus-visible:ring-highlight;
-            }
             &[data-variant="default"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-primary text-primary-foreground hover:bg-gotm/85;
             }
@@ -165,6 +160,19 @@
                that go paper on hover. */
             &[data-variant="sidebar-back"] {
                 @apply font-label rounded-sm border-0 font-semibold tracking-[0.08em] text-faint-foreground uppercase transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+            }
+            /* www#164: a nested page's way back to its parent, small
+               above the title: label caps in the dim ink underlined in
+               GOTM red, yellow on hover. On phones the arrow alone, in
+               paper, as a 32px target. back-on-art is the same on a key-art
+               banner, in paper. */
+            &:is([data-variant="back"], [data-variant="back-on-art"]) {
+                @apply font-label rounded-sm border-0 text-[0.84rem] leading-none font-extrabold tracking-[0.07em] text-dim-foreground uppercase underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-ring max-md:text-foreground max-md:no-underline motion-reduce:transition-none;
+            }
+            /* On the art it is paper; on a phone the arrow sits on a
+               translucent ink square so it holds over any key art. */
+            &[data-variant="back-on-art"] {
+                @apply text-foreground max-md:bg-background/70;
             }
             &[data-variant="add"] {
                 @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
@@ -625,6 +633,14 @@
         }
         [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
             @apply text-dim-foreground;
+        }
+        /* www#164: the member on the phone tab bar's You tab: a ring of the
+           strong rule, yellow while the account menu is open. */
+        [data-slot="avatar"][data-variant="tab"] {
+            @apply ring-[1.5px] ring-border-strong transition-shadow in-aria-expanded:ring-highlight motion-reduce:transition-none;
+            [data-slot="avatar-fallback"] {
+                @apply font-label leading-none font-extrabold text-foreground;
+            }
         }
 
         /* Tooltip: a small paper label with ink type. */
@@ -1317,6 +1333,13 @@
             @apply bg-background;
         }
 
+        /* www#157: the Game Edit page. A field holding an edit not saved
+           yet keeps the field's look, ringed in yellow. */
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="staged"] {
+            @apply border-highlight ring-3 ring-highlight/16 focus-visible:border-highlight focus-visible:ring-highlight/30;
+        }
+
+
         /* www#100: journals, giveaways and the Feature switches. */
         /* The settings switch, its state spelled out in a label beside it:
            the label draws the focus ring around both and passes its hover
@@ -1531,6 +1554,11 @@
            the club" rule, voiced like the heading's "Full history" link. */
         [data-slot="button"][data-variant="heading-action"] {
             @apply font-label h-auto gap-1.5 rounded-sm border-0 bg-transparent px-0 text-sm font-extrabold text-foreground transition-colors hover:text-highlight active:not-aria-[haspopup]:translate-y-0 [&_svg]:size-4 [&_svg]:text-gotm;
+        }
+        /* The game page (www#163): a link at the right end of a section's
+           heading, opposite its title, in the back link's voice. */
+        [data-slot="button"][data-variant="rail-link"] {
+            @apply font-label gap-1.25 rounded-sm text-[0.8rem] leading-none font-extrabold tracking-[0.06em] whitespace-nowrap text-dim-foreground uppercase underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none [&_svg]:size-3.25;
         }
         /* www#149: the Review Feed's Written only, a link that switches
            the filter: a hairline box in the label voice holding a hollow

@@ -20,6 +20,9 @@ type TextareaVariant =
   // wrap (a Lore Entry's title on the writing desk): no box, a strong rule
   // under it that turns yellow on focus.
   | "headline"
+  // www#157: a field holding an edit not saved yet (the Game Edit page's
+  // staged changes): the field's look ringed in yellow.
+  | "staged"
 
 function Textarea({
   className,

@@ -5,8 +5,8 @@ import { REVIEWS_SHOWN } from "@/lib/games/game-page";
 import { GameReviewsList } from "@/components/games/reviews/game-reviews-list";
 import { DetailSection, SectionLink } from "@/components/templates/detail-template";
 
-// The game page's Reviews: the first few as the crew strip, with the
-// write-a-review panel, and a link to all of them.
+// The game page's Reviews, full width: the first few as the crew strip,
+// with the write-a-review panel, and a link to all of them.
 export function GameReviewsSection({
   gameId,
   reviews,
@@ -28,11 +28,6 @@ export function GameReviewsSection({
     <DetailSection
       id="game-reviews"
       title="Reviews"
-      count={
-        reviewTotal
-          ? `${reviewTotal} ${reviewTotal === 1 ? "review" : "reviews"}`
-          : undefined
-      }
       action={
         reviewTotal ? (
           <SectionLink href={`/games/${gameId}/reviews`}>
@@ -40,7 +35,7 @@ export function GameReviewsSection({
           </SectionLink>
         ) : undefined
       }
-      className="min-w-0"
+      className="mt-10 min-w-0"
       headingClassName="mb-4"
     >
       {reviewTotal === null ? (
