@@ -78,11 +78,11 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
 
 // The staff sections lib/staff.ts marks `nav`, under their Pinned Page keys.
 export const STAFF_PAGE: Partial<Record<StaffSectionKey, { key: PinnedPageKey; note: string }>> = {
-  overview: { key: "staff_desk", note: "All staff tools" },
+  overview: { key: "staff_desk", note: "What's waiting, every tool" },
   voting: { key: "voting_console", note: "Run the round" },
   synonyms: { key: "synonyms", note: "Search aliases" },
   "live-events": { key: "live_events", note: "Streams and watch parties" },
-  reminders: { key: "public_reminders", note: "Scheduled posts" },
+  reminders: { key: "public_reminders", note: "The bot's timed announcements" },
   suggestions: { key: "suggestion_review", note: "Triage the board" },
 };
 

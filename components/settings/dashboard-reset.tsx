@@ -8,11 +8,19 @@ import { PreferenceRow } from "@/components/feature/preference-row";
 
 const ID = "dashboard_panels";
 
-// Beside Reset Pinned Pages, for a member whose Dashboard Panels are their
-// own (spec api#421, www#145): Reset asks first, then the API drops their
-// list and they follow the club's default again. The refreshed page drops
-// this row. The default isn't named: the API owns it and may change it.
-export function DashboardReset() {
+// Under the Pinned Pages row on the Your layout tab (spec api#421, www#145).
+// For a member whose Dashboard Panels are their own, Reset asks first, then
+// the API drops their list and they follow the club's default again; the
+// refreshed row reads "Following the club's" with no Reset. The default isn't
+// named: the API owns it and may change it.
+export function DashboardReset({ customised }: { customised: boolean }) {
+  if (!customised) {
+    return (
+      <PreferenceRow id={ID} name="Dashboard" badge={null} where="Following the club's panels. Use Edit dashboard to make them your own." dim={false}>
+        {null}
+      </PreferenceRow>
+    );
+  }
   return (
     <PreferenceRow
       id={ID}

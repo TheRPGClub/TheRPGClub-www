@@ -48,13 +48,13 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
         </p>
         {waiting && (
           <p className="mt-3 text-[0.9rem] text-foreground">
-            A scan is already waiting for the bot. Starting another queues a second one.
+            A recount is already waiting for the bot. Starting another queues a second one.
           </p>
         )}
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Button type="button" variant="highlight" onClick={start} disabled={pending}>
             <Play data-icon="inline-start" />
-            {pending ? "Starting..." : started ? "Start another scan" : "Start memberscan"}
+            {pending ? "Starting..." : started ? "Start another recount" : "Start a recount"}
           </Button>
           {error && (
             <p role="alert" className="text-sm text-destructive">
@@ -70,27 +70,27 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
             jobId={started.id}
             initialJob={started}
             refreshDelays={BOT_JOB_LONG_REFRESH_DELAYS_MS}
-            what="The scan"
+            what="The recount"
             overhang
           >
-            {(job) => <CountSheet job={job} heading={`Scan #${started.id}`} />}
+            {(job) => <CountSheet job={job} heading={`Recount #${started.id}`} />}
           </ProofCard>
         ) : (
           <ProofCard
             overhang
             caption={
               lastDone
-                ? `Counts from the last scan${
+                ? `Counts from the last recount${
                     isClient
                       ? `, ${agoText(lastDone.finished_at ?? lastDone.updated_at, new Date())}`
                       : ""
                   }.`
-                : "No finished scan yet."
+                : "No finished recount yet."
             }
           >
             <CountSheet
               job={lastDone}
-              heading={lastDone ? `Scan #${lastDone.id}` : "No scan yet"}
+              heading={lastDone ? `Recount #${lastDone.id}` : "No recount yet"}
             />
           </ProofCard>
         )}
@@ -101,10 +101,10 @@ export function MemberscanDesk({ recent }: { recent: BotJob[] }) {
           id="memberscan-earlier"
           className="font-label border-b-2 border-foreground pb-1.5 text-[1.05rem] tracking-[0.06em]"
         >
-          Earlier scans
+          Earlier recounts
         </h2>
         {earlier.length === 0 ? (
-          <p className="py-3 text-sm text-dim-foreground">No scans on the wire yet.</p>
+          <p className="py-3 text-sm text-dim-foreground">No recounts yet.</p>
         ) : (
           <ol>
             {earlier.map((job) => (

@@ -1,7 +1,7 @@
 "use client";
 
 import { saveChallengeDmsAction, type ChallengeDmsChange } from "@/app/actions/challenge-settings";
-import type { ChallengeSettings } from "@/lib/challenge-settings";
+import type { ChallengeDmsData, ChallengeSettings } from "@/lib/challenge-settings";
 import { SectionHeading } from "@/components/templates/page-header";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
 import { PreferenceRow } from "@/components/feature/preference-row";
@@ -11,22 +11,34 @@ import { useSwitchSaves } from "@/hooks/use-switch-saves";
 
 const ROW = "challenge-dms";
 
-// /settings: the Challenge DM opt-out, one switch row in the page's own
-// style that saves on flip (useSwitchSaves). Shown only while the Challenges
+// The Notifications tab: what the bot sends the member directly. Today that
+// is the Challenge DM opt-out, one switch row in the page's own style that
+// saves on flip (useSwitchSaves). It is there only while the Challenges
 // Feature is shown to the member; staff seeing it in Preview get the badge.
-export function ChallengeDmsSection({
-  settings,
-  preview,
+// Otherwise one line says why there's nothing to choose.
+export function NotificationsTab({
+  challengeDms,
+  challengesHidden,
 }: {
-  // Null when the read failed.
-  settings: ChallengeSettings | null;
-  preview: boolean;
+  challengeDms: ChallengeDmsData | null;
+  // The member hid Challenges themselves (Features tab), so they can bring
+  // the DMs back; otherwise Challenges isn't theirs to use right now.
+  challengesHidden: boolean;
 }) {
   return (
-    <section aria-labelledby="settings-challenges" className="flex flex-col">
-      <SectionHeading title={<span id="settings-challenges">Challenges</span>} />
-      {settings ? (
-        <DmsRow initial={settings} preview={preview} />
+    <section aria-labelledby="settings-dms" className="flex max-w-2xl flex-col">
+      <SectionHeading title={<span id="settings-dms">Bot DMs</span>} />
+      <p className="mt-3 max-w-[60ch] text-dim-foreground">
+        What the bot sends you directly. Posts in the server&apos;s channels aren&apos;t affected.
+      </p>
+      {!challengeDms ? (
+        <p className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground">
+          {challengesHidden
+            ? "Show Challenges on the Features tab to choose its DMs."
+            : "No DMs to choose right now."}
+        </p>
+      ) : challengeDms.settings ? (
+        <DmsRow initial={challengeDms.settings} preview={challengeDms.preview} />
       ) : (
         <SettingsReadFailed>
           Couldn&apos;t load your Challenge settings from the club&apos;s server. Reload the page to try again.

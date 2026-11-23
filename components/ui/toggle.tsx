@@ -30,6 +30,9 @@ const toggleVariants = cva(
         // www#100: one of a set of choices on the yellow panel (the donated
         // key's platform).
         inverse: "focus-visible:ring-background/30",
+        // A member's own on/off pick drawn as a chip (/settings' News
+        // Categories): pressed is on; off is struck through.
+        ink: "",
       },
       size: {
         default:

@@ -8,13 +8,20 @@ import { PreferenceRow } from "@/components/feature/preference-row";
 
 const ID = "pinned_pages";
 
-// Under the Feature switches, for a member whose Pinned Pages are their own
-// (ticket api#419): one row in the switches' style, its Reset asking first.
-// It sits in the reset list (SettingsView) beside Reset dashboard.
-// Once reset, the session says the member follows the club default, so the
-// refreshed page drops this row and the sidebar shows the default. `names`
-// are the club default's pages, as the session gives them.
-export function PinnedPagesReset({ names }: { names: string }) {
+// The Your layout tab's Pinned Pages row (ticket api#419), in the switches'
+// style. For a member whose Pinned Pages are their own it offers Reset,
+// which asks first; once reset, the session says the member follows the club
+// default, so the refreshed row reads "Following the club's" with no Reset
+// and the sidebar shows the default. `names` are the club default's pages,
+// as the session gives them.
+export function PinnedPagesReset({ names, customised }: { names: string; customised: boolean }) {
+  if (!customised) {
+    return (
+      <PreferenceRow id={ID} name="Pinned Pages" badge={null} where={`Following the club's: ${names}. Use Pin to sidebar on a page to make the list your own.`} dim={false}>
+        {null}
+      </PreferenceRow>
+    );
+  }
   return (
     <PreferenceRow
       id={ID}

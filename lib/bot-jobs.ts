@@ -43,7 +43,7 @@ export const BOT_JOB_LONG_REFRESH_DELAYS_MS: readonly number[] = backoffDelays([
   { every: 60_000, until: 2_100_000 },
 ]);
 
-// Jobs per page on the /admin wire.
+// Jobs per page on the Staff desk's Bot jobs.
 export const WIRE_PAGE_SIZE = 25;
 
 export interface BotJobStatusCopy {
@@ -95,7 +95,7 @@ export function botJobReadError(status: number): { message: string; final: boole
   return { message: `Couldn't check with the bot (HTTP ${status}).`, final: false };
 }
 
-// The wire's headline for a job: the kind of Discord action, in staff
+// A bot job's headline: the kind of Discord action, in staff
 // words. A ticket that adds a kind adds its label here; an unlisted kind
 // reads as its humanised name ("member_scan" -> "Member scan").
 const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
@@ -112,8 +112,8 @@ const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
   gotm_cache_reload: "GOTM cache reload",
   live_event_create: "Live event",
   say: "Say as the bot",
-  memberscan: "Memberscan",
-  presence_set: "Bot presence",
+  memberscan: "Recount members",
+  presence_set: "Bot status",
   feature_flag_changed: "Feature Flag change",
 };
 
@@ -136,14 +136,14 @@ export function botJobSummaryLine(job: Pick<BotJob, "kind" | "summary">): string
   return summary;
 }
 
-// Who queued the job, for an Admin's wire; null for system jobs.
+// Who queued the job, for an Admin's Bot jobs; null for system jobs.
 export function botJobRequester(job: Pick<BotJob, "requested_by" | "requested_by_user_id">): string | null {
   const user = job.requested_by;
   if (user) return user.global_name || user.username || user.user_id;
   return job.requested_by_user_id;
 }
 
-// The wire's time stamp in the viewer's zone: the clock ("21:14") and the
+// A bot job's time stamp in the viewer's zone: the clock ("21:14") and the
 // day under it ("Today", "Yesterday", "Nov 2"; with the year once it isn't
 // this year's). `now` and `timeZone` are passed in so this stays pure.
 export function wireStamp(
@@ -194,7 +194,7 @@ export function latestFailure(
   return latest && latest.status === "failed" ? latest : null;
 }
 
-// The wire's page 1 re-read, with older pages the viewer loaded kept below
+// Bot jobs' page 1 re-read, with older pages the viewer loaded kept below
 // it. A job newer than the fresh page's oldest that it no longer holds is
 // dropped.
 export function mergeFirstPage(fresh: readonly BotJob[], current: readonly BotJob[]): BotJob[] {
@@ -203,7 +203,7 @@ export function mergeFirstPage(fresh: readonly BotJob[], current: readonly BotJo
   return [...fresh, ...current.filter((j) => !ids.has(j.id) && j.id < oldest)];
 }
 
-// The wire's next page under what it shows, without repeating a job.
+// Bot jobs' next page under what it shows, without repeating a job.
 export function appendOlderJobs(current: readonly BotJob[], older: readonly BotJob[]): BotJob[] {
   const ids = new Set(current.map((j) => j.id));
   return [...current, ...older.filter((j) => !ids.has(j.id))];

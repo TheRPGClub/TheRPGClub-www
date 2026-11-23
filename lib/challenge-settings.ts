@@ -13,6 +13,15 @@ export interface ChallengeSettings {
 
 export const CHALLENGES_FEATURE = "challenges";
 
+// /settings' Challenge DM switch data: null (in place of this) when the
+// Challenges Feature isn't shown to the member, so the switch is left out.
+export interface ChallengeDmsData {
+  // Null when the read failed.
+  settings: ChallengeSettings | null;
+  // Staff see Challenges only because it is in Preview.
+  preview: boolean;
+}
+
 // Whether /settings shows the Challenge DM switch: only while the Challenges
 // Feature is shown to this member (its flag, their Feature Preference, the
 // staff Preview switch). Reads the session list by key rather than through

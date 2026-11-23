@@ -50,9 +50,9 @@ export function LiveEventDispatch({ state, guildId }: { state: LiveEventState; g
             Discord scheduled event made
           </Step>
         ) : failed ? (
-          <Step icon="failed" meta={event.bot_job_id == null ? <Link href="/admin" className="hover:text-highlight">The wire</Link> : null}>
+          <Step icon="failed" meta={event.bot_job_id == null ? <Link href="/admin?tab=jobs" className="hover:text-highlight">Bot jobs</Link> : null}>
             {event.bot_job_id == null
-              ? "The bot couldn't finish. Its error is on the wire."
+              ? "The bot couldn't finish. Its error is in Bot jobs on the Staff desk."
               : "The bot couldn't finish. Its error is under the proof."}
           </Step>
         ) : (

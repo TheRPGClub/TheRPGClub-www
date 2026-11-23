@@ -42,7 +42,7 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
 
   return (
     <div className="mt-6 grid items-start gap-9 xl:grid-cols-[minmax(0,1fr)_26rem]">
-      <form onSubmit={submit} aria-label="Set the bot's presence" className="min-w-0">
+      <form onSubmit={submit} aria-label="Set the bot's status" className="min-w-0">
         <Label htmlFor="presence-name" variant="field" className={PRESENCE_LABEL_TYPE}>
           Playing
         </Label>
@@ -93,7 +93,7 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
             <>
               <Button type="submit" variant="highlight" disabled={pending}>
                 <Send data-icon="inline-start" />
-                {pending ? "Setting..." : "Set presence"}
+                {pending ? "Setting..." : "Set status"}
               </Button>
               <span className="text-[0.86rem] text-faint-foreground">
                 The bot shows it at once and keeps it after a restart.
@@ -106,7 +106,7 @@ export function PresenceForm({ current }: { current: BotPresence | null }) {
       <div className="min-w-0">
         <ProofCard
           jobId={sent?.jobId ?? null}
-          what="The presence"
+          what="The status"
           overhang
           caption="A proof of the member list and profile line."
         >

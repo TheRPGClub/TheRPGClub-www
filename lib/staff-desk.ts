@@ -1,12 +1,12 @@
-// The production desk's contents page (/admin): the live notes that replace
-// a tool's fixed hint, read from what the page fetched.
+// The Staff desk (/admin): the live notes beside a tool in its tab, read
+// from what the page fetched.
 
 import type { BotJob, VotingPhase, VotingRound } from "@/lib/api/types";
 import { agoText, latestFailure } from "@/lib/bot-jobs";
-import type { StaffDeskArea, StaffSectionKey, StaffTier } from "@/lib/staff";
+import type { StaffSection, StaffSectionKey } from "@/lib/staff";
 
-// A live note that replaces a tool's fixed hint on the contents page, e.g.
-// "Round 143 open", or "Failed 1 h ago" in signal orange.
+// A live note beside a tool on the desk, e.g. "Round 143 open", or
+// "Failed 1 h ago" in signal orange.
 export interface DeskNote {
   text: string;
   tone?: "live" | "bad";
@@ -24,7 +24,7 @@ export interface DeskReadings {
   presenceCount: number | null;
   // Upcoming live events, already as the note says it ("3", "20+").
   upcomingLiveEvents: string | null;
-  // The wire's first page, newest first.
+  // Bot jobs' first page, newest first.
   jobs: readonly BotJob[];
 }
 
@@ -42,7 +42,7 @@ const PRESENCE_NOTE_MAX = 16;
 
 // The notes for the viewer's tools. A tool whose newest bot job failed says
 // so ("Failed 2 h ago") over any other note.
-export function deskNotes(areas: readonly StaffDeskArea[], r: DeskReadings, now: Date): DeskNotes {
+export function deskNotes(sections: readonly StaffSection[], r: DeskReadings, now: Date): DeskNotes {
   const notes: DeskNotes = {};
   if (r.round) {
     notes.voting = { text: `Round ${r.round.round_number} ${PHASE_NOTE[r.round.phase]}`, tone: "live" };
@@ -56,12 +56,10 @@ export function deskNotes(areas: readonly StaffDeskArea[], r: DeskReadings, now:
   }
   if (r.presenceCount !== null) notes["presence-history"] = { text: `${r.presenceCount} set` };
   if (r.upcomingLiveEvents !== null) notes["live-events"] = { text: `${r.upcomingLiveEvents} upcoming` };
-  for (const area of areas) {
-    for (const section of area.sections) {
-      const failed = section.jobKinds && latestFailure(r.jobs, section.jobKinds);
-      if (failed) {
-        notes[section.key] = { text: `Failed ${agoText(failed.finished_at ?? failed.updated_at, now)}`, tone: "bad" };
-      }
+  for (const section of sections) {
+    const failed = section.jobKinds && latestFailure(r.jobs, section.jobKinds);
+    if (failed) {
+      notes[section.key] = { text: `Failed ${agoText(failed.finished_at ?? failed.updated_at, now)}`, tone: "bad" };
     }
   }
   return notes;
@@ -71,11 +69,4 @@ export function deskNotes(areas: readonly StaffDeskArea[], r: DeskReadings, now:
 // one read is still upcoming.
 export function upcomingNote(count: number, lookback: number): string {
   return count >= lookback ? `${lookback}+` : String(count);
-}
-
-// What the viewer's tier reaches, after the tool count in the desk header.
-export function deskReach(tier: StaffTier): string {
-  if (tier === "superadmin") return " · Admins see all but Superadmin";
-  if (tier === "admin") return " · All but Superadmin";
-  return "";
 }

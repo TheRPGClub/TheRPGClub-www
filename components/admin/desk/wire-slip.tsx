@@ -13,9 +13,11 @@ import { useIsClient } from "@/hooks/use-is-client";
 import { Stamp } from "@/components/admin/desk/stamp";
 import { cn } from "@/lib/utils";
 
-// One bot job as a slip on the wire: its time, what it did, and its Queued,
-// Done or Failed stamp. A tool page that lists its own jobs uses it too.
-export function WireSlip({ job, showRequester }: { job: BotJob; showRequester: boolean }) {
+// One bot job as a slip: its time, what it did, and its Queued, Done or
+// Failed stamp. A tool page that lists its own jobs uses it too. `wide`
+// (the desk's Bot jobs tab) gives the stamp and who asked a column of their
+// own on the right from `sm`.
+export function WireSlip({ job, showRequester, wide = false }: { job: BotJob; showRequester: boolean; wide?: boolean }) {
   const isClient = useIsClient();
   const phase = botJobPhase(job.status);
   // The viewer's clock; the server doesn't know their zone, so the time
@@ -32,11 +34,17 @@ export function WireSlip({ job, showRequester }: { job: BotJob; showRequester: b
   ].filter(Boolean);
 
   return (
-    <article className="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-3.5 border-b border-border py-3">
+    <article
+      className={cn(
+        "grid grid-cols-[4.2rem_minmax(0,1fr)] gap-3.5 border-b border-border py-3",
+        wide && "sm:grid-cols-[5rem_minmax(0,1fr)_10rem] sm:gap-4.5 sm:py-3.5",
+      )}
+    >
       <time
         dateTime={job.created_at}
         className={cn(
           "font-headline text-[1.6rem] text-dim-foreground",
+          wide && "sm:text-[1.9rem]",
           phase === "queued" && "text-highlight",
         )}
       >
@@ -48,15 +56,21 @@ export function WireSlip({ job, showRequester }: { job: BotJob; showRequester: b
       <div className="min-w-0">
         <div className="flex items-baseline justify-between gap-2.5">
           <h3 className="font-semibold">{botJobKindLabel(job.kind)}</h3>
-          <Stamp phase={phase} />
+          <Stamp phase={phase} className={wide ? "sm:hidden" : undefined} />
         </div>
         {summary && <p className="break-words">{summary}</p>}
         {byLine.length > 0 && (
-          <p className="text-[0.82rem] text-faint-foreground">{byLine.join(" · ")}</p>
+          <p className={cn("text-[0.82rem] text-faint-foreground", wide && "sm:hidden")}>{byLine.join(" · ")}</p>
         )}
         {reason && <BotSaid tone="bad">{reason}</BotSaid>}
         {result && <BotSaid tone="plain">{result}</BotSaid>}
       </div>
+      {wide && (
+        <div className="hidden flex-col items-end gap-2 text-right text-[0.82rem] text-faint-foreground sm:flex">
+          <Stamp phase={phase} />
+          {byLine.join(" · ")}
+        </div>
+      )}
     </article>
   );
 }
