@@ -1,5 +1,5 @@
-import type { UpcomingRelease } from "@/lib/api/types";
-import { firstReleasedLabel } from "@/lib/release-calendar";
+import { firstReleasedLabel, type CalendarEntry } from "@/lib/release-calendar";
+import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
 import { cn } from "@/lib/utils";
 import { GameTitle } from "./game-title";
@@ -8,8 +8,9 @@ import { RegionChips } from "./region-chips";
 // An Upcoming Release in a day of the month grid: a small cover, the title
 // on two lines at most, and its platforms by region. A day cell has no room
 // for "First released ...", so it rides in the title link's accessible name
-// and the tooltip over the whole Upcoming Release.
-export function GridUpcomingRelease({ upcoming, past }: { upcoming: UpcomingRelease; past: boolean }) {
+// and the tooltip over the whole Upcoming Release. One only on the member's
+// Hidden Platforms, back for a "Show all" visit, is marked.
+export function GridUpcomingRelease({ upcoming, past }: { upcoming: CalendarEntry; past: boolean }) {
   const { title, game_id: gameId, cover_url: coverUrl } = upcoming.game;
   const first = firstReleasedLabel(upcoming);
   return (
@@ -31,6 +32,11 @@ export function GridUpcomingRelease({ upcoming, past }: { upcoming: UpcomingRele
           past={past}
           className="mb-1 line-clamp-2 text-[0.78rem] leading-[1.2]"
         />
+        {upcoming.hiddenOnly && (
+          <Badge tone="secondary" size="sm" className="mb-1">
+            Hidden
+          </Badge>
+        )}
         <RegionChips upcoming={upcoming} past={past} compact />
       </div>
     </li>

@@ -5,6 +5,8 @@
 // the words. Client-safe: no server imports here. The club's today is
 // `clubToday` in lib/challenges/dates.
 
+import { ordinal } from "@/lib/utils";
+
 export interface BirthDate {
   user_id: string;
   // YYYY-MM-DD, or MM-DD when the member gave only the day and month
@@ -95,12 +97,6 @@ export interface BirthDateFields {
   day: string;
   month: string;
   year: string;
-}
-
-function ordinal(n: number): string {
-  const tens = n % 100;
-  if (tens >= 11 && tens <= 13) return `${n}th`;
-  return `${n}${({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th"}`;
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");

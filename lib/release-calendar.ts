@@ -24,7 +24,16 @@ export interface CalendarFilters {
   month: string;
   // Platform ids the member picked; empty is every platform.
   platforms: number[];
+  // "Show all" for this visit: the member's Hidden Platforms are read too
+  // (`show_hidden=1`, ticket api#427). The address keeps it while they move
+  // between months.
+  showHidden: boolean;
 }
+
+// An Upcoming Release as the calendar draws it: `hiddenOnly` while "Show
+// all" brings back one whose every Release is on a Hidden Platform, so it
+// is marked.
+export type CalendarEntry = UpcomingRelease & { hiddenOnly?: boolean };
 
 // "2026-11" for a YYYY-MM-DD day.
 export function monthOf(day: string): string {
@@ -36,8 +45,9 @@ export function isPastMonth(month: string, today: string): boolean {
   return month < monthOf(today);
 }
 
-// The page's address: `month` (absent on today's month) and `platform`
-// as a comma list. Any year from 0001 on is a month, as the API reads it.
+// The page's address: `month` (absent on today's month), `platform` as a
+// comma list and `show_hidden=1`. Any year from 0001 on is a month, as the
+// API reads it.
 export function parseCalendarFilters(
   params: Record<string, string | string[] | undefined>,
   today: string,
@@ -47,7 +57,8 @@ export function parseCalendarFilters(
   const valid = match && +match[2] >= 1 && +match[2] <= 12 && +match[1] >= 1;
   const ids = [params.platform].flat().flatMap((v) => (v ?? "").split(","));
   const platforms = [...new Set(ids.map(Number).filter((n) => Number.isInteger(n) && n > 0))];
-  return { month: valid ? raw : monthOf(today), platforms };
+  const showHidden = ["1", "true"].includes(firstParam(params.show_hidden) ?? "");
+  return { month: valid ? raw : monthOf(today), platforms, showHidden };
 }
 
 export function calendarHref(
@@ -59,6 +70,7 @@ export function calendarHref(
   const ps = new URLSearchParams();
   if (next.month !== monthOf(today)) ps.set("month", next.month);
   if (next.platforms.length) ps.set("platform", next.platforms.join(","));
+  if (next.showHidden) ps.set("show_hidden", "1");
   const qs = ps.toString().replaceAll("%2C", ",");
   return qs ? `${RELEASES_PATH}?${qs}` : RELEASES_PATH;
 }
@@ -128,6 +140,15 @@ export function upcomingReleaseKey(upcoming: UpcomingRelease): string {
 // The API's platform filter: kept when any of its Releases is on one of them.
 export function onPlatforms(upcoming: UpcomingRelease, platforms: number[]): boolean {
   return platforms.length === 0 || upcoming.releases.some((r) => platforms.includes(r.platform_id));
+}
+
+// Every Release of it is on one of the member's Hidden Platforms.
+export function hiddenOnly(upcoming: UpcomingRelease, hidden: readonly number[]): boolean {
+  return (
+    hidden.length > 0 &&
+    upcoming.releases.length > 0 &&
+    upcoming.releases.every((r) => hidden.includes(r.platform_id))
+  );
 }
 
 export interface PlatformOption {
@@ -258,13 +279,13 @@ export function monthCount(n: number, month: string, today: string): string {
 
 export interface CalendarView {
   // The grid month's Upcoming Releases after the filter.
-  grid: UpcomingRelease[];
+  grid: CalendarEntry[];
   // How many the grid month has before the filter.
   gridUnfilteredCount: number;
   // Day Upcoming Releases by date, for the grid.
-  byDay: Map<string, UpcomingRelease[]>;
+  byDay: Map<string, CalendarEntry[]>;
   // The list: everything from today on, less what the grid shows, filtered.
-  list: UpcomingRelease[];
+  list: CalendarEntry[];
   // How many the list has before the filter.
   listUnfilteredCount: number;
   // Everything from today on after the filter (the header's count).
@@ -274,19 +295,23 @@ export interface CalendarView {
 
 // Both reads (the grid's month, and everything from today on), shaped for
 // the page. Either may be null (it failed): the page says so in that place
-// and draws the rest.
+// and draws the rest. `hidden` are the member's Hidden Platforms when "Show
+// all" brought them back: an Upcoming Release only on those is marked.
 export function calendarView(
   monthRead: UpcomingRelease[] | null,
   fromTodayRead: UpcomingRelease[] | null,
   platforms: number[],
+  hidden: readonly number[] = [],
 ): CalendarView {
-  const month = monthRead ?? [];
-  const fromToday = fromTodayRead ?? [];
+  const mark = (u: UpcomingRelease): CalendarEntry =>
+    hiddenOnly(u, hidden) ? { ...u, hiddenOnly: true } : u;
+  const month = (monthRead ?? []).map(mark);
+  const fromToday = (fromTodayRead ?? []).map(mark);
   const inGrid = new Set(month.map(upcomingReleaseKey));
   const rest = fromToday.filter((u) => !inGrid.has(upcomingReleaseKey(u)));
-  const keep = (u: UpcomingRelease) => onPlatforms(u, platforms);
+  const keep = (u: CalendarEntry) => onPlatforms(u, platforms);
   const shown = month.filter(keep);
-  const byDay = new Map<string, UpcomingRelease[]>();
+  const byDay = new Map<string, CalendarEntry[]>();
   for (const u of shown) {
     if (u.date_precision !== "day" || !u.date) continue;
     byDay.set(u.date, [...(byDay.get(u.date) ?? []), u]);
