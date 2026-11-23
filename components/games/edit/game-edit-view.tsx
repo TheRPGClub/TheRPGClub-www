@@ -14,11 +14,9 @@ import { useLeaveGuard } from "@/hooks/use-leave-guard";
 import { MastheadTabs } from "@/components/templates/masthead-tabs";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { GameEditBand } from "@/components/games/edit/game-edit-band";
-import { PlaceholderTab } from "@/components/games/edit/placeholder-tab";
+import { gameEditPanels } from "@/components/games/edit/game-edit-panels";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
-import { TextVideoTab } from "@/components/games/edit/text-video-tab";
-import { VersionsTab } from "@/components/games/edit/versions-tab";
 
 export interface GameEditViewProps {
   gameId: number;
@@ -41,31 +39,9 @@ export function GameEditView(p: GameEditViewProps) {
   const [tab, setTab] = useState<GameEditTab>(p.tab);
   const tabs = gameEditTabsFor(p.viewer);
 
-  const panels: Record<GameEditTab, React.ReactNode> = {
-    text: (
-      <TextVideoTab
-        loaded={edit.record.text}
-        staged={edit.stage.text}
-        error={edit.errors.text}
-        onStage={(next) => edit.stageSection("text", next)}
-      />
-    ),
-    images: <PlaceholderTab title="Images" />,
-    threads: <PlaceholderTab title="Game Threads" />,
-    releases: <PlaceholderTab title="Releases" />,
-    versions: (
-      <VersionsTab
-        gameId={p.gameId}
-        loaded={edit.record.versions}
-        staged={edit.stage.versions}
-        error={edit.errors.versions}
-        onStage={(next) => edit.stageSection("versions", next)}
-      />
-    ),
-    hltb: <PlaceholderTab title="HowLongToBeat" />,
-  };
+  const panels = gameEditPanels(p.gameId, edit);
   // The tabs' sections in the save module (the rest arrive with www#158-162).
-  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", versions: "versions" };
+  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", threads: "threads", versions: "versions" };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (
     <>

@@ -3,7 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateGameTextAction } from "@/app/actions/game-edit";
-import { linkVersionAction, unlinkVersionAction, type GameLinkResult } from "@/app/actions/game-links";
+import {
+  linkThreadAction,
+  linkVersionAction,
+  unlinkThreadAction,
+  unlinkVersionAction,
+  type GameLinkResult,
+} from "@/app/actions/game-links";
 import {
   gameEditSave,
   saveSummary,
@@ -35,6 +41,8 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "thread.link": (call) => linkThreadAction(call.thread.thread_id, gameId).then(asStep),
+    "thread.unlink": (call) => unlinkThreadAction(call.threadId, gameId).then(asStep),
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
   };
@@ -89,6 +97,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 // The game page's link actions answer with an optional error.
 function stepResult(result: GameLinkResult): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error ?? "Couldn't save that change." };
+}
+
+// The game-links actions' answer as a save step's.
+function asStep(result: GameLinkResult): StepResult {
+  return result.ok ? { ok: true } : { ok: false, error: result.error ?? "That didn't save. Try again." };
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;

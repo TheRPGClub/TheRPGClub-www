@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { gameEditSave, type GameEditCall, type GameEditSteps } from "./index";
+import { gameEditSave, type GameEditCall, type GameEditRecord, type GameEditSteps } from "./index";
 import type { StepResult } from "./engine";
 
 // The Game Edit save module's real sections, through the fake steps the app
-// replaces with server actions. Only Text & video's step is faked; the other
-// sections aren't staged here.
+// replaces with server actions. The record and steps hold this section's
+// alone (cast), so other sections don't have to touch this test.
 function steps(fail = false) {
   const calls: GameEditCall[] = [];
   const run = {
-    "game.update": async (call: GameEditCall): Promise<StepResult> => {
+    "game.update": async (call): Promise<StepResult> => {
       calls.push(call);
       return fail ? { ok: false, error: "Featured Video is invalid." } : { ok: true };
     },
@@ -19,8 +19,7 @@ function steps(fail = false) {
 
 const record = {
   text: { description: "A hero sets out.", featured_video_url: "https://www.youtube.com/watch?v=abc" },
-  versions: [],
-};
+} as GameEditRecord;
 const admin = { admin: true, threads: true };
 const regular = { admin: false, threads: true };
 
