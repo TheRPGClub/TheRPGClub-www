@@ -1,48 +1,29 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-// The rail's facts while they stream in.
-export function RailDetailsSkeleton() {
+// The row under the hero while Releases and Details stream in: each heading
+// over a few lines.
+export function FactsRowSkeleton() {
   return (
-    <div className="space-y-3">
-      <Skeleton variant="control" className="h-7 w-28" />
-      {Array.from({ length: 5 }, (_, i) => (
-        <Skeleton variant="control" key={i} className="h-4 w-full" />
+    <div className="mt-6.5 grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-8">
+      {[4, 6].map((lines) => (
+        <div key={lines} className="space-y-3">
+          <Skeleton variant="control" className="h-7 w-28" />
+          {Array.from({ length: lines }, (_, i) => (
+            <Skeleton variant="control" key={i} className="h-5 w-full" />
+          ))}
+        </div>
       ))}
     </div>
   );
 }
 
-// The rail's Releases while they stream in: the heading, then a few platform
-// rows.
-export function RailReleasesSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton variant="control" className="h-7 w-28" />
-      {Array.from({ length: 3 }, (_, i) => (
-        <Skeleton variant="control" key={i} className="h-6 w-full" />
-      ))}
-    </div>
-  );
-}
-
-// The whole game page while the game is read: the hero plate, then the
-// reviews column beside the rail.
+// The whole game page while the game is read: the hero plate with its panel,
+// then the row under it.
 export function GamePageSkeleton() {
   return (
     <div className="pb-8">
-      <Skeleton variant="plate" className="bleed -mt-6 h-[420px]" />
-      <div className="mt-7.5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
-        <div className="space-y-4">
-          <Skeleton variant="control" className="h-10 w-56" />
-          <Skeleton className="h-18 w-full" />
-          <Skeleton className="h-72 w-full" />
-        </div>
-        <div className="space-y-6">
-          <Skeleton variant="card" className="h-20 w-full" />
-          <Skeleton variant="card" className="h-20 w-full" />
-          <RailDetailsSkeleton />
-        </div>
-      </div>
+      <Skeleton variant="plate" className="bleed -mt-6 h-[560px]" />
+      <FactsRowSkeleton />
     </div>
   );
 }

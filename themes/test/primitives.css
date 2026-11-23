@@ -2051,7 +2051,7 @@
                 color: var(--accent-foreground);
             }
         }
-        [data-slot="button"][data-variant="heading-action"] {
+        [data-slot="button"]:is([data-variant="heading-action"], [data-variant="rail-link"]) {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

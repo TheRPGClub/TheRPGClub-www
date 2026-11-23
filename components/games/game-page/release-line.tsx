@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 // One region and date pair in a platform's row: the region chip in its ink,
 // the date at its Date Precision, then the dashed chip saying what is still
 // unknown ("Day TBA", "Month TBA", "No date yet") or, for a day this week,
-// the countdown. A past one goes faint, its region chip an outline.
-export function ReleaseLine({ release, today }: { release: Release; today: string }) {
+// the countdown. A past one goes faint, its region chip an outline; the
+// game's next Release is set on a faint yellow band.
+export function ReleaseLine({ release, today, next = false }: { release: Release; today: string; next?: boolean }) {
   const { release_date: date, date_precision: precision } = release;
   const label = releaseDateLabel(date, precision);
   const note = precisionNote(precision);
@@ -18,8 +19,9 @@ export function ReleaseLine({ release, today }: { release: Release; today: strin
   return (
     <li
       className={cn(
-        "flex items-center gap-2 text-sm",
+        "flex min-h-6.5 items-center gap-2 text-[0.88rem]",
         past ? "text-faint-foreground" : "text-foreground",
+        next && "-ml-2 rounded-xs bg-highlight/8 pr-1 pl-2",
       )}
     >
       <Badge

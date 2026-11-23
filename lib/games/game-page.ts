@@ -8,6 +8,7 @@ import type {
   GameRelations,
   Release,
   Review,
+  Thread,
   UserSummary,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
@@ -171,5 +172,17 @@ export async function fetchRingMemberNames(): Promise<Map<string, string>> {
     return new Map(data.map((user) => [user.user_id, memberName(user)]));
   } catch {
     return new Map();
+  }
+}
+
+// The game's linked Discord threads for the hero panel, or null when the read
+// fails (signed out).
+export async function fetchGameThreads(gameId: number): Promise<Thread[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/games/${gameId}/threads?per=50`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiCollection<Thread>).data;
+  } catch {
+    return null;
   }
 }

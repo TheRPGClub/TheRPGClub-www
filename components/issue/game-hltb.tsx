@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GameHltbCard } from "@/components/issue/game-hltb-card";
 
 // Reads the game's saved HowLongToBeat times (the profile's `hltb` slice, no
-// scrape) for the rail's "Time to beat" card.
+// scrape) for the hero panel's "Time to beat".
 export async function GameHltb({
   gameId,
   title,
@@ -29,5 +29,5 @@ export async function GameHltb({
 }
 
 export function GameHltbSkeleton() {
-  return <Skeleton variant="card" className="h-44 w-full" />;
+  return <Skeleton variant="control" className="h-36 w-full" />;
 }

@@ -51,7 +51,6 @@ export async function GameAchievements({
     <DetailSection
       id="game-achievements"
       title="Achievements"
-      count={`${sets.length} ${sets.length === 1 ? "set" : "sets"}`}
       className="mt-10"
       headingClassName="mb-5"
     >

@@ -28,7 +28,8 @@ const READER_WINDOW = 3;
 // The game page's chronology plate beside the reader: one chapter line per
 // member from their first entry to their latest, a dot per entry and a
 // diamond where a Game Completion was logged that day. Picking a line or a
-// mark opens that member's entries on the right page.
+// mark opens that member's entries on the right page. The spread is only as
+// tall as its pages' content, so nothing hangs empty below the entries.
 export function GameJournalPlate({
   gameId,
   lines,
@@ -63,7 +64,7 @@ export function GameJournalPlate({
   };
 
   return (
-    <div className="grid gap-1.5 lg:min-h-[470px] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-0">
+    <div className="grid gap-1.5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-0">
       <JournalPage side="left" className="px-4 pb-4 sm:px-6">
         <JournalRunningHead parts={["Chronology"]} note={span} />
         <h3 className="font-headline mt-4 mb-1 text-[1.6rem] leading-[0.9]">

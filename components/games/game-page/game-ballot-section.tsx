@@ -9,7 +9,7 @@ export async function GameBallotSection({ gameId }: { gameId: number }) {
   if (!panels.length) return null;
 
   return (
-    <div className="mt-1.5 space-y-3">
+    <div className="mt-7 space-y-3">
       {panels.map((panel) => (
         <GameBallotPanel key={panel.category} {...panel} />
       ))}

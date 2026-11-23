@@ -208,6 +208,11 @@ const buttonVariants = cva(
         // (the dashboard's Edit dashboard), in the "Full history" link's
         // voice: label caps in paper with a red icon, yellow on hover.
         "heading-action": "",
+        // www#163: a link or toggle at the right end of a game page section's
+        // heading ("On the Release Calendar", "All Details"): label caps in
+        // the dim ink underlined in GOTM red, yellow on hover. Pair with
+        // size="bare".
+        "rail-link": "",
         // www#149: a two-state filter that is a link to its other state (the
         // Review Feed's Written only), role="switch" with aria-checked. It
         // holds a small switch drawn by the Theme: a span[data-part=

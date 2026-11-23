@@ -169,8 +169,10 @@
             &:is([data-variant="back"], [data-variant="back-on-art"]) {
                 @apply font-label rounded-sm border-0 text-[0.84rem] leading-none font-extrabold tracking-[0.07em] text-dim-foreground uppercase underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-ring max-md:text-foreground max-md:no-underline motion-reduce:transition-none;
             }
+            /* On the art it is paper; on a phone the arrow sits on a
+               translucent ink square so it holds over any key art. */
             &[data-variant="back-on-art"] {
-                @apply text-foreground;
+                @apply text-foreground max-md:bg-background/70;
             }
             &[data-variant="add"] {
                 @apply font-label rounded-md border-dashed border-border-strong font-extrabold tracking-[0.06em] text-dim-foreground transition-colors hover:border-highlight hover:text-highlight;
@@ -1552,6 +1554,11 @@
            the club" rule, voiced like the heading's "Full history" link. */
         [data-slot="button"][data-variant="heading-action"] {
             @apply font-label h-auto gap-1.5 rounded-sm border-0 bg-transparent px-0 text-sm font-extrabold text-foreground transition-colors hover:text-highlight active:not-aria-[haspopup]:translate-y-0 [&_svg]:size-4 [&_svg]:text-gotm;
+        }
+        /* The game page (www#163): a link at the right end of a section's
+           heading, opposite its title, in the back link's voice. */
+        [data-slot="button"][data-variant="rail-link"] {
+            @apply font-label gap-1.25 rounded-sm text-[0.8rem] leading-none font-extrabold tracking-[0.06em] whitespace-nowrap text-dim-foreground uppercase underline decoration-gotm decoration-2 underline-offset-4 transition-colors hover:text-highlight focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none [&_svg]:size-3.25;
         }
         /* www#149: the Review Feed's Written only, a link that switches
            the filter: a hairline box in the label voice holding a hollow
