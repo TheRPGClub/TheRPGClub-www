@@ -27,7 +27,6 @@ export default async function MemberAchievementsPage({
 }) {
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const query = parseMemberAchievementsQuery(raw);
-  // The same read as the running head, so the request is shared.
   const userPath = `/api/v1/users/${id}`;
 
   const [features, session, userRes, result] = await Promise.all([

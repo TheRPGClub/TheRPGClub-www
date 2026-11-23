@@ -5,10 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { splitGameTitle } from "@/components/issue/game-cover";
 import { gameTrack, trackAccentText, trackChips } from "@/components/issue/game-track";
 import { cn } from "@/lib/utils";
+import { BackLink } from "@/components/shell/back-link";
 
 // The short key-art banner over a game's departments (its reviews): the
 // game's name on one line, its second half in the track's accent, and the
 // win chips. Bleeds to the content column's edges like the game's own hero.
+// Its top line holds the way back to the game page (www#164).
 export function GameStrip({
   game,
   badge,
@@ -27,7 +29,7 @@ export function GameStrip({
   return (
     <section
       aria-label={game.title}
-      className="relative isolate bleed -mt-6 h-[140px] overflow-hidden bg-card md:h-[180px]"
+      className="relative isolate bleed -mt-6 flex min-h-[140px] flex-col overflow-hidden bg-card md:min-h-[180px]"
     >
       {art && (
         // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
@@ -46,8 +48,9 @@ export function GameStrip({
             : "bg-[linear-gradient(0deg,var(--color-background)_0%,transparent_100%)]",
         )}
       />
-      <div className="flex h-full flex-col justify-between px-4 py-3.5 sm:px-7 md:px-8 md:py-5.5">
-        <div>
+      <div className="flex flex-1 flex-col justify-between px-4 py-3.5 sm:px-7 md:px-8 md:py-5.5">
+        <div className="flex flex-col">
+          <BackLink href={`/games/${game.game_id}`} label="Game page" onArt className="mb-2" />
           <p className="font-headline line-clamp-2 text-[2rem] leading-[0.9] md:text-[2.9rem]">
             <Link
               href={`/games/${game.game_id}`}

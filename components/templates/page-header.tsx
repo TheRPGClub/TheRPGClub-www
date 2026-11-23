@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { BackLink } from "@/components/shell/back-link";
 
 // Page and section headings in the masthead voice: an Anton title sitting on
 // a paper rule, with an optional count and trailing actions on the same
@@ -12,9 +13,12 @@ export function PageHeader({
   count,
   description,
   actions,
+  back,
   className,
 }: {
   title: ReactNode;
+  // A nested page's way back to its parent, above the title (BackLink).
+  back?: { href: string; label: string };
   // A chip set beside the title, e.g. the staff "Preview" badge.
   badge?: ReactNode;
   // A tally beside the title, e.g. "312 games".
@@ -25,6 +29,7 @@ export function PageHeader({
 }) {
   return (
     <header className={cn("space-y-3", className)}>
+      {back && <BackLink {...back} className="mb-0" />}
       <div className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b-2 border-foreground pb-3">
         <h1 className="font-headline text-5xl text-balance sm:text-6xl">
           {title}

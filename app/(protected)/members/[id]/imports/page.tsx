@@ -1,5 +1,4 @@
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { getFeatures, requireAuth } from "@/lib/session";
 import type { ImportJob } from "@/lib/api/types";
@@ -12,7 +11,6 @@ import { importKindHref, shownImportKinds } from "@/lib/imports/kinds";
 import { PageHeader } from "@/components/templates/page-header";
 import { ImportKindList } from "@/components/imports/import-kind-list";
 import { OpenImportPanel } from "@/components/imports/open-import-panel";
-import { ButtonLink } from "@/components/ui/button";
 
 // The imports hub: any open import leads as a yellow progress panel (it's
 // the member's unfinished business), then every import kind as a row with
@@ -50,15 +48,10 @@ export default async function ImportsHubPage({
   return (
     <div className="space-y-7">
       <PageHeader
+        back={{ href: `/members/${id}/edit`, label: "Edit profile" }}
         title="Imports"
         count={open.length > 0 ? `${open.length} open` : undefined}
         description="Bring games in from elsewhere. You can pause an import and come back to it later; you can have one open import of each kind."
-        actions={
-          <ButtonLink href={`/members/${id}/edit`} variant="outline">
-            <ChevronLeft data-icon="inline-start" />
-            Edit profile
-          </ButtonLink>
-        }
       />
       {open.map(({ kind, active: job }, i) => (
         <OpenImportPanel

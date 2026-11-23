@@ -18,6 +18,7 @@ export default async function NewLiveEventPage() {
   return (
     <div>
       <DeskHeader
+        back={{ href: SECTION.href, label: SECTION.label }}
         title="Live event"
         side={
           <>

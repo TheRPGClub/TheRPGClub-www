@@ -53,6 +53,11 @@ const buttonVariants = cva(
         "sidebar-action": "",
         // The back link out of a sidebar group's view ("All sections").
         "sidebar-back": "",
+        // www#164: a nested page's way back to its parent, small above its
+        // title (BackLink): its name in label caps on desktop, the arrow
+        // alone on phones. back-on-art sits on a key-art banner.
+        back: "",
+        "back-on-art": "",
         // A tab in the phone's tab bar: an icon over its name. The current
         // one carries data-current. Pair with size="bare".
         tab: "",
@@ -60,9 +65,6 @@ const buttonVariants = cva(
         // drawn by the caller; the Theme sets its focus. Pair with
         // size="bare".
         round: "",
-        // The member's avatar that opens their account menu (the phone's
-        // top bar). Pair with size="bare".
-        account: "",
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",

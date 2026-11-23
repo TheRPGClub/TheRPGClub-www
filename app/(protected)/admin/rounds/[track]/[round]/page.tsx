@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { fetchRoundEntries } from "@/lib/api/admin-rounds";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
@@ -8,7 +7,6 @@ import { TRACK_NAME, trackFromSlug } from "@/lib/rounds";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { RoundEditor } from "@/components/admin/rounds/round-editor";
 import { StaffOnly } from "@/components/staff-only";
-import { ButtonLink } from "@/components/ui/button";
 
 const SECTION = staffSection("rounds");
 
@@ -36,6 +34,7 @@ export default async function RoundEditPage({
   return (
     <div>
       <DeskHeader
+        back={{ href: SECTION.href, label: SECTION.label }}
         title={`${label} round ${roundNumber}`}
         side={
           <>
@@ -51,12 +50,6 @@ export default async function RoundEditPage({
           </>
         }
       />
-      <div className="mt-4">
-        <ButtonLink href="/admin/rounds" variant="ghost" size="sm">
-          <ArrowLeft data-icon="inline-start" />
-          All rounds
-        </ButtonLink>
-      </div>
       <div className="mt-4">
         {entries === null ? (
           <p role="alert" className="text-destructive">

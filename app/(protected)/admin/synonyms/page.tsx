@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, SearchSynonymGroup } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { StaffOnly } from "@/components/staff-only";
 import { SynonymsDictionary } from "@/components/admin/synonyms/synonyms-dictionary";
@@ -49,6 +49,7 @@ export default async function SynonymsPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           groups && (

@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Platform } from "@/lib/api/types";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { CompletionForMemberForm } from "@/components/admin/completions/completion-for-member-form";
 import { StaffOnly } from "@/components/staff-only";
@@ -36,6 +36,7 @@ export default async function CompletionForMemberPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title="Game Completion"
         side={
           <>

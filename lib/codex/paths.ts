@@ -7,6 +7,9 @@ export const CODEX_PATH = "/codex";
 export const HISTORY_PATH = `${CODEX_PATH}/history`;
 export const LORE_PATH = `${CODEX_PATH}/lore`;
 export const FUN_FACTS_PATH = `${CODEX_PATH}/fun-facts`;
+// A Codex part's way back to the Codex's contents (its BackLink; www#164).
+export const CODEX_BACK = { href: CODEX_PATH, label: "Club Codex" } as const;
+export const LORE_BACK = { href: LORE_PATH, label: "Club Lore" } as const;
 // The Fun Fact add panel at the top of the wall, as a link target.
 export const ADD_FUN_FACT_ID = "add-fun-fact";
 // Writing a Lore Entry (www#125's form) and a History Event (www#126's).

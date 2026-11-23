@@ -38,10 +38,6 @@
                 background-color: var(--muted);
                 border-color: var(--sidebar-ring);
             }
-            &[data-variant="account"] {
-                background-color: var(--muted);
-                border-color: var(--destructive);
-            }
             &[data-variant="default"] {
                 background-color: var(--primary);
                 color: var(--primary-foreground);
@@ -174,6 +170,11 @@
             &[data-variant="sidebar-toggle"] {
                 background-color: var(--sidebar-accent);
                 color: var(--sidebar-accent-foreground);
+                border-color: var(--sidebar-ring);
+            }
+            &:is([data-variant="back"], [data-variant="back-on-art"]) {
+                background-color: var(--muted);
+                color: var(--sidebar-ring);
                 border-color: var(--sidebar-ring);
             }
             &[data-variant="sidebar-back"] {
@@ -750,6 +751,11 @@
             border-color: var(--accent-foreground);
         }
         [data-slot="avatar"][data-variant="credit"] [data-slot="avatar-fallback"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent-foreground);
+        }
+        [data-slot="avatar"][data-variant="tab"] [data-slot="avatar-fallback"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border-color: var(--accent-foreground);

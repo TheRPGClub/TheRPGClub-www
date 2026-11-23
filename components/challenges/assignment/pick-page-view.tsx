@@ -3,6 +3,7 @@ import type { PickPage } from "@/lib/challenges/pick-page";
 import { pickCards, pickCopy, tasteHints } from "@/lib/challenges/santa-pick";
 import { tintStyle } from "@/lib/challenges/tint";
 import { ButtonLink } from "@/components/ui/button";
+import { BackLink } from "@/components/shell/back-link";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { PickDeal } from "@/components/challenges/assignment/pick-deal";
 import { PickHeader } from "@/components/challenges/assignment/pick-header";
@@ -31,7 +32,8 @@ export function PickPageView({ page, badge }: { page: PickPage; badge?: React.Re
     const cards = pickCards(view.backlog ?? []);
     const pick = view.pick?.game;
     return (
-      <div style={tintStyle(page.tint)} className="pb-12">
+      <div style={tintStyle(page.tint)} className="flex flex-col pb-12">
+        <BackLink href={back} label={challenge.name} />
         {header}
         <PickDeal
           editionId={editionId}
@@ -45,7 +47,8 @@ export function PickPageView({ page, badge }: { page: PickPage; badge?: React.Re
   }
   const slip = state.kind === "open" ? null : state;
   return (
-    <div style={tintStyle(page.tint)} className="pb-12">
+    <div style={tintStyle(page.tint)} className="flex flex-col pb-12">
+      <BackLink href={back} label={challenge.name} />
       {header}
       {slip && (
         <NoticeSlip

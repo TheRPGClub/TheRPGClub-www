@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Pencil } from "lucide-react";
 import type { CodexEntry } from "@/lib/codex/types";
-import { LORE_PATH } from "@/lib/codex/paths";
+import { LORE_BACK, LORE_PATH } from "@/lib/codex/paths";
 import { ButtonLink } from "@/components/ui/button";
+import { BackLink } from "@/components/shell/back-link";
 import { LoreDelete } from "./lore-delete";
 import { LoreMasthead } from "./lore-masthead";
 import { LoreSpread } from "./lore-spread";
@@ -23,8 +24,11 @@ export function LoreEntryView({
 }) {
   const { can_edit, can_delete } = entry.viewer;
   return (
-    <article className="pt-2.5">
-      {badge && <div className="mb-3 flex justify-end">{badge}</div>}
+    <article>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <BackLink {...LORE_BACK} className="mb-0" />
+        {badge}
+      </div>
       <LoreMasthead
         entry={entry}
         actions={

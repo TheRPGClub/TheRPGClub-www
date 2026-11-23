@@ -43,6 +43,7 @@ export default async function BacklogPickPage({
       userId={id}
       displayName={memberName(user)}
       title="Pick something to play"
+      back={{ href: `/members/${id}/backlogged-games`, label: "Backlog" }}
       current="backlog"
       counts={memberCounts(user)}
     >
