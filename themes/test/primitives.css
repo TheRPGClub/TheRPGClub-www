@@ -2001,6 +2001,20 @@
             border: 2px dashed var(--gotm);
         }
         /* Dashboard edit mode (www#145). */
+        [data-slot="button"][data-variant="filter-switch"] {
+            background-color: var(--muted);
+            color: var(--foreground);
+            border: 2px dotted var(--accent);
+            [data-part="switch-track"] {
+                width: 30px;
+                height: 16px;
+                border: 2px solid var(--foreground);
+            }
+            &[aria-checked="true"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+            }
+        }
         [data-slot="button"][data-variant="heading-action"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
