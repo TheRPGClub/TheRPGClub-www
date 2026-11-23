@@ -17,6 +17,7 @@ export type PinnedPageKey =
   | "gotm_history"
   | "challenges"
   | "games"
+  | "reviews"
   | "releases"
   | "achievements"
   | "journals"
@@ -64,6 +65,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "gotm_history", href: "/gotm", label: "GOTM history", note: "Every round's winners", group: "play", feature: "voting_gotm" },
   { key: "challenges", href: "/challenges", label: "Challenges", note: "Years Alive, Seasonal, Secret Santa", group: "play", feature: "challenges" },
   { key: "games", href: "/games", label: "Games", note: "The club's GameDB catalogue", group: "games", feature: "game_index" },
+  { key: "reviews", href: "/reviews", label: "Reviews", note: "Every member's reviews, newest first", group: "games", feature: "reviews" },
   { key: "releases", href: RELEASES_PATH, label: "Releases", note: "What's coming out, by region", group: "games", feature: "release_calendar" },
   { key: "achievements", href: "/achievements", label: "Achievements", note: "RA, Steam and PSN unlocks", group: "games", feature: "achievement_hub" },
   { key: "journals", href: "/journals", label: "Game Journals", note: "Members' play diaries", group: "games", feature: "journals" },

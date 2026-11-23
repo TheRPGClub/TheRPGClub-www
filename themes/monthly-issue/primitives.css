@@ -1504,6 +1504,28 @@
         [data-slot="button"][data-variant="heading-action"] {
             @apply font-label h-auto gap-1.5 rounded-sm border-0 bg-transparent px-0 text-sm font-extrabold text-foreground transition-colors hover:text-highlight active:not-aria-[haspopup]:translate-y-0 [&_svg]:size-4 [&_svg]:text-gotm;
         }
+        /* www#149: the Review Feed's Written only, a link that switches
+           the filter: a hairline box in the label voice holding a hollow
+           switch; on (aria-checked), a 2px yellow ring, paper type and the
+           knob slid right and filled yellow. */
+        [data-slot="button"][data-variant="filter-switch"] {
+            @apply font-label h-[34px] gap-2.5 rounded-[2.4px] border-0 px-3 text-[0.85rem] font-extrabold tracking-[0.08em] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-[color,box-shadow] hover:text-foreground hover:shadow-[inset_0_0_0_1px_var(--color-faint-foreground)] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight;
+            [data-part="switch-track"] {
+                @apply relative h-4 w-[30px] rounded-[2px] shadow-[inset_0_0_0_1.5px_var(--color-faint-foreground)];
+            }
+            [data-part="switch-knob"] {
+                @apply absolute top-[3px] left-[3px] size-2.5 rounded-[1px] bg-faint-foreground motion-safe:transition-[left,background-color] motion-safe:duration-200;
+            }
+            &[aria-checked="true"] {
+                @apply text-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)];
+                [data-part="switch-track"] {
+                    @apply shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+                }
+                [data-part="switch-knob"] {
+                    @apply left-[17px] bg-highlight;
+                }
+            }
+        }
         [data-slot="label"][data-variant="kind-tile"] {
             @apply font-label cursor-pointer rounded-xs text-[0.625rem] leading-none font-extrabold tracking-normal text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-[translate,rotate,background-color,box-shadow] duration-200 hover:bg-(--ink)/10 has-data-checked:-translate-y-1 has-data-checked:-rotate-2 has-data-checked:bg-(--ink) has-data-checked:text-background has-data-checked:shadow-[0_6px_14px_rgb(0_0_0/0.45)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
         }
