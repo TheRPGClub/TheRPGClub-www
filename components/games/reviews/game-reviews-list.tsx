@@ -42,6 +42,9 @@ export interface GameReviewsListProps {
   // Shows only the first `limit` reviews. The rest still count when looking
   // for the viewer's own, so the composer never offers a second one.
   limit?: number;
+  // The viewer's own Draft of the game. It stands where the compose prompt
+  // would: a Member has one Review per Game, and a Draft counts as it.
+  draftSlot?: React.ReactNode;
 }
 
 // The reviews block on game pages. Writing and editing happen here, in a
@@ -67,6 +70,7 @@ export function GameReviewsList({
   composeCloseHref,
   reviewHrefs,
   limit,
+  draftSlot,
 }: GameReviewsListProps) {
   const {
     composing,
@@ -82,7 +86,8 @@ export function GameReviewsList({
       ? null
       : (reviews.find((r) => r.user_id === ownerId) ?? null);
 
-  const showCta = showCompose && ownerId !== null && ownReview === null;
+  const canCompose = ownerId !== null && ownReview === null && !draftSlot;
+  const showCta = showCompose && canCompose;
 
   const crew = layout === "crew";
   const visible = limit ? reviews.slice(0, limit) : reviews;
@@ -113,7 +118,9 @@ export function GameReviewsList({
         />
       )}
 
-      {composing && ownerId !== null && ownReview === null && (
+      {draftSlot}
+
+      {composing && canCompose && (
         <div id="compose" className="scroll-mt-20">
           <LazyReviewForm
             userId={ownerId}

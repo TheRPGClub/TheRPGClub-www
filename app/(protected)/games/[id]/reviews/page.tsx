@@ -7,6 +7,7 @@ import { ListPagination } from "@/components/list-pagination";
 import { GameStrip } from "@/components/issue/game-strip";
 import { ReviewComposePanel } from "@/components/issue/review-compose-panel";
 import { ReviewsListView } from "@/components/games/reviews/reviews-list-view";
+import { DraftCard } from "@/components/reviews/drafts/draft-card";
 import { ReviewsReader } from "@/components/games/reviews/reviews-reader";
 
 // A game's reviews, in two states on one URL.
@@ -32,11 +33,11 @@ export default async function GameReviewsPage({
 
   const currentPage = Math.max(1, parseInt(query.page ?? "1", 10) || 1);
   const selectedId = query.review ? parseInt(query.review, 10) : NaN;
-  const composing = query.compose !== undefined;
-
   const page = await loadReviewsPage(gameId, currentPage);
   if (!page) notFound();
-  const { features, game, session, reviews, total, totalPages } = page;
+  const { features, game, session, reviews, total, totalPages, ownDraft } = page;
+  // With a Draft of the game the viewer has their one Review: no composer.
+  const composing = query.compose !== undefined && !ownDraft;
 
   const hrefs = reviewsPageHrefs(gameId, currentPage);
   const readerHrefs = Object.fromEntries(
@@ -48,7 +49,9 @@ export default async function GameReviewsPage({
     ? null
     : await loadSelectedReview(selectedId, gameId, reviews);
 
-  const composePanel = viewer.ownerId &&
+  const composePanel = ownDraft ? (
+    <DraftCard draft={ownDraft.draft} now={ownDraft.now} />
+  ) : viewer.ownerId &&
     !ownOnPage &&
     !(composing && !selected && viewer.canWriteReview) && (
       <ReviewComposePanel

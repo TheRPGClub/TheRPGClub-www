@@ -1276,6 +1276,12 @@
             &[data-variant="pencil"] {
                 @apply text-highlight italic decoration-highlight/70 underline-offset-3 hover:underline focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-highlight;
             }
+            /* www#151: the drafts pile's yellow action, its top right corner
+               cut like a turned-down page. The cut would clip an outer ring,
+               so focus draws inside. */
+            &[data-variant="dog-ear"] {
+                @apply font-label rounded-sm border-transparent bg-highlight pr-4 font-extrabold tracking-[0.04em] text-highlight-foreground uppercase [clip-path:polygon(0_0,calc(100%-9px)_0,100%_9px,100%_100%,0_100%)] hover:bg-highlight/85 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-highlight-foreground;
+            }
         }
         :is([data-slot="input"], [data-slot="textarea"])[data-variant="headline"] {
             @apply rounded-none border-border-strong bg-transparent text-foreground caret-highlight placeholder:text-faint-foreground focus-visible:border-highlight focus-visible:ring-0 disabled:pointer-events-auto disabled:cursor-auto disabled:bg-transparent disabled:opacity-70 dark:disabled:bg-transparent;

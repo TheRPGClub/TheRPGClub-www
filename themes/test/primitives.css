@@ -1857,6 +1857,11 @@
             border-color: var(--accent-foreground);
             box-shadow: 3px 3px 0 var(--foreground);
         }
+        [data-slot="button"][data-variant="dog-ear"] {
+            background-color: var(--highlight);
+            color: var(--highlight-foreground);
+            border-color: var(--highlight-foreground);
+        }
         [data-slot="button"][data-variant="pencil"] {
             color: var(--accent);
             text-decoration: underline wavy var(--foreground);

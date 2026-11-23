@@ -200,6 +200,9 @@ export async function deleteReviewAction(
   revalidatePath(`/members/${userId}/reviews`);
   revalidatePath(`/games/${gameId}`);
   revalidatePath(`/games/${gameId}/reviews`);
+  // A discarded Draft leaves the pile and the feed's drafts row.
+  revalidatePath("/reviews");
+  revalidatePath("/reviews/drafts");
   return { ok: true, data: null };
 }
 

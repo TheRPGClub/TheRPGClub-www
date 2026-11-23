@@ -13,6 +13,7 @@ export function GameReviewsSection({
   reviewTotal,
   viewer,
   accent,
+  draftSlot,
 }: {
   gameId: number;
   reviews: Review[];
@@ -20,6 +21,8 @@ export function GameReviewsSection({
   reviewTotal: number | null;
   viewer: ViewerOnGame;
   accent: ReviewAccent;
+  // The viewer's own Draft of the game, in the compose prompt's place.
+  draftSlot?: React.ReactNode;
 }) {
   return (
     <DetailSection
@@ -54,6 +57,7 @@ export function GameReviewsSection({
           viewerStatus={viewer.status}
           layout="crew"
           accent={accent}
+          draftSlot={draftSlot}
         />
       )}
     </DetailSection>

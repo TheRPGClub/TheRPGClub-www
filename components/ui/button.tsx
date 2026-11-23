@@ -129,6 +129,10 @@ const buttonVariants = cva(
         // missing score, its Retry now): the desk's yellow pencil, in its
         // own italic hand, underlined on hover. Pair with size="inline".
         pencil: "",
+        // www#151: Your drafts. The yellow call to action with its corner
+        // cut away, the dog-ear the drafts pile carries (Continue writing,
+        // Your drafts).
+        "dog-ear": "",
         // www#100: journals, giveaways and the Feature switches.
         // An icon tool on the yellow panel (show the key being donated).
         "inverse-ghost": "focus-visible:ring-background/30",
