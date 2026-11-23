@@ -1,4 +1,4 @@
-import { Pencil, PencilLine } from "lucide-react";
+import { Pencil, PencilLine, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -9,7 +9,8 @@ import {
 import { MAX_RATING } from "@/lib/api/rating";
 
 // The review banner's byline (the reviewer, when they reviewed, and the
-// author's "Edit your review") and its score in a paper block.
+// author's "Edit your review" and, until a Revision is published, "Revisit")
+// and its score in a paper block.
 
 export function ReviewBannerByline({
   authorId,
@@ -17,6 +18,7 @@ export function ReviewBannerByline({
   createdAt,
   editedAt,
   canEdit,
+  revisit,
   note,
 }: {
   authorId: string;
@@ -26,6 +28,10 @@ export function ReviewBannerByline({
   // more than an hour after publishing.
   editedAt?: string | null;
   canEdit?: boolean;
+  // The author's Revisit, beside Edit while the Review has a single take
+  // (the score line carries it once there are more). `continuing` when a
+  // Draft Revision is already waiting.
+  revisit?: { href: string; continuing: boolean } | null;
   // After the date, e.g. "revisited twice".
   note?: string | null;
 }) {
@@ -60,6 +66,15 @@ export function ReviewBannerByline({
         >
           <Pencil aria-hidden className="size-3.5" />
           Edit your review
+        </Link>
+      )}
+      {canEdit && revisit && (
+        <Link
+          href={revisit.href}
+          className="font-label inline-flex items-center gap-1.5 text-[0.82rem] font-extrabold tracking-[0.08em] text-dim-foreground transition-colors hover:text-highlight"
+        >
+          <RotateCcw aria-hidden className="size-3.5" />
+          {revisit.continuing ? "Continue your revision" : "Revisit"}
         </Link>
       )}
     </p>

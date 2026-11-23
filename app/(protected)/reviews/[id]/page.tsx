@@ -6,6 +6,7 @@ import { ReviewMore } from "@/components/issue/review-more";
 import { ReviewVerdict } from "@/components/issue/review-verdict";
 import { apiFetch } from "@/lib/api";
 import type { ApiSingle, Review } from "@/lib/api/types";
+import { reviewHref } from "@/lib/reviews/href";
 import { readReviewSurroundings } from "@/lib/reviews/review-page-read";
 import { accentForGame } from "@/lib/reviews/accent";
 import { editedAt } from "@/lib/reviews/edit-rules";
@@ -15,20 +16,25 @@ import {
   latestEdit,
   revisedCount,
   reviewTakes,
-  revisionDeleteNote,
+  revisionTakeFor,
   scoreRow,
 } from "@/lib/reviews/takes";
-import { ReviewTakes } from "@/components/reviews/takes/review-takes";
+import { ReviewRead } from "@/components/reviews/takes/review-read";
 import { ScoreRow } from "@/components/reviews/takes/score-row";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { DetailTemplate } from "@/components/templates/detail-template";
 
 // A review's own page, read top to bottom like a magazine piece: the cover
-// banner with the headline, the current score and the score row, the takes
-// down the score line newest first, the verdict (the current overall and
-// facet scores) once it has made its case, and the club's other takes on
-// the game last. The author opens a take in the desk from here.
+// banner with the headline and the current score, the review, the verdict
+// (the current overall and facet scores) once it has made its case, and the
+// club's other takes on the game last.
+//
+// The score line (every take newest first on a dated spine, with the score
+// row in the banner) only appears once a Revision is published. Until then
+// the review reads as one article, and the author's Revisit sits beside
+// "Edit your review" in the byline. The author opens a take in the desk from
+// here.
 
 export default async function ReviewPage({
   params,
@@ -64,8 +70,12 @@ export default async function ReviewPage({
   const editing = mode.kind !== "read";
   const takes = reviewTakes(review);
   const current = takes[takes.length - 1];
-  const revision = mode.kind === "revision" ? mode.revision : null;
   const owner = isMine ? { userId: review.user_id, reviewId, gameId } : null;
+  // A Draft Revision alone doesn't count: readers never see it, and the
+  // author continues it from the byline.
+  const revised = takes.length > 1;
+  // Edit and Revisit sit in the byline until the score line carries them.
+  const canRevisit = isMine && !revised;
 
   return (
     <DetailTemplate
@@ -76,8 +86,10 @@ export default async function ReviewPage({
             game={game}
             accent={accent}
             rating={review.rating}
-            scoreHistory={<ScoreRow stops={scoreRow(takes)} />}
-            bylineNote={revisedCount(takes)}
+            scoreHistory={revised ? <ScoreRow stops={scoreRow(takes)} /> : undefined}
+            bylineNote={revised ? revisedCount(takes) : null}
+            canEdit={canRevisit}
+            revisit={canRevisit ? { href: reviewHref(reviewId, { revisit: true }), continuing: !!review.draft_revision } : null}
             authorId={review.user_id}
             authorName={authorName}
             // A Draft finished later reads as reviewed the day it went out.
@@ -100,16 +112,12 @@ export default async function ReviewPage({
         canEdit={isMine}
         startEditing={editing}
         startRevisit={mode.kind === "start-revisit"}
-        revisionTake={revision && {
-          revision,
-          // A Draft Revision answers the current take, taped above Overall.
-          earlier: revision.published_at == null ? current : null,
-          deleteNote: revisionDeleteNote(takes, `revision-${revision.revision_id}`),
-        }}
+        revisionTake={revisionTakeFor(mode.kind === "revision" ? mode.revision : null, takes)}
       >
         <div className="space-y-12 pt-2">
-          <ReviewTakes
+          <ReviewRead
             takes={takes}
+            body={review.body}
             accent={accent}
             owner={owner}
             draftRevision={isMine ? (review.draft_revision ?? null) : null}
