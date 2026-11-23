@@ -4,6 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateGameTextAction } from "@/app/actions/game-edit";
 import {
+  deleteGameImageAction,
+  listGameImagesAction,
+  updateGameImageAction,
+  uploadGameImageAction,
+} from "@/app/actions/game-images";
+import {
   gameEditSave,
   saveSummary,
   type GameEditRecord,
@@ -33,6 +39,14 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "image.upload": (call) => uploadGameImageAction(gameId, imageForm(call.image.file, call.image.kind, call.primary)),
+    "image.update": (call) => updateGameImageAction(gameId, call.imageId, call.fields),
+    "image.delete": (call) => deleteGameImageAction(gameId, call.imageId),
+  };
+  // Sections whose saved record only the API knows (new image ids and
+  // URLs): read back after a save, whether it went through or not.
+  const reloads: { [K in GameEditSectionKey]?: () => Promise<GameEditRecord[K] | null> } = {
+    images: () => listGameImagesAction(gameId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -44,6 +58,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       else next[key] = staged;
       return next;
     });
+  }
+
+  // Puts a section's fresh record in place (after a save or a refresh).
+  function reloadSection<K extends GameEditSectionKey>(key: K, loaded: GameEditRecord[K]) {
+    setRecord((prev) => ({ ...prev, [key]: loaded }));
   }
 
   function discard() {
@@ -60,6 +79,10 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       const failed = outcome.sections.filter((s) => s.status === "failed");
       setErrors(Object.fromEntries(failed.map((s) => [s.key, s.error])));
       setNotice(failed.length > 0 ? { title: saveSummary(outcome).split(":")[0], failed: failed.map((s) => s.label) } : null);
+      for (const { key } of outcome.sections) {
+        const fresh = await reloads[key]?.();
+        if (fresh) reloadSection(key, fresh);
+      }
       router.refresh();
     });
   }
@@ -68,6 +91,7 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     record,
     stage,
     stageSection,
+    reloadSection,
     changes,
     errors,
     notice,
@@ -83,3 +107,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;
+
+function imageForm(file: File, kind: string, primary: boolean): FormData {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("kind", kind);
+  form.append("is_primary", String(primary));
+  return form;
+}
