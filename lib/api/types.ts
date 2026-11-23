@@ -726,8 +726,18 @@ export interface Review {
   // backend doesn't send the key at all until it grows a `title` column, so
   // this stays truthful about what a response can actually look like today.
   title?: string | null;
-  // Null only on a Draft that has no score yet: publishing needs one.
+  // The current score: the latest Published Revision's, else the Review's
+  // own. Null only on a Draft that has no score yet: publishing needs one.
   rating: number | null;
+  // The first take's own score, the one an Edit of the Review changes
+  // (`rating` above follows the Revisions). Absent on shapes that predate
+  // Revisions.
+  original_rating?: number | null;
+  // The Published Revisions, oldest first (publish order). Only on the full
+  // shape (GET /reviews/:id); the first take is the Review itself.
+  revisions?: ReviewRevision[];
+  // The Draft Revision, for its author and Admins only; null otherwise.
+  draft_revision?: ReviewRevision | null;
   // The per-category scorecard (story, music, combat...), or null for a review
   // written without one — which is every review from before it existed, and
   // still a first-class choice ("quick take"). Never read it directly:
@@ -758,13 +768,38 @@ export interface Review {
   game?: Game | null;
 }
 
+// A Revision: a dated return to a Published Review with its own score,
+// title, story and scorecard (validated like a Review's). A Draft Revision
+// (no `published_at`) is seen only by its author.
+export interface ReviewRevision {
+  revision_id: number;
+  review_id: number;
+  rating: number | null;
+  // Published: the score just before it went up. Draft: the Review's
+  // current score, the one publishing would replace.
+  previous_rating: number | null;
+  title?: string | null;
+  facets: ReviewFacets | null;
+  body: ReviewBody;
+  published_at: string | null;
+  edited_at?: string | null;
+  score_locks_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // One of the viewer's own Drafts, from GET /users/:id/reviews/drafts (only
 // its author, or an Admin, may read the listing). `updated_at` is when it was
-// last touched, the listing's order; `kind` is "review" until Draft
-// Revisions join as "revision".
-export interface ReviewDraftEntry extends Omit<Review, "game" | "user" | "updated_at"> {
+// last touched, the listing's order; `kind` says whether it is a Draft Review or
+// a Draft Revision.
+export interface ReviewDraftEntry
+  extends Omit<Review, "game" | "user" | "updated_at" | "revisions" | "draft_revision"> {
   updated_at: string;
   kind: "review" | "revision";
+  // On a Draft Revision: its id, and the Review's current score it would
+  // replace ("Revisiting · was 72"). Null on a Draft Review.
+  revision_id?: number | null;
+  previous_rating?: number | null;
   game?: Game | null;
 }
 

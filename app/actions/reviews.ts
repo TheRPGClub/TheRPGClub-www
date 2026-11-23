@@ -6,7 +6,7 @@ import { MAX_RATING, MIN_RATING, isValidRating } from "@/lib/api/rating";
 import { MAX_REVIEW_LENGTH, sanitizeReviewValue } from "@/lib/api/review-body";
 import { MAX_REVIEW_TITLE_LENGTH, sanitizeReviewTitle } from "@/lib/api/review-title";
 import { WEIGHT_TOTAL, sanitizeReviewFacets } from "@/lib/reviews/facets";
-import type { Review } from "@/lib/api/types";
+import type { Review, ReviewRevision } from "@/lib/api/types";
 import { richTextPlainText } from "@/lib/rich-text/text";
 import { reviewHref } from "@/lib/reviews/href";
 
@@ -21,6 +21,8 @@ export interface ActionResult<T> {
 
 // The API's error codes that have words of their own here.
 const ERROR_WORDS: Record<string, string> = {
+  draft_revision_exists: "You're already revisiting this review: carry on with that draft.",
+  review_not_published: "Publish the review before revisiting it.",
   rating_required: "Give it an overall score before publishing.",
   score_locked:
     "The score is locked now, so nothing was saved. It's back to the published score: save again to keep your other changes.",
@@ -259,4 +261,105 @@ export async function publishReviewAction(
   revalidatePath("/reviews");
   revalidatePath(reviewHref(reviewId));
   return { ok: true, data: body.data };
+}
+
+// ---------------------------------------------------------------------------
+// Revisions: dated returns to a Published Review. Each take is written like
+// a Review (the same validation), under /review_revisions/:id.
+
+// Everywhere the Review's score shows: a published or deleted Revision moves
+// it (the current score is the latest Published Revision's).
+function revalidateReview(userId: string, reviewId: number, gameId: number) {
+  revalidatePath(`/members/${userId}`);
+  revalidatePath(`/members/${userId}/reviews`);
+  revalidatePath(`/games/${gameId}`);
+  revalidatePath(`/games/${gameId}/reviews`);
+  revalidatePath("/reviews");
+  revalidatePath("/reviews/drafts");
+  revalidatePath(reviewHref(reviewId));
+}
+
+// Revisit: starts the Review's Draft Revision, empty. The API allows one at a
+// time (`draft_revision_exists`) and only on a Published Review.
+export async function revisitReviewAction(
+  userId: string,
+  reviewId: number,
+): Promise<ActionResult<ReviewRevision>> {
+  const res = await apiFetch(`/api/v1/reviews/${reviewId}/revisions`, {
+    method: "POST",
+    body: JSON.stringify({ data: {} }),
+  });
+  if (!res.ok) return failure(res);
+  const body = (await res.json()) as { data: ReviewRevision };
+  // The pile and the feed's drafts row gain it.
+  revalidatePath("/reviews");
+  revalidatePath("/reviews/drafts");
+  revalidatePath(`/members/${userId}/reviews`);
+  return { ok: true, data: body.data };
+}
+
+// A Draft Revision's autosave. Nothing is revalidated, as for a Draft.
+export async function saveRevisionDraftAction(
+  revisionId: number,
+  input: ReviewInput,
+): Promise<ActionResult<ReviewRevision>> {
+  const prepared = prepare(input, { draft: true });
+  if (!prepared.ok) return { ok: false, error: prepared.error };
+  const res = await apiFetch(`/api/v1/review_revisions/${revisionId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ data: prepared.payload }),
+  });
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  const body = (await res.json()) as { data: ReviewRevision };
+  return { ok: true, data: body.data };
+}
+
+// The Edit of a Published Revision: explicit Save, under its own score lock.
+export async function updateRevisionAction(
+  userId: string,
+  revision: { reviewId: number; revisionId: number },
+  gameId: number,
+  input: ReviewInput,
+): Promise<ActionResult<ReviewRevision>> {
+  const prepared = prepare(input);
+  if (!prepared.ok) return { ok: false, error: prepared.error };
+  const res = await apiFetch(`/api/v1/review_revisions/${revision.revisionId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ data: prepared.payload }),
+  });
+  // `score_locked` keeps its code: the editor locks the ruler on it.
+  if (!res.ok) return failure(res);
+  const body = (await res.json()) as { data: ReviewRevision };
+  revalidateReview(userId, revision.reviewId, gameId);
+  return { ok: true, data: body.data };
+}
+
+// Publishes a Draft Revision: its score becomes the Review's.
+export async function publishRevisionAction(
+  userId: string,
+  revision: { reviewId: number; revisionId: number },
+  gameId: number,
+): Promise<ActionResult<ReviewRevision>> {
+  const res = await apiFetch(`/api/v1/review_revisions/${revision.revisionId}/publish`, {
+    method: "POST",
+  });
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  const body = (await res.json()) as { data: ReviewRevision };
+  revalidateReview(userId, revision.reviewId, gameId);
+  return { ok: true, data: body.data };
+}
+
+// Deletes a Revision (a Draft's Discard, or Delete revision on a Published
+// one). The Review's score goes back to the take before it.
+export async function deleteRevisionAction(
+  userId: string,
+  revision: { reviewId: number; revisionId: number },
+  gameId: number,
+): Promise<ActionResult<null>> {
+  const res = await apiFetch(`/api/v1/review_revisions/${revision.revisionId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  revalidateReview(userId, revision.reviewId, gameId);
+  return { ok: true, data: null };
 }

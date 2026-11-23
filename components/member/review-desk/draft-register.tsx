@@ -13,9 +13,12 @@ import { cn } from "@/lib/utils";
 export function DraftRegister({
   status,
   onRetry,
+  label = "Draft",
 }: {
   status: AutosaveStatus;
   onRetry: () => void;
+  // What is being written: "Draft", or "Revision" for a Draft Revision.
+  label?: string;
 }) {
   const now = useNow(status.kind === "failed" ? 1000 : 30_000);
   const failed = status.kind === "failed";
@@ -37,7 +40,7 @@ export function DraftRegister({
             failed && "border-dashed border-dim-foreground",
           )}
         />
-        Draft
+        {label}
         <span className={cn("truncate font-bold tracking-[0.06em]", failed ? "text-dim-foreground" : "text-faint-foreground")}>
           · {autosaveLabel(status, now)}
         </span>

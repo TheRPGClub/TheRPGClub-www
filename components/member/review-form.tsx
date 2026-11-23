@@ -1,20 +1,26 @@
 "use client";
 
 import type { Review } from "@/lib/api/types";
+import type { RevisionTake } from "./review-desk/form-strip";
+
+export type { RevisionTake };
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import { useReviewForm } from "@/hooks/use-review-form";
 import { ReviewScorecardEditor } from "./review-scorecard-editor";
 import { ReviewFormActions } from "./review-composer/review-form-actions";
 import type { ReviewDeskGame } from "./review-desk/desk-game";
 import { QuickSheet } from "./review-desk/quick-sheet";
-import { FormDraftStrip } from "./review-desk/form-draft-strip";
-import { EditStrip } from "./review-desk/edit-strip";
+import { FormStrip } from "./review-desk/form-strip";
 import { ReviewDesk } from "./review-desk/review-desk";
 
 export interface ReviewFormProps {
   userId: string;
   gameId: number;
   existing?: Review | null;
+  // Writes this Revision of `existing` instead of its first take: a Draft
+  // Revision with the earlier take taped above Overall, or a Published one
+  // whose Delete says where the score goes ("The score goes back to 85").
+  revisionTake?: RevisionTake | null;
   onCancel?: () => void;
   // Fires after a successful save with the updated review.
   onSaved?: (review: Review) => void;
@@ -56,6 +62,7 @@ export function ReviewForm({
   userId,
   gameId,
   existing,
+  revisionTake,
   onCancel,
   onSaved,
   onDeleted,
@@ -66,7 +73,8 @@ export function ReviewForm({
   layout = "desk",
   game,
 }: ReviewFormProps) {
-  const form = useReviewForm({ userId, gameId, existing, onCancel, onDeleted });
+  const revision = revisionTake?.revision ?? null;
+  const form = useReviewForm({ userId, gameId, existing, revision, onCancel, onDeleted });
   const { facets, pending } = form;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,20 +92,13 @@ export function ReviewForm({
       {form.error}
     </p>
   );
-  // On the desk a Draft and a Published Review each have their strip, which
+  // On the desk a Draft and a Published take each have their strip, which
   // carries the actions; the footer keeps only the error. The quick sheet
   // keeps its row of actions.
   const strip =
-    layout !== "desk" ? null : form.draft ? (
-      <FormDraftStrip form={form} accent={accent} onPublished={onPublished} />
-    ) : existing ? (
-      <EditStrip
-        accent={accent} publishedAt={existing.published_at} pending={pending}
-        rated={form.rating !== null} onCancel={onCancel}
-        // Already confirmed on the strip; deleting is the same call a
-        // Draft's Discard makes.
-        onDelete={form.discard}
-      />
+    layout === "desk" && (form.draft || existing) ? (
+      <FormStrip form={form} accent={accent} existing={existing} revisionTake={revisionTake}
+        onCancel={onCancel} onPublished={onPublished} />
     ) : null;
   const footer = strip ? (
     alert
@@ -125,6 +126,7 @@ export function ReviewForm({
           accent={accent}
           footer={footer}
           strip={strip}
+          earlierTake={form.draft ? revisionTake?.earlier : null}
           scorecard={
             <ReviewScorecardEditor
               value={facets}

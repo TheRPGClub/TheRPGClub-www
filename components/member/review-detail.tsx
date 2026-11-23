@@ -8,6 +8,8 @@ import { isDraft } from "@/lib/reviews/draft";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import type { ReviewDeskGame } from "@/components/member/review-desk/desk-game";
 import { reviewHref } from "@/lib/reviews/href";
+import type { RevisionTake } from "@/components/member/review-form";
+import { RevisitStarter } from "@/components/reviews/takes/revisit-starter";
 
 // Same reasoning as the game page's list: the editor is the heaviest thing
 // here and most readers never open it.
@@ -39,6 +41,11 @@ export interface ReviewDetailProps {
   // writer arriving from the game page's small editor has already saved, so
   // landing them on a read view would make them click straight back out.
   startEditing?: boolean;
+  // The take being edited when it is a Revision (a Draft Revision, or a
+  // Published one under `?revision`); absent, the first take.
+  revisionTake?: RevisionTake | null;
+  // `?revisit` with no Draft Revision yet: start one, then open it.
+  startRevisit?: boolean;
   // The rendered review, passed in already built. It stays a server render
   // that way — the read view is the common one, and it has no business
   // shipping the renderer to the browser just because editing is possible.
@@ -52,10 +59,16 @@ export function ReviewDetail({
   accent,
   canEdit,
   startEditing = false,
+  revisionTake,
+  startRevisit = false,
   children,
 }: ReviewDetailProps) {
   const router = useRouter();
   const readView = reviewHref(review.review_id);
+
+  if (canEdit && startRevisit) {
+    return <RevisitStarter userId={review.user_id} reviewId={review.review_id} />;
+  }
 
   if (canEdit && startEditing) {
     const draft = isDraft(review);
@@ -65,6 +78,9 @@ export function ReviewDetail({
         gameId={gameId}
         game={game}
         existing={review}
+        revisionTake={revisionTake}
+        // Remounts the form for another take, so its fields start afresh.
+        key={revisionTake ? `revision-${revisionTake.revision.revision_id}` : "review"}
         accent={accent}
         showDelete
         onCancel={() => router.replace(readView, { scroll: false })}
@@ -77,7 +93,13 @@ export function ReviewDetail({
         }}
         // The review this page is about is gone, so there is nothing to come
         // back to. A discarded Draft goes back to its game.
-        onDeleted={() => router.replace(draft ? `/games/${gameId}` : `/games/${gameId}/reviews`)}
+        // A Revision's page is still there, one take shorter.
+        onDeleted={() => {
+          if (revisionTake) {
+            router.replace(readView);
+            router.refresh();
+          } else router.replace(draft ? `/games/${gameId}` : `/games/${gameId}/reviews`);
+        }}
       />
     );
   }

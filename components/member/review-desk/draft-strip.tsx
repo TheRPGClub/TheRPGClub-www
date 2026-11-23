@@ -24,6 +24,7 @@ export function DraftStrip({
   discardLoss,
   onDiscard,
   onPublish,
+  revision = false,
 }: {
   status: AutosaveStatus;
   onRetry: () => void;
@@ -35,6 +36,8 @@ export function DraftStrip({
   discardLoss: string;
   onDiscard: () => void;
   onPublish: () => void;
+  // A Draft Revision: the register says Revision and Publish says so too.
+  revision?: boolean;
 }) {
   const [confirming, setConfirming] = useState(false);
   const reasonId = useId();
@@ -57,9 +60,9 @@ export function DraftStrip({
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 px-3.5 py-2.5">
-          <DraftRegister status={status} onRetry={onRetry} />
+          <DraftRegister status={status} onRetry={onRetry} label={revision ? "Revision" : "Draft"} />
           <span className="font-label hidden text-[0.72rem] font-extrabold tracking-[0.08em] text-faint-foreground uppercase lg:inline">
-            only you can see it
+            {revision ? "only you can see it until you publish" : "only you can see it"}
           </span>
           <span className="flex-1" />
           <DraftChecks checks={checks} onScore={onScore} reasonId={reasonId} />
@@ -76,7 +79,7 @@ export function DraftStrip({
               disabled={pending || !checks.score}
               aria-describedby={checks.score ? undefined : reasonId}
             >
-              Publish review
+              {revision ? "Publish revision" : "Publish review"}
             </Button>
           </span>
         </div>

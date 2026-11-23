@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { draftHref } from "@/lib/reviews/drafts";
 import { ButtonLink } from "@/components/ui/button";
 import type { ReviewDraftEntry } from "@/lib/api/types";
-import { reviewHref } from "@/lib/reviews/href";
 import { DraftPaper } from "./draft-paper";
 import { DraftFirstLine, DraftPills, DraftScoreBox, DraftTouched } from "./draft-parts";
 
@@ -37,13 +37,13 @@ export function DraftsRow({
               <p className="font-label m-0 text-[1.05rem] leading-[1.1] font-extrabold tracking-[0.03em]">
                 {newest.game?.title ?? "Game"}
               </p>
-              <DraftPills game={newest.game} kind={newest.kind} />
+              <DraftPills game={newest.game} kind={newest.kind} previousRating={newest.previous_rating} />
             </div>
             <DraftFirstLine draft={newest} lines={1} className="mt-1 text-[0.92rem]" />
           </div>
           <div className="flex shrink-0 basis-full items-center justify-between gap-2 sm:basis-auto">
             <DraftTouched at={newest.updated_at} now={now} className="max-sm:hidden" />
-            <ButtonLink href={reviewHref(newest.review_id)} variant="dog-ear" className="max-sm:ml-auto">
+            <ButtonLink href={draftHref(newest)} variant="dog-ear" className="max-sm:ml-auto">
               Continue writing
               <ArrowRight data-icon="inline-end" />
             </ButtonLink>
@@ -66,7 +66,7 @@ export function DraftsRow({
           {named.map((d) => (
             <li key={d.review_id} className="min-w-0 shrink">
               <Link
-                href={reviewHref(d.review_id)}
+                href={draftHref(d)}
                 className="font-label flex min-w-0 items-center gap-[7px] text-[0.92rem] font-extrabold tracking-[0.04em] whitespace-nowrap hover:text-highlight"
               >
                 <i aria-hidden className="size-[9px] shrink-0 bg-highlight [clip-path:polygon(0_0,0_100%,100%_100%)]" />

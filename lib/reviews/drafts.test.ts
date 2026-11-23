@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { draftCount, draftFirstLine, draftLoss, draftOfGame, lastTouched, touchedAt } from "./drafts";
+import { draftCount, draftFirstLine, draftHref, draftLoss, draftOfGame, draftStateLabel, lastTouched, touchedAt } from "./drafts";
 
 const NOW = Date.parse("2026-11-23T15:00:00Z");
 const ago = (ms: number) => new Date(NOW - ms).toISOString();
@@ -77,5 +77,18 @@ describe("draftLoss", () => {
     const body = [{ type: "p", children: [{ text: "abcd" }] }];
     expect(draftLoss({ rating: 80, facets: null, body })).toBe("Its score and 4 characters go with it.");
     expect(draftLoss({ rating: null, facets: null, body: null })).toBe("It has nothing in it yet.");
+  });
+});
+
+describe("Draft Revisions in the pile", () => {
+  it("continue on their Review's page under ?revisit", () => {
+    expect(draftHref({ review_id: 4, kind: "revision" })).toBe("/reviews/4?revisit=1");
+    expect(draftHref({ review_id: 4, kind: "review" })).toBe("/reviews/4");
+  });
+
+  it("read Revisiting with the score they would replace", () => {
+    expect(draftStateLabel({ kind: "revision", previous_rating: 72 })).toBe("Revisiting · was 72");
+    expect(draftStateLabel({ kind: "revision", previous_rating: null })).toBe("Revisiting");
+    expect(draftStateLabel({ kind: "review", previous_rating: null })).toBe("Draft");
   });
 });

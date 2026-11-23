@@ -27,13 +27,15 @@ import { REVIEW_STORY } from "./story";
 export function ReviewSheet({ form, game }: { form: ReviewFormState; game?: ReviewDeskGame }) {
   return (
     <section
-      aria-label={form.draft ? "Your draft" : "Your review"}
+      aria-label={form.revision ? "Your revision" : form.draft ? "Your draft" : "Your review"}
       className="relative flex flex-col bg-card pb-6 shadow-[0_18px_40px_rgb(0_0_0/0.5)]"
     >
       <CropMarks pencil={form.draft} />
       {form.draft && (
         <>
-          <PencilNote>Draft · only you can see it</PencilNote>
+          <PencilNote>
+            {form.revision ? "Revision · only you can see it until you publish" : "Draft · only you can see it"}
+          </PencilNote>
           <DogEar />
         </>
       )}
