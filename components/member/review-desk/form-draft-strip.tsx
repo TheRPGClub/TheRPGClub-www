@@ -22,6 +22,7 @@ export function FormDraftStrip({
   return (
     <DraftStrip
       status={form.autosave.status}
+      error={form.autosave.error}
       onRetry={form.autosave.retryNow}
       checks={draftChecklist({ title: form.title, storyLength, rating: form.rating })}
       onScore={focusOverall}

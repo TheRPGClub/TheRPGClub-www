@@ -359,6 +359,10 @@
             &[data-size="nav"] {
                 @apply font-extrabold;
             }
+            /* A review's pill: the full label voice, 800 weight. */
+            &[data-size="pill"] {
+                @apply font-extrabold;
+            }
             &[data-size="filter"] {
                 @apply font-extrabold transition-[color,background-color,box-shadow,opacity] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
             }

@@ -15,16 +15,7 @@ export { FacetBars } from "@/components/issue/review-meta-facet-bars";
 
 const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
-export function formatReviewDate(
-  iso: string,
-  month: "short" | "long" = "short",
-): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month,
-    day: "numeric",
-  });
-}
+export { formatReviewDate } from "@/lib/reviews/review-date";
 
 const AVATAR_SIZE = {
   xs: "size-[18px] text-[9px]",

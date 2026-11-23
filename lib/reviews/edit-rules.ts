@@ -1,4 +1,5 @@
 import type { Review } from "@/lib/api/types";
+import { formatReviewDate } from "@/lib/reviews/review-date";
 
 // The Edit rules (ADR 0013): an Edit may change a take's score only in its
 // first 7 days after publishing; an Edit more than an hour after publishing
@@ -32,14 +33,10 @@ export function isScoreLocked(review: Dated, now: number): boolean {
   return locksAt !== null && now > locksAt;
 }
 
-// "12 Mar 2025", in UTC like every date on the review pages.
+// "Mar 12, 2025": the review byline's date, so the desk and the takes read
+// every date the way the byline does.
 export function editRuleDate(at: number | string): string {
-  return new Date(at).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  return formatReviewDate(at);
 }
 
 // The locked ruler's reason. Without a date (a server refusal on a shape

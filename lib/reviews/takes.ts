@@ -180,6 +180,13 @@ export function revisionDeleteNote(takes: Take[], key: string): string {
   return `Its take and scorecard go. The score goes back to ${before.rating}${when}.`;
 }
 
+// Whether the Review has a newer take than its first: the lists' `revised`
+// flag, else the full shape's Published Revisions.
+export function isRevisited(review: Pick<Review, "revised" | "revisions">): boolean {
+  if (review.revised !== undefined) return review.revised;
+  return (review.revisions ?? []).some((r) => r.published_at != null);
+}
+
 // What deleting the whole Review takes with it.
 export function reviewDeleteNote(takes: Take[]): string {
   const revisions = takes.length - 1;

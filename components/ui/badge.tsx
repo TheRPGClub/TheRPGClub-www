@@ -66,6 +66,9 @@ const badgeVariants = cva(
         nav: "h-auto px-1.5 py-px text-[0.7rem]",
         // A filter chip that is a link (the hub's Provider filter).
         filter: "h-[26px] px-2.5 text-[0.8rem]",
+        // A review's pill row (track, then Revisited or Quick take) on the
+        // Review Feed's boxes.
+        pill: "h-[22px] px-2 text-[0.74rem] [&>svg]:size-3!",
       },
     },
     defaultVariants: {

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAutosave, type AutosaveStatus } from "@/lib/reviews/autosave";
 
-function setup(results: boolean[] = []) {
+function setup(results: (boolean | "refused")[] = []) {
   const saved: string[] = [];
   const statuses: AutosaveStatus[] = [];
   const save = vi.fn(async (snapshot: string) => {
@@ -53,6 +53,29 @@ describe("createAutosave", () => {
     await vi.advanceTimersByTimeAsync(8000);
     expect(saved).toEqual(["draft", "draft"]);
     expect(last()?.kind).toBe("saved");
+  });
+
+  it("doesn't retry a refused save, and saves the next change", async () => {
+    const { autosave, saved, last } = setup(["refused", true]);
+    autosave.change("bad");
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(saved).toEqual(["bad"]);
+    expect(last()).toEqual({ kind: "refused" });
+    expect(autosave.dirty()).toBe(true);
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(saved).toEqual(["bad"]);
+
+    autosave.change("fixed");
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(saved).toEqual(["bad", "fixed"]);
+    expect(last()?.kind).toBe("saved");
+  });
+
+  it("flush reports a refused save as not saved", async () => {
+    const { autosave } = setup(["refused"]);
+    autosave.change("bad");
+    expect(await autosave.flush()).toBe(false);
   });
 
   it("treats a thrown save as a failure", async () => {

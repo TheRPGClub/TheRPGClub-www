@@ -4,7 +4,7 @@ import { paginationOf } from "@/lib/api/pagination";
 import { getSession, requireFeature } from "@/lib/session";
 import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { draftOfGame } from "@/lib/reviews/drafts";
-import { DRAFTS_READ, fetchOwnDrafts } from "@/lib/reviews/drafts-read";
+import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 
 // The game's reviews page reads: the game, one page of its reviews, and the
 // review open in the reader.
@@ -25,7 +25,7 @@ export async function loadReviewsPage(gameId: number, currentPage: number) {
     ),
     // The viewer's own Draft of this game takes the compose prompt's place.
     sessionRead.then((s) =>
-      s ? fetchOwnDrafts(s.principal.discord_id, { per: DRAFTS_READ }) : null,
+      s ? fetchOwnDrafts(s.principal.discord_id, { gameId, per: 5 }) : null,
     ),
   ]);
   if (!gameRes.ok) return null;

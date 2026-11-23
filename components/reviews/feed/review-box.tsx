@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
+import { trackChips } from "@/components/issue/game-track";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { reviewHref } from "@/lib/reviews/href";
 import { reviewerName } from "@/lib/reviews/reviewer-name";
@@ -10,7 +11,6 @@ import {
   feedState,
   feedTrack,
   previousScore,
-  TRACK_PILL,
   type ReviewFeedEntry,
 } from "@/lib/reviews/feed";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,8 @@ import { ReviewBoxScore } from "./review-box-score";
 export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
   const track = feedTrack(entry);
   const state = feedState(entry);
+  // "GOTM · Nov 2024": the track pill, with the month it won.
+  const chip = entry.game ? trackChips(entry.game, { short: true, shortMonth: true })[0] : undefined;
   const previous = previousScore(entry);
   const title = entry.game?.title ?? "Untitled game";
   const name = reviewerName(entry.user, "A member");
@@ -50,16 +52,16 @@ export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
           previous != null ? "@lg:pr-[200px]" : "@lg:pr-[130px]",
         )}
       >
-        {(track || state) && (
+        {(chip || state) && (
           <span className="order-2 col-span-2 inline-flex max-w-full flex-nowrap gap-1.5 @lg:order-none">
-            {track && <Badge tone={track} className="font-label">{TRACK_PILL[track]}</Badge>}
+            {chip && <Badge tone={chip.tone} size="pill">{chip.label}</Badge>}
             {state === "revisited" && (
-              <Badge tone="outline" className="font-label">
+              <Badge tone="outline" size="pill">
                 <RotateCcw aria-hidden />
                 Revisited
               </Badge>
             )}
-            {state === "quick" && <Badge tone="outline" className="font-label">Quick take</Badge>}
+            {state === "quick" && <Badge tone="outline" size="pill">Quick take</Badge>}
           </span>
         )}
         <h3

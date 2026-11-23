@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Game, Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { ReviewBodyContent } from "@/components/member/review-body";
 import {
@@ -73,8 +74,8 @@ export function ReviewReader({
             </Link>
             <small className="text-[0.82rem] text-dim-foreground">
               Reviewed{" "}
-              <time dateTime={review.created_at}>
-                {formatReviewDate(review.created_at)}
+              <time dateTime={reviewDate(review)}>
+                {formatReviewDate(reviewDate(review))}
               </time>
             </small>
           </div>

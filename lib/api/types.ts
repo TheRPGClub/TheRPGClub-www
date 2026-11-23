@@ -736,6 +736,9 @@ export interface Review {
   // The Published Revisions, oldest first (publish order). Only on the full
   // shape (GET /reviews/:id); the first take is the Review itself.
   revisions?: ReviewRevision[];
+  // Whether it has Published Revisions; on the list shapes, which don't
+  // carry `revisions`.
+  revised?: boolean;
   // The Draft Revision, for its author and Admins only; null otherwise.
   draft_revision?: ReviewRevision | null;
   // The per-category scorecard (story, music, combat...), or null for a review

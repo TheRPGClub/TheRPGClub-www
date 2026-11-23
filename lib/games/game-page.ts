@@ -14,7 +14,7 @@ import { paginationOf } from "@/lib/api/pagination";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { memberName } from "@/lib/achievements";
 import { draftOfGame } from "@/lib/reviews/drafts";
-import { DRAFTS_READ, fetchOwnDrafts } from "@/lib/reviews/drafts-read";
+import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
 import { isAdminOrAbove, isMemberOrStaff, isRegularOrStaff } from "@/lib/staff";
 
@@ -50,7 +50,7 @@ export async function loadGamePage(gameId: number) {
     // The viewer's own Draft of this game takes the compose prompt's place.
     // The listing has no game filter, so the page looks through the newest.
     Promise.all([featuresRead, sessionRead]).then(([f, s]) =>
-      f.shown("reviews") && s ? fetchOwnDrafts(s.principal.discord_id, { per: DRAFTS_READ }) : null,
+      f.shown("reviews") && s ? fetchOwnDrafts(s.principal.discord_id, { gameId, per: 5 }) : null,
     ),
   ]);
   if (!gameRes.ok) return null;

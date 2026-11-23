@@ -66,6 +66,7 @@ describe("savedAgo and autosaveLabel", () => {
   it("labels each state", () => {
     expect(autosaveLabel({ kind: "idle" }, now)).toBe("nothing new to save");
     expect(autosaveLabel({ kind: "saving" }, now)).toBe("saving");
+    expect(autosaveLabel({ kind: "refused" }, now)).toBe("not saved");
     expect(autosaveLabel({ kind: "saved", at: now }, now)).toBe("saved just now");
     expect(autosaveLabel({ kind: "failed", retryAt: now + 7_200 }, now)).toBe(
       "not saved · retrying in 8s",

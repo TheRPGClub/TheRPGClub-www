@@ -36,6 +36,7 @@ export function useDraftAutosave(target: DraftTarget | null, input: ReviewInput)
               ? await saveRevisionDraftAction(id, snapshot)
               : await saveDraftAction(id, snapshot);
           setError(result.ok ? null : (result.error ?? null));
+          if (!result.ok && result.refused) return "refused";
           return result.ok;
         } catch {
           setError(null);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import {
   ReviewerAvatar,
   formatReviewDate,
@@ -51,7 +52,7 @@ export function ReviewCardByline({
               {" · "}
             </>
           )}
-          <time dateTime={review.created_at}>{formatReviewDate(review.created_at)}</time>
+          <time dateTime={reviewDate(review)}>{formatReviewDate(reviewDate(review))}</time>
         </small>
       </div>
     </div>

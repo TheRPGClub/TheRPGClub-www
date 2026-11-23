@@ -17,6 +17,10 @@ export interface ActionResult<T> {
   // The API's error code, when it sent one (`score_locked`), so the form can
   // show a refusal in place rather than only as words.
   code?: string;
+  // The request was invalid (the form's own checks, or the API's 4xx), so
+  // sending it again unchanged would only be refused again. A Draft's
+  // autosave stops retrying on it; a dropped connection or a 5xx retries.
+  refused?: boolean;
 }
 
 // The API's error codes that have words of their own here.
@@ -34,13 +38,20 @@ async function errorMessage(response: Response): Promise<string> {
 
 // A refused request as an ActionResult: the words, and the API's code.
 async function failure(response: Response): Promise<ActionResult<never>> {
+  const refused =
+    response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429;
   try {
     const body = await response.json();
     const code = typeof body.error === "string" ? body.error : undefined;
-    if (code && ERROR_WORDS[code]) return { ok: false, error: ERROR_WORDS[code], code };
-    return { ok: false, error: body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`, code };
+    if (code && ERROR_WORDS[code]) return { ok: false, error: ERROR_WORDS[code], code, refused };
+    return {
+      ok: false,
+      error: body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`,
+      code,
+      refused,
+    };
   } catch {
-    return { ok: false, error: `Request failed (HTTP ${response.status}).` };
+    return { ok: false, error: `Request failed (HTTP ${response.status}).`, refused };
   }
 }
 
@@ -182,9 +193,13 @@ export async function updateReviewAction(
   const prepared = prepare(input);
   if (!prepared.ok) return { ok: false, error: prepared.error };
 
+  // The first take's own score goes as `original_rating`: a revisited
+  // Review reads back its current score in `rating`, and the API ignores a
+  // `rating` equal to it, so `rating` alone could never set the first take
+  // to the current score.
   const res = await apiFetch(`/api/v1/reviews/${reviewId}`, {
     method: "PATCH",
-    body: JSON.stringify({ data: prepared.payload }),
+    body: JSON.stringify({ data: { ...prepared.payload, original_rating: prepared.payload.rating } }),
   });
 
   // `score_locked` keeps its code: the editor locks the ruler on it.
@@ -228,13 +243,13 @@ export async function saveDraftAction(
   input: ReviewInput,
 ): Promise<ActionResult<Review>> {
   const prepared = prepare(input, { draft: true });
-  if (!prepared.ok) return { ok: false, error: prepared.error };
+  if (!prepared.ok) return { ok: false, error: prepared.error, refused: true };
 
   const res = await apiFetch(`/api/v1/reviews/${reviewId}`, {
     method: "PATCH",
     body: JSON.stringify({ data: prepared.payload }),
   });
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  if (!res.ok) return failure(res);
 
   const body = (await res.json()) as { data: Review };
   return { ok: true, data: body.data };
@@ -304,12 +319,12 @@ export async function saveRevisionDraftAction(
   input: ReviewInput,
 ): Promise<ActionResult<ReviewRevision>> {
   const prepared = prepare(input, { draft: true });
-  if (!prepared.ok) return { ok: false, error: prepared.error };
+  if (!prepared.ok) return { ok: false, error: prepared.error, refused: true };
   const res = await apiFetch(`/api/v1/review_revisions/${revisionId}`, {
     method: "PATCH",
     body: JSON.stringify({ data: prepared.payload }),
   });
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  if (!res.ok) return failure(res);
   const body = (await res.json()) as { data: ReviewRevision };
   return { ok: true, data: body.data };
 }

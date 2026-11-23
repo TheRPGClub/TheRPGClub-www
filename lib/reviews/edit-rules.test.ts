@@ -41,7 +41,7 @@ describe("isScoreLocked", () => {
 describe("scoreLockReason", () => {
   it("names the day it locked", () => {
     expect(scoreLockReason(at("2025-03-19T10:00:00Z"))).toBe(
-      "A score can change for 7 days after publishing. This one locked on 19 Mar 2025. A new score is a Revision.",
+      "A score can change for 7 days after publishing. This one locked on Mar 19, 2025. A new score is a Revision.",
     );
   });
 

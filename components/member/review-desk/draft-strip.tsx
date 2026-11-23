@@ -16,6 +16,7 @@ import { DeskStrip } from "./desk-strip";
 // Discard draft and Publish. Discard turns the strip into its question.
 export function DraftStrip({
   status,
+  error = null,
   onRetry,
   checks,
   onScore,
@@ -27,6 +28,8 @@ export function DraftStrip({
   revision = false,
 }: {
   status: AutosaveStatus;
+  // Why the last save didn't land, when the server (or the form) said.
+  error?: string | null;
   onRetry: () => void;
   checks: DraftChecklist;
   onScore: () => void;
@@ -82,6 +85,11 @@ export function DraftStrip({
               {revision ? "Publish revision" : "Publish review"}
             </Button>
           </span>
+          {error && (status.kind === "failed" || status.kind === "refused") && (
+            <p role="alert" className="m-0 flex-[1_1_100%] text-[0.86rem] text-destructive">
+              {error}
+            </p>
+          )}
         </div>
       )}
     </DeskStrip>

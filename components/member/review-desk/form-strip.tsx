@@ -3,6 +3,7 @@
 import type { ReviewFormState } from "@/hooks/use-review-form";
 import type { Review, ReviewRevision } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
+import { reviewDeleteNote, reviewTakes } from "@/lib/reviews/takes";
 import type { EarlierTake } from "./earlier-take-note";
 import { EditStrip } from "./edit-strip";
 import { FormDraftStrip } from "./form-draft-strip";
@@ -40,6 +41,7 @@ export function FormStrip({
       publishedAt={(revisionTake?.revision ?? existing).published_at}
       pending={form.pending}
       revision={revisionTake}
+      deleteNote={reviewDeleteNote(reviewTakes(existing))}
       rated={form.rating !== null}
       onCancel={onCancel}
       // Already confirmed on the strip; deleting is the same call a Draft's

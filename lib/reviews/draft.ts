@@ -74,6 +74,8 @@ export function autosaveLabel(status: AutosaveStatus, now: number): string {
       return "saving";
     case "saved":
       return `saved ${savedAgo(status.at, now)}`;
+    case "refused":
+      return "not saved";
     case "failed": {
       const seconds = Math.max(0, Math.ceil((status.retryAt - now) / 1000));
       return seconds > 0 ? `not saved · retrying in ${seconds}s` : "not saved · retrying";

@@ -29,6 +29,7 @@ export default async function YourDraftsPage({
   return (
     <YourDrafts
       read={read}
+      page={currentPage}
       badge={features.preview("reviews") && <PreviewBadge />}
       pagination={
         read && (

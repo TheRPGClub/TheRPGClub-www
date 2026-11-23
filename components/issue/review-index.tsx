@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import {
   ReviewerAvatar,
   ScoreBox,
@@ -48,7 +49,7 @@ export function ReviewIndex({
                 <small className="mt-1.5 flex items-center gap-1.5 text-[0.8rem] text-faint-foreground">
                   <ReviewerAvatar userId={review.user_id} name={name} size="xs" />
                   <span className="truncate">
-                    {name} · {formatReviewDate(review.created_at)}
+                    {name} · {formatReviewDate(reviewDate(review))}
                   </span>
                 </small>
               </span>
