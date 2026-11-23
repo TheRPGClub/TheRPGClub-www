@@ -10,14 +10,18 @@ import { DraftsTray } from "./drafts-tray";
 // tray, which would read as "you have none".
 export function YourDrafts({
   read,
+  page = 1,
   badge,
   pagination,
 }: {
   read: DraftsPage | null;
+  page?: number;
   badge?: ReactNode;
   pagination?: ReactNode;
 }) {
   const total = read?.total ?? 0;
+  // An old or hand-edited address past the last page.
+  const pastEnd = read !== null && read.drafts.length === 0 && page > 1;
   return (
     <div className="space-y-[26px] pb-10">
       <PageHeader
@@ -35,9 +39,9 @@ export function YourDrafts({
           Your drafts couldn&apos;t be loaded right now.
         </p>
       ) : (
-        <DraftsTray drafts={read.drafts} now={read.now} />
+        <DraftsTray drafts={read.drafts} now={read.now} pastEndHref={pastEnd ? "/reviews/drafts" : undefined} />
       )}
-      {pagination}
+      {!pastEnd && pagination}
     </div>
   );
 }
