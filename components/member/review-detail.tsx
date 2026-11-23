@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import type { Review } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import type { ReviewDeskGame } from "@/components/member/review-desk/desk-game";
+import { reviewHref } from "@/lib/reviews/href";
 
 // Same reasoning as the game page's list: the editor is the heaviest thing
 // here and most readers never open it.
@@ -53,7 +54,7 @@ export function ReviewDetail({
   children,
 }: ReviewDetailProps) {
   const router = useRouter();
-  const readView = `/games/${gameId}/reviews/${review.review_id}`;
+  const readView = reviewHref(review.review_id);
 
   if (canEdit && startEditing) {
     return (

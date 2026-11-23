@@ -8,6 +8,7 @@ import {
 } from "@/components/issue/review-meta";
 import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { ButtonLink } from "@/components/ui/button";
+import { reviewHref } from "@/lib/reviews/href";
 
 // "More from the club": the game's other reviews as small cards, then the way
 // back to the reviews list and the game. Closes a review's page.
@@ -42,7 +43,7 @@ export function ReviewMore({
               return (
                 <li key={review.review_id}>
                   <Link
-                    href={`/games/${gameId}/reviews/${review.review_id}`}
+                    href={reviewHref(review.review_id)}
                     className="group/mc flex h-full flex-col gap-2.5 rounded-md bg-card p-4 ring-1 ring-border transition-shadow ring-inset hover:ring-faint-foreground"
                   >
                     <span className="flex items-center gap-2.5">

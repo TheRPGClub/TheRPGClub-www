@@ -4,6 +4,7 @@ import { MAX_RATING } from "@/lib/api/rating";
 import { reviewBodyText } from "@/lib/api/review-body";
 import { MemberCover } from "@/components/issue/member-cover";
 import { shortDate } from "@/lib/members/member-lists";
+import { reviewHref } from "@/lib/reviews/href";
 
 // The profile's latest reviews as magazine rows: the game's cover, "On
 // <game>", the review's headline and opening lines, and the score set big on
@@ -22,7 +23,7 @@ export function MemberReviewRows({ reviews }: { reviews: Review[] }) {
 function ReviewRow({ review }: { review: Review }) {
   const game = review.game;
   const gameTitle = game?.title ?? "Unknown game";
-  const href = `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
+  const href = reviewHref(review.review_id);
   const text = reviewBodyText(review.body);
   // Most reviews have no headline; those lead with the game's title.
   const headline = review.title?.trim() || null;
