@@ -12,6 +12,7 @@ import type { ReviewDeskGame } from "./review-desk/desk-game";
 import { QuickSheet } from "./review-desk/quick-sheet";
 import { FormStrip } from "./review-desk/form-strip";
 import { ReviewDesk } from "./review-desk/review-desk";
+import { QuickNotes } from "./review-desk/quick-notes";
 
 export interface ReviewFormProps {
   userId: string;
@@ -144,18 +145,7 @@ export function ReviewForm({
           form={form}
           accent={accent}
           footer={footer}
-          note={
-            facets && (
-              // Says the scorecard is still there and where to change it.
-              // Without this the categories simply vanish from the form,
-              // which reads like the save is about to drop them.
-              <p className="text-xs text-faint-foreground">
-                Scored on {facets.order.length}{" "}
-                {facets.order.length === 1 ? "category" : "categories"}, kept as
-                they are. Open the full review editor to change them.
-              </p>
-            )
-          }
+          note={<QuickNotes existing={existing} facets={facets} />}
         />
       )}
     </form>

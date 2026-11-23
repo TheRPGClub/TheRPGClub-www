@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { ReviewRevision } from "@/lib/api/types";
 import {
   headlineTitle,
+  isRevisited,
   revisedCount,
   reviewDeleteNote,
   reviewTakes,
@@ -105,5 +106,15 @@ describe("the page's words", () => {
   it("says what deleting the Review takes", () => {
     expect(reviewDeleteNote(takes)).toBe("Every take goes with it, all 2 Revisions included.");
     expect(reviewDeleteNote(takes.slice(0, 1))).toBe("Every member loses it, score and all.");
+  });
+});
+
+describe("isRevisited", () => {
+  it("reads the lists' revised flag, else the full shape's Revisions", () => {
+    expect(isRevisited({ revised: true })).toBe(true);
+    expect(isRevisited({ revised: false })).toBe(false);
+    expect(isRevisited({ revisions: [{ published_at: "2026-11-01T00:00:00Z" } as ReviewRevision] })).toBe(true);
+    expect(isRevisited({ revisions: [] })).toBe(false);
+    expect(isRevisited({})).toBe(false);
   });
 });
