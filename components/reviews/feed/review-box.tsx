@@ -52,14 +52,14 @@ export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
       >
         {(track || state) && (
           <span className="order-2 col-span-2 inline-flex max-w-full flex-nowrap gap-1.5 @lg:order-none">
-            {track && <Badge tone={track} className="font-label">{TRACK_PILL[track]}</Badge>}
+            {track && <Badge tone={track} size="pill">{TRACK_PILL[track]}</Badge>}
             {state === "revisited" && (
-              <Badge tone="outline" className="font-label">
+              <Badge tone="outline" size="pill">
                 <RotateCcw aria-hidden />
                 Revisited
               </Badge>
             )}
-            {state === "quick" && <Badge tone="outline" className="font-label">Quick take</Badge>}
+            {state === "quick" && <Badge tone="outline" size="pill">Quick take</Badge>}
           </span>
         )}
         <h3

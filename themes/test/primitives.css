@@ -397,6 +397,10 @@
                 font-family: var(--typeface-display);
                 text-decoration: underline wavy;
             }
+            &[data-size="pill"] {
+                font-family: var(--typeface-display);
+                text-decoration: underline dotted;
+            }
         }
         [data-slot="input"] {
             background-color: var(--card);
