@@ -21,12 +21,15 @@ export function GameHero({
   stats,
   releaseDate,
   badge,
+  action,
 }: {
   game: Game;
   stats: GameHeroStat[];
   releaseDate: string | null;
   // Leads the chip row, e.g. the staff "Preview" badge.
   badge?: ReactNode;
+  // A staff action at the hero's top-right (the game page's Edit game).
+  action?: ReactNode;
 }) {
   const track = gameTrack(game);
   const art = game.art_url;
@@ -63,7 +66,10 @@ export function GameHero({
         <Starburst
           track={track}
           rotate={8}
-          className="absolute top-14 right-3 z-10 size-28 md:top-7.5 md:right-11 md:size-42"
+          className={cn(
+            "absolute top-14 right-3 z-10 size-28 md:right-11 md:size-42",
+            action ? "md:top-18" : "md:top-7.5",
+          )}
           textClassName={
             track === "gotm"
               ? "text-[0.95rem] md:text-[1.45rem]"
@@ -71,6 +77,8 @@ export function GameHero({
           }
         />
       )}
+
+      {action && <div className="absolute top-3 right-4 z-20 sm:right-7 md:top-4.5 md:right-8">{action}</div>}
 
       <div
         className={cn(

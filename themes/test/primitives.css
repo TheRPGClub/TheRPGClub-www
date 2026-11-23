@@ -1921,6 +1921,13 @@
             box-shadow: 3px 3px 0 var(--foreground);
         }
 
+        /* www#157: the Game Edit page's staged field. */
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="staged"] {
+            border-color: var(--highlight);
+            box-shadow: 3px 3px 0 var(--highlight);
+        }
+
+
         /* www#100: journals, giveaways and the Feature switches. */
         [data-slot="switch"][data-variant="labelled"] {
             background-color: var(--gotm);

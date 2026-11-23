@@ -83,12 +83,13 @@ export interface EditOutcome<M extends SectionMap<M>> {
 
 const UNREACHABLE = "Couldn't reach the club's server. Try again.";
 
-// "4 saved, 1 failed: Releases", or "2 saved".
+// "4 saved, 1 failed: Releases", "1 failed: Releases", or "2 saved".
 export function saveSummary(outcome: { sections: { label: string; status: string }[] }): string {
   const failed = outcome.sections.filter((s) => s.status === "failed");
   const saved = outcome.sections.length - failed.length;
   if (failed.length === 0) return `${saved} saved`;
-  return `${saved} saved, ${failed.length} failed: ${failed.map((s) => s.label).join(", ")}`;
+  const names = failed.map((s) => s.label).join(", ");
+  return saved === 0 ? `${failed.length} failed: ${names}` : `${saved} saved, ${failed.length} failed: ${names}`;
 }
 
 export function createGameEditSave<M extends SectionMap<M>>(sections: EditSections<M>, order: Keys<M>[]) {

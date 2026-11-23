@@ -1,3 +1,4 @@
+import { Pencil } from "lucide-react";
 import type { Game } from "@/lib/api/types";
 import type { FeatureView } from "@/lib/features";
 import {
@@ -9,6 +10,7 @@ import {
 import { formatReleaseDate } from "@/lib/games/game-page";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { GameHero } from "@/components/issue/game-hero";
+import { ButtonLink } from "@/components/ui/button";
 
 // The game page's hero: the cover story with the club's numbers (only the
 // counts of Features this viewer is shown) and the release date.
@@ -16,11 +18,14 @@ export function GamePageHero({
   game,
   reviewTotal,
   features,
+  canEdit,
 }: {
   game: Game;
   // Null when Reviews aren't shown or couldn't be read.
   reviewTotal: number | null;
   features: FeatureView;
+  // The viewer may open the Game Edit page (Admins, Regulars and staff).
+  canEdit: boolean;
 }) {
   const stats = countStats(
     shownCounts(countsOf(game, reviewTotal), features),
@@ -36,6 +41,14 @@ export function GamePageHero({
           : null
       }
       badge={features.preview("game_index") && <PreviewBadge />}
+      action={
+        canEdit && (
+          <ButtonLink href={`/games/${game.game_id}/edit`} variant="overlay">
+            <Pencil aria-hidden />
+            Edit game
+          </ButtonLink>
+        )
+      }
     />
   );
 }

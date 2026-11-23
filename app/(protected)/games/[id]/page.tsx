@@ -63,7 +63,7 @@ async function GameContent({
   return (
     <DetailTemplate
       className="pb-8"
-      hero={<GamePageHero game={game} reviewTotal={reviewTotal} features={features} />}
+      hero={<GamePageHero game={game} reviewTotal={reviewTotal} features={features} canEdit={gates.canEdit} />}
     >
       {/* A live read: streams in separately, never holding up the hero. */}
       {show.ballot && (

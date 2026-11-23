@@ -123,6 +123,7 @@ describe("game edit save", () => {
     expect(calls).toEqual([]);
     expect(outcome.sections).toEqual([{ key: "notes", label: "Notes", status: "failed", error: "A note can't be blank." }]);
     expect(outcome.staged).toEqual({ notes: ["a", ""] });
+    expect(saveSummary(outcome)).toBe("1 failed: Notes");
   });
 
   it("plans only the threads gate's sections for a Regular", async () => {

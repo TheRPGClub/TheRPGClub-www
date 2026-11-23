@@ -1317,6 +1317,13 @@
             @apply bg-background;
         }
 
+        /* www#157: the Game Edit page. A field holding an edit not saved
+           yet keeps the field's look, ringed in yellow. */
+        :is([data-slot="textarea"], [data-slot="input"])[data-variant="staged"] {
+            @apply border-highlight ring-3 ring-highlight/16 focus-visible:border-highlight focus-visible:ring-highlight/30;
+        }
+
+
         /* www#100: journals, giveaways and the Feature switches. */
         /* The settings switch, its state spelled out in a label beside it:
            the label draws the focus ring around both and passes its hover
