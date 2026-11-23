@@ -26,7 +26,10 @@ export interface ReviewFeedEntry {
   edited_at?: string | null;
   created_at: string;
   user?: Pick<User, "user_id" | "username" | "global_name"> | null;
-  game?: Pick<Game, "game_id" | "title" | "cover_url" | "gotm_won" | "nr_gotm_won"> | null;
+  game?: Pick<
+    Game,
+    "game_id" | "title" | "cover_url" | "gotm_won" | "nr_gotm_won" | "gotm_month_year" | "nr_gotm_month_year"
+  > | null;
 }
 
 export interface FeedQuery {
@@ -157,7 +160,6 @@ export function feedTrack(entry: ReviewFeedEntry): FeedTrack {
   return null;
 }
 
-export const TRACK_PILL: Record<"gotm" | "nr", string> = { gotm: "GOTM", nr: "NR-GOTM" };
 
 // The state pill after the track pill: a Revision is Revisited, a score-only
 // take is a Quick take, a written Review has none.

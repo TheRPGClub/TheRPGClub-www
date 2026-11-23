@@ -1,6 +1,6 @@
 import { Clock3, RotateCcw } from "lucide-react";
 
-import { gameTrack } from "@/components/issue/game-track";
+import { trackChips } from "@/components/issue/game-track";
 import type { Game } from "@/lib/api/types";
 import { draftFirstLine, draftStateLabel, lastTouched, touchedAt } from "@/lib/reviews/drafts";
 import { cn } from "@/lib/utils";
@@ -38,9 +38,9 @@ export function DraftScoreBox({ rating, size = "md" }: { rating: number | null; 
   );
 }
 
-const TRACK_PILL = {
-  gotm: { label: "GOTM", className: "bg-gotm text-gotm-foreground" },
-  nr_gotm: { label: "NR-GOTM", className: "bg-nr text-nr-foreground" },
+const TRACK_INK = {
+  gotm: "bg-gotm text-gotm-foreground",
+  nr: "bg-nr text-nr-foreground",
 } as const;
 
 // The pill row: the game's track pill (when it won one), then the state pill
@@ -50,20 +50,17 @@ export function DraftPills({
   kind = "review",
   previousRating = null,
 }: {
-  game?: Pick<Game, "gotm_won" | "nr_gotm_won"> | null;
+  game?: Pick<Game, "gotm_won" | "nr_gotm_won" | "gotm_month_year" | "nr_gotm_month_year"> | null;
   kind?: ReviewDraftEntry["kind"];
   // A Draft Revision's "was 72".
   previousRating?: number | null;
 }) {
-  const track = gameTrack(game);
+  // "GOTM · Nov 2024": the track pill, with the month it won.
+  const chip = game ? trackChips(game, { short: true, shortMonth: true })[0] : undefined;
   const pill = "font-label inline-flex h-[21px] items-center text-[0.72rem] font-extrabold whitespace-nowrap";
   return (
     <span className="inline-flex shrink-0 items-center gap-1.5">
-      {track && (
-        <span className={cn(pill, "rounded-xs px-[7px]", TRACK_PILL[track].className)}>
-          {TRACK_PILL[track].label}
-        </span>
-      )}
+      {chip && <span className={cn(pill, "rounded-xs px-[7px]", TRACK_INK[chip.tone])}>{chip.label}</span>}
       <span
         className={cn(
           pill,

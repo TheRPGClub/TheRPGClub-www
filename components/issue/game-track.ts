@@ -24,24 +24,22 @@ export function trackAccentText(track: GameTrack | null): string {
 // tone is the track's Badge tone.
 export function trackChips(
   game: Pick<Game, "gotm_won" | "nr_gotm_won" | "gotm_month_year" | "nr_gotm_month_year">,
-  { short = false }: { short?: boolean } = {},
+  { short = false, shortMonth = false }: { short?: boolean; shortMonth?: boolean } = {},
 ): { tone: "gotm" | "nr"; label: string }[] {
   const chips: { tone: "gotm" | "nr"; label: string }[] = [];
+  const label = (name: string, month: string | null | undefined) =>
+    month ? `${name} · ${shortMonth ? shortMonthYear(month) : month}` : name;
   if (game.gotm_won) {
-    const name = short ? "GOTM" : "Game of the Month";
-    chips.push({
-      tone: "gotm",
-      label: game.gotm_month_year ? `${name} · ${game.gotm_month_year}` : name,
-    });
+    chips.push({ tone: "gotm", label: label(short ? "GOTM" : "Game of the Month", game.gotm_month_year) });
   }
   if (game.nr_gotm_won) {
-    const name = short ? "NR-GOTM" : "Non-RPG Game of the Month";
-    chips.push({
-      tone: "nr",
-      label: game.nr_gotm_month_year
-        ? `${name} · ${game.nr_gotm_month_year}`
-        : name,
-    });
+    chips.push({ tone: "nr", label: label(short ? "NR-GOTM" : "Non-RPG Game of the Month", game.nr_gotm_month_year) });
   }
   return chips;
+}
+
+// "November 2024" as "Nov 2024", for a pill; anything else as it is.
+function shortMonthYear(monthYear: string): string {
+  const match = /^([A-Za-z]{3})[A-Za-z]* (\d{4})$/.exec(monthYear.trim());
+  return match ? `${match[1]} ${match[2]}` : monthYear;
 }
