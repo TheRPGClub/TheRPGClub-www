@@ -191,6 +191,13 @@ export function useReviewForm({
       setError("Give it an overall score before publishing.");
       return;
     }
+    // Before the flush, so a weighting that doesn't add up says so rather
+    // than reading as a save that didn't land.
+    const budgetError = weightsError(facets);
+    if (budgetError) {
+      setError(budgetError);
+      return;
+    }
     startTransition(async () => {
       if (!(await autosave.flush())) {
         setError("Couldn't save the latest changes, so nothing was published. Try again.");

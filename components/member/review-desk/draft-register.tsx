@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 
 // The autosave's register square at the head of the Draft strip: hollow
 // (nothing new), half inked (saving), solid (saved), dashed (the save failed
-// and is waiting to try again, with Retry now beside it).
+// and is waiting to try again, with Retry now beside it; or it was refused,
+// and waits for the next change).
 export function DraftRegister({
   status,
   onRetry,
@@ -21,7 +22,7 @@ export function DraftRegister({
   label?: string;
 }) {
   const now = useNow(status.kind === "failed" ? 1000 : 30_000);
-  const failed = status.kind === "failed";
+  const failed = status.kind === "failed" || status.kind === "refused";
 
   return (
     <span className="flex min-w-0 items-center gap-2.5">
@@ -45,7 +46,7 @@ export function DraftRegister({
           · {autosaveLabel(status, now)}
         </span>
       </span>
-      {failed && (
+      {status.kind === "failed" && (
         <Button type="button" variant="pencil" size="inline" onClick={onRetry}>
           Retry now
         </Button>

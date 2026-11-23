@@ -3,6 +3,9 @@
 // the latest snapshot is saved. One save runs at a time; a change made while
 // one is in flight is saved straight after it. A failed save keeps the
 // snapshot and tries again after a longer wait, or at once on "Retry now".
+// A refused one (the server, or the form's own checks, said the snapshot is
+// invalid) keeps it unsaved but never retries on its own: the same snapshot
+// would only be refused again, so it waits for the next change.
 
 export type AutosaveStatus =
   // Nothing new since the page opened.
@@ -11,11 +14,15 @@ export type AutosaveStatus =
   | { kind: "saving" }
   | { kind: "saved"; at: number }
   // The last save failed; the next try is at `retryAt` (epoch ms).
-  | { kind: "failed"; retryAt: number };
+  | { kind: "failed"; retryAt: number }
+  // The last save was refused as invalid; the next change saves again.
+  | { kind: "refused" };
 
 export interface AutosaveOptions<T> {
-  // Resolves true when the server took it. A throw counts as a failure.
-  save: (snapshot: T) => Promise<boolean>;
+  // Resolves true when the server took it, false when it couldn't be
+  // reached (retried), "refused" when it was invalid (not retried). A throw
+  // counts as a failure.
+  save: (snapshot: T) => Promise<boolean | "refused">;
   onStatus: (status: AutosaveStatus) => void;
   // How long the writer must pause before a save.
   delayMs?: number;
@@ -47,7 +54,7 @@ export function createAutosave<T>({
 }: AutosaveOptions<T>): Autosave<T> {
   let pending: { snapshot: T } | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
-  let inFlight: Promise<boolean> | null = null;
+  let inFlight: Promise<boolean | "refused"> | null = null;
   let disposed = false;
 
   const clearTimer = () => {
@@ -74,19 +81,29 @@ export function createAutosave<T>({
     pending = null;
     onStatus({ kind: "saving" });
 
-    let ok = false;
+    let result: boolean | "refused" = false;
     inFlight = save(snapshot).then(
-      (result) => result,
+      (outcome) => outcome,
       () => false,
     );
     try {
-      ok = await inFlight;
+      result = await inFlight;
     } finally {
       inFlight = null;
     }
-    if (disposed) return ok;
+    if (disposed) return result === true;
 
-    if (!ok) {
+    if (result === "refused") {
+      // A newer snapshot may fix it: save that one after the usual pause.
+      if (pending) {
+        schedule(delayMs);
+        return false;
+      }
+      pending = { snapshot };
+      onStatus({ kind: "refused" });
+      return false;
+    }
+    if (!result) {
       // Keep the snapshot unless a newer one has already replaced it.
       pending ??= { snapshot };
       onStatus({ kind: "failed", retryAt: now() + retryMs });
