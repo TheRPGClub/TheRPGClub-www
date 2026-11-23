@@ -124,6 +124,11 @@ const buttonVariants = cva(
         // An action printed on a poster proof (open the live event's
         // thread): a paper block on the art, yellow on hover.
         poster: "",
+        // www#148: the review desk's Draft.
+        // A pencilled line that is also an action (the Draft strip's
+        // missing score, its Retry now): the desk's yellow pencil, in its
+        // own italic hand, underlined on hover. Pair with size="inline".
+        pencil: "",
         // www#100: journals, giveaways and the Feature switches.
         // An icon tool on the yellow panel (show the key being donated).
         "inverse-ghost": "focus-visible:ring-background/30",

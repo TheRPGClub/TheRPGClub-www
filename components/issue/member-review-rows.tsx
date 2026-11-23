@@ -28,7 +28,9 @@ function ReviewRow({ review }: { review: Review }) {
   // Most reviews have no headline; those lead with the game's title.
   const headline = review.title?.trim() || null;
   const when = shortDate(review.created_at);
-  const score = Math.max(0, Math.min(MAX_RATING, review.rating));
+  // A member's list is Published Reviews only, and a Published Review always
+  // has a score; the fallback only satisfies the Draft-wide type.
+  const score = Math.max(0, Math.min(MAX_RATING, review.rating ?? 0));
 
   return (
     <article className="grid grid-cols-[3.75rem_1fr] items-start gap-x-4.5 gap-y-2 border-b border-border py-4.5 sm:grid-cols-[5.125rem_1fr_auto]">

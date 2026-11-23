@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 import type { Review } from "@/lib/api/types";
+import { isDraft } from "@/lib/reviews/draft";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import type { ReviewDeskGame } from "@/components/member/review-desk/desk-game";
 import { reviewHref } from "@/lib/reviews/href";
@@ -57,6 +58,7 @@ export function ReviewDetail({
   const readView = reviewHref(review.review_id);
 
   if (canEdit && startEditing) {
+    const draft = isDraft(review);
     return (
       <ReviewForm
         userId={review.user_id}
@@ -67,9 +69,15 @@ export function ReviewDetail({
         showDelete
         onCancel={() => router.replace(readView, { scroll: false })}
         onSaved={() => router.replace(readView, { scroll: false })}
+        // Published: the read view, now with the page's own banner. Refresh
+        // too, as the page above the editor was rendered for a Draft.
+        onPublished={() => {
+          router.replace(readView);
+          router.refresh();
+        }}
         // The review this page is about is gone, so there is nothing to come
-        // back to.
-        onDeleted={() => router.replace(`/games/${gameId}/reviews`)}
+        // back to. A discarded Draft goes back to its game.
+        onDeleted={() => router.replace(draft ? `/games/${gameId}` : `/games/${gameId}/reviews`)}
       />
     );
   }

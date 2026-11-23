@@ -10,6 +10,8 @@ import type { ReviewFormState } from "@/hooks/use-review-form";
 import { cn } from "@/lib/utils";
 import { CropMarks } from "./crop-marks";
 import type { ReviewDeskGame } from "./desk-game";
+import { DogEar } from "./dog-ear";
+import { PencilNote } from "./pencil-note";
 import { SheetBanner } from "./sheet-banner";
 import { REVIEW_STORY } from "./story";
 
@@ -18,13 +20,23 @@ import { REVIEW_STORY } from "./story";
 // story. The sheet stretches to the height of the notes beside it, and the
 // space under a short story is the rest of a lined page that takes a click
 // as "carry on writing".
+//
+// A Draft is written in the desk's yellow pencil: a pencilled line above the
+// sheet says so, the crop marks are dashed in pencil and the sheet's corner
+// is turned down.
 export function ReviewSheet({ form, game }: { form: ReviewFormState; game?: ReviewDeskGame }) {
   return (
     <section
-      aria-label="Your review"
+      aria-label={form.draft ? "Your draft" : "Your review"}
       className="relative flex flex-col bg-card pb-6 shadow-[0_18px_40px_rgb(0_0_0/0.5)]"
     >
-      <CropMarks />
+      <CropMarks pencil={form.draft} />
+      {form.draft && (
+        <>
+          <PencilNote>Draft · only you can see it</PencilNote>
+          <DogEar />
+        </>
+      )}
       <RichTextProvider
         schema={REVIEW_SCHEMA}
         initialValue={form.initialValue}

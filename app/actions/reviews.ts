@@ -16,9 +16,15 @@ export interface ActionResult<T> {
   error?: string;
 }
 
+// The API's error codes that have words of their own here.
+const ERROR_WORDS: Record<string, string> = {
+  rating_required: "Give it an overall score before publishing.",
+};
+
 async function errorMessage(response: Response): Promise<string> {
   try {
     const body = await response.json();
+    if (typeof body.error === "string" && ERROR_WORDS[body.error]) return ERROR_WORDS[body.error];
     return body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`;
   } catch {
     return `Request failed (HTTP ${response.status}).`;
@@ -31,8 +37,8 @@ export interface ReviewInput {
   // don't have one.
   title?: unknown;
   // Integer 0..100, matching the column's own scale and CHECK constraint.
-  // Required — the column is NOT NULL.
-  rating: number;
+  // Null only on a Draft that has no score yet: publishing needs one.
+  rating: number | null;
   // A Plate value from the editor. Typed `unknown` on purpose: this crosses
   // the server action boundary, so it is untrusted JSON until
   // `sanitizeReviewValue` has vetted it.
@@ -41,7 +47,6 @@ export interface ReviewInput {
   // scorecard with no facets on it) is a quick take, which is what every
   // review written before the scorecard existed already is.
   facets?: unknown;
-  is_shared?: boolean;
 }
 
 function sentWeights(facets: unknown): boolean {
@@ -60,8 +65,11 @@ type Prepared =
 // Validation and payload building are one step because both need the
 // sanitized value, and sanitizing twice risks the two disagreeing about what
 // gets stored versus what got measured.
-function prepare(input: ReviewInput): Prepared {
-  if (!isValidRating(input.rating)) {
+//
+// `draft` lets the score be empty: a Draft may have none until it is published.
+function prepare(input: ReviewInput, { draft = false } = {}): Prepared {
+  const unrated = draft && input.rating === null;
+  if (!unrated && !isValidRating(input.rating)) {
     return {
       ok: false,
       error: `Pick a rating between ${MIN_RATING} and ${MAX_RATING}.`,
@@ -115,17 +123,20 @@ function prepare(input: ReviewInput): Prepared {
       // Unknown facets and out-of-range scores are dropped here rather than
       // trusted; the API validates the same shape again on its side.
       facets,
-      is_shared: input.is_shared ?? true,
     },
   };
 }
 
+// Writes a new Review. `publish` is the game page's quick take, created and
+// published in one call; without it the Review starts as a Draft (the full
+// editor's), which may have no score yet.
 export async function createReviewAction(
   userId: string,
   gameId: number,
   input: ReviewInput,
+  { publish }: { publish: boolean },
 ): Promise<ActionResult<Review>> {
-  const prepared = prepare(input);
+  const prepared = prepare(input, { draft: !publish });
   if (!prepared.ok) return { ok: false, error: prepared.error };
 
   const res = await apiFetch(`/api/v1/users/${userId}/reviews`, {
@@ -134,6 +145,7 @@ export async function createReviewAction(
       data: {
         gamedb_game_id: gameId,
         ...prepared.payload,
+        publish,
       },
     }),
   });
@@ -189,4 +201,46 @@ export async function deleteReviewAction(
   revalidatePath(`/games/${gameId}`);
   revalidatePath(`/games/${gameId}/reviews`);
   return { ok: true, data: null };
+}
+
+// The Draft's autosave. Nothing is revalidated: a Draft shows nowhere but its
+// own editor, and refreshing the page mid-sentence would fight the writer.
+export async function saveDraftAction(
+  reviewId: number,
+  input: ReviewInput,
+): Promise<ActionResult<Review>> {
+  const prepared = prepare(input, { draft: true });
+  if (!prepared.ok) return { ok: false, error: prepared.error };
+
+  const res = await apiFetch(`/api/v1/reviews/${reviewId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ data: prepared.payload }),
+  });
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+
+  const body = (await res.json()) as { data: Review };
+  return { ok: true, data: body.data };
+}
+
+// Publishes a Draft. The API refuses one with no score (`rating_required`);
+// the editor never offers Publish without one, so that refusal only comes
+// from a stale page.
+export async function publishReviewAction(
+  userId: string,
+  reviewId: number,
+  gameId: number,
+): Promise<ActionResult<Review>> {
+  const res = await apiFetch(`/api/v1/reviews/${reviewId}/publish`, {
+    method: "POST",
+  });
+  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+
+  const body = (await res.json()) as { data: Review };
+  revalidatePath(`/members/${userId}`);
+  revalidatePath(`/members/${userId}/reviews`);
+  revalidatePath(`/games/${gameId}`);
+  revalidatePath(`/games/${gameId}/reviews`);
+  revalidatePath("/reviews");
+  revalidatePath(reviewHref(reviewId));
+  return { ok: true, data: body.data };
 }

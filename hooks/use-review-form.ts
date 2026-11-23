@@ -7,9 +7,12 @@ import type { Value } from "platejs";
 import {
   createReviewAction,
   deleteReviewAction,
+  publishReviewAction,
   updateReviewAction,
   type ActionResult,
 } from "@/app/actions/reviews";
+import { useDraftAutosave } from "@/hooks/use-draft-autosave";
+import { isDraft } from "@/lib/reviews/draft";
 import type { Review } from "@/lib/api/types";
 import { reviewBodyValue } from "@/lib/api/review-body";
 import { emptyRichTextValue } from "@/lib/rich-text/text";
@@ -22,7 +25,10 @@ import {
 
 /**
  * A review as it is written: its title, rating, body and scorecard, and
- * saving or deleting it.
+ * saving or deleting it. A Draft saves itself as it is written and leaves by
+ * Publish or Discard; a Published Review saves when asked; a new one from the
+ * game page is the quick take, published as it is posted, or becomes a Draft
+ * when it moves to the full editor.
  */
 export function useReviewForm({
   userId,
@@ -60,6 +66,13 @@ export function useReviewForm({
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const draft = existing ? isDraft(existing) : false;
+  const autosave = useDraftAutosave(draft && existing ? existing.review_id : null, {
+    title,
+    rating,
+    body,
+    facets,
+  });
 
   // `then` runs only on a successful save, which is how the transfer button
   // avoids navigating away from an edit the server rejected.
@@ -81,13 +94,75 @@ export function useReviewForm({
     startTransition(async () => {
       const result: ActionResult<Review> = existing
         ? await updateReviewAction(userId, existing.review_id, gameId, payload)
-        : await createReviewAction(userId, gameId, payload);
+        : await createReviewAction(userId, gameId, payload, { publish: true });
 
       if (!result.ok) {
         setError(result.error ?? "Failed to save review.");
         return;
       }
       if (result.data) then(result.data);
+    });
+  };
+
+  // The move from the game page's small editor to the full one, for a review
+  // not yet written: it becomes a Draft there, so it needs no score yet.
+  const startDraft = (then: (review: Review) => void) => {
+    setError(null);
+    const budgetError = weightsError(facets);
+    if (budgetError) {
+      setError(budgetError);
+      return;
+    }
+    startTransition(async () => {
+      const result = await createReviewAction(
+        userId,
+        gameId,
+        { title, rating, body, facets },
+        { publish: false },
+      );
+      if (!result.ok) {
+        setError(result.error ?? "Couldn't start the draft.");
+        return;
+      }
+      if (result.data) then(result.data);
+    });
+  };
+
+  // A Draft's Publish: whatever autosave still holds goes first, so what is
+  // published is what is on the sheet.
+  const publish = (then: (review: Review) => void) => {
+    if (!existing) return;
+    setError(null);
+    if (rating === null) {
+      setError("Give it an overall score before publishing.");
+      return;
+    }
+    startTransition(async () => {
+      if (!(await autosave.flush())) {
+        setError("Couldn't save the latest changes, so nothing was published. Try again.");
+        return;
+      }
+      const result = await publishReviewAction(userId, existing.review_id, gameId);
+      if (!result.ok) {
+        setError(result.error ?? "Failed to publish.");
+        return;
+      }
+      if (result.data) then(result.data);
+    });
+  };
+
+  // A Draft's Discard, already confirmed on the strip.
+  const discard = () => {
+    if (!existing) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await deleteReviewAction(userId, existing.review_id, gameId);
+      if (!result.ok) {
+        setError(result.error ?? "Failed to discard.");
+        return;
+      }
+      autosave.stop();
+      onDeleted?.();
     });
   };
 
@@ -124,6 +199,11 @@ export function useReviewForm({
     pending,
     save,
     remove,
+    draft,
+    autosave,
+    startDraft,
+    publish,
+    discard,
     refresh: () => router.refresh(),
   };
 }
