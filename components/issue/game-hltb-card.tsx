@@ -5,11 +5,11 @@ import { lookupHltbAction } from "@/app/actions/hltb";
 import type { Hltb, HltbLookupFailure } from "@/lib/hltb";
 import { Badge } from "@/components/ui/badge";
 import { Empty, Failure } from "@/components/issue/game-hltb-card-empty";
-import { LookingUp, Times } from "@/components/issue/game-hltb-card-times";
+import { HltbReload, LookingUp, Times } from "@/components/issue/game-hltb-card-times";
 
 // The game page rail's "Time to beat" card: HowLongToBeat's hours, one bar
-// per play style on a shared scale. With no saved times it offers the
-// lookup; opening the page never looks anything up.
+// per play style on a shared scale. Members look the times up with the
+// reload icon at the heading's end; opening the page never looks anything up.
 
 type CardState =
   | { kind: "times"; hltb: Hltb; saved: boolean; fresh: boolean }
@@ -66,19 +66,18 @@ export function GameHltbCard({
       aria-labelledby="game-hltb"
       className="rounded-sm bg-card px-4.5 pt-4 pb-3.5"
     >
-      <div className="mb-3 flex items-baseline justify-between gap-3 border-b-2 border-border-strong pb-2">
+      <div className="mb-3 flex items-center justify-between gap-3 border-b-2 border-border-strong pb-2">
         <h2 id="game-hltb" className="font-headline text-[1.4rem] leading-none">
           Time to beat
         </h2>
-        {notSaved ? (
-          <Badge tone="status" className="border-0">
-            Not saved
-          </Badge>
-        ) : (
-          <span className="font-label text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground">
-            Hours
-          </span>
-        )}
+        <span className="flex items-center gap-1.5">
+          {notSaved && (
+            <Badge tone="status" className="border-0">
+              Not saved
+            </Badge>
+          )}
+          {canLookUp && <HltbReload pending={pending} onClick={lookUp} />}
+        </span>
       </div>
 
       <div aria-live="polite" aria-busy={pending}>
@@ -99,11 +98,7 @@ export function GameHltbCard({
             onRetry={canLookUp ? lookUp : undefined}
           />
         ) : (
-          <Empty
-            unloaded={state.kind === "unloaded"}
-            canLookUp={canLookUp}
-            onLookUp={lookUp}
-          />
+          <Empty unloaded={state.kind === "unloaded"} canLookUp={canLookUp} />
         )}
       </div>
     </section>

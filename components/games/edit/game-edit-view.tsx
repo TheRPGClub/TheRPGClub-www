@@ -41,7 +41,7 @@ export function GameEditView(p: GameEditViewProps) {
 
   const panels = gameEditPanels(p.gameId, edit);
   // The tabs' sections in the save module (the rest arrive with www#158-162).
-  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", threads: "threads", versions: "versions" };
+  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", threads: "threads", versions: "versions", hltb: "hltb" };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (
     <>

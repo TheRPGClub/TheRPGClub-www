@@ -3,13 +3,15 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { GameText, StepResult } from "@/lib/games/game-edit";
+import type { GameText, HltbField, StepResult } from "@/lib/games/game-edit";
+import type { Hltb } from "@/lib/hltb";
 
 // The Game Edit page's steps (spec api#437): each saves one planned call of
 // the Game Edit save module and answers { ok } or { ok: false, error }.
 
 const MESSAGES: Record<string, string> = {
   forbidden: "Only Admins can edit a game's description and Featured Video.",
+  forbidden_hltb: "Only members and staff can save HowLongToBeat times.",
   not_found: "That game is no longer in GameDB.",
 };
 
@@ -40,6 +42,29 @@ export async function updateGameTextAction(gameId: number, fields: Partial<GameT
   if (!res.ok) {
     const err = await readApiError(res);
     const code = err.code ?? (res.status === 403 ? "forbidden" : res.status === 404 ? "not_found" : undefined);
+    return { ok: false, error: apiErrorMessage({ ...err, code }, MESSAGES) };
+  }
+  revalidateGame(gameId);
+  return { ok: true };
+}
+
+// The game's HowLongToBeat times entered by hand: one upsert carrying only
+// the changed fields (Admins; the page never offers it to anyone else).
+export async function upsertHltbAction(gameId: number, fields: Partial<Pick<Hltb, HltbField>>): Promise<StepResult> {
+  if (!validId(gameId)) return { ok: false, error: "That game can't be edited." };
+  let res: Response;
+  try {
+    res = await apiFetch(`/api/v1/games/${gameId}/hltb`, {
+      method: "POST",
+      body: JSON.stringify({ data: fields }),
+      cache: "no-store",
+    });
+  } catch {
+    return { ok: false, error: "Couldn't reach the club's server. Try again." };
+  }
+  if (!res.ok) {
+    const err = await readApiError(res);
+    const code = err.code ?? (res.status === 403 ? "forbidden_hltb" : res.status === 404 ? "not_found" : undefined);
     return { ok: false, error: apiErrorMessage({ ...err, code }, MESSAGES) };
   }
   revalidateGame(gameId);

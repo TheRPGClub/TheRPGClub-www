@@ -1,6 +1,7 @@
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, RefreshCw } from "lucide-react";
 import { hltbBars, hltbLookedUpLabel, hltbNotSavedNote, type Hltb } from "@/lib/hltb";
 import { Bar, Foot, labelClass, SourceLink } from "@/components/issue/game-hltb-card-parts";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // The "Time to beat" card's times: one bar per play style and where they
@@ -74,5 +75,24 @@ export function LookingUp() {
         </span>
       </Foot>
     </>
+  );
+}
+
+// The lookup as a frameless reload icon at the heading's right end (design
+// www#156 round 3): a 32px hit area pulled into the rule's margin, the glyph
+// lifted onto the heading's caps; it spins while the lookup runs.
+export function HltbReload({ pending, onClick }: { pending: boolean; onClick: () => void }) {
+  return (
+    <Button
+      variant="row"
+      size="icon"
+      onClick={onClick}
+      disabled={pending}
+      aria-label="Look up on HowLongToBeat"
+      title="Look up on HowLongToBeat"
+      className="-my-1.5 -mr-1.75"
+    >
+      <RefreshCw aria-hidden className={cn("size-4 -translate-y-0.5", pending && "motion-safe:animate-spin")} />
+    </Button>
   );
 }

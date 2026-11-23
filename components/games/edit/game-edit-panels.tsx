@@ -1,5 +1,6 @@
 import type { GameEdit } from "@/hooks/use-game-edit";
 import type { GameEditTab } from "@/lib/games/game-edit/tabs";
+import { HltbTab } from "@/components/games/edit/hltb-tab";
 import { PlaceholderTab } from "@/components/games/edit/placeholder-tab";
 import { TextVideoTab } from "@/components/games/edit/text-video-tab";
 import { ThreadsTab } from "@/components/games/edit/threads-tab";
@@ -36,6 +37,15 @@ export function gameEditPanels(gameId: number, edit: GameEdit): Record<GameEditT
         onStage={(next) => edit.stageSection("versions", next)}
       />
     ),
-    hltb: <PlaceholderTab title="HowLongToBeat" />,
+    hltb: (
+      <HltbTab
+        gameId={gameId}
+        loaded={edit.record.hltb}
+        staged={edit.stage.hltb}
+        error={edit.errors.hltb}
+        onStage={(next) => edit.stageSection("hltb", next)}
+        onReload={(hltb) => edit.reloadSection("hltb", hltb)}
+      />
+    ),
   };
 }

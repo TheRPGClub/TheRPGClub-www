@@ -22,7 +22,7 @@ export function Bar({
   placeholder?: boolean;
 }) {
   return (
-    <li className="grid h-7.5 grid-cols-[6.875rem_1fr_2.875rem] items-center gap-2.5">
+    <li className="grid h-7.5 grid-cols-[6.875rem_1fr_3.2rem] items-center gap-2.5">
       <span className="font-label text-[0.85rem] font-bold tracking-[0.06em] text-dim-foreground uppercase">
         {label}
       </span>
@@ -36,9 +36,13 @@ export function Bar({
           style={{ width: `${percent}%` }}
         />
       </span>
-      <span className="text-right font-headline text-[1.35rem] leading-none">
+      <span className="text-right font-headline text-[1.35rem] leading-none whitespace-nowrap">
         {figure}
-        {unit && <small className="text-[0.8rem] text-dim-foreground normal-case">{unit}</small>}
+        {unit && (
+          <small className="ml-0.75 font-label text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground normal-case">
+            {unit}
+          </small>
+        )}
       </span>
     </li>
   );

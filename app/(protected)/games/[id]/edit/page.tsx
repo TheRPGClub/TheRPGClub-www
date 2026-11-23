@@ -3,6 +3,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle, Game, Thread } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
 import { alternateVersion } from "@/lib/games/game-edit";
+import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { fetchGameRelations } from "@/lib/games/game-page";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
@@ -24,9 +25,10 @@ export default async function GameEditPage({
   const viewer = gameEditViewer(session.membership);
   if (!Number.isInteger(gameId) || gameId <= 0 || !viewer) notFound();
 
-  const [res, relations] = await Promise.all([
+  const [res, relations, hltb] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     viewer.admin ? fetchGameRelations(gameId) : null,
+    viewer.admin ? fetchSavedHltb(gameId) : null,
   ]);
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
@@ -42,6 +44,7 @@ export default async function GameEditPage({
         text: { description: game.description, featured_video_url: game.featured_video_url },
         threads,
         versions: (relations?.alternates ?? []).map(alternateVersion),
+        hltb: hltb ?? null,
       }}
       viewer={viewer}
       tab={parseGameEditTab(query.tab, viewer)}
