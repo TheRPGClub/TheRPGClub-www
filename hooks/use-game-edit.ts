@@ -17,6 +17,12 @@ import {
   uploadGameImageAction,
 } from "@/app/actions/game-images";
 import {
+  createReleaseAction,
+  deleteReleaseAction,
+  loadReleasesAction,
+  updateReleaseAction,
+} from "@/app/actions/game-edit-releases";
+import {
   gameEditSave,
   saveSummary,
   type GameEditRecord,
@@ -52,14 +58,18 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     "image.delete": (call) => deleteGameImageAction(gameId, call.imageId),
     "thread.link": (call) => linkThreadAction(call.thread.thread_id, gameId).then(asStep),
     "thread.unlink": (call) => unlinkThreadAction(call.threadId, gameId).then(asStep),
+    "release.create": (call) => createReleaseAction(gameId, call.fields),
+    "release.update": (call) => updateReleaseAction(gameId, call.releaseId, call.fields),
+    "release.delete": (call) => deleteReleaseAction(gameId, call.releaseId),
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
   };
-  // Sections whose saved record only the API knows (new image ids and
-  // URLs): read back after a save, whether it went through or not.
+  // Sections whose saved record only the API knows (new image and release
+  // ids, image URLs): read back after a save, whether it went through or not.
   const reloads: { [K in GameEditSectionKey]?: () => Promise<GameEditRecord[K] | null> } = {
     images: () => listGameImagesAction(gameId),
+    releases: () => loadReleasesAction(gameId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 

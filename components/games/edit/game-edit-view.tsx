@@ -17,6 +17,7 @@ import { GameEditBand } from "@/components/games/edit/game-edit-band";
 import { gameEditPanels } from "@/components/games/edit/game-edit-panels";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
+import type { ReleaseOptions } from "@/lib/games/game-edit/release-options";
 
 export interface GameEditViewProps {
   gameId: number;
@@ -27,6 +28,10 @@ export interface GameEditViewProps {
   viewer: GameEditViewer;
   // The tab `?tab=` asks for, already checked against the viewer.
   tab: GameEditTab;
+  // The Releases tab's platforms and regions, and whether the game has an
+  // IGDB link to refresh its Releases from.
+  releaseOptions: ReleaseOptions;
+  canRefreshReleases: boolean;
 }
 
 // /games/:id/edit (spec api#437, design www#156 round 3): the band with the
@@ -39,12 +44,13 @@ export function GameEditView(p: GameEditViewProps) {
   const [tab, setTab] = useState<GameEditTab>(p.tab);
   const tabs = gameEditTabsFor(p.viewer);
 
-  const panels = gameEditPanels(p.gameId, edit);
+  const panels = gameEditPanels(p, edit);
   // The tabs' sections in the save module (the rest arrive with www#158-162).
   const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = {
     text: "text",
     images: "images",
     threads: "threads",
+    releases: "releases",
     versions: "versions",
     hltb: "hltb",
   };

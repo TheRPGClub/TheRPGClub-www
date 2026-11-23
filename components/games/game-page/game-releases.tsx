@@ -5,7 +5,6 @@ import { releasesByPlatform, releasesCount } from "@/lib/games/releases";
 import { RELEASES_PATH } from "@/lib/release-calendar";
 import { isPast, releaseDateLabel, utcToday } from "@/lib/releases";
 import { RailHeading } from "@/components/issue/game-rail";
-import { RefreshReleasesButton } from "@/components/igdb/refresh-releases-button";
 import { ReleaseLine } from "@/components/games/game-page/release-line";
 
 // The rail's Releases (www#115, layout B): one row per platform, each listing
@@ -17,13 +16,11 @@ import { ReleaseLine } from "@/components/games/game-page/release-line";
 export async function GameReleases({
   gameId,
   firstReleased,
-  canRefresh,
   calendarShown,
 }: {
   gameId: number;
   // The game's first-release date, said when it has no Releases.
   firstReleased: string | null;
-  canRefresh: boolean;
   calendarShown: boolean;
 }) {
   const releases = await fetchGameReleases(gameId);
@@ -67,7 +64,6 @@ export async function GameReleases({
           <ArrowRight aria-hidden className="size-3.5" />
         </Link>
       )}
-      {canRefresh && <RefreshReleasesButton gameId={gameId} />}
     </section>
   );
 }

@@ -5,7 +5,8 @@ import { requireAuth } from "@/lib/session";
 import { alternateVersion } from "@/lib/games/game-edit";
 import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
-import { fetchGameRelations } from "@/lib/games/game-page";
+import { fetchGameRelations, fetchGameReleases } from "@/lib/games/game-page";
+import { fetchReleaseOptions } from "@/lib/games/game-edit/release-options";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
 import { listGameImagesAction } from "@/app/actions/game-images";
 
@@ -35,6 +36,10 @@ export default async function GameEditPage({
   const { data: game }: ApiSingle<Game> = await res.json();
   const threads = await fetchGameThreads(gameId);
   const images = viewer.admin ? ((await listGameImagesAction(gameId)) ?? []) : [];
+  // Releases are an Admin's section only.
+  const [releases, releaseOptions] = viewer.admin
+    ? await Promise.all([fetchGameReleases(gameId), fetchReleaseOptions()])
+    : [[], { platforms: [], regions: [] }];
 
   return (
     <GameEditView
@@ -46,9 +51,12 @@ export default async function GameEditPage({
         text: { description: game.description, featured_video_url: game.featured_video_url },
         images,
         threads,
+        releases: releases ?? [],
         versions: (relations?.alternates ?? []).map(alternateVersion),
         hltb: hltb ?? null,
       }}
+      releaseOptions={releaseOptions}
+      canRefreshReleases={game.igdb_id != null}
       viewer={viewer}
       tab={parseGameEditTab(query.tab, viewer)}
     />

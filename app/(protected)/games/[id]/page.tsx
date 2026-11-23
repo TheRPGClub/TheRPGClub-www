@@ -93,7 +93,7 @@ async function GameContent({
             />
           )
         }
-        rail={<GameAboutRail gameId={gameId} game={game} show={show} gates={gates} />}
+        rail={<GameAboutRail gameId={gameId} game={game} show={show} />}
       />
       {/* Members' Game Journals on this game: one chapter line per member.
           Completions join the timeline only when Game Completions shows. */}

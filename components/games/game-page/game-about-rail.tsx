@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Game } from "@/lib/api/types";
 import { uniqueUsers } from "@/lib/api/game-counts";
-import type { GamePageGates, GamePageShow } from "@/lib/games/game-page";
+import type { GamePageShow } from "@/lib/games/game-page";
 import { cn } from "@/lib/utils";
 import { GameHltb, GameHltbSkeleton } from "@/components/issue/game-hltb";
 import { RailMembers } from "@/components/issue/game-rail";
@@ -21,12 +21,10 @@ export function GameAboutRail({
   gameId,
   game,
   show,
-  gates,
 }: {
   gameId: number;
   game: Game;
   show: GamePageShow;
-  gates: GamePageGates;
 }) {
   return (
     <aside
@@ -63,7 +61,6 @@ export function GameAboutRail({
         <GameReleases
           gameId={gameId}
           firstReleased={game.initial_release_date}
-          canRefresh={gates.canRefreshReleases}
           calendarShown={show.releaseCalendar}
         />
       </Suspense>
