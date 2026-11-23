@@ -52,6 +52,9 @@ export interface RatingInputProps {
   // composer sets them side by side.
   size?: "desk" | "quick";
   disabled?: boolean;
+  // A Published take's score past its first week (ADR 0013): held where it
+  // is, faded, and no longer pencil-ringed as a thing to change.
+  locked?: boolean;
 }
 
 /**
@@ -63,8 +66,10 @@ export function RatingInput({
   onChange,
   accent = "neutral",
   size = "desk",
-  disabled,
+  disabled: busy,
+  locked = false,
 }: RatingInputProps) {
+  const disabled = busy || locked;
   const style = reviewAccents[accent];
   const unset = value === null;
   // True while the slider is being moved, which is the only thing that
@@ -79,6 +84,7 @@ export function RatingInput({
         live={live}
         size={size}
         disabled={disabled}
+        ringed={!locked}
       />
       <Slider
         // An unset rating still has to put the thumb somewhere; it rests at

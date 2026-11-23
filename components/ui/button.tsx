@@ -206,6 +206,11 @@ const buttonVariants = cva(
         // (the dashboard's Edit dashboard), in the "Full history" link's
         // voice: label caps in paper with a red icon, yellow on hover.
         "heading-action": "",
+        // www#149: a two-state filter that is a link to its other state (the
+        // Review Feed's Written only), role="switch" with aria-checked. It
+        // holds a small switch drawn by the Theme: a span[data-part=
+        // "switch-track"] around a span[data-part="switch-knob"].
+        "filter-switch": "",
       },
       size: {
         default:

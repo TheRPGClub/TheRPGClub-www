@@ -8,6 +8,7 @@ import { ReviewFormActions } from "./review-composer/review-form-actions";
 import type { ReviewDeskGame } from "./review-desk/desk-game";
 import { QuickSheet } from "./review-desk/quick-sheet";
 import { FormDraftStrip } from "./review-desk/form-draft-strip";
+import { EditStrip } from "./review-desk/edit-strip";
 import { ReviewDesk } from "./review-desk/review-desk";
 
 export interface ReviewFormProps {
@@ -83,7 +84,22 @@ export function ReviewForm({
       {form.error}
     </p>
   );
-  const footer = form.draft ? (
+  // On the desk a Draft and a Published Review each have their strip, which
+  // carries the actions; the footer keeps only the error. The quick sheet
+  // keeps its row of actions.
+  const strip =
+    layout !== "desk" ? null : form.draft ? (
+      <FormDraftStrip form={form} accent={accent} onPublished={onPublished} />
+    ) : existing ? (
+      <EditStrip
+        accent={accent} publishedAt={existing.published_at} pending={pending}
+        rated={form.rating !== null} onCancel={onCancel}
+        // Already confirmed on the strip; deleting is the same call a
+        // Draft's Discard makes.
+        onDelete={form.discard}
+      />
+    ) : null;
+  const footer = strip ? (
     alert
   ) : (
     <>
@@ -108,7 +124,7 @@ export function ReviewForm({
           game={game}
           accent={accent}
           footer={footer}
-          strip={form.draft && <FormDraftStrip form={form} accent={accent} onPublished={onPublished} />}
+          strip={strip}
           scorecard={
             <ReviewScorecardEditor
               value={facets}

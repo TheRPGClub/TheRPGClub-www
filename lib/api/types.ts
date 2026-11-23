@@ -744,6 +744,12 @@ export interface Review {
   // When it was published; null while it is a Draft (only its author sees
   // a Draft). Set once and never cleared. Absent on shapes that predate it.
   published_at?: string | null;
+  // The latest Edit more than an hour after publishing, for "Edited <date>".
+  // Null when never edited that late; never set on a Draft.
+  edited_at?: string | null;
+  // When an Edit may no longer change the score (7 days after publishing,
+  // ADR 0013). Only on the full shape; null on a Draft.
+  score_locks_at?: string | null;
   created_at: string;
   updated_at?: string;
   user?: User | null;

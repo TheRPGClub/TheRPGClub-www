@@ -26,6 +26,8 @@ export interface ReviewBannerProps {
   authorId?: string | null;
   authorName?: string | null;
   createdAt?: string | null;
+  // The Edit marker's date (`editedAt` in @/lib/reviews/edit-rules).
+  editedAt?: string | null;
   // Only the author gets the edit affordance, and it lives in the byline: this
   // banner is the review, so editing it starts where it's introduced. The
   // link just adds `?edit` to the current URL; ReviewDetail is what actually
@@ -51,6 +53,7 @@ export function ReviewBanner({
   authorId,
   authorName,
   createdAt,
+  editedAt,
   canEdit,
   title,
   badge,
@@ -118,6 +121,7 @@ export function ReviewBanner({
               authorId={authorId}
               authorName={authorName}
               createdAt={createdAt}
+              editedAt={editedAt}
               canEdit={canEdit}
             />
           )}

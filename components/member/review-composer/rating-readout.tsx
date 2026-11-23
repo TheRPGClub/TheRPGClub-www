@@ -18,12 +18,16 @@ export function RatingReadout({
   live,
   size = "desk",
   disabled,
+  ringed = true,
 }: {
   value: number | null;
   onChange: (next: number | null) => void;
   live: boolean;
   size?: "desk" | "quick";
   disabled?: boolean;
+  // The desk's pencil ring marks the score as there to change; a locked one
+  // has none.
+  ringed?: boolean;
 }) {
   const unset = value === null;
   const desk = size === "desk";
@@ -31,7 +35,7 @@ export function RatingReadout({
   return (
     <div className="flex items-end gap-2">
       <span className={cn("relative inline-flex", desk && "h-[5.75rem] w-[9rem] items-center justify-center")}>
-        {desk && <PencilRing dashed={unset} />}
+        {desk && ringed && <PencilRing dashed={unset} />}
         <Input
           variant="bare"
           type="text"
