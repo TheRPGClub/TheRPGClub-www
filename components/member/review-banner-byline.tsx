@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, PencilLine } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -15,11 +15,15 @@ export function ReviewBannerByline({
   authorId,
   authorName,
   createdAt,
+  editedAt,
   canEdit,
 }: {
   authorId: string;
   authorName: string;
   createdAt?: string | null;
+  // "Edited <date>", shown to every reader once the review was changed
+  // more than an hour after publishing.
+  editedAt?: string | null;
   canEdit?: boolean;
 }) {
   return (
@@ -39,6 +43,12 @@ export function ReviewBannerByline({
           </>
         )}
       </span>
+      {editedAt && (
+        <span className="font-label inline-flex items-center gap-1.5 text-[0.76rem] font-extrabold tracking-[0.08em] text-faint-foreground uppercase">
+          <PencilLine aria-hidden className="size-3.25" />
+          Edited <time dateTime={editedAt}>{formatReviewDate(editedAt)}</time>
+        </span>
+      )}
       {canEdit && (
         <Link
           href="?edit=1"

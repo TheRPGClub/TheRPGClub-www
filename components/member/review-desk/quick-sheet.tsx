@@ -12,6 +12,7 @@ import { MAX_REVIEW_TITLE_LENGTH } from "@/lib/api/review-title";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
 import { CropMarks } from "./crop-marks";
+import { ScoreLock } from "./score-lock";
 import { REVIEW_STORY } from "./story";
 
 // The quick review on a game page: the same sheet as the full editor, small.
@@ -56,7 +57,9 @@ export function QuickSheet({
             accent={accent}
             size="quick"
             disabled={form.pending}
+            locked={form.lock?.locked}
           />
+          {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} />}
           <RichTextToolbar
             schema={REVIEW_SCHEMA}
             variant="compact"
