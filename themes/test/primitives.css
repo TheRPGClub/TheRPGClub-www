@@ -1737,6 +1737,20 @@
             border-color: var(--foreground);
             border-style: double;
         }
+        [data-slot="toggle"][data-variant="ink"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: calc(var(--radius) * 2);
+            &[data-pressed] {
+                background-color: var(--chart-3);
+                color: var(--background);
+            }
+        }
+        [data-slot="tabs-list"][data-variant="masthead"] [data-slot="tabs-trigger"] {
+            background-color: var(--chart-1);
+            color: var(--background);
+            border-radius: 0;
+        }
         [data-slot="toggle"][data-variant="tag"] {
             background-color: var(--accent);
             color: var(--accent-foreground);

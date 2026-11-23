@@ -41,6 +41,9 @@ const tabsListVariants = cva(
         // ticks: a slideshow's ticks, one per slide, in the label voice
         // (the /join slideshow); the caller draws each tick's bar.
         ticks: "",
+        // masthead: /settings' tabs, each name in Anton with its state under
+        // it, the open one marked by the red you-are-here bar on the rule.
+        masthead: "w-full items-end justify-start gap-x-8 p-0 group-data-horizontal/tabs:h-auto",
       },
     },
     defaultVariants: {

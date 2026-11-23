@@ -1124,6 +1124,16 @@
                 @apply bg-(--tab-ink) text-(--tab-ink-foreground) shadow-none;
             }
         }
+        /* masthead (/settings): the tab names in Anton over a hairline,
+           resting in paper-mute; the open one in paper over a 3px masthead
+           red bar on the rule, the site's you-are-here mark. Focus is the
+           yellow outline. */
+        [data-slot="tabs-list"][data-variant="masthead"] {
+            @apply border-b border-border;
+        }
+        [data-slot="tabs-list"][data-variant="masthead"] [data-slot="tabs-trigger"] {
+            @apply rounded-none bg-transparent font-normal tracking-normal text-faint-foreground shadow-none transition-colors after:bottom-[-1px] after:h-[3px] after:bg-gotm hover:text-dim-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight data-active:bg-transparent data-active:text-foreground data-active:shadow-none data-active:after:opacity-100;
+        }
         /* Toggle switcher: a switch between alternatives in place; the
            segment rests in the faint ink. */
         [data-slot="toggle"][data-variant="switcher"],
@@ -1182,6 +1192,14 @@
         }
         [data-slot="toggle"][data-variant="tag"] {
             @apply rounded-xs font-bold text-(--tag-ink) shadow-[inset_0_0_0_1.5px_var(--tag-ink)] transition-colors hover:bg-muted hover:text-(--tag-ink) aria-pressed:bg-(--tag-ink) aria-pressed:text-background aria-pressed:shadow-none data-pressed:bg-(--tag-ink) data-pressed:text-background data-pressed:shadow-none;
+        }
+
+        /* ink (/settings' News Categories): a member's own on/off pick as
+           a chip. On, it is ringed in yellow (yours); off, it rests on a
+           strong rule in paper-mute, struck through. Busy while it saves;
+           inert (aria-disabled) while its Feature is hidden. */
+        [data-slot="toggle"][data-variant="ink"] {
+            @apply font-label cursor-pointer rounded-sm font-bold tracking-[0.06em] text-faint-foreground line-through decoration-[1.5px] shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-[box-shadow,color,opacity] hover:text-dim-foreground aria-busy:cursor-progress aria-busy:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-45 focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight hover:bg-transparent aria-pressed:bg-transparent aria-pressed:text-foreground aria-pressed:no-underline aria-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)] data-pressed:bg-transparent data-pressed:text-foreground data-pressed:no-underline data-pressed:shadow-[inset_0_0_0_2px_var(--color-highlight)];
         }
 
         /* Staff desks (www#98). The Feature Flag state control: segments on

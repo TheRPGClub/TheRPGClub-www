@@ -6,20 +6,24 @@ import type { BirthDate } from "@/lib/birth-date";
 import { useBirthDateForm } from "@/hooks/use-birth-date-form";
 import { Button } from "@/components/ui/button";
 import { BirthDateFields } from "@/components/birth-date/birth-date-fields";
-import { ShareBirthdayRow } from "@/components/settings/share-birthday-row";
+import { WhoSeesIt } from "@/components/settings/who-sees-it";
 import { cn } from "@/lib/utils";
 
 // The member's own Birth Date on /settings: Day, Month and an optional
 // Year, Save, and Remove while one is set, with the limit line under them.
 // The form locks once both changes this month are used, saying when it opens
 // again; staff are never limited. Errors sit under the line, as the settings
-// switches' do. The "Share my Birthday" row follows, which the limit never
-// locks. Staff set another member's on the desk (MemberBirthDateEditor).
+// switches' do. Beside it (under it on a phone) "Who sees it": the "Share my
+// Birthday" row, which the limit never locks, over who sees what. `lead` is
+// the Birth Date's heading and line, set over the form. Staff set another
+// member's on the desk (MemberBirthDateEditor).
 export function BirthDateEditor({
   initial,
   staff,
   today,
+  lead,
 }: {
+  lead: React.ReactNode;
   initial: BirthDate;
   // Moderator or above: changes don't count toward the limit.
   staff: boolean;
@@ -32,10 +36,12 @@ export function BirthDateEditor({
   const errorId = `${id}-error`;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-x-14">
+      <section aria-labelledby="settings-birth-date">
+      {lead}
       <form
         aria-label="Your Birth Date"
-        className="flex flex-col gap-3"
+        className="mt-5 flex flex-col gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           if (f.canSave) f.save();
@@ -77,7 +83,8 @@ export function BirthDateEditor({
           {f.saved}
         </p>
       </form>
-      <ShareBirthdayRow state={f.shareSwitch} pending={f.switchBusy} error={f.shareError} onChange={f.share} />
+      </section>
+      <WhoSeesIt state={f.shareSwitch} pending={f.switchBusy} error={f.shareError} onChange={f.share} />
     </div>
   );
 }

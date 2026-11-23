@@ -213,8 +213,23 @@ export function birthdayShareSwitch(doc: BirthDate): BirthdayShareSwitch {
   return {
     checked: doc.birthday_shared,
     unavailable: false,
-    line: "Members see the day and month on your profile and in Upcoming Birthdays, and the bot greets you with a Birthday Post on the day. Never your year or age. Switch it whenever you like.",
+    line: "Switch it whenever you like; it never counts toward the two a month.",
   };
+}
+
+// Who sees what of the member's Birth Date, for the ledger beside the share
+// switch on /settings. Follows the switch (optimistic included).
+export function birthDateAudience(share: BirthdayShareSwitch): { who: string; sees: string }[] {
+  const members = share.unavailable
+    ? "Nothing until you add the day and month."
+    : share.checked
+      ? "The day and month, on your profile and in Upcoming Birthdays. The bot greets you with a Birthday Post on the day. Never your year or age."
+      : "Nothing while sharing is off.";
+  return [
+    { who: "You and staff", sees: "The full date, year included." },
+    { who: "Members", sees: members },
+    { who: "On a Run", sees: "Your birth year, only on a Run that starts from it." },
+  ];
 }
 
 export interface BirthDateFormControls {

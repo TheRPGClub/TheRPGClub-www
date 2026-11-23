@@ -5,7 +5,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { hideableChoices, type HiddenPlatforms, type PlatformChoice } from "@/lib/hidden-platforms";
 import { useHiddenPlatforms } from "@/hooks/use-hidden-platforms";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { HiddenPlatformPicker } from "@/components/settings/hidden-platform-picker";
+import { SectionHeading } from "@/components/templates/page-header";
 import { cn } from "@/lib/utils";
 
 // The data for the Release Calendar row's Hidden Platforms (api#427): null
@@ -17,9 +18,9 @@ export interface HiddenPlatformsData {
   choices: PlatformChoice[];
 }
 
-// The member's Hidden Platforms, nested under the Release Calendar's
-// Feature row as News Categories are under the News Hub's: one line on what
-// they do, each with Unhide, then a platform picker and Hide. The same list
+// The member's Hidden Platforms, the Release Calendar's own settings on the
+// Features tab beside the News Hub's News Categories: one line on what they
+// do, each with Unhide, then a platform picker and Hide. The same list
 // /releases changes. Dimmed and inert while the Release Calendar itself is
 // hidden, with the reason in one line.
 export function HiddenPlatformsList({
@@ -44,10 +45,14 @@ export function HiddenPlatformsList({
   const off = unavailable || saves.pending;
 
   return (
-    <div className="mt-3 ml-1 border-l border-faint-foreground pl-4 sm:ml-2 sm:pl-5">
-      <p id={`${id}-intro`} className="max-w-[60ch] text-sm text-dim-foreground">
-        Hidden Platforms: never on your Release Calendar or your Upcoming Releases panel. &ldquo;Show
-        all&rdquo; on the calendar brings them back for one visit.
+    <section aria-labelledby={`${id}-title`}>
+      <SectionHeading
+        title={<span id={`${id}-title`}>Hidden Platforms</span>}
+        count={hidden && !unavailable ? `${saves.ids.length} hidden` : undefined}
+      />
+      <p id={`${id}-intro`} className="mt-3 max-w-[60ch] text-sm text-dim-foreground">
+        Never on your Release Calendar or your Upcoming Releases panel. &ldquo;Show all&rdquo; on the
+        calendar brings them back for one visit.
       </p>
       {!hidden ? (
         <p role="alert" className="mt-2 text-sm text-dim-foreground">
@@ -55,7 +60,7 @@ export function HiddenPlatformsList({
         </p>
       ) : (
         <>
-          <ul aria-label="Hidden Platforms" aria-describedby={`${id}-intro`} className="mt-1.5">
+          <ul aria-label="Hidden Platforms" aria-describedby={`${id}-intro`} className="mt-3 border-t border-border">
             {rows.length === 0 && (
               <li className="border-b border-border py-2.5 text-sm text-faint-foreground">
                 None hidden. Every platform shows on your calendar.
@@ -80,41 +85,13 @@ export function HiddenPlatformsList({
               </li>
             ))}
           </ul>
-          <div className="mt-2.5 flex items-center gap-2">
-            {/* Wrapped: the Select's hidden input is a sibling of its trigger. */}
-            <div className="min-w-0 flex-1">
-              <Select
-                items={Object.fromEntries(offered.map((c) => [String(c.id), c.name]))}
-                value={pick}
-                onValueChange={(v) => setPick(v as string | null)}
-                disabled={off || offered.length === 0}
-              >
-                <SelectTrigger
-                  aria-label="Platform to hide"
-                  className="w-full min-w-0 data-[size=default]:h-9"
-                >
-                  <SelectValue placeholder="Choose a platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  {offered.map((c) => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9"
-              disabled={off || pick === null}
-              onClick={() => pick && saves.hide(Number(pick), () => setPick(null))}
-            >
-              <EyeOff data-icon="inline-start" aria-hidden />
-              Hide
-            </Button>
-          </div>
+          <HiddenPlatformPicker
+            offered={offered}
+            pick={pick}
+            onPick={setPick}
+            disabled={off}
+            onHide={() => pick && saves.hide(Number(pick), () => setPick(null))}
+          />
           {saves.error && (
             <p role="alert" className="mt-2 text-sm text-destructive">
               {saves.error}
@@ -127,6 +104,6 @@ export function HiddenPlatformsList({
           )}
         </>
       )}
-    </div>
+    </section>
   );
 }

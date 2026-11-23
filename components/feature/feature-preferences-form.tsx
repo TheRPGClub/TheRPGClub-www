@@ -7,30 +7,27 @@ import {
   type FeaturePreferences,
   type PreferenceChange,
 } from "@/lib/feature-preferences";
-import { Badge } from "@/components/ui/badge";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { FeatureSwitch } from "@/components/feature/feature-switch";
-import { NewsCategorySwitches } from "@/components/feature/news-category-switches";
+import { NewsCategoryChips } from "@/components/feature/news-category-chips";
 import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import { PreferenceRow } from "@/components/feature/preference-row";
 import { HiddenPlatformsList, type HiddenPlatformsData } from "@/components/settings/hidden-platforms-list";
 import { useSwitchSaves } from "@/hooks/use-switch-saves";
 
-const SHOW_PREVIEW = "show_preview";
 const NEWS_HUB = "news_hub";
 const RELEASE_CALENDAR = "release_calendar";
 
 function changeId(change: PreferenceChange): string {
-  return change.kind === "feature" ? change.key : SHOW_PREVIEW;
+  return change.kind === "feature" ? change.key : "show_preview";
 }
 
-// The member's switches, each saving the moment it is flipped (see
-// useSwitchSaves).
-//
-// The News Hub row carries its News Category switches nested under it. They
-// render only when the API lists the News Hub (the member can use it), and
-// go unavailable while the row's own switch, optimistic included, is Hidden.
-// The Release Calendar row carries the member's Hidden Platforms the same way.
+// The Features tab: the member's Feature switches in two columns, each saving
+// the moment it is flipped (see useSwitchSaves), then the settings that
+// belong to a Feature side by side under them: the News Hub's News
+// Categories and the Release Calendar's Hidden Platforms. Each is there only
+// when the API lists its Feature (the member can use it), and goes
+// unavailable while its Feature's switch, optimistic included, is Hidden.
 export function FeaturePreferencesForm({
   initial,
   newsCategories,
@@ -49,76 +46,49 @@ export function FeaturePreferencesForm({
     idOf: changeId,
   });
 
-  const staff = prefs.show_preview_features !== null;
+  if (prefs.features.length === 0) {
+    return (
+      <p className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground">
+        Nothing to hide right now. Parts of the club you can hide will show up here once they&apos;re live.
+      </p>
+    );
+  }
+
+  const shown = (key: string) => prefs.features.some((f) => f.key === key && !f.hidden);
+  const news = prefs.features.some((f) => f.key === NEWS_HUB);
 
   return (
     <>
-      {prefs.features.length > 0 ? (
-        <ul className="mt-4 border-t border-border">
-          {prefs.features.map((f) => {
-            // Any key the API lists, including one www doesn't know yet.
-            const key = f.key;
-            const shown = !f.hidden;
-            return (
-              <PreferenceRow
-                key={key}
-                id={key}
-                name={f.name}
-                badge={f.preview ? <PreviewBadge /> : null}
-                where={whereItShows(f.website)}
-                dim={!shown}
-                error={errors[key]}
-                nested={
-                  key === NEWS_HUB ? (
-                    <NewsCategorySwitches initial={newsCategories} unavailable={!shown} />
-                  ) : key === RELEASE_CALENDAR && hiddenPlatforms ? (
-                    <HiddenPlatformsList data={hiddenPlatforms} unavailable={!shown} />
-                  ) : null
-                }
-              >
-                <FeatureSwitch
-                  checked={shown}
-                  pending={pending.has(key)}
-                  onChange={(next) => save({ kind: "feature", key, shown: next })}
-                  onLabel="Shown"
-                  offLabel="Hidden"
-                  labelledBy={`pref-${key}-name`}
-                  describedBy={`pref-${key}-where`}
-                />
-              </PreferenceRow>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-5 text-sm text-dim-foreground">
-          Nothing to hide right now. Parts of the club you can hide will show up here once they&apos;re live.
-        </p>
-      )}
-
-      {/* Staff only, so it sits apart from the member's own switches on a
-          raised ink-2 panel rather than as one more row of the list. */}
-      {staff && (
-        <ul className="mt-8 rounded-md border border-border bg-card px-4" aria-label="Staff">
+      <ul className="mt-4 grid border-t border-border lg:grid-cols-2 lg:gap-x-10">
+        {prefs.features.map((f) => (
           <PreferenceRow
-            id={SHOW_PREVIEW}
-            name="Show Preview features"
-            badge={<Badge className="border-0">Staff</Badge>}
-            where="Preview Features in your sidebar, dashboard and pages. Turn it off to see the site as members do."
-            dim={!prefs.show_preview_features}
-            error={errors[SHOW_PREVIEW]}
-            className="border-b-0"
+            key={f.key}
+            id={f.key}
+            name={f.name}
+            badge={f.preview ? <PreviewBadge /> : null}
+            where={whereItShows(f.website)}
+            dim={f.hidden}
+            error={errors[f.key]}
           >
             <FeatureSwitch
-              checked={prefs.show_preview_features === true}
-              pending={pending.has(SHOW_PREVIEW)}
-              onChange={(next) => save({ kind: "show_preview", shown: next })}
-              onLabel="On"
-              offLabel="Off"
-              labelledBy={`pref-${SHOW_PREVIEW}-name`}
-              describedBy={`pref-${SHOW_PREVIEW}-where`}
+              checked={!f.hidden}
+              pending={pending.has(f.key)}
+              onChange={(next) => save({ kind: "feature", key: f.key, shown: next })}
+              onLabel="Shown"
+              offLabel="Hidden"
+              labelledBy={`pref-${f.key}-name`}
+              describedBy={`pref-${f.key}-where`}
             />
           </PreferenceRow>
-        </ul>
+        ))}
+      </ul>
+      {(news || hiddenPlatforms) && (
+        <div className="mt-12 grid items-start gap-12 lg:grid-cols-2">
+          {news && <NewsCategoryChips initial={newsCategories} unavailable={!shown(NEWS_HUB)} />}
+          {hiddenPlatforms && (
+            <HiddenPlatformsList data={hiddenPlatforms} unavailable={!shown(RELEASE_CALENDAR)} />
+          )}
+        </div>
       )}
     </>
   );

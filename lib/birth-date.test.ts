@@ -9,6 +9,7 @@ import {
   birthDateRequest,
   birthYearOf,
   birthdayShareSwitch,
+  birthDateAudience,
   formatBirthDate,
   memberChangesLine,
   type BirthDate,
@@ -259,8 +260,7 @@ describe("birthdayShareSwitch", () => {
     next_change_on: null,
     ...over,
   });
-  const SHARE_LINE =
-    "Members see the day and month on your profile and in Upcoming Birthdays, and the bot greets you with a Birthday Post on the day. Never your year or age. Switch it whenever you like.";
+  const SHARE_LINE = "Switch it whenever you like; it never counts toward the two a month.";
 
   it("follows birthday_shared once there is a Birth Date, with or without its year", () => {
     expect(birthdayShareSwitch(doc({ birthday_shared: true }))).toEqual({
@@ -321,5 +321,24 @@ describe("birthDateFormControls", () => {
       canRemove: false,
       switchBusy: false,
     });
+  });
+});
+
+describe("birthDateAudience", () => {
+  const members = (state: { checked: boolean; unavailable: boolean }) =>
+    birthDateAudience({ ...state, line: "" }).find((r) => r.who === "Members")?.sees;
+
+  it("says what members see as the share switch moves", () => {
+    expect(members({ checked: true, unavailable: false })).toMatch(/^The day and month/);
+    expect(members({ checked: false, unavailable: false })).toBe("Nothing while sharing is off.");
+    expect(members({ checked: false, unavailable: true })).toBe("Nothing until you add the day and month.");
+  });
+
+  it("always lists you and staff, members and a Run", () => {
+    expect(birthDateAudience({ checked: true, unavailable: false, line: "" }).map((r) => r.who)).toEqual([
+      "You and staff",
+      "Members",
+      "On a Run",
+    ]);
   });
 });
