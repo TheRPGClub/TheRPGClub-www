@@ -97,7 +97,7 @@ describe("the page's words", () => {
 
   it("says where the score goes when a Revision is deleted", () => {
     expect(revisionDeleteNote(takes, "revision-6")).toBe(
-      "Its take and scorecard go. The score goes back to 85, from 2 Mar 2025.",
+      "Its take and scorecard go. The score goes back to 85, from Mar 2, 2025.",
     );
     expect(revisionDeleteNote(takes, "revision-5")).toBe("Its take and scorecard go. The score stays as it is.");
   });

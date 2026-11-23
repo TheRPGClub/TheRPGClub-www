@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Review } from "@/lib/api/types";
+import { reviewDate } from "@/lib/reviews/review-date";
 import { SectionHeading } from "@/components/templates/page-header";
 import {
   ScoreBox,
@@ -56,7 +57,7 @@ export function ReviewMore({
                           {name}
                         </b>
                         <small className="text-[0.8rem] text-faint-foreground">
-                          {formatReviewDate(review.created_at)}
+                          {formatReviewDate(reviewDate(review))}
                         </small>
                       </span>
                     </span>
