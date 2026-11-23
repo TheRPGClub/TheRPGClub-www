@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateGameTextAction } from "@/app/actions/game-edit";
+import { linkThreadAction, unlinkThreadAction, type GameLinkResult } from "@/app/actions/game-links";
 import {
   gameEditSave,
   saveSummary,
@@ -11,6 +12,7 @@ import {
   type GameEditStage,
   type GameEditSteps,
   type GameEditViewer,
+  type StepResult,
 } from "@/lib/games/game-edit";
 
 export interface GameEditSaveNotice {
@@ -33,6 +35,8 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "thread.link": (call) => linkThreadAction(call.thread.thread_id, gameId).then(asStep),
+    "thread.unlink": (call) => unlinkThreadAction(call.threadId, gameId).then(asStep),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -80,6 +84,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       ([key, n]) => `${gameEditSave.label(key)} ${n}`,
     ),
   };
+}
+
+// The game-links actions' answer as a save step's.
+function asStep(result: GameLinkResult): StepResult {
+  return result.ok ? { ok: true } : { ok: false, error: result.error ?? "That didn't save. Try again." };
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;

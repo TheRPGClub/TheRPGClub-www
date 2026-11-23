@@ -72,7 +72,7 @@ export function GameAboutRail({
         <GameDetails gameId={gameId} />
       </Suspense>
       <Suspense fallback={null}>
-        <GameThreads gameId={gameId} canEdit={gates.canEditThreads} />
+        <GameThreads gameId={gameId} />
       </Suspense>
       {gates.isAdmin && (
         <section>

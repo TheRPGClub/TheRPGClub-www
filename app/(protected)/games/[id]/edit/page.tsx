@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { ApiSingle, Game } from "@/lib/api/types";
+import type { ApiCollection, ApiSingle, Game, Thread } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
@@ -25,6 +25,7 @@ export default async function GameEditPage({
   const res = await apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" });
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
+  const threads = await fetchGameThreads(gameId);
 
   return (
     <GameEditView
@@ -32,9 +33,21 @@ export default async function GameEditPage({
       title={game.title}
       coverUrl={game.cover_url}
       artUrl={game.art_url}
-      record={{ text: { description: game.description, featured_video_url: game.featured_video_url } }}
+      record={{
+        text: { description: game.description, featured_video_url: game.featured_video_url },
+        threads,
+      }}
       viewer={viewer}
       tab={parseGameEditTab(query.tab, viewer)}
     />
   );
+}
+
+// The game's Game Threads. A failed read fails the page (its error
+// boundary) rather than showing an empty list to edit against.
+async function fetchGameThreads(gameId: number) {
+  const res = await apiFetch(`/api/v1/games/${gameId}/threads?per=50`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Game Threads couldn't be loaded (HTTP ${res.status}).`);
+  const { data }: ApiCollection<Thread> = await res.json();
+  return data.map(({ thread_id, thread_name, jump_url }) => ({ thread_id, thread_name, jump_url }));
 }
