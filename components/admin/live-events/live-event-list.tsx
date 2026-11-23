@@ -10,7 +10,7 @@ const PROGRESS: Record<LiveEvent["status"], string> = {
   queued: "Waiting for the bot",
   thread_created: "Thread made, the event is next",
   created: "Thread and event made",
-  failed: "The bot couldn't finish; its error is on the wire",
+  failed: "The bot couldn't finish; its error is in Bot jobs",
 };
 
 // The live events, newest first, as slips: when it starts in the viewer's

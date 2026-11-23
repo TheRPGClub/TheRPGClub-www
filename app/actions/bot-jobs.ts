@@ -41,7 +41,7 @@ export interface BotJobListResult {
   error?: string;
 }
 
-// One page of the wire, newest first. Admins and Superadmins get every
+// One page of bot jobs, newest first. Admins and Superadmins get every
 // job; Moderators only the jobs they queued; anyone else 403.
 export async function listBotJobsAction(page = 1): Promise<BotJobListResult> {
   const p = Number.isInteger(page) && page > 0 ? page : 1;
@@ -54,9 +54,9 @@ export async function listBotJobsAction(page = 1): Promise<BotJobListResult> {
     return { ok: false, error: "Couldn't reach the club's server. Try again." };
   }
   if (!res.ok) {
-    if (res.status === 401) return { ok: false, error: "Sign in again to see the wire." };
-    if (res.status === 403) return { ok: false, error: "Only staff can see the wire." };
-    return { ok: false, error: `Couldn't read the wire (HTTP ${res.status}).` };
+    if (res.status === 401) return { ok: false, error: "Sign in again to see the bot jobs." };
+    if (res.status === 403) return { ok: false, error: "Only staff can see bot jobs." };
+    return { ok: false, error: `Couldn't read the bot jobs (HTTP ${res.status}).` };
   }
   const body = (await res.json()) as ApiCollection<BotJob>;
   return { ok: true, data: body.data, meta: body.meta };

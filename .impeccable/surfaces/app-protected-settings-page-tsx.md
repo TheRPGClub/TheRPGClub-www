@@ -2,7 +2,7 @@
 version: 1
 slug: "app-protected-settings-page-tsx"
 primary_target: "app/(protected)/settings/page.tsx"
-related_targets: ["components/settings/settings-view.tsx","components/settings/settings-tabs.tsx","components/feature/feature-preferences-form.tsx","components/feature/feature-switch.tsx","components/feature/news-category-chips.tsx","components/settings/birth-date-editor.tsx","components/admin/birth-dates/member-birth-date-editor.tsx"]
+related_targets: ["components/settings/settings-view.tsx","components/settings/settings-tabs.tsx","components/templates/masthead-tabs.tsx","components/feature/feature-preferences-form.tsx","components/feature/feature-switch.tsx","components/feature/news-category-chips.tsx","components/settings/birth-date-editor.tsx","components/admin/birth-dates/member-birth-date-editor.tsx"]
 ---
 
 # Surface: /settings (member settings, in tabs)

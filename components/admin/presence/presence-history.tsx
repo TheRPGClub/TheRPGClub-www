@@ -51,7 +51,7 @@ export function PresenceHistory({
     <section id="history" aria-labelledby="presence-history-heading" className="mt-12 scroll-mt-20">
       <div className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
         <h2 id="presence-history-heading" className="font-headline text-[1.9rem]">
-          Presence history
+          Status history
         </h2>
         <span className="font-label text-[0.85rem] tracking-[0.08em] text-faint-foreground">
           {initialMeta ? `${initialMeta.count} in all` : "Newest first"}
@@ -63,7 +63,7 @@ export function PresenceHistory({
         </p>
       )}
       {rows.length === 0 && !error ? (
-        <p className="py-4 text-sm text-dim-foreground">No presence set yet.</p>
+        <p className="py-4 text-sm text-dim-foreground">No status set yet.</p>
       ) : (
         <ol>
           {rows.map((row, i) => {

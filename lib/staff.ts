@@ -75,14 +75,8 @@ export function canUseTier(m: Flags, tier: StaffTier): boolean {
   return TIER_GATE[tier](m);
 }
 
-// Each tier by name, for the desk's byline ("xergg · Superadmin").
-export const TIER_NAME: Record<StaffTier, string> = {
-  moderator: "Moderator",
-  admin: "Admin",
-  superadmin: "Superadmin",
-};
-
-// The desk's short form of TIER_AUDIENCE, beside each area's heading.
+// The short form of TIER_AUDIENCE, for a desk page's note and the
+// desk's tool chips.
 export const TIER_SHORT: Record<StaffTier, string> = {
   moderator: "Moderators and up",
   admin: "Admins",
@@ -97,26 +91,17 @@ export function staffTierOf(m: Flags): StaffTier | null {
   return null;
 }
 
-// The desk's areas, in the order its contents page lists them. Each area's
-// tier is the lowest tier of its tools; an area shows when the viewer can use
-// any tool in it.
-export type StaffArea =
-  | "voting"
-  | "nominations"
-  | "gamedb"
-  | "mod"
-  | "posts"
-  | "features"
-  | "superadmin";
+// The desk's groups, by the job a tool does, in the order the desk's tabs
+// list them (design pick, 2026-11-23). Each group's tier is the lowest tier
+// of its tools; a group shows when the viewer can use any tool in it.
+export type StaffGroup = "voting" | "bot" | "members" | "gamedb" | "flags";
 
-export const STAFF_AREAS: readonly { key: StaffArea; label: string; tier: StaffTier }[] = [
+export const STAFF_GROUPS: readonly { key: StaffGroup; label: string; tier: StaffTier }[] = [
   { key: "voting", label: "Voting", tier: "admin" },
-  { key: "nominations", label: "Nominations", tier: "admin" },
+  { key: "bot", label: "The bot", tier: "moderator" },
+  { key: "members", label: "Members", tier: "moderator" },
   { key: "gamedb", label: "GameDB", tier: "admin" },
-  { key: "mod", label: "Mod", tier: "moderator" },
-  { key: "posts", label: "Posts", tier: "admin" },
-  { key: "features", label: "Features", tier: "admin" },
-  { key: "superadmin", label: "Superadmin", tier: "superadmin" },
+  { key: "flags", label: "Feature Flags", tier: "admin" },
 ];
 
 export type StaffSectionKey =
@@ -147,42 +132,41 @@ export interface StaffSection {
   href: string;
   label: string;
   tier: StaffTier;
-  // The desk area it is listed under; null for the desk itself.
-  area: StaffArea | null;
+  // The desk group (tab) it is listed under; null for the desk itself.
+  group: StaffGroup | null;
   // One line for the page header.
   blurb: string;
-  // What the desk's contents page prints after the dot leader, where a
-  // magazine prints the page number: a fixed note on the tool.
-  hint: string;
+  // The desk's one line on what the tool does, under its name.
+  line: string;
   // Listed in the sidebar's Staff group too.
   nav?: boolean;
-  // Takes the whole line on the desk (a long label).
-  wide?: boolean;
-  // Bot job kinds the tool queues. When the newest of them on the wire
-  // failed, the desk shows "Failed 1 h ago" in place of the hint. A ticket
-  // that adds a kind for its tool lists it here.
+  // Bot job kinds the tool queues: its jobs show in its tab's Recent bot
+  // jobs, and when the newest of them failed the desk says "Failed 1 h ago"
+  // beside the tool. A ticket that adds a kind for its tool lists it here.
   jobKinds?: readonly BotJobKind[];
 }
 
+// In desk order: each group's tools as its tab lists them.
 export const STAFF_SECTIONS: readonly StaffSection[] = [
   {
     key: "overview",
     href: "/admin",
     label: "Staff desk",
     tier: "moderator",
-    area: null,
-    blurb: "Every staff tool your role can use, beside the wire of bot jobs.",
-    hint: "",
+    group: null,
+    blurb: "What's waiting on the desk, every staff tool your role can use, and the bot's jobs.",
+    line: "",
     nav: true,
   },
+  // Voting
   {
     key: "voting",
     href: "/admin/voting",
     label: "Voting console",
     tier: "admin",
-    area: "voting",
+    group: "voting",
     blurb: "Run the current round: dates, the private tally, results and resets.",
-    hint: "This round",
+    line: "Run this round: its dates, the private tally, results and resets.",
     nav: true,
     jobKinds: ["voting_results_publish", "voting_panels_repost", "voting_tie_broken"],
   },
@@ -191,9 +175,9 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     href: "/admin/rounds",
     label: "GOTM rounds",
     tier: "admin",
-    area: "voting",
+    group: "voting",
     blurb: "Add a GOTM or NR-GOTM round, or edit a round's games and Reddit URL.",
-    hint: "Add or edit",
+    line: "Add a GOTM or NR-GOTM round, or fix a round's games and Reddit link.",
     jobKinds: ["gotm_cache_reload"],
   },
   {
@@ -201,19 +185,113 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     href: "/admin/nominations",
     label: "Delete a nomination",
     tier: "admin",
-    area: "nominations",
+    group: "voting",
     blurb: "Remove a nomination with a reason; the bot posts the change.",
-    hint: "With a reason",
+    line: "Take a nomination out of the round with a reason; the bot posts the change.",
     jobKinds: ["nomination_deleted"],
   },
+  // The bot
+  {
+    key: "say",
+    href: "/admin/say",
+    label: "Say as the bot",
+    tier: "superadmin",
+    group: "bot",
+    blurb: "Post a message as the bot in any text channel, or reply to one.",
+    line: "Post as the bot in any text channel, or reply to a message.",
+    jobKinds: ["say"],
+  },
+  {
+    key: "presence",
+    href: "/admin/presence",
+    label: "Bot status",
+    tier: "moderator",
+    group: "bot",
+    blurb: "Set what the bot is playing, and see who set it before.",
+    line: "Set what the bot is playing.",
+    jobKinds: ["presence_set"],
+  },
+  {
+    key: "presence-history",
+    href: "/admin/presence#history",
+    label: "Status history",
+    tier: "moderator",
+    group: "bot",
+    blurb: "Every status the bot has had, with who set it.",
+    line: "Every status the bot has had, and who set it.",
+  },
+  {
+    key: "reminders",
+    href: "/admin/reminders",
+    label: "Scheduled posts",
+    tier: "admin",
+    group: "bot",
+    blurb: "Schedule announcements in a club channel.",
+    line: "Announcements the bot posts in a club channel on a schedule.",
+    nav: true,
+  },
+  {
+    key: "live-events",
+    href: "/admin/live-events",
+    label: "Live events",
+    tier: "moderator",
+    group: "bot",
+    blurb: "A forum thread and a Discord event for a stream or a play session.",
+    line: "A forum thread and a Discord event for a stream or a play session.",
+    nav: true,
+    jobKinds: ["live_event_create"],
+  },
+  // Members
+  {
+    key: "birth-dates",
+    href: "/admin/birth-dates",
+    label: "Set a Birth Date",
+    tier: "moderator",
+    group: "members",
+    blurb:
+      "Set or remove a member's Birth Date, with or without the year, or stop them sharing their Birthday. Staff changes don't count toward their two a month.",
+    line: "Set or remove a member's Birth Date; staff changes don't count toward their two a month.",
+  },
+  {
+    key: "completions",
+    href: "/admin/completions",
+    label: "Add a Game Completion",
+    tier: "superadmin",
+    group: "members",
+    blurb: "Log a Game Completion on another member's behalf, and announce it.",
+    line: "Log a Game Completion on a member's behalf, and announce it.",
+    jobKinds: ["completion_announce"],
+  },
+  {
+    key: "memberscan",
+    href: "/admin/memberscan",
+    label: "Recount members",
+    tier: "superadmin",
+    group: "members",
+    blurb: "Re-read the server's members and their roles; the bot reports the counts.",
+    line: "Re-read the server's members and their roles, and report the counts.",
+    jobKinds: ["memberscan"],
+  },
+  {
+    key: "suggestions",
+    href: "/admin/suggestions",
+    label: "Review Suggestions",
+    tier: "superadmin",
+    group: "members",
+    blurb: "Approve Suggestions into GitHub issues, or reject them with a reason.",
+    line: "Approve Suggestions into GitHub issues, or reject them with a reason.",
+    nav: true,
+    jobKinds: ["suggestion_outcome"],
+  },
+  // GameDB
   {
     key: "synonyms",
     href: "/admin/synonyms",
-    label: "Synonyms",
+    label: "Game synonyms",
     tier: "admin",
-    area: "gamedb",
+    group: "gamedb",
     blurb: "Search terms that find the same games.",
-    hint: "Dictionary",
+    line: "Search terms that find the same games.",
     nav: true,
   },
   {
@@ -221,123 +299,31 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     // points at the games index rather than a page of its own.
     key: "versions",
     href: "/games",
-    label: "Link versions",
+    label: "Game versions",
     tier: "admin",
-    area: "gamedb",
+    group: "gamedb",
     blurb: "Link versions of a game from its game page.",
-    hint: "By game",
-  },
-  {
-    key: "presence",
-    href: "/admin/presence",
-    label: "Bot presence",
-    tier: "moderator",
-    area: "mod",
-    blurb: "Set what the bot is playing, and see who set it before.",
-    hint: "Set it",
-    jobKinds: ["presence_set"],
-  },
-  {
-    key: "presence-history",
-    href: "/admin/presence#history",
-    label: "Presence history",
-    tier: "moderator",
-    area: "mod",
-    blurb: "Every presence the bot has had, with who set it.",
-    hint: "Who set it",
-  },
-  {
-    key: "live-events",
-    href: "/admin/live-events",
-    label: "Live events",
-    tier: "moderator",
-    area: "mod",
-    blurb: "A forum thread and a Discord event for a stream or a play session.",
-    hint: "Thread + event",
-    nav: true,
-    jobKinds: ["live_event_create"],
-  },
-  {
-    key: "birth-dates",
-    href: "/admin/birth-dates",
-    label: "Set a Birth Date",
-    tier: "moderator",
-    area: "mod",
-    blurb:
-      "Set or remove a member's Birth Date, with or without the year, or stop them sharing their Birthday. Staff changes don't count toward their two a month.",
-    hint: "Any time",
-  },
-  {
-    key: "reminders",
-    href: "/admin/reminders",
-    label: "Public reminders",
-    tier: "admin",
-    area: "posts",
-    blurb: "Schedule announcements in a club channel.",
-    hint: "Scheduled posts",
-    nav: true,
-  },
-  {
-    key: "features",
-    href: "/admin/features",
-    label: "Features",
-    tier: "admin",
-    area: "features",
-    blurb: "Set each Feature Off, Preview or Live for the site and the bot.",
-    hint: "Off, Preview, Live",
-    jobKinds: ["feature_flag_changed"],
-  },
-  {
-    key: "say",
-    href: "/admin/say",
-    label: "Say as the bot",
-    tier: "superadmin",
-    area: "superadmin",
-    blurb: "Post a message as the bot in any text channel, or reply to one.",
-    hint: "Any channel",
-    jobKinds: ["say"],
-  },
-  {
-    key: "memberscan",
-    href: "/admin/memberscan",
-    label: "Memberscan",
-    tier: "superadmin",
-    area: "superadmin",
-    blurb: "Re-read the guild's members and their roles.",
-    hint: "Counts when done",
-    jobKinds: ["memberscan"],
+    line: "Link a game's versions together, from its game page.",
   },
   {
     key: "images",
     href: "/admin/images",
-    label: "Download missing images",
+    label: "Missing images",
     tier: "superadmin",
-    area: "superadmin",
+    group: "gamedb",
     blurb: "Fetch cover art for GameDB games that have none.",
-    hint: "With progress",
-    wide: true,
+    line: "Fetch cover art for GameDB games that have none.",
   },
+  // Feature Flags
   {
-    key: "suggestions",
-    href: "/admin/suggestions",
-    label: "Suggestion review",
-    tier: "superadmin",
-    area: "superadmin",
-    blurb: "Approve Suggestions into GitHub issues, or reject them with a reason.",
-    hint: "Pending",
-    nav: true,
-    jobKinds: ["suggestion_outcome"],
-  },
-  {
-    key: "completions",
-    href: "/admin/completions",
-    label: "Log a Game Completion for a member",
-    tier: "superadmin",
-    area: "superadmin",
-    blurb: "Log a Game Completion on another member's behalf, and announce it.",
-    hint: "With announce",
-    wide: true,
-    jobKinds: ["completion_announce"],
+    key: "features",
+    href: "/admin/features",
+    label: "Feature Flags",
+    tier: "admin",
+    group: "flags",
+    blurb: "Set each Feature Off, Preview or Live for the site and the bot.",
+    line: "Set each Feature Off, Preview or Live, for the site and the bot.",
+    jobKinds: ["feature_flag_changed"],
   },
 ];
 
@@ -351,19 +337,19 @@ export function staffSection(key: StaffSectionKey): StaffSection {
   return section;
 }
 
-export interface StaffDeskArea {
-  key: StaffArea;
+export interface StaffDeskGroup {
+  key: StaffGroup;
   label: string;
   tier: StaffTier;
   sections: StaffSection[];
 }
 
-// The desk's contents page: the viewer's tools grouped by area, in area
-// order, leaving out areas with nothing the viewer can use.
-export function staffDeskFor(m: Flags): StaffDeskArea[] {
+// The desk's job groups the viewer can use, each with their tools, in tab
+// order, leaving out groups with nothing the viewer can use.
+export function staffDeskFor(m: Flags): StaffDeskGroup[] {
   const sections = staffSectionsFor(m);
-  return STAFF_AREAS.map((area) => ({
-    ...area,
-    sections: sections.filter((s) => s.area === area.key),
-  })).filter((area) => area.sections.length > 0);
+  return STAFF_GROUPS.map((group) => ({
+    ...group,
+    sections: sections.filter((s) => s.group === group.key),
+  })).filter((group) => group.sections.length > 0);
 }

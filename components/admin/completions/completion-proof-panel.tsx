@@ -27,9 +27,9 @@ export function CompletionProofPanel({
   const caption = sent ? (
     sent.announced ? (
       <>
-        Announced, but its bot job didn&apos;t come back with the reply. Follow it on{" "}
-        <Link href="/admin" className="underline underline-offset-3">
-          the wire
+        Announced, but its bot job didn&apos;t come back with the reply. Follow it in{" "}
+        <Link href="/admin?tab=jobs" className="underline underline-offset-3">
+          Bot jobs
         </Link>
         .
       </>

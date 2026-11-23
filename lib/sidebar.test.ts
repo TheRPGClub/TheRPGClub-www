@@ -55,13 +55,14 @@ describe("sidebarGroups", () => {
       "staff_desk",
       "live_events",
     ]);
+    // In the desk's order: Voting, The bot, Members, GameDB.
     expect(keys(sidebarGroups(undefined, flags({ dev: true }))).staff).toEqual([
       "staff_desk",
       "voting_console",
-      "synonyms",
-      "live_events",
       "public_reminders",
+      "live_events",
       "suggestion_review",
+      "synonyms",
     ]);
   });
 });

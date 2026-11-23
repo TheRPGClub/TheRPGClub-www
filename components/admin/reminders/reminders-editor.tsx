@@ -52,7 +52,7 @@ export function PublicRemindersEditor({
     });
 
   return (
-    <section aria-label="Public reminders" className="space-y-4">
+    <section aria-label="Scheduled posts" className="space-y-4">
       <p className="text-sm text-faint-foreground">
         The bot posts each message in its channel when it is due. Times show in your time zone
         {isClient ? ` (${browserZone()})` : ""} and in club time ({CLUB_TIME_ZONE}).

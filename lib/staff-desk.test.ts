@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import type { BotJob } from "@/lib/api/types";
 import { staffDeskFor } from "@/lib/staff";
-import { deskNotes, deskReach, upcomingNote, type DeskReadings } from "@/lib/staff-desk";
+import { deskNotes, upcomingNote, type DeskReadings } from "@/lib/staff-desk";
 
-const superadmin = staffDeskFor({ dev: true } as never);
+const superadmin = staffDeskFor({ dev: true } as never).flatMap((g) => g.sections);
 
 const NONE: DeskReadings = {
   round: null,
@@ -104,13 +104,5 @@ describe("upcomingNote", () => {
     expect(upcomingNote(3, 20)).toBe("3");
     expect(upcomingNote(0, 20)).toBe("0");
     expect(upcomingNote(20, 20)).toBe("20+");
-  });
-});
-
-describe("deskReach", () => {
-  it("says what each tier's desk reaches", () => {
-    expect(deskReach("superadmin")).toBe(" · Admins see all but Superadmin");
-    expect(deskReach("admin")).toBe(" · All but Superadmin");
-    expect(deskReach("moderator")).toBe("");
   });
 });
