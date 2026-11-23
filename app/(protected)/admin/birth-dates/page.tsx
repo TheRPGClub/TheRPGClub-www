@@ -1,6 +1,6 @@
 import { clubToday } from "@/lib/challenges/dates";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection, TIER_SHORT } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection, TIER_SHORT } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { BirthDateForMember } from "@/components/admin/birth-dates/birth-date-for-member";
 import { StaffOnly } from "@/components/staff-only";
@@ -19,6 +19,7 @@ export default async function BirthDatesPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title="Birth Date"
         side={
           <>

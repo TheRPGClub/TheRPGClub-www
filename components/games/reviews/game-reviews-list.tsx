@@ -121,7 +121,7 @@ export function GameReviewsList({
       {draftSlot}
 
       {composing && canCompose && (
-        <div id="compose" className="scroll-mt-20">
+        <div id="compose" className="scroll-mt-5">
           <LazyReviewForm
             userId={ownerId}
             gameId={gameId}

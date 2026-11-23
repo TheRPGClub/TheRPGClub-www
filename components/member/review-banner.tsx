@@ -6,7 +6,11 @@ import { trackChips } from "@/components/issue/game-track";
 import type { Game } from "@/lib/api/types";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import { cn } from "@/lib/utils";
+import { BackLink } from "@/components/shell/back-link";
 import { ReviewBannerByline, ReviewBannerScore } from "./review-banner-byline";
+
+// The way back to the game's Reviews, on the banner's top-left corner.
+const ON_BANNER = "absolute top-4 left-4 z-10 mb-0 sm:left-7 md:top-5 md:left-8";
 
 export interface ReviewBannerProps {
   game: Pick<
@@ -51,7 +55,8 @@ export interface ReviewBannerProps {
  * The cover over a review: full-bleed key art, the game and its win chip on a
  * small line, the review's headline set huge, the byline, and the score in a
  * paper block at the right. It bleeds to the content column's edges, so it
- * undoes the layout's padding itself.
+ * undoes the layout's padding itself. Its top-left corner holds the way back
+ * to the game's Reviews.
  */
 export function ReviewBanner({
   game,
@@ -99,6 +104,7 @@ export function ReviewBanner({
             : "bg-[linear-gradient(0deg,var(--color-background)_0%,var(--color-card)_100%)]",
         )}
       />
+      <BackLink href={`/games/${game.game_id}/reviews`} label="Reviews" onArt className={ON_BANNER} />
 
       <div className="grid gap-5 px-4 pt-15 pb-6 sm:px-7 md:min-h-[420px] md:grid-cols-[1fr_auto] md:items-end md:gap-7 md:px-8 md:pt-16 md:pb-7.5">
         <div className="min-w-0">

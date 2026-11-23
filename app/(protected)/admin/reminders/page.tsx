@@ -2,7 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiCollection, PublicReminder } from "@/lib/api/types";
 import { fetchGuildChannels } from "@/lib/api/guild-channels";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { PageHeader } from "@/components/templates/page-header";
 import { StaffOnly } from "@/components/staff-only";
 import { PublicRemindersEditor } from "@/components/admin/reminders/reminders-editor";
@@ -40,7 +40,7 @@ export default async function PublicRemindersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={SECTION.label} description={SECTION.blurb} />
+      <PageHeader back={STAFF_DESK_BACK} title={SECTION.label} description={SECTION.blurb} />
       {reminders === null ? (
         <p role="alert" className="text-destructive">
           {"Couldn't load the reminders. Refresh to try again."}

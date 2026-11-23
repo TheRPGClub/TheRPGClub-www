@@ -49,7 +49,6 @@ export default async function ReviewPage({
 
   const [features, reviewRes, session] = await Promise.all([
     requireFeature("reviews"),
-    // The running head reads the same URL, so React shares the one fetch.
     apiFetch(`/api/v1/reviews/${reviewId}`, { cache: "no-store" }),
     getSession(),
   ]);

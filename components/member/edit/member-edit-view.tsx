@@ -1,4 +1,3 @@
-import { ChevronLeft } from "lucide-react";
 
 import { EDIT_LISTS, type MemberEditData, type MemberEditShown } from "@/lib/member-edit";
 import { SocialsEditor } from "@/components/socials-editor";
@@ -6,7 +5,6 @@ import { GameListEditor } from "@/components/member/game-list-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { PageHeader } from "@/components/templates/page-header";
 import { EditSections, type EditSection } from "@/components/member/edit/edit-sections";
-import { ButtonLink } from "@/components/ui/button";
 
 // The profile edit page: its header, then one section per list the member is
 // shown, their socials and (where the hub is open to them) their Linked
@@ -80,14 +78,9 @@ export function MemberEditView({
   return (
     <div className="space-y-7">
       <PageHeader
+        back={{ href: `/members/${user.user_id}`, label: displayName }}
         title="Edit profile"
         count={displayName}
-        actions={
-          <ButtonLink href={`/members/${user.user_id}`} variant="outline">
-            <ChevronLeft data-icon="inline-start" />
-            Back to profile
-          </ButtonLink>
-        }
       />
       <EditSections sections={sections} importsHref={importsHref} />
     </div>

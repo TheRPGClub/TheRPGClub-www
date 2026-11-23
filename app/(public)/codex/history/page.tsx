@@ -3,16 +3,14 @@ import { notFound } from "next/navigation";
 import { fetchHistoryEvents } from "@/lib/api/codex";
 import { appShellProps } from "@/lib/app-shell";
 import { focusQuery, historyEventParam, historyQuery, timelineHref } from "@/lib/codex/history";
-import { entryHref, HISTORY_PATH } from "@/lib/codex/paths";
+import { CODEX_BACK, entryHref, HISTORY_PATH } from "@/lib/codex/paths";
 import { visibleLinks } from "@/lib/codex/see-also";
-import { crumbTrail } from "@/lib/crumbs";
 import { discordInviteUrl } from "@/lib/discord-invite";
 import { featureView } from "@/lib/features";
 import { firstParam } from "@/lib/search-params";
 import { getSession } from "@/lib/session";
 import { discordSignInUrl } from "@/lib/sign-in";
 import { isAdminOrAbove } from "@/lib/staff";
-import { RunningHead } from "@/components/issue/running-head";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { PublicFrame } from "@/components/landing/public-frame";
 import { AppShell } from "@/components/shell/app-shell";
@@ -22,7 +20,7 @@ import { HistorySeeAlso } from "@/components/codex/history/history-see-also";
 // Club History (www#126, design 2B), the public part of the Club Codex. It
 // lives outside the protected group so a Visitor can read it, and serves
 // both frames itself: a Visitor gets the public top bar, a Member the app
-// shell with its crumbs. The API decides what a Visitor sees (not found
+// shell, with a way back to the Club Codex. The API decides what a Visitor sees (not found
 // unless the Feature is Live); a Member's session decides theirs, as on
 // every Feature page.
 //
@@ -56,6 +54,7 @@ export default async function ClubHistoryPage({ searchParams }: PageProps<"/code
       query={query}
       linked={session !== null}
       canAdd={isAdminOrAbove(session?.membership)}
+      back={visitor ? undefined : CODEX_BACK}
       badge={features.preview("club_codex") && <PreviewBadge />}
       seeAlso={(event) => (
         <HistorySeeAlso
@@ -73,9 +72,8 @@ export default async function ClubHistoryPage({ searchParams }: PageProps<"/code
       </PublicFrame>
     );
   }
-  const trail = await crumbTrail(["codex", "history"]);
   return (
-    <AppShell {...await appShellProps(session)} crumbs={<RunningHead trail={trail} />}>
+    <AppShell {...await appShellProps(session)}>
       {timeline}
     </AppShell>
   );

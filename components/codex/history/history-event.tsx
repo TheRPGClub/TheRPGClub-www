@@ -25,7 +25,7 @@ export function HistoryEvent({
     <article
       id={historyEventAnchor(event.id)}
       style={{ "--ink": kindInk(event.kind) } as React.CSSProperties}
-      className="group/event scroll-mt-24"
+      className="group/event scroll-mt-9"
     >
       <div className="flex min-h-6 items-center gap-2.5">
         <span aria-hidden className="size-2.5 shrink-0 rounded-full bg-(--ink)" />

@@ -16,6 +16,7 @@ export default async function NewChallengePage() {
     return (
       <div className="space-y-6">
         <PageHeader
+          back={{ href: "/challenges", label: "Challenges" }}
           title="New Challenge"
           badge={badge}
           description="You need the Regulars role to create a Challenge. If you think your role is out of date, sign out and back in to refresh it from Discord."

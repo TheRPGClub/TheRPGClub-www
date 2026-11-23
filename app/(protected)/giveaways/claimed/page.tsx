@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { fetchClaimedKeys } from "@/lib/api/game-keys";
 import { fetchMemberNames } from "@/lib/api/members";
 import { PageHeader } from "@/components/templates/page-header";
 import { ClaimedKeysTable } from "@/components/giveaways/claimed-keys-table";
-import { ButtonLink } from "@/components/ui/button";
 
 export const metadata = { title: "Your claimed keys" };
 
@@ -23,16 +21,11 @@ export default async function ClaimedKeysPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        back={{ href: "/giveaways", label: "Giveaways" }}
         title="Your claimed keys"
         badge={features.preview("giveaways") && <PreviewBadge />}
         count={keys ? `${keys.length} ${keys.length === 1 ? "key" : "keys"}` : undefined}
         description="Each key you claim stays here. The bot also sent each one to your Discord DMs when you claimed it."
-        actions={
-          <ButtonLink href="/giveaways" variant="outline">
-            <ArrowLeft data-icon="inline-start" />
-            Back to the shelf
-          </ButtonLink>
-        }
       />
       {keys === null ? (
         <p role="alert" className="text-destructive">

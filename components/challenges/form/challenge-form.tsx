@@ -38,6 +38,7 @@ export function ChallengeForm({
   return (
     <div className="space-y-6 pb-12">
       <PageHeader
+        back={{ href: cancelHref, label: edit ? initial.name || "Challenge" : "Challenges" }}
         title={edit ? "Edit Challenge" : "New Challenge"}
         badge={badge}
         actions={

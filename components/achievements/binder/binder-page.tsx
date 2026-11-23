@@ -15,6 +15,7 @@ import { BinderFilterTabs } from "./binder-filter-tabs";
 import { BinderIndexHeader } from "./binder-index-header";
 import { BinderMemberPage } from "./binder-member-page";
 import { BinderNote } from "./binder-notes";
+import { BackLink } from "@/components/shell/back-link";
 
 // A member's achievements as an open binder. The left page is the member:
 // their name, totals, Linked Accounts and four rarest Unlocks. The right page
@@ -47,6 +48,7 @@ export function BinderPage({
 
   return (
     <div className="pt-2 pb-6">
+      <BackLink href={`/members/${userId}`} label={displayName} />
       {sets && (
         <BinderFilterTabs
           query={query}

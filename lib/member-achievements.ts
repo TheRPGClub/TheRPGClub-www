@@ -162,8 +162,7 @@ export function achievementRowId(id: number): string {
   return `achievement-${id}`;
 }
 
-// GET /achievement_sets/:id through a member's eyes. The set page and the
-// running head both read it with this URL, so the request is shared.
+// GET /achievement_sets/:id through a member's eyes, as the set page reads it.
 export function setDetailPath(setId: string, userId: string): string {
   return `/api/v1/achievement_sets/${setId}?user_id=${encodeURIComponent(userId)}`;
 }

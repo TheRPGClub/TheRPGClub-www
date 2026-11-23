@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { CodexEntry } from "@/lib/codex/types";
-import { FUN_FACTS_PATH, partCount } from "@/lib/codex/paths";
+import { CODEX_BACK, FUN_FACTS_PATH, partCount } from "@/lib/codex/paths";
 import { cardNumber, pageRange } from "@/lib/codex/wall";
 import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
@@ -38,6 +38,7 @@ export function FunFactsWall({
   return (
     <WallProvider ids={ids}>
       <PageHeader
+        back={CODEX_BACK}
         title="Fun Facts"
         badge={badge}
         count={failed ? null : total}

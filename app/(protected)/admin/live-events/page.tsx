@@ -4,7 +4,7 @@ import type { ApiCollection, LiveEvent } from "@/lib/api/types";
 import { discordLinkConfig } from "@/lib/gotm-links";
 import { upcomingCount } from "@/lib/live-events";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { YourZone } from "@/components/admin/desk/your-zone";
 import { LiveEventList } from "@/components/admin/live-events/live-event-list";
@@ -37,6 +37,7 @@ export default async function LiveEventsPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           <>

@@ -26,7 +26,7 @@ export function FunFactEdit({
     <section
       id={id}
       aria-labelledby={`${id}-edit`}
-      className="scroll-mt-24 rounded-md bg-card px-4 pt-4 pb-3.5 shadow-[inset_0_3px_0_var(--color-codex-fact),0_10px_22px_rgb(0_0_0/0.5)]"
+      className="scroll-mt-9 rounded-md bg-card px-4 pt-4 pb-3.5 shadow-[inset_0_3px_0_var(--color-codex-fact),0_10px_22px_rgb(0_0_0/0.5)]"
     >
       <h3 id={`${id}-edit`} className="font-label mb-2.5 text-[0.8125rem] font-bold tracking-[0.08em] text-codex-fact">
         Edit Fun Fact No. {number}

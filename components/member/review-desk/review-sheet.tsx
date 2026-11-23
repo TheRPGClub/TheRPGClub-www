@@ -16,7 +16,7 @@ import { SheetBanner } from "./sheet-banner";
 import { REVIEW_STORY } from "./story";
 
 // The sheet a review is written on: the game's banner with the title, the
-// toolbar sticky under the top bar once the banner scrolls away, then the
+// toolbar sticky at the top of the screen once the banner scrolls away, then the
 // story. The sheet stretches to the height of the notes beside it, and the
 // space under a short story is the rest of a lined page that takes a click
 // as "carry on writing".
@@ -52,7 +52,7 @@ export function ReviewSheet({ form, game }: { form: ReviewFormState; game?: Revi
           count={richTextPlainText(form.body).length}
           disabled={form.pending}
         />
-        <div className="sticky top-[60px] z-20 bg-card px-4 sm:px-10">
+        <div className="sticky top-[env(safe-area-inset-top)] z-20 bg-card px-4 sm:px-10">
           <RichTextToolbar
             schema={REVIEW_SCHEMA}
             className="flex-nowrap overflow-x-auto border-b border-border-strong px-1 py-1.5"

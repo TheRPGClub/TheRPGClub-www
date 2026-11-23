@@ -65,7 +65,7 @@ export function ReviewDesk({
         <ReviewSheet form={form} game={game} />
         <aside
           aria-label="Scores"
-          className="flex flex-col gap-7 lg:sticky lg:top-[76px] lg:max-h-[calc(100dvh-92px)] lg:self-start lg:overflow-y-auto lg:px-2 lg:pt-3 lg:pb-4 lg:-mx-2 lg:-mt-3"
+          className="flex flex-col gap-7 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-32px)] lg:self-start lg:overflow-y-auto lg:px-2 lg:pt-3 lg:pb-4 lg:-mx-2 lg:-mt-3"
         >
           {earlierTake && <EarlierTakeNote take={earlierTake} track={TRACK_NOTE[accent]} />}
           <DeskNote

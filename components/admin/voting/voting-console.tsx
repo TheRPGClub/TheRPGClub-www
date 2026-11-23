@@ -9,6 +9,8 @@ import { NextVoteOp } from "./next-vote-op";
 import { TallyTrack, type TrackView } from "./tally-track";
 import { PublishOp, RepostOp } from "./voting-job-ops";
 import { CloseNowOp } from "./voting-ops";
+import { STAFF_DESK_BACK } from "@/lib/staff";
+import { BackLink } from "@/components/shell/back-link";
 
 export type ConsoleTrack = TrackView;
 
@@ -52,7 +54,8 @@ export function VotingConsole({
   const pinMax = Math.max(saved, rulerTime(96, scale));
 
   return (
-    <div>
+    <div className="flex flex-col">
+      <BackLink {...STAFF_DESK_BACK} />
       <header className="grid items-end gap-x-7 gap-y-1.5 border-b-2 border-foreground pb-3.5 md:grid-cols-[auto_minmax(0,1fr)]">
         <p aria-hidden className="font-headline text-[5.5rem] leading-[0.8] md:text-[8rem]">
           {n}

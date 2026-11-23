@@ -47,7 +47,7 @@ export function AppSidebar({ principal, membership, votingPhase, features, pinne
   };
 
   return (
-    // z-30: the rail's slide-out panel and its scrim cover the top bar (z-20).
+    // z-30: the rail's slide-out panel and its scrim cover the page.
     // The fixed panel moves in past a landscape phone's notch, as the body's
     // padding moves the page.
     <Sidebar collapsible="icon" className="z-30 data-[side=left]:left-[env(safe-area-inset-left)]">

@@ -34,7 +34,7 @@ export function ImportProgressRail({
   const finished = job.status === "completed" || job.status === "canceled";
 
   return (
-    <aside aria-label="Import progress" className="space-y-4.5 lg:sticky lg:top-20">
+    <aside aria-label="Import progress" className="space-y-4.5 lg:sticky lg:top-5">
       <ImportProgressBar kind={kind} total={total} counts={counts} />
       {/* The full tally is a desktop rail; phones keep the count and bar
           so the item under review comes up sooner. */}

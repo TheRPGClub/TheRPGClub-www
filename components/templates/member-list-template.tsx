@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/templates/page-header";
+import { BackLink } from "@/components/shell/back-link";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import {
   MEMBER_LISTS,
@@ -29,11 +30,14 @@ export interface MemberListTemplateProps {
   // The Feature this page belongs to, for the staff Preview badge; defaults
   // to the current list's.
   feature?: FeatureKey;
+  // The page's way back (its BackLink); the member's profile by default.
+  back?: { href: string; label: string };
   children: ReactNode;
 }
 
-// The frame every member sub-page shares (the top bar carries the trail): the
-// member's name with a switcher across their lists, then the page title on the paper rule
+// The frame every member sub-page shares: the way back (to the member's
+// profile, unless a deeper page names its parent), the member's name with a
+// switcher across their lists, then the page title on the paper rule
 // with its actions. The switcher leaves out lists whose Feature this viewer
 // isn't shown, except the one being read (a list hidden by preference still
 // opens from a link). Not-found when the page's Feature flag hides it.
@@ -47,6 +51,7 @@ export async function MemberListTemplate({
   current,
   counts,
   feature,
+  back,
   children,
 }: MemberListTemplateProps) {
   const features = await getFeatures();
@@ -60,7 +65,8 @@ export async function MemberListTemplate({
   if (pageFeature && !features.canOpen(pageFeature)) notFound();
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
+        <BackLink {...(back ?? { href: `/members/${userId}`, label: displayName })} className="mb-0" />
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link
             href={`/members/${userId}`}

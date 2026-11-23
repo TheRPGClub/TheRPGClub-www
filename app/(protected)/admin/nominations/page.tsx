@@ -1,7 +1,7 @@
 import type { VotingPhase } from "@/lib/api/types";
 import { fetchNominations, fetchVotingRound, VOTING_CATEGORIES } from "@/lib/api/voting-round";
 import { requireAuth } from "@/lib/session";
-import { canUseTier, staffSection } from "@/lib/staff";
+import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { NominationDesk } from "@/components/admin/nominations/nomination-desk";
 import { StaffOnly } from "@/components/staff-only";
@@ -30,7 +30,7 @@ export default async function NominationsAdminPage() {
   if (!round) {
     return (
       <div>
-        <DeskHeader title={SECTION.label} side="No round right now" />
+        <DeskHeader back={STAFF_DESK_BACK} title={SECTION.label} side="No round right now" />
         <p className="mt-6 text-dim-foreground">There is no voting round, so there are no nominations to delete.</p>
       </div>
     );
@@ -47,6 +47,7 @@ export default async function NominationsAdminPage() {
   return (
     <div>
       <DeskHeader
+        back={STAFF_DESK_BACK}
         title={SECTION.label}
         side={
           <>

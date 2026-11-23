@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { loadMemberProfile } from "@/lib/members/profile-page";
 import { MemberAchievementsSection } from "@/components/achievements/member-achievements-section";
+import { BackLink } from "@/components/shell/back-link";
 import { ProfileBanner } from "@/components/member/profile/profile-banner";
 import { ProfileBookcase } from "@/components/member/profile/profile-bookcase";
 import { ProfileJournal } from "@/components/member/profile/profile-journal";
@@ -25,7 +26,15 @@ export default async function MemberPage({
   const { show, achievements, runs } = profile;
 
   return (
-    <DetailTemplate className="space-y-10" hero={<ProfileBanner profile={profile} />}>
+    <DetailTemplate
+      className="space-y-10"
+      hero={
+        <div className="flex flex-col">
+          <BackLink href="/members" label="Members" />
+          <ProfileBanner profile={profile} />
+        </div>
+      }
+    >
       {show.nowPlaying && <ProfileNowPlaying profile={profile} />}
       <ProfileBookcase profile={profile} />
       {/* The Challenges department: hidden with the Feature, or unread. */}

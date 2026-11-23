@@ -18,7 +18,12 @@ export function DonateView({
   const claimed = keys?.filter((k) => k.claimed_by_user_id).length ?? 0;
   return (
     <div className="space-y-6">
-      <PageHeader title="Giveaways" badge={preview && <PreviewBadge />} count="Donate and manage" />
+      <PageHeader
+        back={{ href: "/giveaways", label: "Giveaways" }}
+        title="Giveaways"
+        badge={preview && <PreviewBadge />}
+        count="Donate and manage"
+      />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,28.75rem)_minmax(0,1fr)] lg:gap-9">
         <div>
           <DonateForm />
