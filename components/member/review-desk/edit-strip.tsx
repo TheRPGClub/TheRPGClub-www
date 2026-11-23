@@ -21,6 +21,7 @@ export function EditStrip({
   onCancel,
   onDelete,
   revision,
+  deleteNote = "Every member loses it, score and all.",
 }: {
   accent: ReviewAccent;
   publishedAt?: string | null;
@@ -32,6 +33,9 @@ export function EditStrip({
   // Editing a Published Revision: Delete takes only it, and says where the
   // score goes ("Its take and scorecard go. The score goes back to 85.").
   revision?: { deleteNote: string } | null;
+  // Editing the Review's first take: what deleting the whole Review takes
+  // with it (its Revisions too, on a revisited Review).
+  deleteNote?: string;
 }) {
   const [confirming, setConfirming] = useState(false);
 
@@ -43,7 +47,7 @@ export function EditStrip({
             <b className="font-semibold text-destructive">
               {revision ? "Delete this revision?" : "Delete this review?"}
             </b>{" "}
-            {revision ? revision.deleteNote : "Every member loses it, score and all."} This can&apos;t be undone.
+            {revision ? revision.deleteNote : deleteNote} This can&apos;t be undone.
           </p>
           <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(false)} disabled={pending} autoFocus>
             Keep it
