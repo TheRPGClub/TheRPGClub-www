@@ -97,7 +97,6 @@ export function gamePageGates(
   membership: Parameters<typeof isAdminOrAbove>[0],
 ) {
   return {
-    // Image upload and linking versions.
     isAdmin: isAdminOrAbove(membership),
     // Thread link and unlink: the API's Regulars-or-staff gate.
     canEditThreads: isRegularOrStaff(membership),

@@ -11,6 +11,12 @@ import {
   type GameLinkResult,
 } from "@/app/actions/game-links";
 import {
+  deleteGameImageAction,
+  listGameImagesAction,
+  updateGameImageAction,
+  uploadGameImageAction,
+} from "@/app/actions/game-images";
+import {
   gameEditSave,
   saveSummary,
   type GameEditRecord,
@@ -41,11 +47,19 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "image.upload": (call) => uploadGameImageAction(gameId, imageForm(call.image.file, call.image.kind, call.primary)),
+    "image.update": (call) => updateGameImageAction(gameId, call.imageId, call.fields),
+    "image.delete": (call) => deleteGameImageAction(gameId, call.imageId),
     "thread.link": (call) => linkThreadAction(call.thread.thread_id, gameId).then(asStep),
     "thread.unlink": (call) => unlinkThreadAction(call.threadId, gameId).then(asStep),
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
+  };
+  // Sections whose saved record only the API knows (new image ids and
+  // URLs): read back after a save, whether it went through or not.
+  const reloads: { [K in GameEditSectionKey]?: () => Promise<GameEditRecord[K] | null> } = {
+    images: () => listGameImagesAction(gameId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -59,8 +73,8 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     });
   }
 
-  // A refresh or lookup ran (an action, not an edit): the section's record
-  // as it now stands.
+  // Puts a section's fresh record in place: after a save (see `reloads`)
+  // or after a refresh or lookup a tab ran (an action, not an edit).
   function reloadSection<K extends GameEditSectionKey>(key: K, loaded: GameEditRecord[K]) {
     setRecord((prev) => ({ ...prev, [key]: loaded }));
   }
@@ -79,6 +93,10 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       const failed = outcome.sections.filter((s) => s.status === "failed");
       setErrors(Object.fromEntries(failed.map((s) => [s.key, s.error])));
       setNotice(failed.length > 0 ? { title: saveSummary(outcome).split(":")[0], failed: failed.map((s) => s.label) } : null);
+      for (const { key } of outcome.sections) {
+        const fresh = await reloads[key]?.();
+        if (fresh) reloadSection(key, fresh);
+      }
       router.refresh();
     });
   }
@@ -113,3 +131,11 @@ function asStep(result: GameLinkResult): StepResult {
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;
+
+function imageForm(file: File, kind: string, primary: boolean): FormData {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("kind", kind);
+  form.append("is_primary", String(primary));
+  return form;
+}

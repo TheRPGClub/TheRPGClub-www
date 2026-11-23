@@ -7,6 +7,7 @@ import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { fetchGameRelations } from "@/lib/games/game-page";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
+import { listGameImagesAction } from "@/app/actions/game-images";
 
 export const metadata = { title: "Edit game" };
 
@@ -33,6 +34,7 @@ export default async function GameEditPage({
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
   const threads = await fetchGameThreads(gameId);
+  const images = viewer.admin ? ((await listGameImagesAction(gameId)) ?? []) : [];
 
   return (
     <GameEditView
@@ -42,6 +44,7 @@ export default async function GameEditPage({
       artUrl={game.art_url}
       record={{
         text: { description: game.description, featured_video_url: game.featured_video_url },
+        images,
         threads,
         versions: (relations?.alternates ?? []).map(alternateVersion),
         hltb: hltb ?? null,

@@ -1,5 +1,6 @@
 import { createGameEditSave, type EditCall, type EditRecord, type EditStage, type EditSteps } from "./engine";
 import { textSection, type GameText, type GameUpdateCall, type TextStage } from "./text";
+import { imagesSection, type GameImageEntry, type ImageCall, type ImagesStage } from "./images";
 import { threadsSection, type GameThreadRef, type ThreadCall, type ThreadsStage } from "./threads";
 import { versionsSection, type AlternateVersion, type VersionCall, type VersionsStage } from "./versions";
 import { hltbSection, type HltbStage, type HltbTimes, type HltbUpsertCall } from "./hltb";
@@ -14,6 +15,7 @@ import { hltbSection, type HltbStage, type HltbTimes, type HltbUpsertCall } from
 
 export interface GameEditSections {
   text: { loaded: GameText; staged: TextStage; call: GameUpdateCall };
+  images: { loaded: GameImageEntry[]; staged: ImagesStage; call: ImageCall };
   threads: { loaded: GameThreadRef[]; staged: ThreadsStage; call: ThreadCall };
   versions: { loaded: AlternateVersion[]; staged: VersionsStage; call: VersionCall };
   hltb: { loaded: HltbTimes; staged: HltbStage; call: HltbUpsertCall };
@@ -26,12 +28,19 @@ export type GameEditCall = EditCall<GameEditSections>;
 export type GameEditSteps = EditSteps<GameEditSections>;
 
 export const gameEditSave = createGameEditSave<GameEditSections>(
-  { text: textSection, threads: threadsSection, versions: versionsSection, hltb: hltbSection },
-  ["text", "threads", "versions", "hltb"],
+  {
+    text: textSection,
+    images: imagesSection,
+    threads: threadsSection,
+    versions: versionsSection,
+    hltb: hltbSection,
+  },
+  ["text", "images", "threads", "versions", "hltb"],
 );
 
 export { saveSummary, type GameEditViewer, type StepResult } from "./engine";
 export type { GameText, TextStage } from "./text";
+export type { GameImageEntry, ImageCall, ImagesStage, ImageKind, PendingImage } from "./images";
 export type { GameThreadRef, ThreadRef, ThreadsStage } from "./threads";
 export { alternateVersion, type AlternateVersion, type VersionsStage } from "./versions";
 export { hltbFieldValue, type HltbField, type HltbStage, type HltbTimes } from "./hltb";
