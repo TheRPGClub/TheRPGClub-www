@@ -13,6 +13,7 @@ import {
 } from "@/app/actions/reviews";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 import { isDraft } from "@/lib/reviews/draft";
+import { isScoreLocked, scoreLocksAt } from "@/lib/reviews/edit-rules";
 import type { Review } from "@/lib/api/types";
 import { reviewBodyValue } from "@/lib/api/review-body";
 import { emptyRichTextValue } from "@/lib/rich-text/text";
@@ -67,6 +68,17 @@ export function useReviewForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const draft = existing ? isDraft(existing) : false;
+  // A Published take's score is fixed 7 days after publishing (ADR 0013).
+  // Read once when the editor opens; a server `score_locked` refusal (the
+  // week ran out while the editor was open) locks it the same way.
+  const [scoreLocked, setScoreLocked] = useState(() =>
+    existing ? isScoreLocked(existing, Date.now()) : false,
+  );
+  // The day it locked, for the reason. A refusal while this page thought the
+  // week still open (a clock running behind) says it locked now, never on a
+  // day still to come.
+  const [locksAt, setLocksAt] = useState(() => (existing ? scoreLocksAt(existing) : null));
+  const lock = existing && !draft ? { locked: scoreLocked, locksAt } : null;
   const autosave = useDraftAutosave(draft && existing ? existing.review_id : null, {
     title,
     rating,
@@ -97,6 +109,12 @@ export function useReviewForm({
         : await createReviewAction(userId, gameId, payload, { publish: true });
 
       if (!result.ok) {
+        if (result.code === "score_locked" && existing) {
+          // Back to the published score, so the next Save keeps the rest.
+          setScoreLocked(true);
+          setLocksAt((at) => (at !== null && at <= Date.now() ? at : Date.now()));
+          setRating(existing.rating);
+        }
         setError(result.error ?? "Failed to save review.");
         return;
       }
@@ -151,7 +169,8 @@ export function useReviewForm({
     });
   };
 
-  // A Draft's Discard, already confirmed on the strip.
+  // A Draft's Discard, or a Published Review's Delete on the desk: already
+  // confirmed on the strip.
   const discard = () => {
     if (!existing) return;
     setError(null);
@@ -200,6 +219,8 @@ export function useReviewForm({
     save,
     remove,
     draft,
+    // The score lock on a Published take; null on a Draft or a new review.
+    lock,
     autosave,
     startDraft,
     publish,

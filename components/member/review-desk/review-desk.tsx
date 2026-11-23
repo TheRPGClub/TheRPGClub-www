@@ -6,6 +6,7 @@ import type { ReviewFormState } from "@/hooks/use-review-form";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import type { ReviewDeskGame } from "./desk-game";
 import { DeskNote } from "./desk-note";
+import { ScoreLock } from "./score-lock";
 import { ReviewSheet } from "./review-sheet";
 
 // The track a score is given under, in the Overall note's corner.
@@ -66,7 +67,9 @@ export function ReviewDesk({
               onChange={form.setRating}
               accent={accent}
               disabled={form.pending}
+              locked={form.lock?.locked}
             />
+            {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} />}
             {form.draft && form.rating === null && (
               <p className="mt-3 mb-0 text-[0.9rem] leading-tight font-semibold text-highlight italic">
                 score it to publish

@@ -14,20 +14,31 @@ export interface ActionResult<T> {
   ok: boolean;
   data?: T;
   error?: string;
+  // The API's error code, when it sent one (`score_locked`), so the form can
+  // show a refusal in place rather than only as words.
+  code?: string;
 }
 
 // The API's error codes that have words of their own here.
 const ERROR_WORDS: Record<string, string> = {
   rating_required: "Give it an overall score before publishing.",
+  score_locked:
+    "The score is locked now, so nothing was saved. It's back to the published score: save again to keep your other changes.",
 };
 
 async function errorMessage(response: Response): Promise<string> {
+  return (await failure(response)).error!;
+}
+
+// A refused request as an ActionResult: the words, and the API's code.
+async function failure(response: Response): Promise<ActionResult<never>> {
   try {
     const body = await response.json();
-    if (typeof body.error === "string" && ERROR_WORDS[body.error]) return ERROR_WORDS[body.error];
-    return body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`;
+    const code = typeof body.error === "string" ? body.error : undefined;
+    if (code && ERROR_WORDS[code]) return { ok: false, error: ERROR_WORDS[code], code };
+    return { ok: false, error: body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`, code };
   } catch {
-    return `Request failed (HTTP ${response.status}).`;
+    return { ok: false, error: `Request failed (HTTP ${response.status}).` };
   }
 }
 
@@ -174,13 +185,15 @@ export async function updateReviewAction(
     body: JSON.stringify({ data: prepared.payload }),
   });
 
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  // `score_locked` keeps its code: the editor locks the ruler on it.
+  if (!res.ok) return failure(res);
 
   const body = (await res.json()) as { data: Review };
   revalidatePath(`/members/${userId}`);
   revalidatePath(`/members/${userId}/reviews`);
   revalidatePath(`/games/${gameId}`);
   revalidatePath(`/games/${gameId}/reviews`);
+  revalidatePath("/reviews");
   revalidatePath(reviewHref(reviewId));
   return { ok: true, data: body.data };
 }

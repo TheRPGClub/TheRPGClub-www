@@ -9,15 +9,11 @@ import { ReviewVerdict } from "@/components/issue/review-verdict";
 import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import { reviewBodyText } from "@/lib/api/review-body";
-import type {
-  ApiCollection,
-  ApiSingle,
-  Game,
-  Review,
-} from "@/lib/api/types";
+import type { ApiCollection, ApiSingle, Game, Review } from "@/lib/api/types";
 import { fetchAuthor } from "@/lib/games/reviews-page";
 import { accentForGame } from "@/lib/reviews/accent";
 import { isDraft } from "@/lib/reviews/draft";
+import { editedAt } from "@/lib/reviews/edit-rules";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { DetailTemplate } from "@/components/templates/detail-template";
@@ -100,6 +96,7 @@ export default async function ReviewPage({
             authorName={authorName}
             // A Draft finished later reads as reviewed the day it went out.
             createdAt={review.published_at ?? review.created_at}
+            editedAt={editedAt(review)}
             canEdit={isMine}
             title={review.title}
             badge={features.preview("reviews") && <PreviewBadge />}
