@@ -3,16 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Review } from "@/lib/api/types";
+import { reviewHref } from "@/lib/reviews/href";
 
 // The game reviews block's composer state: whether the quick composer is
 // open, which of the viewer's reviews is in the small editor, and the hand-off
 // to the full-page editor.
 export function useReviewComposer({
-  gameId,
   startComposing,
   composeCloseHref,
 }: {
-  gameId: number;
   // Opens the composer straight away (`?compose`).
   startComposing: boolean;
   // Where closing it goes, so the `?compose` that opened it drops out.
@@ -33,7 +32,7 @@ export function useReviewComposer({
   // `?edit` so the full page opens in the editor rather than dropping the
   // writer back into a read view they then have to click out of.
   const openFullEditor = (review: Review) =>
-    router.push(`/games/${gameId}/reviews/${review.review_id}?edit=1`);
+    router.push(reviewHref(review.review_id, { edit: true }));
 
   const closeComposer = () => {
     setComposing(false);

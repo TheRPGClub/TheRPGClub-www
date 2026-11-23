@@ -8,6 +8,7 @@ import { MAX_REVIEW_TITLE_LENGTH, sanitizeReviewTitle } from "@/lib/api/review-t
 import { WEIGHT_TOTAL, sanitizeReviewFacets } from "@/lib/reviews/facets";
 import type { Review } from "@/lib/api/types";
 import { richTextPlainText } from "@/lib/rich-text/text";
+import { reviewHref } from "@/lib/reviews/href";
 
 export interface ActionResult<T> {
   ok: boolean;
@@ -168,7 +169,7 @@ export async function updateReviewAction(
   revalidatePath(`/members/${userId}/reviews`);
   revalidatePath(`/games/${gameId}`);
   revalidatePath(`/games/${gameId}/reviews`);
-  revalidatePath(`/games/${gameId}/reviews/${reviewId}`);
+  revalidatePath(reviewHref(reviewId));
   return { ok: true, data: body.data };
 }
 

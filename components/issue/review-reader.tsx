@@ -14,6 +14,7 @@ import {
   type ReaderNeighbour,
 } from "@/components/issue/review-reader-neighbours";
 import { ReviewReaderTools } from "@/components/issue/review-reader-tools";
+import { reviewHref } from "@/lib/reviews/href";
 
 // The reviews list's inline reader: one review open in full beside the list.
 // A slim art banner carrying the byline and the score, the headline, the
@@ -42,7 +43,7 @@ export function ReviewReader({
   const art = game.art_url ?? game.cover_url;
   const facets = scoredFacets(review.facets);
   const hasBody = reviewBodyText(review.body) !== null;
-  const fullHref = `/games/${game.game_id}/reviews/${review.review_id}`;
+  const fullHref = reviewHref(review.review_id);
 
   return (
     <article aria-labelledby="reader-title" className="min-w-0">

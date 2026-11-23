@@ -6,6 +6,7 @@ import { FacetBars, ScoreBox, scoredFacets } from "@/components/issue/review-met
 import { ReviewCardBody } from "@/components/issue/review-card-body";
 import { ReviewCardByline } from "@/components/issue/review-card-byline";
 import { cn } from "@/lib/utils";
+import { reviewHref } from "@/lib/reviews/href";
 
 export interface ReviewCardProps {
   review: Review;
@@ -36,7 +37,7 @@ export function ReviewCard({
   className,
 }: ReviewCardProps) {
   const target =
-    href ?? `/games/${review.gamedb_game_id}/reviews/${review.review_id}`;
+    href ?? reviewHref(review.review_id);
   const hasBody = reviewBodyText(review.body) !== null;
   const excerpt = reviewBodyExcerpt(review.body, variant === "card" ? 280 : 200);
   const facets = scoredFacets(review.facets);

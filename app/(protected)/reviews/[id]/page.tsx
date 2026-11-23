@@ -28,44 +28,42 @@ import { DetailTemplate } from "@/components/templates/detail-template";
 
 const MORE_SHOWN = 4;
 
-export default async function GameReviewDetailPage({
+export default async function ReviewPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string; reviewId: string }>;
+  params: Promise<{ id: string }>;
   searchParams: Promise<{ edit?: string }>;
 }) {
-  const [{ id, reviewId }, { edit }] = await Promise.all([
-    params,
-    searchParams,
-  ]);
-  const gameId = parseInt(id, 10);
-  const numericReviewId = parseInt(reviewId, 10);
-  if (isNaN(gameId) || isNaN(numericReviewId)) notFound();
+  const [{ id }, { edit }] = await Promise.all([params, searchParams]);
+  const reviewId = parseInt(id, 10);
+  if (isNaN(reviewId)) notFound();
 
-  const [features, reviewRes, gameRes, session, othersRes] = await Promise.all([
+  const [features, reviewRes, session] = await Promise.all([
     requireFeature("reviews"),
-    apiFetch(`/api/v1/reviews/${numericReviewId}`, { cache: "no-store" }),
-    apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
+    // The running head reads the same URL, so React shares the one fetch.
+    apiFetch(`/api/v1/reviews/${reviewId}`, { cache: "no-store" }),
     getSession(),
+  ]);
+  if (!reviewRes.ok) notFound();
+  const { data: review }: ApiSingle<Review> = await reviewRes.json();
+  const gameId = review.gamedb_game_id;
+
+  // The single-review endpoint renders the row's own columns and embeds no
+  // author, so the byline needs its own read.
+  const [gameRes, othersRes, author] = await Promise.all([
+    apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     // One more than shown, so the current review can drop out and still
     // leave a full row.
     apiFetch(`/api/v1/games/${gameId}/reviews?per=${MORE_SHOWN + 1}`, {
       cache: "no-store",
     }),
+    fetchAuthor(review.user_id),
   ]);
-
-  if (!reviewRes.ok || !gameRes.ok) notFound();
-  const { data: review }: ApiSingle<Review> = await reviewRes.json();
+  if (!gameRes.ok) notFound();
   const { data: game }: ApiSingle<Game> = await gameRes.json();
 
-  // Defensive — the URL might point at a review for a different game.
-  if (review.gamedb_game_id !== gameId) notFound();
-
-  // The single-review endpoint renders the row's own columns and embeds no
-  // author, so the byline needs its own read. It depends on the review, so it
-  // can't join the batch above.
-  const authorName = reviewerName(await fetchAuthor(review.user_id), review.user_id);
+  const authorName = reviewerName(author, review.user_id);
 
   let others: Review[] = [];
   let otherCount = 0;

@@ -75,7 +75,7 @@ export function GameReviewsList({
     editingReviewId,
     setEditingReviewId,
     openFullEditor,
-  } = useReviewComposer({ gameId, startComposing, composeCloseHref });
+  } = useReviewComposer({ startComposing, composeCloseHref });
 
   const ownReview =
     ownerId == null
