@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { updateGameTextAction } from "@/app/actions/game-edit";
+import { linkVersionAction, unlinkVersionAction, type GameLinkResult } from "@/app/actions/game-links";
 import {
   gameEditSave,
   saveSummary,
@@ -11,6 +12,7 @@ import {
   type GameEditStage,
   type GameEditSteps,
   type GameEditViewer,
+  type StepResult,
 } from "@/lib/games/game-edit";
 
 export interface GameEditSaveNotice {
@@ -33,6 +35,8 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
+    "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -80,6 +84,11 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       ([key, n]) => `${gameEditSave.label(key)} ${n}`,
     ),
   };
+}
+
+// The game page's link actions answer with an optional error.
+function stepResult(result: GameLinkResult): StepResult {
+  return result.ok ? { ok: true } : { ok: false, error: result.error ?? "Couldn't save that change." };
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;

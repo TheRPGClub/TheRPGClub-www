@@ -18,6 +18,7 @@ import { PlaceholderTab } from "@/components/games/edit/placeholder-tab";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
 import { TextVideoTab } from "@/components/games/edit/text-video-tab";
+import { VersionsTab } from "@/components/games/edit/versions-tab";
 
 export interface GameEditViewProps {
   gameId: number;
@@ -52,11 +53,19 @@ export function GameEditView(p: GameEditViewProps) {
     images: <PlaceholderTab title="Images" />,
     threads: <PlaceholderTab title="Game Threads" />,
     releases: <PlaceholderTab title="Releases" />,
-    versions: <PlaceholderTab title="Alternate Versions" />,
+    versions: (
+      <VersionsTab
+        gameId={p.gameId}
+        loaded={edit.record.versions}
+        staged={edit.stage.versions}
+        error={edit.errors.versions}
+        onStage={(next) => edit.stageSection("versions", next)}
+      />
+    ),
     hltb: <PlaceholderTab title="HowLongToBeat" />,
   };
   // The tabs' sections in the save module (the rest arrive with www#158-162).
-  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text" };
+  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", versions: "versions" };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (
     <>
