@@ -3,8 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { GameCover } from "@/components/issue/game-cover";
 import { ButtonLink } from "@/components/ui/button";
 import type { ReviewDraftEntry } from "@/lib/api/types";
-import { draftLoss } from "@/lib/reviews/drafts";
-import { reviewHref } from "@/lib/reviews/href";
+import { draftHref, draftLoss } from "@/lib/reviews/drafts";
 import { DiscardDraft } from "./discard-draft";
 import { DraftPaper } from "./draft-paper";
 import { DraftFirstLine, DraftPills, DraftScoreBox, DraftTouched } from "./draft-parts";
@@ -39,7 +38,7 @@ export function DraftSlot({
         <div className="min-w-0 [grid-area:body]">
           <h3 className="font-headline m-0 mb-1.5 text-[1.6rem] leading-none">Your draft</h3>
           <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <DraftPills game={draft.game} kind={draft.kind} />
+            <DraftPills game={draft.game} kind={draft.kind} previousRating={draft.previous_rating} />
             <DraftTouched at={draft.updated_at} now={now} />
           </div>
           <DraftFirstLine draft={draft} className="text-[0.98rem]" />
@@ -48,7 +47,7 @@ export function DraftSlot({
           <DraftScoreBox rating={draft.rating} />
         </div>
         <ButtonLink
-          href={reviewHref(draft.review_id)}
+          href={draftHref(draft)}
           variant="dog-ear"
           className="self-end [grid-area:go] max-sm:justify-self-start"
         >

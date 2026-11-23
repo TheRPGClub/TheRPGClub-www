@@ -6,6 +6,9 @@ import type { ReviewFormState } from "@/hooks/use-review-form";
 import type { ReviewAccent } from "@/lib/reviews/accent";
 import type { ReviewDeskGame } from "./desk-game";
 import { DeskNote } from "./desk-note";
+import { EarlierTakeNote, type EarlierTake } from "./earlier-take-note";
+
+export type { EarlierTake };
 import { ScoreLock } from "./score-lock";
 import { ReviewSheet } from "./review-sheet";
 
@@ -31,6 +34,7 @@ export function ReviewDesk({
   scorecard,
   footer,
   strip,
+  earlierTake,
 }: {
   form: ReviewFormState;
   game?: ReviewDeskGame;
@@ -41,6 +45,8 @@ export function ReviewDesk({
   // the bottom of the screen for the whole height of the desk (a sticky
   // element is held inside its parent).
   strip?: React.ReactNode;
+  // A Draft Revision's earlier take, taped above Overall.
+  earlierTake?: EarlierTake | null;
 }) {
   // The sheet and the notes share a grid of their own, apart from the
   // footer: a sticky element is held inside its containing block, so with the
@@ -61,7 +67,13 @@ export function ReviewDesk({
           aria-label="Scores"
           className="flex flex-col gap-7 lg:sticky lg:top-[76px] lg:max-h-[calc(100dvh-92px)] lg:self-start lg:overflow-y-auto lg:px-2 lg:pt-3 lg:pb-4 lg:-mx-2 lg:-mt-3"
         >
-          <DeskNote id={OVERALL_ID} heading="Overall" aside={TRACK_NOTE[accent]} className="scroll-mt-24 lg:-rotate-[1deg]">
+          {earlierTake && <EarlierTakeNote take={earlierTake} track={TRACK_NOTE[accent]} />}
+          <DeskNote
+            id={OVERALL_ID}
+            heading="Overall"
+            aside={earlierTake?.rating != null ? `was ${earlierTake.rating}` : TRACK_NOTE[accent]}
+            className="scroll-mt-24 lg:-rotate-[1deg]"
+          >
             <RatingInput
               value={form.rating}
               onChange={form.setRating}
@@ -69,7 +81,7 @@ export function ReviewDesk({
               disabled={form.pending}
               locked={form.lock?.locked}
             />
-            {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} />}
+            {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} revisitHref={form.revisitHref ?? undefined} />}
             {form.draft && form.rating === null && (
               <p className="mt-3 mb-0 text-[0.9rem] leading-tight font-semibold text-highlight italic">
                 score it to publish

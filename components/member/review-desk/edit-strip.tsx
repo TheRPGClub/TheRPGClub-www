@@ -20,6 +20,7 @@ export function EditStrip({
   rated,
   onCancel,
   onDelete,
+  revision,
 }: {
   accent: ReviewAccent;
   publishedAt?: string | null;
@@ -28,23 +29,28 @@ export function EditStrip({
   rated: boolean;
   onCancel?: () => void;
   onDelete: () => void;
+  // Editing a Published Revision: Delete takes only it, and says where the
+  // score goes ("Its take and scorecard go. The score goes back to 85.").
+  revision?: { deleteNote: string } | null;
 }) {
   const [confirming, setConfirming] = useState(false);
 
   return (
     <DeskStrip accent={accent} alarm={confirming}>
       {confirming ? (
-        <div role="alertdialog" aria-label="Delete this review?" className="flex flex-wrap items-center gap-2.5 px-3.5 py-2.5">
+        <div role="alertdialog" aria-label={revision ? "Delete this revision?" : "Delete this review?"} className="flex flex-wrap items-center gap-2.5 px-3.5 py-2.5">
           <p className="m-0 flex-[1_1_100%] text-[0.94rem] text-dim-foreground sm:flex-1">
-            <b className="font-semibold text-destructive">Delete this review?</b>{" "}
-            Every member loses it, score and all. This can&apos;t be undone.
+            <b className="font-semibold text-destructive">
+              {revision ? "Delete this revision?" : "Delete this review?"}
+            </b>{" "}
+            {revision ? revision.deleteNote : "Every member loses it, score and all."} This can&apos;t be undone.
           </p>
           <Button type="button" variant="ghost" size="sm" onClick={() => setConfirming(false)} disabled={pending} autoFocus>
             Keep it
           </Button>
           <Button type="button" variant="destructive-solid" size="sm" onClick={onDelete} disabled={pending}>
             <Trash2 />
-            Delete review
+            {revision ? "Delete revision" : "Delete review"}
           </Button>
         </div>
       ) : (
@@ -65,7 +71,7 @@ export function EditStrip({
           <span className="ml-auto flex items-center gap-2 sm:ml-0">
             <Button type="button" variant="destructive-ghost" size="sm" onClick={() => setConfirming(true)} disabled={pending}>
               <Trash2 />
-              Delete<span className="hidden sm:inline">review</span>
+              Delete<span className="hidden sm:inline">{revision ? "revision" : "review"}</span>
             </Button>
             <span aria-hidden className="hidden w-px self-stretch bg-border-strong sm:block" />
             {onCancel && (

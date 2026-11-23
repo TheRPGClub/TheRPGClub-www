@@ -1,8 +1,8 @@
-import { Clock3 } from "lucide-react";
+import { Clock3, RotateCcw } from "lucide-react";
 
 import { gameTrack } from "@/components/issue/game-track";
 import type { Game } from "@/lib/api/types";
-import { draftFirstLine, lastTouched, touchedAt } from "@/lib/reviews/drafts";
+import { draftFirstLine, draftStateLabel, lastTouched, touchedAt } from "@/lib/reviews/drafts";
 import { cn } from "@/lib/utils";
 import type { ReviewDraftEntry } from "@/lib/api/types";
 
@@ -48,9 +48,12 @@ const TRACK_PILL = {
 export function DraftPills({
   game,
   kind = "review",
+  previousRating = null,
 }: {
   game?: Pick<Game, "gotm_won" | "nr_gotm_won"> | null;
   kind?: ReviewDraftEntry["kind"];
+  // A Draft Revision's "was 72".
+  previousRating?: number | null;
 }) {
   const track = gameTrack(game);
   const pill = "font-label inline-flex h-[21px] items-center text-[0.72rem] font-extrabold whitespace-nowrap";
@@ -67,7 +70,8 @@ export function DraftPills({
           "bg-muted pr-2.5 pl-[7px] text-foreground shadow-[inset_0_0_0_1px_var(--border-strong)] [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,0_100%)]",
         )}
       >
-        {kind === "revision" ? "Draft Revision" : "Draft"}
+        {kind === "revision" && <RotateCcw aria-hidden className="mr-1 size-3" />}
+        {draftStateLabel({ kind, previous_rating: previousRating })}
       </span>
     </span>
   );

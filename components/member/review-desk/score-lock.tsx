@@ -3,8 +3,8 @@ import { Lock, RotateCcw } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { scoreLockReason } from "@/lib/reviews/edit-rules";
 
-// Under a locked score: why it can't change, and the way round it. The
-// Revisit link waits for Revisions; without `revisitHref` it stays hidden.
+// Under a locked score: why it can't change, and the way round it, a
+// Revision ("Revisit instead", given `revisitHref`).
 export function ScoreLock({
   id,
   locksAt,

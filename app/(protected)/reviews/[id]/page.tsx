@@ -1,38 +1,43 @@
 import { notFound } from "next/navigation";
 
 import { ReviewBanner } from "@/components/member/review-banner";
-import { ReviewBodyContent } from "@/components/member/review-body";
 import { ReviewDetail } from "@/components/member/review-detail";
 import { ReviewMore } from "@/components/issue/review-more";
-import { reviewerName } from "@/lib/reviews/reviewer-name";
 import { ReviewVerdict } from "@/components/issue/review-verdict";
 import { apiFetch } from "@/lib/api";
-import { paginationOf } from "@/lib/api/pagination";
-import { reviewBodyText } from "@/lib/api/review-body";
-import type { ApiCollection, ApiSingle, Game, Review } from "@/lib/api/types";
-import { fetchAuthor } from "@/lib/games/reviews-page";
+import type { ApiSingle, Review } from "@/lib/api/types";
+import { readReviewSurroundings } from "@/lib/reviews/review-page-read";
 import { accentForGame } from "@/lib/reviews/accent";
-import { isDraft } from "@/lib/reviews/draft";
 import { editedAt } from "@/lib/reviews/edit-rules";
+import { reviewPageMode } from "@/lib/reviews/review-page";
+import {
+  headlineTitle,
+  latestEdit,
+  revisedCount,
+  reviewTakes,
+  revisionDeleteNote,
+  scoreRow,
+} from "@/lib/reviews/takes";
+import { ReviewTakes } from "@/components/reviews/takes/review-takes";
+import { ScoreRow } from "@/components/reviews/takes/score-row";
 import { getSession, requireFeature } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { DetailTemplate } from "@/components/templates/detail-template";
 
 // A review's own page, read top to bottom like a magazine piece: the cover
-// banner with the headline and the score, the review as an article column,
-// the verdict (overall and the facet scores) once it has made its case, and
-// the club's other takes on the game last.
-
-const MORE_SHOWN = 4;
+// banner with the headline, the current score and the score row, the takes
+// down the score line newest first, the verdict (the current overall and
+// facet scores) once it has made its case, and the club's other takes on
+// the game last. The author opens a take in the desk from here.
 
 export default async function ReviewPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit?: string; revision?: string; revisit?: string }>;
 }) {
-  const [{ id }, { edit }] = await Promise.all([params, searchParams]);
+  const [{ id }, query] = await Promise.all([params, searchParams]);
   const reviewId = parseInt(id, 10);
   if (isNaN(reviewId)) notFound();
 
@@ -46,42 +51,21 @@ export default async function ReviewPage({
   const { data: review }: ApiSingle<Review> = await reviewRes.json();
   const gameId = review.gamedb_game_id;
 
-  // The single-review endpoint renders the row's own columns and embeds no
-  // author, so the byline needs its own read.
-  const [gameRes, othersRes, author] = await Promise.all([
-    apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
-    // One more than shown, so the current review can drop out and still
-    // leave a full row.
-    apiFetch(`/api/v1/games/${gameId}/reviews?per=${MORE_SHOWN + 1}`, {
-      cache: "no-store",
-    }),
-    fetchAuthor(review.user_id),
-  ]);
-  if (!gameRes.ok) notFound();
-  const { data: game }: ApiSingle<Game> = await gameRes.json();
-
-  const authorName = reviewerName(author, review.user_id);
-
-  let others: Review[] = [];
-  let otherCount = 0;
-  if (othersRes.ok) {
-    const body: ApiCollection<Review> = await othersRes.json();
-    others = body.data
-      .filter((r) => r.review_id !== review.review_id)
-      .slice(0, MORE_SHOWN);
-    const total = paginationOf(body.meta, body.data.length).total;
-    otherCount = Math.max(0, total - 1);
-  }
+  const read = await readReviewSurroundings(review);
+  if (!read) notFound();
+  const { game, others, otherCount, authorName, now } = read;
 
   const accent = accentForGame(game);
   const ownerId = session?.principal.discord_id ?? null;
   const isMine = ownerId !== null && ownerId === review.user_id;
-  // A Draft has no read view for its author: it opens straight in the desk.
-  const draft = isDraft(review);
+  const mode = reviewPageMode(review, query, isMine);
   // While the author edits, the editor's own banner takes the page banner's
   // place, so the game's art shows once.
-  const editing = isMine && (edit !== undefined || draft);
-  const hasBody = reviewBodyText(review.body) !== null;
+  const editing = mode.kind !== "read";
+  const takes = reviewTakes(review);
+  const current = takes[takes.length - 1];
+  const revision = mode.kind === "revision" ? mode.revision : null;
+  const owner = isMine ? { userId: review.user_id, reviewId, gameId } : null;
 
   return (
     <DetailTemplate
@@ -92,13 +76,14 @@ export default async function ReviewPage({
             game={game}
             accent={accent}
             rating={review.rating}
+            scoreHistory={<ScoreRow stops={scoreRow(takes)} />}
+            bylineNote={revisedCount(takes)}
             authorId={review.user_id}
             authorName={authorName}
             // A Draft finished later reads as reviewed the day it went out.
             createdAt={review.published_at ?? review.created_at}
-            editedAt={editedAt(review)}
-            canEdit={isMine}
-            title={review.title}
+            editedAt={latestEdit(takes, (t) => editedAt({ published_at: t.publishedAt, edited_at: t.editedAt }))}
+            title={headlineTitle(takes)}
             badge={features.preview("reviews") && <PreviewBadge />}
           />
         )
@@ -114,21 +99,30 @@ export default async function ReviewPage({
         accent={accent}
         canEdit={isMine}
         startEditing={editing}
+        startRevisit={mode.kind === "start-revisit"}
+        revisionTake={revision && {
+          revision,
+          // A Draft Revision answers the current take, taped above Overall.
+          earlier: revision.published_at == null ? current : null,
+          deleteNote: revisionDeleteNote(takes, `revision-${revision.revision_id}`),
+        }}
       >
-        <div className="space-y-12">
-          <article aria-label="Review" className="max-w-[68ch] md:px-1">
-            {hasBody ? (
-              <ReviewBodyContent body={review.body} variant="article" />
-            ) : (
-              <p className="text-faint-foreground italic">
-                {isMine
-                  ? "You scored this game but haven't written anything yet."
-                  : `${authorName} scored this game without writing a review.`}
-              </p>
-            )}
-          </article>
+        <div className="space-y-12 pt-2">
+          <ReviewTakes
+            takes={takes}
+            accent={accent}
+            owner={owner}
+            draftRevision={isMine ? (review.draft_revision ?? null) : null}
+            authorName={authorName}
+            now={now}
+          />
 
-          <ReviewVerdict review={review} game={game} authorName={authorName} />
+          {/* The current take's verdict: its score and scorecard. */}
+          <ReviewVerdict
+            review={{ ...review, rating: current.rating, facets: current.facets }}
+            game={game}
+            authorName={authorName}
+          />
         </div>
       </ReviewDetail>
 

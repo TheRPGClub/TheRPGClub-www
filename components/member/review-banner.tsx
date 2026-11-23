@@ -39,6 +39,10 @@ export interface ReviewBannerProps {
   title?: string | null;
   // Leads the chip line, e.g. the staff "Preview" badge.
   badge?: ReactNode;
+  // A revisited Review's score row, under the score.
+  scoreHistory?: ReactNode;
+  // After the byline's date: "· revisited twice".
+  bylineNote?: string | null;
 }
 
 /**
@@ -57,6 +61,8 @@ export function ReviewBanner({
   canEdit,
   title,
   badge,
+  scoreHistory,
+  bylineNote,
 }: ReviewBannerProps) {
   const art = game.art_url ?? game.cover_url;
   // `gotm_won` isn't on every embedded game; a month-year means it won.
@@ -123,11 +129,12 @@ export function ReviewBanner({
               createdAt={createdAt}
               editedAt={editedAt}
               canEdit={canEdit}
+              note={bylineNote}
             />
           )}
         </div>
 
-        {typeof rating === "number" && <ReviewBannerScore rating={rating} />}
+        {typeof rating === "number" && <ReviewBannerScore rating={rating} history={scoreHistory} />}
       </div>
     </section>
   );

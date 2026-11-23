@@ -3,8 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { GameCover } from "@/components/issue/game-cover";
 import { ButtonLink } from "@/components/ui/button";
 import type { ReviewDraftEntry } from "@/lib/api/types";
-import { draftLoss } from "@/lib/reviews/drafts";
-import { reviewHref } from "@/lib/reviews/href";
+import { draftHref, draftLoss } from "@/lib/reviews/drafts";
 import { DiscardDraft } from "./discard-draft";
 import { DraftPaper } from "./draft-paper";
 import { DraftFirstLine, DraftPills, DraftScoreBox, DraftTouched } from "./draft-parts";
@@ -14,7 +13,7 @@ import { DraftFirstLine, DraftPills, DraftScoreBox, DraftTouched } from "./draft
 // Last touched and Discard, then Continue writing.
 export function DraftCard({ draft, now }: { draft: ReviewDraftEntry; now: number }) {
   const title = draft.game?.title ?? "Game";
-  const href = reviewHref(draft.review_id);
+  const href = draftHref(draft);
   return (
     <DraftPaper className="flex h-full flex-col gap-2.5 px-4 pt-[15px] pb-3.5">
       <div className="flex items-start gap-3">
@@ -29,7 +28,7 @@ export function DraftCard({ draft, now }: { draft: ReviewDraftEntry; now: number
             {title}
           </h3>
           <div className="mt-1.5">
-            <DraftPills game={draft.game} kind={draft.kind} />
+            <DraftPills game={draft.game} kind={draft.kind} previousRating={draft.previous_rating} />
           </div>
         </div>
         <DraftScoreBox rating={draft.rating} />
@@ -38,6 +37,7 @@ export function DraftCard({ draft, now }: { draft: ReviewDraftEntry; now: number
       <DiscardDraft
         userId={draft.user_id}
         reviewId={draft.review_id}
+        revisionId={draft.kind === "revision" ? draft.revision_id : null}
         gameId={draft.gamedb_game_id}
         gameTitle={title}
         loss={draftLoss(draft)}

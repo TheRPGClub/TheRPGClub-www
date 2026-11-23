@@ -59,7 +59,7 @@ export function QuickSheet({
             disabled={form.pending}
             locked={form.lock?.locked}
           />
-          {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} />}
+          {form.lock?.locked && <ScoreLock locksAt={form.lock.locksAt} revisitHref={form.revisitHref ?? undefined} />}
           <RichTextToolbar
             schema={REVIEW_SCHEMA}
             variant="compact"

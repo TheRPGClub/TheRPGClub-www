@@ -34,6 +34,7 @@ export function FormDraftStrip({
       })}
       onDiscard={form.discard}
       onPublish={() => form.publish((review) => onPublished?.(review))}
+      revision={form.revision}
     />
   );
 }

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
-import { deleteReviewAction } from "@/app/actions/reviews";
+import { deleteReviewAction, deleteRevisionAction } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 export function DiscardDraft({
   userId,
   reviewId,
+  revisionId = null,
   gameId,
   gameTitle,
   loss,
@@ -23,6 +24,8 @@ export function DiscardDraft({
 }: {
   userId: string;
   reviewId: number;
+  // A Draft Revision: only it goes, the Published Review stays.
+  revisionId?: number | null;
   gameId: number;
   gameTitle: string;
   // discardLoss's sentence.
@@ -40,7 +43,10 @@ export function DiscardDraft({
 
   const discard = () =>
     start(async () => {
-      const res = await deleteReviewAction(userId, reviewId, gameId);
+      const res =
+        revisionId !== null
+          ? await deleteRevisionAction(userId, { reviewId, revisionId }, gameId)
+          : await deleteReviewAction(userId, reviewId, gameId);
       if (!res.ok) {
         setError(res.error ?? "The draft couldn't be discarded.");
         return;

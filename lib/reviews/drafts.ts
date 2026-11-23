@@ -2,6 +2,7 @@ import { reviewBodyText } from "@/lib/api/review-body";
 import type { ReviewDraftEntry } from "@/lib/api/types";
 import { discardLoss } from "@/lib/reviews/draft";
 import { sanitizeReviewFacets } from "@/lib/reviews/facets";
+import { reviewHref } from "@/lib/reviews/href";
 
 // Helpers for the viewer's own Drafts wherever they lie: the Your drafts
 // page, the feed's drafts row, the game page and the member's reviews page.
@@ -79,4 +80,17 @@ export function draftLoss(draft: Pick<ReviewDraftEntry, "rating" | "facets" | "b
     hasScorecard: sanitizeReviewFacets(draft.facets) !== null,
     storyLength: reviewBodyText(draft.body)?.length ?? 0,
   });
+}
+
+// Where Continue writing goes: a Draft Review's page (it opens in the desk),
+// or a Draft Revision on its Review's page (`?revisit`).
+export function draftHref(draft: Pick<ReviewDraftEntry, "review_id" | "kind">): string {
+  return reviewHref(draft.review_id, { revisit: draft.kind === "revision" });
+}
+
+// The state pill's words: "Draft", or "Revisiting · was 72" on a Draft
+// Revision (the Review's current score it would replace).
+export function draftStateLabel(draft: Pick<ReviewDraftEntry, "kind" | "previous_rating">): string {
+  if (draft.kind !== "revision") return "Draft";
+  return draft.previous_rating != null ? `Revisiting · was ${draft.previous_rating}` : "Revisiting";
 }

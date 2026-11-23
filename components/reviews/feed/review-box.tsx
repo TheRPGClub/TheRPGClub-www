@@ -31,7 +31,7 @@ export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
   const text = entry.written ? reviewBodyText(entry.body)?.replace(/\s+/g, " ").trim() : null;
   return (
     <Link
-      href={reviewHref(entry.review_id)}
+      href={reviewHref(entry.review_id, { take: entry.revision_id ?? undefined })}
       className={cn(
         "group relative grid grid-cols-[4rem_minmax(0,1fr)] gap-x-3 gap-y-2.5 overflow-hidden rounded-[2.4px] border-2 bg-card p-2.5",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight @lg:flex @lg:min-h-[178px] @lg:gap-4 @lg:p-3",
