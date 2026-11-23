@@ -118,7 +118,7 @@ async function GameContent({
         </Suspense>
       )}
       <Suspense fallback={null}>
-        <AlternateVersions gameId={gameId} canLink={gates.isAdmin} />
+        <AlternateVersions gameId={gameId} />
       </Suspense>
     </DetailTemplate>
   );

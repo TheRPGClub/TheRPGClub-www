@@ -2,7 +2,9 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { ApiSingle, Game } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
+import { alternateVersion } from "@/lib/games/game-edit";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
+import { fetchGameRelations } from "@/lib/games/game-page";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
 
 export const metadata = { title: "Edit game" };
@@ -22,7 +24,10 @@ export default async function GameEditPage({
   const viewer = gameEditViewer(session.membership);
   if (!Number.isInteger(gameId) || gameId <= 0 || !viewer) notFound();
 
-  const res = await apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" });
+  const [res, relations] = await Promise.all([
+    apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
+    viewer.admin ? fetchGameRelations(gameId) : null,
+  ]);
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
 
@@ -32,7 +37,10 @@ export default async function GameEditPage({
       title={game.title}
       coverUrl={game.cover_url}
       artUrl={game.art_url}
-      record={{ text: { description: game.description, featured_video_url: game.featured_video_url } }}
+      record={{
+        text: { description: game.description, featured_video_url: game.featured_video_url },
+        versions: (relations?.alternates ?? []).map(alternateVersion),
+      }}
       viewer={viewer}
       tab={parseGameEditTab(query.tab, viewer)}
     />

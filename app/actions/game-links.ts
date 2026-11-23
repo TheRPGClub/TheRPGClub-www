@@ -63,6 +63,27 @@ export async function linkVersionAction(
   return result;
 }
 
+// Unlinks `altGameId` as an alternate version of `gameId` (Admins). The pair
+// is stored once, so it unlinks from either side; both games' pages change.
+export async function unlinkVersionAction(
+  gameId: number,
+  altGameId: number,
+): Promise<GameLinkResult> {
+  if (!validId(gameId) || !validId(altGameId)) {
+    return { ok: false, error: "That version no longer exists." };
+  }
+  const result = await send(
+    "version-unlink",
+    `/api/v1/games/${gameId}/alternates/${altGameId}`,
+    { method: "DELETE" },
+  );
+  if (result.ok) {
+    revalidatePath(`/games/${gameId}`);
+    revalidatePath(`/games/${altGameId}`);
+  }
+  return result;
+}
+
 // Links a Discord thread to the game (Regulars, or Moderator and up).
 export async function linkThreadAction(
   threadId: string,

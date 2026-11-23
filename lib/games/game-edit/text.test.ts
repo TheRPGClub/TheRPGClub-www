@@ -4,20 +4,22 @@ import { gameEditSave, type GameEditCall, type GameEditSteps } from "./index";
 import type { StepResult } from "./engine";
 
 // The Game Edit save module's real sections, through the fake steps the app
-// replaces with server actions.
+// replaces with server actions. Only Text & video's step is faked; the other
+// sections aren't staged here.
 function steps(fail = false) {
   const calls: GameEditCall[] = [];
-  const run: GameEditSteps = {
-    "game.update": async (call): Promise<StepResult> => {
+  const run = {
+    "game.update": async (call: GameEditCall): Promise<StepResult> => {
       calls.push(call);
       return fail ? { ok: false, error: "Featured Video is invalid." } : { ok: true };
     },
-  };
+  } as GameEditSteps;
   return { calls, run };
 }
 
 const record = {
   text: { description: "A hero sets out.", featured_video_url: "https://www.youtube.com/watch?v=abc" },
+  versions: [],
 };
 const admin = { admin: true, threads: true };
 const regular = { admin: false, threads: true };
