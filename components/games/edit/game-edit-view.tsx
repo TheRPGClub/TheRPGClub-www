@@ -14,6 +14,7 @@ import { useLeaveGuard } from "@/hooks/use-leave-guard";
 import { MastheadTabs } from "@/components/templates/masthead-tabs";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { GameEditBand } from "@/components/games/edit/game-edit-band";
+import { HltbTab } from "@/components/games/edit/hltb-tab";
 import { PlaceholderTab } from "@/components/games/edit/placeholder-tab";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
@@ -53,10 +54,19 @@ export function GameEditView(p: GameEditViewProps) {
     threads: <PlaceholderTab title="Game Threads" />,
     releases: <PlaceholderTab title="Releases" />,
     versions: <PlaceholderTab title="Alternate Versions" />,
-    hltb: <PlaceholderTab title="HowLongToBeat" />,
+    hltb: (
+      <HltbTab
+        gameId={p.gameId}
+        loaded={edit.record.hltb}
+        staged={edit.stage.hltb}
+        error={edit.errors.hltb}
+        onStage={(next) => edit.stageSection("hltb", next)}
+        onReload={(hltb) => edit.reloadSection("hltb", hltb)}
+      />
+    ),
   };
   // The tabs' sections in the save module (the rest arrive with www#158-162).
-  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text" };
+  const counted: Partial<Record<GameEditTab, keyof typeof edit.changes.bySection>> = { text: "text", hltb: "hltb" };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (
     <>

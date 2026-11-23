@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { updateGameTextAction } from "@/app/actions/game-edit";
+import { updateGameTextAction, upsertHltbAction } from "@/app/actions/game-edit";
 import {
   gameEditSave,
   saveSummary,
@@ -33,6 +33,7 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
 
   const steps: GameEditSteps = {
     "game.update": (call) => updateGameTextAction(gameId, call.fields),
+    "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -44,6 +45,12 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
       else next[key] = staged;
       return next;
     });
+  }
+
+  // A refresh or lookup ran (an action, not an edit): the section's record
+  // as it now stands.
+  function reloadSection<K extends GameEditSectionKey>(key: K, loaded: GameEditRecord[K]) {
+    setRecord((prev) => ({ ...prev, [key]: loaded }));
   }
 
   function discard() {
@@ -68,6 +75,7 @@ export function useGameEdit(gameId: number, loaded: GameEditRecord, viewer: Game
     record,
     stage,
     stageSection,
+    reloadSection,
     changes,
     errors,
     notice,

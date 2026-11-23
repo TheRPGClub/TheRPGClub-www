@@ -1,5 +1,6 @@
 import { createGameEditSave, type EditCall, type EditRecord, type EditStage, type EditSteps } from "./engine";
 import { textSection, type GameText, type GameUpdateCall, type TextStage } from "./text";
+import { hltbSection, type HltbStage, type HltbTimes, type HltbUpsertCall } from "./hltb";
 
 // The Game Edit save module's sections (spec api#437). To add one (Images,
 // Game Threads, Releases, Alternate Versions, HowLongToBeat):
@@ -11,6 +12,7 @@ import { textSection, type GameText, type GameUpdateCall, type TextStage } from 
 
 export interface GameEditSections {
   text: { loaded: GameText; staged: TextStage; call: GameUpdateCall };
+  hltb: { loaded: HltbTimes; staged: HltbStage; call: HltbUpsertCall };
 }
 
 export type GameEditSectionKey = keyof GameEditSections;
@@ -19,7 +21,11 @@ export type GameEditStage = EditStage<GameEditSections>;
 export type GameEditCall = EditCall<GameEditSections>;
 export type GameEditSteps = EditSteps<GameEditSections>;
 
-export const gameEditSave = createGameEditSave<GameEditSections>({ text: textSection }, ["text"]);
+export const gameEditSave = createGameEditSave<GameEditSections>(
+  { text: textSection, hltb: hltbSection },
+  ["text", "hltb"],
+);
 
 export { saveSummary, type GameEditViewer, type StepResult } from "./engine";
 export type { GameText, TextStage } from "./text";
+export { hltbFieldValue, type HltbField, type HltbStage, type HltbTimes } from "./hltb";
