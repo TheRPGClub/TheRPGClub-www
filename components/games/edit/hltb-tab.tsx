@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { ArrowUpRight, Link2, RefreshCw } from "lucide-react";
 import { lookupHltbAction } from "@/app/actions/hltb";
 import { hltbFieldValue, hltbSection, type HltbField as Field, type HltbStage, type HltbTimes } from "@/lib/games/game-edit/hltb";
-import { HLTB_FAILURE_COPY } from "@/lib/hltb";
+import { HLTB_FAILURE_COPY, hltbSearchAgainLabel } from "@/lib/hltb";
 import { Button } from "@/components/ui/button";
 import { EditSection } from "@/components/games/edit/edit-section";
 import { HltbField } from "@/components/games/edit/hltb-field";
@@ -19,6 +19,8 @@ const FIELDS: { key: Field; label: string }[] = [
 // times in hours and the matched page's link, staged until Save all, for
 // when the lookup matched the wrong game. The lookup is an action: it runs at
 // once, and is off while the tab has staged times so it can't clobber them.
+// It forces a fresh search (spec api#437); the tab is Admin-only and Admins
+// are never held to the 30-day interval, so it is never off for that.
 export function HltbTab({
   gameId,
   loaded,
@@ -49,15 +51,16 @@ export function HltbTab({
 
   function lookUp() {
     startLookup(async () => {
-      const result = await lookupHltbAction(gameId);
+      const result = await lookupHltbAction(gameId, { force: true });
       if (!result.ok) {
         const copy = HLTB_FAILURE_COPY[result.failure];
-        setNote(`${copy.title} ${result.message ?? copy.body}`);
+        const next = result.nextForcedSearchAt && `${hltbSearchAgainLabel(result.nextForcedSearchAt)}.`;
+        setNote(`${copy.title} ${next || result.message || copy.body}`);
       } else if (!result.meta.saved) {
         setNote("HowLongToBeat found times, but they aren't saved until the game is six months old.");
       } else {
         onReload(result.data);
-        setNote(result.meta.source === "hltb" ? "Looked up just now." : "These are the saved times; HowLongToBeat is searched only while none are saved.");
+        setNote(result.meta.source === "hltb" ? "Looked up just now." : "These are the saved times.");
       }
     });
   }

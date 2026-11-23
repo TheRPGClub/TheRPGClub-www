@@ -1,6 +1,6 @@
 import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { getSession } from "@/lib/session";
-import { isMemberOrStaff } from "@/lib/staff";
+import { isAdminOrAbove, isMemberOrStaff } from "@/lib/staff";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameHltbCard } from "@/components/issue/game-hltb-card";
 
@@ -24,6 +24,7 @@ export async function GameHltb({
       releaseDate={releaseDate}
       hltb={hltb}
       canLookUp={canLookUp}
+      anyTime={isAdminOrAbove(session?.membership)}
     />
   );
 }

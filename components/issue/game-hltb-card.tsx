@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { lookupHltbAction } from "@/app/actions/hltb";
-import type { Hltb, HltbLookupFailure } from "@/lib/hltb";
+import { hltbForceBlockedUntil, hltbSearchAgainLabel, type Hltb, type HltbLookupFailure } from "@/lib/hltb";
 import { Badge } from "@/components/ui/badge";
 import { PanelHeading } from "@/components/issue/game-rail";
 import { Empty, Failure } from "@/components/issue/game-hltb-card-empty";
@@ -11,6 +11,8 @@ import { HltbReload, LookingUp, Times } from "@/components/issue/game-hltb-card-
 // The game page hero panel's "Time to beat": HowLongToBeat's hours, one bar
 // per play style on a shared scale. Members look the times up with the
 // reload icon at the heading's end; opening the page never looks anything up.
+// The icon forces a fresh search (spec api#437): a member may once every 30
+// days per game, so until then it is off and says when it can be used.
 
 type CardState =
   | { kind: "times"; hltb: Hltb; saved: boolean; fresh: boolean }
@@ -26,6 +28,8 @@ export interface GameHltbCardProps {
   hltb: Hltb | null | undefined;
   // Members role or staff: the API's gate on the lookup.
   canLookUp: boolean;
+  // Admins and above may force a search at any time.
+  anyTime?: boolean;
 }
 
 export function GameHltbCard({
@@ -34,6 +38,7 @@ export function GameHltbCard({
   releaseDate,
   hltb,
   canLookUp,
+  anyTime = false,
 }: GameHltbCardProps) {
   const [state, setState] = useState<CardState>(() =>
     hltb
@@ -46,21 +51,23 @@ export function GameHltbCard({
 
   function lookUp() {
     startTransition(async () => {
-      const result = await lookupHltbAction(gameId);
-      setState(
-        result.ok
-          ? {
-              kind: "times",
-              hltb: result.data,
-              saved: result.meta.saved,
-              fresh: result.meta.source === "hltb",
-            }
-          : { kind: "failure", failure: result.failure, message: result.message },
-      );
+      const result = await lookupHltbAction(gameId, { force: true });
+      setState((prev) => {
+        if (result.ok) {
+          return { kind: "times", hltb: result.data, saved: result.meta.saved, fresh: result.meta.source === "hltb" };
+        }
+        // A stale page: keep the times and turn the icon off until the date.
+        if (result.failure === "too_soon" && prev.kind === "times" && result.nextForcedSearchAt) {
+          return { ...prev, hltb: { ...prev.hltb, next_forced_search_at: result.nextForcedSearchAt } };
+        }
+        const message = result.nextForcedSearchAt ? `${hltbSearchAgainLabel(result.nextForcedSearchAt)}.` : result.message;
+        return { kind: "failure", failure: result.failure, message };
+      });
     });
   }
 
   const notSaved = state.kind === "times" && !state.saved && !pending;
+  const blockedUntil = !anyTime && state.kind === "times" && state.saved ? hltbForceBlockedUntil(state.hltb) : null;
 
   return (
     <section aria-labelledby="game-hltb">
@@ -74,7 +81,13 @@ export function GameHltbCard({
                 Not saved
               </Badge>
             )}
-            {canLookUp && <HltbReload pending={pending} onClick={lookUp} />}
+            {canLookUp && (
+              <HltbReload
+                pending={pending}
+                onClick={lookUp}
+                blockedLabel={blockedUntil ? hltbSearchAgainLabel(blockedUntil) : undefined}
+              />
+            )}
           </span>
         }
       />

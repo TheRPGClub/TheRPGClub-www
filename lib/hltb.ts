@@ -17,6 +17,11 @@ export interface Hltb {
   vs: string | null;
   source_query: string | null;
   scraped_at: string | null;
+  // When HowLongToBeat was last searched for the game (null: entered by hand)
+  // and when a member may next force a search (null: now; spec api#437).
+  // Optional: older payloads and hand-made rows lack them.
+  searched_at?: string | null;
+  next_forced_search_at?: string | null;
   updated_at: string | null;
 }
 
@@ -120,6 +125,29 @@ export function hltbNotSavedNote(releaseDate: string | null): string {
   return `Released ${released}. Times are saved once a game is six months old; look up again after ${clubDate(after.toISOString(), "UTC")}.`;
 }
 
+// When a member may next force a fresh search, while that is still ahead;
+// null when they may now. Admins and above are never held to it (the API's
+// rule), so callers skip this for them.
+export function hltbForceBlockedUntil(
+  hltb: Pick<Hltb, "next_forced_search_at">,
+  now: Date = new Date(),
+): string | null {
+  const iso = hltb.next_forced_search_at;
+  if (!iso) return null;
+  const at = new Date(iso).getTime();
+  return Number.isNaN(at) || at <= now.getTime() ? null : iso;
+}
+
+// "Can search again on 12 Dec", in the club's time zone.
+export function hltbSearchAgainLabel(iso: string): string {
+  const day = new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    timeZone: CLUB_TIME_ZONE,
+  });
+  return `Can search again on ${day}`;
+}
+
 // HowLongToBeat's own search, for a title it had no match for.
 export function hltbSearchUrl(title: string): string {
   return `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`;
@@ -131,6 +159,7 @@ export type HltbLookupFailure =
   | "failed"
   | "not_configured"
   | "forbidden"
+  | "too_soon"
   | "other";
 
 export function hltbFailureKind(
@@ -140,6 +169,7 @@ export function hltbFailureKind(
   if (code === "hltb_no_match") return "no_match";
   if (code === "hltb_lookup_failed") return "failed";
   if (code === "hltb_not_configured") return "not_configured";
+  if (code === "hltb_search_too_soon" || status === 429) return "too_soon";
   if (status === 403) return "forbidden";
   return "other";
 }
@@ -163,6 +193,10 @@ export const HLTB_FAILURE_COPY: Record<
   forbidden: {
     title: "Members only.",
     body: "Only members with the Members role, and staff, can look up times.",
+  },
+  too_soon: {
+    title: "Searched recently.",
+    body: "HowLongToBeat can be searched again for this game later.",
   },
   other: {
     title: "The lookup didn't work.",
