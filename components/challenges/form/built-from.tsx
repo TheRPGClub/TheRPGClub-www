@@ -23,7 +23,7 @@ export function BuiltFrom({ form, tally }: { form: ChallengeFormState; tally: st
         >
           <span>{source.name}</span>
           <span className="text-faint-foreground">
-            {source.kind === "franchise" ? "Franchise" : "Collection"}
+            {source.kind === "franchise" ? "Franchise" : "Series"}
             {source.game_count != null && ` · ${source.game_count}`}
           </span>
           {!locked && (

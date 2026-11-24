@@ -34,11 +34,13 @@ export interface GameEditViewProps {
   // IGDB link to refresh its Releases from.
   releaseOptions: ReleaseOptions;
   canRefreshReleases: boolean;
+  // The game's IGDB collection, shown read only as its Series.
+  series: string | null;
 }
 
 // /games/:id/edit (spec api#437, design www#156 round 3): the band with the
-// six tabs, one section a tab, and the sticky save bar while anything is
-// staged. A Regular gets Game Threads alone, without tabs. Leaving with
+// seven tabs, one section a tab, and the sticky save bar while anything is
+// staged. A Regular gets Game Threads and Franchises. Leaving with
 // staged changes asks first.
 export function GameEditView(p: GameEditViewProps) {
   const edit = useGameEdit(p.gameId, p.record, p.viewer, p.unavailable);
@@ -55,6 +57,7 @@ export function GameEditView(p: GameEditViewProps) {
     releases: "releases",
     versions: "versions",
     hltb: "hltb",
+    franchises: "franchises",
   };
   // The band, then any failed save's slip, above the open section.
   const band = (row?: React.ReactNode) => (

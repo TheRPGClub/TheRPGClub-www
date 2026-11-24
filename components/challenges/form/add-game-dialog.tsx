@@ -20,7 +20,7 @@ export function AddGameDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add a game by hand</DialogTitle>
-          <DialogDescription>It joins the Pool whatever its franchise or collection.</DialogDescription>
+          <DialogDescription>It joins the Pool whatever its Franchise or Series.</DialogDescription>
         </DialogHeader>
         {open && (
           <GamePicker

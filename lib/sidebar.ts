@@ -117,12 +117,18 @@ export function isCurrent(pathname: string, href: string, exact = false): boolea
   return pathname === href || (!exact && pathname.startsWith(href + "/"));
 }
 
+// Pages with no sidebar entry of their own that sit under another's:
+// Franchise pages are part of GameDB, so Games stays lit (www#168).
+const UNDER: [string, string][] = [["/franchises/", "/games/"]];
+
 // The page the viewer is on, by its longest matching path; null on a page
 // with a fixed place (Dashboard, Settings, a profile) or one not listed.
 export function currentPage(groups: readonly SidebarGroup[], pathname: string): SidebarPage | null {
+  const under = UNDER.find(([prefix]) => pathname.startsWith(prefix));
+  const path = under ? under[1] + pathname.slice(under[0].length) : pathname;
   let best: SidebarPage | null = null;
   for (const page of groups.flatMap((g) => g.pages)) {
-    if (isCurrent(pathname, page.href, page.exact) && (!best || page.href.length > best.href.length)) {
+    if (isCurrent(path, page.href, page.exact) && (!best || page.href.length > best.href.length)) {
       best = page;
     }
   }

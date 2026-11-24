@@ -28,7 +28,7 @@ const HELP: Record<RuleWordKey, string> = {
   target:
     "How many games from the Pool a member Clears to Finish, or every game. A member can keep Clearing after they Finish.",
   sources:
-    "Every game in a franchise or collection joins the Pool, and new ones join by themselves. Leave a game out, or add one by hand, on the covers below.",
+    "Every game in a Franchise or Series joins the Pool, and new ones join by themselves. Leave a game out, or add one by hand, on the covers below.",
   "season-start": "The Season repeats every year. It can cross the new year: end it before it starts.",
   "season-end": "The Season repeats every year. It can cross the new year: end it before it starts.",
   schedule:

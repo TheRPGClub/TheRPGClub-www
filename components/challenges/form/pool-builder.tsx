@@ -57,7 +57,7 @@ export function PoolBuilder({ form }: { form: ChallengeFormState }) {
       {preview.problem && <SearchProblemNote problem={preview.problem} className="mt-3" />}
       {games.length === 0 && !preview.loading && (
         <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">
-          Add a franchise or a collection in the sentence above, or a game by hand, and its games show here.
+          Add a Franchise or a Series in the sentence above, or a game by hand, and its games show here.
         </p>
       )}
       <ul className="mt-3.5 grid grid-cols-4 gap-x-3 gap-y-3.5 sm:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10">

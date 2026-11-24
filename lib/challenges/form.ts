@@ -148,7 +148,7 @@ export function validateDraft(
   if (!name) errors.name = "Give the Challenge a name.";
   else if (name.length > 100) errors.name = "Keep the name to 100 characters.";
   if (draft.format === "pool") {
-    if (!hasPoolDefinition(draft)) errors.sources = "Add a franchise, a collection or a game.";
+    if (!hasPoolDefinition(draft)) errors.sources = "Add a Franchise, a Series or a game.";
     if (draft.target !== "all") {
       if (!Number.isInteger(draft.target) || draft.target < 1) errors.target = "Clear at least 1 game.";
       else if (poolSize !== null && draft.target > poolSize) errors.target = `The Pool has only ${poolSize} games.`;
