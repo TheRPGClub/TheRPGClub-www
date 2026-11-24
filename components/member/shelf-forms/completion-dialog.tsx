@@ -29,6 +29,10 @@ export interface CompletionDialogProps {
   // The club's today; defaults to now.
   today?: IsoDay;
   onSaved: (saved: ShelfSaved) => void;
+  // Editing: take the completion off the list (the host holds it behind Undo).
+  onRemove?: () => void;
+  // Open another of the member's completions from the timeline.
+  onPick?: (completionId: number) => void;
 }
 
 // Logging (or editing) a Game Completion (spec api#451, 2B + 2D): a dialog
@@ -55,6 +59,8 @@ function CompletionDialogBody({
   platforms,
   today = clubToday(),
   onSaved,
+  onRemove,
+  onPick,
 }: CompletionDialogProps & { titleId: string }) {
   const log = useCompletionLog({ userId, gameId: game.game_id, entry, nowPlaying, today, onSaved });
   // On phones the timeline is folded away, so the slip names the game and
@@ -71,6 +77,7 @@ function CompletionDialogBody({
           title={game.title}
           coverUrl={game.cover_url}
           nodes={completionHistory(completions, entry?.completion_id)}
+          onPick={onPick}
           pending={
             entry
               ? null
@@ -99,6 +106,7 @@ function CompletionDialogBody({
           platforms={platforms}
           today={today}
           onCancel={() => onOpenChange(false)}
+          onRemove={onRemove}
           className="min-h-dvh max-md:rounded-none md:min-h-0 md:-rotate-[0.6deg] md:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
         />
       </div>
