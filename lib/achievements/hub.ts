@@ -1,7 +1,6 @@
 import type {
   AchievementFeedCard,
   AchievementFeedGroup,
-  AchievementFeedHighlight,
   AchievementHighlightKind,
   AchievementUnlock,
 } from "@/lib/api/types";
@@ -72,45 +71,4 @@ const TIME = new Intl.DateTimeFormat("en-GB", {
 export function formatUtcTime(iso: string): string | null {
   if (isUnknownUnlockDate(iso)) return null;
   return TIME.format(new Date(iso));
-}
-
-const SHORT_DAY = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
-// A Highlight tag's stamp: "Oct 31 · 21:48 UTC", or "Unknown date".
-export function formatUnlockStamp(iso: string): string {
-  const time = formatUtcTime(iso);
-  return time ? `${SHORT_DAY.format(new Date(iso))} · ${time} UTC` : "Unknown date";
-}
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-// The rail's week: the seven UTC days ending today. `from` is the first
-// day's midnight; `label` reads "Oct 26 – Nov 1".
-export function hubWeek(now: Date): { from: number; label: string } {
-  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const from = today - 6 * DAY_MS;
-  return {
-    from,
-    label: `${SHORT_DAY.format(from)} – ${SHORT_DAY.format(today)}`,
-  };
-}
-
-// The Highlights of the week, newest first as the feed serves them.
-export function highlightsSince(
-  cards: AchievementFeedCard[],
-  from: number,
-  limit: number,
-): AchievementFeedHighlight[] {
-  return cards
-    .filter(
-      (card): card is AchievementFeedHighlight =>
-        card.kind === "highlight" &&
-        !isUnknownUnlockDate(card.unlocked_at) &&
-        Date.parse(card.unlocked_at) >= from,
-    )
-    .slice(0, limit);
 }

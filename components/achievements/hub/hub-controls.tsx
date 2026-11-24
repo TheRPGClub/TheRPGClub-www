@@ -1,40 +1,13 @@
 import Link from "next/link";
 import {
-  FEED_VIEW_OPTIONS,
   feedHref,
   type AchievementFeedFilters as Filters,
 } from "@/lib/api/achievement-feed";
 import { ACHIEVEMENT_PROVIDERS, PROVIDER_LABEL } from "@/lib/achievements";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// The hub's two controls, both plain links so the URL holds the state
-// (`?view=`, `?provider=`; either change returns to page 1). The views are
-// Tabs whose tabs are those links; the current one carries a yellow inset
-// ring, the selection mark.
-
-export function HubViewTabs({ filters }: { filters: Filters }) {
-  return (
-    <Tabs value={filters.view} className="gap-0">
-      <TabsList variant="chip" aria-label="Feed view">
-        {FEED_VIEW_OPTIONS.map((option) => (
-          <TabsTrigger
-            key={option.value}
-            value={option.value}
-            nativeButton={false}
-            render={<Link href={feedHref(filters, { view: option.value, page: 1 })} scroll={false} />}
-            className="h-[34px] flex-none gap-2 border-0 px-3.5 py-0 text-base"
-          >
-            {option.value === "highlights" && (
-              <span aria-hidden className="foil size-3 rounded-xs" />
-            )}
-            {option.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
-  );
-}
+// The hub's Provider filter, plain links so the URL holds the state
+// (`?provider=`; a change returns to page 1).
 
 // "All" plus one chip per Provider in its own colour. With every Provider
 // shown, every chip is solid; once one is picked, it alone stays solid and

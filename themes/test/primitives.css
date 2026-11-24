@@ -34,10 +34,6 @@
                     color: var(--background);
                 }
             }
-            &[data-variant="round"] {
-                background-color: var(--muted);
-                border-color: var(--sidebar-ring);
-            }
             &[data-variant="default"] {
                 background-color: var(--primary);
                 color: var(--primary-foreground);

@@ -61,10 +61,6 @@ const buttonVariants = cva(
         // A tab in the phone's tab bar: an icon over its name. The current
         // one carries data-current. Pair with size="bare".
         tab: "",
-        // The round button at the tab bar's middle: its burst is its look,
-        // drawn by the caller; the Theme sets its focus. Pair with
-        // size="bare".
-        round: "",
         // An empty slot at the end of a list that adds one more to it
         // (Link another account).
         add: "",

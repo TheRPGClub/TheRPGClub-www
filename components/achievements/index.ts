@@ -21,8 +21,6 @@
 //   <TintSpine tint width?=12 className?>  left-edge spine; parent `relative`
 //   <TintBand tint={SetTint} as? className?>  solid title band, AA type
 //   <SpoilerText spoiler className?>  blurred until clicked (hidden names)
-//   <RarestUnlocks unlocks userId className?>  four rarest Unlocks, taped
-//     down large; foil edge + Highlight caption, else Rarity in tier ink
 //   member-binder: <BinderTotals totals linked>, <LinkedAccountChips
 //     accounts>, <BinderIndexRow row number tint href>, <SlotDots earned
 //     total tint>, <BinderRings count> (the member page's binder)
@@ -49,7 +47,6 @@ export { RarityLabel } from "./rarity-label";
 export { SetBadgeChip } from "./set-badge";
 export { SpoilerText } from "./spoiler-text";
 export { TintBand, TintSpine } from "./tint";
-export { RarestUnlocks } from "./rarest-unlocks";
 export {
   BinderIndexRow,
   BinderRings,

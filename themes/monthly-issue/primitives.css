@@ -44,11 +44,6 @@
                     @apply text-foreground before:absolute before:inset-x-3 before:-top-px before:h-[3px] before:bg-gotm;
                 }
             }
-            /* The round button: the yellow burst is the whole look; a press
-               sinks it a touch, focus rings it in paper. */
-            &[data-variant="round"] {
-                @apply rounded-full border-0 transition-transform focus-visible:ring-2 focus-visible:ring-foreground active:scale-95 motion-reduce:transition-none;
-            }
             &[data-variant="default"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-primary text-primary-foreground hover:bg-gotm/85;
             }

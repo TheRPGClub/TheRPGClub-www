@@ -11,8 +11,7 @@ export const TRACK_INK: Record<ReviewAccent, string> = {
 
 // The strip along the desk's foot, held at the bottom of the screen: a
 // Draft's (autosave, checklist, Discard, Publish) or a Published Review's
-// Edit (Cancel, Save changes). On a phone it rides above the tab bar and its
-// round button.
+// Edit (Cancel, Save changes). On a phone it rides above the tab bar.
 export function DeskStrip({
   accent,
   alarm,

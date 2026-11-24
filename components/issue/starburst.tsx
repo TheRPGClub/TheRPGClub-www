@@ -1,9 +1,7 @@
 import { cn } from "@/lib/utils";
 
 // The winner starburst: the Monthly Issue's signature mark. It belongs to GOTM
-// and NR-GOTM wins only, so it never decorates anything else. One sanctioned
-// exception: the phone tab bar's round button (components/shell/tab-round),
-// the club's open round in the same yellow. GOTM wears the
+// and NR-GOTM wins only, so it never decorates anything else. GOTM wears the
 // highlighter yellow with ink type, NR-GOTM its own violet with white type.
 //
 // It is positioned by the caller (absolute inside a relative container) and

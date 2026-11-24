@@ -14,6 +14,8 @@ import { PANEL_ITEMS } from "@/lib/dashboard/panels";
 import { dailyPickSeed } from "@/lib/dashboard/panel-items";
 import { clubToday } from "@/lib/challenges/dates";
 import { upcomingReleasesTag } from "@/lib/hidden-platforms";
+import { fetchNewsStamp } from "@/lib/api/news";
+import { newsFeedTag } from "@/lib/news-category-preferences";
 import type { ReviewFeedEntry } from "@/lib/reviews/feed";
 
 // Each Dashboard Panel's read (spec api#421, "Panel data"): one endpoint a
@@ -110,7 +112,16 @@ export interface ChallengeEvent {
 }
 
 // News in the member's saved categories (no `category`: the API applies them).
-export const readNews = () => readData<NewsItem>(`/api/v1/news_items?${per}`);
+// Keyed by the News Feed Stamp like /news (`v`, which the API ignores), so a
+// new item shows on the next visit instead of after the minute's cache, and
+// tagged per member so a News Category Preferences save expires it too.
+export async function readNews(id: string) {
+  const stamp = await fetchNewsStamp();
+  const v = stamp ? `&v=${encodeURIComponent(stamp)}` : "";
+  return readData<NewsItem>(`/api/v1/news_items?${per}${v}`, {
+    next: { revalidate: 60, tags: [newsFeedTag(id)] },
+  });
+}
 export const readClubNowPlaying = () => readData<PanelNowPlaying>(`/api/v1/now_playing?${per}`);
 export const readMyNowPlaying = (id: string) => readData<PanelNowPlaying>(`${user(id)}/now_playing?${per}`, FRESH);
 // The API leaves out the member's Hidden Platforms by itself. Tagged like

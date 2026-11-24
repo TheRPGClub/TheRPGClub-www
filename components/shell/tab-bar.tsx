@@ -6,16 +6,14 @@ import { LayoutDashboard } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import type { SessionMembership } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
-import { featureView, type SessionFeature } from "@/lib/features";
+import type { SessionFeature } from "@/lib/features";
 import { currentPage, sidebarGroups } from "@/lib/sidebar";
 import { DASHBOARD_HREF, TAB_CLASS, isCurrent } from "@/components/shell/nav-items";
 import { TabGroupMenu } from "@/components/shell/tab-group-menu";
-import { TabRound } from "@/components/shell/tab-round";
 
 // The phone's navigation, in place of the sidebar: a tab bar along the foot
-// of the screen with Home, the Browse groups (Play, Games, Club) and the
-// round button between them, and last the member's own "You" tab (their
-// avatar), which opens the account menu (www#164; there is no top bar). A
+// of the screen with Home, the Browse groups (Play, Games, Club), and last
+// the member's own "You" tab (their avatar), which opens the account menu (www#164; there is no top bar). A
 // group's tab pops up its pages; Staff lives in the account menu. The tab
 // holding the current page carries the red you-are-here bar.
 export function TabBar({
@@ -42,15 +40,6 @@ export function TabBar({
       <TabGroupMenu group={group} current={current} votingPhase={votingPhase} />
     </li>
   ));
-  // The round sits second from the left of centre, after Home and the first
-  // group; Voting & GOTM hidden from this viewer, there is no round.
-  if (featureView(features).shown("voting_gotm")) {
-    tabs.splice(1, 0, (
-      <li key="round" className="grid place-items-center">
-        <TabRound phase={votingPhase} />
-      </li>
-    ));
-  }
 
   return (
     <nav
