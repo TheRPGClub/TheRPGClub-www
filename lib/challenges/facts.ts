@@ -1,5 +1,6 @@
 import { formatDay, formatFullDay, seasonAround, seasonRange, type IsoDay } from "@/lib/challenges/dates";
 import { memberAvatar, memberName } from "@/lib/challenges/runs";
+import { optionalSourcesLine } from "@/lib/challenges/pool-wall";
 import type { Challenge, PoolGame } from "@/lib/challenges/types";
 
 // What a Challenge page says about its rules: the banner's chip and the fact
@@ -33,31 +34,34 @@ export interface Fact {
   detail: string;
 }
 
-export function finishLine(challenge: Pick<Challenge, "pool">): string | null {
-  const target = challenge.pool?.target;
-  if (target == null) return null;
-  if (target === "all") return "Clear every game in the Pool";
-  return `Clear ${target} ${target === 1 ? "game" : "games"} from the Pool`;
-}
+const games = (n: number, kind: "Core" | "Optional") => `${n} ${kind} ${n === 1 ? "Game" : "Games"}`;
 
-// "Final Fantasy franchise · 41 games", naming every source and the games
-// added by hand.
-export function poolLine(challenge: Pick<Challenge, "pool">, gameCount: number | null): string | null {
+// What Finishes a Pool Run (spec api#442): "Clear all 14 Core Games and 2
+// Optional Games", "Clear the 1 Core Game", "Clear 3 Optional Games".
+export function finishLine(challenge: Pick<Challenge, "pool">): string | null {
   const pool = challenge.pool;
   if (!pool) return null;
-  const parts = [
-    ...(pool.franchises ?? []).map((f) => `${f.name} franchise`),
-    ...(pool.collections ?? []).map((c) => `${c.name} collection`),
-  ];
-  const added = pool.included_games?.length ?? 0;
-  if (added) parts.push(`${added} added`);
-  const count = gameCount ?? pool.game_count;
-  return [parts.join(", "), count != null ? `${count} ${count === 1 ? "game" : "games"}` : null]
+  const core = pool.core_count ?? pool.core_games?.length ?? 0;
+  const target = pool.optional_target ?? 0;
+  const corePart = core === 1 ? "the 1 Core Game" : `all ${games(core, "Core")}`;
+  if (core === 0) return `Clear ${games(target, "Optional")}`;
+  return target > 0 ? `Clear ${corePart} and ${games(target, "Optional")}` : `Clear ${corePart}`;
+}
+
+// "14 Core · 12 Optional · from the Final Fantasy Franchise and the Final
+// Fantasy VII Series", the sources named as members know them.
+export function poolLine(challenge: Pick<Challenge, "pool">): string | null {
+  const pool = challenge.pool;
+  if (!pool) return null;
+  const core = pool.core_count ?? pool.core_games?.length ?? 0;
+  const optional = pool.optional_count ?? pool.optional_games?.length ?? null;
+  const sources = optionalSourcesLine(pool);
+  return [`${core} Core`, optional != null ? `${optional} Optional` : null, sources && sources.replace(/^From/, "from")]
     .filter(Boolean)
     .join(" · ");
 }
 
-export function challengeFacts(challenge: Challenge, today: IsoDay, gameCount: number | null): Fact[] {
+export function challengeFacts(challenge: Challenge, today: IsoDay): Fact[] {
   const facts: Fact[] = [{ term: "Host", detail: hostName(challenge) }];
   if (challenge.schedule === "seasonal" && challenge.season) {
     facts.push({
@@ -72,7 +76,7 @@ export function challengeFacts(challenge: Challenge, today: IsoDay, gameCount: n
   }
   const finish = finishLine(challenge);
   if (finish) facts.push({ term: "Finish", detail: finish });
-  const pool = poolLine(challenge, gameCount);
+  const pool = poolLine(challenge);
   if (pool) facts.push({ term: "Pool", detail: pool });
   return [...facts, ...slotsFacts(challenge)];
 }

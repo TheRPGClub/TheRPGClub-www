@@ -4,12 +4,14 @@ import { isModeratorOrAbove } from "@/lib/staff";
 import { fetchChallenge } from "@/lib/api/challenges";
 import { draftFromChallenge } from "@/lib/challenges/form";
 import { canEditChallenge } from "@/lib/challenges/permissions";
+import { challengeTint } from "@/lib/challenges/tint";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { ChallengeForm } from "@/components/challenges/form/challenge-form";
 
-// Edit a Challenge: its Host, or Moderators and above for a club-hosted one.
-// Once it has a Run its rules are locked; a Format whose rules the website
-// doesn't set up yet edits only its name, description and end date.
+// Edit a Challenge: its Host, or Moderators and above (api#448). Once it has
+// a Run its rules are locked (a Pool's games, sources and target excepted); a
+// Format whose rules the website doesn't set up yet edits only its name,
+// description and end date.
 export default async function EditChallengePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await requireAuth();
   const features = await requireFeature("challenges");
@@ -38,6 +40,7 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
       staff={isModeratorOrAbove(session.membership)}
       runCount={runCount}
       badge={features.preview("challenges") && <PreviewBadge />}
+      tint={challengeTint(challenge)}
     />
   );
 }

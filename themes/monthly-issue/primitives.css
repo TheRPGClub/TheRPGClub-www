@@ -1526,6 +1526,18 @@
             &[data-variant="pool-tile"] {
                 @apply rounded-sm border-0 bg-transparent focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0;
             }
+            /* www#170: the switch under a Pool editor cover, a segment
+               each for Core, Optional and Leave out in the label voice,
+               faint until hovered, 32px tall on phones and 24px from sm;
+               pressed, Core fills with the Challenge tint's hi and
+               Optional with paper, ink type on both. Focus is the yellow
+               outline drawn inside. */
+            &:is([data-variant="pool-switch"], [data-variant="pool-switch-core"]) {
+                @apply font-label h-8 min-w-0 rounded-none border-0 bg-transparent px-1 text-[0.66rem] sm:h-6 leading-none font-extrabold tracking-[0.06em] text-faint-foreground uppercase transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-solid focus-visible:outline-highlight active:not-aria-[haspopup]:translate-y-0 aria-pressed:bg-foreground aria-pressed:text-background;
+            }
+            &[data-variant="pool-switch-core"] {
+                @apply aria-pressed:bg-(--challenge-tint-hi);
+            }
             /* www#107: a profile's "+2 more" current-Run tile, stamp-sized:
                ink-2 on a strong-rule inset edge, Anton, lifting to muted. */
             &[data-variant="stamp-more"] {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { initials, memberAvatar, runCardView, runSegments, seasonRuns, sortRuns } from "@/lib/challenges/runs";
+import { initials, memberAvatar, poolGoal, runCardView, runSegments, seasonRuns, sortRuns } from "@/lib/challenges/runs";
 import type { ChallengeRun } from "@/lib/challenges/types";
 
 const run = (id: number, over: Partial<ChallengeRun> = {}): ChallengeRun =>
@@ -103,6 +103,10 @@ describe("runCardView", () => {
     });
   });
 
+  it("has no Pool goal without the API's Core and Optional progress", () => {
+    expect(runCardView(run(2), "x", new Map(), "2026-11-17").goal).toBeNull();
+  });
+
   it("dates an ended Run by when it ended", () => {
     const view = runCardView(
       run(1, { status: "finished", ended_at: "2026-11-06T15:00:00Z" }),
@@ -170,5 +174,37 @@ describe("helpers", () => {
     expect(initials("Crit Fisher")).toBe("CF");
     expect(initials("backlog_slayer")).toBe("BS");
     expect(initials("xergg")).toBe("XE");
+  });
+});
+
+describe("poolGoal", () => {
+  const cleared = (game_id: number, title: string) => ({ game_id, title, state: "cleared" as const, picked_by_hand: false });
+
+  it("reads Core x/y and Optional a/N, with a bar each", () => {
+    const goal = poolGoal(
+      run(5, {
+        progress: { in_progress: 0, cleared: 3, target: 5, core: { cleared: 2, total: 3 }, optional: { cleared: 1, target: 2 } },
+        entries: [cleared(1, "FF I"), cleared(2, "FF II"), cleared(20, "Tactics")],
+      }),
+      new Set([1, 2, 3]),
+    );
+    expect(goal).toMatchObject({
+      core: { cleared: 2, total: 3, segments: [true, true, false] },
+      optional: { cleared: 1, target: 2, segments: [true, false] },
+      optionalCleared: [],
+      extra: 0,
+    });
+  });
+
+  it("lists every Optional Game Cleared past the target", () => {
+    const goal = poolGoal(
+      run(6, {
+        progress: { in_progress: 0, cleared: 4, target: 2, core: { cleared: 1, total: 1 }, optional: { cleared: 3, target: 1 } },
+        entries: [cleared(1, "FF I"), cleared(20, "Tactics"), cleared(21, "Crisis Core"), cleared(22, "Type-0")],
+      }),
+      new Set([1]),
+    );
+    expect(goal?.optionalCleared).toEqual(["Tactics", "Crisis Core", "Type-0"]);
+    expect(goal?.extra).toBe(2);
   });
 });

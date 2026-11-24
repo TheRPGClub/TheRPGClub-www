@@ -70,7 +70,7 @@ describe("an Assignment Challenge's checks", () => {
   });
 
   it("doesn't ask a Pool of it", () => {
-    expect(validateDraft({ ...santa(), sources: [], target: 0 }, null)).toEqual({});
+    expect(validateDraft({ ...santa(), sources: [], optionalTarget: 0 }, null)).toEqual({});
   });
 });
 

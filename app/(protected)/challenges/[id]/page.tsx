@@ -6,6 +6,7 @@ import { canEditChallenge, canHostDelete } from "@/lib/challenges/permissions";
 import { parsePlayed } from "@/lib/challenges/pool-wall";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { ChallengeView } from "@/components/challenges/challenge-view";
+import { parseView } from "@/components/challenges/view-switch";
 import { DuplicateNotice } from "@/components/challenges/duplicate-notice";
 import { HostTools } from "@/components/challenges/host-tools";
 import { StaffMenu } from "@/components/challenges/staff-menu";
@@ -107,7 +108,7 @@ export default async function ChallengePage({
   return (
     <ChallengeView
       page={page}
-      view={view === "pool" ? "pool" : "runs"}
+      view={parseView(view, ["runs", "pool", "proposals"])}
       played={parsePlayed(played)}
       showAll={all === "1"}
       badge={badge}

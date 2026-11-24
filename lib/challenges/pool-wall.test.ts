@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { filterWall, parsePlayed, poolWall } from "@/lib/challenges/pool-wall";
+import { filterWall, optionalSourcesLine, parsePlayed, poolKey, poolWall, splitWall } from "@/lib/challenges/pool-wall";
 import type { PoolProgressGame } from "@/lib/challenges/types";
 
 const crit = { user_id: "c", username: "crit", global_name: "Crit Fisher" };
@@ -23,13 +23,20 @@ describe("poolWall", () => {
       game(3),
     ],
     "me",
-    new Set([3]),
+    poolKey({
+      optional_target: 1,
+      core_games: [{ game_id: 1, title: "Game 1" }],
+      optional_games: [
+        { game_id: 2, title: "Game 2", source: "franchise", new: true },
+        { game_id: 3, title: "Game 3", source: "hand", new: false },
+      ],
+    }),
   );
 
   it("tags each cover with who Cleared it and who is playing it, from the Pool's progress", () => {
-    expect(tiles[0]).toMatchObject({ cleared: ["Crit Fisher"], inProgress: ["Night Owl"], yours: true, added: false });
-    expect(tiles[1]).toMatchObject({ cleared: [], inProgress: ["Crit Fisher"], yours: false });
-    expect(tiles[2]).toMatchObject({ cleared: [], inProgress: [], added: true });
+    expect(tiles[0]).toMatchObject({ cleared: ["Crit Fisher"], inProgress: ["Night Owl"], yours: true, core: true, tag: null });
+    expect(tiles[1]).toMatchObject({ cleared: [], inProgress: ["Crit Fisher"], yours: false, tag: "new", source: "franchise" });
+    expect(tiles[2]).toMatchObject({ cleared: [], inProgress: [], core: false, tag: "added", source: "hand" });
     expect(tiles[0].game).toMatchObject({ game_id: 1, title: "Game 1" });
   });
 
@@ -37,7 +44,7 @@ describe("poolWall", () => {
     const again = poolWall(
       [game(1, { cleared_by: [{ ...crit, run_id: 1 }], in_progress: [{ ...crit, run_id: 3 }] })],
       "me",
-      new Set(),
+      poolKey(null),
     );
     expect(again[0]).toMatchObject({ cleared: ["Crit Fisher"], inProgress: [] });
   });
@@ -46,5 +53,22 @@ describe("poolWall", () => {
     expect(filterWall(tiles, "played").map((t) => t.game.game_id)).toEqual([1, 2]);
     expect(filterWall(tiles, "unplayed").map((t) => t.game.game_id)).toEqual([3]);
     expect(parsePlayed("x")).toBe("all");
+  });
+
+  it("splits the wall into Core then Optional", () => {
+    const { core, optional } = splitWall(tiles);
+    expect(core.map((t) => t.game.game_id)).toEqual([1]);
+    expect(optional.map((t) => t.game.game_id)).toEqual([2, 3]);
+  });
+
+  it("names what feeds the Optional Games", () => {
+    expect(
+      optionalSourcesLine({
+        optional_target: 0,
+        franchises: [{ franchise_id: 1, name: "Final Fantasy" }],
+        collections: [{ collection_id: 7, name: "Final Fantasy VII" }],
+      }),
+    ).toBe("From the Final Fantasy Franchise and the Final Fantasy VII Series");
+    expect(optionalSourcesLine(null)).toBeNull();
   });
 });

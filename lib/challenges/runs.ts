@@ -70,8 +70,21 @@ export interface RunCardView {
   clearedGames: RunGame[];
   inProgressGames: RunGame[];
   inProgress: number;
+  // Pool (spec api#442): Core Cleared of the Core Games and Optional
+  // Cleared of the target, each with its bar (null for other Formats and an
+  // older API).
+  goal: PoolGoal | null;
   // "Started 23 Sep", "Finished 6 Nov", "Abandoned 3 Oct", "Expired 20 Dec".
   dateLine: string;
+}
+
+export interface PoolGoal {
+  core: { cleared: number; total: number; segments: boolean[] };
+  optional: { cleared: number; target: number; segments: boolean[] };
+  // Every Optional Game Cleared, by title, once the member Cleared more
+  // than the target, and how many more.
+  optionalCleared: string[];
+  extra: number;
 }
 
 const MAX_SEGMENTS = 20;
@@ -94,11 +107,29 @@ export function memberName(member: { global_name?: string | null; username: stri
   return member.global_name?.trim() || member.username;
 }
 
+// A Pool Run's goal in two parts. `coreIds` are the Pool's Core Games, to
+// tell the Optional Games among the Run's Cleared ones.
+export function poolGoal(run: ChallengeRun, coreIds: ReadonlySet<number>): PoolGoal | null {
+  const { core, optional } = run.progress;
+  if (!core || !optional) return null;
+  const extra = Math.max(0, optional.cleared - optional.target);
+  const optionalCleared = (run.entries ?? [])
+    .filter((e) => e.state === "cleared" && !coreIds.has(e.game_id))
+    .map((e) => e.title);
+  return {
+    core: { ...core, segments: runSegments(core.cleared, core.total) },
+    optional: { ...optional, segments: runSegments(optional.cleared, optional.target) },
+    optionalCleared: extra > 0 ? optionalCleared : [],
+    extra,
+  };
+}
+
 export function runCardView(
   run: ChallengeRun,
   viewerId: string,
   covers: ReadonlyMap<number, string | null>,
   today: IsoDay,
+  coreIds: ReadonlySet<number> = new Set(),
 ): RunCardView {
   const games = (state: "cleared" | "in_progress") =>
     (run.entries ?? [])
@@ -123,6 +154,7 @@ export function runCardView(
     clearedGames: games("cleared"),
     inProgressGames: games("in_progress"),
     inProgress: run.progress.in_progress,
+    goal: poolGoal(run, coreIds),
     dateLine: endedAt
       ? `${ENDED[run.status as keyof typeof ENDED]} ${formatDay(clubDayOf(endedAt), today)}`
       : `Started ${formatDay(clubDayOf(run.started_at), today)}`,

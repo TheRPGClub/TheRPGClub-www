@@ -2,6 +2,8 @@
 
 import { Loader2, Lock } from "lucide-react";
 import type { ChallengeDraft } from "@/lib/challenges/form";
+import type { ChallengeTint } from "@/lib/challenges/types";
+import { CURATED_TINTS, tintStyle } from "@/lib/challenges/tint";
 import { useChallengeForm, type EditTarget } from "@/hooks/use-challenge-form";
 import { PageHeader } from "@/components/templates/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -19,24 +21,28 @@ import { YearRuler } from "@/components/challenges/form/year-ruler";
 // underlined words whose controls open beneath it, the Pool it means as a
 // cover wall (Slots: its years on a ruler), then the name, description and
 // Host. Once a Run exists the
-// rules are locked and only the name, description and end date change.
+// rules are locked and only the name, description and end date change,
+// except a Pool's games, sources and target (spec api#442). The Challenge's
+// tint rings Core Games (a new one shows cobalt until the API gives it one).
 export function ChallengeForm({
   initial,
   edit,
   staff,
   runCount,
   badge,
+  tint,
 }: {
   initial: ChallengeDraft;
   edit: EditTarget | null;
   staff: boolean;
   runCount: number;
   badge?: React.ReactNode;
+  tint?: ChallengeTint;
 }) {
   const form = useChallengeForm(initial, edit);
   const cancelHref = edit ? `/challenges/${edit.id}` : "/challenges";
   return (
-    <div className="space-y-6 pb-12">
+    <div style={tintStyle(tint ?? CURATED_TINTS.cobalt)} className="space-y-6 pb-12">
       <PageHeader
         back={{ href: cancelHref, label: edit ? initial.name || "Challenge" : "Challenges" }}
         title={edit ? "Edit Challenge" : "New Challenge"}
@@ -74,14 +80,7 @@ export function ChallengeForm({
         <div>
           {form.draft.format === "slots" ? <SlotsSentence form={form} /> : <RuleSentence form={form} />}
           <WordEditor form={form} />
-          {edit?.locked && (
-            <p className="mt-3 flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
-              <Lock aria-hidden className="size-4 shrink-0" />
-              {runCount > 0
-                ? `The rules are locked because ${runCount} ${runCount === 1 ? "Run has" : "Runs have"} started. The name, description and end date can still change.`
-                : "The rules are locked. The name, description and end date can still change."}
-            </p>
-          )}
+          {edit?.locked && <LockNote pool={form.draft.format === "pool"} runCount={runCount} />}
           {form.draft.format === "slots" ? <YearRuler form={form} /> : <PoolBuilder form={form} />}
         </div>
       ) : form.draft.format === "assignment" ? (
@@ -94,5 +93,20 @@ export function ChallengeForm({
       )}
       <MetaFields form={form} canHostForClub={staff && !edit} />
     </div>
+  );
+}
+
+// Once Runs exist: what is locked, and for a Pool, what stays open.
+function LockNote({ pool, runCount }: { pool: boolean; runCount: number }) {
+  const runs = `${runCount} ${runCount === 1 ? "Run has" : "Runs have"} started`;
+  return (
+    <p className="mt-3 flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
+      <Lock aria-hidden className="size-4 shrink-0" />
+      {pool
+        ? `The Format and schedule are locked because ${runs}. Core and Optional Games, sources and the target stay editable. Adding a Core Game or raising the target sends a DM to members with an active Run.`
+        : runCount > 0
+          ? `The rules are locked because ${runs}. The name, description and end date can still change.`
+          : "The rules are locked. The name, description and end date can still change."}
+    </p>
   );
 }
