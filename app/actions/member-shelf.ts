@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
-import type { GameListKind } from "@/lib/api/game-list-entry";
+import type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 
-export type { GameListKind } from "@/lib/api/game-list-entry";
+export type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 
 // One server-actions module shared by all six profile lists. They all have the
 // same wire shape: a list scoped to a user, individual entries identified by
@@ -26,7 +26,7 @@ interface ListConfig {
   profileSubpath: string;
 }
 
-const LISTS: Record<GameListKind, ListConfig> = {
+const LISTS: Record<MemberShelfKind, ListConfig> = {
   favorite: {
     userCollection: "favorites",
     entryResource: "favorites",
@@ -63,12 +63,12 @@ async function errorMessage(response: Response): Promise<string> {
   }
 }
 
-function revalidateMemberPages(userId: string, kind: GameListKind) {
+function revalidateMemberPages(userId: string, kind: MemberShelfKind) {
   revalidatePath(`/members/${userId}`);
   revalidatePath(`/members/${userId}/${LISTS[kind].profileSubpath}`);
 }
 
-export interface GameListPayload {
+export interface MemberShelfPayload {
   gamedb_game_id: number;
   platform_id?: number | null;
   note?: string | null;
@@ -86,25 +86,25 @@ export interface GameListPayload {
 
 // Favorites are platform-agnostic on the backend — sending platform_id makes
 // the request fail validation. The other lists do accept it.
-const FORBIDDEN_FIELDS: Partial<Record<GameListKind, ReadonlyArray<keyof GameListPayload>>> = {
+const FORBIDDEN_FIELDS: Partial<Record<MemberShelfKind, ReadonlyArray<keyof MemberShelfPayload>>> = {
   favorite: ["platform_id"],
 };
 
 function sanitizePayload(
-  kind: GameListKind,
-  input: Partial<GameListPayload>,
-): Partial<GameListPayload> {
+  kind: MemberShelfKind,
+  input: Partial<MemberShelfPayload>,
+): Partial<MemberShelfPayload> {
   const forbidden = FORBIDDEN_FIELDS[kind];
   if (!forbidden || forbidden.length === 0) return input;
-  const cleaned: Partial<GameListPayload> = { ...input };
+  const cleaned: Partial<MemberShelfPayload> = { ...input };
   for (const field of forbidden) delete cleaned[field];
   return cleaned;
 }
 
-export async function addGameToListAction(
+export async function addToMemberShelfAction(
   userId: string,
-  kind: GameListKind,
-  input: GameListPayload,
+  kind: MemberShelfKind,
+  input: MemberShelfPayload,
 ): Promise<ActionResult<{ entry_id: number }>> {
   if (!input.gamedb_game_id) {
     return { ok: false, error: "Pick a game first." };
@@ -125,11 +125,11 @@ export async function addGameToListAction(
   return { ok: true, data: body.data };
 }
 
-export async function updateGameListEntryAction(
+export async function updateMemberShelfEntryAction(
   userId: string,
-  kind: GameListKind,
+  kind: MemberShelfKind,
   entryId: number,
-  input: Partial<GameListPayload>,
+  input: Partial<MemberShelfPayload>,
 ): Promise<ActionResult<{ entry_id: number }>> {
   const res = await apiFetch(
     `/api/v1/${LISTS[kind].entryResource}/${entryId}`,
@@ -146,9 +146,9 @@ export async function updateGameListEntryAction(
   return { ok: true, data: body.data };
 }
 
-export async function removeGameListEntryAction(
+export async function removeMemberShelfEntryAction(
   userId: string,
-  kind: GameListKind,
+  kind: MemberShelfKind,
   entryId: number,
 ): Promise<ActionResult<null>> {
   const res = await apiFetch(
@@ -166,15 +166,15 @@ export async function removeGameListEntryAction(
 // in one round-trip from the client's perspective. We can't make this truly
 // atomic without a backend endpoint, so the client should handle partial
 // failures (e.g. show an error if the add succeeded but the delete failed).
-export async function moveGameListEntryAction(
+export async function moveMemberShelfEntryAction(
   userId: string,
-  source: { kind: GameListKind; entryId: number },
-  target: { kind: GameListKind; payload: GameListPayload },
+  source: { kind: MemberShelfKind; entryId: number },
+  target: { kind: MemberShelfKind; payload: MemberShelfPayload },
 ): Promise<ActionResult<{ entry_id: number }>> {
-  const added = await addGameToListAction(userId, target.kind, target.payload);
+  const added = await addToMemberShelfAction(userId, target.kind, target.payload);
   if (!added.ok) return added;
 
-  const removed = await removeGameListEntryAction(
+  const removed = await removeMemberShelfEntryAction(
     userId,
     source.kind,
     source.entryId,

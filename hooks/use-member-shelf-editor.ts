@@ -3,17 +3,17 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { addGameToListAction, removeGameListEntryAction } from "@/app/actions/game-lists";
-import type { GameListKind } from "@/lib/api/game-list-entry";
+import { addToMemberShelfAction, removeMemberShelfEntryAction } from "@/app/actions/member-shelf";
+import type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 import type { Game } from "@/lib/api/types";
-import { COMPLETION_TYPES, OWNERSHIP_TYPES } from "@/lib/game-lists/entry-meta";
+import { COMPLETION_TYPES, OWNERSHIP_TYPES } from "@/lib/member-shelf/entry-meta";
 
 /**
  * One of the member's lists as it is edited: whether the add panel is open,
  * the options a new entry is added with, and adding or removing an entry.
  * Every change refreshes the page so the shelf shows the list as stored.
  */
-export function useGameListEditor(userId: string, kind: GameListKind) {
+export function useMemberShelfEditor(userId: string, kind: MemberShelfKind) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
   const [platformId, setPlatformId] = useState<number | null>(null);
@@ -25,7 +25,7 @@ export function useGameListEditor(userId: string, kind: GameListKind) {
   const add = (game: Game) => {
     setError(null);
     startTransition(async () => {
-      const result = await addGameToListAction(userId, kind, {
+      const result = await addToMemberShelfAction(userId, kind, {
         gamedb_game_id: game.game_id,
         platform_id: platformId,
         ...(kind === "completed" ? { completion_type: completionType } : {}),
@@ -49,7 +49,7 @@ export function useGameListEditor(userId: string, kind: GameListKind) {
     if (!confirm("Remove this entry?")) return;
     setError(null);
     startTransition(async () => {
-      const result = await removeGameListEntryAction(userId, kind, entryId);
+      const result = await removeMemberShelfEntryAction(userId, kind, entryId);
       if (!result.ok) {
         setError(result.error ?? "Failed to remove.");
         return;
@@ -86,4 +86,4 @@ export function useGameListEditor(userId: string, kind: GameListKind) {
   };
 }
 
-export type GameListOptions = ReturnType<typeof useGameListEditor>["options"];
+export type MemberShelfOptions = ReturnType<typeof useMemberShelfEditor>["options"];

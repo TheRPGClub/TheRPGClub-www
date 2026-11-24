@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { ActionResult } from "@/app/actions/game-lists";
+import type { ActionResult } from "@/app/actions/member-shelf";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { isMemberId } from "@/lib/imports/kinds";
 

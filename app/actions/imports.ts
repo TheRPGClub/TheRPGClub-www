@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { ActionResult } from "@/app/actions/game-lists";
+import type { ActionResult } from "@/app/actions/member-shelf";
 import type {
   ApiCollection,
   ApiSingle,
@@ -15,7 +15,7 @@ import type {
 } from "@/lib/api/types";
 import { readApiError } from "@/lib/api/errors";
 import type { AddCompletionPayload } from "@/lib/imports/completionator";
-import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import {
   IMPORT_KINDS,
   importApiPath,

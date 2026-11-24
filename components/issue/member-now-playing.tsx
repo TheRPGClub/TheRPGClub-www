@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
 import type { UserNowPlaying } from "@/lib/api/types";
-import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import { shortDate } from "@/lib/members/member-lists";
 import { cn } from "@/lib/utils";
 

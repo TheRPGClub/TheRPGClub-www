@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import type { GameListEntry } from "@/lib/api/game-list-entry";
+import type { MemberShelfEntry } from "@/lib/api/member-shelf-entry";
 import { entryMeta } from "./entry-meta";
 
 const platform = { platform_id: 1, platform_name: "PlayStation 2", platform_abbreviation: "PS2" };
 
-const entry = (fields: Record<string, unknown>) => fields as unknown as GameListEntry;
+const entry = (fields: Record<string, unknown>) => fields as unknown as MemberShelfEntry;
 
 describe("entryMeta", () => {
   it("dates a completion by month and names its platform", () => {
