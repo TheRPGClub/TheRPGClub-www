@@ -13,12 +13,14 @@ import { FactsRowSkeleton, GamePageSkeleton } from "@/components/games/game-page
 import { GameReviewsSection } from "@/components/games/game-page/game-reviews-section";
 import { DraftSlot } from "@/components/reviews/drafts/draft-slot";
 import { DetailTemplate } from "@/components/templates/detail-template";
+import { GameListsSection } from "@/components/game-lists/game/game-lists-section";
 
 // A game's page is its cover story (design www#156, round 3), in a fixed
 // order: the hero with the club's panel over its foot (time to beat, who's
 // playing it, who finished it, its Discord threads); Releases, Details and
 // Alternate Versions; the round it's on the ballot for; its Featured Video;
-// then Reviews, its members' journals and its Achievement Sets, full width.
+// then Reviews, the Game Lists it is in, its members' journals and its
+// Achievement Sets, full width.
 
 export default function GamePage({
   params,
@@ -93,6 +95,12 @@ async function GameContent({
             )
           }
         />
+      )}
+      {/* In Game Lists, below Reviews (pick 5C): its own read, streamed. */}
+      {show.gameLists && (
+        <Suspense fallback={null}>
+          <GameListsSection gameId={gameId} gameTitle={game.title} viewerId={session?.principal.discord_id ?? null} />
+        </Suspense>
       )}
       {/* Members' Game Journals on this game: one chapter line per member.
           Completions join the timeline only when Game Completions shows. */}

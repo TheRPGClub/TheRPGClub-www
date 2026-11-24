@@ -36,7 +36,7 @@ describe("sidebarGroups", () => {
   it("groups every page for a member who is shown everything", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "challenges"],
-      games: ["games", "reviews", "releases", "achievements", "journals"],
+      games: ["games", "lists", "reviews", "releases", "achievements", "journals"],
       club: ["members", "news", "codex", "giveaways", "suggestions"],
     });
   });

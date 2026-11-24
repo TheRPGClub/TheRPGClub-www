@@ -1,6 +1,6 @@
 import { Dices } from "lucide-react";
 import type { MemberProfile } from "@/lib/members/profile-page";
-import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import { MemberShelf, Spine } from "@/components/issue/member-shelf";
 import { platformShort } from "@/components/issue/member-cover";
 import { memberListHref } from "@/lib/members/member-lists";

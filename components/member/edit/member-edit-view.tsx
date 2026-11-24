@@ -1,7 +1,7 @@
 
 import { EDIT_LISTS, type MemberEditData, type MemberEditShown } from "@/lib/member-edit";
 import { SocialsEditor } from "@/components/socials-editor";
-import { GameListEditor } from "@/components/member/game-list-editor";
+import { MemberShelfEditor } from "@/components/member/member-shelf-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { PageHeader } from "@/components/templates/page-header";
 import { EditSections, type EditSection } from "@/components/member/edit/edit-sections";
@@ -32,7 +32,7 @@ export function MemberEditView({
         label: def.title,
         count: list.total,
         content: (
-          <GameListEditor
+          <MemberShelfEditor
             userId={user.user_id}
             kind={def.kind}
             title={def.title}

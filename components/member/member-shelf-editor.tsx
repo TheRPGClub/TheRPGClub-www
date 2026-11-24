@@ -3,22 +3,22 @@
 import { Loader2, Plus } from "lucide-react";
 import {
   resolveEntryId,
-  type GameListEntry,
-  type GameListKind,
-} from "@/lib/api/game-list-entry";
+  type MemberShelfEntry,
+  type MemberShelfKind,
+} from "@/lib/api/member-shelf-entry";
 import type { Platform } from "@/lib/api/types";
-import { useGameListEditor } from "@/hooks/use-game-list-editor";
+import { useMemberShelfEditor } from "@/hooks/use-member-shelf-editor";
 import { SectionHeading } from "@/components/templates/page-header";
 import { Button } from "@/components/ui/button";
-import { AddGamePanel } from "./game-list/add-game-panel";
-import { ListEntryTile } from "./game-list/list-entry-tile";
+import { AddGamePanel } from "./member-shelf/add-game-panel";
+import { ListEntryTile } from "./member-shelf/list-entry-tile";
 
-export interface GameListEditorProps {
+export interface MemberShelfEditorProps {
   userId: string;
-  kind: GameListKind;
+  kind: MemberShelfKind;
   title: string;
   description?: string;
-  entries: GameListEntry[];
+  entries: MemberShelfEntry[];
   // Total count from the backend — we may only have a partial preview window.
   total?: number;
   platforms: Platform[];
@@ -29,7 +29,7 @@ export interface GameListEditorProps {
 // One of the member's lists as a shelf of covers: each cover carries its
 // remove button, and the dashed Add tile at the end opens the game picker
 // inline above the shelf.
-export function GameListEditor({
+export function MemberShelfEditor({
   userId,
   kind,
   title,
@@ -38,8 +38,8 @@ export function GameListEditor({
   total,
   platforms,
   igdbBlockedReason,
-}: GameListEditorProps) {
-  const editor = useGameListEditor(userId, kind);
+}: MemberShelfEditorProps) {
+  const editor = useMemberShelfEditor(userId, kind);
   const shownCount = entries.length;
   const displayedTotal = total ?? shownCount;
   const hasMoreThanShown = total !== undefined && total > shownCount;

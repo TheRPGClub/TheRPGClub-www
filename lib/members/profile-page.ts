@@ -18,6 +18,7 @@ import { loadMemberRuns } from "@/lib/challenges/member-runs";
 import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { fetchMember } from "@/lib/members/member-page";
 import { memberCounts } from "@/lib/members/member-lists";
+import { fetchMemberGameLists } from "@/lib/game-lists/api";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk (face-on key art), everything else is closed books on a bookcase, one
@@ -79,11 +80,12 @@ export async function loadMemberProfile(id: string) {
     achievements: features.shown("achievement_hub"),
     reviews: features.shown("reviews"),
     journal: features.shown("journals"),
+    gameLists: features.shown("game_lists"),
     challenges: features.shown("challenges"),
     imports: shownImportKinds(features).length > 0,
   }));
   const users = `/api/v1/users/${id}`;
-  const [user, session, favorites, show, [nowPlaying, completed, backlog, collection, reviews, achievements, runs]] =
+  const [user, session, favorites, show, [nowPlaying, completed, backlog, collection, reviews, achievements, runs, gameLists]] =
     await Promise.all([
       fetchMember<UserProfile & { journal?: JournaledGame[] }>(id),
       getSession(),
@@ -98,6 +100,7 @@ export async function loadMemberProfile(id: string) {
           fetchPreview<Review>(`${users}/reviews?per=3`, show.reviews),
           show.achievements ? fetchAchievementSummary(id) : null,
           show.challenges ? loadMemberRuns(id) : null,
+          show.gameLists ? fetchMemberGameLists(id) : null,
         ]),
       ),
     ]);
@@ -122,6 +125,8 @@ export async function loadMemberProfile(id: string) {
     lists: { favorites, nowPlaying, completed, backlog, collection, reviews },
     achievements,
     runs,
+    // The member's Game Lists the viewer may read; null when hidden or unread.
+    gameLists,
     journal: journalPreview(user, aggregated.journal),
   };
 }
