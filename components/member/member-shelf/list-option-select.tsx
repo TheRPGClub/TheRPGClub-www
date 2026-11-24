@@ -20,16 +20,21 @@ export function ListOptionSelect<T extends string | number | null>({
   items,
   value,
   onValueChange,
+  variant = "default",
+  id,
 }: {
   // The field's name to a screen reader.
   label: string;
   items: ListOption<T>[];
   value: T;
   onValueChange: (value: T) => void;
+  // "slip" on a shelf form's paper slip (api#451).
+  variant?: "default" | "slip";
+  id?: string;
 }) {
   return (
     <Select items={items} value={value} onValueChange={(next) => onValueChange(next as T)}>
-      <SelectTrigger aria-label={label} className="w-full min-w-0 data-[size=default]:h-9">
+      <SelectTrigger id={id} aria-label={label} variant={variant} className="w-full min-w-0 data-[size=default]:h-9">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

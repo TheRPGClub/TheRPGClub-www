@@ -338,6 +338,8 @@ export interface GameCompletion {
   note: string | null;
   // Main Story | Main Story + Side Content | Completionist
   completion_type: string;
+  // The day the member started it (YYYY-MM-DD), optional (spec api#451).
+  started_at?: string | null;
   completed_at: string | null;
   // Serialised as a decimal string ("20.0"); see playtimeHours().
   final_playtime_hrs: string | number | null;
