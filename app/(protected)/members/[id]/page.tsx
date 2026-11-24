@@ -14,7 +14,7 @@ import { ProfileLists } from "@/components/game-lists/profile/profile-lists";
 // A member's page reads as one idea: what they're playing now is open on the
 // desk, everything else is closed books on a bookcase, one shelf per list,
 // then their Achievements, latest reviews and Game Journal. Read-only;
-// managing the lists lives on the edit page.
+// the owner manages each list on its own page.
 
 export default async function MemberPage({
   params,

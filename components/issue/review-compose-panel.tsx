@@ -28,7 +28,7 @@ const COPY = {
 } as const;
 
 export function ReviewComposePanel({
-  ownerId,
+  gameId,
   canWriteReview,
   status,
   onStart,
@@ -36,7 +36,8 @@ export function ReviewComposePanel({
   variant = "bar",
   className,
 }: {
-  ownerId: string;
+  // The game's page, whose list button puts it on Now Playing or Completed.
+  gameId: number;
   canWriteReview: boolean;
   status: "playing" | "completed" | null;
   // A button that opens the composer in place, or a link to where it opens.
@@ -61,7 +62,7 @@ export function ReviewComposePanel({
         <p className="mt-1">
           Add it to{" "}
           <Link
-            href={`/members/${ownerId}/edit`}
+            href={`/games/${gameId}#your-lists`}
             className="text-foreground underline decoration-faint-foreground/60 underline-offset-2 hover:text-highlight"
           >
             Now Playing or Completed

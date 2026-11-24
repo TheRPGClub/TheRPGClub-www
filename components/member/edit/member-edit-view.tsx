@@ -1,23 +1,26 @@
 
-import { EDIT_LISTS, type MemberEditData, type MemberEditShown } from "@/lib/member-edit";
+import type { MemberEditData } from "@/lib/member-edit";
+import type { ManagedList } from "@/lib/members/managed-lists";
 import { SocialsEditor } from "@/components/socials-editor";
-import { MemberShelfEditor } from "@/components/member/member-shelf-editor";
 import { LinkedAccountsEditor } from "@/components/member/linked-accounts-editor";
 import { PageHeader } from "@/components/templates/page-header";
 import { EditSections, type EditSection } from "@/components/member/edit/edit-sections";
 
-// The profile edit page: its header, then one section per list the member is
-// shown, their socials and (where the hub is open to them) their Linked
-// Accounts, behind the section switcher.
+// The profile edit page: its header, then the member's socials and (where the
+// hub is open to them) their Linked Accounts behind the section switcher, with
+// links to the Imports and to each list's own page, where the lists are
+// managed (spec api#451).
 export function MemberEditView({
   data,
-  shown,
-  igdbBlockedReason,
+  linked,
+  lists,
   importsHref,
 }: {
   data: MemberEditData;
-  shown: MemberEditShown;
-  igdbBlockedReason: string | null;
+  // Whether the Linked Accounts section shows (the hub's flag).
+  linked: boolean;
+  // The list pages the "Manage your lists" row links to.
+  lists: ManagedList[];
   // Null when there's nothing to import.
   importsHref: string | null;
 }) {
@@ -25,26 +28,6 @@ export function MemberEditView({
   const displayName = user.global_name ?? user.username ?? user.user_id;
 
   const sections: EditSection[] = [
-    ...EDIT_LISTS.filter((def) => def.shown === null || shown[def.shown]).map((def) => {
-      const list = data.lists[def.list];
-      return {
-        id: def.id,
-        label: def.title,
-        count: list.total,
-        content: (
-          <MemberShelfEditor
-            userId={user.user_id}
-            kind={def.kind}
-            title={def.title}
-            description={def.description}
-            entries={list.data}
-            total={list.total}
-            platforms={data.platforms}
-            igdbBlockedReason={igdbBlockedReason}
-          />
-        ),
-      };
-    }),
     {
       id: "socials",
       label: "Socials",
@@ -58,7 +41,7 @@ export function MemberEditView({
       ),
     },
   ];
-  if (shown.linked) {
+  if (linked) {
     sections.push({
       // www-03's "link an account" CTA lands on /edit#linked-accounts.
       id: "linked-accounts",
@@ -82,7 +65,7 @@ export function MemberEditView({
         title="Edit profile"
         count={displayName}
       />
-      <EditSections sections={sections} importsHref={importsHref} />
+      <EditSections sections={sections} importsHref={importsHref} lists={lists} />
     </div>
   );
 }

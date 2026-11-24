@@ -22,8 +22,8 @@ import { fetchMemberGameLists } from "@/lib/game-lists/api";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk (face-on key art), everything else is closed books on a bookcase, one
-// shelf per list, and their latest reviews follow. Read-only; managing the
-// lists lives on the edit page.
+// shelf per list, and their latest reviews follow. Read-only; the owner
+// manages each list on its own page.
 
 export const SHELF_LIMIT = 12;
 
