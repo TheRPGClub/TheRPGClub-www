@@ -1671,5 +1671,27 @@
         [data-slot="label"][data-variant="slip-choice"] {
             @apply font-label cursor-pointer rounded-sm text-background inset-ring-[1.5px] inset-ring-background/35 transition-colors hover:bg-background/[0.06] has-data-checked:bg-background has-data-checked:text-foreground has-data-checked:inset-ring-background has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-background motion-reduce:transition-none;
         }
+        /* The game page's split button (api#451, 1A): the highlight button
+           cut in two, the next step on its main side and the caret joined
+           to it by an ink hairline; the open caret rings in yellow. */
+        [data-slot="button"][data-variant="split"],
+        :is([data-slot="button"], [data-slot="dropdown-menu-trigger"])[data-variant="split-caret"] {
+            @apply font-label border-transparent bg-highlight bg-clip-padding font-extrabold text-highlight-foreground transition-[background-color,box-shadow] hover:bg-highlight/85 focus-visible:border-ring motion-reduce:transition-none;
+        }
+        [data-slot="button"][data-variant="split"] {
+            @apply rounded-l-sm rounded-r-none;
+        }
+        :is([data-slot="button"], [data-slot="dropdown-menu-trigger"])[data-variant="split-caret"] {
+            @apply rounded-l-none rounded-r-sm shadow-[inset_1px_0_0_rgb(11_11_13/0.4)] aria-expanded:shadow-[inset_1px_0_0_rgb(11_11_13/0.4),0_0_0_3px_color-mix(in_oklab,var(--color-highlight)_30%,transparent)];
+        }
+        /* Where the game is on the member's lists, beside the split button:
+           paper label caps on a translucent ink chip with a paper hairline,
+           the icon in dim paper, a figure in Anton. */
+        [data-slot="badge"][data-tone="shelf"] {
+            @apply rounded-[2px] border-0 bg-background/55 text-[0.8rem] font-bold tracking-[0.06em] text-foreground uppercase inset-ring-1 inset-ring-foreground/22 [&>svg]:text-dim-foreground;
+            [data-part="figure"] {
+                @apply font-display text-base leading-none font-normal tracking-normal;
+            }
+        }
     }
 }

@@ -14,10 +14,13 @@ export function GameHeroText({
   game,
   track,
   badge,
+  lists,
 }: {
   game: Game;
   track: GameTrack | null;
   badge?: ReactNode;
+  // Under the blurb, full width on a phone (spec api#451, 1A).
+  lists?: ReactNode;
 }) {
   const chips = trackChips(game);
   const hasChips = !!badge || chips.length > 0 || (game.platforms?.length ?? 0) > 0;
@@ -62,6 +65,7 @@ export function GameHeroText({
           {igdb}
         </div>
       )}
+      {lists}
     </div>
   );
 }

@@ -58,6 +58,11 @@ const badgeVariants = cva(
         "region-jp": "",
         "region-ww": "",
         region: "",
+        // api#451: where the game already is on the member's lists, beside
+        // the game page's split button ("Playing since 9 Nov", "Completed
+        // x2"): paper label caps on a translucent ink chip over the art,
+        // a figure set in Anton.
+        shelf: "",
       },
       size: {
         default: "",

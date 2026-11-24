@@ -21,6 +21,7 @@ export function GameHero({
   badge,
   action,
   panel,
+  lists,
 }: {
   game: Game;
   // Leads the chip row, e.g. the staff "Preview" badge.
@@ -29,6 +30,9 @@ export function GameHero({
   action?: ReactNode;
   // The plate over the hero's foot (time to beat, who's playing...).
   panel?: ReactNode;
+  // The signed-in member's list control under the blurb (the game page's
+  // split button and state chips).
+  lists?: ReactNode;
 }) {
   const track = gameTrack(game);
   const art = game.art_url;
@@ -91,7 +95,7 @@ export function GameHero({
           className="row-start-1 w-21 shadow-[0_18px_40px_rgb(0_0_0/0.6)] md:w-auto md:min-w-30 md:self-stretch"
           fallbackClassName="text-base md:text-[1.7rem]"
         />
-        <GameHeroText game={game} track={track} badge={badge} />
+        <GameHeroText game={game} track={track} badge={badge} lists={lists} />
       </div>
 
       {panel}

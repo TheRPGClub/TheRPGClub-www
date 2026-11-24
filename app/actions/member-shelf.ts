@@ -75,6 +75,10 @@ function revalidateMemberPages(userId: string, kind: MemberShelfKind) {
   revalidatePath(`/members/${userId}/${LISTS[kind].profileSubpath}`);
 }
 
+// The payload lives in lib (MemberShelfPayload) so the shared list forms can
+// build it. A "use server" module may only export async functions: a bare
+// `export type { X }` of an imported name compiles to a runtime reference.
+
 // Favorites are platform-agnostic on the backend — sending platform_id makes
 // the request fail validation. The other lists do accept it.
 // Each list's own extras are dropped from the others, so a shared form can't
