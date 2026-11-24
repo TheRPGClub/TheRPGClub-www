@@ -50,7 +50,10 @@ export interface ChallengeDraft {
   // The saved Pool's Optional Games, for their "new" tags and the linked
   // Game List's games, which the preview can't resolve (empty on create).
   savedOptional: ChallengeOptionalGame[];
-  gameList: { id: number; name: string } | null;
+  // The linked Game List (api#448): set when the Challenge starts from one
+  // and kept for good; `canAdd` when the viewer may add games to it from
+  // this Challenge (the Pool's `game_list.can_add`).
+  gameList: { id: number; name: string; canAdd?: boolean } | null;
   // Assignment only: the Edition calendar as MM-DD (www#110).
   signupCutoff: string;
   pickDeadline: string;
@@ -117,7 +120,9 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
       title: g.title,
     })),
     savedOptional: pool?.optional_games ?? [],
-    gameList: pool?.game_list ? { id: pool.game_list.id, name: pool.game_list.name } : null,
+    gameList: pool?.game_list
+      ? { id: pool.game_list.id, name: pool.game_list.name, canAdd: pool.game_list.can_add }
+      : null,
     signupCutoff: challenge.assignment?.signup_cutoff ?? SECRET_SANTA_CALENDAR.cutoff,
     pickDeadline: challenge.assignment?.pick_deadline ?? SECRET_SANTA_CALENDAR.deadline,
     reveal: challenge.assignment?.reveal ?? SECRET_SANTA_CALENDAR.reveal,
@@ -204,7 +209,7 @@ type RequestData = {
   season?: { start: string; end: string } | null;
   ends_on?: string | null;
   hosted_by_club?: boolean;
-  pool?: PoolDefinition & { optional_target: number };
+  pool?: PoolDefinition & { optional_target: number; game_list_id?: number };
   assignment?: { signup_cutoff: string; pick_deadline: string; reveal: string };
   slots?: ChallengeSlots;
 };
@@ -247,13 +252,15 @@ function ruleFields(draft: ChallengeDraft): RequestData {
   };
 }
 
+// A new Challenge. A Pool started from a Game List names it once, here: the
+// link can't be set on an edit.
 export function createRequest(draft: ChallengeDraft): { data: RequestData } {
   const { pool, ...rest } = ruleFields(draft);
   return {
     data: {
       ...rest,
       hosted_by_club: draft.hostedByClub,
-      ...(pool ? { pool } : {}),
+      ...(pool ? { pool: draft.gameList ? { ...pool, game_list_id: draft.gameList.id } : pool } : {}),
     },
   };
 }
@@ -263,18 +270,30 @@ export function createRequest(draft: ChallengeDraft): { data: RequestData } {
 // go, and the end date not once the Challenge is Closed for good; a Pool
 // stays editable with Runs (spec api#442), so it goes too. The Host is
 // changed by staff on the Challenge page, never here.
+// `addToList` also puts the games the edit newly adds to the Pool by hand
+// into the linked Game List (api#448).
 export function editRequest(
   draft: ChallengeDraft,
-  { locked, closedForGood }: { locked: boolean; closedForGood: boolean },
-): { data: RequestData } {
-  if (!locked) return { data: ruleFields(draft) };
+  { locked, closedForGood, addToList = false }: { locked: boolean; closedForGood: boolean; addToList?: boolean },
+): { data: RequestData & { add_to_list?: boolean } } {
+  const extra = addToList && draft.gameList ? { add_to_list: true } : {};
+  if (!locked) return { data: { ...ruleFields(draft), ...extra } };
   const data: RequestData = {
     name: draft.name.trim(),
     description: draft.description.trim(),
   };
   if (draft.schedule === "always_open" && !closedForGood) data.ends_on = draft.endsOn;
   if (draft.format === "pool") data.pool = poolRequest(draft);
-  return { data };
+  return { data: { ...data, ...extra } };
+}
+
+// The games an edit newly puts in the Pool by hand, as Core or as a
+// hand-picked Optional Game (moves between the two don't count), less those
+// the linked list already holds: what `add_to_list` would add to it.
+export function newHandGames(initial: ChallengeDraft, draft: ChallengeDraft): DraftGame[] {
+  const before = new Set([...initial.core, ...initial.optional].map((g) => g.game_id));
+  const listed = new Set(draft.savedOptional.filter((g) => g.source === "list").map((g) => g.game_id));
+  return [...draft.core, ...draft.optional].filter((g) => !before.has(g.game_id) && !listed.has(g.game_id));
 }
 
 export function addSource(draft: ChallengeDraft, source: DraftSource): ChallengeDraft {

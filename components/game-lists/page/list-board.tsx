@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import type { GameList } from "@/lib/game-lists/types";
 import { gamesCount } from "@/lib/game-lists/text";
 import { useGameListBoard } from "@/hooks/use-game-list-board";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/templates/page-header";
 import { ListPageByline } from "@/components/game-lists/page/list-page-byline";
@@ -23,12 +23,15 @@ export function ListBoard({
   isOwner,
   now,
   badge,
+  startChallengeHref = null,
 }: {
   initial: GameList;
   // Only the owner changes who sees a list.
   isOwner: boolean;
   now: string;
   badge?: ReactNode;
+  // "Start a Challenge" from this list (www#172): its games become Core.
+  startChallengeHref?: string | null;
 }) {
   const board = useGameListBoard(initial);
   const { list, entries } = board;
@@ -46,12 +49,22 @@ export function ListBoard({
         badge={badge}
         count={gamesCount(list.entry_count)}
         actions={
-          list.viewer.can_edit &&
-          !editing && (
-            <Button variant="outline" onClick={() => setEditing(true)}>
-              <Pencil aria-hidden />
-              Edit list
-            </Button>
+          !editing &&
+          (startChallengeHref || list.viewer.can_edit) && (
+            <>
+              {startChallengeHref && list.entry_count > 0 && (
+                <ButtonLink href={startChallengeHref} variant="outline">
+                  <Plus aria-hidden />
+                  Start a Challenge
+                </ButtonLink>
+              )}
+              {list.viewer.can_edit && (
+                <Button variant="outline" onClick={() => setEditing(true)}>
+                  <Pencil aria-hidden />
+                  Edit list
+                </Button>
+              )}
+            </>
           )
         }
       />

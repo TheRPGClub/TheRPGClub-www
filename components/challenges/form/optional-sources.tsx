@@ -38,10 +38,21 @@ export function OptionalSources({ form }: { form: ChallengeFormState }) {
           </Badge>
         ))}
         {draft.gameList && (
-          <Badge tone="picked" className="h-[30px] gap-2 px-2.5">
+          <Badge tone="picked" className={form.unlinkList ? "h-[30px] gap-2 pr-1 pl-2.5" : "h-[30px] gap-2 px-2.5"}>
             <ListOrdered aria-hidden />
             <span>{draft.gameList.name}</span>
             <span className="text-faint-foreground">Game List · linked</span>
+            {form.unlinkList && (
+              <Button
+                type="button"
+                variant="chip-remove"
+                size="icon-xs"
+                aria-label={`Don't link ${draft.gameList.name}`}
+                onClick={form.unlinkList}
+              >
+                <X aria-hidden />
+              </Button>
+            )}
           </Badge>
         )}
         <Button

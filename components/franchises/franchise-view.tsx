@@ -21,11 +21,14 @@ export function FranchiseView({
   history,
   view,
   now,
+  canStartChallenge = false,
 }: {
   page: FranchisePage;
   history: { changes: FranchiseChange[]; total: number } | null;
   view: FranchiseViewKey;
   now: string;
+  // The viewer may host Challenges (the Feature is open to them).
+  canStartChallenge?: boolean;
 }) {
   const editor = useFranchiseEditor(page.franchise_id);
   const layout = franchiseLayout(page);
@@ -36,7 +39,13 @@ export function FranchiseView({
 
   return (
     <div className="pb-10">
-      <FranchiseHeader page={page} counts={layout.counts} editor={editor} canToggleEdit={shown === "games"} />
+      <FranchiseHeader
+        page={page}
+        counts={layout.counts}
+        editor={editor}
+        canToggleEdit={shown === "games"}
+        canStartChallenge={canStartChallenge}
+      />
       {editing && page.viewer.can_admin && (
         <div className="mt-4">
           <FranchiseAdminTools franchise={page} games={games} />

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { fetchFranchiseChanges, fetchFranchisePage } from "@/lib/franchises/fetch";
+import { getFeatures } from "@/lib/session";
 import { FranchiseView } from "@/components/franchises/franchise-view";
 
 // /franchises/:id (spec api#442): members-only (the protected layout), part
@@ -28,7 +29,7 @@ export default async function FranchisePage({
   params: Params;
   searchParams: Promise<{ view?: string | string[] }>;
 }) {
-  const [{ id }, query] = await Promise.all([params, searchParams]);
+  const [{ id }, query, features] = await Promise.all([params, searchParams, getFeatures()]);
   const read = await fetchFranchisePage(franchiseId(id));
   if (read.status === "missing") notFound();
   const { page } = read;
@@ -36,5 +37,13 @@ export default async function FranchisePage({
   const history = page.viewer.can_edit ? await fetchFranchiseChanges(page.franchise_id) : null;
   const view = (Array.isArray(query.view) ? query.view[0] : query.view) === "history" ? "history" : "games";
 
-  return <FranchiseView page={page} history={history} view={view} now={new Date().toISOString()} />;
+  return (
+    <FranchiseView
+      page={page}
+      history={history}
+      view={view}
+      now={new Date().toISOString()}
+      canStartChallenge={features.canOpen("challenges")}
+    />
+  );
 }
