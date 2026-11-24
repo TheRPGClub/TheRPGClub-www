@@ -7,13 +7,13 @@ import type { HubFeed } from "@/lib/achievements/hub-feed";
 import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
 import { EmptyState, FeedEmpty } from "./feed-empty";
-import { HubFilterRow } from "./hub-controls";
-import { LatestDay } from "./latest-day";
+import { HubProviderFilter } from "./hub-controls";
+import { HubDay } from "./hub-day";
 
 // The community hub: every member's Unlocks across the club, newest first,
-// in UTC day bands. Each day lays its member-plus-game cards out as a wall
-// (a card holding a Highlight takes double size). It narrows by Provider;
-// the URL holds the state.
+// in UTC day bands as the News page runs its days. Each row is one member's
+// day in one set with every Unlock as an equal frame; details open on
+// hover. It narrows by Provider; the URL holds the state.
 export function HubPage({
   filters,
   feed,
@@ -27,32 +27,34 @@ export function HubPage({
   // The viewer's own Linked Accounts, for the empty hub.
   editHref: string;
 }) {
-  const { result, cards, tints } = feed;
-
-  const list = !result ? (
-    <EmptyState>Couldn&apos;t load the achievements. Try again in a moment.</EmptyState>
-  ) : cards.length === 0 ? (
-    <FeedEmpty filters={filters} editHref={editHref} />
-  ) : (
-    <div className="space-y-7">
-      {groupFeedByDay(cards).map((day, i) => (
-        <LatestDay key={day.day ?? "unknown"} day={day} index={i} tints={tints} />
-      ))}
-    </div>
-  );
+  const { result, cards } = feed;
+  const now = new Date();
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader title="Achievements" badge={badge} />
-      <div className="space-y-4">
-        <HubFilterRow filters={filters} />
-        {list}
-        <ListPagination
-          currentPage={filters.page}
-          totalPages={feed.totalPages}
-          buildHref={(page) => feedHref(filters, { page })}
-        />
-      </div>
+      <HubProviderFilter filters={filters} />
+      {!result ? (
+        <EmptyState>Couldn&apos;t load the achievements. Try again in a moment.</EmptyState>
+      ) : cards.length === 0 ? (
+        <FeedEmpty filters={filters} editHref={editHref} />
+      ) : (
+        <div className="space-y-9">
+          {groupFeedByDay(cards).map((day) => (
+            <HubDay key={day.day ?? "unknown"} day={day} now={now} />
+          ))}
+        </div>
+      )}
+      <ListPagination
+        currentPage={filters.page}
+        totalPages={feed.totalPages}
+        buildHref={(page) => feedHref(filters, { page })}
+      />
+      {cards.length > 0 && (
+        <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+          Days and times in UTC
+        </p>
+      )}
     </div>
   );
 }

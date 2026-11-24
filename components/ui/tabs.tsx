@@ -35,6 +35,10 @@ const tabsListVariants = cva(
         // provider: index tabs in each Provider's colour on the page's top
         // edge; each tab sets --tab-ink to its Provider colour.
         provider: "items-end justify-start gap-1 p-0 group-data-horizontal/tabs:h-auto",
+        // provider-chip: the game page's service switch, chips like the
+        // hub's Provider filter: the current one solid in its Provider
+        // colour, the rest a stroke in theirs; each tab sets --tab-ink.
+        "provider-chip": "gap-1.5 p-0 group-data-horizontal/tabs:h-auto",
         // index: index tabs on a page's top edge, the current one in the
         // game tint; the list sets --tab-ink and --tab-ink-foreground.
         index: "items-end justify-start gap-1 p-0 group-data-horizontal/tabs:h-auto",

@@ -28,6 +28,7 @@ export function PanelItem({
   external = false,
   meta,
   aside,
+  below,
   plain = false,
 }: {
   media?: ReactNode;
@@ -36,6 +37,9 @@ export function PanelItem({
   external?: boolean;
   meta?: ReactNode;
   aside?: ReactNode;
+  // A strip under the title and meta, in their column (an Unlock run, a
+  // progress strip).
+  below?: ReactNode;
   // A sentence ("Mara cleared Hades II"): regular weight, its bold parts in
   // paper, the rest dimmer.
   plain?: boolean;
@@ -66,6 +70,7 @@ export function PanelItem({
         )}
       </span>
       <span className="flex items-center">{aside}</span>
+      {below && <div className="col-start-2 col-end-4 -mt-1">{below}</div>}
     </li>
   );
 }

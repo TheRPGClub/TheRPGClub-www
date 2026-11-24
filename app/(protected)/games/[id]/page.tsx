@@ -117,8 +117,6 @@ async function GameContent({
         <Suspense fallback={null}>
           <GameAchievements
             gameId={gameId}
-            coverUrl={game.cover_url}
-            viewerId={viewer.ownerId}
             ach={ach}
             achSet={achSet}
           />

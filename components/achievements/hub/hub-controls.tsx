@@ -49,15 +49,3 @@ export function HubProviderFilter({ filters }: { filters: Filters }) {
     </nav>
   );
 }
-
-// The Provider filter with the note that days are UTC.
-export function HubFilterRow({ filters }: { filters: Filters }) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <HubProviderFilter filters={filters} />
-      <p className="font-label ml-auto text-[0.8rem] tracking-[0.08em] text-faint-foreground">
-        Days in UTC
-      </p>
-    </div>
-  );
-}

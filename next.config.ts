@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
   // sharp's native binary dlopens libvips, which the file tracer can't see,
   // so the achievement tint (lib/achievements/tint.ts) shipped without it.
   outputFileTracingIncludes: {
-    "/achievements": SHARP_LIBVIPS,
     "/games/*": SHARP_LIBVIPS,
     "/members/*/achievements{,/**}": SHARP_LIBVIPS,
   },

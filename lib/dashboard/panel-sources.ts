@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import type {
   AchievementFeedCard,
-  AchievementUnlock,
+  AchievementSetProgress,
   BacklogPickResponse,
   GameSummary,
   Suggestion,
@@ -43,6 +43,8 @@ async function readData<T>(path: string, init: RequestInit = FETCH): Promise<T[]
 }
 
 const per = `per=${PANEL_ITEMS}`;
+// The Mine achievements panel's sets: two rows of two.
+const MY_SETS = 4;
 const user = (id: string) => `/api/v1/users/${encodeURIComponent(id)}`;
 
 // The platform an entry was logged on (Platform, or null).
@@ -131,7 +133,9 @@ export const readReleases = (id: string) =>
     next: { revalidate: 60, tags: [upcomingReleasesTag(id)] },
   });
 export const readClubAchievements = () => readData<AchievementFeedCard>(`/api/v1/achievements/feed?view=latest&${per}`);
-export const readMyUnlocks = (id: string) => readData<AchievementUnlock>(`${user(id)}/achievements/unlocks?${per}`);
+// The member's sets closest to done (at least one Unlock, no Completion).
+export const readMySets = (id: string) =>
+  readData<AchievementSetProgress>(`${user(id)}/achievements/sets?status=in_progress&sort=progress&per=${MY_SETS}`);
 export const readChallengeActivity = () => readData<ChallengeEvent>(`/api/v1/challenge_activity?${per}`);
 export const readMyRuns = (id: string) => readData<ChallengeRun>(`${user(id)}/challenge_runs?status=active&${per}`, FRESH);
 export const readClubCompletions = () => readData<PanelCompletion>(`/api/v1/completions/recent?${per}`);
