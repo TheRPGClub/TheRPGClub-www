@@ -24,7 +24,8 @@ export function parseView(value: string | undefined, offered: readonly Challenge
 // Proposals, www#172): Anton words on the 2px paper rule, the current one
 // paper over a 4px underline in the tint's hi. The view is kept in the
 // address (`?view=pool`) so it can be shared. The viewer's action sits at
-// the right of the rule.
+// the right of the rule. The words stay on one row on the rule: on a phone
+// they set smaller and closer, and the action takes its own row above them.
 export function ViewSwitch({
   challengeId,
   current,
@@ -38,7 +39,7 @@ export function ViewSwitch({
 }) {
   return (
     <div className="mt-9 mb-4 flex flex-wrap items-baseline gap-x-[22px] gap-y-3 border-b-2 border-foreground pb-2">
-      <nav aria-label="Views" className="contents">
+      <nav aria-label="Views" className="flex items-baseline gap-x-4 whitespace-nowrap sm:gap-x-[22px]">
         {views.map((view) => {
           const on = view.key === current;
           return (
@@ -48,7 +49,7 @@ export function ViewSwitch({
               scroll={false}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "font-headline relative inline-flex items-baseline gap-2 text-[1.875rem] leading-[0.9] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
+                "font-headline relative inline-flex items-baseline gap-1.5 text-[1.5rem] leading-[0.9] transition-colors sm:gap-2 sm:text-[1.875rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
                 on
                   ? "text-foreground after:absolute after:inset-x-0 after:-bottom-3 after:h-1 after:bg-(--challenge-tint-hi) after:content-['']"
                   : "text-faint-foreground hover:text-foreground",
@@ -68,7 +69,11 @@ export function ViewSwitch({
           );
         })}
       </nav>
-      {action && <div className="ml-auto self-center">{action}</div>}
+      {action && (
+        <div className="order-first flex basis-full justify-end self-center sm:order-none sm:ml-auto sm:basis-auto">
+          {action}
+        </div>
+      )}
     </div>
   );
 }
