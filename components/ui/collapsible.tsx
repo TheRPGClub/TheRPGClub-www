@@ -1,6 +1,7 @@
 "use client"
 
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible"
+import { triggerSlot } from "@/components/ui/trigger-slot"
 
 // What the collapsible is, drawn by each Theme by
 // [data-slot="collapsible"][data-variant] (api ADR-0008).
@@ -24,10 +25,8 @@ function Collapsible({
   )
 }
 
-function CollapsibleTrigger({ ...props }: CollapsiblePrimitive.Trigger.Props) {
-  return (
-    <CollapsiblePrimitive.Trigger data-slot="collapsible-trigger" {...props} />
-  )
+function CollapsibleTrigger(props: CollapsiblePrimitive.Trigger.Props) {
+  return <CollapsiblePrimitive.Trigger {...triggerSlot("collapsible-trigger", props.render)} {...props} />
 }
 
 function CollapsibleContent({ ...props }: CollapsiblePrimitive.Panel.Props) {

@@ -3,18 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
+import { readApiError } from "@/lib/api/errors";
+import type { MemberShelfPayload } from "@/lib/shelf-forms/values";
 
 export type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 
 // One server-actions module shared by all six profile lists. They all have the
 // same wire shape: a list scoped to a user, individual entries identified by
 // per-resource PKs, and a payload with `gamedb_game_id` + optional
-// `platform_id` + list-specific extras (note, ownership_type, completion_type, completed_at).
+// `platform_id` + list-specific extras (note, ownership_type, completion_type,
+// started_at, completed_at, leave_now_playing, added_at).
 
 export interface ActionResult<T> {
   ok: boolean;
   data?: T;
   error?: string;
+  // The API's refusal code (422 `started_after_finished`...), so a form can
+  // put the message on its field.
+  code?: string;
 }
 
 interface ListConfig {
@@ -54,13 +60,14 @@ const LISTS: Record<MemberShelfKind, ListConfig> = {
   },
 };
 
-async function errorMessage(response: Response): Promise<string> {
-  try {
-    const body = await response.json();
-    return body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`;
-  } catch {
-    return `Request failed (HTTP ${response.status}).`;
-  }
+// A refused request: the API's prose and its code.
+async function refusal(response: Response): Promise<{ ok: false; error: string; code?: string }> {
+  const err = await readApiError(response);
+  return {
+    ok: false,
+    code: err.code,
+    error: err.message ?? err.code ?? `Request failed (HTTP ${response.status}).`,
+  };
 }
 
 function revalidateMemberPages(userId: string, kind: MemberShelfKind) {
@@ -68,26 +75,20 @@ function revalidateMemberPages(userId: string, kind: MemberShelfKind) {
   revalidatePath(`/members/${userId}/${LISTS[kind].profileSubpath}`);
 }
 
-export interface MemberShelfPayload {
-  gamedb_game_id: number;
-  platform_id?: number | null;
-  note?: string | null;
-  // Required for the "collection" list, validated as one of
-  // Digital | Physical | Subscription | Other.
-  ownership_type?: string | null;
-  // Required for the "completed" list, validated as one of
-  // Main Story | Main Story + Side Content | Completionist.
-  completion_type?: string | null;
-  completed_at?: string | null;
-  final_playtime_hrs?: number | null;
-  is_shared?: boolean;
-  sort_order?: number | null;
-}
+// The payload lives in lib (MemberShelfPayload) so the shared list forms can
+// build it. A "use server" module may only export async functions: a bare
+// `export type { X }` of an imported name compiles to a runtime reference.
 
 // Favorites are platform-agnostic on the backend — sending platform_id makes
 // the request fail validation. The other lists do accept it.
+// Each list's own extras are dropped from the others, so a shared form can't
+// send a field another list would refuse.
 const FORBIDDEN_FIELDS: Partial<Record<MemberShelfKind, ReadonlyArray<keyof MemberShelfPayload>>> = {
-  favorite: ["platform_id"],
+  favorite: ["platform_id", "started_at", "leave_now_playing", "added_at"],
+  backlog: ["started_at", "leave_now_playing", "added_at"],
+  now_playing: ["started_at", "leave_now_playing"],
+  collection: ["started_at", "leave_now_playing", "added_at"],
+  completed: ["added_at"],
 };
 
 function sanitizePayload(
@@ -105,7 +106,7 @@ export async function addToMemberShelfAction(
   userId: string,
   kind: MemberShelfKind,
   input: MemberShelfPayload,
-): Promise<ActionResult<{ entry_id: number }>> {
+): Promise<ActionResult<{ entry_id: number; left_now_playing?: boolean }>> {
   if (!input.gamedb_game_id) {
     return { ok: false, error: "Pick a game first." };
   }
@@ -118,11 +119,24 @@ export async function addToMemberShelfAction(
     },
   );
 
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  if (!res.ok) return refusal(res);
 
-  const body = (await res.json()) as { data: { entry_id: number } };
+  // A completion answers `meta.left_now_playing` when it was asked to leave
+  // Now Playing (api#452).
+  const body = (await res.json()) as {
+    data: { entry_id?: number; completion_id?: number };
+    meta?: { left_now_playing?: boolean };
+  };
   revalidateMemberPages(userId, kind);
-  return { ok: true, data: body.data };
+  const left = body.meta?.left_now_playing === true;
+  if (left) revalidateMemberPages(userId, "now_playing");
+  return {
+    ok: true,
+    data: {
+      entry_id: body.data.entry_id ?? body.data.completion_id ?? 0,
+      ...(input.leave_now_playing ? { left_now_playing: left } : {}),
+    },
+  };
 }
 
 export async function updateMemberShelfEntryAction(
@@ -139,11 +153,11 @@ export async function updateMemberShelfEntryAction(
     },
   );
 
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  if (!res.ok) return refusal(res);
 
-  const body = (await res.json()) as { data: { entry_id: number } };
+  const body = (await res.json()) as { data: { entry_id?: number; completion_id?: number } };
   revalidateMemberPages(userId, kind);
-  return { ok: true, data: body.data };
+  return { ok: true, data: { entry_id: body.data.entry_id ?? body.data.completion_id ?? entryId } };
 }
 
 export async function removeMemberShelfEntryAction(
@@ -156,7 +170,7 @@ export async function removeMemberShelfEntryAction(
     { method: "DELETE" },
   );
 
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
+  if (!res.ok) return refusal(res);
 
   revalidateMemberPages(userId, kind);
   return { ok: true, data: null };
@@ -186,4 +200,26 @@ export async function moveMemberShelfEntryAction(
     };
   }
   return added;
+}
+
+// Moves one entry of an ordered list (Now Playing, Backlog, Favorites) to
+// `position` (1-based, across the whole list; past the end is last). The
+// API renumbers the member's list 1..n in one transaction (api#452b), so
+// one request per move.
+export async function reorderMemberShelfAction(
+  userId: string,
+  kind: MemberShelfKind,
+  entryId: number,
+  position: number,
+): Promise<ActionResult<null>> {
+  if (kind === "completed" || kind === "collection") {
+    return { ok: false, error: "This list isn't ordered." };
+  }
+  const res = await apiFetch(`/api/v1/${LISTS[kind].entryResource}/${entryId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ data: { position } }),
+  });
+  if (!res.ok) return refusal(res);
+  revalidateMemberPages(userId, kind);
+  return { ok: true, data: null };
 }

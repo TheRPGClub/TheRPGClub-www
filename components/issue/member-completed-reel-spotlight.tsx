@@ -5,17 +5,21 @@ import { reelFacts } from "@/components/issue/member-completed-reel-entries";
 import { cn } from "@/lib/utils";
 
 // The reel's spotlight: the selected completion over its key art, with
-// everything the list knows about it. `controls` fills its corner.
+// everything the list knows about it. `controls` fills its corner. For the
+// list's owner, `editor` turns the spotlight into the completion's form
+// under the yellow ring (spec api#451, pick 3A).
 export function ReelSpotlight({
   ref,
   current,
   ownerName,
   controls,
+  editor,
 }: {
   ref: Ref<HTMLElement>;
   current: GameCompletion;
   ownerName: string;
   controls: ReactNode;
+  editor?: ReactNode;
 }) {
   const game = current.game;
   const title = game?.title ?? "Unknown game";
@@ -25,9 +29,12 @@ export function ReelSpotlight({
   return (
     <section
       ref={ref}
-      aria-label="Selected completion"
-      aria-live="polite"
-      className="relative isolate grid scroll-mt-20 items-end gap-4 overflow-hidden rounded-md bg-black p-4.5 sm:min-h-[23.75rem] sm:grid-cols-[11rem_1fr] sm:gap-7.5 sm:p-7.5 xl:grid-cols-[14.375rem_1fr_auto]"
+      aria-label={editor ? "Editing completion" : "Selected completion"}
+      aria-live={editor ? "off" : "polite"}
+      className={cn(
+        "relative isolate grid scroll-mt-20 items-end gap-4 overflow-hidden rounded-md bg-black p-4.5 sm:min-h-[23.75rem] sm:grid-cols-[11rem_1fr] sm:gap-7.5 sm:p-7.5 xl:grid-cols-[14.375rem_1fr_auto]",
+        editor && "items-start shadow-[0_0_0_2px_var(--color-highlight)]",
+      )}
     >
       {art && (
         // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
@@ -53,34 +60,36 @@ export function ReelSpotlight({
         className="w-30 shadow-[0_14px_34px_rgb(0_0_0/0.55)] sm:w-full"
         fallbackClassName="text-2xl"
       />
-      <div className="min-w-0">
-        <h2 className="font-headline max-w-[14ch] text-[2.75rem] leading-[0.88] text-balance break-words sm:text-6xl xl:text-[5.25rem]">
-          {title}
-        </h2>
-        {facts.length > 0 && (
-          <dl className="mt-5 flex flex-wrap gap-x-6.5 gap-y-3.5">
-            {facts.map((fact) => (
-              <div key={fact.small} className="flex flex-col-reverse gap-1">
-                <dt className="font-label text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground">
-                  {fact.small}
-                </dt>
-                <dd className="font-headline text-[1.9rem] leading-[0.85] sm:text-[2.5rem]">
-                  {fact.big}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
-        {current.note && (
-          <blockquote className="mt-4.5 max-w-[52ch] text-base text-foreground italic">
-            &ldquo;{current.note}&rdquo;
-            <footer className="font-label mt-1 text-xs font-extrabold tracking-[0.1em] text-faint-foreground not-italic">
-              {ownerName}&apos;s note
-            </footer>
-          </blockquote>
-        )}
-      </div>
-      {controls}
+      {editor ?? (
+        <div className="min-w-0">
+          <h2 className="font-headline max-w-[14ch] text-[2.75rem] leading-[0.88] text-balance break-words sm:text-6xl xl:text-[5.25rem]">
+            {title}
+          </h2>
+          {facts.length > 0 && (
+            <dl className="mt-5 flex flex-wrap gap-x-6.5 gap-y-3.5">
+              {facts.map((fact) => (
+                <div key={fact.small} className="flex flex-col-reverse gap-1">
+                  <dt className="font-label text-[0.8rem] font-extrabold tracking-[0.08em] text-dim-foreground">
+                    {fact.small}
+                  </dt>
+                  <dd className="font-headline text-[1.9rem] leading-[0.85] sm:text-[2.5rem]">
+                    {fact.big}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {current.note && (
+            <blockquote className="mt-4.5 max-w-[52ch] text-base text-foreground italic">
+              &ldquo;{current.note}&rdquo;
+              <footer className="font-label mt-1 text-xs font-extrabold tracking-[0.1em] text-faint-foreground not-italic">
+                {ownerName}&apos;s note
+              </footer>
+            </blockquote>
+          )}
+        </div>
+      )}
+      {!editor && controls}
     </section>
   );
 }

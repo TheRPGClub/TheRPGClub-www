@@ -30,7 +30,7 @@ export function NowPlayingBooks({
   );
 }
 
-function OpenBook({
+export function OpenBook({
   entry,
   showSince,
 }: {

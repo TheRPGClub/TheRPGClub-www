@@ -1,15 +1,17 @@
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import type { Game } from "@/lib/api/types";
 import { Button, ButtonLink } from "@/components/ui/button";
 
 // The spotlight's corner: step through the page's completions, where the
-// selected one sits in the whole list, and its game.
+// selected one sits in the whole list, and its game. The list's owner also
+// gets Edit (spec api#451, pick 3A).
 export function ReelControls({
   count,
   position,
   total,
   game,
   onStep,
+  onEdit,
 }: {
   // Completions on this page.
   count: number;
@@ -18,6 +20,7 @@ export function ReelControls({
   total: number;
   game: Game | null | undefined;
   onStep: (delta: number) => void;
+  onEdit?: () => void;
 }) {
   return (
     <div className="flex items-center gap-2 sm:col-span-2 xl:col-span-1 xl:flex-col xl:items-end">
@@ -46,11 +49,17 @@ export function ReelControls({
       <p className="font-label text-[0.82rem] font-extrabold tracking-[0.1em] text-faint-foreground">
         <b className="text-foreground">{position}</b> of {total}
       </p>
+      {onEdit && (
+        <Button variant="overlay" onClick={onEdit} className="ml-auto xl:ml-0">
+          <Pencil data-icon="inline-start" aria-hidden />
+          Edit
+        </Button>
+      )}
       {game && (
         <ButtonLink
           href={`/games/${game.game_id}`}
           variant="overlay"
-          className="ml-auto xl:ml-0"
+          className={onEdit ? undefined : "ml-auto xl:ml-0"}
         >
           View game
           <ArrowRight data-icon="inline-end" />

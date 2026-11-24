@@ -338,6 +338,8 @@ export interface GameCompletion {
   note: string | null;
   // Main Story | Main Story + Side Content | Completionist
   completion_type: string;
+  // The day the member started it (YYYY-MM-DD), optional (spec api#451).
+  started_at?: string | null;
   completed_at: string | null;
   // Serialised as a decimal string ("20.0"); see playtimeHours().
   final_playtime_hrs: string | number | null;
@@ -390,6 +392,8 @@ export interface UserBacklog {
   user_id: string;
   gamedb_game_id: number;
   platform_id: number | null;
+  // The member's order (api#452b); null on rows never reordered.
+  sort_order?: number | null;
   note: string | null;
   created_at: string;
   updated_at: string;

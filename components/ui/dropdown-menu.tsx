@@ -4,15 +4,14 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { triggerSlot } from "@/components/ui/trigger-slot"
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
 }
 
-function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
-  return (
-    <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
-  )
+function DropdownMenuTrigger(props: MenuPrimitive.Trigger.Props) {
+  return <MenuPrimitive.Trigger {...triggerSlot("dropdown-menu-trigger", props.render)} {...props} />
 }
 
 function DropdownMenuGroup({ ...props }: MenuPrimitive.Group.Props) {

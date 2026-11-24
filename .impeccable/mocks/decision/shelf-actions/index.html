@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shelf Actions Options</title>
+<meta name="description" content="Design options for managing a member's lists from the game page and from each list's own page.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<style>
+.grp{margin-top:56px}
+.grp>h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;font:400 2.6rem/.9 Anton;text-transform:uppercase;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.grp>h2 a:hover{color:var(--hl)}
+.grp>h2 small{font:700 .9rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.grp>h2 .open{margin-left:auto;font:800 .9rem/1 "Barlow Condensed";letter-spacing:.07em;color:var(--dim);display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-decoration-color:var(--gotm);text-decoration-thickness:2px;text-underline-offset:4px}
+.grp>h2 .open:hover{color:var(--hl)}
+.sfs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,720px),1fr));gap:32px 36px;margin-top:22px}
+.sf h3{font:400 1.6rem/.95 Anton;text-transform:uppercase}
+.sf .sub{font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.thumbs{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:10px;margin-top:14px}
+.thumbs a{display:block;position:relative;border-radius:3px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--bs);aspect-ratio:16/10;background:var(--card)}
+.thumbs a img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.thumbs a b{position:absolute;left:0;top:0;background:var(--bg);color:var(--hl);font:400 1.25rem/1 Anton;padding:5px 8px 4px;border-radius:0 0 3px 0}
+.thumbs a.r::after{content:"Pick";position:absolute;right:6px;top:6px;background:var(--hl);color:var(--bg);font:800 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;padding:4px 6px 3px;border-radius:2px}
+.thumbs a:hover{box-shadow:inset 0 0 0 2px var(--hl)}
+.ol{margin-top:14px}
+.ol li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--border);line-height:1.45;color:var(--dim)}
+.ol li>a{font:400 1.25rem/1.1 Anton;color:var(--hl)}
+.ol li b{color:var(--fg);font-weight:600}
+.ol li .rk{display:inline-flex;align-items:center;height:18px;padding:0 5px;border-radius:2px;background:var(--hl);color:var(--bg);font:800 .66rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;margin-left:6px;width:auto;vertical-align:1px}
+.decided{margin-top:64px}
+.decided>h2{font:400 2.6rem/.9 Anton;text-transform:uppercase;padding-bottom:10px;border-bottom:2px solid var(--fg);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+.decided>h2 small{font:700 .9rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.decided ul{margin-top:12px;max-width:100ch}
+.decided li{padding:8px 0;border-top:1px solid var(--border);color:var(--dim);line-height:1.5}
+.decided li b{color:var(--fg);font-weight:600}
+@media (max-width:600px){.grp>h2,.decided>h2{font-size:2rem}.thumbs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body><div class="gx" id="root"></div>
+<script>
+/* one-liners per option; codes match the anchors on each page (#o1a ...). r = recommended */
+const GROUPS = [
+  { title: "Game page", href: "game-page.html", sub: "/games/[id] · the control and how each list's state reads", surfaces: [
+    { t: "1 · Your lists on the game page", s: "Not on any list, on four lists, phone", o: [
+      { c: "1A", r: 1, n: "The next move", d: "A yellow split button under the blurb offers the likely next step (Start playing, Log a completion); its caret opens all five lists with state and a verb each; state chips sit beside it." },
+      { c: "1B", n: "You, beside the club", d: "A fifth \"You\" block on the hero's translucent plate: one line per list with your state or + Add; a line opens that list's popover." },
+      { c: "1C", n: "Five cells under the hero", d: "A full-width strip of five cells (Day 16, 1 time, No. 2, Physical, dashed + Add) that each open a drawer with that list's form." },
+      { c: "1D", n: "Your card in the margin", d: "A sticky You card in a right margin; dates arrive as teal stamps, one per completion, with a dashed slot for the next; a dock on phones." },
+    ] },
+  ] },
+  { title: "Log a completion", href: "log-completion.html", sub: "the form, both calendars, the Now Playing pre-fill, the replay", surfaces: [
+    { t: "2 · Log a completion", s: "Started and Finished calendars open, 2nd time, Collection in the same voice", o: [
+      { c: "2A", r: 1, n: "The quick popover", d: "A 440px popover under the button: type as segments, two date fields each with its calendar, Keep it in Now Playing last; a bottom sheet on phones." },
+      { c: "2B", n: "The dialog with your history", d: "A dialog with your completions on a timeline beside described type tiles and a Started → 15 days → Finished span; full screen on phones." },
+      { c: "2C", n: "Say it in a sentence", d: "\"I finished it on Switch, Main Story + Side Content. I started on Sun 9 Nov…\": each underlined word opens its picker or calendar." },
+      { c: "2D", n: "The paper slip", d: "A paper slip slides out of the You card with big date blocks and ink boxes; logging presses a new stamp into the card." },
+    ] },
+  ] },
+  { title: "List pages and /edit", href: "manage-lists.html", sub: "owner manage mode on Completed and Backlog · the trimmed edit page", surfaces: [
+    { t: "3 · Owner manage mode", s: "Add by search, edit in place with the calendars, remove with Undo, reorder without drag", o: [
+      { c: "3A", n: "Edit where you're looking", d: "The reel stays; Edit turns the spotlight into the form on its key art; Backlog cards are picked up and put down with an Earlier / Later bar." },
+      { c: "3B", r: 1, n: "Flip to the ledger", d: "Edit list flips the page to a ruled ledger by year and month with rows edited in place; Backlog rows get a grip and Top / Up / Down." },
+      { c: "3C", n: "Tools on every card, no mode", d: "The owner sees month grids of cards each with ⋯ (Edit, Log it again, Remove) and a dashed Add tile per month; Move sheet on phones." },
+    ] },
+    { t: "4 · /members/:id/edit, trimmed", s: "Socials, Linked Accounts, Import games", o: [
+      { c: "4", n: "Socials and Linked Accounts", d: "The rail keeps two sections and the Import games link; the list sections are gone." },
+    ] },
+  ] },
+];
+const DECIDED = [
+  "<b>Every list's own page is where its owner manages it in full</b>; other members see today's read-only page, and /edit keeps only Socials, Linked Accounts and Import games.",
+  "<b>Started is optional</b> and Finished defaults to today. Each calendar offers <b>Only the month</b> for half-remembered dates, which needs the API to store a date precision on completions (it has none today). Say if day-only is enough.",
+  "<b>Logging a completion of a game in Now Playing</b> pre-fills Started from its start date (the Now Playing added_at) and takes it out of Now Playing unless \"Keep it in Now Playing\" is ticked; the box is unticked by default.",
+  "<b>Replays are separate completions</b>; the form says which one this is (\"2nd time\") and when the last one was.",
+  "<b>Days after today are off</b> in the Finished calendar, and Started can't be after Finished.",
+  "<b>A removal holds for a few seconds behind Undo</b> before it's sent, with the signal-orange draining bar from the Staff desk. Destructive stays signal orange; nothing here uses GOTM red or NR violet, and yellow stays the member's own business.",
+  "<b>Reordering always has a no-drag way</b>: buttons or a picked-up card moved with arrow keys, announced in a live line.",
+  "<b>The teal stamp ink in 1D and 2D is new</b> and would only ever mark a member's own dates. It only ships if 1D or 2D is picked.",
+];
+const ic = (n) => `<i data-lucide="${n}"></i>`;
+const root = document.getElementById("root");
+root.innerHTML = `<h1>Shelf actions: website options</h1>
+<p class="lede">The /impeccable options pass for <b>managing your lists outside /edit</b>: adding and editing <b>Now Playing, Completed, Backlog, Favorites and Collection</b> right on a <b>game's page</b>, a proper <b>Log a completion</b> form with Started and Finished calendars and replays, and <b>owner manage mode</b> on each list's own page. Pick one option per surface, or mix them (\"1A's button with 2C's sentence\"). Every option is drawn at desktop (1280) and phone (390) width with its key states, and carries its own idea through every control. The one marked <b>Pick</b> on each surface is the recommendation. Real content: <b>Final Fantasy VI</b> on four of Mara's lists (playing it again since 9 Nov, finished once in 2019), her <b>141 completions</b> with 2026 open, and her <b>Backlog</b> in her order.</p>
+<div class="gx-keys"><span>Today <b>Tue 24 Nov 2026</b></span><span>Viewer <b>Mara</b></span><span>Members <b>invented</b></span><span>Art <b>Steam covers; Anton fallback where a game has none</b></span><span>Branch <b>design/shelf-actions</b></span></div>
+${GROUPS.map((g) => `<section class="grp"><h2><a href="${g.href}">${g.title}</a><small>${g.sub}</small><a class="open" href="${g.href}">Open the options ${ic("arrow-right")}</a></h2>
+<div class="sfs">${g.surfaces.map((s) => `<div class="sf"><h3>${s.t}</h3><p class="sub">${s.o.length > 1 ? s.o.length + " options · " : ""}${s.s}</p>
+<div class="thumbs" style="--n:${Math.max(3, Math.min(s.o.length, 4))}">${s.o.map((o) => `<a class="${o.r ? "r" : ""}" href="${g.href}#o${o.c.toLowerCase()}"><img src="png/${o.c.toLowerCase()}-desk.png" alt="Option ${o.c}" loading="lazy"><b>${o.c}</b></a>`).join("")}</div>
+<ul class="ol">${s.o.map((o) => `<li><a href="${g.href}#o${o.c.toLowerCase()}">${o.c}</a><span><b>${o.n}.</b>${o.r ? `<span class="rk">Pick</span>` : ""} ${o.d}</span></li>`).join("")}</ul></div>`).join("")}</div></section>`).join("")}
+<section class="decided"><h2>Already decided in these mocks<small>Say if any is wrong</small></h2><ul>${DECIDED.map((d) => `<li>${d}</li>`).join("")}</ul></section>`;
+lucide.createIcons();
+</script></body></html>

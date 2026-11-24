@@ -48,6 +48,9 @@ type SelectTriggerVariant =
   // it (the month in the Lore desk's Anton date): no rule, no ground, the
   // type it sits in; yellow on hover and focus.
   | "bare"
+  // api#451: a field on a paper slip (the shelf forms): a pale field with
+  // an ink stroke and an ink focus ring, since yellow on paper fails contrast.
+  | "slip"
 
 function SelectTrigger({
   className,

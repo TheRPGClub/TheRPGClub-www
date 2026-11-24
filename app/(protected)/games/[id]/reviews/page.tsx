@@ -55,7 +55,7 @@ export default async function GameReviewsPage({
     !ownOnPage &&
     !(composing && !selected && viewer.canWriteReview) && (
       <ReviewComposePanel
-        ownerId={viewer.ownerId}
+        gameId={gameId}
         canWriteReview={viewer.canWriteReview}
         status={viewer.status}
         href={hrefs.compose}

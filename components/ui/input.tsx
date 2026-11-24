@@ -40,6 +40,9 @@ type InputVariant =
   // www#157: a field holding an edit not saved yet (the Game Edit page's
   // staged changes): the field's look ringed in yellow.
   | "staged"
+  // api#451: a field on a paper slip (the shelf forms): a pale field with
+  // an ink stroke and an ink focus ring, since yellow on paper fails contrast.
+  | "slip"
 
 function Input({
   className,

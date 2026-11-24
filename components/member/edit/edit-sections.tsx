@@ -1,14 +1,19 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FileUp } from "lucide-react";
+import type { ManagedList } from "@/lib/members/managed-lists";
 import { cn } from "@/lib/utils";
+import { ManageListsRow } from "./manage-lists-row";
 
-// The edit page's section switcher: a sticky rail of the member's lists and
-// socials (a strip of tabs on phones), with only the chosen section shown.
-// The choice lives in the URL hash, so `/edit#socials` (where the imports
-// send a member to link an account) opens straight onto that section.
+// The edit page's section switcher: a sticky rail of its sections (a strip of
+// tabs on phones), with only the chosen section shown, then the Imports link
+// and the "Manage your lists" row. The choice lives in the URL hash, so
+// `/edit#socials` (where the imports send a member to link an account) opens
+// straight onto that section. A list's old hash (`/edit#backlog`, from before
+// the lists moved to their own pages) is sent on to that list's page.
 
 export interface EditSection {
   // Also the URL hash, e.g. "socials".
@@ -29,13 +34,20 @@ const serverHash = () => "";
 export function EditSections({
   sections,
   importsHref,
+  lists,
 }: {
   sections: EditSection[];
   // Null when there's nothing to import: no link.
   importsHref: string | null;
+  lists: ManagedList[];
 }) {
+  const router = useRouter();
   const hash = useSyncExternalStore(subscribe, readHash, serverHash);
   const current = sections.find((s) => s.id === hash) ?? sections[0];
+  const moved = lists.find((l) => l.hash === hash)?.href;
+  useEffect(() => {
+    if (moved) router.replace(moved);
+  }, [moved, router]);
 
   // Swap the hash without the jump a plain anchor makes, then tell the store.
   const choose = (id: string) => (e: React.MouseEvent) => {
@@ -93,10 +105,11 @@ export function EditSections({
             </li>
           )}
         </ul>
+        <ManageListsRow lists={lists} />
       </nav>
 
       <div key={current.id} className="min-w-0">
-        {current.content}
+        {moved ? null : current.content}
       </div>
     </div>
   );

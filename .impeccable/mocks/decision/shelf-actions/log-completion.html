@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log a completion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* shared: the hero's action row from 1A */
+.act{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.split{display:inline-flex;flex:none}
+.split .btn:first-child{border-radius:2.4px 0 0 2.4px}
+.split .btn.ic{border-radius:0 2.4px 2.4px 0;box-shadow:inset 1px 0 0 rgb(11 11 13/.4)}
+.split.open .btn:first-child{box-shadow:0 0 0 3px rgb(255 212 0/.3)}
+.yst{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px;border-radius:2px;background:rgb(11 11 13/.55);box-shadow:inset 0 0 0 1px rgb(244 244 240/.22);font:700 .8rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+.yst svg.lucide{width:14px;height:14px;color:var(--dim)}
+.yst b{font:400 1rem/1 Anton}
+.prev{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;color:var(--dim);background:var(--muted);border-radius:2.4px;padding:8px 10px;margin-bottom:12px}
+.prev svg.lucide{width:15px;height:15px;color:var(--faint);margin-top:2px}
+.prev b{color:var(--fg);font-weight:600}
+.nth{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:2px;background:var(--fg);color:var(--bg);font:800 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;align-self:center}
+
+/* ---------- 2A popover ---------- */
+.logpop{width:440px}
+.logpop .seg span{padding:0 8px;font-size:.8rem}
+
+/* ---------- 2B dialog ---------- */
+.dlg.log{width:860px;padding:0;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.dlg.log .lft{background:var(--muted);padding:22px 20px;border-right:1px solid var(--border)}
+.dlg.log .lft .t{font:400 1.6rem/.92 Anton;text-transform:uppercase;margin-top:12px}
+.dlg.log .lft .t span{display:block}
+.tlh{font:800 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bs)}
+.tline{position:relative;padding-left:22px}
+.tline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--fg)}
+.tline li{position:relative;padding-bottom:14px}
+.tline li::before{content:"";position:absolute;left:-22px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 3px var(--muted)}
+.tline li.now::before{background:var(--hl)}
+.tline li b{display:block;font-weight:600;font-size:.95rem}
+.tline li small{display:block;font:700 .72rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.tline li.now b{color:var(--hl)}
+.dlg.log .rgt{padding:22px 24px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tile{border-radius:3px;box-shadow:inset 0 0 0 1px var(--bs);padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile b{font:800 .9rem/1.1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;display:flex;gap:6px;align-items:center}
+.tile b svg.lucide{width:16px;height:16px;color:var(--faint)}
+.tile small{color:var(--faint);font-size:.8rem;line-height:1.3}
+.tile.on{box-shadow:inset 0 0 0 2px var(--hl);background:rgb(255 212 0/.06)}
+.tile.on b svg.lucide{color:var(--hl)}
+.tiles.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.spanr{display:grid;grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr);align-items:start;gap:8px}
+.spanr .mid{display:flex;flex-direction:column;align-items:center;padding-top:30px;font:700 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);gap:6px}
+.spanr .mid i.ln{display:block;width:100%;height:2px;background:var(--bs);position:relative}
+.spanr .mid i.ln::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--bs);border-right:0}
+.fsd{position:absolute;inset:0;z-index:9;background:var(--card);display:flex;flex-direction:column}
+.fsd .bar{display:flex;align-items:center;gap:10px;height:56px;padding:0 12px 0 16px;border-bottom:1px solid var(--border)}
+.fsd .bar b{font:400 1.4rem/1 Anton;text-transform:uppercase;font-weight:400;flex:1}
+.fsd .bd{padding:14px 16px;flex:1;overflow:hidden}
+.fsd .ftr{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px}
+.fsd .ftr .btn{width:100%}
+.fsd .tiles{grid-template-columns:1fr}
+.fsd .tile{flex-direction:row;align-items:center;justify-content:space-between;padding:9px 12px}
+.fsd .spanr{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+
+/* ---------- 2C the sentence ---------- */
+.cub{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:28px}
+.cb{position:relative;background:var(--card);border-radius:3.2px;padding:12px 14px;min-height:124px;display:flex;flex-direction:column;box-shadow:inset 0 0 0 1px var(--border)}
+.cb .h{display:flex;align-items:center;gap:7px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.cb .h svg.lucide{width:15px;height:15px}
+.cb .big{font:400 2.5rem/.9 Anton;text-transform:uppercase;margin-top:auto;padding-top:10px;display:flex;align-items:baseline;gap:6px}
+.cb .big small{font-size:1.1rem;color:var(--faint)}
+.cb .m{font:700 .74rem/1.25 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.cb.add{background:transparent;box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px}
+.cb.add .big{font-size:1.5rem;color:var(--dim);align-items:center}
+.cb.open{box-shadow:inset 0 0 0 2px var(--hl)}
+.cb.open::after{content:"";position:absolute;left:50%;bottom:-17px;border:8px solid transparent;border-top-color:var(--hl);margin-left:-8px}
+.drawer{margin-top:16px;background:var(--card);box-shadow:inset 0 0 0 1px var(--hl);border-radius:3.2px;padding:18px 22px 20px;position:relative;z-index:6}
+.drawer .dh{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--fg);padding-bottom:8px;flex-wrap:wrap}
+.drawer .dh h3{font:400 1.9rem/.9 Anton;text-transform:uppercase}
+.drawer .dh .x{margin-left:auto;align-self:center;color:var(--faint)}
+.drawer .dh .faint{font-size:.9rem}
+.drawer .rs{background:none;padding:14px 0 6px;font-size:1.75rem;line-height:1.75}
+.rs .anc{display:inline}
+.rw.ph{color:var(--faint);font-weight:500}
+.drawer .low{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:end;margin-top:10px}
+.drawer .low .bt{display:flex;gap:8px;align-items:center}
+.drawer .rs .pop{font-size:16px;line-height:1.5;font-weight:400}
+.opts .o{display:flex;align-items:center;gap:10px;height:36px;padding:0 8px;margin:0 -8px;border-radius:2.4px;font-size:.95rem}
+.opts .o.on{background:var(--muted);box-shadow:inset 0 0 0 1px var(--hl)}
+.opts .o svg.lucide{width:16px;height:16px;color:var(--faint)}
+.opts .o .c{margin-left:auto;color:var(--hl)}
+.pshell .cub{grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.pshell .cb{min-height:92px;padding:10px 12px}
+.pshell .cb:last-child{grid-column:1/-1;min-height:0}
+.pshell .cb .big{font-size:1.8rem}
+.pshell .drawer{padding:14px 14px 16px}
+.pshell .drawer .rs{font-size:1.3rem;line-height:1.85}
+.pshell .drawer .low{grid-template-columns:minmax(0,1fr)}
+.pshell .drawer .low .bt{flex-wrap:wrap}
+.pshell .drawer .low .bt .ck{flex-basis:100%;margin-bottom:4px}
+.pshell .drawer .dh h3{font-size:1.5rem}
+
+/* ---------- 2D the slip ---------- */
+.wrail{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:start}
+.rail{margin-top:36px;position:relative}
+.yc{background:var(--card);border-radius:3.2px;box-shadow:inset 0 0 0 1px var(--border),0 12px 30px rgb(0 0 0/.5);padding:16px 18px 12px}
+.yc .yh{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--fg);padding-bottom:8px}
+.yc .yh b{font:400 1.8rem/.9 Anton;text-transform:uppercase;font-weight:400}
+.yc .yh small{margin-left:auto;font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ys{padding:11px 0;border-bottom:1px solid var(--border)}
+.ys:last-child{border-bottom:0}
+.ys .h{display:flex;align-items:center;gap:7px;font:800 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);height:24px}
+.ys .h svg.lucide{width:14px;height:14px}
+.ys .row{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
+.ys .row p{font-size:.9rem;color:var(--dim)}
+.ys .row p b{color:var(--fg);font-weight:600}
+.stp{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px 5px;border-radius:3px;box-shadow:inset 0 0 0 2px var(--stamp);color:var(--stamp);transform:rotate(var(--r,-2deg));flex:none}
+.stp b{font:400 1.35rem/1 Anton;text-transform:uppercase;font-weight:400}
+.stp small{font:800 .6rem/1 "Barlow Condensed";letter-spacing:.09em;text-transform:uppercase;margin-top:3px}
+.stp.slot{box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px;color:var(--dim);transform:none;flex-direction:row;gap:5px;height:46px;justify-content:center;font:800 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.stp.slot svg.lucide{width:14px;height:14px}
+.stp.slot.open{outline-color:var(--hl);color:var(--hl)}
+.stp.fresh{box-shadow:inset 0 0 0 3px var(--stamp),0 6px 14px rgb(0 0 0/.45)}
+.addl{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;outline:1.5px dashed var(--bs);outline-offset:-1.5px;border-radius:2.4px;font:800 .8rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.addl svg.lucide{width:14px;height:14px}
+.paper{--ink:#0b0b0d;background:var(--fg);color:var(--ink);border-radius:2px;box-shadow:0 24px 60px rgb(0 0 0/.6);padding:18px 20px 16px;width:470px;transform:rotate(-1deg);text-align:left}
+.paper.pos{position:absolute;z-index:20;right:calc(100% + 18px);top:-30px}
+.paper h5{font:400 1.7rem/.95 Anton;text-transform:uppercase;display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:8px;margin:0 0 12px;flex-wrap:wrap}
+.paper h5 small{font:800 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:rgb(11 11 13/.62)}
+.paper h5 .x{margin-left:auto;align-self:center;color:rgb(11 11 13/.6)}
+.paper .nth{background:var(--ink);color:var(--fg)}
+.paper .flab{color:rgb(11 11 13/.72)}
+.paper .lastp{font-size:.88rem;color:rgb(11 11 13/.75);margin:-4px 0 12px}
+.paper .lastp b{color:var(--ink)}
+.dbs{display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);align-items:center}
+.db{border-radius:3px;box-shadow:inset 0 0 0 1.5px rgb(11 11 13/.4);padding:9px 12px 10px;position:relative}
+.db .l{font:800 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:rgb(11 11 13/.7);display:flex;gap:5px;align-items:center}
+.db .l svg.lucide{width:13px;height:13px}
+.db .d{display:flex;align-items:flex-end;gap:7px;margin-top:6px}
+.db .d b{font:400 3rem/.8 Anton;font-weight:400}
+.db .d span{font:400 1.05rem/1 Anton;text-transform:uppercase;padding-bottom:1px}
+.db .s{font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:rgb(11 11 13/.62);margin-top:6px;display:flex;gap:4px;align-items:center}
+.db .s svg.lucide{width:12px;height:12px}
+.db.open{box-shadow:inset 0 0 0 3px var(--ink)}
+.db.blank .d b{color:rgb(11 11 13/.35)}
+.dbs .ar{text-align:center;font:700 .7rem/1.1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:rgb(11 11 13/.62)}
+.dbs .ar svg.lucide{display:block;margin:0 auto 2px;color:var(--ink)}
+.boxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.boxes.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.boxes span{display:flex;align-items:center;gap:7px;height:38px;padding:0 9px;border-radius:2.4px;box-shadow:inset 0 0 0 1.5px rgb(11 11 13/.35);font:800 .8rem/1.05 "Barlow Condensed";letter-spacing:.05em;text-transform:uppercase}
+.boxes span i.o{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink);flex:none}
+.boxes span.on{background:var(--ink);color:var(--fg)}
+.boxes span.on i.o{box-shadow:inset 0 0 0 4px var(--fg)}
+.fld.pp{background:#e6e6de;box-shadow:inset 0 0 0 1px rgb(11 11 13/.35);color:var(--ink)}
+.fld.pp svg.lucide{color:rgb(11 11 13/.6)}
+.fld.pp.empty .v{color:rgb(11 11 13/.55)}
+.paper .ck{color:var(--ink)}
+.paper .ck .bx{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.paper .ck.on .bx{background:var(--ink);color:var(--fg)}
+.paper .ck small{color:rgb(11 11 13/.65)}
+.paper .bt{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:14px}
+.paper .bt .ck{margin-right:auto}
+.paper .btn.invol{color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.paper .cal{z-index:30}
+.toast{position:absolute;z-index:20;left:50%;bottom:24px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--fg);color:var(--bg);padding:10px 12px 10px 16px;border-radius:2px;box-shadow:0 12px 30px rgb(0 0 0/.5);font-size:.92rem;white-space:nowrap}
+.toast b{font-weight:700}
+.toast .btn{color:var(--bg);box-shadow:inset 0 0 0 1.5px var(--bg)}
+.ydock{display:flex;align-items:center;gap:8px;height:56px;padding:0 12px 0 16px;background:var(--card);border-top:1px solid var(--bs)}
+.pslip .paper{width:auto;transform:none;border-radius:3px 3px 0 0;box-shadow:0 -18px 40px rgb(0 0 0/.6)}
+.pslip .dbs{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
+.pslip .db .d b{font-size:2.4rem}
+.pslip .paper{padding:16px 16px 14px}
+.pslip .boxes span{font-size:.74rem;padding:0 7px;gap:5px}
+</style></head>
+<body>
+<script>
+const S = FF6, C1 = S.done[0];
+const stChips = `<span class="yst">${ic("gamepad-2")}Playing since 9 Nov</span><span class="yst">${ic("flag")}Completed <b>×1</b></span><span class="yst">${ic("heart")}Favorite <b>No. 2</b></span><span class="yst">${ic("archive")}Physical</span>`;
+const splitBtn = (open, label = "Log a completion", icn = "flag") => `<span class="split ${open ? "open" : ""}"><span class="btn hl">${ic(icn)}${label}</span><span class="btn hl ic">${ic("chevron-down")}</span></span>`;
+const PREV = `<p class="prev">${ic("history")}<span>Your 1st time: <b>Main Story</b> on SNES, 2 Feb to <b>14 Mar 2019</b>, 38 h.</span></p>`;
+const SAY_NP = `${ic("gamepad-2")}You started playing on <b style="color:var(--fg)">&nbsp;9 Nov</b>`;
+
+/* ================= 2A: the quick popover ================= */
+const formA = (o = {}) => {
+  const started = o.first ? dateF("Optional", { empty: 1, open: o.cal === "s" }) : dateF("9 Nov 2026", { open: o.cal === "s" });
+  const calS = o.cal === "s" ? cal({ sel: 9, span: [9, 24], other: 24, today: 24, max: 24, title: "Started", say: SAY_NP, foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` }) : "";
+  const calF = o.cal === "f" ? cal({ sel: 24, span: [9, 24], other: 9, today: 24, max: 24, title: "Finished", cls: `r ${o.up ? "up" : ""}`, foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` }) : "";
+  return `${o.first ? "" : PREV}<div class="fg">
+  <div>${lab("Completion")}${segm(["Main Story", "+ Side Content", "Completionist"], o.first ? 0 : 1, "full")}</div>
+  <div class="fg2"><div>${lab("Started", 1)}<span class="anc wide">${started}${calS}</span>${o.first ? "" : `<span class="hint">${ic("gamepad-2")}From Now Playing</span>`}</div>
+    <div>${lab("Finished")}<span class="anc wide">${dateF(o.first ? "Today, 24 Nov 2026" : "Today, 24 Nov 2026", { open: o.cal === "f" })}${calF}</span></div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel(o.first ? "PC" : "Nintendo Switch")}</div><div>${lab("Playtime", 1)}${fld("Hours", { cls: "empty" })}</div></div>
+  <div>${lab("Note", 1)}${fld(o.first ? "" : "Got Shadow back this time. Opera house still undefeated.", { cls: "area " + (o.first ? "empty" : "") })}</div>
+  ${o.first ? "" : ck("Keep it in Now Playing", false, "Otherwise it leaves Now Playing when you log this.")}</div>`;
+};
+const popA = (o = {}) => `<div class="pop logpop ${o.cls || ""}" style="${o.style || ""}"><h5>Log a completion${o.first ? "" : `<span class="nth">2nd time</span>`}<span class="x">${ic("x")}</span></h5>${formA(o)}<div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">${ic("check")}Log it</span></div></div>`;
+const colA = `<div class="pop" style="width:400px"><h5>Add to Collection<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5><div class="fg">
+  <div>${lab("How you own it")}${segm(OWN, 1, "full")}</div>
+  <div>${lab("Platform")}${sel("Nintendo Switch")}</div>
+  <div>${lab("Note", 1)}${fld("Pixel Remaster collector's box", { cls: "area", })}</div></div>
+  <div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">${ic("plus")}Add to Collection</span></div></div>`;
+const actA = (pop, label, icn) => `<div class="act"><span class="anc">${splitBtn(1, label, icn)}${pop}</span>${stChips}</div>`;
+
+/* ================= 2B: the dialog with history ================= */
+const leftB = (first) => `<div class="lft">${cover("ff6", 120)}<div class="t"><span>Final Fantasy</span><span>VI</span></div>
+  <div class="tlh">Your completions</div><ul class="tline">${first ? "" : `<li><b>14 Mar 2019</b><small>Main Story · SNES · 38 h</small></li>`}<li class="now"><b>${first ? "This one" : "This one · 2nd time"}</b><small>Finishing 24 Nov 2026</small></li></ul></div>`;
+const tilesB = (on) => `<div class="tiles">${[["book-open", "Main Story", "The credits rolled."], ["map", "+ Side Content", "And a good share of the rest."], ["trophy", "Completionist", "Everything there is."]].map(([i, t, d], k) => `<div class="tile ${k === on ? "on" : ""}"><b>${ic(i)}${t}</b><small>${d}</small></div>`).join("")}</div>`;
+const dlgB = (o = {}) => {
+  const calF = o.cal === "f" ? cal({ sel: 24, span: [9, 24], other: 9, today: 24, max: 24, title: "Finished", cls: "r", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` }) : "";
+  const calS = o.cal === "s" ? cal({ sel: 9, span: [9, 24], other: 24, today: 24, max: 24, title: "Started", say: SAY_NP, foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` }) : "";
+  return `<div class="dlg log">${leftB(o.first)}<div class="rgt"><h3>Log a completion${o.first ? "" : `<small>2nd time</small>`}<span class="x">${ic("x")}</span></h3><div class="fg">
+  <div>${lab("How far did you get?")}${tilesB(o.first ? 0 : 1)}</div>
+  <div class="spanr"><div>${lab("Started", 1)}<span class="anc wide">${o.first ? dateF("Pick a day, or leave it", { empty: 1 }) : dateF("Sun 9 Nov 2026", { open: o.cal === "s" })}${calS}</span>${o.first ? `<span class="hint">Leave it blank if you don't remember</span>` : `<span class="hint y">${ic("gamepad-2")}From Now Playing</span>`}</div>
+    <div class="mid"><i class="ln"></i>${o.first ? "" : "15 days"}</div>
+    <div>${lab("Finished")}<span class="anc wide">${dateF("Today · Tue 24 Nov 2026", { open: o.cal === "f" })}${calF}</span></div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel(o.first ? "PlayStation 5" : "Nintendo Switch")}</div><div>${lab("Final playtime", 1)}${fld(o.first ? "Hours" : "41", { cls: o.first ? "empty" : "", end: o.first ? "" : "" })}</div></div>
+  <div>${lab("Note", 1)}${fld(o.first ? "What stuck with you?" : "Got Shadow back this time. Opera house still undefeated.", { cls: "area" + (o.first ? " empty" : "") })}</div></div>
+  <div class="bt">${o.first ? "" : ck("Keep it in Now Playing")}<span class="btn gh">Cancel</span><span class="btn hl">${ic("flag")}Log completion</span></div></div></div>`;
+};
+const dlgColB = `<div class="dlg" style="width:600px"><h3>Collection<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h3><div class="fg">
+  <div>${lab("How do you own it?")}<div class="tiles four">${[["cloud-download", "Digital", "A store download."], ["disc-3", "Physical", "Cart, disc or box."], ["repeat", "Subscription", "Game Pass and kin."], ["package", "Other", "Anything else."]].map(([i, t, d], k) => `<div class="tile ${k === 1 ? "on" : ""}"><b>${ic(i)}${t}</b><small>${d}</small></div>`).join("")}</div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel("Nintendo Switch")}</div><div></div></div>
+  <div>${lab("Note", 1)}${fld("Pixel Remaster collector's box", { cls: "area" })}</div></div>
+  <div class="bt"><span class="btn ds" style="margin-right:auto">${ic("trash-2")}Remove from Collection</span><span class="btn gh">Cancel</span><span class="btn hl">${ic("check")}Save</span></div></div>`;
+const fsdB = () => `<div class="fsd"><div class="bar"><span class="btn sm ic gh">${ic("x")}</span><b>Log a completion</b><span class="nth">2nd</span></div><div class="bd"><div class="fg">
+  <div>${lab("How far did you get?")}<div class="tiles">${["Main Story", "+ Side Content", "Completionist"].map((t, k) => `<div class="tile ${k === 1 ? "on" : ""}"><b>${t}</b>${k === 1 ? ic("check") : ""}</div>`).join("")}</div></div>
+  <div class="spanr"><div>${lab("Started", 1)}<span class="anc wide">${dateF("9 Nov 2026", { open: 1 })}${cal({ sel: 9, span: [9, 24], other: 24, today: 24, max: 24, title: "Started", say: SAY_NP, style: "width:326px", foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` })}</span><span class="hint y">${ic("gamepad-2")}From Now Playing</span></div><div>${lab("Finished")}${dateF("Today, 24 Nov")}</div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel("Switch")}</div><div>${lab("Playtime", 1)}${fld("41")}</div></div>
+  <div>${lab("Note", 1)}${fld("Got Shadow back this time.", { cls: "area" })}</div></div></div>
+  <div class="ftr">${ck("Keep it in Now Playing")}<span class="btn hl">${ic("flag")}Log completion</span></div></div>`;
+
+/* ================= 2C: one sentence ================= */
+const cellsC = (open) => {
+  const c = (k, n, i, big, m) => `<div class="cb ${open === k ? "open" : ""}"><div class="h">${ic(i)}${n}</div><div class="big">${big}</div><div class="m">${m}</div></div>`;
+  return `<div class="cub">${c("np", "Now Playing", "gamepad-2", "Day 16", "Since 9 Nov · Switch")}${c("done", "Completed", "flag", "1<small>time</small>", "Last 14 Mar 2019")}<div class="cb add"><div class="h">${ic("hourglass")}Backlog</div><div class="big">${ic("plus")}Add</div></div>${c("fav", "Favorites", "heart", "No. 2<small>of 10</small>", "“The opera house.”")}${c("col", "Collection", "archive", "Physical", "Switch")}</div>`;
+};
+const rw = (t, o = {}) => `<span class="anc"><span class="rw ${o.open ? "open" : ""} ${o.ph ? "ph" : ""}">${t}${ic("chevron-down")}</span>${o.pop || ""}</span>`;
+const typeMenu = `<div class="pop opts" style="width:300px">${TYPES.map((t, i) => `<div class="o ${i === 1 ? "on" : ""}">${ic(["book-open", "map", "trophy"][i])}${t}${i === 1 ? `<span class="c">${ic("check")}</span>` : ""}</div>`).join("")}</div>`;
+const sentence = (o = {}) => {
+  const cS = o.cal === "s" ? cal({ sel: 9, span: [9, 24], other: 24, today: 24, max: 24, title: "Started", say: SAY_NP, foot: `<span class="tl">I don't remember</span><span class="tl">Only the month</span>` }) : "";
+  const cF = o.cal === "f" ? cal({ sel: 24, span: [9, 24], other: 9, today: 24, max: 24, title: "Finished", cls: o.calR ? "r" : "", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` }) : "";
+  const started = o.first ? rw("a day I don't remember", { ph: 1 }) : rw("Sun 9 Nov", { open: o.cal === "s", pop: cS });
+  return `<div class="rs">I finished it on ${rw(o.first ? "PlayStation 5" : "Switch")}, ${rw(o.first ? "Main Story" : "Main Story + Side Content", { open: o.type, pop: o.type ? typeMenu : "" })}. I started on ${started} and finished ${rw("today, 24 Nov", { open: o.cal === "f", pop: cF })}, after about ${rw("— hours", { ph: 1 })}.</div>`;
+};
+const drawerC = (o = {}) => `<div class="drawer"><div class="dh"><h3>${o.first ? "Log a completion" : "Log your 2nd completion"}</h3>${o.first ? "" : `<span class="faint">1st: Main Story on SNES, 14 Mar 2019</span>`}<span class="x">${ic("x")}</span></div>
+  ${sentence(o)}
+  <div class="low"><div>${lab("Note", 1)}${fld(o.first ? "Anything to remember it by?" : "Got Shadow back this time. Opera house still undefeated.", { cls: o.first ? "empty" : "" })}</div>
+  <div class="bt">${o.first ? "" : ck("Keep it in Now Playing")}<span class="btn gh">Cancel</span><span class="btn hl">${ic("flag")}Log it</span></div></div></div>`;
+const ownMenu = `<div class="pop opts" style="width:260px">${[["cloud-download", "Digital"], ["disc-3", "Physical"], ["repeat", "Subscription"], ["package", "Other"]].map(([i, t], k) => `<div class="o ${k === 1 ? "on" : ""}">${ic(i)}${t}${k === 1 ? `<span class="c">${ic("check")}</span>` : ""}</div>`).join("")}</div>`;
+const drawerCol = `<div class="drawer"><div class="dh"><h3>Collection</h3><span class="x">${ic("x")}</span></div>
+  <div class="rs">It's in my collection as a ${rw("Physical", { open: 1, pop: ownMenu })} copy on ${rw("Switch")}.</div>
+  <div class="low"><div>${lab("Note", 1)}${fld("Pixel Remaster collector's box")}</div><div class="bt"><span class="btn ds">${ic("trash-2")}Remove</span><span class="btn gh">Cancel</span><span class="btn hl">${ic("check")}Save</span></div></div></div>`;
+
+/* ================= 2D: the slip ================= */
+const cardD = (o = {}) => `<div class="yc"><div class="yh">${av("mara", 30)}<b>You</b><small>${o.logged ? "3" : "4"} of 5 lists</small></div>
+  <div class="ys"><div class="h">${ic("gamepad-2")}Now Playing</div><div class="row">${o.logged ? `<span class="addl">${ic("plus")}Start playing</span>` : `<span class="stp"><small>Started</small><b>09 Nov</b></span><p><b>Day 16</b> · Switch</p>`}</div></div>
+  <div class="ys"><div class="h">${ic("flag")}Completed</div><div class="row"><span class="stp"><small>Completed</small><b>14 Mar 19</b><small>Main Story · SNES</small></span>${o.logged ? `<span class="stp fresh" style="--r:2deg"><small>Completed</small><b>24 Nov 26</b><small>+ Side · Switch</small></span>` : ""}<span class="anc">${o.logged ? `<span class="stp slot">${ic("plus")}Log another</span>` : `<span class="stp slot ${o.slip ? "open" : ""}">${ic("plus")}Log another</span>`}</span></div></div>
+  <div class="ys"><div class="h">${ic("hourglass")}Backlog</div><div class="row"><span class="addl">${ic("plus")}Add to Backlog</span></div></div>
+  <div class="ys"><div class="h">${ic("heart")}Favorites</div><div class="row"><p><b>No. 2</b> of 10</p></div></div>
+  <div class="ys"><div class="h">${ic("archive")}Collection</div><div class="row"><p><b>Physical</b> · Switch</p></div></div></div>`;
+const dateBox = (lbl, d, my, sub, o = {}) => `<div class="anc wide" style="display:block"><div class="db ${o.open ? "open" : ""} ${o.blank ? "blank" : ""}"><div class="l">${ic("calendar")}${lbl}</div><div class="d"><b>${d}</b><span>${my}</span></div><div class="s">${sub}</div></div>${o.pop || ""}</div>`;
+const slip = (o = {}) => {
+  const cS = o.cal === "s" ? cal({ sel: 9, span: [9, 24], other: 24, today: 24, max: 24, title: "Started", say: SAY_NP, foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` }) : "";
+  const cF = o.cal === "f" ? cal({ sel: 24, span: [9, 24], other: 9, today: 24, max: 24, title: "Finished", cls: o.calUp ? "r up" : "r", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` }) : "";
+  return `<div class="paper ${o.pos ? "pos" : ""}"><h5>Completed<span class="nth">2nd time</span><span class="x">${ic("x")}</span></h5>
+  <p class="lastp">Your 1st: <b>14 Mar 2019</b>, Main Story on SNES.</p>
+  <div class="dbs">${dateBox("Started", "09", "Nov 2026", `${ic("gamepad-2")}From Now Playing`, { open: o.cal === "s", pop: cS })}<div class="ar">${ic("arrow-right")}15 days</div>${dateBox("Finished", "24", "Nov 2026", "Today", { open: o.cal === "f", pop: cF })}</div>
+  <div class="fg" style="margin-top:12px"><div>${lab("How far")}<div class="boxes">${["Main Story", "+ Side Content", "Completionist"].map((t, i) => `<span class="${i === 1 ? "on" : ""}"><i class="o"></i>${t}</span>`).join("")}</div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel("Nintendo Switch", { cls: "pp" })}</div><div>${lab("Hours", 1)}${fld("41", { cls: "pp" })}</div></div>
+  <div>${lab("Note", 1)}${fld("Got Shadow back this time. Opera house still undefeated.", { cls: "pp" })}</div></div>
+  <div class="bt">${ck("Keep it in Now Playing")}<span class="btn invol">Cancel</span><span class="btn inv">${ic("flag")}Log it</span></div></div>`;
+};
+const slipCol = `<div class="paper" style="width:440px;transform:rotate(1deg)"><h5>Collection<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5><div class="fg">
+  <div>${lab("How you own it")}<div class="boxes four">${OWN.map((t, i) => `<span class="${i === 1 ? "on" : ""}"><i class="o"></i>${t}</span>`).join("")}</div></div>
+  <div>${lab("Platform")}${sel("Nintendo Switch", { cls: "pp" })}</div><div>${lab("Note", 1)}${fld("Pixel Remaster collector's box", { cls: "pp" })}</div></div>
+  <div class="bt"><span class="btn invol">Cancel</span><span class="btn inv">${ic("check")}Save</span></div></div>`;
+const railD = (o) => `<div class="rail-in" style="position:relative">${cardD(o)}${o.slip || ""}</div>`;
+const pageD = (o, h = 1100) => G_DESK({ plate: { mine: 1, notPlaying: o.logged }, rail: railD(o), h });
+
+page({
+  title: "Log a completion",
+  lede: "Logging a completion of <b>Final Fantasy VI</b> from the game page, and the small form every other list gets in the same voice (drawn here for <b>Collection</b>). Mara is replaying it: it's been in <b>Now Playing since 9 Nov</b>, so <b>Started</b> comes in pre-filled with that day, <b>Finished</b> defaults to today, and it leaves Now Playing unless she ticks <b>Keep it in Now Playing</b>. She finished it once before, in 2019, so this is her <b>2nd time</b>. Each option sits on the game page control it pairs with best (2A on 1A, 2B on 1A, 2C on 1C, 2D on 1D), but any of them can open from any control.",
+  keys: [["Today", "Tue 24 Nov 2026"], ["Viewer", "Mara"], ["Now Playing since", "Sun 9 Nov 2026, Switch"], ["1st completion", "14 Mar 2019, Main Story, SNES"]],
+  surfaces: [{
+    id: "s2", title: "2 · Log a completion", sub: "the form, its dates and the replay · 4 options",
+    brief: "Fields: completion type (Main Story, Main Story + Side Content, Completionist), platform, <b>Started</b> and <b>Finished</b> each on its own <b>calendar popover</b>, final playtime in hours (optional) and a note. Dates are day-precise; every calendar offers <b>Only the month</b> for the ones members half-remember, and <b>Started is optional</b>. Days after today are off. The calendars share one look: the picked day ringed in yellow, the other end of the span outlined, the days between on a faint yellow wash, today underlined in red (you are here).",
+    options: [
+      {
+        code: "2A", short: "Popover", title: "The quick popover", rec: 1,
+        idea: "Logging stays <b>in place</b>: the split button's main half opens a 440px <b>popover</b> under it. A grey line recalls the <b>1st time</b> (Main Story on SNES, finished 14 Mar 2019). The type is a <b>segmented control</b>; Started and Finished sit side by side as date fields, Started marked \"From Now Playing\"; each opens its own calendar popover over the form. <b>Keep it in Now Playing</b> sits last, unticked, with what happens otherwise spelled out. On phones the popover becomes a <b>bottom sheet</b> and the calendars open above their field.",
+        trade: "Fastest and lightest; nothing leaves the page. A calendar over a popover is two layers deep, and at 440px the type labels have to shorten (\"+ Side Content\").",
+        desk: ["Desktop · Started open (pre-filled from Now Playing)", G_DESK({ actions: actA(popA({ cal: "s" })), plate: { mine: 1 }, h: 1060 })],
+        phone: ["Phone · the sheet, Finished open", PSHEET(G_PH({ plate: { mine: 1 } }), `<h5>Log a completion<span class="nth">2nd time</span><span class="x">${ic("x")}</span></h5>${formA({ cal: "f", up: 1 })}<div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">${ic("check")}Log it</span></div>`, 900), "ph"],
+        more: [
+          ["Desktop · a first completion, not playing it: Started left blank", G_DESK({ actions: `<div class="act"><span class="anc">${splitBtn(1, "Log a completion")}${popA({ first: 1 })}</span><span class="yst">${ic("archive")}Physical</span></div>`, plate: {}, h: 1000 })],
+          ["Desktop · Collection in the same voice", G_DESK({ actions: actA(colA, "Log a completion"), plate: { mine: 1 }, h: 860 })],
+        ],
+        notes: ["<b>Why this one:</b> the common case (finishing what you're playing) is two presses with every default right, it pairs with 1A, and the same popover works from the list pages in Surface 3. Borrow 2B's \"Only the month\" and 2C's plain-English start (\"I don't remember\") whichever is picked.", "Enter in the form logs it; Esc closes the calendar first, then the popover.", "The 2nd-time tag counts this member's completions of this game; the API needs no new field for it.", "Collection opens from its chip or the caret menu; Remove lives at the foot of its edit form (not shown on Add)."],
+      },
+      {
+        code: "2B", short: "Dialog", title: "The dialog with your history",
+        idea: "A <b>dialog</b> with room to think about it. The left column is the game and <b>your completions on a timeline</b>: 14 Mar 2019, then a yellow node for <b>this one</b>. The right column asks \"How far did you get?\" with three described <b>tiles</b>, then the <b>span</b>: Started → 15 days → Finished, each end its own date field and calendar; Started says \"From Now Playing\" in yellow. Playtime and the note follow; Keep it in Now Playing sits by the buttons. On phones it's a full-screen dialog with a sticky Log completion.",
+        trade: "The clearest for replays and for members who log rarely, and the tiles explain the three types. It interrupts (a modal for a short task, which the craft floor frowns on) and is the slowest for the regular logger.",
+        desk: ["Desktop · Finished open", DLG(G_DESK({ actions: `<div class="act">${splitBtn(0)}${stChips}</div>`, plate: { mine: 1 } }), dlgB({ cal: "f" }), 900, 50)],
+        phone: ["Phone · full screen, Started open", `<div class="stage" style="height:844px">${G_PH({ plate: { mine: 1 } })}${fsdB()}</div>`],
+        more: [
+          ["Desktop · a first completion: Started blank, no timeline yet", DLG(G_DESK({ actions: `<div class="act">${splitBtn(0, "Start playing", "gamepad-2")}</div>`, plate: {} }), dlgB({ first: 1 }), 820, 50)],
+          ["Desktop · Collection as a dialog, with Remove", DLG(G_DESK({ actions: `<div class="act">${splitBtn(0)}${stChips}</div>`, plate: { mine: 1 } }), dlgColB, 700, 90)],
+        ],
+        notes: ["The timeline is this member's own completions of this game only, oldest first; each past node opens it for editing.", "The middle of the span counts days (\"15 days\") once both ends are set, and goes quiet when Started is blank.", "Remove from Collection is the destructive outline (signal orange) and asks first."],
+      },
+      {
+        code: "2C", short: "Sentence", title: "Say it in a sentence",
+        idea: "The form is <b>one sentence of underlined words</b> in the drawer under the five cells: \"I finished it on <u>Switch</u>, <u>Main Story + Side Content</u>. I started on <u>Sun 9 Nov</u> and finished <u>today, 24 Nov</u>, after about <u>— hours</u>.\" Each word opens its picker right under it: a short menu for the type, the <b>calendar</b> for each date. A blank start reads \"<u>a day I don't remember</u>\". The drawer head says it's your <b>2nd completion</b> and when the 1st was; the note and Keep it in Now Playing sit under the sentence. Collection reads \"It's in my collection as a <u>Physical</u> copy on <u>Switch</u>.\"",
+        trade: "The friendliest read, the defaults are visible as plain English, and it reuses the Challenge form's sentence so it's already in the site's voice. Harder to scan for a missing field, it wraps to four lines on a phone, and translating a sentence is harder than labels (not a concern today).",
+        desk: ["Desktop · Started open in the sentence", G_DESK({ plate: { mine: 1 }, mid: cellsC("np") + drawerC({ cal: "s" }), h: 1180 })],
+        phone: ["Phone · Finished open", G_PH({ plate: { mine: 1 }, mid: cellsC("np") + drawerC({ cal: "f" }) })],
+        more: [
+          ["Desktop · the type word open", G_DESK({ plate: { mine: 1 }, mid: cellsC("np") + drawerC({ type: 1 }), h: 1040 })],
+          ["Desktop · a first completion: \"a day I don't remember\"", G_DESK({ plate: {}, mid: cellsC("done") + drawerC({ first: 1 }), h: 980 })],
+          ["Desktop · Collection as a sentence", G_DESK({ plate: { mine: 1 }, mid: cellsC("col") + drawerCol, h: 980 })],
+        ],
+        notes: ["It opens from Now Playing's \"Finished it?\" (ringed here) or from the Completed cell; both land on the same sentence.", "Tab walks the words in reading order; Enter or Space opens one.", "Hours stays faint until filled, so a skipped optional word never reads like an answer."],
+      },
+      {
+        code: "2D", short: "Paper slip", title: "The paper slip",
+        idea: "Logging is filling in a <b>paper slip</b> that slides out of the You card's dashed \"Log another\" slot: paper stock, ink type, a slight tilt. The two dates are <b>big blocks</b> (Anton day over month and year), Started marked From Now Playing, with \"15 days\" between; pressing one rings it in ink and opens its calendar. The type is three ink boxes. Log it drops a fresh teal <b>stamp</b> into the card beside the 2019 one, and Now Playing empties. On phones the slip rises from the dock as a paper sheet.",
+        trade: "The most memorable, and the stamp makes the replay feel collected. A paper surface is a new large light object on a dark site (the Notice Slip is the only precedent), so it's the loudest option, and it only fits beside the 1D card.",
+        desk: ["Desktop · Started open on the slip", pageD({ slip: slip({ pos: 1, cal: "s" }) }, 1160)],
+        phone: ["Phone · the slip as a sheet, Finished open", `<div class="stage" style="height:900px">${G_PH({ plate: { mine: 1 }, dock: `<div class="ydock">${av("mara", 26)}</div>` })}<div class="dimmer"></div><div class="pslip" style="position:absolute;left:0;right:0;bottom:0;z-index:9">${slip({ cal: "f", calUp: 1 })}</div></div>`],
+        more: [
+          ["Desktop · just logged: a new stamp, out of Now Playing", `<div class="stage">${pageD({ logged: 1 }, 1020)}<div class="toast">${ic("check")}<span><b>Logged your 2nd completion.</b> It left Now Playing.</span><span class="btn sm">Undo</span></div></div>`],
+          ["Desktop · Collection on a slip", `<div style="padding:40px;background:var(--bg);display:flex;justify-content:center">${slipCol}</div>`],
+        ],
+        notes: ["The slip is paper with ink type (the Notice Slip's stock); its fields are pale, ink-stroked, and the focus ring turns ink, since yellow on paper fails contrast.", "The confirmation is a paper toast with Undo, kept for a few seconds.", "The new stamp is pressed in with the starburst's stamp motion, behind <code>motion-safe</code>."],
+      },
+    ],
+  }],
+});
+</script>
+</body></html>

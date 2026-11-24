@@ -3,14 +3,18 @@ import type { CompletedPage } from "@/lib/members/completed-page";
 import { COMPLETED_PAGE_SIZE } from "@/lib/members/completed-page";
 import { CompletedReel } from "@/components/issue/member-completed-reel";
 import { MemberListEmpty } from "@/components/member/member-game-card";
+import { ManagedReel } from "@/components/member/manage/managed-reel";
 
-// The shown page of completions as the reel, or why there is none.
+// The shown page of completions as the reel, or why there is none. The
+// list's owner gets the reel with its manage tools (spec api#451, pick 3A).
 export function CompletedList({
   page,
   currentPage,
   q,
   displayName,
+  manage = false,
 }: {
+  manage?: boolean;
   page: CompletedPage;
   currentPage: number;
   q: string;
@@ -26,7 +30,12 @@ export function CompletedList({
     );
   }
   if (list.entries.length === 0) {
-    const scope = year === "all" ? "every year" : year === "unknown" ? "entries with no date" : year;
+    const scope =
+      year === "all"
+        ? "every year"
+        : year === "unknown"
+          ? "entries with no date"
+          : year;
     return (
       <div className="space-y-3">
         <MemberListEmpty>
@@ -49,8 +58,9 @@ export function CompletedList({
       </div>
     );
   }
+  const Reel = manage ? ManagedReel : CompletedReel;
   return (
-    <CompletedReel
+    <Reel
       // A new page or year starts the spotlight on its first entry.
       key={`${year}-${q}-${currentPage}`}
       entries={list.entries}

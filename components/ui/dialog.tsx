@@ -6,6 +6,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
+import { triggerSlot } from "@/components/ui/trigger-slot"
 
 // The centred counterpart to sheet.tsx, on the same Base UI primitive — that
 // one anchors to an edge and is sized for a panel of controls, this one sits
@@ -15,8 +16,8 @@ function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
-function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+function DialogTrigger(props: DialogPrimitive.Trigger.Props) {
+  return <DialogPrimitive.Trigger {...triggerSlot("dialog-trigger", props.render)} {...props} />
 }
 
 function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
