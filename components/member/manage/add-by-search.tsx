@@ -35,14 +35,7 @@ export function AddBySearch({
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {/* The trigger's own data-slot would replace the Button's, so the
-          Button's are restated for the Theme to draw it. */}
-      <PopoverTrigger
-        render={<Button type="button" variant="highlight" />}
-        data-slot="button"
-        data-variant="highlight"
-        data-size="default"
-      >
+      <PopoverTrigger render={<Button type="button" variant="highlight" />}>
         <Icon data-icon="inline-start" aria-hidden />
         {shortLabel ? (
           <>

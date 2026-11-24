@@ -52,7 +52,7 @@ export function useCompletionLog(input: {
   const submit = () => {
     setTried(true);
     if (Object.values(found).some(Boolean)) return;
-    saver.save(completionPayload(gameId, values, { editing: entry != null, onNowPlaying: nowPlaying != null }));
+    saver.save(completionPayload(gameId, values, { original: entry ?? null, onNowPlaying: nowPlaying != null }));
   };
 
   return {

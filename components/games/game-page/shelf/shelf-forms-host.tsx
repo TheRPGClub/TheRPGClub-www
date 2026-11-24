@@ -2,23 +2,36 @@
 
 import type { ShelfSaved } from "@/hooks/use-shelf-save";
 import type { Platform } from "@/lib/api/types";
-import type { GameShelf, ShelfList } from "@/lib/games/shelf";
+import { resolveEntryId } from "@/lib/api/member-shelf-entry";
+import type { GameShelf, ShelfList, ShelfMode } from "@/lib/games/shelf";
 import type { SimpleShelfEntry, SimpleShelfKind } from "@/lib/shelf-forms/values";
 import { CompletionDialog } from "@/components/member/shelf-forms/completion-dialog";
 import type { ShelfGame } from "@/components/member/shelf-forms/shelf-entry-form";
 import { ShelfFormDialog } from "@/components/member/shelf-forms/shelf-form-dialog";
 
-// The entry a simple list's form edits, or null to add the game.
-export function shelfEntry(shelf: GameShelf, kind: SimpleShelfKind): SimpleShelfEntry | null {
+// What the game page has open: the Game Completion dialog, or one list's
+// form adding the game (no `entryId` on Backlog / Collection, which may hold
+// it again) or editing its entry.
+export interface ShelfOpen {
+  list: ShelfList;
+  mode: ShelfMode;
+  entryId?: number;
+}
+
+// The entry a simple list's form edits, or null to add the game. Backlog and
+// Collection name theirs by id; Now Playing and Favorites hold one.
+export function shelfEntry(shelf: GameShelf, kind: SimpleShelfKind, entryId?: number): SimpleShelfEntry | null {
   switch (kind) {
     case "now_playing":
       return shelf.nowPlaying;
-    case "backlog":
-      return shelf.backlog;
     case "favorite":
       return shelf.favorite?.entry ?? null;
-    case "collection":
-      return shelf.collection;
+    case "backlog":
+    case "collection": {
+      if (entryId == null) return null;
+      const entries: SimpleShelfEntry[] = shelf[kind];
+      return entries.find((e) => resolveEntryId(kind, e) === entryId) ?? null;
+    }
   }
 }
 
@@ -35,7 +48,7 @@ export function ShelfFormsHost({
   onSaved,
   onRemove,
 }: {
-  open: ShelfList | null;
+  open: ShelfOpen | null;
   onClose: () => void;
   userId: string;
   game: ShelfGame;
@@ -47,7 +60,7 @@ export function ShelfFormsHost({
   const onOpenChange = (next: boolean) => {
     if (!next) onClose();
   };
-  if (open === "completed") {
+  if (open?.list === "completed") {
     return (
       <CompletionDialog
         open
@@ -62,19 +75,20 @@ export function ShelfFormsHost({
     );
   }
   if (!open) return null;
-  const entry = shelfEntry(shelf, open);
+  const kind = open.list;
+  const entry = open.mode === "edit" ? shelfEntry(shelf, kind, open.entryId) : null;
   return (
     <ShelfFormDialog
-      key={open}
+      key={`${kind}:${open.entryId ?? open.mode}`}
       open
       onOpenChange={onOpenChange}
-      kind={open}
+      kind={kind}
       userId={userId}
       game={game}
       entry={entry}
       platforms={platforms}
       onSaved={onSaved}
-      onRemove={entry ? () => onRemove(open, entry) : undefined}
+      onRemove={entry ? () => onRemove(kind, entry) : undefined}
     />
   );
 }

@@ -26,11 +26,30 @@ export function isOrderedKind(kind: MemberShelfKind): kind is (typeof ORDERED_KI
   return (ORDERED_KINDS as readonly string[]).includes(kind);
 }
 
-// The page's entry for a game, so adding a game already on the list opens
-// its entry instead of a refused add.
-export function entryForGame<T extends { game?: { game_id: number } | null; gamedb_game_id?: number | null }>(
+// The lists that may hold one game more than once (another platform or
+// copy: the API's keys include platform / ownership).
+const REPEATABLE: readonly MemberShelfKind[] = ["backlog", "collection"];
+
+export type AddPick = { action: "add" } | { action: "open"; entryId: number; undoRemoval: boolean };
+
+// What picking a game in a list page's add search does. Backlog and
+// Collection always add (another entry for the game is fine). Now Playing
+// and Favorites open the game's entry instead of a refused add; one whose
+// removal is held behind Undo is put back and opened, and one already
+// removed counts as gone (so the game is added again).
+export function addPick<T extends { game?: { game_id: number } | null; gamedb_game_id?: number | null }>(
+  kind: MemberShelfKind,
   entries: readonly T[],
   gameId: number,
-): T | undefined {
-  return entries.find((entry) => (entry.game?.game_id ?? entry.gamedb_game_id) === gameId);
+  idOf: (entry: T) => number | null | undefined,
+  removal: { held: ReadonlySet<number>; gone: ReadonlySet<number> },
+): AddPick {
+  if (REPEATABLE.includes(kind)) return { action: "add" };
+  const listed = entries.find((entry) => {
+    const id = idOf(entry);
+    return id != null && !removal.gone.has(id) && (entry.game?.game_id ?? entry.gamedb_game_id) === gameId;
+  });
+  const entryId = listed && idOf(listed);
+  if (entryId == null) return { action: "add" };
+  return { action: "open", entryId, undoRemoval: removal.held.has(entryId) };
 }

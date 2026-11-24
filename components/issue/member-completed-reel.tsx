@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import type { GameCompletion } from "@/lib/api/types";
+import { reelIndex, reelStep } from "@/lib/members/reel-selection";
 import { groupByMonth } from "@/components/issue/member-completed-reel-entries";
 import { ReelControls } from "@/components/issue/member-completed-reel-controls";
 import { ReelSpotlight } from "@/components/issue/member-completed-reel-spotlight";
@@ -15,6 +16,8 @@ export interface ReelManage {
   onEdit: (entry: GameCompletion) => void;
   editor: (entry: GameCompletion) => ReactNode | null;
   renderFrame: (entry: GameCompletion, frame: ReactNode) => ReactNode;
+  // Removed (held behind Undo, or sent): never the spotlight.
+  isRemoved: (entry: GameCompletion) => boolean;
 }
 
 // Completed games as a spotlight and a filmstrip: the selected completion
@@ -38,7 +41,10 @@ export function CompletedReel({
   const [selected, setSelected] = useState(0);
   const spotRef = useRef<HTMLElement>(null);
   const groups = groupByMonth(entries);
-  const current = entries[Math.min(selected, entries.length - 1)];
+  const removed = (i: number) => manage?.isRemoved(entries[i]) ?? false;
+  // A removed completion hands the spotlight to the next one still there.
+  const shown = reelIndex(selected, entries.length, removed);
+  const current = entries[shown] ?? entries[Math.min(selected, entries.length - 1)];
   if (!current) return null;
 
   const pick = (index: number) => {
@@ -56,7 +62,7 @@ export function CompletedReel({
     }
   };
   const step = (delta: number) =>
-    setSelected((i) => (i + delta + entries.length) % entries.length);
+    setSelected(reelStep(shown < 0 ? selected : shown, delta < 0 ? -1 : 1, entries.length, removed));
 
   return (
     <div className="min-w-0 space-y-7">
@@ -68,17 +74,17 @@ export function CompletedReel({
         controls={
           <ReelControls
             count={entries.length}
-            position={offset + selected + 1}
+            position={offset + Math.max(shown, 0) + 1}
             total={total}
             game={current.game}
             onStep={step}
-            onEdit={manage && (() => manage.onEdit(current))}
+            onEdit={manage && shown >= 0 ? () => manage.onEdit(current) : undefined}
           />
         }
       />
       <ReelStrip
         groups={groups}
-        selected={selected}
+        selected={shown}
         onPick={pick}
         renderFrame={manage?.renderFrame}
       />
