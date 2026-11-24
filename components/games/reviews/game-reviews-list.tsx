@@ -111,7 +111,7 @@ export function GameReviewsList({
     <div className="space-y-4">
       {showCta && !composing && (
         <ReviewComposePanel
-          ownerId={ownerId}
+          gameId={gameId}
           canWriteReview={canWriteReview}
           status={viewerStatus}
           onStart={openComposer}

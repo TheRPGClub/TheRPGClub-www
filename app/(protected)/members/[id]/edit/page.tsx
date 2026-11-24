@@ -1,12 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { getFeatures, requireAuth } from "@/lib/session";
-import { igdbAddBlockedReason } from "@/lib/igdb";
-import { fetchMemberEdit, memberEditShown } from "@/lib/member-edit";
+import { fetchMemberEdit } from "@/lib/member-edit";
+import { managedLists } from "@/lib/members/managed-lists";
 import { importsHubHref, shownImportKinds } from "@/lib/imports/kinds";
 import { MemberEditView } from "@/components/member/edit/member-edit-view";
 
-// /members/:id/edit: the member's own profile editor. Anyone else is sent to
-// the profile it edits.
+// /members/:id/edit: the member's own profile editor (Socials, Linked
+// Accounts, the Imports link). Anyone else is sent to the profile it edits.
 export default async function MemberEditPage({
   params,
 }: {
@@ -19,15 +19,17 @@ export default async function MemberEditPage({
   }
 
   const features = await getFeatures();
-  const shown = memberEditShown(features);
-  const data = await fetchMemberEdit(id, shown);
+  // Linked Accounts follow the flag only, like the Achievements pages whose
+  // "link an account" button lands here.
+  const linked = features.canOpen("achievement_hub");
+  const data = await fetchMemberEdit(id, linked);
   if (!data) notFound();
 
   return (
     <MemberEditView
       data={data}
-      shown={shown}
-      igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
+      linked={linked}
+      lists={managedLists(id, features)}
       importsHref={
         shownImportKinds(features).length > 0 ? importsHubHref(data.user.user_id) : null
       }

@@ -83,7 +83,9 @@ export function ShelfActions(props: {
   };
 
   return (
-    <div className="col-span-full flex flex-col gap-2.5 md:mt-4.5">
+    // `#your-lists` is where "Add it to Now Playing or Completed" (the review
+    // composer's locked note) points.
+    <div id="your-lists" className="col-span-full flex scroll-mt-5 flex-col gap-2.5 md:mt-4.5">
       <div className="flex flex-wrap items-center gap-2">
         <ShelfSplitButton
           step={nextStep(shelf, shown)}
