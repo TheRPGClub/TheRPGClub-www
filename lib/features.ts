@@ -32,6 +32,7 @@ export const FEATURE_KEYS = [
   "challenges",
   "release_calendar",
   "club_codex",
+  "game_lists",
 ] as const;
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];

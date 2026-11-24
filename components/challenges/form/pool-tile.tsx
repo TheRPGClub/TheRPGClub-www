@@ -1,69 +1,97 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
-import type { PoolGame } from "@/lib/challenges/types";
+import { X } from "lucide-react";
+import type { EditorGame, PoolSide } from "@/lib/challenges/pool-editor";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GameCover } from "@/components/issue/game-cover";
 
-// A cover on the form's Pool wall (surface brief challenges-form, 5C). Tapped,
-// a source's game is left out (greyed, a paper "Left out" tag, the x turns
-// to +) or put back; a game added by hand carries a paper outline and an
-// "Added" tag, and tapping it takes it out of the Pool. Locked rules show the
-// wall without the controls.
+export const POOL_GAME_TYPE = "application/x-rpgclub-pool-game";
+
+// A cover in the Pool editor (pick 8, 8B's tiles): a Core Game is ringed in
+// the Challenge tint's hi, an Optional one sits plain; a paper "New" tag
+// marks a game that joined in the last 14 days and "Added" one picked by
+// hand. Under it the switch moves it between Core and Optional or leaves it
+// out (the keyboard and phone way); dragging the cover onto the other
+// section does the same.
 export function PoolTile({
   game,
-  state,
-  locked,
-  onToggle,
+  side,
+  onMove,
+  onLeaveOut,
 }: {
-  game: PoolGame;
-  state: "in" | "out" | "added";
-  locked: boolean;
-  onToggle: () => void;
+  game: EditorGame;
+  side: PoolSide;
+  onMove: (to: PoolSide) => void;
+  onLeaveOut: () => void;
 }) {
-  const cover = (
-    <>
-      <GameCover
-        title={game.title}
-        coverUrl={game.cover_url}
-        className={cn(
-          "w-full",
-          state === "out" && "opacity-28 grayscale",
-          state === "added" && "outline-2 outline-offset-2 outline-foreground",
-        )}
-        fallbackClassName="text-[0.8rem] p-1.5"
-      />
-      {state !== "in" && (
-        <span className="font-label absolute bottom-[5px] left-[5px] rounded-xs bg-foreground px-1 pt-[3px] pb-0.5 text-[0.66rem] leading-none font-extrabold tracking-[0.06em] text-background">
-          {state === "out" ? "Left out" : "Added"}
-        </span>
-      )}
-    </>
-  );
-  if (locked) return <div className="relative">{cover}</div>;
-  const label = state === "out" ? `Put ${game.title} back in the Pool` : `Leave ${game.title} out of the Pool`;
   return (
-    <Button
-      type="button"
-      variant="pool-tile"
-      size="bare"
-      aria-pressed={state === "out"}
-      aria-label={state === "added" ? `Take ${game.title} out of the Pool` : label}
-      title={game.title}
-      onClick={onToggle}
-      className="relative block w-full"
+    <li
+      draggable
+      onDragStart={(event) => {
+        event.dataTransfer.setData(POOL_GAME_TYPE, JSON.stringify({ ...game, from: side }));
+        event.dataTransfer.effectAllowed = "move";
+      }}
+      className="flex cursor-grab flex-col gap-1.5 active:cursor-grabbing"
     >
-      {cover}
-      <span
-        aria-hidden
+      <div
+        title={game.title}
         className={cn(
-          "absolute top-[5px] right-[5px] grid size-[22px] place-items-center rounded-xs [&_svg]:size-3.5",
-          state === "out" ? "bg-foreground text-background" : "bg-background/75 text-foreground",
+          "relative rounded-sm",
+          side === "core" && "outline-2 outline-offset-2 outline-(--challenge-tint-hi)",
         )}
       >
-        {state === "out" ? <Plus /> : <X />}
-      </span>
-    </Button>
+        <GameCover
+          title={game.title}
+          coverUrl={game.cover_url}
+          alt={game.title}
+          className="pointer-events-none w-full"
+          fallbackClassName="text-[0.8rem] p-1.5"
+        />
+        {game.tag && (
+          <span className="font-label absolute bottom-[5px] left-[5px] rounded-xs bg-foreground px-1 pt-[3px] pb-0.5 text-[0.66rem] leading-none font-extrabold tracking-[0.06em] text-background">
+            {game.tag === "new" ? "New" : "Added"}
+          </span>
+        )}
+      </div>
+      <div
+        role="group"
+        aria-label={`${game.title}: place in the Pool`}
+        className="grid grid-cols-[1fr_1.45fr_auto] overflow-hidden rounded-xs shadow-[inset_0_0_0_1px_var(--color-border-strong)]"
+      >
+        <Button
+          type="button"
+          variant="pool-switch-core"
+          size="bare"
+          aria-pressed={side === "core"}
+          aria-label={`Make ${game.title} a Core Game`}
+          onClick={() => side !== "core" && onMove("core")}
+          className="items-center justify-center"
+        >
+          Core
+        </Button>
+        <Button
+          type="button"
+          variant="pool-switch"
+          size="bare"
+          aria-pressed={side === "optional"}
+          aria-label={`Make ${game.title} an Optional Game`}
+          onClick={() => side !== "optional" && onMove("optional")}
+          className="items-center justify-center"
+        >
+          Optional
+        </Button>
+        <Button
+          type="button"
+          variant="pool-switch"
+          size="bare"
+          aria-label={`Leave ${game.title} out of the Pool`}
+          onClick={onLeaveOut}
+          className="w-7 items-center justify-center sm:w-6 [&_svg]:size-3.5"
+        >
+          <X aria-hidden />
+        </Button>
+      </div>
+    </li>
   );
 }

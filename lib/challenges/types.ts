@@ -24,13 +24,66 @@ export interface ChallengeTint {
   hi: string;
 }
 
+// A game of the Pool as the Challenge serves it (swagger
+// `ChallengePostGame`).
+export interface ChallengePoolGame {
+  game_id: number;
+  title: string;
+  cover_url?: string | null;
+}
+
+// Where an Optional Game comes from: picked by hand, else its first source.
+export type OptionalSource = "hand" | "list" | "franchise" | "series";
+
+export interface ChallengeOptionalGame extends ChallengePoolGame {
+  source: OptionalSource;
+  // Joined the Pool in the last 14 days, after the Challenge was created.
+  new: boolean;
+}
+
+// A Pool Challenge's settings (spec api#442, ADR 0014): a Run Finishes by
+// Clearing every Core Game plus `optional_target` Optional Games. Optional
+// Games are the sources' games (a linked Game List, Franchises and Series,
+// which the API calls collections) less Add-ons, plus those picked by hand,
+// less the excluded and Core games. `optional_games`, `optional_count` and
+// `game_count` are on the show only (null in lists).
 export interface ChallengePool {
-  target: number | "all";
+  optional_target: number;
+  game_list?: { id: number; name: string; visible: boolean; can_add: boolean } | null;
   franchises?: { franchise_id: number; name: string }[];
   collections?: { collection_id: number; name: string }[];
-  included_games?: { game_id: number; title: string }[];
+  core_games?: ChallengePoolGame[];
+  optional_games?: ChallengeOptionalGame[] | null;
   excluded_games?: { game_id: number; title: string }[];
+  core_count?: number;
+  optional_count?: number | null;
   game_count?: number | null;
+}
+
+// A list notice: a Core Game whose entry left the linked Game List, for the
+// Host and Moderators to Remove or Keep (www#172 shows them).
+export interface ChallengeListNotice {
+  id: number;
+  game?: ChallengePoolGame;
+  created_at: string;
+}
+
+// A Pool Proposal (api#447): a member asked for a game to join a Pool
+// Challenge, with an optional note to whoever decides.
+export type PoolProposalStatus = "pending" | "accepted" | "declined";
+
+export interface ChallengePoolProposal {
+  id: number;
+  challenge_id: number;
+  game?: ChallengePoolGame;
+  proposer?: ChallengeMember | null;
+  note?: string | null;
+  status: PoolProposalStatus;
+  accepted_as?: "core" | "optional" | null;
+  decider?: ChallengeMember | null;
+  decided_at?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ChallengeSlots {
@@ -83,6 +136,10 @@ export interface Challenge {
   // lands, when the site falls back to the curated tints (lib/challenges/tint).
   tint?: ChallengeTint | null;
   key_art_url?: string | null;
+  // A Pool Challenge's pending Pool Proposals and open list notices, for
+  // the Host and Moderators and above (null for other viewers and in lists).
+  pending_proposals?: number | null;
+  list_notices?: ChallengeListNotice[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -130,6 +187,10 @@ export interface ChallengeRun {
     in_progress: number;
     cleared: number;
     target: number;
+    // Pool only: Core Games Cleared of how many (all are needed), and
+    // Optional Games Cleared (every one counted) of how many are needed.
+    core?: { cleared: number; total: number };
+    optional?: { cleared: number; target: number };
     caught_up?: boolean;
   };
   entries?: ChallengeRunEntry[];

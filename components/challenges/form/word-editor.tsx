@@ -2,13 +2,13 @@
 
 import type { ChallengeFormState, RuleWordKey } from "@/hooks/use-challenge-form";
 import { EDITOR_ID } from "@/components/challenges/form/rule-sentence";
-import { SourceSearch } from "@/components/challenges/form/source-search";
 import { DayEditor } from "@/components/challenges/form/day-editor";
-import { EndDateEditor, ScheduleEditor, TargetEditor } from "@/components/challenges/form/word-controls";
+import { EndDateEditor, ScheduleEditor } from "@/components/challenges/form/word-controls";
+import { TargetStepper } from "@/components/challenges/form/target-stepper";
 import { FirstYearEditor, LastYearEditor, PastPlayEditor } from "@/components/challenges/form/slots-word-controls";
 
 const TITLE: Record<RuleWordKey, string> = {
-  target: "Games to Clear",
+  target: "Optional Games to Clear",
   sources: "Built from",
   "season-start": "Season starts",
   "season-end": "Season ends",
@@ -26,9 +26,9 @@ const CALENDAR_FIELD = { "signup-cutoff": "signupCutoff", "pick-deadline": "pick
 
 const HELP: Record<RuleWordKey, string> = {
   target:
-    "How many games from the Pool a member Clears to Finish, or every game. A member can keep Clearing after they Finish.",
+    "A Run Finishes with every Core Game Cleared plus this many Optional Games. 0 asks for Core Games only. Every extra Optional Game a member Clears still counts on their Run.",
   sources:
-    "Every game in a franchise or collection joins the Pool, and new ones join by themselves. Leave a game out, or add one by hand, on the covers below.",
+    "Every game of a Franchise or Series joins the Pool as an Optional Game, and new ones join by themselves. Add-ons (DLC, expansions) never come in by themselves; add one by hand.",
   "season-start": "The Season repeats every year. It can cross the new year: end it before it starts.",
   "season-end": "The Season repeats every year. It can cross the new year: end it before it starts.",
   schedule:
@@ -66,7 +66,8 @@ const ERROR_OF: Partial<Record<RuleWordKey, keyof ChallengeFormState["errors"]>>
 // beside it. Escape closes it.
 export function WordEditor({ form }: { form: ChallengeFormState }) {
   const key = form.open;
-  if (!key) return null;
+  // The sources are searched in the Pool editor's Optional section.
+  if (!key || key === "sources") return null;
   const errorKey = ERROR_OF[key];
   const error = errorKey ? form.errors[errorKey] : undefined;
   return (
@@ -81,8 +82,7 @@ export function WordEditor({ form }: { form: ChallengeFormState }) {
     >
       <div className="min-w-0 space-y-1.5">
         <p className="font-label text-[0.8rem] tracking-[0.08em] text-dim-foreground">Editing: {TITLE[key]}</p>
-        {key === "target" && <TargetEditor form={form} />}
-        {key === "sources" && <SourceSearch form={form} />}
+        {key === "target" && <TargetStepper form={form} />}
         {(key === "season-start" || key === "season-end") && (
           <DayEditor form={form} edge={key === "season-start" ? "start" : "end"} />
         )}

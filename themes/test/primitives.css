@@ -110,6 +110,16 @@
                 color: var(--destructive-foreground);
                 border-radius: 0;
             }
+            &[data-variant="cover-token"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-radius: 0;
+            }
+            &[data-variant="insert"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                text-decoration: underline;
+            }
             &[data-variant="destructive"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);
@@ -2031,7 +2041,7 @@
             border: 2px dashed var(--gotm);
         }
         /* Challenges (www#106). */
-        [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="stamp-more"], [data-variant="done"]) {
+        [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="pool-switch"], [data-variant="pool-switch-core"], [data-variant="stamp-more"], [data-variant="done"]) {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

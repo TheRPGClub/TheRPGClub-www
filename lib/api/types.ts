@@ -219,6 +219,14 @@ export interface Franchise {
   name: string;
   created_at: string;
   updated_at: string;
+  // On a game's relations: whether the game is Mainline in it (api#442).
+  mainline?: boolean;
+}
+
+// An IGDB collection, shown to members as a "Series" (api#442). Read only.
+export interface GameSeries {
+  collection_id: number;
+  name: string;
 }
 
 export interface Genre {
@@ -253,6 +261,8 @@ export interface GameRelations {
   platforms: Platform[];
   companies: Company[];
   franchises: Franchise[];
+  // The game's IGDB collection, labelled "Series"; absent on older reads.
+  collection?: GameSeries | null;
   genres: Genre[];
   modes: GameMode[];
   perspectives: Perspective[];

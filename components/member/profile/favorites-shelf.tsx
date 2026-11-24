@@ -1,5 +1,5 @@
 import type { MemberProfile } from "@/lib/members/profile-page";
-import { resolveEntryId } from "@/lib/api/game-list-entry";
+import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import { MemberShelf, PodiumSpines, Spine } from "@/components/issue/member-shelf";
 import { memberListHref } from "@/lib/members/member-lists";
 import { memberName } from "@/lib/achievements";

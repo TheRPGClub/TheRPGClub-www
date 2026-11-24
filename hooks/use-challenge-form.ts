@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { createChallengeAction, updateChallengeAction } from "@/app/actions/challenges";
 import {
   addSource,
-  includeGame,
+  newHandGames,
   removeSource,
-  toggleGame,
   validateDraft,
   type ChallengeDraft,
   type DraftGame,
   type DraftSource,
 } from "@/lib/challenges/form";
+import { leaveOut, moveGame, poolColumns, putBack, setTarget, stepTarget, type PoolSide } from "@/lib/challenges/pool-editor";
 import { usePoolPreview } from "@/hooks/use-pool-preview";
 
 // The words of the rule sentence a member can open, one at a time.
@@ -49,8 +49,12 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
   const [error, setError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
   const [saving, startSaving] = useTransition();
+  // The games an edit adds by hand to a list-linked Pool, while the "also
+  // add to the list?" prompt is open (www#172).
+  const [listPrompt, setListPrompt] = useState<DraftGame[] | null>(null);
   const preview = usePoolPreview(draft);
-  const errors = validateDraft(draft, preview.known ? preview.size : null);
+  const columns = poolColumns(draft, preview.sources);
+  const errors = validateDraft(draft, preview.known ? columns.optionalCount : null);
   const locked = edit?.locked ?? false;
 
   const update = (change: Partial<ChallengeDraft>) => setDraft((d) => ({ ...d, ...change }));
@@ -59,16 +63,26 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
   const save = () => {
     setTried(true);
     setError(null);
-    const first = (locked ? [errors.name, errors.endsOn] : Object.values(errors)).find(Boolean);
+    const lockedChecks =
+      draft.format === "pool" ? [errors.name, errors.endsOn, errors.sources, errors.target] : [errors.name, errors.endsOn];
+    const first = (locked ? lockedChecks : Object.values(errors)).find(Boolean);
     if (first) {
       setError(first);
       return;
     }
+    const added = edit && draft.format === "pool" && draft.gameList?.canAdd ? newHandGames(initial, draft) : [];
+    if (added.length > 0) setListPrompt(added);
+    else send(false);
+  };
+
+  const send = (addToList: boolean) => {
+    setListPrompt(null);
     startSaving(async () => {
       const result = edit
         ? await updateChallengeAction(edit.id, draft, {
             locked,
             closedForGood: edit.closedForGood,
+            addToList,
           })
         : await createChallengeAction(draft);
       if (!result.ok || !result.data) {
@@ -89,6 +103,7 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     openWord: setOpen,
     closeWord: () => setOpen(null),
     preview,
+    columns,
     // Words go orange as soon as they're wrong; what's missing waits for a
     // save.
     errors: tried
@@ -108,10 +123,22 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     // Closed for good.
     endDateLocked: edit?.closedForGood ?? false,
     save,
+    // The "also add to the list?" prompt: the games it names, then the save
+    // with or without them going into the list.
+    listPrompt,
+    saveWithList: send,
+    closeListPrompt: () => setListPrompt(null),
+    // A new Challenge started from a list can drop the link (its games stay
+    // Core); a saved link is for good.
+    unlinkList: edit ? null : () => setDraft((d) => ({ ...d, gameList: null })),
     addSource: (source: DraftSource) => setDraft((d) => addSource(d, source)),
     removeSource: (source: DraftSource) => setDraft((d) => removeSource(d, source)),
-    toggleGame: (game: DraftGame) => setDraft((d) => toggleGame(d, game)),
-    includeGame: (game: DraftGame) => setDraft((d) => includeGame(d, game)),
+    // The Pool editor (lib/challenges/pool-editor).
+    moveGame: (game: DraftGame, to: PoolSide) => setDraft((d) => moveGame(d, game, to, columns.sourceIds)),
+    leaveOut: (game: DraftGame) => setDraft((d) => leaveOut(d, game)),
+    putBack: (game: DraftGame) => setDraft((d) => putBack(d, game, columns.sourceIds)),
+    stepTarget: (delta: number) => setDraft((d) => stepTarget(d, delta)),
+    setTarget: (value: number) => setDraft((d) => setTarget(d, value)),
   };
 }
 

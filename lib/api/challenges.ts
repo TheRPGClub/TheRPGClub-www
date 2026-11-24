@@ -2,7 +2,15 @@ import { apiFetch } from "@/lib/api";
 import { paginationOf } from "@/lib/api/pagination";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { PoolDefinition } from "@/lib/challenges/form";
-import type { Challenge, ChallengeOpenSignup, ChallengeRun, PoolGame, PoolProgressGame } from "@/lib/challenges/types";
+import type {
+  Challenge,
+  ChallengeOpenSignup,
+  ChallengePoolProposal,
+  ChallengeRun,
+  PoolGame,
+  PoolProgressGame,
+  PoolProposalStatus,
+} from "@/lib/challenges/types";
 
 // Server-only reads for the Challenges pages (they read the session cookie).
 // Each answers null when the API can't be read, so a page can say so rather
@@ -93,14 +101,30 @@ export async function fetchPoolProgress(id: number): Promise<PoolProgressGame[] 
   return body?.data ?? null;
 }
 
-// A saved Challenge's Pool as a definition the preview takes.
-export function savedPoolDefinition(challenge: Challenge, { withExcluded = true } = {}): PoolDefinition | null {
+// A saved Challenge's Pool as a definition the preview takes (its linked
+// Game List aside, which the preview can't resolve).
+export function savedPoolDefinition(challenge: Challenge): PoolDefinition | null {
   const pool = challenge.pool;
   if (challenge.challenge_format !== "pool" || !pool) return null;
   return {
     franchise_ids: (pool.franchises ?? []).map((f) => f.franchise_id),
     collection_ids: (pool.collections ?? []).map((c) => c.collection_id),
-    included_game_ids: (pool.included_games ?? []).map((g) => g.game_id),
-    excluded_game_ids: withExcluded ? (pool.excluded_games ?? []).map((g) => g.game_id) : [],
+    core_game_ids: (pool.core_games ?? []).map((g) => g.game_id),
+    optional_game_ids: (pool.optional_games ?? []).filter((g) => g.source === "hand").map((g) => g.game_id),
+    excluded_game_ids: (pool.excluded_games ?? []).map((g) => g.game_id),
   };
+}
+
+// A Pool Challenge's Pool Proposals, newest first: every one for whoever
+// decides (the Host, Moderators and above), else the viewer's own. Null when
+// they can't be read.
+export async function fetchPoolProposals(
+  id: number,
+  status?: PoolProposalStatus,
+): Promise<ChallengePoolProposal[] | null> {
+  const query = status ? `&status=${status}` : "";
+  const body = await readJson<ApiCollection<ChallengePoolProposal>>(
+    `/api/v1/challenges/${id}/pool_proposals?per=${MAX_PER}${query}`,
+  );
+  return body?.data ?? null;
 }

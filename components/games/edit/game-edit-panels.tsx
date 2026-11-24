@@ -9,6 +9,7 @@ import { TextVideoTab } from "@/components/games/edit/text-video-tab";
 import { ThreadsTab } from "@/components/games/edit/threads-tab";
 import { VersionsTab } from "@/components/games/edit/versions-tab";
 import { UnavailableTab } from "@/components/games/edit/unavailable-tab";
+import { FranchisesTab } from "@/components/games/edit/franchises-tab";
 
 const TITLES: Record<GameEditSectionKey, string> = {
   text: "Description & video",
@@ -17,6 +18,7 @@ const TITLES: Record<GameEditSectionKey, string> = {
   releases: "Releases",
   versions: "Alternate Versions",
   hltb: "HowLongToBeat",
+  franchises: "Franchises",
 };
 
 // The Game Edit page's section a tab, each wired to the save module. A
@@ -97,6 +99,15 @@ function sections(p: GameEditViewProps, edit: GameEdit): Record<GameEditSectionK
         error={edit.errors.hltb}
         onStage={(next) => edit.stageSection("hltb", next)}
         onReload={(hltb) => edit.reloadSection("hltb", hltb)}
+      />
+    ),
+    franchises: (
+      <FranchisesTab
+        loaded={edit.record.franchises}
+        staged={edit.stage.franchises}
+        error={edit.errors.franchises}
+        series={p.series}
+        onStage={(next) => edit.stageSection("franchises", next)}
       />
     ),
   };

@@ -1,11 +1,11 @@
 import { requireAuth, requireFeature } from "@/lib/session";
-import { isRegularOrStaff } from "@/lib/staff";
 import { parseBoardFilters } from "@/lib/challenges/board";
 import { loadBoardPage } from "@/lib/challenges/board-page";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { ChallengeBoard } from "@/components/challenges/challenge-board";
 
 // The Challenges index: Open / Closed and Format filters in the address.
+// Any member may create a Challenge (spec api#442).
 export default async function ChallengesPage({
   searchParams,
 }: {
@@ -19,7 +19,7 @@ export default async function ChallengesPage({
     <ChallengeBoard
       page={page}
       filters={filters}
-      canCreate={isRegularOrStaff(session.membership)}
+      canCreate
       badge={features.preview("challenges") && <PreviewBadge />}
     />
   );

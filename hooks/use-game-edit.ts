@@ -22,7 +22,13 @@ import {
   loadReleasesAction,
   updateReleaseAction,
 } from "@/app/actions/game-edit-releases";
-import { loadGameThreadsAction, loadVersionsAction } from "@/app/actions/game-edit-reads";
+import { loadGameFranchisesAction, loadGameThreadsAction, loadVersionsAction } from "@/app/actions/game-edit-reads";
+import {
+  createFranchiseWithGameAction,
+  linkFranchiseGameAction,
+  unlinkFranchiseGameAction,
+  type FranchiseResult,
+} from "@/app/actions/franchises";
 import {
   gameEditSave,
   recordAfterSave,
@@ -81,6 +87,11 @@ export function useGameEdit(
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
+    "franchise.create": (call) => createFranchiseWithGameAction(call.name, gameId, call.mainline).then(franchiseStep),
+    "franchise.link": (call) =>
+      linkFranchiseGameAction(call.franchiseId, gameId, call.mainline || undefined).then(franchiseStep),
+    "franchise.mainline": (call) => linkFranchiseGameAction(call.franchiseId, gameId, call.mainline).then(franchiseStep),
+    "franchise.unlink": (call) => unlinkFranchiseGameAction(call.franchiseId, gameId).then(franchiseStep),
   };
   // Sections whose saved record only the API knows (new image and release
   // ids, image URLs, a linked thread's jump link, a linked version's cover):
@@ -91,6 +102,7 @@ export function useGameEdit(
     threads: () => loadGameThreadsAction(gameId),
     releases: () => loadReleasesAction(gameId),
     versions: () => loadVersionsAction(gameId),
+    franchises: () => loadGameFranchisesAction(gameId),
   };
   const changes = gameEditSave.changes(record, stage, viewer);
 
@@ -181,6 +193,10 @@ function stepResult(result: GameLinkResult): StepResult {
 // The game-links actions' answer as a save step's.
 function asStep(result: GameLinkResult): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error ?? "That didn't save. Try again." };
+}
+
+function franchiseStep(result: FranchiseResult): StepResult {
+  return result.ok ? { ok: true } : { ok: false, error: result.error };
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;

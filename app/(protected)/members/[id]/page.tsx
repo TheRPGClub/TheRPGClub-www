@@ -9,6 +9,7 @@ import { ProfileNowPlaying } from "@/components/member/profile/profile-now-playi
 import { ProfileReviews } from "@/components/member/profile/profile-reviews";
 import { ProfileRuns } from "@/components/member/profile/profile-runs";
 import { DetailTemplate } from "@/components/templates/detail-template";
+import { ProfileLists } from "@/components/game-lists/profile/profile-lists";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk, everything else is closed books on a bookcase, one shelf per list,
@@ -23,7 +24,7 @@ export default async function MemberPage({
   const { id } = await params;
   const profile = await loadMemberProfile(id);
   if (!profile) notFound();
-  const { show, achievements, runs } = profile;
+  const { show, achievements, runs, gameLists } = profile;
 
   return (
     <DetailTemplate
@@ -36,6 +37,11 @@ export default async function MemberPage({
       }
     >
       {show.nowPlaying && <ProfileNowPlaying profile={profile} />}
+      {/* Game Lists: another member's with none show nothing (the Empty
+          Track Rule); your own invites you to start one. */}
+      {gameLists && (gameLists.length > 0 || profile.isSelf) && (
+        <ProfileLists lists={gameLists} own={profile.isSelf} now={new Date().toISOString()} />
+      )}
       <ProfileBookcase profile={profile} />
       {/* The Challenges department: hidden with the Feature, or unread. */}
       {show.challenges && runs && <ProfileRuns runs={runs} isSelf={profile.isSelf} />}

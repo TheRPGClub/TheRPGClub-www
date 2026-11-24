@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { SearchProblemNote } from "@/components/search-problem-note";
 
-// The source word's search: franchises, then collections, matching what the
-// member types, each with how many games it brings. Picking one adds it to
-// the Pool; one already in it is marked.
+// The Pool editor's source search: Franchises, then Series (IGDB
+// collections), matching what the member types, each with how many games it
+// brings. Picking one adds its games as Optional Games; one already in the
+// Pool is marked.
 export function SourceSearch({ form }: { form: ChallengeFormState }) {
   const [query, setQuery] = useState("");
   const { hasQuery, results, loading, problem, settled } = usePoolSources(query);
@@ -23,8 +24,8 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
         </InputGroupAddon>
         <InputGroupInput
           autoFocus
-          aria-label="Search franchises and collections"
-          placeholder="Search franchises and collections…"
+          aria-label="Search Franchises and Series"
+          placeholder="Search Franchises and Series…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -34,7 +35,7 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
           {loading && results.length === 0 && <p className="px-2 py-2 text-sm text-faint-foreground">Searching…</p>}
           {problem && <SearchProblemNote problem={problem} className="px-2 py-2" />}
           {settled && results.length === 0 && !problem && (
-            <p className="px-2 py-2 text-sm text-faint-foreground">No franchises or collections match.</p>
+            <p className="px-2 py-2 text-sm text-faint-foreground">No Franchises or Series match.</p>
           )}
           <ul className="max-h-72 overflow-y-auto">
             {results.map((source) => {
@@ -51,7 +52,7 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
                   >
                     <span className="min-w-0 truncate">{source.name}</span>
                     <span className="font-label shrink-0 text-[0.76rem] tracking-[0.08em] text-faint-foreground">
-                      {source.kind === "franchise" ? "Franchise" : "Collection"} · {source.game_count}
+                      {source.kind === "franchise" ? "Franchise" : "Series"} · {source.game_count}
                     </span>
                   </Button>
                 </li>

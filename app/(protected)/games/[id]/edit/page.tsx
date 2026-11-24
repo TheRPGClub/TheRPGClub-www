@@ -2,7 +2,12 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle, Game, Thread } from "@/lib/api/types";
 import { requireAuth } from "@/lib/session";
-import { alternateVersion, SECTION_UNREADABLE, type GameEditUnavailable } from "@/lib/games/game-edit";
+import {
+  alternateVersion,
+  gameFranchiseRefs,
+  SECTION_UNREADABLE,
+  type GameEditUnavailable,
+} from "@/lib/games/game-edit";
 import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { fetchGameRelations, fetchGameReleases } from "@/lib/games/game-page";
@@ -14,7 +19,8 @@ export const metadata = { title: "Edit game" };
 
 // /games/:id/edit (spec api#437): a staff tool, not a Feature. Admins and up
 // edit every section; a Regular, or staff below Admin, links Game Threads
-// only; anyone else gets a 404. `?tab=` picks the open tab.
+// and Franchises (api#442); anyone else gets a 404. `?tab=` picks the open
+// tab.
 export default async function GameEditPage({
   params,
   searchParams,
@@ -29,7 +35,7 @@ export default async function GameEditPage({
 
   const [res, relations, hltb] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
-    viewer.admin ? fetchGameRelations(gameId) : null,
+    fetchGameRelations(gameId),
     viewer.admin ? fetchSavedHltb(gameId) : null,
   ]);
   if (!res.ok) notFound();
@@ -48,9 +54,12 @@ export default async function GameEditPage({
     versions: relations === null,
     hltb: hltb === undefined,
   };
-  const unavailable: GameEditUnavailable = viewer.admin
-    ? Object.fromEntries(Object.entries(failed).flatMap(([key, bad]) => (bad ? [[key, SECTION_UNREADABLE]] : [])))
-    : {};
+  const unavailable: GameEditUnavailable = {
+    ...(viewer.admin
+      ? Object.fromEntries(Object.entries(failed).flatMap(([key, bad]) => (bad ? [[key, SECTION_UNREADABLE]] : [])))
+      : {}),
+    ...(relations === null ? { franchises: SECTION_UNREADABLE } : {}),
+  };
 
   return (
     <GameEditView
@@ -65,7 +74,9 @@ export default async function GameEditPage({
         releases: releases ?? [],
         versions: (relations?.alternates ?? []).map(alternateVersion),
         hltb: hltb ?? null,
+        franchises: gameFranchiseRefs(relations?.franchises ?? []),
       }}
+      series={relations?.collection?.name ?? null}
       unavailable={unavailable}
       releaseOptions={releaseOptions}
       canRefreshReleases={game.igdb_id != null}

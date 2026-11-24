@@ -64,3 +64,6 @@ STORY: the Host says what the Challenge is in one line, sees the games or years 
 FIRST VIEWPORT: header with Create, the Format cards, the sentence and the open word's control.
 FORM: owner's mix of 5C and 5D (merged mock `challenges-final#form`). seed: none (unavailable)
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+
+## www#170 build (Game Lists pick 8)
+The Pool is now Core and Optional Games (spec api#442). The sentence reads "Clear every Core Game and [2 Optional Games], ..."; the sources left it. Under it the Pool editor: a game search with "Add as Core | Optional", then Core (tint-hi rule, covers ringed in the tint's hi) above Optional (paper rule, the target stepper, source chips with "+ Franchise or Series", the Add-on line), each cover with the Core / Optional / x switch under it and draggable between the sections, then Left out with Put back. With Runs only the Format and schedule lock. DESIGN.md "Format cards and Pool editor" has the details.

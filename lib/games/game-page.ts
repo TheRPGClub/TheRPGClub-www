@@ -73,6 +73,7 @@ export async function loadGamePage(gameId: number) {
     reviews: features.shown("reviews"),
     journals: features.shown("journals"),
     achievements: features.shown("achievement_hub"),
+    gameLists: features.shown("game_lists"),
     // The Releases section always shows (it is the game index's); only its
     // link to the Release Calendar follows that Feature.
     releaseCalendar: features.shown("release_calendar"),

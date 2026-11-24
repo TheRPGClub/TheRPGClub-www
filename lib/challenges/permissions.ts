@@ -12,9 +12,10 @@ export function isHost(challenge: Pick<Challenge, "host" | "hosted_by_club">, vi
   return !challenge.hosted_by_club && challenge.host?.user_id === viewer.id;
 }
 
-// The Host edits their own; Moderators and above edit a club-hosted one.
+// The Host edits their own; Moderators and above edit any (api#448, now
+// that any member hosts).
 export function canEditChallenge(challenge: Pick<Challenge, "host" | "hosted_by_club">, viewer: Viewer): boolean {
-  return isHost(challenge, viewer) || (challenge.hosted_by_club && isModeratorOrAbove(viewer.membership));
+  return isHost(challenge, viewer) || isModeratorOrAbove(viewer.membership);
 }
 
 // The Host deletes their own while it has no Runs (staff remove any from

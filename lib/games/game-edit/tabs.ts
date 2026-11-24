@@ -3,10 +3,10 @@ import { isAdminOrAbove, isRegularOrStaff } from "@/lib/staff";
 import type { GameEditViewer } from "./engine";
 
 // /games/:id/edit's tabs (design www#156, round 3): one section a tab.
-// Admins (and Superadmins) get all six; a Regular, or staff below Admin,
-// only Game Threads, shown without tabs. Client-safe.
+// Admins (and Superadmins) get all seven; a Regular, or staff below Admin,
+// Game Threads and Franchises (api#442). Client-safe.
 
-export const GAME_EDIT_TABS = ["text", "images", "threads", "releases", "versions", "hltb"] as const;
+export const GAME_EDIT_TABS = ["text", "images", "threads", "releases", "versions", "hltb", "franchises"] as const;
 export type GameEditTab = (typeof GAME_EDIT_TABS)[number];
 
 export const GAME_EDIT_TAB_LABELS: Record<GameEditTab, string> = {
@@ -16,6 +16,7 @@ export const GAME_EDIT_TAB_LABELS: Record<GameEditTab, string> = {
   releases: "Releases",
   versions: "Versions",
   hltb: "Time to beat",
+  franchises: "Franchises",
 };
 
 // The viewer's gates from their membership, or null when they may not edit
@@ -27,7 +28,7 @@ export function gameEditViewer(membership: SessionMembership | null | undefined)
 }
 
 export function gameEditTabsFor(viewer: GameEditViewer): GameEditTab[] {
-  return viewer.admin ? [...GAME_EDIT_TABS] : ["threads"];
+  return viewer.admin ? [...GAME_EDIT_TABS] : ["threads", "franchises"];
 }
 
 // `?tab=` read leniently: anything unknown opens the first tab.

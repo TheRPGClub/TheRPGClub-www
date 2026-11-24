@@ -36,7 +36,7 @@ describe("sidebarGroups", () => {
   it("groups every page for a member who is shown everything", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "challenges"],
-      games: ["games", "reviews", "releases", "achievements", "journals"],
+      games: ["games", "lists", "reviews", "releases", "achievements", "journals"],
       club: ["members", "news", "codex", "giveaways", "suggestions"],
     });
   });
@@ -84,6 +84,10 @@ describe("currentPage", () => {
     expect(at("/releases")).toBe("releases");
     expect(at("/reviews")).toBe("reviews");
     expect(at("/reviews/42")).toBe("reviews");
+  });
+
+  it("keeps Games lit on a Franchise page", () => {
+    expect(at("/franchises/7")).toBe("games");
   });
 
   it("matches the staff desk only on its own path", () => {
