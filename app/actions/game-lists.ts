@@ -2,188 +2,124 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
-import type { GameListKind } from "@/lib/api/game-list-entry";
+import { apiErrorMessage, readApiError } from "@/lib/api/errors";
+import type {
+  GameList,
+  GameListEntry,
+  GameListSort,
+  GameListVisibility,
+  ListFeedsChallenges,
+} from "@/lib/game-lists/types";
 
-export type { GameListKind } from "@/lib/api/game-list-entry";
+// Making and changing Game Lists as the signed-in member (spec api#442,
+// api#446). The API owns every rule and writes its refusals for members, so
+// those are shown as given. A delete, or a change to Private, of a list that
+// feeds a Challenge comes back as `feeds` until it is sent again confirmed.
 
-// One server-actions module shared by all six profile lists. They all have the
-// same wire shape: a list scoped to a user, individual entries identified by
-// per-resource PKs, and a payload with `gamedb_game_id` + optional
-// `platform_id` + list-specific extras (note, ownership_type, completion_type, completed_at).
-
-export interface ActionResult<T> {
+export interface GameListResult<T = undefined> {
   ok: boolean;
   data?: T;
   error?: string;
+  // 409 list_feeds_challenges: what confirming would do.
+  feeds?: ListFeedsChallenges;
 }
 
-interface ListConfig {
-  // Path segment under /users/:id used for create + listing.
-  userCollection: string;
-  // Path segment used for entry operations (get/update/destroy).
-  entryResource: string;
-  // Profile-page section the entry appears in (for revalidation).
-  profileSubpath: string;
+export interface GameListFields {
+  name?: string;
+  description?: string | null;
+  sort?: GameListSort;
+  visibility?: GameListVisibility;
 }
 
-const LISTS: Record<GameListKind, ListConfig> = {
-  favorite: {
-    userCollection: "favorites",
-    entryResource: "favorites",
-    profileSubpath: "favorite-games",
-  },
-  backlog: {
-    userCollection: "backlog",
-    entryResource: "backlog",
-    profileSubpath: "backlogged-games",
-  },
-  now_playing: {
-    userCollection: "now_playing",
-    entryResource: "now_playing",
-    profileSubpath: "now-playing-games",
-  },
-  completed: {
-    userCollection: "completions",
-    entryResource: "completions",
-    profileSubpath: "completed-games",
-  },
-  collection: {
-    userCollection: "collections",
-    entryResource: "collections",
-    profileSubpath: "collected-games",
-  },
+const UNREACHABLE = "Couldn't reach the club's server. Try again.";
+
+const MESSAGES: Record<string, string> = {
+  already_in_list: "That game is already on this list.",
+  list_full: "A list holds 500 games. Remove one first.",
 };
 
-async function errorMessage(response: Response): Promise<string> {
+function validId(id: number): boolean {
+  return Number.isInteger(id) && id > 0;
+}
+
+async function send<T>(path: string, init: RequestInit): Promise<GameListResult<T>> {
+  let res: Response;
   try {
-    const body = await response.json();
-    return body.error ?? body.message ?? `Request failed (HTTP ${response.status}).`;
+    res = await apiFetch(path, { ...init, cache: "no-store" });
   } catch {
-    return `Request failed (HTTP ${response.status}).`;
+    return { ok: false, error: UNREACHABLE };
   }
-}
-
-function revalidateMemberPages(userId: string, kind: GameListKind) {
-  revalidatePath(`/members/${userId}`);
-  revalidatePath(`/members/${userId}/${LISTS[kind].profileSubpath}`);
-}
-
-export interface GameListPayload {
-  gamedb_game_id: number;
-  platform_id?: number | null;
-  note?: string | null;
-  // Required for the "collection" list, validated as one of
-  // Digital | Physical | Subscription | Other.
-  ownership_type?: string | null;
-  // Required for the "completed" list, validated as one of
-  // Main Story | Main Story + Side Content | Completionist.
-  completion_type?: string | null;
-  completed_at?: string | null;
-  final_playtime_hrs?: number | null;
-  is_shared?: boolean;
-  sort_order?: number | null;
-}
-
-// Favorites are platform-agnostic on the backend — sending platform_id makes
-// the request fail validation. The other lists do accept it.
-const FORBIDDEN_FIELDS: Partial<Record<GameListKind, ReadonlyArray<keyof GameListPayload>>> = {
-  favorite: ["platform_id"],
-};
-
-function sanitizePayload(
-  kind: GameListKind,
-  input: Partial<GameListPayload>,
-): Partial<GameListPayload> {
-  const forbidden = FORBIDDEN_FIELDS[kind];
-  if (!forbidden || forbidden.length === 0) return input;
-  const cleaned: Partial<GameListPayload> = { ...input };
-  for (const field of forbidden) delete cleaned[field];
-  return cleaned;
-}
-
-export async function addGameToListAction(
-  userId: string,
-  kind: GameListKind,
-  input: GameListPayload,
-): Promise<ActionResult<{ entry_id: number }>> {
-  if (!input.gamedb_game_id) {
-    return { ok: false, error: "Pick a game first." };
+  if (!res.ok) {
+    if (res.status === 401) return { ok: false, error: "Your session has ended. Sign in again." };
+    if (res.status === 404) return { ok: false, error: "That Game List no longer exists." };
+    const err = await readApiError(res);
+    if (err.code === "list_feeds_challenges") {
+      const challenges = (err.body?.challenges as ListFeedsChallenges["challenges"] | undefined) ?? [];
+      return { ok: false, feeds: { message: err.message ?? "", challenges } };
+    }
+    if (res.status === 403 && !err.message) return { ok: false, error: "You can't change this Game List." };
+    return { ok: false, error: apiErrorMessage(err, MESSAGES) };
   }
-
-  const res = await apiFetch(
-    `/api/v1/users/${userId}/${LISTS[kind].userCollection}`,
-    {
-      method: "POST",
-      body: JSON.stringify({ data: sanitizePayload(kind, input) }),
-    },
-  );
-
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
-
-  const body = (await res.json()) as { data: { entry_id: number } };
-  revalidateMemberPages(userId, kind);
+  revalidatePath("/lists", "layout");
+  const body = (await res.json()) as { data: T };
   return { ok: true, data: body.data };
 }
 
-export async function updateGameListEntryAction(
-  userId: string,
-  kind: GameListKind,
-  entryId: number,
-  input: Partial<GameListPayload>,
-): Promise<ActionResult<{ entry_id: number }>> {
-  const res = await apiFetch(
-    `/api/v1/${LISTS[kind].entryResource}/${entryId}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ data: sanitizePayload(kind, input) }),
-    },
-  );
+const json = (method: string, data: Record<string, unknown>): RequestInit => ({
+  method,
+  body: JSON.stringify({ data }),
+});
 
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
-
-  const body = (await res.json()) as { data: { entry_id: number } };
-  revalidateMemberPages(userId, kind);
-  return { ok: true, data: body.data };
-}
-
-export async function removeGameListEntryAction(
-  userId: string,
-  kind: GameListKind,
-  entryId: number,
-): Promise<ActionResult<null>> {
-  const res = await apiFetch(
-    `/api/v1/${LISTS[kind].entryResource}/${entryId}`,
-    { method: "DELETE" },
-  );
-
-  if (!res.ok) return { ok: false, error: await errorMessage(res) };
-
-  revalidateMemberPages(userId, kind);
-  return { ok: true, data: null };
-}
-
-// Convenience helper for the "move" action — swaps an entry between two lists
-// in one round-trip from the client's perspective. We can't make this truly
-// atomic without a backend endpoint, so the client should handle partial
-// failures (e.g. show an error if the add succeeded but the delete failed).
-export async function moveGameListEntryAction(
-  userId: string,
-  source: { kind: GameListKind; entryId: number },
-  target: { kind: GameListKind; payload: GameListPayload },
-): Promise<ActionResult<{ entry_id: number }>> {
-  const added = await addGameToListAction(userId, target.kind, target.payload);
-  if (!added.ok) return added;
-
-  const removed = await removeGameListEntryAction(
-    userId,
-    source.kind,
-    source.entryId,
-  );
-  if (!removed.ok) {
-    return {
-      ok: false,
-      error: `Added to ${target.kind} but failed to remove from ${source.kind}: ${removed.error ?? "unknown error"}`,
-    };
+// A new list, then its first games in the order they were picked. A game
+// that won't go in is reported, the list stays made.
+export async function createGameListAction(
+  fields: Required<Pick<GameListFields, "name">> & GameListFields,
+  gameIds: readonly number[] = [],
+): Promise<GameListResult<GameList>> {
+  if (!fields.name.trim()) return { ok: false, error: "Give the list a name." };
+  const made = await send<GameList>("/api/v1/game_lists", json("POST", { ...fields }));
+  if (!made.ok || !made.data) return made;
+  for (const gameId of gameIds) {
+    const added = await send<GameListEntry>(`/api/v1/game_lists/${made.data.id}/entries/${gameId}`, json("POST", {}));
+    if (!added.ok) return { ok: true, data: made.data, error: `Made the list, but not every game went in: ${added.error}` };
   }
-  return added;
+  return made;
+}
+
+export async function updateGameListAction(
+  id: number,
+  fields: GameListFields,
+  confirm = false,
+): Promise<GameListResult<GameList>> {
+  if (!validId(id)) return { ok: false, error: "That Game List no longer exists." };
+  return send<GameList>(`/api/v1/game_lists/${id}`, json("PATCH", { ...fields, ...(confirm ? { confirm: true } : {}) }));
+}
+
+export async function deleteGameListAction(
+  id: number,
+  confirm = false,
+): Promise<GameListResult<{ taken_over: boolean }>> {
+  if (!validId(id)) return { ok: false, error: "That Game List no longer exists." };
+  return send(`/api/v1/game_lists/${id}${confirm ? "?confirm=true" : ""}`, { method: "DELETE" });
+}
+
+export async function addGameToListAction(id: number, gameId: number): Promise<GameListResult<GameListEntry>> {
+  if (!validId(id) || !validId(gameId)) return { ok: false, error: "That game can't be added." };
+  return send<GameListEntry>(`/api/v1/game_lists/${id}/entries/${gameId}`, json("POST", {}));
+}
+
+export async function removeGameFromListAction(id: number, gameId: number): Promise<GameListResult> {
+  if (!validId(id) || !validId(gameId)) return { ok: false, error: "That game isn't on the list." };
+  return send(`/api/v1/game_lists/${id}/entries/${gameId}`, { method: "DELETE" });
+}
+
+export async function noteGameAction(id: number, gameId: number, note: string): Promise<GameListResult<GameListEntry>> {
+  if (!validId(id) || !validId(gameId)) return { ok: false, error: "That game isn't on the list." };
+  const text = note.trim();
+  return send<GameListEntry>(`/api/v1/game_lists/${id}/entries/${gameId}`, json("PATCH", { note: text || null }));
+}
+
+export async function orderGameListAction(id: number, gameIds: readonly number[]): Promise<GameListResult<GameList>> {
+  if (!validId(id)) return { ok: false, error: "That Game List no longer exists." };
+  return send<GameList>(`/api/v1/game_lists/${id}/entries/order`, json("PUT", { game_ids: gameIds }));
 }

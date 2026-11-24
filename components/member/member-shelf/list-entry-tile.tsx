@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 
-import type { GameListEntry, GameListKind } from "@/lib/api/game-list-entry";
-import { entryMeta } from "@/lib/game-lists/entry-meta";
+import type { MemberShelfEntry, MemberShelfKind } from "@/lib/api/member-shelf-entry";
+import { entryMeta } from "@/lib/member-shelf/entry-meta";
 import { Button } from "@/components/ui/button";
 
 // One entry on a list's shelf: its cover (or its title where it has none)
@@ -12,8 +12,8 @@ export function ListEntryTile({
   removable,
   onRemove,
 }: {
-  kind: GameListKind;
-  entry: GameListEntry;
+  kind: MemberShelfKind;
+  entry: MemberShelfEntry;
   removable: boolean;
   onRemove: () => void;
 }) {

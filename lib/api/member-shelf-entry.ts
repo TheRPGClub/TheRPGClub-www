@@ -6,14 +6,14 @@ import type {
   UserNowPlaying,
 } from "./types";
 
-export type GameListKind =
+export type MemberShelfKind =
   | "favorite"
   | "backlog"
   | "now_playing"
   | "completed"
   | "collection";
 
-export type GameListEntry =
+export type MemberShelfEntry =
   | UserFavorite
   | UserBacklog
   | UserNowPlaying
@@ -23,7 +23,7 @@ export type GameListEntry =
 // Each list uses a Rails-style resource-specific PK (e.g. `completion_id`).
 // We try the canonical key first, then fall back to a generic `entry_id` to
 // stay compatible if the backend ever renames things.
-const PK_FIELDS: Record<GameListKind, string[]> = {
+const PK_FIELDS: Record<MemberShelfKind, string[]> = {
   favorite: ["favorite_id", "entry_id"],
   backlog: ["backlog_id", "entry_id"],
   now_playing: ["now_playing_id", "entry_id"],
@@ -32,8 +32,8 @@ const PK_FIELDS: Record<GameListKind, string[]> = {
 };
 
 export function resolveEntryId(
-  kind: GameListKind,
-  entry: GameListEntry,
+  kind: MemberShelfKind,
+  entry: MemberShelfEntry,
 ): number | undefined {
   const candidates = PK_FIELDS[kind];
   for (const field of candidates) {

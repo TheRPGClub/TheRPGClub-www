@@ -1,9 +1,9 @@
 "use client";
 
-import type { GameListKind } from "@/lib/api/game-list-entry";
+import type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 import type { Game, Platform } from "@/lib/api/types";
-import { COMPLETION_TYPES, OWNERSHIP_TYPES } from "@/lib/game-lists/entry-meta";
-import type { GameListOptions } from "@/hooks/use-game-list-editor";
+import { COMPLETION_TYPES, OWNERSHIP_TYPES } from "@/lib/member-shelf/entry-meta";
+import type { MemberShelfOptions } from "@/hooks/use-member-shelf-editor";
 import { Button } from "@/components/ui/button";
 import { GamePicker } from "../game-picker";
 import { ListOptionSelect } from "./list-option-select";
@@ -22,10 +22,10 @@ export function AddGamePanel({
   onPick,
   onCancel,
 }: {
-  kind: GameListKind;
+  kind: MemberShelfKind;
   title: string;
   platforms: Platform[];
-  options: GameListOptions;
+  options: MemberShelfOptions;
   pending: boolean;
   igdbBlockedReason: string | null;
   onPick: (game: Game) => void;

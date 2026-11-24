@@ -1,4 +1,4 @@
-import type { GameListEntry, GameListKind } from "@/lib/api/game-list-entry";
+import type { MemberShelfEntry, MemberShelfKind } from "@/lib/api/member-shelf-entry";
 
 // Backend validates these as check constraints; the order here drives the
 // default selection so the "no choice" path still produces a valid request.
@@ -17,7 +17,7 @@ const MONTH = new Intl.DateTimeFormat("en-US", {
 
 // The one line of facts under a cover: when it was finished, how it's
 // owned, or just the platform.
-export function entryMeta(kind: GameListKind, entry: GameListEntry): string | null {
+export function entryMeta(kind: MemberShelfKind, entry: MemberShelfEntry): string | null {
   const platform =
     entry.platform?.platform_abbreviation ?? entry.platform?.platform_name ?? null;
   if (kind === "completed" && "completion_id" in entry) {
