@@ -1603,5 +1603,73 @@
         [data-slot="label"][data-variant="kind-tile"] {
             @apply font-label cursor-pointer rounded-xs text-[0.625rem] leading-none font-extrabold tracking-normal text-(--ink) shadow-[inset_0_0_0_1.5px_var(--ink)] transition-[translate,rotate,background-color,box-shadow] duration-200 hover:bg-(--ink)/10 has-data-checked:-translate-y-1 has-data-checked:-rotate-2 has-data-checked:bg-(--ink) has-data-checked:text-background has-data-checked:shadow-[0_6px_14px_rgb(0_0_0/0.45)] has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight;
         }
+        /* Shelf actions (api#451). The calendar: one month in a popover's
+           ink-2 card, the month in Anton under a label-caps heading, days
+           as hard tiles. The picked day is ringed in yellow, the days
+           between Started and Finished wash faintly yellow, the span's
+           other end keeps a dim ring, and today carries a short GOTM-red
+           bar. Days that can't be picked (the future for a Finished day)
+           fade into the ground. */
+        [data-slot="calendar"] {
+            @apply text-foreground;
+        }
+        [data-slot="calendar-heading"] {
+            @apply font-label text-[0.72rem] leading-none font-bold tracking-[0.08em] text-faint-foreground uppercase;
+        }
+        [data-slot="calendar-caption-label"] {
+            @apply font-headline text-[1.3rem] leading-none uppercase;
+        }
+        [data-slot="calendar-nav"] {
+            @apply rounded-sm text-dim-foreground transition-colors hover:bg-muted hover:text-foreground aria-disabled:opacity-35;
+        }
+        [data-slot="calendar-weekday"] {
+            @apply font-label text-[0.68rem] leading-none font-bold tracking-[0.08em] text-faint-foreground uppercase;
+        }
+        [data-slot="calendar-day"] {
+            @apply rounded-sm text-[0.9rem] font-semibold text-foreground transition-colors hover:bg-muted motion-reduce:transition-none;
+            &[data-span] {
+                @apply rounded-none bg-highlight/8;
+            }
+            &[data-anchor] {
+                @apply shadow-[inset_0_0_0_1px_var(--color-dim-foreground)];
+            }
+            &[data-today] {
+                @apply after:absolute after:bottom-1.5 after:left-1/2 after:h-0.5 after:w-3 after:-translate-x-1/2 after:bg-gotm;
+            }
+            &[data-outside],
+            &[data-disabled] {
+                @apply text-faint-foreground opacity-40;
+            }
+            &[data-selected] {
+                @apply bg-highlight/10 font-bold text-highlight opacity-100 shadow-[inset_0_0_0_2px_var(--color-highlight)];
+            }
+        }
+        /* The paper slip's fields (api#451): Paper stock with ink type, so
+           the fields are pale, ink-stroked, and focus rings in ink (yellow
+           on paper fails contrast). A refused field strokes in signal
+           orange. */
+        [data-slot="popover-trigger"][data-variant="date-block"] {
+            @apply rounded-[3px] text-background inset-ring-[1.5px] inset-ring-background/40 transition-shadow hover:inset-ring-background/70 focus-visible:ring-background/40 aria-expanded:inset-ring-[3px] aria-expanded:inset-ring-background aria-invalid:inset-ring-2 aria-invalid:inset-ring-destructive motion-reduce:transition-none;
+        }
+        [data-slot="input"][data-variant="slip"],
+        [data-slot="textarea"][data-variant="slip"],
+        [data-slot="select-trigger"][data-variant="slip"] {
+            @apply rounded-sm border-background/35 bg-background/[0.07] text-background placeholder:text-background/55 hover:border-background/60 focus-visible:border-background focus-visible:ring-background/25 aria-invalid:border-destructive data-placeholder:text-background/55;
+            [data-slot="select-trigger-icon"] {
+                @apply text-background/70;
+            }
+        }
+        [data-slot="checkbox"][data-variant="slip"] {
+            @apply size-5 rounded-xs border-[1.5px] border-background bg-transparent focus-visible:border-background focus-visible:ring-background/40 data-checked:border-background data-checked:bg-background data-checked:text-foreground;
+        }
+        [data-slot="radio-group-item"][data-variant="slip"] {
+            @apply border-0 bg-transparent shadow-[inset_0_0_0_1.5px_var(--color-background)] focus-visible:ring-0 data-checked:bg-transparent data-checked:shadow-[inset_0_0_0_4px_var(--color-foreground)];
+            [data-slot="radio-group-dot"] {
+                @apply bg-transparent;
+            }
+        }
+        [data-slot="label"][data-variant="slip-choice"] {
+            @apply font-label cursor-pointer rounded-sm text-background inset-ring-[1.5px] inset-ring-background/35 transition-colors hover:bg-background/[0.06] has-data-checked:bg-background has-data-checked:text-foreground has-data-checked:inset-ring-background has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-background motion-reduce:transition-none;
+        }
     }
 }

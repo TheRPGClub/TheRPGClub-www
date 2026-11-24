@@ -40,6 +40,10 @@ const labelVariants = cva("", {
       // around its (visually hidden) radio, in the ink of --ink: outlined
       // with ink type; the checked one fills, lifts and tilts.
       "kind-tile": "",
+      // api#451: a choice box on a paper slip (how far a Game Completion
+      // got, how a game is owned), around its radio: an ink stroke with ink
+      // type; the checked one fills with ink and takes paper type.
+      "slip-choice": "",
     },
   },
   defaultVariants: { variant: "default" },

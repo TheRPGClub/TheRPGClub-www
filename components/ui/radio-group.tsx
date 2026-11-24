@@ -22,6 +22,9 @@ type RadioGroupItemVariant =
   // The radio of a choice card: the whole card is its label and carries
   // the focus (an import's candidate match).
   | "choice"
+  // api#451: the radio of a choice box on a paper slip: an ink ring that
+  // fills to a paper dot on the checked (ink) box.
+  | "slip"
 
 function RadioGroupItem({
   className,

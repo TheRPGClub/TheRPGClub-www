@@ -2073,5 +2073,30 @@
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
         }
+        /* Shelf actions (api#451). */
+        [data-slot="calendar"],
+        [data-slot="calendar-heading"],
+        [data-slot="calendar-caption-label"],
+        [data-slot="calendar-nav"],
+        [data-slot="calendar-weekday"],
+        [data-slot="calendar-day"],
+        [data-slot="popover-trigger"][data-variant="date-block"],
+        [data-slot="input"][data-variant="slip"],
+        [data-slot="textarea"][data-variant="slip"],
+        [data-slot="select-trigger"][data-variant="slip"],
+        [data-slot="checkbox"][data-variant="slip"],
+        [data-slot="radio-group-item"][data-variant="slip"],
+        [data-slot="label"][data-variant="slip-choice"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        [data-slot="calendar-day"][data-selected] {
+            background-color: var(--highlight);
+        }
+        [data-slot="select-trigger"][data-variant="slip"] [data-slot="select-trigger-icon"],
+        [data-slot="radio-group-item"][data-variant="slip"] [data-slot="radio-group-dot"] {
+            color: var(--gotm);
+        }
     }
 }
