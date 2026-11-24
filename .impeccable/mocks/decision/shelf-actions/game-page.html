@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game page control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- 1A: split button + state chips ---------- */
+.act{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.split{display:inline-flex;flex:none}
+.split .btn:first-child{border-radius:2.4px 0 0 2.4px}
+.split .btn.ic{border-radius:0 2.4px 2.4px 0;box-shadow:inset 1px 0 0 rgb(11 11 13/.4)}
+.split.open .btn.ic{box-shadow:inset 1px 0 0 rgb(11 11 13/.4),0 0 0 3px rgb(255 212 0/.3)}
+.yst{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px;border-radius:2px;background:rgb(11 11 13/.55);box-shadow:inset 0 0 0 1px rgb(244 244 240/.22);font:700 .8rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+.yst svg.lucide{width:14px;height:14px;color:var(--dim)}
+.yst b{font:400 1rem/1 Anton;letter-spacing:0}
+.act .none{font:700 .82rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-left:4px}
+.menu{width:410px}
+.pfoot{border-top:1px solid var(--border);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;align-items:center}
+.pshell .act{margin-top:14px}
+.pshell .split{display:flex;width:100%}
+.pshell .split .btn:first-child{flex:1}
+
+/* ---------- 1B: a You block on the plate ---------- */
+.you h4 .av{margin-right:2px}
+.yl{display:flex;align-items:center;gap:8px;height:27px;font-size:.88rem;padding:0 6px;margin:0 -6px;border-radius:2.4px}
+.yl svg.lucide{width:14px;height:14px;color:var(--faint)}
+.yl .k{font:800 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim);width:86px;flex:none}
+.yl .v{margin-left:auto;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.yl .v b{font:400 1.05rem/1 Anton}
+.yl .v.add{font:800 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);display:inline-flex;gap:4px;align-items:center;font-weight:800}
+.yl .v.add svg.lucide{width:12px;height:12px}
+.yl.hov{background:var(--muted)}
+.anc.wide>.yl{flex:1}
+.yl.open{background:var(--muted);box-shadow:inset 0 0 0 1px var(--hl)}
+.cpl{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.cpl .n{font:400 2rem/.9 Anton;color:var(--faint)}
+.cpl b{font-weight:600;display:block}
+.cpl small{font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.cpl q{grid-column:2/-1;font-style:italic;color:var(--dim);font-size:.86rem;quotes:"\201C" "\201D"}
+
+/* ---------- 1C: five compartments under the hero ---------- */
+.cub{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:28px}
+.cb{position:relative;background:var(--card);border-radius:3.2px;padding:12px 14px;min-height:124px;display:flex;flex-direction:column;box-shadow:inset 0 0 0 1px var(--border)}
+.cb .h{display:flex;align-items:center;gap:7px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.cb .h svg.lucide{width:15px;height:15px}
+.cb .h .e{margin-left:auto;color:var(--faint)}
+.cb .big{font:400 2.5rem/.9 Anton;text-transform:uppercase;margin-top:auto;padding-top:10px;display:flex;align-items:baseline;gap:6px}
+.cb .big small{font-size:1.1rem;color:var(--faint)}
+.cb .m{font:700 .74rem/1.25 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-top:6px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.cb .m .tl{color:var(--fg);text-decoration-color:var(--hl)}
+.cb.add{background:transparent;box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px}
+.cb.add .big{font-size:1.5rem;color:var(--dim);align-items:center;gap:6px}
+.cb.add .big svg.lucide{width:20px;height:20px}
+.cb.open{box-shadow:inset 0 0 0 2px var(--hl)}
+.cb.open::after{content:"";position:absolute;left:50%;bottom:-17px;border:8px solid transparent;border-top-color:var(--hl);margin-left:-8px}
+.drawer{margin-top:16px;background:var(--card);box-shadow:inset 0 0 0 1px var(--hl);border-radius:3.2px;padding:18px 20px}
+.drawer .dh{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--fg);padding-bottom:8px}
+.drawer .dh h3{font:400 1.9rem/.9 Anton;text-transform:uppercase}
+.drawer .dh .x{margin-left:auto;align-self:center;color:var(--faint)}
+.drawer .runs{display:flex;gap:14px;margin-top:14px;align-items:stretch;flex-wrap:wrap}
+.drawer .run{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 14px;align-items:center;padding:12px 14px;background:var(--muted);border-radius:3px;min-width:420px}
+.drawer .run .n{font:400 2.6rem/.85 Anton;grid-row:span 2}
+.drawer .run b{font-weight:600}
+.drawer .run small{font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.drawer .run .btn{grid-row:span 2}
+.drawer .next{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 16px;border:1.5px dashed var(--bs);border-radius:3px;flex:1}
+.drawer .next p{color:var(--dim);font-size:.92rem}
+.pshell .cub{grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.pshell .cb{min-height:98px;padding:10px 12px}
+.pshell .cb:last-child{grid-column:1/-1;min-height:0}
+.pshell .cb:last-child .big{padding-top:6px}
+.pshell .cb .big{font-size:1.9rem}
+.pshell .cb.add .big{font-size:1.2rem}
+
+/* ---------- 1D: your card in the margin ---------- */
+.rail{margin-top:36px}
+.yc{background:var(--card);border-radius:3.2px;box-shadow:inset 0 0 0 1px var(--border),0 12px 30px rgb(0 0 0/.5);padding:16px 18px 12px}
+.yc .yh{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--fg);padding-bottom:8px}
+.yc .yh b{font:400 1.8rem/.9 Anton;text-transform:uppercase;font-weight:400}
+.yc .yh small{margin-left:auto;font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ys{padding:11px 0;border-bottom:1px solid var(--border)}
+.ys:last-of-type{border-bottom:0}
+.ys .h{display:flex;align-items:center;gap:7px;font:800 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);height:24px}
+.ys .h svg.lucide{width:14px;height:14px}
+.ys .h .btn{margin-left:auto}
+.ys .row{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
+.ys .row p{font-size:.9rem;color:var(--dim)}
+.ys .row p b{color:var(--fg);font-weight:600}
+.stp{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px 5px;border-radius:3px;box-shadow:inset 0 0 0 2px var(--stamp);color:var(--stamp);transform:rotate(var(--r,-2deg));flex:none}
+.stp b{font:400 1.35rem/1 Anton;text-transform:uppercase;font-weight:400}
+.stp small{font:800 .6rem/1 "Barlow Condensed";letter-spacing:.09em;text-transform:uppercase;margin-top:3px;opacity:.9}
+.stp.slot{box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px;color:var(--dim);transform:none;justify-content:center;flex-direction:row;gap:5px;height:46px;font:800 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.stp.slot svg.lucide{width:14px;height:14px}
+.ys .rank{font:400 2.4rem/.85 Anton;text-transform:uppercase}
+.ys .rank small{font-size:1rem;color:var(--faint)}
+.ys .addl{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;outline:1.5px dashed var(--bs);outline-offset:-1.5px;border-radius:2.4px;font:800 .8rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.ys .addl svg.lucide{width:14px;height:14px}
+.yc .yf{border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
+.ydock{display:flex;align-items:center;gap:8px;height:56px;padding:0 12px 0 16px;background:var(--card);border-top:1px solid var(--bs);box-shadow:0 -10px 24px rgb(0 0 0/.45)}
+.ydock b.y{font:400 1.25rem/1 Anton;text-transform:uppercase;font-weight:400;margin-right:2px}
+.ydock .mini{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 6px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--stamp);color:var(--stamp);font:800 .7rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.ydock .mini svg.lucide{width:12px;height:12px}
+.ydock .end{margin-left:auto}
+.sheet .yc{box-shadow:none;padding:0;background:none}
+</style></head>
+<body>
+<script>
+const S = FF6;
+const val = (s, k) => s[k] && (k === "done" ? s.done.length : true);
+
+/* ---------- 1A ---------- */
+const stChips = (s) => [
+  s.np && `<span class="yst">${ic("gamepad-2")}Playing since ${s.np.short}</span>`,
+  s.done.length && `<span class="yst">${ic("flag")}Completed <b>×${s.done.length}</b></span>`,
+  s.bl && `<span class="yst">${ic("hourglass")}In Backlog</span>`,
+  s.fav && `<span class="yst">${ic("heart")}Favorite <b>No. ${s.fav.rank}</b></span>`,
+  s.col && `<span class="yst">${ic("archive")}${s.col.own}</span>`,
+].filter(Boolean).join("");
+const primary = (s) => (s.np ? [ic("flag"), "Log a completion"] : s.done.length ? [ic("flag"), "Log another completion"] : [ic("gamepad-2"), "Start playing"]);
+const splitA = (s, open, ph) => { const [i, t] = primary(s); return `<span class="split ${open ? "open" : ""}"><span class="btn hl">${i}${t}</span><span class="btn hl ic" aria-label="All your lists">${ic("chevron-down")}</span></span>`; };
+const menuRows = (s, hov) => LISTS5.map((l) => {
+  const on = val(s, l.k);
+  const go = l.k === "done" ? `<span class="go ${on ? "" : "add"}">${ic("plus")}${on ? "Log another" : "Log one"}</span>` : on ? `<span class="go">${ic("pencil")}Edit</span>` : `<span class="go add">${ic("plus")}Add</span>`;
+  return `<div class="mr ${on ? "on" : ""} ${hov === l.k ? "hov" : ""}"><span class="mi">${on ? ic("check") : ic(l.i)}</span><span class="nm"><b>${l.n}</b><small>${stateLine(s, l.k) || "Not on it"}</small></span>${go}</div>`;
+}).join("");
+const menuA = (s, hov, cls = "") => `<div class="pop menu ${cls}"><h5>Your lists<small>Final Fantasy VI</small></h5>${menuRows(s, hov)}<div class="pfoot"><span class="tl">Your Completed list</span><span class="faint lb">${ic("keyboard")} ↑ ↓ to move</span></div></div>`;
+const actA = (s, open, ph) => `<div class="act">${open ? `<span class="anc">${splitA(s, 1)}${menuA(s, "done")}</span>` : splitA(s, 0, ph)}${s.np || s.done.length || s.fav || s.col ? stChips(s) : `<span class="none">Not on your lists</span>`}</div>`;
+const menuSheet = (s) => `<h5>Your lists<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5>${menuRows(s)}`;
+
+/* ---------- 1B ---------- */
+const youRows = (s, open) => LISTS5.map((l) => {
+  const on = val(s, l.k);
+  const v = !on ? `<span class="v add">${ic("plus")}Add</span>` : {
+    np: `<span class="v">Since ${s.np?.short}</span>`, done: `<span class="v"><b>×${s.done.length}</b> · ${s.done.at(-1)?.endY}</span>`, bl: `<span class="v">Queued</span>`,
+    fav: `<span class="v"><b>No. ${s.fav?.rank}</b></span>`, col: `<span class="v">${s.col?.own}</span>` }[l.k];
+  const row = `<div class="yl ${open === l.k ? "open" : ""}">${ic(l.i)}<span class="k">${l.n}</span>${v}</div>`;
+  return open === l.k ? `<div class="anc wide">${row}${popB(s)}</div>` : row;
+}).join("");
+const youBlock = (s, open, ph) => `<div class="you ${ph ? "full" : ""}"><h4>${av("mara", 24)}You</h4>${youRows(s, open)}</div>`;
+const popB = (s) => `<div class="pop r" style="width:380px"><h5>Completed<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5>
+  ${s.done.map((c) => `<div class="cpl"><span class="n">${c.n}</span><span><b>${c.end}</b><small>${c.type} · ${c.plat} · ${c.hrs} h · started ${c.start}</small></span><span class="btn xs ic gh">${ic("pencil")}</span><q>${c.note}</q></div>`).join("")}
+  <div class="bt" style="justify-content:space-between"><span class="tl">Your Completed list</span><span class="btn hl">${ic("plus")}Log another completion</span></div></div>`;
+
+/* ---------- 1C ---------- */
+const cell = (s, l, open) => {
+  const on = val(s, l.k);
+  if (!on) return `<div class="cb add ${open === l.k ? "open" : ""}"><div class="h">${ic(l.i)}${l.n}</div><div class="big">${ic("plus")}Add</div></div>`;
+  const body = {
+    np: [`Day ${s.np?.day}`, `<span>Since ${s.np?.short} · ${s.np?.plat}</span><span class="tl">Finished it?</span>`],
+    done: [`${s.done.length}<small>${s.done.length === 1 ? "time" : "times"}</small>`, `<span>Last ${s.done.at(-1)?.end}</span>`],
+    bl: ["Queued", ""],
+    fav: [`No. ${s.fav?.rank}<small>of ${s.fav?.of}</small>`, `<span>“${s.fav?.note}”</span>`],
+    col: [s.col?.own, `<span>${s.col?.plat}</span>`],
+  }[l.k];
+  return `<div class="cb ${open === l.k ? "open" : ""}"><div class="h">${ic(l.i)}${l.n}<span class="e">${ic(l.k === "done" ? "plus" : "pencil")}</span></div><div class="big">${body[0]}</div><div class="m">${body[1]}</div></div>`;
+};
+const cubs = (s, open) => `<div class="cub">${LISTS5.map((l) => cell(s, l, open)).join("")}</div>`;
+const drawerDone = (s) => `<div class="drawer"><div class="dh"><h3>Completed</h3><span class="faint lb">Once so far</span><span class="x">${ic("x")}</span></div>
+  <div class="runs">${s.done.map((c) => `<div class="run"><span class="n">${c.n}</span><b>${c.end}</b><span class="btn sm">${ic("pencil")}Edit</span><small>${c.type} · ${c.plat} · ${c.hrs} h · started ${c.start}</small></div>`).join("")}
+  <div class="next"><p>Playing it again since <b style="color:var(--fg)">9 Nov</b> on Switch. Finished?</p><div style="display:flex;gap:8px;align-items:center"><span class="btn hl">${ic("flag")}Log a completion</span><span class="lnk">Your Completed list</span></div></div></div></div>`;
+
+/* ---------- 1D ---------- */
+const card = (s, o = {}) => {
+  const sec = (l, body, edit = true) => `<div class="ys"><div class="h">${ic(l.i)}${l.n}${edit && val(s, l.k) ? `<span class="btn xs ic gh">${ic("pencil")}</span>` : ""}</div><div class="row">${body}</div></div>`;
+  const [np, done, bl, fav, col] = LISTS5;
+  return `<div class="yc"><div class="yh">${av("mara", 30)}<b>You</b><small>${[s.np, s.done.length, s.bl, s.fav, s.col].filter(Boolean).length} of 5 lists</small></div>
+  ${sec(np, s.np ? `<span class="stp"><small>Started</small><b>09 Nov</b></span><p><b>Day ${s.np.day}</b> · ${s.np.plat}<br><span class="tl" style="color:var(--fg)">Finished it?</span></p>` : `<span class="addl">${ic("plus")}Start playing</span>`)}
+  ${sec(done, `${s.done.map((c, i) => `<span class="stp" style="--r:${i % 2 ? 1.5 : -2.5}deg"><small>Completed</small><b>${c.endS} ${c.endY.slice(2)}</b><small>${c.type} · ${c.plat}</small></span>`).join("")}<span class="stp slot">${ic("plus")}Log ${s.done.length ? "another" : "a completion"}</span>`, false)}
+  ${sec(bl, s.bl ? "Queued" : `<span class="addl">${ic("plus")}Add to Backlog</span>`)}
+  ${sec(fav, s.fav ? `<span class="rank">No. ${s.fav.rank}<small> of ${s.fav.of}</small></span><p>“${s.fav.note}”</p>` : `<span class="addl">${ic("plus")}Add to Favorites</span>`)}
+  ${sec(col, s.col ? `<p><b>${s.col.own}</b> · ${s.col.plat}</p>` : `<span class="addl">${ic("plus")}Add to Collection</span>`)}
+  ${o.foot === false ? "" : `<div class="yf"><span class="tl">All your lists on your profile</span></div>`}</div>`;
+};
+const dock = (s) => `<div class="ydock">${av("mara", 26)}<b class="y">You</b>${s.np ? `<span class="mini">${ic("gamepad-2")}Day ${s.np.day}</span>` : ""}${s.done.length ? `<span class="mini">${ic("flag")}×${s.done.length}</span>` : ""}${s.fav ? `<span class="mini">${ic("heart")}No. ${s.fav.rank}</span>` : ""}${s.col ? `<span class="mini">${ic("archive")}</span>` : ""}${!s.np && !s.done.length ? `<span class="faint lb">Not on your lists</span>` : ""}<span class="btn sm ${s.np || s.done.length ? "" : "hl"} end">${ic("chevron-up")}${s.np || s.done.length ? "" : "Add"}</span></div>`;
+
+page({
+  title: "Game page: your lists",
+  lede: "Where a signed-in member adds <b>Final Fantasy VI</b> to their own lists, right on its page, and how each list's state reads at a glance. Mara has it in <b>Now Playing</b> (since 9 Nov, Switch), has <b>Completed</b> it once (SNES, 2019), ranks it <b>No. 2</b> in Favorites and owns it <b>Physical</b> on Switch; Backlog is empty. Each option also shows the page when the game is on none of her lists, and a phone. Logging a completion itself is its own surface on <a href=\"log-completion.html\"><b>the next page</b></a>.",
+  keys: [["Today", "Tue 24 Nov 2026"], ["Viewer", "Mara"], ["Game", "Final Fantasy VI (Pixel Remaster)"], ["Members", "invented"], ["Art", "Steam covers; Anton fallback where a game has none"]],
+  surfaces: [{
+    id: "s1", title: "1 · The control on the game page", sub: "/games/[id] · 4 options",
+    brief: "One control for five lists. Each list keeps its own fields (Now Playing: platform, note, start date; Backlog: platform, note; Favorites: note; Collection: ownership, platform, note; Completed: type, platform, started, finished, hours, note, and as many completions as replays). The control has to say <b>which lists it's on</b>, <b>how many times it's been completed</b>, and offer the <b>likely next step</b> without hiding the other four. Yellow stays the member's own business; nothing here borrows GOTM red or NR violet.",
+    options: [
+      {
+        code: "1A", short: "Split button", title: "The next move", rec: 1,
+        idea: "One <b>yellow split button</b> under the blurb always offers the most likely next step: <b>Start playing</b> when the game is on none of your lists, <b>Log a completion</b> while it's in Now Playing, <b>Log another completion</b> once it's finished and put down. The caret opens <b>Your lists</b>: five menu rows, each with its state (\"Since 9 Nov · Switch\", \"Once · last 14 Mar 2019\") and its own verb (Edit, Add, Log another). Beside the button, <b>state chips</b> sit in the same row as quiet facts: Playing since 9 Nov, Completed ×1, Favorite No. 2, Physical.",
+        trade: "The fastest path for the common case and the smallest footprint on the hero. But four of five lists live one click deep, and the primary verb changes with state, which some members find surprising the first time.",
+        desk: ["Desktop · on four lists, the menu open", G_DESK({ actions: actA(S, 1), plate: { mine: 1 }, h: 1060 })],
+        phone: ["Phone · on four lists", G_PH({ actions: actA(S, 0, 1), plate: { mine: 1 } })],
+        more: [
+          ["Desktop · on none of Mara's lists", G_DESK({ actions: actA(EMPTY, 0), plate: {}, h: 900 })],
+          ["Phone · the caret opens Your lists as a sheet", PSHEET(G_PH({ actions: actA(S, 0, 1), plate: { mine: 1 } }), menuSheet(S)), "ph"],
+        ],
+        notes: ["<b>Why this one:</b> it is a pattern members already know, it costs the hero one row, it reads on a phone as one full-width button, and the state chips still say every list at a glance. 1B is the runner-up if the owner wants every list visible without a click.", "The caret is its own button (\"All your lists\"), so the main verb never hides a menu behind it.", "A chip opens its own list's form: the Favorite No. 2 chip goes straight to the Favorites edit.", "The state chips are left out when there's nothing to say; the row then reads \"Not on your lists\"."],
+      },
+      {
+        code: "1B", short: "You on the plate", title: "You, beside the club",
+        idea: "The hero's translucent plate already says who's playing and who finished it. A fifth block, <b>You</b>, joins it with your avatar on the 34px head and one 27px line per list: the list's name and your state in paper (Since 9 Nov, <b>×1</b> · 2019, <b>No. 2</b>, Physical), or a faint <b>+ Add</b>. A line opens a small popover for that list; Completed's lists each completion with Edit and a yellow <b>Log another completion</b>. Your avatar in Playing now and Completed by takes the yellow ring, so you can find yourself in the club's blocks too.",
+        trade: "Every list's state is visible at once with no new band on the page, and it reads as part of the club's facts. The plate grows by about 50px, and the block is dense at 27px lines (touch targets clear 24px, not 44px).",
+        desk: ["Desktop · on four lists, Completed open", G_DESK({ plate: { mine: 1, ring: 1, extra: youBlock(S, "done") }, h: 1000 })],
+        phone: ["Phone · You leads the plate", G_PH({ plate: { mine: 1, ring: 1, extraFirst: youBlock(S, null, 1) } })],
+        more: [
+          ["Desktop · on none of Mara's lists", G_DESK({ plate: { extra: youBlock(EMPTY) }, h: 900 })],
+          ["Phone · on none of Mara's lists", G_PH({ plate: { extraFirst: youBlock(EMPTY, null, 1) } }), "ph"],
+        ],
+        notes: ["Plate columns go 1.1 / 0.85 / 0.95 / 1 / 1.5 so Time to beat keeps its bars and You keeps its values on one line.", "On phones You is the plate's first full row, above Time to beat.", "The plate is the one place that already names members, so this is where \"you\" reads most naturally."],
+      },
+      {
+        code: "1C", short: "Five cells", title: "Five cells under the hero",
+        idea: "A <b>strip of five cells</b> runs full width straight under the hero, one per list, each a button. A filled cell is a card with its state set big in Anton: <b>Day 16</b> for Now Playing (with \"Finished it?\" at its foot), <b>×1</b> for Completed, <b>No. 2</b> of 10 for Favorites, <b>Physical</b> for Collection. An empty cell is a dashed outline reading <b>+ Add</b>. Opening a cell rings it in yellow and drops a <b>drawer</b> open beneath the strip with that list's form; Completed's drawer shows each completion beside the next one to log.",
+        trade: "The clearest read of all four and the biggest targets, with room for the fun numbers. It costs a full band of height on every game page (124px) and pushes Releases and Details down; members who never use lists see five dashed cells.",
+        desk: ["Desktop · on four lists", G_DESK({ plate: { mine: 1 }, mid: cubs(S), h: 980 })],
+        phone: ["Phone · on four lists", G_PH({ plate: { mine: 1 }, mid: cubs(S) })],
+        more: [
+          ["Desktop · on none of Mara's lists", G_DESK({ plate: {}, mid: cubs(EMPTY), h: 940 })],
+          ["Desktop · Completed opened as the drawer", G_DESK({ plate: { mine: 1 }, mid: cubs(S, "done") + drawerDone(S), h: 1100 })],
+        ],
+        notes: ["Day 16 counts from the start date, so it ticks over without anyone touching it.", "Only one drawer is open at a time; opening another cell swaps it. Esc closes it and hands focus back to the cell.", "On phones the cells go two across, Collection as a full row."],
+      },
+      {
+        code: "1D", short: "Card in the margin", title: "Your card in the margin",
+        idea: "A <b>You card</b> stands in a 320px right margin below the hero and stays put while the page scrolls past. Each list is a ruled row; dates arrive as <b>stamps</b> in a teal stamp-pad ink, set slightly askew: Started 09 Nov, and one Completed stamp per completion (date, type, platform), so replays pile up as more stamps. A dashed slot after the last stamp is <b>Log another</b>. Empty lists show a dashed add. On phones the card becomes a <b>dock</b> above the tab bar with tiny stamps (Day 16, ×1, No. 2) that opens the card as a sheet.",
+        trade: "Always in reach while reading the rest of the page, and replays have a satisfying, collectable look. It narrows everything under the hero to two columns (Alternate Versions drops below), adds a new ink (teal, only on this card), and the phone dock adds a strip above the tab bar.",
+        desk: ["Desktop · on four lists", G_DESK({ plate: { mine: 1 }, rail: card(S), h: 1020 })],
+        phone: ["Phone · the dock above the tab bar", G_PH({ plate: { mine: 1 }, dock: dock(S) })],
+        more: [
+          ["Desktop · on none of Mara's lists", G_DESK({ plate: {}, rail: card(EMPTY), h: 1020 })],
+          ["Phone · the dock opened as a sheet", PSHEET(G_PH({ plate: { mine: 1 }, dock: dock(S) }), card(S, { foot: false })), "ph"],
+        ],
+        notes: ["The stamp ink is a teal chosen to sit off red, violet, yellow and orange; it only ever marks your own dates.", "Stamps tilt by a stable angle from the entry's id (within ±2.5°), like the Hand-Placed Rule.", "The card is sticky from <code>lg</code>; below it the dock takes over."],
+      },
+    ],
+  }],
+});
+</script>
+</body></html>

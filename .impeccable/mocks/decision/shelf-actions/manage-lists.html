@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manage your lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- the Completed page today: year heading, reel, year rail ---------- */
+.cwrap{display:grid;grid-template-columns:minmax(0,1fr) 5rem;gap:28px;margin-top:24px}
+.yhd{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.yhd h2{font:400 2.5rem/.9 Anton;text-transform:uppercase}
+.yhd h2 small{font:800 .84rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint);margin-left:12px;vertical-align:middle}
+.yrail{border-left:1px solid var(--border);padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:2px;align-self:start}
+.yrail .all{font:800 .8rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:5px 0;width:56px;text-align:center;border-radius:3px;margin-bottom:4px}
+.yrail .y{font:400 1.25rem/1 Anton;color:var(--faint);margin:8px 0 4px}
+.yrail .y.on{color:var(--fg)}
+.yrail .m{font:800 .8rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);width:48px;text-align:center;padding:3px 0}
+.yrail .m.off{color:var(--bs)}
+.yrail .nd{font:400 1rem/1 Anton;color:var(--faint);margin-top:8px;text-transform:uppercase}
+.yrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.yrow span{font:400 1.15rem/1 Anton;color:var(--faint);padding:6px 8px;border-radius:3px}
+.yrow span.on{background:var(--fg);color:var(--bg)}
+.spot{position:relative;isolation:isolate;display:grid;grid-template-columns:180px minmax(0,1fr) auto;gap:30px;align-items:end;padding:30px;border-radius:3.2px;overflow:visible;background:#000;min-height:380px}
+.spot>.art{z-index:-2;border-radius:3.2px;background-position:50% 30%}
+.spot::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:3.2px;background:linear-gradient(90deg,rgb(11 11 13/.94) 0%,rgb(11 11 13/.8) 45%,rgb(11 11 13/.35) 100%),linear-gradient(0deg,rgb(11 11 13/.85),transparent 55%)}
+.spot .cv{box-shadow:0 14px 34px rgb(0 0 0/.55)}
+.spot h2{font:400 4.6rem/.88 Anton;text-transform:uppercase;max-width:14ch}
+.spot dl{display:flex;flex-wrap:wrap;gap:12px 26px;margin:18px 0 0}
+.spot dl div{display:flex;flex-direction:column-reverse;gap:4px}
+.spot dt{font:800 .8rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.spot dd{margin:0;font:400 2.4rem/.85 Anton;text-transform:uppercase}
+.spot blockquote{margin:16px 0 0;font-style:italic;max-width:52ch}
+.spot blockquote small{display:block;font:800 .72rem/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-style:normal;margin-top:5px}
+.spot .ctl{display:flex;flex-direction:column;align-items:flex-end;gap:10px;align-self:stretch;justify-content:space-between}
+.spot .ctl .pos{font:800 .8rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:flex;gap:6px;align-items:center}
+.spot.editing{box-shadow:0 0 0 2px var(--hl)}
+.spot .ef{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px;margin-top:16px;max-width:760px}
+.spot .ef .fld{background:rgb(11 11 13/.82)}
+.spot .ef .wide2{grid-column:span 2}
+.spot .ef .all3{grid-column:1/-1}
+.spot .ebar{display:flex;gap:8px;margin-top:16px;align-items:center}
+.spot .ebar .btn.ds{margin-right:auto;background:rgb(11 11 13/.7)}
+.strip{display:flex;gap:22px;margin-top:26px;padding-top:12px;overflow:hidden}
+.strip section{display:flex;flex-direction:column;gap:10px;flex:none}
+.strip h3{font:800 .84rem/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--border);padding-bottom:6px}
+.strip h3 b{color:var(--fg);margin-right:6px}
+.strip ul{display:flex;gap:8px}
+.strip li{width:104px;position:relative}
+.strip li .t{font:700 .8rem/1.15 "Barlow Condensed";margin-top:6px;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.strip li.on .cv{box-shadow:0 0 0 3px var(--fg)}
+.strip li.on::before{content:"";position:absolute;top:-14px;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:var(--fg)}
+.strip li.on .t{color:var(--fg)}
+.strip li.hole .cv{background:transparent;box-shadow:none;outline:1.5px dashed var(--dest);outline-offset:-1.5px;display:grid;place-items:center}
+.strip li.hole .cv::after{display:none}
+.strip li.hole .t{color:var(--dest);text-decoration:line-through}
+.strip li .x{position:absolute;top:4px;right:4px;z-index:2;width:26px;height:26px;border-radius:2.4px;background:rgb(11 11 13/.82);display:grid;place-items:center;color:var(--dim)}
+.strip li .x svg.lucide{width:14px;height:14px}
+.pshell .cwrap{display:block;margin-top:16px}
+.pshell .yhd h2{font-size:1.9rem}
+.pshell .spot{grid-template-columns:minmax(0,1fr);padding:18px;gap:14px;min-height:0}
+.pshell .spot .cv{width:110px!important}
+.pshell .spot h2{font-size:2.5rem}
+.pshell .spot dd{font-size:1.8rem}
+.pshell .spot .ef{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pshell .spot .ef .all3,.pshell .spot .ef .wide2{grid-column:1/-1}
+.pshell .spot .ctl{flex-direction:row;align-items:center}
+.pshell .strip{flex-direction:column}
+.pshell .strip ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.pshell .strip li{width:auto}
+
+/* list grid (Backlog) */
+.bgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px 14px;margin-top:22px}
+.gc{position:relative;min-width:0}
+.gc .num{position:absolute;top:-14px;left:4px;z-index:3;font:400 3.1rem/1 Anton;color:var(--fg);-webkit-text-stroke:6px var(--bg);paint-order:stroke fill}
+.gc .cv{width:100%!important}
+.gc b{display:block;font:700 .97rem/1.15 "Barlow Condensed";letter-spacing:.02em;margin-top:9px}
+.gc small{display:block;font:700 .78rem/1.2 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.gc q{display:block;font-style:italic;font-size:.82rem;color:var(--dim);margin-top:5px;quotes:"\201C" "\201D"}
+.gc.lift{transform:translateY(-10px) rotate(-1.5deg);z-index:5}
+.gc.lift .cv{box-shadow:0 0 0 3px var(--hl),0 18px 34px rgb(0 0 0/.6)}
+.gc.ghost .cv{opacity:.3}
+.gc.ghost{opacity:.6}
+.gc.slotgap{border:2px dashed var(--hl);border-radius:3px;background:rgb(255 212 0/.06);display:grid;place-items:center;align-content:center;gap:6px;color:var(--hl);font:800 .8rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;min-height:200px}
+.liftbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);box-shadow:inset 0 0 0 1px var(--hl);border-radius:3px;padding:10px 12px;margin-top:20px}
+.liftbar b{font:400 1.2rem/1 Anton;text-transform:uppercase}
+.liftbar .lb{color:var(--dim)}
+.liftbar .r{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:2px;box-shadow:inset 0 0 0 1px var(--bs);font:700 .74rem/1 "Barlow Condensed";color:var(--fg)}
+.pshell .bgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px}
+.pshell .gc .num{font-size:2.3rem}
+
+/* ---------- 3B the ledger ---------- */
+.lg{width:100%;border-collapse:collapse;table-layout:fixed}
+.lg th{font:800 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 10px;border-bottom:1px solid var(--bs)}
+.lg td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.92rem;color:var(--dim)}
+.lg td.g{color:var(--fg);font-weight:600}
+.lg td.g .w{display:flex;align-items:center;gap:12px}
+.lg .fld.sm{padding:0 8px;gap:6px}
+.lg td.n{font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg td.d{white-space:nowrap;font-variant-numeric:tabular-nums}
+.lg td.tl2{white-space:nowrap;text-align:right}
+.lg tr.mh td{font:800 .78rem/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;color:var(--fg);padding:16px 10px 6px;border-bottom:1px solid var(--bs)}
+.lg tr.mh td span{color:var(--faint);margin-left:6px}
+.lg tr.ed td{background:rgb(255 212 0/.04);border-bottom:0;padding-top:10px;padding-bottom:10px}
+.lg tr.ed td:first-child{box-shadow:inset 2px 0 0 var(--hl)}
+.rowform{display:grid;grid-template-columns:1.5fr 1fr 1.2fr 1.2fr .6fr;gap:10px 10px;align-items:end}
+.rowform .nt{grid-column:1/4}
+.rowform .bb{grid-column:4/-1;display:flex;gap:6px;justify-content:flex-end}
+.lg tr.ed2 td{background:rgb(255 212 0/.04);padding-top:0;padding-bottom:12px}
+.lg tr.ed2 td:first-child{box-shadow:inset 2px 0 0 var(--hl)}
+.lg tr.rm td{color:var(--faint)}
+.lg tr.rm td.g{color:var(--dest);text-decoration:line-through}
+.lg tr.rm td.g .cv{opacity:.35}
+.lg tr.rm td.tl2{text-decoration:none}
+.lg tr.drain td{padding:0;border-bottom:1px solid var(--border);height:3px;background:linear-gradient(90deg,var(--dest) 58%,transparent 58%)}
+.lg .rk2{font:400 1.6rem/.9 Anton;color:var(--fg);width:30px;text-align:right}
+.lg tr.drag td{background:var(--muted)}
+.lg tr.drag td:first-child{box-shadow:inset 2px 0 0 var(--hl)}
+.lg tr.dropl td{padding:0;height:3px;background:var(--hl);border:0;position:relative}
+.ltool{display:flex;gap:4px;justify-content:flex-end}
+.addrow{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.addrow .fld{flex:1;max-width:520px}
+.ledhd{display:flex;align-items:baseline;gap:12px;margin:6px 0 0;border-bottom:2px solid var(--fg);padding-bottom:6px}
+.ledhd h2{font:400 2.2rem/.9 Anton;text-transform:uppercase}
+.ledhd .r{margin-left:auto;font:800 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--hl)}
+.editbar{display:flex;align-items:center;gap:10px;background:var(--card);box-shadow:inset 0 0 0 1px var(--hl);border-radius:3px;padding:10px 14px;margin-bottom:18px;font-size:.92rem;color:var(--dim)}
+.editbar b{color:var(--fg)}
+.editbar svg.lucide{color:var(--hl)}
+.prow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.prow b{font-weight:600;display:block;line-height:1.2}
+.prow small{font:700 .74rem/1.25 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.prow.ed{background:rgb(255 212 0/.04);box-shadow:inset 2px 0 0 var(--hl);padding-left:10px;padding-right:8px;margin:0 -8px 0 -10px}
+.prow .eform{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:8px}
+.prow .eform .full{grid-column:1/-1}
+
+/* ---------- 3C cards with tools ---------- */
+.mg{margin-top:26px}
+.mg>h3{display:flex;align-items:baseline;gap:8px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:14px}
+.mg>h3 b{color:var(--fg)}
+.cgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:20px 14px}
+.cc{position:relative;min-width:0}
+.cc .cv{width:100%!important}
+.cc .more{position:absolute;top:6px;right:6px;z-index:3;width:28px;height:28px;border-radius:2.4px;background:rgb(11 11 13/.82);display:grid;place-items:center;color:var(--fg);box-shadow:inset 0 0 0 1px rgb(244 244 240/.2)}
+.cc .more svg.lucide{width:16px;height:16px}
+.cc .more.on{box-shadow:inset 0 0 0 2px var(--hl);color:var(--hl)}
+.cc b{display:block;font:700 .95rem/1.15 "Barlow Condensed";margin-top:8px;letter-spacing:.02em}
+.cc small{display:block;font:700 .74rem/1.25 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.cc.sel .cv{box-shadow:0 0 0 3px var(--hl)}
+.cc.addt .cv{background:transparent;outline:1.5px dashed var(--bs);outline-offset:-1.5px;display:grid;place-items:center;align-content:center;gap:6px;color:var(--dim);font:800 .84rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;text-align:center}
+.cc.addt .cv::after{display:none}
+.cc.addt.on .cv{outline-color:var(--hl);color:var(--hl)}
+.cc.gone .cv{background:transparent;outline:1.5px dashed var(--dest);outline-offset:-1.5px;display:grid;place-items:center;align-content:center;gap:8px;color:var(--dest);text-align:center;padding:8px}
+.cc.gone .cv::after{display:none}
+.cc.gone .cv span{font:800 .76rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.cc.gone b{color:var(--faint);text-decoration:line-through}
+.cmenu{width:230px;padding:6px}
+.cmenu .o{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:2.4px;font:800 .86rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase}
+.cmenu .o svg.lucide{width:16px;height:16px;color:var(--faint)}
+.cmenu .o.hov{background:var(--muted)}
+.cmenu .o.dz{color:var(--dest)}
+.cmenu .o.dz svg.lucide{color:var(--dest)}
+.cmenu hr{border:0;border-top:1px solid var(--border);margin:4px 0}
+.live{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--dim);margin-top:14px}
+.live svg.lucide{width:16px;height:16px;color:var(--hl)}
+.pshell .cgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}
+
+/* ---------- 4 /edit trimmed ---------- */
+.esec{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:36px;margin-top:24px}
+.enav a{display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 12px;border-radius:2.4px;font:800 1.05rem/1 "Barlow Condensed";letter-spacing:.04em;text-transform:uppercase;color:var(--dim)}
+.enav a.on{background:var(--fg);color:var(--bg)}
+.enav a b{font:400 1.05rem/1 Anton;color:var(--faint)}
+.enav .imp{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.enav .imp a{color:var(--fg)}
+.enav .lists{margin-top:18px;border-top:1px solid var(--border);padding-top:12px}
+.enav .lists p{font:800 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:0 12px 8px}
+.enav .lists a{height:34px;font-size:.92rem;color:var(--faint)}
+.soc{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px 18px;align-items:center;max-width:720px}
+.soc .k{display:flex;align-items:center;gap:8px;font:800 .9rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.pshell .esec{grid-template-columns:minmax(0,1fr);gap:16px}
+.pshell .enav{display:flex;gap:6px;overflow:hidden}
+.pshell .enav a{height:36px;font-size:.92rem;background:var(--card);white-space:nowrap}
+.pshell .enav a.on{background:var(--fg)}
+.pshell .enav .imp{margin:0;border:0;padding:0}
+.pshell .soc{grid-template-columns:minmax(0,1fr);gap:6px}
+.pshell .soc .fld{margin-bottom:8px}
+</style></head>
+<body>
+<script>
+/* ---------- data ---------- */
+const DONE = [
+  ["e33", "Nov", "18 Nov 2026", "Main Story + Side Content", "PS5", "20 Sep 2026", 61, "The Gommage. Still thinking about it."],
+  ["hades", "Nov", "3 Nov 2026", "Main Story", "PC", "2 Oct 2026", 22, ""],
+  ["liesofp", "Oct", "27 Oct 2026", "Main Story", "PS5", "1 Oct 2026", 41, "Best boss in the genre is a puppet."],
+  ["ff7rb", "Oct", "12 Oct 2026", "Main Story + Side Content", "PS5", "4 Aug 2026", 88, ""],
+  ["sos", "Sep", "21 Sep 2026", "Main Story", "Switch", "2 Sep 2026", 29, "Coop with Jun on the couch."],
+  ["wukong", "Aug", "30 Aug 2026", "Main Story", "PC", "8 Aug 2026", 44, ""],
+  ["octo", "Jul", "19 Jul 2026", "Main Story", "Switch", "3 May 2026", 70, ""],
+  ["p5r", "Jun", "2 Jun 2026", "Completionist", "PS5", "1 Feb 2026", 132, "Every confidant. Never again. Until next time."],
+  ["outer", "Apr", "14 Apr 2026", "Main Story", "PC", "", 19, "Go in blind."],
+  ["dq11", "Feb", "8 Feb 2026", "Main Story + Side Content", "Switch", "2 Dec 2025", 96, ""],
+  ["disco", "Jan", "11 Jan 2026", "Main Story", "PC", "28 Dec 2025", 31, ""],
+];
+const MON = { Nov: "November", Oct: "October", Sep: "September", Aug: "August", Jul: "July", Jun: "June", Apr: "April", Feb: "February", Jan: "January" };
+const byMonth = () => { const m = []; DONE.forEach((d) => { let g = m.find((x) => x.k === d[1]); if (!g) m.push((g = { k: d[1], items: [] })); g.items.push(d); }); return m; };
+const shortType = (t) => ({ "Main Story": "Main", "Main Story + Side Content": "Main + Side", Completionist: "Completionist" })[t];
+const BACKLOG = [["wolong", "Switch", "Before Wuchang, apparently.", "3 Feb"], ["wuchang", "PS5", "", "9 Aug"], ["liesofp2", null], ["nioh2", "PC", "Pairs with Wo Long.", "14 Mar"], ["ff12", "PS4", "", "1 Jan"], ["yakuza0", "PC", "Everyone says start here.", "20 Feb"], ["bg3", "PC", "", "2 Sep"], ["ff7r", "PS5", "", "12 Apr"], ["metaphor", "PS5", "For the club round.", "11 Nov"], ["elden", "PC", "", "5 May"], ["trails", "Switch", "", "30 Oct"], ["xeno", "Switch", "", "7 Jun"]].filter((b) => b[1] !== null);
+const PLATS = ["PS5", "PC", "Switch"];
+
+/* ---------- the list page head (MemberListTemplate) ---------- */
+const lhead = (cur, o = {}) => {
+  const L = LISTS5.map((l) => `<li class="${l.k === cur ? "on" : ""}">${l.n}<b>${COUNTS[l.k]}</b></li>`).join("");
+  const title = LISTS5.find((l) => l.k === cur).n;
+  return `${o.ph ? `<span class="pback">${ic("arrow-left")}</span>` : `<span class="back">${ic("arrow-left")}Mara</span>`}
+  <div class="mhd"><span class="who">${av("mara", 32)}Mara</span><ul>${L}</ul></div>
+  <div class="hd"><h1>${title}</h1><span class="n lb">${COUNTS[cur]} games</span><div class="act">${o.act || ""}</div></div>`;
+};
+const yrail = () => `<nav class="yrail"><span class="all">All</span><span class="y on">2026</span>${["Nov", "Oct", "Sep", "Aug", "Jul", "Jun", "May", "Apr", "Mar", "Feb", "Jan"].map((m) => `<span class="m ${["May", "Mar"].includes(m) ? "off" : ""}">${m}</span>`).join("")}${[2025, 2024, 2023, 2022, 2021, 2020, 2019].map((y) => `<span class="y">${y}</span>`).join("")}<span class="nd">No date</span></nav>`;
+const yrow = `<div class="yrow"><span>All</span><span class="on">2026</span><span>2025</span><span>2024</span><span>2023</span><span>2022</span><span>2021</span><span>…</span></div>`;
+const yhd = (o = {}) => `<div class="yhd"><h2>2026<small>${o.n ?? 11} games</small></h2>${o.r ?? fld("Search Mara's completed games", { i: "search", cls: "ph" })}</div>`;
+const LOGBTN = `<span class="btn hl">${ic("flag")}Log a completion</span>`;
+
+/* ---------- reel: spotlight + strip ---------- */
+const spot = (d, o = {}) => {
+  const [k, , end, type, plat, start, hrs, note] = d;
+  const g = G[k];
+  const view = `<h2>${esc(g.t)}</h2><dl><div><dt>Finished</dt><dd>${end.replace(" 2026", "")}</dd></div><div><dt>Type</dt><dd>${shortType(type)}</dd></div><div><dt>Platform</dt><dd>${plat}</dd></div><div><dt>Playtime</dt><dd>${hrs} h</dd></div></dl>${note ? `<blockquote>“${note}”<small>Mara's note</small></blockquote>` : ""}`;
+  const cS = o.cal === "s" ? cal({ y: 2026, m: 9, sel: 20, today: 0, title: "Started", cls: o.ph ? "r" : "", foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` }) : "";
+  const cF = o.cal === "f" ? cal({ sel: 18, today: 24, max: 24, title: "Finished", cls: "", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` }) : "";
+  const edit = `<h2 style="font-size:${o.ph ? "2.3rem" : "3.4rem"}">${esc(g.t)}</h2><div class="ef">
+    <div class="wide2">${lab("Completion")}${sel(type)}</div><div>${lab("Platform")}${sel("PlayStation 5")}</div>
+    <div>${lab("Started", 1)}<span class="anc wide">${dateF(start, { open: o.cal === "s" })}${cS}</span></div><div>${lab("Finished")}<span class="anc wide">${dateF(end, { open: o.cal === "f" })}${cF}</span></div><div>${lab("Playtime", 1)}${fld(hrs + " h")}</div>
+    <div class="all3">${lab("Note", 1)}${fld(note || "Add a note", { cls: note ? "" : "empty" })}</div></div>
+    <div class="ebar"><span class="btn ds">${ic("trash-2")}Remove</span><span class="btn ov">Cancel</span><span class="btn hl">${ic("check")}Save</span></div>`;
+  const ctl = o.edit ? "" : `<div class="ctl"><span class="btn sm ov">${ic("pencil")}Edit</span><div><p class="pos">${o.pos ?? "1"} of 11</p><div style="display:flex;gap:6px;margin-top:8px"><span class="btn sm ic ov">${ic("chevron-left")}</span><span class="btn sm ic ov">${ic("chevron-right")}</span></div></div></div>`;
+  return `<section class="spot ${o.edit ? "editing" : ""}">${artBg(k)}${cover(k, o.ph ? 110 : 180)}<div style="min-width:0">${o.edit ? edit : view}</div>${ctl}</section>`;
+};
+const strip = (o = {}) => `<div class="strip">${byMonth().slice(0, o.n ?? 6).map((m) => `<section><h3><b>${m.k}</b>${m.items.length}</h3><ul>${m.items.map((d) => {
+  const hole = o.hole === d[0];
+  return `<li class="${o.on === d[0] ? "on" : ""} ${hole ? "hole" : ""}">${hole ? `<span class="cv" style="width:100%">${ic("undo-2")}</span>` : cover(d[0], "100%")}${o.tools && !hole ? `<span class="x" title="Remove">${ic("x")}</span>` : ""}<p class="t">${hole ? "Removed" : esc(G[d[0]].t)}</p></li>`;
+}).join("")}</ul></section>`).join("")}</div>`;
+const reelPage = (o) => `${lhead("done", { act: o.act ?? LOGBTN, ph: o.ph })}<div class="cwrap"><div style="min-width:0">${o.ph ? yrow : ""}${yhd({ r: o.yr })}${o.top || ""}${spot(o.d ?? DONE[0], { ...o.spot, ph: o.ph })}${o.mid || ""}${strip({ on: (o.d ?? DONE[0])[0], tools: o.tools, hole: o.hole, n: o.ph ? 3 : 6 })}</div>${o.ph ? "" : yrail()}</div>`;
+
+/* search popover (add by game search) */
+const searchPop = (o = {}) => `<div class="pop ${o.cls || ""}" style="width:${o.w || 420}px">${o.bare ? "" : `<h5>${o.title || "Log a completion"}<span class="x">${ic("x")}</span></h5>
+  ${fld(`sea<span class="caret"></span>`, { i: "search", cls: "focus" })}`}
+  <div style="margin-top:8px">${[["sos", "Sea of Stars", 2023, "Completed 21 Sep 2026", 1], ["ff6", "Final Fantasy VI", 1994, "", 0], ["octo", "Octopath Traveler", 2018, "", 0]].map(([k, t, y, al, h], i) => `<div class="res ${i === 1 ? "hov" : ""}">${cover(k, 34)}<span class="nm"><b>${t}</b><small>${y}${al ? " · " + al : ""}</small></span>${al ? `<span class="already">Log again</span>` : `<span class="btn xs">${ic("plus")}Pick</span>`}</div>`).join("")}</div>
+  <p class="hint" style="margin-top:10px">${ic("info")}Not here? Search IGDB for it</p></div>`;
+
+/* backlog grid (3A pick-up) */
+const bcard = (b, i, o = {}) => `<div class="gc ${o.cls || ""}"><span class="num">${i + 1}</span>${cover(b[0], "100%")}<b>${esc(G[b[0]].t)}</b><small>${b[1]} · Queued ${b[3]}</small>${b[2] ? `<q>${b[2]}</q>` : ""}</div>`;
+const backlogA = (ph) => {
+  const items = BACKLOG.slice(0, ph ? 6 : 12);
+  const rest = items.filter((_, i) => i !== 3);
+  const out = rest.map((b, i) => bcard(b, i >= 1 ? i + 1 : i));
+  out.splice(1, 0, bcard(items[3], 1, { cls: "lift" }));
+  return `${lhead("bl", { act: `<span class="btn">${ic("dices")}Pick something to play</span><span class="btn hl">${ic("plus")}Add to Backlog</span>`, ph })}
+  <div class="liftbar"><span class="lb">Moving</span><b>Final Fantasy XII</b><span class="lb">from 4th to 2nd</span><div class="r"><span class="btn sm">${ic("arrow-left")}Earlier</span><span class="btn sm">${ic("arrow-right")}Later</span><span class="btn sm hl">${ic("check")}Put it here</span><span class="btn sm gh">Cancel</span></div></div>
+  <div class="bgrid">${out.slice(0, ph ? 6 : 12).join("")}</div>`;
+};
+
+/* ================= 3B: the ledger ================= */
+const ledRows = (o = {}) => byMonth().slice(0, o.months ?? 4).map((m) => `<tr class="mh"><td colspan="9">${MON[m.k]}<span>${m.items.length}</span></td></tr>${m.items.map((d) => {
+  const [k, , end, type, plat, start, hrs, note] = d;
+  if (o.edit === k) {
+    const cS = cal({ y: 2026, m: 10, sel: 1, today: 0, title: "Started", foot: `<span class="tl">Only the month</span><span class="tl">Clear</span>` });
+    return `<tr class="ed"><td class="g"><div class="w">${cover(k, 36)}${esc(G[k].t)}</div></td><td colspan="8"><div class="rowform">
+      <div>${lab("Completion")}${sel("Main Story", { cls: "sm" })}</div><div>${lab("Platform")}${sel("PS5", { cls: "sm" })}</div>
+      <div>${lab("Started", 1)}<span class="anc wide">${dateF("1 Oct 2026", { open: 1, cls: "sm" })}${cS}</span></div><div>${lab("Finished")}${dateF("27 Oct 2026", { cls: "sm" })}</div><div>${lab("Hours", 1)}${fld("41", { cls: "sm" })}</div>
+      <div class="nt">${lab("Note", 1)}${fld("Best boss in the genre is a puppet.", { cls: "sm" })}</div><div class="bb"><span class="btn sm gh">Cancel</span><span class="btn sm hl">${ic("check")}Save</span></div></div></td></tr>`;
+  }
+  if (o.rm === k) return `<tr class="rm"><td class="g"><div class="w">${cover(k, 36)}${esc(G[k].t)}</div></td><td colspan="5">Removed from Completed</td><td colspan="3" class="tl2"><span class="btn sm">${ic("undo-2")}Undo</span></td></tr><tr class="drain"><td colspan="9"></td></tr>`;
+  return `<tr><td class="g"><div class="w">${cover(k, 36)}${esc(G[k].t)}</div></td><td>${shortType(type)}</td><td>${plat}</td><td class="d">${start ? start.replace(" 2026", "") : "<span class='faint'>—</span>"}</td><td class="d">${end.replace(" 2026", "")}</td><td class="d">${hrs} h</td><td class="n">${note ? "“" + note + "”" : ""}</td><td></td><td class="tl2"><div class="ltool"><span class="btn xs ic gh">${ic("pencil")}</span><span class="btn xs ic gh">${ic("trash-2")}</span></div></td></tr>`;
+}).join("")}`).join("");
+const ledger = (o = {}) => `<table class="lg"><thead><tr><th style="width:190px">Game</th><th style="width:100px">Type</th><th style="width:72px">Platform</th><th style="width:118px">Started</th><th style="width:118px">Finished</th><th style="width:60px">Hours</th><th>Note</th><th style="width:0;padding:0"></th><th style="width:72px"></th></tr></thead><tbody>${ledRows(o)}</tbody></table>`;
+const ledgerPage = (o = {}) => `${lhead("done", { act: `<span class="btn hl">${ic("check")}Done</span>` })}<div class="cwrap"><div style="min-width:0">
+  <div class="editbar">${ic("pencil-ruler")}<span><b>Editing your Completed list.</b> Changes save as you make them.</span></div>
+  <div class="addrow"><span class="anc wide" style="flex:1;max-width:520px">${o.search ? fld(`sea<span class="caret"></span>`, { i: "plus", cls: "focus" }) + searchPop({ bare: 1, w: 460 }) : fld("Add a completion: search for a game", { i: "plus", cls: "ph" })}</span><span class="faint lb">Lands in its year by Finished date</span></div>
+  <div class="ledhd"><h2>2026</h2><span class="faint lb">11 games</span></div>${ledger(o)}</div>${yrail()}</div>`;
+const ledgerPh = () => `${lhead("done", { act: `<span class="btn sm hl">${ic("check")}Done</span>`, ph: 1 })}<div style="margin-top:16px">${yrow}${fld("Add a completion", { i: "plus", cls: "ph" })}<div class="ledhd" style="margin-top:16px"><h2>2026</h2><span class="faint lb">11 games</span></div>
+  ${DONE.slice(0, 5).map((d, i) => {
+    const [k, , end, type, plat, start, hrs] = d;
+    if (i === 2) return `<div class="prow ed">${cover(k, 44)}<span><b>${esc(G[k].t)}</b><small>Editing</small></span><span class="btn xs gh">Cancel</span><div class="eform"><div class="full">${lab("Completion")}${sel(type)}</div><div>${lab("Started", 1)}${dateF("1 Oct")}</div><div>${lab("Finished")}<span class="anc wide">${dateF("27 Oct", { open: 1 })}${cal({ m: 10, sel: 27, today: 0, title: "Finished", cls: "r", style: "width:300px", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` })}</span></div><div>${lab("Platform")}${sel("PS5")}</div><div>${lab("Hours", 1)}${fld("41")}</div><div class="full"><span class="btn ds sm">${ic("trash-2")}Remove</span> <span class="btn hl sm" style="float:right">${ic("check")}Save</span></div></div></div>`;
+    return `<div class="prow">${cover(k, 44)}<span><b>${esc(G[k].t)}</b><small>${end.replace(" 2026", "")} · ${shortType(type)} · ${plat} · ${hrs} h</small></span><span class="btn xs ic gh">${ic("pencil")}</span></div>`;
+  }).join("")}</div>`;
+const backlogLedger = (ph) => {
+  const rows = BACKLOG.slice(0, 8);
+  const order = [0, 1, 2, 3, 4, 5, 6, 7];
+  return `${lhead("bl", { act: `<span class="btn hl">${ic("check")}Done</span>`, ph })}<div style="margin-top:20px"><div class="editbar">${ic("grip-vertical")}<span><b>Drag a row by its grip, or use the arrows.</b> Press the grip and use ↑ ↓ on a keyboard.</span></div>
+  <table class="lg"><thead><tr><th style="width:36px"></th><th style="width:44px"></th><th style="width:300px">Game</th><th style="width:100px">Platform</th><th>Note</th><th style="width:100px">Queued</th><th style="text-align:right;width:150px">Move</th></tr></thead><tbody>
+  ${order.map((idx, i) => {
+    const b = rows[idx];
+    const drag = idx === 3;
+    const line = i === 1 ? `<tr class="dropl"><td colspan="7"><span class="drop" style="display:block;height:0;margin:0"><span>Drop here · 2nd</span></span></td></tr>` : "";
+    return `${line}<tr class="${drag ? "drag" : ""}" ${drag ? 'style="opacity:.55"' : ""}><td style="width:28px"><span class="grip">${ic("grip-vertical")}</span></td><td class="rk2">${i + 1}</td><td class="g"><div class="w">${cover(b[0], 36)}${esc(G[b[0]].t)}</div></td><td>${b[1]}</td><td class="n">${b[2] ? "“" + b[2] + "”" : ""}</td><td class="d">${b[3]}</td><td class="tl2"><div class="ltool"><span class="btn xs ic" title="Move to top">${ic("chevrons-up")}</span><span class="btn xs ic" title="Move up">${ic("arrow-up")}</span><span class="btn xs ic" title="Move down">${ic("arrow-down")}</span><span class="btn xs ic gh">${ic("trash-2")}</span></div></td></tr>`;
+  }).join("")}</tbody></table></div>`;
+};
+
+/* ================= 3C: cards with tools, no mode ================= */
+const ccard = (d, o = {}) => {
+  const [k, , end, type, plat] = d;
+  if (o.gone) return `<div class="cc gone"><span class="cv">${ic("undo-2")}<span>Removed</span><span class="btn xs">Undo</span></span><b>${esc(G[k].t)}</b><small>Gone when you leave</small></div>`;
+  return `<div class="cc ${o.sel ? "sel" : ""}">${o.wrap ? `<span class="anc" style="position:absolute;top:6px;right:6px;z-index:4"><span class="more on" style="position:static">${ic("ellipsis")}</span>${o.wrap}</span>` : `<span class="more">${ic("ellipsis")}</span>`}${cover(k, "100%")}<b>${esc(G[k].t)}</b><small>${end.replace(" 2026", "")} · ${shortType(type)} · ${plat}</small></div>`;
+};
+const cmenu = (cls = "") => `<div class="pop cmenu ${cls}"><div class="o hov">${ic("pencil")}Edit</div><div class="o">${ic("flag")}Log it again</div><div class="o">${ic("external-link")}Game page</div><hr><div class="o dz">${ic("trash-2")}Remove</div></div>`;
+const editPopC = (d) => `<div class="pop side" style="width:400px;top:-8px"><h5>${esc(G[d[0]].t)}<span class="x">${ic("x")}</span></h5><div class="fg">
+  <div>${lab("Completion")}${segm(["Main Story", "+ Side Content", "Completionist"], 0, "full")}</div>
+  <div class="fg2"><div>${lab("Started", 1)}${dateF("1 Oct 2026")}</div><div>${lab("Finished")}<span class="anc wide">${dateF("27 Oct 2026", { open: 1 })}${cal({ m: 10, sel: 27, span: [1, 27], other: 1, today: 0, title: "Finished", cls: "r", foot: `<span class="tl">Only the month</span><span class="tl">Today</span>` })}</span></div></div>
+  <div class="fg2"><div>${lab("Platform")}${sel("PlayStation 5")}</div><div>${lab("Playtime", 1)}${fld("41 h")}</div></div>
+  <div>${lab("Note", 1)}${fld("Best boss in the genre is a puppet.")}</div></div>
+  <div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">${ic("check")}Save</span></div></div>`;
+const cardsPage = (o = {}) => {
+  const groups = byMonth().slice(0, o.ph ? 2 : (o.months ?? 3));
+  const grid = groups.map((m) => `<div class="mg"><h3><b>${MON[m.k]}</b>${m.items.length}</h3><div class="cgrid">${m.items.map((d) => ccard(d, { sel: o.sel === d[0], wrap: o.sel === d[0] ? o.pop : "", gone: o.gone === d[0] })).join("")}${m.k === "Nov" || !o.ph ? `<div class="cc addt ${o.add === m.k ? "on" : ""}">${o.add === m.k ? `<span class="anc wide" style="display:block">` : ""}<span class="cv" style="width:100%">${ic("plus")}Add to ${m.k}</span>${o.add === m.k ? searchPop({ title: "Finished in " + MON[m.k], w: 400 }) + "</span>" : ""}</div>` : ""}</div></div>`).join("");
+  return `${lhead("done", { act: LOGBTN, ph: o.ph })}<div class="cwrap"><div style="min-width:0">${o.ph ? yrow : ""}${yhd()}${grid}</div>${o.ph ? "" : yrail()}</div>`;
+};
+const backlogC = (ph) => {
+  const items = BACKLOG.slice(0, ph ? 6 : 12);
+  return `${lhead("bl", { act: `<span class="btn">${ic("dices")}Pick something to play</span><span class="btn hl">${ic("plus")}Add to Backlog</span>`, ph })}
+  <div class="bgrid">${items.map((b, i) => `<div class="gc ${i === 2 ? "lift" : ""}"><span class="num">${i + 1}</span><span class="more" style="position:absolute;top:6px;right:6px;z-index:4;width:28px;height:28px;border-radius:2.4px;background:rgb(11 11 13/.82);display:grid;place-items:center;${i === 2 ? "box-shadow:inset 0 0 0 2px var(--hl);color:var(--hl)" : ""}">${ic(i === 2 ? "grip" : "ellipsis")}</span>${cover(b[0], "100%")}<b>${esc(G[b[0]].t)}</b><small>${b[1]} · Queued ${b[3]}</small></div>`).join("")}</div>
+  <p class="live" role="status">${ic("move")}<span><b style="color:var(--fg)">Picked up Nioh 2.</b> 3rd of 24. Use the arrow keys to move it, Space to drop, Esc to cancel.</span></p>`;
+};
+const moveSheet = `<h5>Nioh 2<small>3rd of 24</small><span class="x">${ic("x")}</span></h5>
+  <div class="cmenu" style="width:auto;padding:0">${[["arrow-up-to-line", "Move to top"], ["arrow-up", "Move up one"], ["arrow-down", "Move down one"], ["arrow-down-to-line", "Move to bottom"]].map(([i, t], k) => `<div class="o ${k === 0 ? "hov" : ""}" style="height:44px">${ic(i)}${t}</div>`).join("")}<div class="o" style="height:44px">${ic("hash")}Move to place <span class="fld sm" style="width:64px;margin-left:auto">3</span></div><hr><div class="o" style="height:44px">${ic("pencil")}Edit</div><div class="o dz" style="height:44px">${ic("trash-2")}Remove</div></div>`;
+
+/* ================= 4: /edit trimmed ================= */
+const SOC = [["twitch", "Twitch", "mara_plays"], ["youtube", "YouTube", ""], ["at-sign", "Bluesky", "mara.bsky.social"], ["gamepad-2", "Steam", "steamcommunity.com/id/mara"], ["gamepad", "PSN", "MaraOfTheNorth"], ["joystick", "Xbox", ""]];
+const editPage = (ph) => `${ph ? `<span class="pback">${ic("arrow-left")}</span>` : `<span class="back">${ic("arrow-left")}Mara</span>`}<div class="hd"><h1>Edit profile</h1></div>
+  <div class="esec"><nav class="enav"><a class="on">Socials<b>4</b></a><a>Linked Accounts<b>2</b></a><div class="imp"><a>Import games ${ic("file-up")}</a></div></nav>
+  <div><div class="sec" style="margin-top:0"><h2>Socials</h2><span class="n lb">Shown on your profile</span></div><div class="soc">${SOC.map(([i, k, v]) => `<span class="k">${ic(i)}${k}</span>${fld(v || "Not set", { cls: v ? "" : "empty" })}`).join("")}</div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;max-width:720px"><span class="btn hl">${ic("check")}Save socials</span></div></div></div>`;
+
+page({
+  title: "Manage your lists",
+  lede: "Each list's own page becomes where its <b>owner</b> manages it in full: add by game search, edit an entry in place (type, platform, both dates on their calendars, hours, note), remove with Undo, and reorder where the list has an order (Now Playing, Backlog, Favorites). Everyone else keeps today's read-only page. Mara's <b>Completed</b> list is the main example, still grouped by year with the year dial; her <b>Backlog</b> shows reorder, with a keyboard and button way that needs no drag. Then the trimmed <b>/members/:id/edit</b>.",
+  keys: [["Today", "Tue 24 Nov 2026"], ["Viewer", "Mara, on her own lists"], ["Completed", "141, 11 in 2026"], ["Backlog", "24, in her order"]],
+  surfaces: [
+    {
+      id: "s3", title: "3 · Owner manage mode on a list page", sub: "/members/[id]/completed-games · backlogged-games · 3 options",
+      brief: "Today the Completed page is a <b>spotlight over key art</b> with a <b>filmstrip grouped by month</b> and the <b>year dial</b> down the right; Backlog is a grid of cards in the member's order. The owner's version adds the yellow <b>Log a completion</b> (or Add to Backlog) beside the title. Saves happen as you go; a removal holds for a few seconds behind <b>Undo</b> before it's sent, with the signal-orange draining bar the Staff desk uses. Destructive actions stay signal orange; nothing here wears red or violet.",
+      options: [
+        {
+          code: "3A", short: "Spotlight edits", title: "Edit where you're looking",
+          idea: "The page stays the reel. For the owner, the spotlight carries an <b>Edit</b> button, and editing turns <b>the spotlight itself into the form</b>: its facts (Type, Platform, Started, Finished, Playtime) become fields on the key art, the note a field, with Remove, Cancel and Save along the foot, all under a yellow ring. Each filmstrip frame gets a small remove ×; a removed frame becomes an orange dashed hole with Undo. <b>Log a completion</b> opens a search popover from the header. Backlog reorders by <b>picking a card up</b>: it lifts, tilts and rings yellow, a dashed \"Drop here · 2nd\" slot follows it, and a bar offers <b>Earlier</b>, <b>Later</b> and <b>Put it here</b> for keyboard and touch.",
+          trade: "The least new UI: the owner edits the same object everyone admires, so nothing feels like an admin screen. One entry at a time, though, so fixing a dozen old dates means a dozen trips through the spotlight.",
+          desk: ["Desktop · editing Clair Obscur in the spotlight, Finished open", desk(reelPage({ spot: { edit: 1, cal: "f" }, tools: 1 }), "members", { h: 1060 })],
+          phone: ["Phone · the spotlight as the form, Started open", phone(reelPage({ ph: 1, spot: { edit: 1, cal: "s" }, act: `<span class="btn sm hl">${ic("flag")}Log</span>` }), "you")],
+          more: [
+            ["Desktop · Log a completion: search, with one already on the list", desk(reelPage({ act: `<span class="anc">${LOGBTN}${searchPop({ cls: "r" })}</span>`, tools: 1 }), "members", { h: 980 })],
+            ["Desktop · Hades removed: a hole with Undo", desk(reelPage({ d: DONE[2], spot: { pos: 2 }, tools: 1, hole: "hades", mid: `<div class="undo" style="margin-top:16px;--left:58%">${ic("trash-2")}<span><b>Hades</b> removed from Completed.</span><span class="btn sm">${ic("undo-2")}Undo</span></div>` }), "members", { h: 1060 })],
+            ["Desktop · Backlog: Final Fantasy XII picked up", desk(backlogA(), "members", { h: 860 })],
+            ["Phone · Backlog: picked up, moving with the bar", phone(backlogA(1), "you"), "ph"],
+          ],
+          notes: ["Only the owner sees Edit, the frame ×, and the yellow ring; other members get today's reel.", "Esc cancels an edit and a pick-up; the pick-up bar is also how screen readers and touch move a card.", "The Hades frame stays a hole until Undo runs out or you leave the year."],
+        },
+        {
+          code: "3B", short: "Ledger", title: "Flip to the ledger", rec: 1,
+          idea: "Viewing stays the reel; <b>Edit list</b> flips the page into a <b>ledger</b>: one ruled row per completion under month heads (Game, Type, Platform, Started, Finished, Hours, Note), still filed by year with the year dial. A pencil opens the row <b>in place</b> on a faint yellow band, each cell a field and each date its calendar; Save and Cancel stay on the row. The trash strikes a row through in signal orange with <b>Undo</b> and a draining bar under it. An <b>Add a completion</b> search sits on top. Backlog's ledger gets a <b>grip</b>, its place in Anton, and <b>Top / Up / Down</b> buttons on every row; a dragged row dims and a yellow \"Drop here\" line shows where it lands. <b>Done</b> flips back.",
+          trade: "The fastest for bulk cleanup (imports leave a lot of missing dates) and the most scannable. It's a second view of the same page to build and keep in step, and on phones the table has to become stacked rows.",
+          desk: ["Desktop · Lies of P being edited, Started open", desk(ledgerPage({ edit: "liesofp" }), "members", { h: 1000 })],
+          phone: ["Phone · stacked rows, one open, Finished open", phone(ledgerPh(), "you")],
+          more: [
+            ["Desktop · Add a completion: search on top", desk(ledgerPage({ search: 1 }), "members", { h: 900 })],
+            ["Desktop · Hades removed, Undo draining", desk(ledgerPage({ rm: "hades" }), "members", { h: 900 })],
+            ["Desktop · Backlog: Final Fantasy XII dragged to 2nd", desk(backlogLedger(), "members", { h: 820 })],
+          ],
+          notes: ["<b>Why this one:</b> viewers and the owner keep the same reel, and when the owner does sit down to manage, imports and old completions mean many rows at once; the ledger is the only option that makes that quick. The Backlog arrows give every list with an order a no-drag way that also works on touch.", "Rows save one at a time (Save on the row), so a half-done row never blocks the rest.", "The grip is a button: Space picks it up, ↑ ↓ move it, Space drops, Esc puts it back. The arrows do the same in one press.", "Started shows a dash when it's blank (Outer Wilds); it's optional."],
+        },
+        {
+          code: "3C", short: "Cards with tools", title: "Tools on every card, no mode",
+          idea: "No edit mode at all. For the owner the page shows each month as a <b>grid of cards</b> (cover, title, finished date, type, platform), and every card carries a <b>⋯</b> button: Edit, Log it again, Game page, Remove. Edit opens a <b>popover beside the card</b> with the full form and its calendars. Each month ends with a dashed <b>Add to Nov</b> tile whose search already knows the month. Remove leaves an orange dashed card reading Removed with Undo, gone when you leave. Backlog cards drag by their cover; the keyboard way is a <b>grip button</b> with a live line (\"Picked up Wuchang. 3rd of 24. Use the arrow keys…\"), and on phones ⋯ opens a <b>Move</b> sheet (top, up, down, bottom, or a place number).",
+          trade: "Everything is one press from where you are, and adding into a month is a nice shortcut for back-filling. But the owner's page stops being the reel (the owner sees cards, everyone else the spotlight), and ⋯ on every card adds noise.",
+          desk: ["Desktop · Edit beside Lies of P, Finished open", desk(cardsPage({ sel: "liesofp", pop: editPopC(DONE[2]) }), "members", { h: 1060 })],
+          phone: ["Phone · ⋯ open as a menu", phone(cardsPage({ ph: 1, sel: "hades", pop: cmenu("r") }), "you")],
+          more: [
+            ["Desktop · Add to Oct: search already set to October", desk(cardsPage({ add: "Oct" }), "members", { h: 1000 })],
+            ["Desktop · Hades removed, Undo on its card", desk(cardsPage({ gone: "hades" }), "members", { h: 960 })],
+            ["Desktop · Backlog: Nioh 2 picked up by its grip", desk(backlogC(), "members", { h: 860 })],
+            ["Phone · Backlog: the Move sheet", PSHEET(phone(backlogC(1), "you"), moveSheet), "ph"],
+          ],
+          notes: ["A completion added from \"Add to Oct\" opens with Finished in October and the day left for you to pick.", "\"Log it again\" opens a fresh completion of the same game (a replay), its Started blank.", "On touch the ⋯ is always shown; with a mouse it's shown too, so nothing hides behind hover."],
+        },
+      ],
+    },
+    {
+      id: "s4", title: "4 · /members/:id/edit, trimmed", sub: "one mock",
+      brief: "The list sections leave the edit page (they live on each list's page now). It keeps <b>Socials</b>, <b>Linked Accounts</b> and the <b>Import games</b> link, in the same rail and the same <code>#socials</code> hash.",
+      options: [{
+        code: "4", short: "Trimmed /edit", title: "Socials and Linked Accounts",
+        idea: "The rail drops Now Playing, Completed, Backlog, Favorites and Collection and keeps <b>Socials</b>, <b>Linked Accounts</b> and <b>Import games</b> below a rule. With two sections the rail could become tabs, but keeping it means the imports' <code>/edit#socials</code> links keep working untouched.",
+        desk: ["Desktop · Socials open", desk(editPage(), "members", { h: 640 })],
+        phone: ["Phone · the strip of tabs", phone(editPage(1), "you")],
+        notes: ["Members who bookmarked <code>/edit#completed</code> land on Socials (the first section), as any unknown hash does today."],
+      }],
+    },
+  ],
+});
+</script>
+</body></html>
