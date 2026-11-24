@@ -34,6 +34,12 @@ export interface PoolColumns {
 export interface SourcePreview {
   games: PoolGame[];
   total: number;
+  // When the sources have more games than one preview page: how many
+  // Optional Games the API resolves with Core and Left out applied (a
+  // count-only preview of the whole definition, less the Core Games), as
+  // the page alone can't tell which unseen games are Core or Left out.
+  // Absent while it is being counted, or when the page holds every game.
+  optionalTotal?: number;
 }
 
 const ids = (games: readonly { game_id: number }[]) => new Set(games.map((g) => g.game_id));
@@ -67,7 +73,12 @@ export function poolColumns(draft: ChallengeDraft, preview: SourcePreview | null
       tag: fresh.has(game.game_id) ? "new" : hand.has(game.game_id) ? "added" : null,
     });
   }
-  const unseen = preview ? Math.max(0, preview.total - previewed.length) : 0;
+  // The page holds every game, so `optional` is the whole count; past it,
+  // the count-only preview names how many resolved games are unseen. The
+  // linked list's games are not in the preview, so they count on top.
+  const resolved = new Set([...previewed.map((g) => g.game_id), ...hand]);
+  const shownResolved = optional.filter((g) => resolved.has(g.game_id)).length;
+  const unseen = preview?.optionalTotal != null ? Math.max(0, preview.optionalTotal - shownResolved) : 0;
   return {
     core: draft.core.map((g) => ({ ...g, tag: null })),
     optional,

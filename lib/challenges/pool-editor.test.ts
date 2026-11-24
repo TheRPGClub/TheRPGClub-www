@@ -47,11 +47,27 @@ describe("poolColumns", () => {
       optional: [bravely],
       savedOptional: [{ ...tactics, source: "franchise", new: true }],
     });
-    const columns = poolColumns(d, { games: [ff1, tactics, bravely], total: 600 });
+    const columns = poolColumns(d, { games: [ff1, tactics, bravely], total: 600, optionalTotal: 600 });
     expect(columns.optional.find((g) => g.game_id === 30)?.tag).toBe("added");
     expect(columns.optional.find((g) => g.game_id === 20)?.tag).toBe("new");
-    expect(columns.optionalCount).toBe(3 + 597);
+    expect(columns.optionalCount).toBe(600);
     expect(columns.sourceIds.has(30)).toBe(false);
+  });
+
+  it("counts games past the page from the count-only preview, so unseen Core and Left out games don't count", () => {
+    // 600 source games, two of them Core and one Left out past the page.
+    const columns = poolColumns(draft({ core: [ff1] }), {
+      games: [ff1, ff7, tactics],
+      total: 600,
+      optionalTotal: 600 - 1 - 3,
+    });
+    expect(columns.optional.map((g) => g.game_id)).toEqual([7, 20]);
+    expect(columns.optionalCount).toBe(596);
+  });
+
+  it("counts only the page's Optional Games until the count-only preview answers", () => {
+    const columns = poolColumns(draft({ core: [ff1] }), { games: [ff1, ff7, tactics], total: 600 });
+    expect(columns.optionalCount).toBe(2);
   });
 
   it("shows a hand pick before the preview answers, and the linked list's games", () => {
