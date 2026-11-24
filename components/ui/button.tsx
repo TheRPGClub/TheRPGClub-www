@@ -78,6 +78,12 @@ const buttonVariants = cva(
         help: "",
         // A round action sitting on a cover (remove the game from a list).
         "cover-remove": "",
+        // api#442: a square ink token on a Franchise page cover in edit mode
+        // (the Mainline star, Unlink); pressed, a paper block.
+        "cover-token": "",
+        // api#442: an Add-on's paper insert clipped under its parent's cover;
+        // open (aria-expanded), it turns yellow.
+        insert: "",
         // www#91: the rest of the Monthly Issue editorial components.
         // Previous or next through a set, sitting on art (the completed
         // reel's spotlight).

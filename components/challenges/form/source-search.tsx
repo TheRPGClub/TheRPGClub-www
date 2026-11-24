@@ -23,8 +23,8 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
         </InputGroupAddon>
         <InputGroupInput
           autoFocus
-          aria-label="Search franchises and collections"
-          placeholder="Search franchises and collections…"
+          aria-label="Search Franchises and Series"
+          placeholder="Search Franchises and Series…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -34,7 +34,7 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
           {loading && results.length === 0 && <p className="px-2 py-2 text-sm text-faint-foreground">Searching…</p>}
           {problem && <SearchProblemNote problem={problem} className="px-2 py-2" />}
           {settled && results.length === 0 && !problem && (
-            <p className="px-2 py-2 text-sm text-faint-foreground">No franchises or collections match.</p>
+            <p className="px-2 py-2 text-sm text-faint-foreground">No Franchise or Series matches.</p>
           )}
           <ul className="max-h-72 overflow-y-auto">
             {results.map((source) => {
@@ -51,7 +51,7 @@ export function SourceSearch({ form }: { form: ChallengeFormState }) {
                   >
                     <span className="min-w-0 truncate">{source.name}</span>
                     <span className="font-label shrink-0 text-[0.76rem] tracking-[0.08em] text-faint-foreground">
-                      {source.kind === "franchise" ? "Franchise" : "Collection"} · {source.game_count}
+                      {source.kind === "franchise" ? "Franchise" : "Series"} · {source.game_count}
                     </span>
                   </Button>
                 </li>

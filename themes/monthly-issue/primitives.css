@@ -102,6 +102,12 @@
             &[data-variant="cover-remove"] {
                 @apply rounded-full bg-background/85 text-foreground transition-colors hover:bg-foreground hover:text-background;
             }
+            &[data-variant="cover-token"] {
+                @apply rounded-xs bg-background/80 text-foreground transition-colors hover:bg-foreground hover:text-background aria-pressed:bg-foreground aria-pressed:text-background focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-highlight;
+            }
+            &[data-variant="insert"] {
+                @apply font-label -rotate-2 rounded-xs bg-foreground text-[0.68rem] leading-none font-extrabold tracking-[0.07em] text-background transition-colors hover:bg-highlight hover:text-highlight-foreground aria-expanded:bg-highlight aria-expanded:text-highlight-foreground active:not-aria-[haspopup]:translate-y-0;
+            }
             &[data-variant="destructive"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 dark:bg-destructive/20 dark:hover:bg-destructive/30;
             }

@@ -2,7 +2,13 @@
 
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle, GameRelations, Thread } from "@/lib/api/types";
-import { alternateVersion, type AlternateVersion, type GameThreadRef } from "@/lib/games/game-edit";
+import {
+  alternateVersion,
+  gameFranchiseRefs,
+  type AlternateVersion,
+  type GameFranchiseRef,
+  type GameThreadRef,
+} from "@/lib/games/game-edit";
 
 // The Game Edit page's read-backs after Save all (spec api#437): the
 // sections whose saved record only the API knows (a linked thread's jump
@@ -31,4 +37,10 @@ export async function loadVersionsAction(gameId: number): Promise<AlternateVersi
   if (!validId(gameId)) return null;
   const body = await read<ApiSingle<GameRelations>>(`/api/v1/games/${gameId}/relations`);
   return body ? (body.data.alternates ?? []).map(alternateVersion) : null;
+}
+
+export async function loadGameFranchisesAction(gameId: number): Promise<GameFranchiseRef[] | null> {
+  if (!validId(gameId)) return null;
+  const body = await read<ApiSingle<GameRelations>>(`/api/v1/games/${gameId}/relations`);
+  return body ? gameFranchiseRefs(body.data.franchises ?? []) : null;
 }

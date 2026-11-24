@@ -47,7 +47,7 @@ export function poolLine(challenge: Pick<Challenge, "pool">, gameCount: number |
   if (!pool) return null;
   const parts = [
     ...(pool.franchises ?? []).map((f) => `${f.name} franchise`),
-    ...(pool.collections ?? []).map((c) => `${c.name} collection`),
+    ...(pool.collections ?? []).map((c) => `${c.name} Series`),
   ];
   const added = pool.included_games?.length ?? 0;
   if (added) parts.push(`${added} added`);

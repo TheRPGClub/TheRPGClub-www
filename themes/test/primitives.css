@@ -110,6 +110,16 @@
                 color: var(--destructive-foreground);
                 border-radius: 0;
             }
+            &[data-variant="cover-token"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-radius: 0;
+            }
+            &[data-variant="insert"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                text-decoration: underline;
+            }
             &[data-variant="destructive"] {
                 background-color: var(--destructive);
                 color: var(--destructive-foreground);

@@ -10,7 +10,7 @@ export const EDITOR_ID = "challenge-rule-editor";
 
 // The rules as one sentence (surface brief challenges-form, 5D) on an ink-2
 // panel, big Barlow in the dim ink with each setting an underlined word:
-// "Clear [3] games from [Final Fantasy ×] [+ franchise or collection],
+// "Clear [3] games from [Final Fantasy ×] [+ Franchise or Series],
 // played between [22 Sep] and [20 Dec], [every year]." "every year" and "any
 // time" switch Seasonal and Always Open; "any time" adds "until [no end
 // date]". The end date stays open once the rules are locked.
@@ -51,7 +51,7 @@ export function RuleSentence({ form }: { form: ChallengeFormState }) {
           onClick={() => toggleWord("sources")}
           className="mx-0.5 inline-flex items-center gap-2 leading-[1.15] whitespace-nowrap [&_svg]:size-[0.55em]"
         >
-          <Plus aria-hidden /> franchise or collection
+          <Plus aria-hidden /> Franchise or Series
         </Button>
       )}
       {seasonal ? (

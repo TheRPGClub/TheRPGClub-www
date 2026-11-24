@@ -148,7 +148,7 @@ describe("validateDraft", () => {
   it("names what is missing", () => {
     const errors = validateDraft(draft({ name: " ", sources: [] }), null);
     expect(errors.name).toBe("Give the Challenge a name.");
-    expect(errors.sources).toBe("Add a franchise, a collection or a game.");
+    expect(errors.sources).toBe("Add a Franchise, a Series or a game.");
   });
 
   it("refuses a target above the Pool's size or below one", () => {

@@ -86,6 +86,10 @@ describe("currentPage", () => {
     expect(at("/reviews/42")).toBe("reviews");
   });
 
+  it("keeps Games lit on a Franchise page", () => {
+    expect(at("/franchises/7")).toBe("games");
+  });
+
   it("matches the staff desk only on its own path", () => {
     expect(at("/admin")).toBe("staff_desk");
     expect(at("/admin/voting")).toBe("voting_console");

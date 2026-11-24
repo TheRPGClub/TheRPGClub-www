@@ -20,15 +20,21 @@ describe("Game Edit access", () => {
     for (const flags of [{ admin: true }, { dev: true }]) {
       const viewer = gameEditViewer(m(flags));
       expect(viewer).toEqual({ admin: true, threads: true });
-      expect(gameEditTabsFor(viewer!)).toHaveLength(6);
+      expect(gameEditTabsFor(viewer!)).toHaveLength(7);
+      expect(gameEditTabsFor(viewer!)).toContain("franchises");
     }
   });
 
-  it("gives a Regular only Game Threads", () => {
+  it("gives a Regular Game Threads and Franchises", () => {
     const viewer = gameEditViewer(m({ regular: true, member: true }));
     expect(viewer).toEqual({ admin: false, threads: true });
-    expect(gameEditTabsFor(viewer!)).toEqual(["threads"]);
+    expect(gameEditTabsFor(viewer!)).toEqual(["threads", "franchises"]);
     expect(parseGameEditTab("text", viewer!)).toBe("threads");
+    expect(parseGameEditTab("franchises", viewer!)).toBe("franchises");
+  });
+
+  it("gives a Moderator below Admin the Regulars' tabs", () => {
+    expect(gameEditTabsFor(gameEditViewer(m({ moderator: true }))!)).toEqual(["threads", "franchises"]);
   });
 
   it("shuts out a member and a signed-out viewer", () => {
