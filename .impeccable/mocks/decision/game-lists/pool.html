@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pool Editor Options</title>
+<meta name="description" content="Design options for the Pool editor and the Challenge page's Core and Optional Games, Pool Proposals and list notices (www#168).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- pool page additions ---------- */
+.umber{--tint:#7a531c;--tint-hi:#e0b56e}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wall{display:grid;grid-template-columns:repeat(var(--cols,10),minmax(0,1fr));gap:14px 12px}
+.wall .cv{width:100%!important}
+.tile{min-width:0;position:relative}
+.tile .marks{display:flex;gap:2px;margin-top:5px;min-height:18px;flex-wrap:wrap}
+.tile .marks .av{--s:18px!important;width:18px;height:18px;font-size:8px}
+.tile .marks .av.ip{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
+.tile .nm{font:700 .72rem/1.1 "Barlow Condensed";letter-spacing:.04em;text-transform:uppercase;color:var(--dim);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ktag{display:inline-flex;align-items:center;height:18px;padding:0 5px;border-radius:2px;font:800 .66rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;background:var(--fg);color:var(--bg)}
+.ktag.core{background:var(--tint-hi);color:var(--bg)}
+.ktag.ol{background:rgb(11 11 13/.8);color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.xbtn{display:grid;place-items:center;width:22px;height:22px;border-radius:2px;background:rgb(11 11 13/.78);color:var(--fg)}
+.xbtn svg.lucide{width:13px;height:13px}
+.addt{aspect-ratio:3/4;border:1.5px dashed var(--bs);border-radius:2.4px;display:grid;place-items:center;text-align:center;color:var(--faint);font:800 .78rem/1.2 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;padding:8px}
+.addt svg.lucide{display:block;margin:0 auto 6px;width:20px;height:20px}
+.wh{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--fg);padding-bottom:8px;margin:28px 0 14px;flex-wrap:wrap}
+.wh h3{font:400 1.875rem/.9 Anton;text-transform:uppercase}
+.wh .n{color:var(--faint)}
+.wh .r{margin-left:auto;display:flex;gap:8px;align-items:center;color:var(--dim);font-size:.9rem}
+.wh.sub{border-bottom-width:1px;border-color:var(--bs)}
+.wh.sub h3{font-size:1.45rem}
+.src{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.srcc{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 10px;border-radius:2.4px;background:var(--card);box-shadow:inset 0 0 0 1px var(--bs);font:700 .86rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase}
+.srcc em{font-style:normal;color:var(--faint)}
+.srcc svg.lucide{width:14px;height:14px;color:var(--faint)}
+.srcc.dash{background:transparent;box-shadow:none;border:1.5px dashed var(--bs);color:var(--faint);padding:0 10px}
+.tally{font:700 .8rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.tally b{color:var(--fg);font-weight:700}
+.note{display:flex;gap:10px;align-items:flex-start;color:var(--dim);font-size:.92rem;line-height:1.45}
+.note svg.lucide{color:var(--faint);margin-top:2px;width:16px;height:16px}
+.dash-note{border:1px dashed var(--bs);border-radius:3px;padding:12px 14px}
+.dash-note b{color:var(--fg);font-weight:600}
+.stp{display:inline-flex;align-items:center;box-shadow:inset 0 0 0 1px var(--bs);border-radius:2.4px;height:36px}
+.stp span{width:34px;height:100%;display:grid;place-items:center;color:var(--dim)}
+.stp b{font:400 1.5rem/1 Anton;min-width:40px;text-align:center}
+.stp.bad{box-shadow:inset 0 0 0 1.5px var(--dest)}
+.stp.bad b{color:var(--dest)}
+.err{color:var(--dest);font-size:.88rem;display:flex;gap:6px;align-items:center}
+.err svg.lucide{width:15px;height:15px}
+.fmt{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fmt div{background:var(--card);border-radius:3.2px;padding:14px 16px;box-shadow:inset 0 0 0 1px var(--border)}
+.fmt div.on{box-shadow:inset 0 0 0 2px var(--hl)}
+.fmt b{display:flex;align-items:center;gap:8px;font:400 1.5rem/1 Anton;text-transform:uppercase}
+.fmt p{color:var(--dim);font-size:.9rem;margin-top:4px}
+/* 8A columns */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 44px minmax(0,1.25fr);gap:16px;align-items:start;margin-top:18px}
+.colh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--fg);padding-bottom:8px;margin-bottom:10px}
+.colh h3{font:400 1.875rem/.9 Anton;text-transform:uppercase}
+.colh .r{margin-left:auto}
+.colh.core{box-shadow:0 2px 0 var(--tint-hi);border-color:var(--tint-hi)}
+.led{border-top:1px solid var(--border)}
+.lr{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.lr .t{flex:1;min-width:0;font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr .y{color:var(--faint);font-size:.82rem;flex:none}
+.lr .mv{flex:none}
+.lr.sel{background:rgb(255 212 0/.08);box-shadow:inset 0 0 0 1px var(--hl);padding-left:6px;padding-right:6px}
+.mid{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:180px;color:var(--faint)}
+.owall{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 10px}
+.owall .cv{width:100%!important}
+/* 8B tile toggle */
+.tog{display:flex;margin-top:6px;box-shadow:inset 0 0 0 1px var(--bs);border-radius:2px}
+.tog span{flex:1;height:24px;display:grid;place-items:center;font:800 .62rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.tog span.c{background:var(--tint-hi);color:var(--bg);border-radius:2px}
+.tog span.o{background:var(--fg);color:var(--bg);border-radius:2px}
+.tile.core .cv{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--tint-hi)}
+.tile.out .cv{opacity:.28;filter:grayscale(1)}
+.lgd{display:flex;gap:16px;flex-wrap:wrap;font:700 .78rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.lgd i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:6px}
+/* 8C sentence */
+.rs .ct{font-style:normal;font:700 .9rem/1 "Barlow Condensed";letter-spacing:.06em;color:var(--faint);margin-left:4px;vertical-align:.15em}
+.rs .add{color:var(--faint);font-weight:500;box-shadow:inset 0 -2px 0 var(--bs);border-bottom:0;white-space:nowrap}
+.under{background:var(--card);border-radius:0 0 3.2px 3.2px;border-top:1px solid var(--bs);padding:18px 22px;margin-top:-4px}
+.under .hint{color:var(--faint);font-size:.88rem;margin-bottom:12px}
+.ledger2{columns:2;column-gap:28px}
+.ledger2 .lr{break-inside:avoid}
+/* challenge page */
+.rules{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;margin-top:22px}
+.facts{display:grid;grid-template-columns:96px 1fr;gap:8px 14px;font-size:.92rem;align-content:start}
+.facts dt{font:700 .78rem/1.5 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.facts dd{margin:0;color:var(--fg)}
+.facts dd a{text-decoration:underline;text-decoration-color:var(--tint-hi);text-underline-offset:3px;text-decoration-thickness:2px}
+.rc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.rc{background:var(--card);border-radius:3.2px;padding:16px;position:relative}
+.rc.you{box-shadow:inset 0 0 0 2px var(--hl)}
+.rc .h{display:flex;align-items:center;gap:10px}
+.rc .h b{font:400 1.45rem/1 Anton;text-transform:uppercase}
+.rc .sc{margin-left:auto;text-align:right}
+.rc .sc span{display:block;font:400 2.2rem/.9 Anton}
+.rc .sc span em{font-style:normal;color:var(--faint);font-size:1.3rem}
+.rc .sc small{font:700 .7rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.bars{margin-top:12px;display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:64px 1fr 42px;gap:8px;align-items:center}
+.bar>span:first-child{font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.bar>b{font:400 1rem/1 Anton;text-align:right}
+.bar>b em{font-style:normal;color:var(--faint)}
+.segs{display:flex;gap:2px;height:8px}
+.segs i{flex:1;background:var(--muted);border-radius:1px}
+.segs i.on{background:var(--tint-hi)}
+.segs i.ex{background:transparent;box-shadow:inset 0 0 0 1.5px var(--tint-hi)}
+.rc .cvs{display:flex;gap:5px;margin-top:12px;flex-wrap:wrap}
+.rc .foot{display:flex;justify-content:space-between;margin-top:10px;font:700 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.rc .stmp{position:absolute;right:14px;bottom:30px;font:400 1.1rem/1 Anton;text-transform:uppercase;color:var(--tint-hi);box-shadow:inset 0 0 0 2px var(--tint-hi);padding:5px 8px 3px;border-radius:2px;transform:rotate(-5deg);background:var(--card)}
+.extra{font:700 .72rem/1.3 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+.extra b{color:var(--tint-hi);font-weight:700}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--hl);color:var(--bg);font:800 .74rem/1 "Barlow Condensed";vertical-align:.3em;margin-left:6px}
+.prop{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.prop .t{font:400 1.3rem/1 Anton;text-transform:uppercase}
+.prop .m{color:var(--dim);font-size:.88rem;margin-top:4px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.prop .a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tray{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
+.tcard{background:var(--card);border-radius:3px;box-shadow:inset 0 0 0 1px var(--border),inset 0 4px 0 var(--hl);padding:18px 18px 14px}
+.tcard.plain{box-shadow:inset 0 0 0 1px var(--border),inset 0 4px 0 var(--bs)}
+.tcard .top{display:flex;align-items:flex-start;gap:12px}
+.tcard .num{font:400 3.6rem/.8 Anton;color:var(--hl)}
+.tcard.plain .num{color:var(--fg)}
+.tcard .ti{font:800 .95rem/1.1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.tcard .ln{color:var(--dim);font-size:.88rem;margin-top:3px}
+.tcard .items{margin-top:12px;border-top:1px solid var(--border)}
+.tcard .prop{grid-template-columns:48px minmax(0,1fr)}
+.tcard .prop .a{grid-column:1/-1;justify-content:flex-start}
+.split{display:flex;align-items:center;gap:12px;margin:18px 0 12px}
+.split b{font:400 1.45rem/1 Anton;text-transform:uppercase}
+.split .ln{flex:1;height:2px;background:var(--bs)}
+.split small{font:700 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.chk{display:grid;grid-template-columns:26px 36px minmax(0,1fr) auto 108px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.chk .no{font:400 1.2rem/1 Anton;color:var(--faint);text-align:right}
+.chk .t{font-weight:600}
+.chk .t small{display:block;color:var(--faint);font-weight:400;font-size:.8rem}
+.chk .st{display:flex;align-items:center;gap:6px;font:700 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.chk .st.ok{color:var(--tint-hi)}
+.chk .st.ip{color:var(--fg)}
+.chk .mk{display:flex;gap:2px}
+.chk .mk .av{width:20px!important;height:20px!important;font-size:8px}
+.bslip{position:absolute;z-index:3;background:var(--fg);color:var(--bg);border-radius:2px;box-shadow:0 12px 30px rgb(0 0 0/.5);padding:12px 14px;width:300px}
+.bslip h4{font:400 1.15rem/.95 Anton;text-transform:uppercase;margin-bottom:4px}
+.bslip p{font-size:.86rem;color:rgb(11 11 13/.75);line-height:1.35}
+.bslip p b{color:var(--bg)}
+.bslip .row{margin-top:10px}
+.made{display:inline-flex;align-items:center;gap:6px;font:700 .8rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--fg);background:rgb(11 11 13/.7);padding:6px 8px;border-radius:2px}
+.made a{text-decoration:underline;text-decoration-color:var(--tint-hi);text-decoration-thickness:2px;text-underline-offset:3px}
+.made svg.lucide{width:14px;height:14px}
+.ov{position:relative}
+.ovl{position:absolute;inset:0;background:rgb(0 0 0/.62);z-index:4;display:grid;place-items:center;padding:24px}
+.ovl .dlg{width:min(520px,100%)}
+.pick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pick div{box-shadow:inset 0 0 0 1px var(--bs);border-radius:2.4px;padding:10px 12px}
+.pick div.on{box-shadow:inset 0 0 0 2px var(--hl)}
+.pick b{font:400 1.1rem/1 Anton;text-transform:uppercase;display:block}
+.pick small{color:var(--dim)}
+.lp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lpc{background:var(--card);border-radius:3.2px;padding:14px;box-shadow:inset 0 0 0 1px var(--border)}
+.lpc.on{box-shadow:inset 0 0 0 2px var(--hl)}
+.lpc .fan{display:flex;margin-bottom:10px}
+.lpc .fan .cv{margin-right:-14px;box-shadow:0 6px 14px rgb(0 0 0/.5)}
+.lpc b{font:400 1.3rem/1 Anton;text-transform:uppercase;display:block}
+.lpc small{color:var(--faint);font:700 .74rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.pshell .rules{grid-template-columns:1fr;gap:16px}
+.pshell .rc-grid{grid-template-columns:1fr}
+.pshell .cols{grid-template-columns:1fr}
+.pshell .tray{grid-template-columns:1fr}
+.pshell .fmt{grid-template-columns:1fr}
+.pshell .chk{grid-template-columns:24px 36px minmax(0,1fr) 70px}
+.pshell .chk .mk{display:none}
+.pshell .prop{grid-template-columns:48px minmax(0,1fr)}
+.pshell .prop .a{grid-column:1/-1;justify-content:flex-start}
+.pshell .vsw{gap:16px}
+.pshell .vsw span{font-size:1.4rem}
+.pshell .cbn .plate{position:static;align-self:flex-start;padding:8px 12px;gap:16px}
+.pshell .cbn .plate b{font-size:2rem}
+.pshell .lp{grid-template-columns:1fr}
+</style></head><body>
+<script>
+/* ---------------- page data ---------------- */
+game("dissidia", "Dissidia Final Fantasy NT", 2018, null);
+game("ffcc", "Final Fantasy Crystal Chronicles Remastered", 2020, null);
+const roman = { ff1: "I", ff2: "II", ff3: "III", ff4: "IV", ff5: "V", ff6: "VI", ff7: "VII", ff8: "VIII", ff9: "IX", ff10: "X", ff12: "XII", ff13: "XIII", ff15: "XV", ff16: "XVI" };
+const MARA_CORE = ["ff1", "ff2", "ff3", "ff4", "ff5", "ff6", "ff7", "ff8", "ff9"];
+const RUNS = [
+  { m: "mara", core: 9, opt: 1, ip: ["ff10"], cl: ["ff7", "ff8", "ff9", "ff7r"], started: "Started 23 Sep", you: 1 },
+  { m: "tavi", core: 14, opt: 3, cl: ["ff13", "ff15", "ff16", "cc", "t0", "wofs"], extra: 1, started: "Finished 18 Nov", fin: 1 },
+  { m: "jun", core: 11, opt: 2, ip: ["ff12"], cl: ["ff9", "ff10", "ff7r", "ff7rb"], started: "Started 22 Sep" },
+  { m: "rowan", core: 6, opt: 0, ip: ["ff7"], cl: ["ff4", "ff5", "ff6"], started: "Started 24 Sep" },
+  { m: "owl", core: 3, opt: 0, ip: ["ff8"], cl: ["ff1", "ff2", "ff3"], started: "Started 2 Oct" },
+  { m: "mog", core: 8, opt: 1, ip: ["ff13"], cl: ["ff10", "ff12", "ff9"], started: "Started 1 Oct" },
+];
+/* stable member marks per game (cleared, in progress) */
+const marks = (k) => {
+  let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) % 997;
+  const ks = Object.keys(M); const n = h % 5; const out = [];
+  for (let i = 0; i < n; i++) out.push(ks[(h + i * 3) % ks.length]);
+  return [...new Set(out)].map((m, i) => (i === 0 && h % 3 === 0 ? av(m, 18).replace('class="av"', 'class="av ip"') : av(m, 18))).join("");
+};
+const tname = (k) => (roman[k] ? "Final Fantasy " + roman[k] : G[k].t);
+
+/* ---------------- shared bits ---------------- */
+const asHost = (html, k) => html.replace(`${av("mara", 32)}<div><b>Mara</b><small>@mara</small></div>`, `${av(k, 32)}<div><b>${M[k].n}</b><small>@${k === "grind" ? "grindlord" : k} · Host</small></div>`);
+const fmtCards = (locked) => `<div class="fmt">
+  <div><b><i class="fsq" style="background:var(--f-slots)"></i>Slots</b><p>One game for every year in a range</p></div>
+  <div class="on"><b><i class="fsq"></i>Pool</b><p>Clear games from a set you choose${locked ? ` ${ic("lock")}` : ""}</p></div>
+  <div style="opacity:.55"><b><i class="fsq" style="background:#52cf98"></i>Assignment</b><p>Staff only</p></div></div>`;
+const head = (t, act = "Create Challenge", back = "Challenges") => `<a class="back">${ic("arrow-left")}${back}</a><div class="hd"><h1>${t}</h1><div class="act"><span class="btn gh">Cancel</span><span class="btn hl">${act}</span></div></div>`;
+const pHead = (t, act = "Create") => `<span class="pback">${ic("arrow-left")}</span><div class="hd"><h1>${t}</h1></div><div class="row" style="margin-top:10px"><span class="btn hl sm" style="flex:1">${act}</span><span class="btn gh sm">Cancel</span></div>`;
+const srcRow = (o = {}) => `<div class="src">
+  <span class="srcc">${ic("library-big")}Final Fantasy<em>Franchise · 31</em>${ic("x")}</span>
+  <span class="srcc">${ic("layers")}Final Fantasy VII<em>Series · 9</em>${ic("x")}</span>
+  ${o.list ? `<span class="srcc">${ic("list-ordered")}${o.list}<em>Game List</em>${ic("x")}</span>` : `<span class="srcc dash">${ic("plus")}Franchise, Series or Game List</span>`}
+</div>`;
+const addonLine = `<p class="note" style="margin-top:10px">${ic("info")}<span>Sources only add Optional Games. Add-ons (DLC, expansions) never come in by themselves; add one by hand.</span></p>`;
+const lockNote = (n = 9) => `<div class="dash-note note">${ic("lock")}<span><b>Format and Season are locked</b> because ${n} Runs have started. Core and Optional Games, sources and the target stay editable. Adding a Core Game or raising the target sends a DM to the 8 members with an active Run.</span></div>`;
+const stepper = (v, bad) => `<span class="stp ${bad ? "bad" : ""}"><span>${ic("minus")}</span><b>${v}</b><span>${ic("plus")}</span></span>`;
+const alsoAdd = (game, list) => `<div class="dlg"><h3>Also add to the list?</h3><p class="dim">${esc(G[game].t)} joins the Pool as an Optional Game. <b style="color:var(--fg)">${esc(list)}</b> feeds this Challenge, so you can add it there too.</p>
+  <div class="row" style="margin-top:14px;gap:16px">${cover(game, 64)}<div><span class="sw"><span class="t"></span><span class="lb">Also add to ${esc(list)}</span></span><p class="faint" style="font-size:.85rem;margin-top:6px">Leave it off to keep your list as it is.</p></div></div>
+  <div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">Add to the Pool</span></div></div>`;
+const ovl = (bg, dlg, h) => `<div class="ov" style="min-height:${h || 560}px">${bg}<div class="ovl">${dlg}</div></div>`;
+const listPick = (sel = "souls") => {
+  const card = (k, on) => { const L = LISTS[k]; return `<div class="lpc ${on ? "on" : ""}"><div class="fan">${L.games.slice(0, 4).map(([g]) => cover(g, 54)).join("")}</div><b>${L.name}</b><small>${L.count || L.games.length} games · ${L.vis === "private" ? "Private" : "Members"}</small></div>`; };
+  return `<div class="lp">${card("souls", sel === "souls")}${card("top10")}${card("ffmain")}</div>`;
+};
+
+/* ================= 8A: two columns ================= */
+const ledRow = (k, i, side, sel) => `<div class="lr ${sel ? "sel" : ""}">${cover(k, 30)}<span class="t">${esc(tname(k))}</span><span class="y">${G[k].y}</span>
+  <span class="btn xs ic mv" title="${side === "core" ? "Make Optional" : "Make Core"}">${ic(side === "core" ? "arrow-right" : "arrow-left")}</span><span class="btn xs ic gh mv" title="Leave out">${ic("x")}</span></div>`;
+const optTile = (k, o = {}) => `<div class="tile">${cover(k, 80, { tag: FOFF.newOpt.includes(k) ? `<span class="new">New</span>` : o.hand ? `<span class="ktag">Added</span>` : "", tr: `<span class="xbtn">${ic("arrow-left")}</span>` })}<div class="nm">${esc(G[k].t)}</div></div>`;
+const colsA = (o = {}) => `<div class="cols" style="${o.short ? "grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)" : ""}">
+  <div><div class="colh core"><h3>Core</h3><span class="n lb faint">14 games</span><span class="r btn xs">${ic("plus")}Add</span></div>
+    <p class="faint" style="font-size:.86rem;margin-bottom:8px">Every Run must Clear all of these.</p>
+    <div class="led">${FOFF.core.slice(0, o.short ? 6 : 14).map((k, i) => ledRow(k, i, "core", k === "ff13" && o.sel)).join("")}</div>${o.short ? `<p class="tally" style="margin-top:8px">+ 8 more</p>` : ""}</div>
+  ${o.short ? "" : `<div class="mid">${ic("arrow-left-right")}<span class="lb" style="writing-mode:vertical-rl;transform:rotate(180deg)">Move in one tap</span></div>`}
+  <div><div class="colh"><h3>Optional</h3><span class="n lb faint">12 games</span><span class="r row"><span class="lb dim">Clear</span>${stepper(o.bad ? 13 : 2, o.bad)}<span class="lb dim">of 12</span></span></div>
+    ${o.bad ? `<p class="err" style="margin:-2px 0 10px">${ic("circle-alert")}Only 12 Optional Games. Lower the target or add more.</p>` : ""}
+    ${srcRow(o)}${addonLine}
+    <div class="owall" style="margin-top:14px">${FOFF.optional.slice(0, o.short ? 6 : 12).map((k) => optTile(k)).join("")}${o.short ? "" : `<div class="addt">${ic("plus")}Add a game by hand</div>`}</div>
+  </div></div>
+  <div class="wh sub"><h3>Left out</h3><span class="n lb">5</span><span class="r">From the sources, kept out until you put them back</span></div>
+  <div class="row">${FOFF.excluded.map((k) => `<span class="srcc">${esc(G[k].t)}<em>Put back</em>${ic("undo-2")}</span>`).join("")}</div>`;
+const sentenceA = `<div class="rs" style="font-size:1.7rem">Clear <span class="rw">every Core Game${ic("chevron-down")}</span> and <span class="rw">2 Optional Games${ic("chevron-down")}</span>, played between <span class="rw">22 Sep${ic("calendar")}</span> and <span class="rw">20 Dec${ic("calendar")}</span>, <span class="rw">every year${ic("chevron-down")}</span>.</div>`;
+const deskA = desk(`${head("New Challenge")}<div style="margin-top:20px">${fmtCards()}</div><div style="margin-top:18px">${sentenceA}</div>${colsA({})}`, "challenges");
+const phoneA = phone(`${pHead("New Challenge")}<div style="margin-top:16px"><div class="rs">Clear <span class="rw">every Core Game</span> and <span class="rw">2 Optional</span>, <span class="rw">22 Sep</span> to <span class="rw">20 Dec</span>, <span class="rw">every year</span>.</div></div>
+  <div class="seg sm" style="margin-top:18px;display:flex"><span class="on" style="flex:1;justify-content:center">Core 14</span><span style="flex:1;justify-content:center">Optional 12</span><span style="flex:1;justify-content:center">Left out 5</span></div>
+  <div class="led" style="margin-top:12px">${FOFF.core.slice(0, 7).map((k) => ledRow(k, 0, "core")).join("")}</div>
+  <div class="addt" style="aspect-ratio:auto;height:44px;margin-top:10px;display:flex;gap:6px;justify-content:center">${ic("plus")}Add a Core Game</div>`, "play", { h: 900 });
+const editA = desk(`${head("Edit Challenge", "Save", "Fall of Final Fantasy")}<div style="margin-top:16px">${lockNote()}</div>${colsA({ short: 1, sel: 1 })}`, "challenges");
+const badA = desk(`${head("Edit Challenge", "Save", "Fall of Final Fantasy")}${colsA({ short: 1, bad: 1 })}`, "challenges");
+const fromListA = desk(`${head("New Challenge")}<div class="wh"><h3>Start from a Game List</h3><span class="n lb">Your lists</span><span class="r">Its games become Core. Move some to Optional after.</span></div>${listPick()}
+  <div class="cols" style="grid-template-columns:1fr 1.25fr"><div><div class="colh core"><h3>Core</h3><span class="n lb faint">6 games</span></div><div class="led">${LISTS.souls.games.map(([k]) => ledRow(k, 0, "core")).join("")}</div></div>
+  <div><div class="colh"><h3>Optional</h3><span class="n lb faint">0 games</span><span class="r row"><span class="lb dim">Clear</span>${stepper(0)}</span></div><div class="src"><span class="srcc">${ic("list-ordered")}Soulslike, but make it history<em>Game List · linked</em>${ic("x")}</span></div>
+  <p class="note" style="margin-top:10px">${ic("info")}<span>Games you add to the list later arrive here as Optional Games.</span></p><div class="empty" style="margin-top:14px">No Optional Games yet. Use the arrow on a Core Game, or add a source.</div></div></div>`, "challenges");
+const alsoA = ovl(desk(`${head("Edit Challenge", "Save", "Soulslike Summer")}<div class="umber">${colsA({ short: 1, list: "Soulslike, but make it history" })}</div>`, "challenges"), alsoAdd("elden", "Soulslike, but make it history"), 760);
+
+/* ================= 8B: one wall, a toggle per tile ================= */
+const tileB = (k, st, o = {}) => `<div class="tile ${st}">${cover(k, 90, { tag: st === "out" ? `<span class="ktag ol">Left out</span>` : FOFF.newOpt.includes(k) ? `<span class="new">New</span>` : o.hand ? `<span class="ktag">Added</span>` : "" })}
+  <div class="tog"><span class="${st === "core" ? "c" : ""}">Core</span><span class="${st === "opt" ? "o" : ""}">Optional</span><span title="Leave out">${ic("x")}</span></div></div>`;
+const wallB = (o = {}) => {
+  const all = [...FOFF.core.map((k) => [k, "core"]), ...FOFF.optional.map((k) => [k, "opt"]), ...FOFF.excluded.map((k) => [k, "out"])];
+  const n = o.n || all.length;
+  return `<div class="wh"><h3>The Pool</h3><span class="n lb">14 Core · 12 Optional</span><span class="r"><span class="seg sm"><span class="on">All 31</span><span>Core 14</span><span>Optional 12</span><span>Left out 5</span></span></span></div>
+  <div class="row" style="justify-content:space-between;margin-bottom:12px"><div class="tally"><b>31</b> from Final Fantasy · <b>9</b> from Final Fantasy VII · <b>1</b> added · <b>5</b> left out</div>
+  <div class="lgd"><span><i style="background:var(--tint-hi)"></i>Core</span><span><i style="background:var(--fg)"></i>Optional</span><span><i style="background:var(--muted);box-shadow:inset 0 0 0 1px var(--bs)"></i>Left out</span></div></div>
+  <div class="wall" style="--cols:${o.cols || 8}">${all.slice(0, n).map(([k, s]) => tileB(k, s, { hand: k === "ffmq" })).join("")}${o.cols ? "" : `<div class="addt">${ic("plus")}Add a game by hand</div>`}</div>`;
+};
+const sentenceB = (bad) => `<div class="rs">Clear <span class="rw">every Core Game${ic("chevron-down")}</span> and <span class="rw ${bad ? "open" : ""}" style="${bad ? "box-shadow:inset 0 -3px 0 var(--dest);background:rgb(255 140 60/.08)" : ""}">${bad ? 13 : 2} Optional${ic("chevron-down")}</span> from <span class="rw">Final Fantasy${ic("x")}</span> <span class="rw">Final Fantasy VII Series${ic("x")}</span> <span class="add">+ Franchise, Series or list</span>, played between <span class="rw">22 Sep${ic("calendar")}</span> and <span class="rw">20 Dec${ic("calendar")}</span>, <span class="rw">every year${ic("chevron-down")}</span>.</div>`;
+const deskB = desk(`${head("New Challenge")}<div style="margin-top:20px">${fmtCards()}</div><div style="margin-top:18px">${sentenceB()}</div>${addonLine}${wallB()}`, "challenges");
+const phoneB = phone(`${pHead("New Challenge")}<div style="margin-top:16px">${sentenceB().replace('class="rs"', 'class="rs" style="font-size:1.25rem"')}</div>
+  <div class="wh"><h3>The Pool</h3><span class="n lb">14 Core · 12 Optional</span></div><div class="seg sm" style="display:flex;margin-bottom:12px"><span class="on">All</span><span>Core</span><span>Optional</span><span>Left out</span></div>
+  <div class="wall" style="--cols:3">${[...FOFF.core.slice(0, 6).map((k) => [k, "core"]), ["fft", "opt"], ["cc", "opt"], ["ff11", "out"]].map(([k, s]) => tileB(k, s)).join("")}</div>`, "play", { h: 1000 });
+const editB = desk(`${head("Edit Challenge", "Save", "Fall of Final Fantasy")}<div style="margin-top:16px">${lockNote()}</div><div style="margin-top:16px">${sentenceB().replace(/<span class="rw">22 Sep.*?every year[^<]*<i[^>]*><\/i><\/span>/, '<span class="dim">22 Sep and 20 Dec, every year ' + ic("lock") + "</span>")}</div>${wallB({ n: 16 })}`, "challenges");
+const badB = desk(`${head("Edit Challenge", "Save", "Fall of Final Fantasy")}<div style="margin-top:16px">${sentenceB(1)}</div>
+  <div class="panel" style="padding:14px 18px;margin-top:-2px;display:flex;gap:16px;align-items:center">${stepper(13, 1)}<p class="err">${ic("circle-alert")}There are only 12 Optional Games. Lower the target or add more.</p></div>${wallB({ n: 8 })}`, "challenges");
+const fromFrB = desk(`${head("New Challenge")}<div class="dash-note note" style="margin-top:16px">${ic("library-big")}<span>Started from the <b>Final Fantasy</b> Franchise. Its 16 Mainline games came in as Core and everything else as Optional; XI and XIV were then switched to Left out. Change any tile below.</span></div><div style="margin-top:16px">${sentenceB()}</div>${wallB({ n: 16 })}`, "challenges");
+const alsoB = ovl(desk(`${head("Edit Challenge", "Save", "Soulslike Summer")}<div class="umber" style="margin-top:16px"><div class="wall" style="--cols:8">${LISTS.souls.games.map(([k]) => tileB(k, "core")).join("")}<div class="addt" style="box-shadow:inset 0 0 0 2px var(--hl)">${ic("plus")}Add a game by hand</div></div></div>`, "challenges"), alsoAdd("elden", "Soulslike, but make it history"), 640);
+
+/* ================= 8C: the sentence runs it ================= */
+const sentC = (open) => `<div class="rs">Clear <span class="rw ${open === "core" ? "open" : ""}">all 14 Core Games${ic("chevron-down")}</span> and <span class="rw ${open === "opt" ? "open" : ""}">2${ic("chevron-down")}</span> of the <span class="rw ${open === "pool" ? "open" : ""}">12 Optional Games${ic("chevron-down")}</span> from <span class="rw">Final Fantasy${ic("x")}</span> <span class="rw">Final Fantasy VII Series${ic("x")}</span> <span class="add">+ source</span>, played between <span class="rw">22 Sep${ic("calendar")}</span> and <span class="rw">20 Dec${ic("calendar")}</span>, <span class="rw">every year${ic("chevron-down")}</span>.</div>`;
+const coreUnder = (n = 14) => `<div class="under"><p class="hint">Core Games: every Run must Clear all of them. Drag to reorder, the arrow makes one Optional.</p>
+  <div class="ledger2">${FOFF.core.slice(0, n).map((k, i) => `<div class="lr"><span class="grip">${ic("grip-vertical")}</span><span class="lb faint" style="width:22px">${String(i + 1).padStart(2, "0")}</span>${cover(k, 28)}<span class="t">${esc(tname(k))}</span><span class="btn xs" title="Make Optional">${ic("arrow-down-right")}Optional</span><span class="btn xs ic gh">${ic("x")}</span></div>`).join("")}</div>
+  <div class="row" style="margin-top:12px"><span class="fld ph" style="flex:1">${ic("search")}Add a Core Game from GameDB</span></div></div>`;
+const optUnder = `<div class="under"><p class="hint">Optional Games: the sources keep this list fresh. Each new one is tagged New for 14 days.</p>
+  <div class="wall" style="--cols:12">${FOFF.optional.map((k) => `<div class="tile">${cover(k, 80, { tag: FOFF.newOpt.includes(k) ? `<span class="new">New</span>` : "", tr: `<span class="xbtn" title="Make Core">${ic("arrow-up-left")}</span>` })}<div class="nm">${esc(G[k].t)}</div></div>`).join("")}</div>
+  ${addonLine}<p class="tally" style="margin-top:10px">Left out: ${FOFF.excluded.map((k) => G[k].t).join(" · ")} <span class="tl" style="margin-left:6px">Put one back</span></p></div>`;
+const deskC = desk(`${head("New Challenge")}<div style="margin-top:20px">${fmtCards()}</div><div style="margin-top:18px">${sentC("core")}</div>${coreUnder()}
+  <div class="wh sub"><h3>12 Optional Games</h3><span class="r">${ic("chevron-down")}Open from the sentence</span></div>`, "challenges");
+const phoneC = phone(`${pHead("New Challenge")}<div style="margin-top:16px">${sentC().replace('class="rs"', 'class="rs" style="font-size:1.25rem"')}</div>
+  <div style="margin:18px -16px 0;background:var(--card);border-top:2px solid var(--hl);padding:14px 16px;border-radius:3px 3px 0 0;box-shadow:0 -12px 30px rgb(0 0 0/.5)"><div style="width:40px;height:4px;background:var(--bs);border-radius:2px;margin:0 auto 12px"></div>
+  <div class="wh" style="margin-top:0"><h3>14 Core Games</h3></div>${FOFF.core.slice(0, 7).map((k) => `<div class="lr">${cover(k, 28)}<span class="t">${esc(tname(k))}</span><span class="btn xs ic">${ic("arrow-down-right")}</span></div>`).join("")}<span class="btn hl" style="width:100%;margin-top:12px">Done</span></div>`, "play", { h: 900 });
+const optC = desk(`${head("New Challenge")}<div style="margin-top:18px">${sentC("pool")}</div>${optUnder}`, "challenges");
+const editC = desk(`${head("Edit Challenge", "Save", "Fall of Final Fantasy")}<div style="margin-top:16px">${lockNote()}</div><div style="margin-top:16px">${sentC("opt").replace(/played between.*every year[^<]*<i[^>]*><\/i><\/span>/, '<span class="dim">played between 22 Sep and 20 Dec, every year ' + ic("lock") + "</span>")}</div>
+  <div class="under"><div class="row" style="gap:16px">${stepper(3)}<span class="dim">Raising the target from 2 to 3 sends a DM to the 8 members with an active Run. Lowering it Finishes any Run that now meets it.</span></div></div>`, "challenges");
+const fromListC = desk(`${head("New Challenge")}<div class="rs" style="margin-top:18px">Clear <span class="rw open">the games in${ic("chevron-down")}</span> <span class="rw">Soulslike, but make it history${ic("x")}</span> and <span class="rw">0${ic("chevron-down")}</span> Optional Games, <span class="rw">any time${ic("chevron-down")}</span>.</div>
+  <div class="under"><p class="hint">Start from one of your Game Lists. Its 6 games become Core, and games you add to it later arrive as Optional.</p>${listPick()}</div>`, "challenges");
+const alsoC = ovl(desk(`${head("Edit Challenge", "Save", "Soulslike Summer")}<div class="umber" style="margin-top:18px"><div class="rs">Clear <span class="rw open">all 6 Core Games${ic("chevron-down")}</span> and <span class="rw">0${ic("chevron-down")}</span> of the <span class="rw">1 Optional Game${ic("chevron-down")}</span> from <span class="rw">Soulslike, but make it history${ic("x")}</span>, <span class="rw">any time${ic("chevron-down")}</span>.</div></div>`, "challenges"), alsoAdd("elden", "Soulslike, but make it history"), 620);
+
+/* ================= surface 9: Challenge page ================= */
+const banner = (o = {}) => { const s = o.souls; return `<div class="cbn">${artBg(s ? "wukong" : "ff16")}<div class="in">
+  <a class="back" style="position:absolute;top:18px;left:28px;color:var(--fg)">${ic("arrow-left")}Challenges</a>${o.slips || ""}
+  <div class="row"><span class="chip tint">${s ? "Always Open" : FOFF.season}</span><span class="chip"><i class="fsq"></i>Pool</span>${s && o.made ? `<span class="made">${ic("list-ordered")}Made from <a>Soulslike, but make it history</a></span>` : ""}</div>
+  <h1>${s ? `Soulslike<span>Summer</span>` : `Fall of<span>Final Fantasy</span>`}</h1></div>
+  <div class="plate">${s ? `<div><b style="color:var(--tint-hi)">4</b><small>Runs</small></div><div><b>0</b><small>Finished</small></div>` : `<div><b style="color:var(--tint-hi)">26</b><small>Days left</small></div><div><b>9</b><small>Runs</small></div><div><b>1</b><small>Finished</small></div>`}</div></div>`; };
+const pbanner = (o = {}) => { const s = o.souls; return `<div class="cbn">${artBg(s ? "wukong" : "ff16")}<div class="in"><span class="pback" style="position:absolute;top:14px;left:16px;background:rgb(11 11 13/.6);margin:0">${ic("arrow-left")}</span>
+  <div class="row"><span class="chip tint sm">${s ? "Always Open" : "Season 2026"}</span><span class="chip sm"><i class="fsq"></i>Pool</span></div><h1>${s ? `Soulslike<span>Summer</span>` : `Fall of<span>Final Fantasy</span>`}</h1>
+  <div class="plate">${s ? `<div><b style="color:var(--tint-hi)">4</b><small>Runs</small></div>` : `<div><b style="color:var(--tint-hi)">26</b><small>Days left</small></div><div><b>9</b><small>Runs</small></div><div><b>1</b><small>Finished</small></div>`}</div></div></div>`; };
+const rulesRow = (o = {}) => `<div class="rules"><p class="blurb">Play through Final Fantasy this autumn. Clear every numbered game except the two online ones, then any 2 of the spin-offs, remakes and sequels. New Optional Games join as Square Enix releases them, and the Host can add a Core Game when a new numbered one comes out.</p>
+  <dl class="facts"><dt>Host</dt><dd class="row">${av("rowan", 22)}Rowan</dd><dt>Season</dt><dd>22 Sep – 20 Dec, every year</dd><dt>Finish</dt><dd>Clear all 14 Core Games and 2 Optional Games</dd><dt>Pool</dt><dd>14 Core · 12 Optional · from the Final Fantasy Franchise and the Final Fantasy VII Series</dd>${o.extra || ""}</dl></div>`;
+const segs = (n, on, ex = 0, max = 20) => `<span class="segs">${Array.from({ length: Math.min(n, max) }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join("")}${Array.from({ length: ex }, () => `<i class="ex"></i>`).join("")}</span>`;
+const runCard = (r) => `<div class="rc ${r.you ? "you" : ""}"><div class="h">${av(r.m, 34)}<b>${M[r.m].n}</b>${r.you ? `<span class="chip hl sm">You</span>` : ""}<div class="sc"><span>${r.core}<em> / 14</em></span><small>Core</small></div></div>
+  ${r.fin ? `<span class="stmp">Finished</span>` : ""}
+  <div class="bars"><div class="bar"><span>Core</span>${segs(14, r.core)}<b>${r.core}<em>/14</em></b></div><div class="bar"><span>Optional</span>${segs(2, Math.min(r.opt, 2), Math.max(0, r.opt - 2))}<b>${r.opt}<em>/2</em></b></div></div>
+  ${r.opt > 2 ? `<p class="extra">Optional Cleared: <b>Crisis Core, Type-0 HD, World of FF</b> · 1 more than needed</p>` : ""}
+  <div class="cvs">${r.cl.map((k) => cover(k, 40)).join("")}${(r.ip || []).map((k) => cover(k, 40, { cls: "ip" }).replace('class="cv ip"', 'class="cv" style="width:40px;outline:2px dashed var(--fg);outline-offset:2px"')).join("")}</div>
+  <div class="foot"><span>${r.started}</span><span>${r.ip ? r.ip.length + " In Progress" : ""}</span></div></div>`;
+const runsGrid = (n = 6) => `<div class="rc-grid">${RUNS.slice(0, n).map(runCard).join("")}</div>`;
+const poolTile = (k, o = {}) => `<div class="tile">${cover(k, 90, { cls: MARA_CORE.includes(k) || k === "ff7r" ? "ring" : "", tag: FOFF.newOpt.includes(k) ? `<span class="new">New</span>` : "" })}<div class="marks">${marks(k)}</div></div>`;
+const propRow = (k, by, o = {}) => `<div class="prop">${cover(k, 56)}<div><div class="t">${esc(G[k].t)}</div><div class="m">${av(by, 18)}Proposed by ${M[by].n} · ${o.when || "2 days ago"}${o.out ? ` · <span class="chip ols sm">Left out by the Host</span>` : ""}</div></div>
+  <div class="a"><span class="btn sm hl">${ic("plus")}Accept as Core</span><span class="btn sm">Accept as Optional</span><span class="btn sm ds">Decline</span></div></div>`;
+const props = (n = 3) => [propRow("ff14", "tavi", { out: 1, when: "today" }), propRow("dissidia", "mog"), propRow("ffcc", "dice", { when: "5 days ago" })].slice(0, n).join("");
+const noticeRow = `<div class="prop">${cover("nioh", 56)}<div><div class="t">Nioh was removed from your list</div><div class="m">It was removed from Soulslike, but make it history, and it's still a Core Game here.</div></div><div class="a"><span class="btn sm ds">Remove from the Pool</span><span class="btn sm">Keep it</span></div></div>`;
+const proposeBtn = `<span class="btn sm">${ic("message-square-plus")}Propose a game</span>`;
+const proposeDlg = (refused) => `<div class="dlg"><h3>Propose a game</h3><p class="dim">Rowan, the Host, decides. You'll get a DM if it's accepted.</p>
+  <div class="fld ${refused ? "" : "focus"}" style="margin-top:14px">${ic("search")}${refused ? "Final Fantasy XIV" : "Final Fantasy Tactics A2<span class='caret'></span>"}</div>
+  ${refused ? `<div class="slip" style="margin-top:18px;transform:rotate(-1.5deg)"><h4>Already proposed</h4><p><b>Tavi</b> proposed Final Fantasy XIV today, and it's waiting for Rowan. A game already in the Pool can't be proposed either.</p></div>` : `<div class="lr" style="margin-top:10px;background:var(--muted);padding:8px">${cover("fft", 36)}<span class="t">Final Fantasy Tactics A2: Grimoire of the Rift</span><span class="y">2007</span></div>`}
+  <div class="bt"><span class="btn gh">Cancel</span><span class="btn hl ${refused ? "dis" : ""}">Send the proposal</span></div></div>`;
+const acceptDlg = `<div class="dlg"><h3>Accept Elden Ring</h3><p class="dim">Proposed by Tavi for Soulslike Summer.</p><div class="pick" style="margin-top:14px"><div><b>Core</b><small>Every Run must Clear it. Members in a Run get a DM.</small></div><div class="on"><b>Optional</b><small>Arrives quietly with a New tag.</small></div></div>
+  <div style="margin-top:14px"><span class="sw"><span class="t"></span><span class="lb">Also add to Soulslike, but make it history</span></span></div><div class="bt"><span class="btn gh">Cancel</span><span class="btn hl">Accept as Optional</span></div></div>`;
+
+/* 9A: a third word on the switch, two walls */
+const vswA = (on, host = 1) => `<div class="vsw"><span class="${on === "runs" ? "on" : ""}">Runs<em>9</em></span><span class="${on === "pool" ? "on" : ""}">The Pool<em>26</em></span>${host ? `<span class="${on === "prop" ? "on" : ""}">Proposals<span class="badge">3</span></span>` : ""}<span class="r">${host ? `<span class="btn ds sm">Abandon your Run</span>` : proposeBtn}</span></div>`;
+const poolA = (cols = 10, n = 99) => `<div class="wh sub" style="margin-top:6px"><h3>Core Games</h3><span class="n lb">14 · every Run Clears all of them</span><span class="r"><span class="seg sm"><span class="on">All</span><span>Played by the club</span><span>Not played yet</span></span></span></div>
+  <div class="wall" style="--cols:${cols}">${FOFF.core.slice(0, n).map((k) => poolTile(k)).join("")}</div>
+  <div class="wh sub"><h3>Optional Games</h3><span class="n lb">12 · Clear any 2</span><span class="r">From Final Fantasy and the Final Fantasy VII Series</span></div>
+  <div class="wall" style="--cols:${cols}">${FOFF.optional.slice(0, n).map((k) => poolTile(k)).join("")}</div>
+  <p class="tally" style="margin-top:14px">Left out by the Host: ${FOFF.excluded.map((k) => G[k].t).join(" · ")}</p>`;
+const deskA9 = desk(`${banner()}${rulesRow()}${vswA("pool", 0)}${poolA()}`, "challenges", { h: 1500 });
+const phoneA9 = phone(`${pbanner()}${vswA("pool", 0).replace("<em>9</em>", "<em>9</em>")}${poolA(3, 6)}`, "play", { h: 1300 });
+const propA9 = asHost(desk(`${banner()}${vswA("prop")}<p class="dim" style="margin-bottom:6px">Members propose games they think belong in the Pool. Accepting a game as Core sends a DM to the 8 members with an active Run; as Optional it arrives quietly.</p>${props()}`, "challenges", { h: 820 }), "rowan");
+const soulsA9 = `<div class="umber">${asHost(desk(`${banner({ souls: 1, made: 1 })}<div class="vsw"><span>Runs<em>4</em></span><span>The Pool<em>7</em></span><span class="on">Proposals<span class="badge">2</span></span></div>${noticeRow}${propRow("elden", "tavi", { when: "today" })}`, "challenges", { h: 760 }), "grind")}</div>`;
+const refA9 = ovl(desk(`${banner()}${vswA("pool", 0)}${poolA(10, 10)}`, "challenges"), proposeDlg(1), 760);
+
+/* 9B: an in-tray above the switch, one wall split by a rule */
+const trayB = (souls) => `<div class="tray">
+  <div class="tcard"><div class="top"><span class="num">${souls ? 1 : 3}</span><div><div class="ti">Pool Proposals</div><div class="ln">${souls ? "Elden Ring from Tavi" : "Final Fantasy XIV, Dissidia NT, Crystal Chronicles"}</div></div><span class="lb faint" style="margin-left:auto">${ic("inbox")}</span></div>
+  <div class="items">${souls ? propRow("elden", "tavi", { when: "today" }) : props(1)}</div><p class="tl" style="margin-top:10px;display:inline-block">${souls ? "" : "See all 3"}</p></div>
+  <div class="tcard plain"><div class="top"><span class="num">${souls ? 1 : 0}</span><div><div class="ti">List notices</div><div class="ln">${souls ? "A Core Game left your list" : "Nothing to decide"}</div></div><span class="lb faint" style="margin-left:auto">${ic("list-ordered")}</span></div>
+  <div class="items">${souls ? noticeRow : `<div class="empty" style="margin-top:12px">When a game leaves your linked list, it shows here.</div>`}</div></div></div>`;
+const poolB = (cols = 10, n = 99) => `<div class="row" style="justify-content:space-between"><span class="seg sm"><span class="on">All 26</span><span>Played by the club 15</span><span>Not played yet 11</span></span><span class="lgd"><span><i style="box-shadow:0 0 0 2px var(--hl)"></i>In your Run</span><span><i style="background:var(--fg)"></i>New this fortnight</span></span></div>
+  <div class="split"><b style="color:var(--tint-hi)">Core</b><small>14 · Clear all</small><span class="ln" style="background:var(--tint-hi)"></span></div>
+  <div class="wall" style="--cols:${cols}">${FOFF.core.slice(0, n).map((k) => poolTile(k)).join("")}</div>
+  <div class="split"><b>Optional</b><small>12 · Clear any 2</small><span class="ln"></span></div>
+  <div class="wall" style="--cols:${cols}">${FOFF.optional.slice(0, n).map((k) => poolTile(k)).join("")}</div>`;
+const vswB = (on, r) => `<div class="vsw"><span class="${on === "runs" ? "on" : ""}">Runs<em>9</em></span><span class="${on === "pool" ? "on" : ""}">The Pool<em>26</em></span><span class="r">${r}</span></div>`;
+const deskB9 = asHost(desk(`${banner()}${rulesRow()}${trayB()}${vswB("pool", `${proposeBtn}<span class="btn ds sm">Abandon your Run</span>`)}${poolB()}`, "challenges", { h: 1700 }), "rowan");
+const phoneB9 = phone(`${pbanner()}<div class="vsw"><span>Runs<em>9</em></span><span class="on">The Pool<em>26</em></span></div><div style="margin:-8px 0 14px">${proposeBtn}</div>${poolB(3, 6).replace(/<span class="lgd">.*?<\/span><\/span><\/div>/, "</div>")}`, "play", { h: 1300 });
+const runsB9 = desk(`${banner()}${vswB("runs", `${proposeBtn}<span class="btn ds sm">Abandon your Run</span>`)}${runsGrid()}`, "challenges", { h: 1100 });
+const soulsB9 = `<div class="umber">${asHost(desk(`${banner({ souls: 1, made: 1 })}${trayB(1)}`, "challenges", { h: 900 }), "grind")}</div>`;
+const acceptB9 = `<div class="umber">${ovl(asHost(desk(`${banner({ souls: 1, made: 1 })}${trayB(1)}`, "challenges"), "grind"), acceptDlg, 900)}</div>`;
+
+/* 9C: slips pinned on the banner, Core as a checklist ledger */
+const slipsC = `<div class="bslip" style="right:300px;top:20px;transform:rotate(-2deg)"><h4>3 Pool Proposals</h4><p><b>Tavi</b> proposed Final Fantasy XIV, plus 2 more waiting for you.</p><div class="row"><span class="btn inv sm">Review them</span></div></div>`;
+const slipsSouls = `<div class="bslip" style="right:28px;top:14px;transform:rotate(-2deg)"><h4>Nioh left your list</h4><p>You removed it from <b>Soulslike, but make it history</b>. It's still a Core Game here.</p><div class="row"><span class="btn inv sm">Remove it</span><span class="btn invol sm">Keep it</span></div></div>
+  <div class="bslip" style="right:350px;top:30px;transform:rotate(1.5deg);width:250px"><h4>1 Pool Proposal</h4><p><b>Tavi</b> proposed Elden Ring.</p><div class="row"><span class="btn inv sm">Review it</span></div></div>`;
+const chkRow = (k, i) => { const cl = MARA_CORE.includes(k), ip = k === "ff10"; return `<div class="chk"><span class="no">${String(i + 1).padStart(2, "0")}</span>${cover(k, 36)}<span class="t">${esc(tname(k))}<small>${G[k].y}</small></span><span class="mk">${marks(k)}</span><span class="st ${cl ? "ok" : ip ? "ip" : ""}">${ic(cl ? "circle-check" : ip ? "circle-dashed" : "circle")}${cl ? "Cleared" : ip ? "In Progress" : "To play"}</span></div>`; };
+const poolC = (n = 14, cols = 8, on = 12) => `<div class="rules" style="grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:36px;margin-top:0">
+  <div><div class="wh sub" style="margin-top:0"><h3>Core</h3><span class="n lb">Your Run · 9 of 14 Cleared</span></div>${FOFF.core.slice(0, n).map(chkRow).join("")}</div>
+  <div><div class="wh sub" style="margin-top:0"><h3>Optional</h3><span class="n lb">Your Run · 1 of 2 Cleared</span></div><div class="wall" style="--cols:${cols === 8 ? 4 : cols}">${FOFF.optional.slice(0, on).map((k) => poolTile(k)).join("")}</div><p class="tally" style="margin-top:12px">Left out by the Host: ${FOFF.excluded.length} games</p></div></div>`;
+const deskC9 = asHost(desk(`${banner({ slips: slipsC })}${rulesRow()}<div class="vsw"><span>Runs<em>9</em></span><span class="on">The Pool<em>26</em></span><span class="r"><span class="btn ds sm">Abandon your Run</span></span></div>${poolC()}`, "challenges", { h: 1400 }), "rowan");
+const phoneC9 = phone(`${pbanner()}<div class="vsw"><span>Runs<em>9</em></span><span class="on">The Pool<em>26</em></span></div><div style="margin:-8px 0 14px">${proposeBtn}</div>
+  <div class="wh sub" style="margin-top:0"><h3>Core</h3><span class="n lb">9 of 14</span></div>${FOFF.core.slice(0, 8).map(chkRow).join("")}
+  <div class="wh sub"><h3>Optional</h3><span class="n lb">1 of 2</span></div><div class="wall" style="--cols:3">${FOFF.optional.slice(0, 6).map((k) => poolTile(k)).join("")}</div>`, "play", { h: 1500 });
+const soulsC9 = `<div class="umber">${asHost(desk(`${banner({ souls: 1, made: 1, slips: slipsSouls })}<div class="vsw"><span>Runs<em>4</em></span><span class="on">The Pool<em>7</em></span></div>`, "challenges", { h: 520 }), "grind")}</div>`;
+const inboxC9 = asHost(desk(`${banner()}<div class="vsw"><span>Runs<em>9</em></span><span class="on">The Pool<em>26</em></span></div><div class="panel" style="padding:4px 20px 8px;box-shadow:inset 0 0 0 2px var(--hl)"><div class="wh" style="margin-top:12px"><h3>Pool Proposals</h3><span class="n lb">3 waiting</span><span class="r btn xs gh">${ic("x")}Close</span></div>${props()}</div>`, "challenges", { h: 900 }), "rowan");
+
+/* ================= the page ================= */
+page({
+  title: "Pool editor and Challenge page",
+  lede: "Options for the <b>Pool editor</b> (create and edit) and the <b>Challenge page</b> once Pools have <b>Core Games</b> and <b>Optional Games</b> (spec api#442). The example is <b>Fall of Final Fantasy</b>: the numbered games minus XI and XIV are Core, the spin-offs, remakes and sequels are Optional, and a Run Finishes with every Core Game and 2 Optional Games Cleared. <b>Soulslike Summer</b> is Grindlord's Challenge made from his Game List. Everything stays in the shipped Challenges look (rule sentence, cover wall, banner, view switch, Run cards); only the new parts change between options.",
+  keys: [["Today", "Tue 24 Nov 2026"], ["Viewer", "Mara (Rowan or Grindlord when the Host)"], ["Tint", "cobalt (FF), umber (Soulslike)"], ["Members", "invented"]],
+  surfaces: [
+    { id: "s8", title: "Pool editor", sub: "/challenges/new · /challenges/[id]/edit · 3 options",
+      brief: "Core and Optional side by side, sources that only feed Optional, the Optional target, Left out games, adding by hand, and the entry states <b>Start from a Game List</b> and <b>Start from this Franchise</b>. Once Runs exist only the Format and the Season lock; the Pool stays editable.",
+      options: [
+        { code: "8A", short: "Two columns", title: "Two columns, one arrow", idea: "Core is a numbered <b>ledger</b> on the left in the tint's hi, Optional is a <b>cover wall</b> on the right with its sources and the target stepper on its heading. Every row and tile carries <b>one arrow</b> that moves the game to the other column; Left out games sit in a strip under both.",
+          desk: ["Desktop · new Challenge", deskA], phone: ["Phone · Core tab", phoneA],
+          more: [["Edit with 9 Runs · Format and Season locked, Pool still open", editA], ["Target above the Optional count", badA], ["Start from a Game List · Soulslike becomes Core", fromListA], ["Add by hand to a list-linked Challenge", alsoA]] },
+        { code: "8B", short: "One wall, a switch per tile", title: "One wall, a switch per tile", idea: "The shipped <b>cover wall</b> stays the whole editor. Each tile gets a three-way switch under it (<b>Core · Optional · Left out</b>): Core tiles are ringed in the tint's hi, Left out tiles grey out. The sentence names the sources, and a filter narrows the wall to one kind.",
+          desk: ["Desktop · new Challenge", deskB], phone: ["Phone", phoneB],
+          more: [["Edit with 9 Runs · schedule words locked", editB], ["Target above the Optional count", badB], ["Start from this Franchise · Mainline offered as Core", fromFrB], ["Add by hand to a list-linked Challenge", alsoB]] },
+        { code: "8C", short: "The sentence runs it", title: "The sentence runs it", idea: "Core and Optional become <b>words in the rule sentence</b> (\"Clear all 14 Core Games and 2 of the 12 Optional Games from...\"). Opening a word unfolds its editor under the panel: a draggable Core ledger, the Optional wall with its sources, or the target. Nothing shows until you open a word, so the form stays one line long.",
+          desk: ["Desktop · the Core word open", deskC], phone: ["Phone · the Core word as a bottom sheet", phoneC],
+          more: [["The Optional word open", optC], ["Edit with 9 Runs · raising the target", editC], ["Start from a Game List", fromListC], ["Add by hand to a list-linked Challenge", alsoC]] },
+      ] },
+    { id: "s9", title: "Challenge page", sub: "/challenges/[id] · Core, Optional, Pool Proposals, list notices · 3 options",
+      brief: "The Pool view shows Core and Optional with <b>New</b> tags for 14 days, Runs read <b>Core 9 / 14 · Optional 1 / 2</b>, a list-made Challenge says <b>Made from</b> its list, and the Host gets the <b>Pool Proposals</b> inbox and <b>list notices</b>. Members get <b>Propose a game</b>.",
+      options: [
+        { code: "9A", short: "A third switch word", title: "A third word on the switch", idea: "Proposals are a <b>third view</b> on the switch (\"Proposals 3\" with a yellow badge), shown only to the Host or to Moderators on a club Challenge; list notices sit at its top. The Pool view is <b>two walls</b> under their own headings, Core first.",
+          desk: ["Desktop · a member on The Pool", deskA9], phone: ["Phone · a member", phoneA9],
+          more: [["The Host on Proposals", propA9], ["Soulslike Summer · Made from, a list notice and a proposal", soulsA9], ["Propose a game refused · already pending", refA9]] },
+        { code: "9B", short: "An in-tray above the switch", title: "An in-tray above the switch", idea: "The Host gets the Staff desk's <b>in-tray</b> between the rules and the switch: a Pool Proposals card with a yellow count and a List notices card, each deciding in place. The Pool is <b>one wall split by a rule</b>: Core above a tint-hi rule, Optional below.",
+          desk: ["Desktop · the Host on The Pool", deskB9], phone: ["Phone · a member", phoneB9],
+          more: [["Runs · Core and Optional bars, extra Optional Clears listed", runsB9], ["Soulslike Summer · Host in-tray", soulsB9], ["Accept as Core or Optional, also add to the list", acceptB9]] },
+        { code: "9C", short: "Slips on the banner", title: "Slips on the banner, Core as a checklist", idea: "What needs the Host is a <b>notice slip pinned on the banner</b> (\"3 Pool Proposals\", \"Nioh left your list\"), opening the inbox as a panel. The Pool view reads like a run sheet: <b>Core as a numbered checklist</b> with your status per game, <b>Optional as a wall</b> beside it.",
+          desk: ["Desktop · the Host on The Pool", deskC9], phone: ["Phone · a member", phoneC9],
+          more: [["Soulslike Summer · two slips on the banner", soulsC9], ["The inbox opened from the slip", inboxC9], ["Runs · same cards as 9B", runsB9]] },
+      ] },
+  ],
+});
+</script>
+</body></html>

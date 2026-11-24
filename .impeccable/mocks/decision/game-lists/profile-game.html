@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile and game page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- profile context ---------- */
+.pbn{position:relative;height:250px;margin:-24px -28px 0;overflow:hidden;background:var(--muted)}
+.pbn .art{opacity:.55}
+.pbn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(11 11 13/.96) 0%,rgb(11 11 13/.7) 45%,rgb(11 11 13/.2) 100%)}
+.pbn .in{position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;gap:22px;padding:24px 28px}
+.pbn .bav{box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.pbn h1{font:400 5.2rem/.86 Anton;text-transform:uppercase}
+.pbn .by{font:700 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pbn .by .chip{height:22px}
+.pshell .pbn{height:230px;margin:-20px -16px 0}
+.pshell .pbn .in{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+.pshell .pbn h1{font-size:3.2rem}
+.np{display:flex;gap:14px;align-items:flex-end}
+.np .bk{display:flex;gap:10px;align-items:flex-end}
+.np .bk b{display:block;font:400 1.05rem/.95 Anton;text-transform:uppercase;max-width:150px}
+.np .bk small{font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ctx{opacity:.55}
+/* shelf head: monumental count + title on the left */
+.case{display:grid;grid-template-columns:190px minmax(0,1fr);gap:28px;margin-top:40px}
+.case .lead .num{font:400 6rem/.8 Anton;letter-spacing:-.01em}
+.case .lead h2{font:400 2.2rem/.9 Anton;text-transform:uppercase;margin-top:10px;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.case .lead p{color:var(--faint);font:700 .78rem/1.35 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;margin-top:10px}
+.case .lead .btn{margin-top:14px}
+.pshell .case{grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.pshell .case .lead{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-items:end}
+.pshell .case .lead .num{font-size:4.2rem;grid-row:span 2}
+.pshell .case .lead h2{font-size:1.8rem;margin:0}
+.pshell .case .lead p{margin-top:6px}
+.pshell .case .lead .btn{grid-column:1/-1;margin-top:12px;justify-self:start}
+
+/* ---------- 4A: box-set spines on a shelf ---------- */
+.shelf{background:var(--card);border-radius:3.2px;padding:24px 22px 0;position:relative}
+.sp-row{display:flex;gap:8px;align-items:flex-end;height:316px}
+.bs{position:relative;width:var(--w);height:var(--h);border-radius:2.4px 2.4px 0 0;background:var(--b);color:var(--t);padding:12px 0 10px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:inset 0 0 0 1px rgb(244 244 240/.12),inset -6px 0 10px -6px rgb(0 0 0/.5);flex:none;transition:transform .2s}
+.bs .ti{writing-mode:vertical-rl;transform:rotate(180deg);font:400 1.2rem/1 Anton;text-transform:uppercase;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-height:0}
+.bs .rl{width:70%;height:1px;background:currentColor;opacity:.6}
+.bs .ct{font:400 1.35rem/.9 Anton}
+.bs .ct small{display:block;font:800 .6rem/1 "Barlow Condensed";letter-spacing:.08em;text-align:center;opacity:.8;margin-top:2px}
+.bs .thumb{width:36px;border-radius:1.6px;overflow:hidden;flex:none}
+.bs .thumb .cv{width:100%!important}
+.bs.paper{--b:var(--fg);--t:var(--bg)}
+.bs.ink{--b:var(--muted);--t:var(--fg)}
+.bs.jade{--b:#1f6b67;--t:var(--fg)}
+.bs.umber{--b:#7a531c;--t:var(--fg)}
+.bs.priv{--b:var(--bg);--t:var(--dim);box-shadow:inset 0 0 0 1.5px var(--bs)}
+.bs.priv::before{content:"";position:absolute;inset:4px;border:1px dashed var(--bs);border-bottom:0;pointer-events:none}
+.bs .lk{position:absolute;top:-11px;left:50%;transform:translateX(-50%) rotate(-4deg);background:var(--fg);color:var(--bg);font:800 .66rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;padding:4px 6px 3px;border-radius:2px;display:inline-flex;gap:3px;align-items:center;white-space:nowrap;z-index:2}
+.bs .lk svg.lucide{width:11px;height:11px}
+.bs.pick{transform:translateY(-22px);box-shadow:inset 0 0 0 2px var(--hl),0 14px 28px rgb(0 0 0/.55)}
+.bs.newsl{--b:transparent;--t:var(--faint);box-shadow:none;border:1.5px dashed var(--bs);border-bottom:0;justify-content:center}
+.bs.newsl .ti{flex:none;font-size:1.05rem;color:var(--dim)}
+.board{height:16px;background:var(--bs);margin:0 -22px;box-shadow:0 8px 16px rgb(0 0 0/.5)}
+.pullout{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;padding:18px 0 20px}
+.pullout .fan{display:flex}
+.pullout .fan .cv+.cv{margin-left:-18px}
+.pullout .fan .cv{box-shadow:0 6px 12px rgb(0 0 0/.5)}
+.pullout h3{font:400 1.7rem/.95 Anton;text-transform:uppercase}
+.pullout .m{font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.pullout .d{color:var(--dim);font-size:.95rem;margin-top:6px;max-width:58ch}
+.shelf .hint{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:10px 0 14px}
+.pshell .shelf{padding:20px 14px 0;overflow:hidden}
+.pshell .sp-row{overflow-x:auto;height:262px;padding-top:16px;scrollbar-width:none}
+.pshell .board{margin:0 -14px}
+.pshell .pullout{grid-template-columns:minmax(0,1fr);gap:10px}
+
+/* ---------- 4B: ledger rows with a cover fan ---------- */
+.lr{display:grid;grid-template-columns:210px minmax(0,1fr) auto;gap:22px;align-items:center;padding:16px 0;border-bottom:1px solid var(--border)}
+.lr:first-child{padding-top:4px}
+.lr .fan{display:flex;height:96px;align-items:flex-end}
+.lr .fan .cv{box-shadow:0 6px 12px rgb(0 0 0/.55)}
+.lr .fan .cv+.cv{margin-left:-30px}
+.lr .fan .cv:nth-child(1){z-index:5}.lr .fan .cv:nth-child(2){z-index:4}.lr .fan .cv:nth-child(3){z-index:3}.lr .fan .cv:nth-child(4){z-index:2}
+.lr h3{font:400 1.75rem/.95 Anton;text-transform:uppercase;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lr .m{font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lr .m b{color:var(--dim);font-weight:700}
+.lr .d{color:var(--dim);font-size:.95rem;margin-top:5px;max-width:62ch;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.lr .n{font:400 3rem/.8 Anton;text-align:right}
+.lr .n small{display:block;font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.lr.priv .fan{opacity:.75}
+.pshell .lr{grid-template-columns:minmax(0,1fr) auto;gap:10px 12px}
+.pshell .lr .fan{grid-column:1/-1;height:80px}
+.pshell .lr h3{font-size:1.4rem}
+.pshell .lr .d{-webkit-line-clamp:2}
+.pshell .lr .n{font-size:2.2rem;align-self:start}
+
+/* ---------- 4C: mosaic cards ---------- */
+.mos-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.mc{min-width:0}
+.mc .mo{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:3px;background:var(--card);padding:3px;border-radius:3.2px;box-shadow:inset 0 0 0 1px var(--border)}
+.mc .mo .cv{width:100%!important}
+.mc .mo .rn{position:absolute;z-index:2;font:400 1.4rem/1 Anton;color:var(--fg);text-shadow:0 1px 8px rgb(0 0 0/.85)}
+.mc .mo .more{position:absolute;right:8px;bottom:8px;z-index:2}
+.mc h3{font:400 1.45rem/.95 Anton;text-transform:uppercase;margin-top:12px}
+.mc .m{font:700 .76rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.mc .lkc{position:absolute;left:8px;top:8px;z-index:2}
+.mc.priv .mo{background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--bs)}
+.mc.priv .mo .cv{opacity:.6}
+.mc.nw .mo{background:transparent;box-shadow:none;border:1.5px dashed var(--bs);aspect-ratio:3/4;display:grid;place-items:center;align-content:center;gap:8px;color:var(--dim)}
+.mc.nw .mo b{font:400 1.4rem/1 Anton;text-transform:uppercase;color:var(--fg)}
+.pshell .mos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}
+.pshell .mc h3{font-size:1.15rem}
+
+/* ---------- game page ---------- */
+.ghero{position:relative;margin:-24px -28px 0;min-height:440px;overflow:visible;background:var(--muted)}
+.ghero .art{opacity:.9}
+.ghero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(11 11 13/.96) 0%,rgb(11 11 13/.78) 46%,rgb(11 11 13/.2) 100%),linear-gradient(0deg,rgb(11 11 13/.95) 0%,transparent 45%)}
+.ghero .top{position:absolute;z-index:3;left:28px;right:28px;top:18px;display:flex;align-items:center;gap:8px}
+.ghero .top .back{margin:0;color:var(--fg)}
+.ghero .top .r{margin-left:auto;display:flex;gap:8px;position:relative}
+.ov{background:rgb(11 11 13/.7)}
+.ghero .blk{position:relative;z-index:2;display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center;padding:70px 28px 0}
+.ghero h1{font:400 5rem/.86 Anton;text-transform:uppercase}
+.ghero h1 span{display:block}
+.ghero .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.ghero .bl{color:var(--dim);max-width:62ch;margin-top:12px;font-size:.98rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.plate{position:relative;z-index:2;margin:24px 28px 22px;background:rgb(11 11 13/.84);box-shadow:inset 0 0 0 1px rgb(244 244 240/.1);border-radius:3px;display:grid;padding:14px 4px}
+.plate>div{padding:0 16px;border-left:1px solid var(--border);min-width:0}
+.plate>div:first-child{border-left:0}
+.plate h4{font:400 1.3rem/1 Anton;text-transform:uppercase;height:34px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bs);margin-bottom:10px}
+.plate h4 .r{margin-left:auto}
+.ttb{display:grid;grid-template-columns:auto 1fr auto;gap:5px 8px;align-items:center;font-size:.82rem}
+.ttb span:nth-child(3n+1){font:700 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.ttb i{display:block;height:6px;background:var(--fg);border-radius:1px}
+.avs{display:flex;flex-wrap:wrap}
+.avs .av{box-shadow:0 0 0 2px var(--bg)}
+.avs .av+.av{margin-left:-6px}
+.late{font-size:.8rem;color:var(--dim);margin-top:8px}
+.thr{font-size:.86rem;color:var(--dim);display:flex;gap:6px;align-items:center;margin-top:4px}
+.thr svg.lucide{width:14px;height:14px;color:var(--faint)}
+.row3{display:grid;grid-template-columns:1fr 1.25fr .95fr;gap:28px;margin-top:36px}
+.row3 .sec{margin-top:0}
+.row3 .sec h2{font-size:1.6rem}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.92rem}
+.facts dt{font:700 .74rem/1.6 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.facts dd{margin:0;color:var(--dim)}
+.facts dd a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--gotm);text-decoration-thickness:2px;text-underline-offset:3px;font-weight:600}
+.facts dd .ser{color:var(--fg)}
+.rel{display:grid;grid-template-columns:70px 1fr;gap:6px 12px;font-size:.86rem;color:var(--faint)}
+.rel b{font:700 .8rem/1.5 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg)}
+.alt{display:flex;gap:10px;align-items:center;font-size:.88rem;color:var(--dim);padding:5px 0;border-bottom:1px solid var(--border)}
+.pshell .ghero{margin:-20px -16px 0;min-height:0;padding-bottom:4px}
+.pshell .ghero .top{left:16px;right:16px;top:12px}
+.pshell .ghero .blk{grid-template-columns:84px minmax(0,1fr);gap:14px;padding:62px 16px 0;align-items:end}
+.pshell .ghero h1{font-size:2.3rem}
+.pshell .ghero .tail{grid-column:1/-1}
+.pshell .plate{margin:16px 16px 14px;grid-template-columns:1fr 1fr!important;gap:14px 0;padding:12px 0}
+.pshell .plate>div{padding:0 12px}
+.pshell .plate>div.full{grid-column:1/-1;border-left:0}
+.pshell .plate>div:nth-child(odd):not(.full){border-left:0}
+.pshell .row3{grid-template-columns:1fr;gap:24px;margin-top:26px}
+
+/* ---------- 5A: chip row + popover picker ---------- */
+.inl{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:2px;background:rgb(244 244 240/.08);box-shadow:inset 0 0 0 1px var(--dim);font:700 .78rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg)}
+.inl svg.lucide{width:13px;height:13px}
+.inl.open{box-shadow:inset 0 0 0 1.5px var(--hl);color:var(--hl)}
+.pop{position:absolute;z-index:6;background:var(--card);border:1px solid var(--bs);border-radius:3.2px;box-shadow:0 24px 60px rgb(0 0 0/.6);padding:14px 16px;width:360px}
+.pop h5{font:400 1.25rem/1 Anton;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--fg);margin:0 0 4px;display:flex;align-items:baseline;gap:8px}
+.pop h5 small{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.pr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.95rem}
+.pr:last-of-type{border-bottom:0}
+.pr .nm{flex:1;min-width:0}
+.pr .nm b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr .nm small{font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.pr .bx{width:20px;height:20px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--bs);display:grid;place-items:center;flex:none}
+.pr .bx svg.lucide{width:14px;height:14px}
+.pr.in .bx{background:var(--fg);color:var(--bg);box-shadow:none}
+.pr.just .bx{background:var(--hl);color:var(--bg);box-shadow:none}
+.pr.full{opacity:1}
+.pr.full .nm b{color:var(--faint)}
+.pr.full .bx{opacity:.4}
+.pr .why{font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dest)}
+.pr.mine{box-shadow:none}
+.popnew{display:flex;gap:6px;margin-top:10px}
+.popnew .fld{flex:1;height:32px;font-size:.9rem}
+.pop .ok{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:rgb(255 212 0/.1);box-shadow:inset 0 0 0 1px rgb(255 212 0/.5);border-radius:2px;font-size:.9rem}
+.pop .ok svg.lucide{color:var(--hl);width:16px;height:16px}
+.pop .ok .tl{margin-left:auto}
+.lpop{width:330px}
+.lpop .li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.lpop .li:last-child{border-bottom:0}
+.lpop .li b{font-weight:600;font-size:.95rem;display:block}
+.lpop .li small{font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lpop .li .rk2{margin-left:auto;font:400 1.3rem/1 Anton;text-transform:uppercase;white-space:nowrap;color:var(--dim)}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:8;background:var(--card);border-top:2px solid var(--fg);border-radius:3px 3px 0 0;padding:16px 16px 14px;box-shadow:0 -18px 40px rgb(0 0 0/.6)}
+.sheet .pop{position:static;width:auto;box-shadow:none;border:0;padding:0;background:none}
+.dimmer{position:absolute;inset:0;z-index:7;background:rgb(0 0 0/.55)}
+.pshell{position:relative}
+.states .fr.ph{max-width:360px}
+
+/* ---------- 5B: a hero panel block with switches ---------- */
+.inb .big{font:400 3.2rem/.8 Anton;display:flex;align-items:flex-end;gap:10px}
+.inb .big small{font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:2px}
+.inb ul{margin-top:10px}
+.inb li{font-size:.86rem;color:var(--dim);display:flex;gap:6px;align-items:center;padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inb li a{color:var(--fg);font-weight:600;text-decoration:underline;text-decoration-color:var(--bs);text-underline-offset:3px;overflow:hidden;text-overflow:ellipsis}
+.swp{position:absolute;z-index:6;width:380px;background:var(--card);border:1px solid var(--bs);border-radius:3.2px;box-shadow:0 24px 60px rgb(0 0 0/.6);padding:14px 16px}
+.swp h5{font:400 1.25rem/1 Anton;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--fg);margin:0 0 2px}
+.swr{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.swr .nm{flex:1;min-width:0}
+.swr .nm b{font-weight:600;font-size:.95rem;display:flex;gap:6px;align-items:center}
+.swr .nm b svg.lucide{width:14px;height:14px;color:var(--faint)}
+.swr .nm small{font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.swr .sw .s{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim);min-width:22px;text-align:right}
+.swr.full .nm b{color:var(--faint)}
+.swr.full .sw{opacity:.4}
+.swr .why{color:var(--dest)}
+.swp .nl{display:flex;align-items:center;gap:8px;padding-top:10px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- 5C: its own department ---------- */
+.lc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.lc{background:var(--card);border-radius:3.2px;padding:14px 14px 12px;box-shadow:inset 0 0 0 1px var(--border);min-width:0;display:flex;flex-direction:column}
+.lc .pos{display:flex;align-items:flex-end;gap:8px}
+.lc .pos b{font:400 3rem/.8 Anton;text-transform:uppercase}
+.lc .pos small{font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:2px}
+.lc .strip{display:flex;gap:4px;margin:12px 0}
+.lc .strip .cv{flex:1;width:auto!important}
+.lc .strip .cv.me{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--fg)}
+.lc h3{font:400 1.25rem/.95 Anton;text-transform:uppercase}
+.lc .by{display:flex;gap:6px;align-items:center;margin-top:8px;font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:auto;padding-top:10px}
+.lc.yours{box-shadow:inset 0 0 0 1px var(--border)}
+.tray{background:var(--card);border-radius:3.2px;box-shadow:inset 0 0 0 1px var(--hl);padding:16px 18px;margin:0 0 20px}
+.tray .h{display:flex;align-items:center;gap:10px;font:700 .8rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.tray .h b{color:var(--fg)}
+.tray .h .x{margin-left:auto}
+.tray .opts2{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tb{height:36px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:2.4px;box-shadow:inset 0 0 0 1px rgb(141 141 135/.6);font:800 .9rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+.tb svg.lucide{width:15px;height:15px}
+.tb em{font-style:normal;color:var(--faint);font-weight:700}
+.tb.on{background:var(--fg);color:var(--bg);box-shadow:none}
+.tb.on em{color:rgb(11 11 13/.6)}
+.tb.just{background:var(--hl);color:var(--bg);box-shadow:none}
+.tb.just em{color:var(--hl-ink)}
+.tb.full{color:var(--faint);box-shadow:inset 0 0 0 1px var(--border)}
+.tb.nw{box-shadow:none;border:1.5px dashed var(--bs);color:var(--dim)}
+.tray .msg{margin-top:12px;font-size:.9rem;color:var(--dim)}
+.tray .msg b{color:var(--fg)}
+.tray .msg .w{color:var(--dest)}
+.pshell .lc-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+.pshell .lc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center}
+.pshell .lc .strip{display:none}
+.pshell .lc .pos{grid-row:span 2}
+.pshell .lc .by{margin-top:0;padding-top:0}
+.pshell .tray{padding:14px}
+.pshell .tray .opts2{flex-direction:column;align-items:stretch}
+.pshell .tb{justify-content:flex-start}
+.pshell .tb em{margin-left:auto}
+</style>
+</head><body>
+<script>
+/* ---------------- page data ---------------- */
+const ME = "mara";
+/* Mara's lists for the profile. FF6 sits in Top 10 (#2) and FF numbered (#1). */
+const MARA_LISTS = ["top10", "ffmain", "cozy"];
+const GRIND_LISTS = [
+  "souls",
+  { id: 32, name: "Team Ninja, ranked", owner: "grind", vis: "members", sort: "ranked", updated: "3 weeks ago", count: 5, desc: "Every Team Ninja action game I've finished, best first.", games: [["nioh2"], ["nioh"], ["wolong"], ["elden"]] },
+];
+const L = (x) => (typeof x === "string" ? LISTS[x] : x);
+const cnt = (l) => l.count ?? l.games.length;
+const SORT = { ranked: "Ranked", alphabetical: "A to Z", added: "Date added" };
+const meta = (l) => `${SORT[l.sort]} · ${cnt(l)} games · Updated ${l.updated}`;
+/* FF6's lists the viewer can see (the "In 4 Game Lists" set) */
+const IN_LISTS = [
+  { l: "top10", pos: 2, of: 10 },
+  { l: "canon", pos: 2, of: 20 },
+  { l: "ffmain", pos: 1, of: 16 },
+  { l: "jrpg", pos: null, of: 23, note: "A to Z" },
+];
+/* Mara's lists, for the picker */
+const PICK = [
+  { name: "Top 10 of all time", n: 10, vis: "members", in: true, pos: 2 },
+  { name: "Final Fantasy, the numbered ones", n: 16, vis: "members", in: true, pos: 1 },
+  { name: "Cozy for the winter", n: 4, vis: "private", in: false },
+  { name: "Everything on my shelf", n: 500, vis: "members", in: false, full: true },
+];
+
+/* ---------------- profile context ---------------- */
+const profBanner = (k, ph) => {
+  const m = M[k];
+  return `<div class="pbn">${artBg(k === "mara" ? "metaphor" : "wukong")}<div class="in">
+    <span class="av bav" style="--s:${ph ? 64 : 104}px;--c:${m.c}">${m.n[0]}</span>
+    <div><h1>${m.n}</h1><div class="by">@${m.n.toLowerCase().replace(/ /g, "")} <span>·</span> In the club since ${k === "mara" ? "Mar 2021" : "Jun 2023"}<span class="chip ols sm">${m.role}</span><span class="chip sm">Member</span></div></div></div></div>`;
+};
+const nowPlaying = (k, ph) => {
+  const gs = k === "mara" ? ["ff6", "metaphor"] : ["wuchang", "nioh2"];
+  return `<div class="ctx"><div class="sec" style="margin-top:28px"><h2>Now Playing</h2><span class="n lb">2 games</span></div>
+  <div class="np">${gs.map((g) => `<div class="bk">${cover(g, ph ? 58 : 70)}<div><b>${esc(G[g].t)}</b><small>Since ${g === "ff6" ? "9 Nov" : "2 Oct"}</small></div></div>`).join("")}</div></div>`;
+};
+const belowCtx = (ph) => `<div class="ctx"><div class="case" style="margin-top:36px"><div class="lead"><div class="num">${ph ? 41 : 41}</div><h2>Completed</h2></div><div class="empty" style="border-style:solid;color:var(--faint)">The Completed shelf continues below.</div></div></div>`;
+
+/* ---------------- 4A: box-set spines ---------------- */
+const BIND = ["paper", "jade", "ink", "umber"];
+const spine = (l, i, o = {}) => {
+  const w = Math.min(108, 64 + Math.round(cnt(l) * 1.6));
+  const h = 268 + ((l.id * 37) % 26);
+  const priv = l.vis === "private";
+  return `<div class="bs ${priv ? "priv" : BIND[i % BIND.length]} ${o.pick ? "pick" : ""}" style="--w:${o.ph ? Math.round(w * .8) : w}px;--h:${o.ph ? Math.round(h * .86) : h}px">
+    ${priv ? `<span class="lk">${ic("lock")}Private</span>` : ""}
+    <span class="thumb">${cover(l.games[0][0], 34)}</span>
+    <span class="ti">${esc(l.name)}</span><span class="rl"></span>
+    <span class="ct">${cnt(l)}<small>${l.sort === "ranked" ? "Ranked" : l.sort === "added" ? "Added" : "A to Z"}</small></span></div>`;
+};
+const pullout = (l) => `<div class="pullout"><div class="fan">${l.games.slice(0, 4).map(([g]) => cover(g, 58)).join("")}</div>
+  <div><h3>${esc(l.name)}</h3><p class="m">${meta(l)}${l.vis === "private" ? " · Private" : ""}</p>${l.desc ? `<p class="d">${esc(l.desc)}</p>` : ""}</div>
+  <span class="btn">Open the list${ic("arrow-right")}</span></div>`;
+const shelfA = (owner, lists, o = {}) => {
+  const ls = lists.map(L);
+  const own = owner === ME;
+  const lead = `<div class="lead"><div class="num">${ls.length}</div><h2>Game Lists</h2><p>${own ? "1 Private, only you see it" : "Members-visible lists"}</p>${own ? `<span class="btn hl sm">${ic("plus")}New list</span>` : ""}</div>`;
+  if (!ls.length) return `<div class="case">${lead.replace(">0<", ">0<")}<div class="shelf"><div class="sp-row"><div class="bs newsl" style="--w:88px;--h:230px"><span class="ti">Start a list</span>${ic("plus")}</div></div><div class="board"></div><p class="hint" style="padding:16px 0">No Game Lists yet. A list can be ranked, A to Z or by date added, and Members-visible or Private.</p></div></div>`;
+  return `<div class="case">${lead}<div class="shelf"><div class="sp-row">${ls.map((l, i) => spine(l, i, { pick: i === 0, ph: o.ph })).join("")}${own ? `<div class="bs newsl" style="--w:${o.ph ? 56 : 70}px;--h:${o.ph ? 150 : 190}px"><span class="ti">New list</span>${ic("plus")}</div>` : ""}</div>
+  <div class="board"></div>${pullout(ls[0])}</div></div>`;
+};
+
+/* ---------------- 4B: ledger rows ---------------- */
+const rowB = (l) => {
+  const priv = l.vis === "private";
+  return `<div class="lr ${priv ? "priv" : ""}"><div class="fan">${l.games.slice(0, 5).map(([g]) => cover(g, 66)).join("")}</div>
+  <div><h3>${esc(l.name)}${priv ? `<span class="chip pp sm">${ic("lock")}Private</span>` : ""}</h3>
+  <p class="m"><b>${SORT[l.sort]}</b><span>·</span>Updated ${l.updated}</p>${l.desc ? `<p class="d">${esc(l.desc)}</p>` : ""}</div>
+  <div class="n">${cnt(l)}<small>games</small></div></div>`;
+};
+const ledgerB = (owner, lists) => {
+  const ls = lists.map(L);
+  const own = owner === ME;
+  const head = `<div class="sec"><h2>Game Lists</h2><span class="n lb">${ls.length}</span><div class="r">${own ? `<span class="btn hl sm">${ic("plus")}New list</span>` : ""}<span class="lnk">All lists${ic("arrow-right")}</span></div></div>`;
+  if (!ls.length) return head.replace(`<span class="lnk">All lists${ic("arrow-right")}</span>`, "") + `<div class="empty">No Game Lists yet. Make one for anything: a top 10, a backlog, a theme.</div>`;
+  return head + ls.map(rowB).join("");
+};
+
+/* ---------------- 4C: mosaic cards ---------------- */
+const cardC = (l) => {
+  const priv = l.vis === "private";
+  const g4 = l.games.slice(0, 4);
+  const ranks = l.sort === "ranked" ? g4.map((_, i) => `<span class="rn" style="left:${i % 2 ? "calc(50% + 8px)" : "10px"};top:${i < 2 ? "6px" : "calc(50% + 4px)"}">${i + 1}</span>`).join("") : "";
+  return `<div class="mc ${priv ? "priv" : ""}"><div class="mo">${g4.map(([g]) => cover(g, 100)).join("")}${ranks}
+  ${priv ? `<span class="lkc chip pp sm">${ic("lock")}Private</span>` : ""}${cnt(l) > 4 ? `<span class="more chip pp sm">+${cnt(l) - 4}</span>` : ""}</div>
+  <h3>${esc(l.name)}</h3><p class="m">${SORT[l.sort]} · ${cnt(l)} games</p></div>`;
+};
+const mosaicC = (owner, lists) => {
+  const ls = lists.map(L);
+  const own = owner === ME;
+  const head = `<div class="sec"><h2>Game Lists</h2><span class="n lb">${ls.length}</span>${own ? `<div class="r"><span class="faint lb">Only you see Private lists</span></div>` : ""}</div>`;
+  const nw = own ? `<div class="mc nw"><div class="mo">${ic("plus")}<b>New list</b><span class="lb faint">Ranked, A to Z or by date</span></div></div>` : "";
+  if (!ls.length) return head + `<div class="mos-grid">${nw}</div>`;
+  return head + `<div class="mos-grid">${ls.map(cardC).join("")}${nw}</div>`;
+};
+
+/* profile page wrapper */
+const prof = (owner, section, ph) => profBanner(owner, ph) + nowPlaying(owner, ph) + section + (ph ? "" : belowCtx(ph));
+const P = (owner, fn, lists, ph) => (ph ? phone(prof(owner, fn(owner, lists, { ph: 1 }), 1), "you") : desk(prof(owner, fn(owner, lists, {}), 0), "members"));
+
+/* ---------------- game page ---------------- */
+const g6 = G.ff6;
+const heroPanelCols = { std: "1.3fr 1fr 1fr 1.3fr", b: "1.15fr .8fr 1fr 1.05fr 1.3fr" };
+const ttb = `<div class="ttb"><span>Main</span><i style="width:58%"></i><span>31 h</span><span>Extras</span><i style="width:70%"></i><span>38 h</span><span>Complete</span><i style="width:100%"></i><span>55 h</span></div>`;
+const playing = `<div class="avs">${["mara", "tavi", "owl"].map((k) => av(k, 30)).join("")}</div><p class="late">Mara started 9 Nov</p>`;
+const completed = `<div class="avs">${["rowan", "jun", "mog", "dice", "save", "loot", "grind"].map((k) => av(k, 30)).join("")}</div><p class="late">Latest: Rowan, Oct 2026</p>`;
+const threads = `<p class="thr">${ic("message-square")}Final Fantasy VI Pixel Remaster</p><p class="thr">${ic("message-square")}FF6 opera house appreciation</p>`;
+const blk = (t, body, cls = "", r = "") => `<div class="${cls}"><h4>${t}${r ? `<span class="r">${r}</span>` : ""}</h4>${body}</div>`;
+const plate = (extra, ph) => {
+  const cols = extra ? heroPanelCols.b : heroPanelCols.std;
+  return `<div class="plate" style="grid-template-columns:${cols}">${blk("Time to beat", ttb, ph ? "full" : "", `<span class="faint">${ic("refresh-cw")}</span>`)}${blk("Playing now", playing)}${blk("Completed by", completed)}${blk("Discord threads", threads, ph ? "full" : "")}${extra || ""}</div>`;
+};
+const hero = (o = {}) => {
+  const ph = o.ph;
+  const [l1, l2] = two(g6.t);
+  return `<div class="ghero">${artBg("ff6")}
+  <div class="top">${ph ? `<span class="pback" style="margin:0;background:rgb(11 11 13/.6);border-radius:2.4px">${ic("arrow-left")}</span>` : `<span class="back">${ic("arrow-left")}Games</span>`}<div class="r">${o.topRight || ""}${ph ? "" : `<span class="btn sm ov">${ic("pencil")}Edit game</span>`}</div></div>
+  <div class="blk">${cover("ff6", ph ? 84 : 150)}<div><h1><span>${l1}</span><span>${l2}</span></h1>${ph ? "" : `<div class="chips">${o.chips || ""}</div><p class="bl">${BLURB}</p>`}</div>
+  ${ph ? `<div class="tail"><div class="chips">${o.chips || ""}</div></div>` : ""}</div>${plate(o.extra, ph)}${o.after || ""}</div>`;
+};
+const BLURB = "The Empire has rediscovered magic and means to use it. A half-Esper girl with no memory, a thief, a gambler and a dozen others set out to stop it, until the world itself is broken. The Pixel Remaster keeps the 1994 SNES story with new art and music.";
+const baseChips = `<span class="chip">1994</span><span class="chip">RPG</span><span class="chip">Square</span>`;
+const row3 = (ph) => `<div class="row3">
+  <div><div class="sec"><h2>Releases</h2><span class="r"><span class="lnk">Calendar</span></span></div><div class="rel"><b>SNES</b><span>JP 2 Apr 1994 · NA 11 Oct 1994</span><b>PC</b><span>WW 23 Feb 2022</span><b>Switch</b><span>WW 19 Apr 2023</span><b>PS4</b><span>WW 19 Apr 2023</span></div></div>
+  <div><div class="sec"><h2>Details</h2><span class="r"><span class="lnk">All details</span></span></div><dl class="facts" style="margin:0">
+    <dt>Franchise</dt><dd><a>Final Fantasy</a></dd>
+    <dt>Series</dt><dd><span class="ser">Final Fantasy Pixel Remaster</span></dd>
+    <dt>Developer</dt><dd>Square</dd><dt>Genres</dt><dd>Role-playing, Turn-based</dd><dt>Modes</dt><dd>Single player</dd></dl></div>
+  <div><div class="sec"><h2>Versions</h2></div><div class="alt">${cover("ff6", 30)}Final Fantasy VI Pixel Remaster</div><div class="alt"><span class="cv" style="width:30px"><span class="fb" style="font-size:6px">FF VI Adv</span></span>Final Fantasy VI Advance</div></div>
+</div>`;
+const tailDept = `<div class="ctx"><div class="sec"><h2>Reviews</h2><span class="n lb">6</span></div><div class="empty" style="border-style:solid">The Reviews crew strip, the Game Journal and Achievements follow.</div></div>`;
+const G_DESK = (o) => desk(hero(o) + (o.mid || "") + row3() + (o.dept || "") + tailDept, "games", { h: o.h });
+const PSHEET = (ph, sh) => `<div style="position:relative;height:844px;overflow:hidden">${ph}<div class="dimmer"></div><div class="sheet">${sh}</div></div>`;
+const G_PH = (o) => phone(hero({ ...o, ph: 1 }) + (o.mid || "") + row3(1) + (o.dept || ""), "games", { h: o.h });
+
+/* ---- 5A: the chip row chip + an Add to list button pinned to the hero's top line ---- */
+const inChip = (open) => `<span class="inl ${open ? "open" : ""}">${ic("list-ordered")}In 4 Game Lists${ic("chevron-down")}</span>`;
+const addBtnA = (open, ph) => `<span class="btn ${ph ? "" : "sm"} hl" ${open ? 'style="box-shadow:0 0 0 3px rgb(255 212 0/.3)"' : ""}>${ic("list-plus")}${ph ? "" : "Add to list"}</span>`;
+const pickRowsA = (st) => PICK.map((p, i) => {
+  const just = st === "added" && i === 2;
+  const cls = p.full ? "full" : p.in ? "in" : just ? "just" : "";
+  const chk = p.in || just ? ic("check") : "";
+  const small = p.full ? `<span class="why">Full · 500 games, the most a list holds</span>` : `${p.vis === "private" ? "Private · " : ""}${p.in ? `No. ${p.pos} of ${p.n}` : just ? `Added at No. 5 · 5 games` : `${p.n} games`}`;
+  return `<div class="pr ${cls}"><span class="bx">${chk}</span><span class="nm"><b>${esc(p.name)}</b><small>${small}</small></span>${p.vis === "private" ? `<span class="faint">${ic("lock")}</span>` : ""}</div>`;
+}).join("");
+const popA = (st, style) => `<div class="pop" style="${style}"><h5>Add Final Fantasy VI<small>to your lists</small></h5>${pickRowsA(st)}
+  ${st === "added" ? `<p class="ok">${ic("check")}Added to Cozy for the winter<span class="tl">Undo</span></p>` : `<div class="popnew"><span class="fld ph">${ic("plus")}New list name</span><span class="btn sm">Create</span></div>`}</div>`;
+const listsPopA = (style) => `<div class="pop lpop" style="${style}"><h5>In 4 Game Lists<small>you can see</small></h5>${IN_LISTS.map((x) => {
+  const l = LISTS[x.l];
+  return `<div class="li">${av(l.owner, 24)}<div><b>${esc(l.name)}</b><small>${who(l.owner)} · ${cnt(l)} games</small></div><span class="rk2">${x.pos ? "No. " + x.pos : "A to Z"}</span></div>`;
+}).join("")}</div>`;
+
+/* ---- 5B: a fifth hero panel block, with switches ---- */
+const inBlock = (open, ph) => blk("In Game Lists", `<div class="big">4<small>lists you<br>can see</small></div><ul>${IN_LISTS.slice(0, ph ? 4 : 3).map((x) => {
+  const l = LISTS[x.l];
+  return `<li>${av(l.owner, 18)}<a>${esc(l.name)}</a></li>`;
+}).join("")}${ph ? "" : `<li class="faint">and JRPGs to play</li>`}</ul>`, ph ? "full inb" : "inb", `<span class="btn xs hl" ${open ? 'style="box-shadow:0 0 0 3px rgb(255 212 0/.3)"' : ""}>${ic("plus")}Add</span>`);
+const swRows = (st) => PICK.map((p, i) => {
+  const on = p.in || (st === "added" && i === 2);
+  return `<div class="swr ${p.full ? "full" : ""}"><span class="nm"><b>${p.vis === "private" ? ic("lock") : ""}${esc(p.name)}</b><small>${p.full ? `<span class="why">Full at 500 games. Remove one to add this.</span>` : p.in ? `No. ${p.pos} of ${p.n}${p.vis === "private" ? " · Private" : ""}` : st === "added" && i === 2 ? `Just added · Private · 5 games` : `${p.vis === "private" ? "Private · " : ""}${p.n} games`}</small></span>
+  <span class="sw ${on ? "" : "off"}"><span class="s">${on ? "In" : ""}</span><span class="t"></span></span></div>`;
+}).join("");
+const popB = (st, style) => `<div class="swp" style="${style}"><h5>Your Game Lists</h5>${swRows(st)}<div class="nl">${ic("plus")}New list with this game</div></div>`;
+
+/* ---- 5C: its own department ---- */
+const lcCard = (x) => {
+  const l = LISTS[x.l];
+  const gs = l.games.slice(0, 5).map(([g]) => g);
+  if (!gs.includes("ff6")) gs[gs.length - 1] = "ff6";
+  return `<div class="lc"><div class="pos"><b>${x.pos ? "No. " + x.pos : "A to Z"}</b><small>${x.pos ? `of ${x.of}` : `${x.of} games`}</small></div>
+  <div class="strip">${gs.map((g) => cover(g, 40, { cls: g === "ff6" ? "me" : "" })).join("")}</div>
+  <h3>${esc(l.name)}</h3><div class="by">${av(l.owner, 20)}${who(l.owner)}</div></div>`;
+};
+const trayC = (st) => {
+  const chips = PICK.map((p, i) => {
+    const just = st === "added" && i === 2;
+    const cls = p.full ? "full" : p.in ? "on" : just ? "just" : "";
+    const lead = p.in || just ? ic("check") : p.full ? ic("ban") : p.vis === "private" ? ic("lock") : ic("plus");
+    return `<span class="tb ${cls}">${lead}${esc(p.name)}<em>${p.full ? "500 full" : p.in ? `No. ${p.pos}` : just ? "Added" : p.n}</em></span>`;
+  }).join("");
+  const msg = st === "added" ? `<p class="msg">Added to <b>Cozy for the winter</b> (Private) at the bottom, No. 5. <span class="tl">Undo</span></p>`
+    : st === "full" ? `<p class="msg"><span class="w">Everything on my shelf is full.</span> A list holds 500 games. Remove one there first, or start a new list.</p>`
+    : `<p class="msg">Tap a list to add Final Fantasy VI. Lists it's already in are filled; tap one to take it out.</p>`;
+  return `<div class="tray"><div class="h">${ic("list-plus")}<b>Add to your lists</b><span class="x btn xs gh ic">${ic("x")}</span></div><div class="opts2">${chips}<span class="tb nw">${ic("plus")}New list</span></div>${msg}</div>`;
+};
+const deptC = (st, ph) => `<div class="sec"><h2>In Game Lists</h2><span class="n lb">4</span><div class="r"><span class="btn ${ph ? "sm" : ""} hl">${ic("list-plus")}Add to list</span></div></div>${st ? trayC(st) : ""}<div class="lc-grid">${IN_LISTS.map(lcCard).join("")}</div>`;
+
+/* ---------------- the page ---------------- */
+page({
+  title: "Profile and game page",
+  lede: "Two places a Game List shows up outside <b>/lists</b>: the <b>Lists</b> section on a member's profile, and <b>In N Game Lists</b> plus <b>Add to list</b> on a game page. Three options each, desktop and phone. Profiles are Mara's (the viewer: Members-visible lists plus her Private one) and Grindlord's (Members-visible only). The game is Final Fantasy VI, whose Details now link the <b>Franchise</b> and label IGDB's collection as <b>Series</b>. Today is Tue 24 Nov 2026.",
+  keys: [["Viewer", "Mara (Regular)"], ["Lists Feature", "Preview"], ["Members", "invented"], ["Covers", "Steam CDN, Anton fallback"]],
+  surfaces: [
+    {
+      id: "s4", title: "4 · Profile Lists section", sub: "/members/[id] · 3 options",
+      brief: "A member's lists on their profile, under Now Playing and above the shelves. Your own profile also shows your <b>Private</b> lists (only you see them) and a way to start a new one; another member's shows only their <b>Members-visible</b> lists. With no lists, your own profile invites you to start one and another member's leaves the section out (the Empty Track Rule).",
+      options: [
+        {
+          code: "4A", short: "Box sets", title: "Box sets on the shelf",
+          idea: "The profile is already a bookcase, so <b>each Game List is a box set standing on its own shelf</b>: the monumental count and \"Game Lists\" on the left like every shelf, and on the right one fat spine per list, its width growing with the list's size, its first cover at the top, its name sideways and its count and sort at the foot. The picked box set lifts out with the yellow ring and its <b>pull-out</b> under the board shows the first covers, description and Open the list. A <b>Private</b> list is an unbound black spine with a dashed edge and a paper Private tag; New list is a dashed empty slot at the end of the shelf.",
+          desk: ["Desktop · Mara's own profile", P("mara", shelfA, MARA_LISTS, 0)],
+          phone: ["Phone · Mara's own profile", P("mara", shelfA, MARA_LISTS, 1)],
+          more: [
+            ["Desktop · Mara views Grindlord's profile (Members-visible only)", P("grind", shelfA, GRIND_LISTS, 0)],
+            ["Desktop · Your own profile with no lists yet", desk(profBanner("mara") + shelfA("mara", []), "members", { h: 640 })],
+          ],
+          notes: ["<b>Width by size:</b> 64px plus a little per game, capped at 108px, so a 500-game list doesn't swallow the shelf. Heights are uneven and stable from the list id, like the other shelves.", "Spine bindings rotate paper, jade, ink, umber from the list's place; they're binding colours, not meanings. Private is the only binding that means something.", "Arrow keys move along the shelf (a listbox, as on Club Lore); the pull-out keeps <b>?list=</b> in the address."],
+        },
+        {
+          code: "4B", short: "Ledger", title: "A ledger of fans",
+          idea: "The calm, scannable one: <b>Game Lists</b> is a ruled department with one row per list. Each row leads with a <b>fan of its first five covers</b>, then the name in Anton, the sort and last update in label type and one line of description, and the game count as an Anton numeral on the right. Private carries a paper Private chip and its fan sits slightly back. <b>New list</b> (yellow) and All lists sit on the section rule.",
+          desk: ["Desktop · Mara's own profile", P("mara", ledgerB, MARA_LISTS, 0)],
+          phone: ["Phone · Mara's own profile", P("mara", ledgerB, MARA_LISTS, 1)],
+          more: [
+            ["Desktop · Mara views Grindlord's profile", P("grind", ledgerB, GRIND_LISTS, 0)],
+            ["Desktop · Your own profile with no lists yet", desk(profBanner("mara") + ledgerB("mara", []), "members", { h: 520 })],
+          ],
+          notes: ["Five rows, then <b>All lists</b> goes to /lists filtered to this member.", "On phones the fan moves above the name and the description gets two lines."],
+        },
+        {
+          code: "4C", short: "Mosaics", title: "Cover mosaics",
+          idea: "Each list is <b>a 2 by 2 mosaic of its first four covers</b>, four across, with the name and sort under it, like a playlist sleeve. A ranked list numbers its covers 1 to 4 in Anton; a list longer than four carries a paper +N. Private mosaics sit on a black ground with a dashed rule and a paper Private tag, covers dimmed. The last tile is the dashed <b>New list</b> sleeve on your own profile.",
+          desk: ["Desktop · Mara's own profile", P("mara", mosaicC, MARA_LISTS, 0)],
+          phone: ["Phone · Mara's own profile", P("mara", mosaicC, MARA_LISTS, 1)],
+          more: [
+            ["Desktop · Mara views Grindlord's profile", P("grind", mosaicC, GRIND_LISTS, 0)],
+            ["Desktop · Your own profile with no lists yet", desk(profBanner("mara") + mosaicC("mara", []), "members", { h: 640 })],
+          ],
+          notes: ["Two across on phones. Eight mosaics, then All lists.", "A list with fewer than four games leaves dashed cells rather than stretching its covers."],
+        },
+      ],
+    },
+    {
+      id: "s5", title: "5 · Game page: In N Game Lists and Add to list", sub: "/games/[id] · 3 options",
+      brief: "The game page says how many Game Lists the viewer can see this game in, with links, and lets them add it to one of their own. The picker lists <b>your</b> lists: the ones it's already in are marked (with its place in a ranked list), a <b>Private</b> one carries a lock, a full list (500 games) refuses with the reason, and a new list can be started from it. The Details block now links the <b>Franchise</b> to its page and labels IGDB's collection <b>Series</b> (plain text: Series have no page).",
+      options: [
+        {
+          code: "5A", short: "Chip row", title: "In the chip row",
+          idea: "The lightest touch on the hero: <b>\"In 4 Game Lists\" is an outlined chip</b> in the chip row that opens a small list of the four lists (owner, size, this game's place). <b>Add to list</b> is a yellow button on the hero's top line beside Edit game, opening a <b>checklist popover</b>: a box per list (filled where it already is), lock for Private, the full list greyed with its reason, and a New list field at the foot. Adding fills the box yellow and says where it went, with Undo. On phones Add to list is the icon on the hero and the picker is a bottom sheet.",
+          desk: ["Desktop · Add to list open", G_DESK({ chips: baseChips + inChip(), topRight: addBtnA(true), after: popA("open", "right:28px;top:58px") })],
+          phone: ["Phone · picker as a bottom sheet, just added", PSHEET(G_PH({ chips: baseChips + inChip(), topRight: addBtnA(false, 1) }), popA("added", ""))],
+          more: [
+            ["Desktop · the In 4 Game Lists chip open", G_DESK({ chips: baseChips + inChip(true), topRight: addBtnA(false), after: listsPopA("left:202px;top:286px"), h: 900 })],
+            ["Desktop · just added to a Private list", G_DESK({ chips: baseChips + inChip(), topRight: addBtnA(true), after: popA("added", "right:28px;top:58px"), h: 900 })],
+          ],
+          notes: ["The chip reads \"In 1 Game List\" and \"In 4 Game Lists\"; with none it's left out, and Add to list stays.", "The count is lists the viewer can see: other members' Private lists never count."],
+        },
+        {
+          code: "5B", short: "Panel block", title: "A block on the hero panel",
+          idea: "Game Lists join the club facts on the <b>hero panel plate</b> as a fifth block, <b>\"In Game Lists\"</b>: the count as an Anton numeral, the first three lists with their owners' marks, and a small yellow <b>Add</b> at the block's head. Add opens a panel of <b>switches</b>, one per list (on where it's in, with its place), in the settings voice; the full list's switch is off and inert with the reason in signal orange. \"New list with this game\" closes the panel.",
+          desk: ["Desktop · Add open", G_DESK({ chips: baseChips, extra: inBlock(true), after: popB("open", "right:28px;top:572px") })],
+          phone: ["Phone · the block on its own row", G_PH({ chips: baseChips, extra: inBlock(false, 1) })],
+          more: [
+            ["Desktop · just added to Cozy for the winter", G_DESK({ chips: baseChips, extra: inBlock(true), after: popB("added", "right:28px;top:572px"), h: 900 })],
+            ["Phone · Add open as a sheet", PSHEET(G_PH({ chips: baseChips, extra: inBlock(true, 1) }), popB("open", "position:static;width:auto;border:0;box-shadow:none;padding:0;background:none")), "ph"],
+          ],
+          notes: ["The plate goes 1.2 / 0.9 / 0.9 / 1.15 / 1.25 so Time to beat keeps its bars. With no lists the block shows \"0\" and Add, so there's always a way in.", "Switches save at once, like Pinned Pages; a failed save springs back with a Notice Slip."],
+        },
+        {
+          code: "5C", short: "Department", title: "Its own department",
+          idea: "Game Lists get a <b>full-width department</b> after Releases and Details: \"In Game Lists 4\" on the 2px rule with a yellow <b>Add to list</b> at its right. Each list is a card leading with <b>this game's place</b> in Anton (\"No. 2 of 10\", or A to Z), a strip of its neighbouring covers with Final Fantasy VI ringed, the name and the owner. Add to list opens an <b>inline tray</b> above the cards with one toggle button per list (paper when it's in, yellow when just added, greyed when full) and a dashed New list.",
+          desk: ["Desktop · Add to list open", G_DESK({ chips: baseChips, dept: deptC("open") })],
+          phone: ["Phone · tray open, just added", G_PH({ chips: baseChips, dept: deptC("added", 1) })],
+          more: [
+            ["Desktop · tapped the full list", G_DESK({ chips: baseChips, dept: deptC("full"), h: 900 })],
+            ["Desktop · closed (how every member sees it)", G_DESK({ chips: baseChips, dept: deptC(null), h: 900 })],
+          ],
+          notes: ["Four cards a row; past eight, \"All 12 lists\" goes to /lists?game=. With none, the department keeps only its heading and Add to list (\"Not in any Game List yet\").", "The tray is the member's own business, so it takes the yellow editor ring."],
+        },
+      ],
+    },
+  ],
+});
+</script>
+</body></html>
