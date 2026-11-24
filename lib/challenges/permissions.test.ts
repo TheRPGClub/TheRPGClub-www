@@ -17,9 +17,10 @@ const mine = {
 const club = { hosted_by_club: true, host: null, run_count: 0 };
 
 describe("Challenge tools", () => {
-  it("lets the Host edit their own and Moderators edit the club's", () => {
+  it("lets the Host edit their own and Moderators edit any", () => {
     expect(canEditChallenge(mine, { id: "me", membership: member })).toBe(true);
-    expect(canEditChallenge(mine, { id: "you", membership: mod })).toBe(false);
+    expect(canEditChallenge(mine, { id: "you", membership: mod })).toBe(true);
+    expect(canEditChallenge(mine, { id: "you", membership: member })).toBe(false);
     expect(canEditChallenge(club, { id: "you", membership: mod })).toBe(true);
     expect(canEditChallenge(club, { id: "me", membership: member })).toBe(false);
   });

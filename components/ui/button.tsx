@@ -189,11 +189,16 @@ const buttonVariants = cva(
         // plain once the rules are locked (disabled). Pair with
         // size="inline".
         "rule-word": "",
-        // The sentence's dashed "+ franchise or collection" that adds one.
+        // A dashed "+ Franchise or Series" that adds a source.
         "rule-add": "",
         // A cover on the form's Pool wall that is tapped to leave its game
         // out or put it back: the cover is the look, the focus ring kept.
         "pool-tile": "",
+        // www#170: a segment of the switch under a Pool editor cover (Core,
+        // Optional, Leave out), pressed for the game's place: the Core
+        // segment fills with the Challenge tint's hi, Optional with paper.
+        "pool-switch": "",
+        "pool-switch-core": "",
         // www#107: the stamp-sized ink-2 tile ("+2 more") that opens the
         // rest of a profile's current Runs in place. Pair with size="bare"
         // and lay it out as a stamp.

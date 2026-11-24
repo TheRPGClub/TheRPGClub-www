@@ -5,10 +5,9 @@ import {
   draftFromChallenge,
   editRequest,
   emptyDraft,
-  includeGame,
   poolDefinition,
   removeSource,
-  toggleGame,
+  sourcePreviewDefinition,
   validateDraft,
   type ChallengeDraft,
 } from "@/lib/challenges/form";
@@ -43,7 +42,7 @@ describe("createRequest", () => {
         seasonStart: "09-22",
         seasonEnd: "12-20",
         endsOn: "2027-01-01",
-        target: 3,
+        optionalTarget: 3,
       }),
     );
     expect(body).toEqual({
@@ -58,9 +57,10 @@ describe("createRequest", () => {
         pool: {
           franchise_ids: [12],
           collection_ids: [7],
-          included_game_ids: [],
+          core_game_ids: [],
+          optional_game_ids: [],
           excluded_game_ids: [],
-          target: 3,
+          optional_target: 3,
         },
       },
     });
@@ -71,7 +71,6 @@ describe("createRequest", () => {
       draft({
         schedule: "always_open",
         endsOn: "2027-03-03",
-        target: "all",
         hostedByClub: true,
       }),
     );
@@ -81,16 +80,18 @@ describe("createRequest", () => {
       ends_on: "2027-03-03",
       hosted_by_club: true,
     });
-    expect(body.data.pool?.target).toBe("all");
+    expect(body.data.pool?.optional_target).toBe(0);
   });
 
-  it("keeps the games added and left out by hand", () => {
+  it("sends the Core Games, the hand-picked Optional Games and those left out", () => {
     const d = draft({
-      included: [{ game_id: 5, title: "Bravely Default" }],
+      core: [{ game_id: 1, title: "Final Fantasy" }],
+      optional: [{ game_id: 5, title: "Bravely Default" }],
       excluded: [{ game_id: 9, title: "Mobius" }],
     });
     expect(createRequest(d).data.pool).toMatchObject({
-      included_game_ids: [5],
+      core_game_ids: [1],
+      optional_game_ids: [5],
       excluded_game_ids: [9],
     });
   });
@@ -98,30 +99,43 @@ describe("createRequest", () => {
 
 describe("editRequest", () => {
   it("sends every setting while the rules are open", () => {
-    const body = editRequest(draft({ target: 4 }), {
+    const body = editRequest(draft({ optionalTarget: 4 }), {
       locked: false,
       closedForGood: false,
     });
     expect(body.data).toMatchObject({
       name: "Fall of Final Fantasy",
       challenge_format: "pool",
-      pool: { target: 4 },
+      pool: { optional_target: 4 },
     });
     expect(body.data).not.toHaveProperty("hosted_by_club");
   });
 
-  it("sends only the name, description and end date once the rules are locked", () => {
-    const body = editRequest(draft({ schedule: "always_open", endsOn: "2027-01-31" }), {
-      locked: true,
-      closedForGood: false,
-    });
+  it("sends the name, description, end date and the Pool once the rules are locked", () => {
+    const body = editRequest(
+      draft({ schedule: "always_open", endsOn: "2027-01-31", core: [{ game_id: 1, title: "FF" }], optionalTarget: 2 }),
+      { locked: true, closedForGood: false },
+    );
     expect(body).toEqual({
       data: {
         name: "Fall of Final Fantasy",
         description: "Any Final Fantasy.",
         ends_on: "2027-01-31",
+        pool: {
+          franchise_ids: [12],
+          collection_ids: [7],
+          core_game_ids: [1],
+          optional_game_ids: [],
+          excluded_game_ids: [],
+          optional_target: 2,
+        },
       },
     });
+  });
+
+  it("sends no Pool for another Format once locked", () => {
+    const body = editRequest(draft({ format: "slots", sources: [] }), { locked: true, closedForGood: false });
+    expect(body.data).not.toHaveProperty("pool");
   });
 
   it("leaves the end date alone on a Seasonal or Closed-for-good Challenge", () => {
@@ -142,18 +156,21 @@ describe("editRequest", () => {
 
 describe("validateDraft", () => {
   it("accepts a complete draft", () => {
-    expect(validateDraft(draft(), 41)).toEqual({});
+    expect(validateDraft(draft({ optionalTarget: 3 }), 41)).toEqual({});
+    expect(validateDraft(draft({ core: [{ game_id: 1, title: "FF" }] }), 0)).toEqual({});
   });
 
   it("names what is missing", () => {
     const errors = validateDraft(draft({ name: " ", sources: [] }), null);
     expect(errors.name).toBe("Give the Challenge a name.");
-    expect(errors.sources).toBe("Add a Franchise, a Series or a game.");
+    expect(errors.sources).toBe("Add a Core Game, or ask for at least 1 Optional Game.");
   });
 
-  it("refuses a target above the Pool's size or below one", () => {
-    expect(validateDraft(draft({ target: 50 }), 41).target).toBe("The Pool has only 41 games.");
-    expect(validateDraft(draft({ target: 0 }), 41).target).toBe("Clear at least 1 game.");
+  it("refuses a target above the Optional Games", () => {
+    expect(validateDraft(draft({ optionalTarget: 13 }), 12).target).toBe(
+      "Only 12 Optional Games. Lower the target or add more.",
+    );
+    expect(validateDraft(draft({ optionalTarget: 13 }), null).target).toBeUndefined();
   });
 
   it("refuses a Season of the same day and an end date in the wrong shape", () => {
@@ -171,34 +188,21 @@ describe("validateDraft", () => {
   });
 });
 
-describe("the Pool's games", () => {
-  it("previews the definition without the games left out, so they can be put back", () => {
+describe("the Pool's definitions", () => {
+  it("previews the sources and hand-picked Optional Games only", () => {
     const d = draft({
+      core: [{ game_id: 1, title: "FF" }],
       excluded: [{ game_id: 9, title: "Mobius" }],
-      included: [{ game_id: 5, title: "Bravely" }],
+      optional: [{ game_id: 5, title: "Bravely" }],
     });
-    expect(poolDefinition(d, { withExcluded: false })).toEqual({
+    expect(sourcePreviewDefinition(d)).toEqual({
       franchise_ids: [12],
       collection_ids: [7],
-      included_game_ids: [5],
+      core_game_ids: [],
+      optional_game_ids: [5],
       excluded_game_ids: [],
     });
-  });
-
-  it("leaves a source's game out, puts it back, and drops a game added by hand", () => {
-    const game = { game_id: 9, title: "Mobius" };
-    const out = toggleGame(draft(), game);
-    expect(out.excluded).toEqual([game]);
-    expect(toggleGame(out, game).excluded).toEqual([]);
-    const added = includeGame(draft(), { game_id: 5, title: "Bravely" });
-    expect(toggleGame(added, { game_id: 5, title: "Bravely" }).included).toEqual([]);
-  });
-
-  it("adds a game by hand once, taking it off the left-out list", () => {
-    const d = draft({ excluded: [{ game_id: 5, title: "Bravely" }] });
-    const added = includeGame(includeGame(d, { game_id: 5, title: "Bravely" }), { game_id: 5, title: "Bravely" });
-    expect(added.included).toHaveLength(1);
-    expect(added.excluded).toEqual([]);
+    expect(poolDefinition(d)).toMatchObject({ core_game_ids: [1], excluded_game_ids: [9] });
   });
 
   it("removes a source", () => {
@@ -218,11 +222,17 @@ describe("draftFromChallenge", () => {
       season: { start: "12-01", end: "02-28", crosses_new_year: true },
       ends_on: null,
       pool: {
-        target: 2,
+        optional_target: 2,
+        core_count: 1,
         franchises: [{ franchise_id: 4, name: "Dragon Quest" }],
         collections: [],
-        included_games: [{ game_id: 1, title: "Slime Mori Mori" }],
+        core_games: [{ game_id: 3, title: "Dragon Quest III", cover_url: "c" }],
+        optional_games: [
+          { game_id: 1, title: "Slime Mori Mori", source: "hand", new: false },
+          { game_id: 2, title: "Builders", source: "franchise", new: true },
+        ],
         excluded_games: [],
+        game_list: { id: 8, name: "Slimes", visible: true, can_add: true },
       },
     } as unknown as Challenge;
     expect(draftFromChallenge(challenge)).toMatchObject({
@@ -232,10 +242,13 @@ describe("draftFromChallenge", () => {
       schedule: "seasonal",
       seasonStart: "12-01",
       seasonEnd: "02-28",
-      target: 2,
+      optionalTarget: 2,
       sources: [{ kind: "franchise", id: 4, name: "Dragon Quest" }],
-      included: [{ game_id: 1, title: "Slime Mori Mori" }],
+      core: [{ game_id: 3, title: "Dragon Quest III", cover_url: "c" }],
+      optional: [{ game_id: 1, title: "Slime Mori Mori", cover_url: null }],
+      gameList: { id: 8, name: "Slimes" },
     });
+    expect(draftFromChallenge(challenge).savedOptional).toHaveLength(2);
   });
 });
 

@@ -1,32 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
 import type { ChallengeFormState } from "@/hooks/use-challenge-form";
-import type { PoolGame } from "@/lib/challenges/types";
-import { Button } from "@/components/ui/button";
 import { SearchProblemNote } from "@/components/search-problem-note";
-import { PoolTile } from "@/components/challenges/form/pool-tile";
-import { AddGameDialog } from "@/components/challenges/form/add-game-dialog";
-import { BuiltFrom } from "@/components/challenges/form/built-from";
+import { PoolSearch } from "@/components/challenges/form/pool-search";
+import { PoolSection } from "@/components/challenges/form/pool-section";
+import { OptionalSources } from "@/components/challenges/form/optional-sources";
+import { TargetStepper } from "@/components/challenges/form/target-stepper";
+import { LeftOut } from "@/components/challenges/form/left-out";
 
-const PAGE = 40;
-
-// The Pool under the sentence (surface brief challenges-form, 5C): the games
-// it means right now, as a cover wall to tap games out of, with what it is
-// built from and a tally, and a last tile to add a game by hand.
+// The Pool under the sentence (www#170, design pick 8): a search that adds
+// a game as Core or Optional, then Core on top and Optional below as cover
+// walls (8B's tiles), split by the rule. Optional carries its sources and the
+// target stepper (8A); Left out sits under both. A cover moves by its switch
+// or by dragging it onto the other section. The Pool stays editable once
+// Runs exist.
 export function PoolBuilder({ form }: { form: ChallengeFormState }) {
-  const { draft, preview, locked } = form;
-  const [showAll, setShowAll] = useState(false);
-  const [adding, setAdding] = useState(false);
-  const excluded = new Set(draft.excluded.map((g) => g.game_id));
-  const added = new Set(draft.included.map((g) => g.game_id));
-  // Games added by hand that the preview hasn't answered for yet.
-  const pending: PoolGame[] = draft.included.filter((g) => !preview.games.some((p) => p.game_id === g.game_id));
-  const games = [...preview.games, ...pending];
-  const visible = showAll ? games : games.slice(0, PAGE);
-  const fromSources = games.length - added.size;
-  const sourceNames = draft.sources.map((s) => s.name).join(", ");
+  const { columns, preview, errors } = form;
+  const plural = (n: number, word: string) => `${n} ${n === 1 ? word : `${word}s`}`;
   return (
     <section aria-labelledby="pool-heading" className="mt-[34px]">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-2 border-foreground pb-2">
@@ -34,63 +24,50 @@ export function PoolBuilder({ form }: { form: ChallengeFormState }) {
           The Pool
         </h2>
         <span className="font-label text-sm tracking-[0.08em] text-faint-foreground">
-          {preview.loading ? "Counting…" : `${preview.size} ${preview.size === 1 ? "game" : "games"}`}
+          {columns.core.length} Core · {preview.loading ? "…" : columns.optionalCount} Optional
         </span>
-        {!locked && (
-          <span className="ml-auto text-[0.88rem] text-faint-foreground">
-            Tap a cover to leave it out. New franchise games join by themselves.
-          </span>
-        )}
+        <span className="ml-auto hidden text-[0.88rem] text-faint-foreground sm:inline">
+          Drag a cover between Core and Optional, or use its switch.
+        </span>
       </div>
-      {(draft.sources.length > 0 || games.length > 0) && (
-        <BuiltFrom
-          form={form}
-          tally={[
-            sourceNames && `${fromSources} from ${sourceNames}`,
-            added.size && `${added.size} added`,
-            excluded.size && `${excluded.size} left out`,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        />
-      )}
+      <PoolSearch form={form} />
       {preview.problem && <SearchProblemNote problem={preview.problem} className="mt-3" />}
-      {games.length === 0 && !preview.loading && (
-        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">
-          Add a Franchise or a Series in the sentence above, or a game by hand, and its games show here.
+      <div className="mt-5 space-y-7">
+        <PoolSection
+          side="core"
+          title="Core"
+          count={plural(columns.core.length, "game")}
+          games={columns.core}
+          empty="No Core Games yet. Every Run must Clear each Core Game: add one with the search, or drag an Optional Game here."
+          onMove={form.moveGame}
+          onLeaveOut={form.leaveOut}
+        >
+          <p className="mt-2 text-[0.88rem] text-faint-foreground">Every Run must Clear all of these.</p>
+        </PoolSection>
+        <PoolSection
+          side="optional"
+          title="Optional"
+          count={preview.loading ? "Counting…" : plural(columns.optionalCount, "game")}
+          aside={<TargetStepper form={form} />}
+          games={columns.optional}
+          empty="No Optional Games yet. Add a Franchise or Series, search for a game, or drag a Core Game here."
+          onMove={form.moveGame}
+          onLeaveOut={form.leaveOut}
+        >
+          {errors.target && (
+            <p role="alert" className="mt-2 text-sm text-destructive">
+              {errors.target}
+            </p>
+          )}
+          <OptionalSources form={form} />
+        </PoolSection>
+      </div>
+      {errors.sources && (
+        <p role="alert" className="mt-3 text-sm text-destructive">
+          {errors.sources}
         </p>
       )}
-      <ul className="mt-3.5 grid grid-cols-4 gap-x-3 gap-y-3.5 sm:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10">
-        {visible.map((game) => (
-          <li key={game.game_id}>
-            <PoolTile
-              game={game}
-              locked={locked}
-              state={added.has(game.game_id) ? "added" : excluded.has(game.game_id) ? "out" : "in"}
-              onToggle={() =>
-                form.toggleGame({
-                  game_id: game.game_id,
-                  title: game.title,
-                  cover_url: game.cover_url,
-                })
-              }
-            />
-          </li>
-        ))}
-        {!locked && (
-          <li>
-            <Button type="button" variant="add" size="tile" onClick={() => setAdding(true)}>
-              <Plus aria-hidden /> Add a game by hand
-            </Button>
-          </li>
-        )}
-      </ul>
-      {!showAll && games.length > PAGE && (
-        <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => setShowAll(true)}>
-          Show all {games.length}
-        </Button>
-      )}
-      <AddGameDialog open={adding} onOpenChange={setAdding} onPick={form.includeGame} />
+      <LeftOut games={columns.leftOut} onPutBack={form.putBack} />
     </section>
   );
 }

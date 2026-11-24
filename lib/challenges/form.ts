@@ -1,7 +1,15 @@
 import { calendarError, SECRET_SANTA_CALENDAR } from "@/lib/challenges/edition-calendar";
 import { clubToday } from "@/lib/challenges/dates";
 import { slotsDraftFrom, slotsErrors, slotsRequest, SLOTS_DEFAULTS, type SlotsDraft } from "@/lib/challenges/slots-form";
-import type { Challenge, ChallengeFormat, ChallengeSchedule, ChallengeSlots, PoolSource } from "@/lib/challenges/types";
+import { goalErrors } from "@/lib/challenges/pool-editor";
+import type {
+  Challenge,
+  ChallengeFormat,
+  ChallengeOptionalGame,
+  ChallengeSchedule,
+  ChallengeSlots,
+  PoolSource,
+} from "@/lib/challenges/types";
 
 // The create and edit form (surface brief challenges-form) as plain data: the
 // draft the form edits, its checks, and the request bodies the API takes
@@ -15,7 +23,7 @@ export interface DraftGame {
   cover_url?: string | null;
 }
 
-// A franchise or collection the Pool is built from. `game_count` is known
+// A Franchise or Series (the API's collection) the Pool is built from. `game_count` is known
 // when it was picked from the search, not when read back from the Challenge.
 export type DraftSource = Pick<PoolSource, "kind" | "id" | "name"> & {
   game_count?: number;
@@ -32,10 +40,17 @@ export interface ChallengeDraft {
   seasonEnd: string;
   // YYYY-MM-DD or null for no end (Always Open only).
   endsOn: string | null;
-  target: number | "all";
+  // Pool (spec api#442): every Core Game plus this many Optional Games.
+  optionalTarget: number;
   sources: DraftSource[];
-  included: DraftGame[];
+  core: DraftGame[];
+  // Optional Games picked by hand (sources bring the rest).
+  optional: DraftGame[];
   excluded: DraftGame[];
+  // The saved Pool's Optional Games, for their "new" tags and the linked
+  // Game List's games, which the preview can't resolve (empty on create).
+  savedOptional: ChallengeOptionalGame[];
+  gameList: { id: number; name: string } | null;
   // Assignment only: the Edition calendar as MM-DD (www#110).
   signupCutoff: string;
   pickDeadline: string;
@@ -54,10 +69,13 @@ export function emptyDraft(): ChallengeDraft {
     seasonStart: "09-22",
     seasonEnd: "12-20",
     endsOn: null,
-    target: 3,
+    optionalTarget: 0,
     sources: [],
-    included: [],
+    core: [],
+    optional: [],
     excluded: [],
+    savedOptional: [],
+    gameList: null,
     signupCutoff: SECRET_SANTA_CALENDAR.cutoff,
     pickDeadline: SECRET_SANTA_CALENDAR.deadline,
     reveal: SECRET_SANTA_CALENDAR.reveal,
@@ -77,7 +95,7 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
     seasonStart: challenge.season?.start ?? "09-22",
     seasonEnd: challenge.season?.end ?? "12-20",
     endsOn: challenge.ends_on ?? null,
-    target: pool?.target ?? 3,
+    optionalTarget: pool?.optional_target ?? 0,
     sources: [
       ...(pool?.franchises ?? []).map((f) => ({
         kind: "franchise" as const,
@@ -90,14 +108,16 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
         name: c.name,
       })),
     ],
-    included: (pool?.included_games ?? []).map((g) => ({
-      game_id: g.game_id,
-      title: g.title,
-    })),
+    core: (pool?.core_games ?? []).map((g) => ({ game_id: g.game_id, title: g.title, cover_url: g.cover_url ?? null })),
+    optional: (pool?.optional_games ?? [])
+      .filter((g) => g.source === "hand")
+      .map((g) => ({ game_id: g.game_id, title: g.title, cover_url: g.cover_url ?? null })),
     excluded: (pool?.excluded_games ?? []).map((g) => ({
       game_id: g.game_id,
       title: g.title,
     })),
+    savedOptional: pool?.optional_games ?? [],
+    gameList: pool?.game_list ? { id: pool.game_list.id, name: pool.game_list.name } : null,
     signupCutoff: challenge.assignment?.signup_cutoff ?? SECRET_SANTA_CALENDAR.cutoff,
     pickDeadline: challenge.assignment?.pick_deadline ?? SECRET_SANTA_CALENDAR.deadline,
     reveal: challenge.assignment?.reveal ?? SECRET_SANTA_CALENDAR.reveal,
@@ -108,25 +128,32 @@ export function draftFromChallenge(challenge: Challenge): ChallengeDraft {
 export interface PoolDefinition {
   franchise_ids: number[];
   collection_ids: number[];
-  included_game_ids: number[];
+  core_game_ids: number[];
+  optional_game_ids: number[];
   excluded_game_ids: number[];
 }
 
-// The Pool as the API reads it. The form previews it without the games left
-// out (`withExcluded: false`), so a left-out cover stays on the wall to put
-// back.
-export function poolDefinition(draft: ChallengeDraft, { withExcluded = true } = {}): PoolDefinition {
+// The Pool as the API takes it.
+export function poolDefinition(draft: ChallengeDraft): PoolDefinition {
   const ids = (kind: DraftSource["kind"]) => draft.sources.filter((s) => s.kind === kind).map((s) => s.id);
   return {
     franchise_ids: ids("franchise"),
     collection_ids: ids("collection"),
-    included_game_ids: draft.included.map((g) => g.game_id),
-    excluded_game_ids: withExcluded ? draft.excluded.map((g) => g.game_id) : [],
+    core_game_ids: draft.core.map((g) => g.game_id),
+    optional_game_ids: draft.optional.map((g) => g.game_id),
+    excluded_game_ids: draft.excluded.map((g) => g.game_id),
   };
 }
 
-export function hasPoolDefinition(draft: ChallengeDraft): boolean {
-  return draft.sources.length > 0 || draft.included.length > 0;
+// What the editor previews: the sources and the hand-picked Optional Games
+// only, so a source's game that is Core or Left out still shows (the editor
+// then knows a source brings it) and is sorted out by ./pool-editor.
+export function sourcePreviewDefinition(draft: ChallengeDraft): PoolDefinition {
+  return { ...poolDefinition(draft), core_game_ids: [], excluded_game_ids: [] };
+}
+
+export function hasSourcePreview(draft: ChallengeDraft): boolean {
+  return draft.sources.length > 0 || draft.optional.length > 0;
 }
 
 export type DraftErrors = Partial<
@@ -137,10 +164,10 @@ const MONTH_DAY = /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 // What stops the draft from saving, by the sentence word it belongs to.
-// `poolSize` is the previewed Pool's game count, when known.
+// `optionalCount` is the Pool's Optional Games now, when known.
 export function validateDraft(
   draft: ChallengeDraft,
-  poolSize: number | null,
+  optionalCount: number | null,
   currentYear: number = Number(clubToday().slice(0, 4)),
 ): DraftErrors {
   const errors: DraftErrors = {};
@@ -148,11 +175,9 @@ export function validateDraft(
   if (!name) errors.name = "Give the Challenge a name.";
   else if (name.length > 100) errors.name = "Keep the name to 100 characters.";
   if (draft.format === "pool") {
-    if (!hasPoolDefinition(draft)) errors.sources = "Add a Franchise, a Series or a game.";
-    if (draft.target !== "all") {
-      if (!Number.isInteger(draft.target) || draft.target < 1) errors.target = "Clear at least 1 game.";
-      else if (poolSize !== null && draft.target > poolSize) errors.target = `The Pool has only ${poolSize} games.`;
-    }
+    const goal = goalErrors(draft, optionalCount);
+    if (goal.empty) errors.sources = goal.empty;
+    if (goal.target) errors.target = goal.target;
   }
   if (draft.format === "assignment") {
     // Always Open with no end date: the Editions set its time.
@@ -179,10 +204,14 @@ type RequestData = {
   season?: { start: string; end: string } | null;
   ends_on?: string | null;
   hosted_by_club?: boolean;
-  pool?: PoolDefinition & { target: number | "all" };
+  pool?: PoolDefinition & { optional_target: number };
   assignment?: { signup_cutoff: string; pick_deadline: string; reveal: string };
   slots?: ChallengeSlots;
 };
+
+function poolRequest(draft: ChallengeDraft) {
+  return { ...poolDefinition(draft), optional_target: draft.optionalTarget };
+}
 
 function assignmentCalendar(draft: ChallengeDraft) {
   return { cutoff: draft.signupCutoff, deadline: draft.pickDeadline, reveal: draft.reveal };
@@ -213,7 +242,7 @@ function ruleFields(draft: ChallengeDraft): RequestData {
     schedule: draft.schedule,
     season: seasonal ? { start: draft.seasonStart, end: draft.seasonEnd } : null,
     ends_on: seasonal ? null : draft.endsOn,
-    ...(draft.format === "pool" ? { pool: { ...poolDefinition(draft), target: draft.target } } : {}),
+    ...(draft.format === "pool" ? { pool: poolRequest(draft) } : {}),
     ...(draft.format === "slots" ? { slots: slotsRequest(draft.slots, draft.schedule) } : {}),
   };
 }
@@ -231,7 +260,8 @@ export function createRequest(draft: ChallengeDraft): { data: RequestData } {
 
 // An edit. Once the rules are locked (a Run exists) or the Format's rules
 // aren't edited here, only the name, description and an Always Open end date
-// go, and the end date not once the Challenge is Closed for good. The Host is
+// go, and the end date not once the Challenge is Closed for good; a Pool
+// stays editable with Runs (spec api#442), so it goes too. The Host is
 // changed by staff on the Challenge page, never here.
 export function editRequest(
   draft: ChallengeDraft,
@@ -243,29 +273,8 @@ export function editRequest(
     description: draft.description.trim(),
   };
   if (draft.schedule === "always_open" && !closedForGood) data.ends_on = draft.endsOn;
+  if (draft.format === "pool") data.pool = poolRequest(draft);
   return { data };
-}
-
-// Tapping a cover on the Pool wall: a game added by hand comes out of the
-// Pool; a source's game is left out, or put back.
-export function toggleGame(draft: ChallengeDraft, game: DraftGame): ChallengeDraft {
-  if (draft.included.some((g) => g.game_id === game.game_id)) {
-    return {
-      ...draft,
-      included: draft.included.filter((g) => g.game_id !== game.game_id),
-    };
-  }
-  const out = draft.excluded.some((g) => g.game_id === game.game_id);
-  return {
-    ...draft,
-    excluded: out ? draft.excluded.filter((g) => g.game_id !== game.game_id) : [...draft.excluded, game],
-  };
-}
-
-export function includeGame(draft: ChallengeDraft, game: DraftGame): ChallengeDraft {
-  const excluded = draft.excluded.filter((g) => g.game_id !== game.game_id);
-  if (draft.included.some((g) => g.game_id === game.game_id)) return { ...draft, excluded };
-  return { ...draft, excluded, included: [...draft.included, game] };
 }
 
 export function addSource(draft: ChallengeDraft, source: DraftSource): ChallengeDraft {

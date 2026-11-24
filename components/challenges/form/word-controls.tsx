@@ -6,41 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // The controls an open rule word shows beneath the sentence (the Season's
-// days are in ./day-editor).
-
-export function TargetEditor({ form }: { form: ChallengeFormState }) {
-  const { draft, update, preview } = form;
-  const every = draft.target === "all";
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Input
-        type="number"
-        variant="compose"
-        min={1}
-        max={preview.known ? preview.size : undefined}
-        inputMode="numeric"
-        aria-label="Games to Clear"
-        autoFocus
-        value={every ? "" : String(draft.target)}
-        placeholder="3"
-        onChange={(e) =>
-          update({
-            target: e.target.value === "" ? 0 : Math.trunc(Number(e.target.value)),
-          })
-        }
-        className="w-28"
-      />
-      <Button
-        type="button"
-        variant={every ? "selected" : "outline"}
-        aria-pressed={every}
-        onClick={() => update({ target: every ? 3 : "all" })}
-      >
-        Every game{preview.known ? ` (${preview.size})` : ""}
-      </Button>
-    </div>
-  );
-}
+// days are in ./day-editor, the Optional target in ./target-stepper).
 
 export function ScheduleEditor({ form }: { form: ChallengeFormState }) {
   return (

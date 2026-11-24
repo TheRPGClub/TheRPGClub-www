@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { bannerArt, challengeFacts, hostName, poolLine, scheduleChip, slotsChips } from "@/lib/challenges/facts";
+import { bannerArt, challengeFacts, finishLine, hostName, poolLine, scheduleChip, slotsChips } from "@/lib/challenges/facts";
 import type { Challenge } from "@/lib/challenges/types";
 
 const fall = {
@@ -13,20 +13,24 @@ const fall = {
   season: { start: "09-22", end: "12-20", crosses_new_year: false },
   open: true,
   pool: {
-    target: 3,
+    optional_target: 2,
     franchises: [{ franchise_id: 1, name: "Final Fantasy" }],
-    collections: [],
-    included_games: [],
+    collections: [{ collection_id: 7, name: "Final Fantasy VII" }],
+    core_count: 14,
+    optional_count: 12,
   },
 } as unknown as Challenge;
 
 describe("challenge facts", () => {
   it("lists the Host, Season, Finish and Pool", () => {
-    expect(challengeFacts(fall, "2026-11-17", 41)).toEqual([
+    expect(challengeFacts(fall, "2026-11-17")).toEqual([
       { term: "Host", detail: "Crit Fisher" },
       { term: "Season", detail: "22 Sep – 20 Dec, every year" },
-      { term: "Finish", detail: "Clear 3 games from the Pool" },
-      { term: "Pool", detail: "Final Fantasy franchise · 41 games" },
+      { term: "Finish", detail: "Clear all 14 Core Games and 2 Optional Games" },
+      {
+        term: "Pool",
+        detail: "14 Core · 12 Optional · from the Final Fantasy Franchise and the Final Fantasy VII Series",
+      },
     ]);
   });
 
@@ -34,13 +38,13 @@ describe("challenge facts", () => {
     expect(hostName({ hosted_by_club: true, host: null })).toBe("The RPG Club");
   });
 
-  it("counts the games added by hand", () => {
-    const pool = {
-      ...fall.pool!,
-      target: "all" as const,
-      included_games: [{ game_id: 1, title: "x" }],
-    };
-    expect(poolLine({ pool }, null)).toBe("Final Fantasy franchise, 1 added");
+  it("says how a Pool Run Finishes, with or without Core Games and a target", () => {
+    const pool = (core: number, target: number) => ({ pool: { ...fall.pool!, core_count: core, optional_target: target } });
+    expect(finishLine(pool(1, 0))).toBe("Clear the 1 Core Game");
+    expect(finishLine(pool(5, 0))).toBe("Clear all 5 Core Games");
+    expect(finishLine(pool(0, 1))).toBe("Clear 1 Optional Game");
+    expect(finishLine({ pool: null })).toBeNull();
+    expect(poolLine({ pool: { optional_target: 0, core_count: 3, franchises: [], collections: [] } })).toBe("3 Core");
   });
 
   it("chips the Season, or when a Closed one opens", () => {
@@ -75,14 +79,14 @@ describe("Slots facts", () => {
   const nineties = { ...years, slots: { first_year: 1990, last_year: 1999, counts_past_play: false } } as Challenge;
 
   it("says the years, how to Finish or be Caught Up, and Counts past play", () => {
-    expect(challengeFacts(years, "2026-11-17", null)).toEqual([
+    expect(challengeFacts(years, "2026-11-17")).toEqual([
       { term: "Host", detail: "Crit Fisher" },
       { term: "Open", detail: "Any time" },
       { term: "Years", detail: "Your birth year to now, one game each" },
       { term: "Finish", detail: "Clear every year to be Caught Up; a year opens every 1 January" },
       { term: "Past play", detail: "Counts: pick a Game Completion from before your Run for an open year" },
     ]);
-    expect(challengeFacts(nineties, "2026-11-17", null).slice(2)).toEqual([
+    expect(challengeFacts(nineties, "2026-11-17").slice(2)).toEqual([
       { term: "Years", detail: "1990 to 1999, one game each" },
       { term: "Finish", detail: "Clear all 10 years" },
     ]);

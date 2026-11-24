@@ -93,14 +93,16 @@ export async function fetchPoolProgress(id: number): Promise<PoolProgressGame[] 
   return body?.data ?? null;
 }
 
-// A saved Challenge's Pool as a definition the preview takes.
-export function savedPoolDefinition(challenge: Challenge, { withExcluded = true } = {}): PoolDefinition | null {
+// A saved Challenge's Pool as a definition the preview takes (its linked
+// Game List aside, which the preview can't resolve).
+export function savedPoolDefinition(challenge: Challenge): PoolDefinition | null {
   const pool = challenge.pool;
   if (challenge.challenge_format !== "pool" || !pool) return null;
   return {
     franchise_ids: (pool.franchises ?? []).map((f) => f.franchise_id),
     collection_ids: (pool.collections ?? []).map((c) => c.collection_id),
-    included_game_ids: (pool.included_games ?? []).map((g) => g.game_id),
-    excluded_game_ids: withExcluded ? (pool.excluded_games ?? []).map((g) => g.game_id) : [],
+    core_game_ids: (pool.core_games ?? []).map((g) => g.game_id),
+    optional_game_ids: (pool.optional_games ?? []).filter((g) => g.source === "hand").map((g) => g.game_id),
+    excluded_game_ids: (pool.excluded_games ?? []).map((g) => g.game_id),
   };
 }

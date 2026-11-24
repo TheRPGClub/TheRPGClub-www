@@ -2041,7 +2041,7 @@
             border: 2px dashed var(--gotm);
         }
         /* Challenges (www#106). */
-        [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="stamp-more"], [data-variant="done"]) {
+        [data-slot="button"]:is([data-variant="rule-word"], [data-variant="rule-add"], [data-variant="pool-tile"], [data-variant="pool-switch"], [data-variant="pool-switch-core"], [data-variant="stamp-more"], [data-variant="done"]) {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);

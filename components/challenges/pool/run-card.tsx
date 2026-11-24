@@ -5,11 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberMark } from "@/components/challenges/host-badge";
 import { DeleteRunButton } from "@/components/challenges/delete-run-button";
+import { RunGoal } from "@/components/challenges/pool/run-goal";
 
 // One member's Run as a card (surface brief challenges-pool, 2D): their mark
 // and name, the score with the target muted, their Cleared covers then the
 // In Progress ones on a dashed outline, a bar with a segment per game to
-// Clear in the tint's hi, and when it started or ended. Your own card wears
+// Clear in the tint's hi (a Pool Run: a bar for Core and one for Optional,
+// its score Core Cleared of the Core Games), and when it started or ended. Your own card wears
 // the yellow ring; a Finished Run is stamped; an Abandoned one fades.
 export function RunCard({ run }: { run: RunCardView }) {
   const faded = run.status === "abandoned" || run.status === "expired";
@@ -37,11 +39,7 @@ export function RunCard({ run }: { run: RunCardView }) {
           </Badge>
         )}
       </header>
-      <p className="font-headline absolute top-3.5 right-[18px] text-[3rem] leading-[0.85]">
-        {run.cleared}
-        <span className="text-[1.6rem] text-faint-foreground"> / {run.target}</span>
-        <span className="sr-only"> Cleared</span>
-      </p>
+      <Score run={run} />
       <div className="flex min-h-24 flex-wrap items-end gap-2">
         {run.clearedGames.map((game) => (
           <RunCover key={game.game_id} game={game} />
@@ -53,14 +51,18 @@ export function RunCard({ run }: { run: RunCardView }) {
           <p className="text-sm text-faint-foreground">Nothing played for it yet.</p>
         )}
       </div>
-      <div className="flex gap-1" aria-hidden>
-        {run.segments.map((on, i) => (
-          <i
-            key={i}
-            className={cn("h-1.5 flex-1 rounded-[1px]", on ? "bg-(--challenge-tint-hi)" : "bg-border-strong")}
-          />
-        ))}
-      </div>
+      {run.goal ? (
+        <RunGoal goal={run.goal} />
+      ) : (
+        <div className="flex gap-1" aria-hidden>
+          {run.segments.map((on, i) => (
+            <i
+              key={i}
+              className={cn("h-1.5 flex-1 rounded-[1px]", on ? "bg-(--challenge-tint-hi)" : "bg-border-strong")}
+            />
+          ))}
+        </div>
+      )}
       <footer className="flex items-center justify-between gap-3 text-[0.85rem] text-faint-foreground">
         <span className="mr-auto">{run.dateLine}</span>
         {run.status === "active" && run.inProgress > 0 && <span>{run.inProgress} In Progress</span>}
@@ -72,11 +74,36 @@ export function RunCard({ run }: { run: RunCardView }) {
         {run.canDelete && <DeleteRunButton runId={run.id} />}
       </footer>
       {run.status === "finished" && (
-        <span className="font-headline absolute right-4 bottom-11 -rotate-5 rounded-xs bg-card px-[9px] pt-1.5 pb-1 text-[1.06rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]">
+        <span
+          className={cn(
+            "font-headline absolute right-4 -rotate-5 rounded-xs bg-card px-[9px] pt-1.5 pb-1 text-[1.06rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]",
+            // Under the score on a Pool Run, clear of its two bars and counts.
+            run.goal ? "top-[5.25rem]" : "bottom-11",
+          )}
+        >
           Finished
         </span>
       )}
     </article>
+  );
+}
+
+// The score at the top right: a Pool Run with Core Games counts those
+// ("9 / 14 Core"), else every game Cleared of the target.
+function Score({ run }: { run: RunCardView }) {
+  const core = run.goal && run.goal.core.total > 0 ? run.goal.core : null;
+  return (
+    <p className="font-headline absolute top-3.5 right-[18px] text-right text-[3rem] leading-[0.85]">
+      {core ? core.cleared : run.cleared}
+      <span className="text-[1.6rem] text-faint-foreground"> / {core ? core.total : run.target}</span>
+      {core ? (
+        <span className="font-label block text-[0.72rem] tracking-[0.08em] text-faint-foreground uppercase">
+          Core<span className="sr-only"> Games Cleared</span>
+        </span>
+      ) : (
+        <span className="sr-only"> Cleared</span>
+      )}
+    </p>
   );
 }
 
