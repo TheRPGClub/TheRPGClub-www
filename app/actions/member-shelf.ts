@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
 import { readApiError } from "@/lib/api/errors";
-import type { SortOrderPatch } from "@/lib/shelf-forms/reorder";
 import type { MemberShelfPayload } from "@/lib/shelf-forms/values";
 
 export type { MemberShelfKind } from "@/lib/api/member-shelf-entry";
@@ -75,9 +74,6 @@ function revalidateMemberPages(userId: string, kind: MemberShelfKind) {
   revalidatePath(`/members/${userId}`);
   revalidatePath(`/members/${userId}/${LISTS[kind].profileSubpath}`);
 }
-
-// The payload lives in lib so the shared list forms can build it.
-export type { MemberShelfPayload };
 
 // Favorites are platform-agnostic on the backend — sending platform_id makes
 // the request fail validation. The other lists do accept it.
@@ -202,27 +198,23 @@ export async function moveMemberShelfEntryAction(
   return added;
 }
 
-// Stores a new order for one of the ordered lists (Now Playing, Backlog,
-// Favorites): each patch writes an entry's `sort_order`. Built by
-// `sortOrderPatches`, which renumbers only what it must. Sent in parallel;
-// a refusal stops nothing already sent, so the page re-reads either way.
+// Moves one entry of an ordered list (Now Playing, Backlog, Favorites) to
+// `position` (1-based, across the whole list; past the end is last). The
+// API renumbers the member's list 1..n in one transaction (api#452b), so
+// one request per move.
 export async function reorderMemberShelfAction(
   userId: string,
   kind: MemberShelfKind,
-  patches: SortOrderPatch[],
+  entryId: number,
+  position: number,
 ): Promise<ActionResult<null>> {
   if (kind === "completed" || kind === "collection") {
     return { ok: false, error: "This list isn't ordered." };
   }
-  const results = await Promise.all(
-    patches.map((patch) =>
-      apiFetch(`/api/v1/${LISTS[kind].entryResource}/${patch.entryId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ data: { sort_order: patch.sortOrder } }),
-      }),
-    ),
-  );
+  const res = await apiFetch(`/api/v1/${LISTS[kind].entryResource}/${entryId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ data: { position } }),
+  });
   revalidateMemberPages(userId, kind);
-  const failed = results.find((res) => !res.ok);
-  return failed ? refusal(failed) : { ok: true, data: null };
+  return res.ok ? { ok: true, data: null } : refusal(res);
 }

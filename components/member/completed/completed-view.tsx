@@ -12,7 +12,10 @@ export function CompletedView({
   currentPage,
   q,
   displayName,
+  manage = false,
 }: {
+  // The owner's manage tools on the reel (spec api#451, pick 3A).
+  manage?: boolean;
   page: CompletedPage;
   currentPage: number;
   q: string;
@@ -21,7 +24,8 @@ export function CompletedView({
   const { view, list } = page;
   const { year, hrefFor, dialYears } = view;
   const all = { href: hrefFor("all", 1, q), count: null, on: year === "all" };
-  const months = /^\d{4}$/.test(year) && !q ? dialMonths(year, view.monthJumps) : [];
+  const months =
+    /^\d{4}$/.test(year) && !q ? dialMonths(year, view.monthJumps) : [];
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_5rem] lg:gap-7">
       <div className="min-w-0 space-y-6">
@@ -44,10 +48,22 @@ export function CompletedView({
         </div>
 
         <div className="lg:hidden">
-          <YearDial years={dialYears} current={year} months={[]} layout="row" all={all} />
+          <YearDial
+            years={dialYears}
+            current={year}
+            months={[]}
+            layout="row"
+            all={all}
+          />
         </div>
 
-        <CompletedList page={page} currentPage={currentPage} q={q} displayName={displayName} />
+        <CompletedList
+          page={page}
+          currentPage={currentPage}
+          q={q}
+          displayName={displayName}
+          manage={manage}
+        />
 
         <ListPagination
           currentPage={currentPage}

@@ -392,6 +392,8 @@ export interface UserBacklog {
   user_id: string;
   gamedb_game_id: number;
   platform_id: number | null;
+  // The member's order (api#452b); null on rows never reordered.
+  sort_order?: number | null;
   note: string | null;
   created_at: string;
   updated_at: string;
