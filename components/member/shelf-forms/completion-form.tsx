@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { ArrowRight, Check, Flag, Gamepad2, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Flag, Gamepad2, Loader2, Trash2 } from "lucide-react";
 import type { CompletionLog } from "@/hooks/use-completion-log";
 import type { Platform } from "@/lib/api/types";
 import { spanText, type IsoDay } from "@/lib/shelf-forms/dates";
@@ -28,6 +28,7 @@ export function CompletionForm({
   platforms,
   today,
   onCancel,
+  onRemove,
   className,
 }: {
   log: CompletionLog;
@@ -38,6 +39,9 @@ export function CompletionForm({
   platforms: Platform[];
   today: IsoDay;
   onCancel: () => void;
+  // Editing: take the completion off the list. The host holds it behind
+  // Undo (the Completed page's spotlight, spec api#451 pick 3A).
+  onRemove?: () => void;
   className?: string;
 }) {
   const ids = { hours: useId(), note: useId(), keep: useId() };
@@ -61,6 +65,11 @@ export function CompletionForm({
               <Checkbox id={ids.keep} variant="slip" checked={values.keepNowPlaying} onCheckedChange={(on) => set("keepNowPlaying", on === true)} />
               Keep it in Now Playing
             </label>
+          )}
+          {log.editing && onRemove && (
+            <Button type="button" variant="inverse-link" className="mr-auto max-sm:basis-full max-sm:justify-start" onClick={onRemove} disabled={log.pending}>
+              <Trash2 aria-hidden />Remove from Completed
+            </Button>
           )}
           <Button type="button" variant="inverse-outline" className="max-sm:flex-1" onClick={onCancel} disabled={log.pending}>
             Cancel
