@@ -229,6 +229,12 @@ const buttonVariants = cva(
         // holds a small switch drawn by the Theme: a span[data-part=
         // "switch-track"] around a span[data-part="switch-knob"].
         "filter-switch": "",
+        // api#451: the game page's split button (1A). split is its main side
+        // (the next step for the game, in highlight), split-caret the caret
+        // that opens all the member's lists, joined to it by an ink hairline
+        // and ringed in yellow while open (aria-expanded).
+        split: "",
+        "split-caret": "",
       },
       size: {
         default:
