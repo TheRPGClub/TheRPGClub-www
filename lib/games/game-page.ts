@@ -74,6 +74,9 @@ export async function loadGamePage(gameId: number) {
     journals: features.shown("journals"),
     achievements: features.shown("achievement_hub"),
     gameLists: features.shown("game_lists"),
+    // The member's own lists in the hero's split button (spec api#451).
+    backlog: features.shown("backlog"),
+    collection: features.shown("collection"),
     // The Releases section always shows (it is the game index's); only its
     // link to the Release Calendar follows that Feature.
     releaseCalendar: features.shown("release_calendar"),

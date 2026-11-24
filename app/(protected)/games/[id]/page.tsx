@@ -65,7 +65,7 @@ async function GameContent({
   return (
     <DetailTemplate
       className="pb-8"
-      hero={<GamePageHero game={game} features={features} show={show} canEdit={gates.canEdit} />}
+      hero={<GamePageHero game={game} features={features} show={show} canEdit={gates.canEdit} userId={viewer.ownerId} />}
     >
       <Suspense fallback={<FactsRowSkeleton />}>
         <GameFactsRow game={game} calendarShown={show.releaseCalendar} />
