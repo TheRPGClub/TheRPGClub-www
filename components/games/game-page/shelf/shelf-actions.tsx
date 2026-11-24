@@ -13,16 +13,15 @@ import {
   nextStep,
   shelfChips,
   shelfRows,
-  withoutList,
+  withoutEntry,
   type GameShelf,
-  type ShelfList,
   type ShelfShown,
 } from "@/lib/games/shelf";
 import type { SimpleShelfEntry, SimpleShelfKind } from "@/lib/shelf-forms/values";
 import { UndoBar } from "@/components/admin/desk/undo-bar";
 import type { ShelfGame } from "@/components/member/shelf-forms/shelf-entry-form";
 import { ShelfChips } from "./shelf-chips";
-import { ShelfFormsHost, shelfEntry } from "./shelf-forms-host";
+import { ShelfFormsHost, type ShelfOpen } from "./shelf-forms-host";
 import { ShelfSplitButton } from "./shelf-split-button";
 
 // A held removal: "<kind>:<entry id>", so a game put back on the list later
@@ -42,7 +41,7 @@ export function ShelfActions(props: {
 }) {
   const { userId, game, shown, platforms } = props;
   const router = useRouter();
-  const [open, setOpen] = useState<ShelfList | null>(null);
+  const [open, setOpen] = useState<ShelfOpen | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const removal = useUndoDelete<string>({
     commit: async (key) => {
@@ -54,12 +53,9 @@ export function ShelfActions(props: {
   });
 
   // The shelf as the member sees it: held and sent removals taken off.
-  const shelf = KINDS.reduce((acc, kind) => {
-    const entry = shelfEntry(acc, kind);
-    const id = entry && resolveEntryId(kind, entry);
-    if (id == null) return acc;
-    const key = heldKey(kind, id);
-    return removal.held.has(key) || removal.gone.has(key) ? withoutList(acc, kind) : acc;
+  const shelf = [...removal.held, ...removal.gone].reduce((acc, key) => {
+    const [kind, id] = key.split(":");
+    return KINDS.includes(kind as SimpleShelfKind) ? withoutEntry(acc, kind as SimpleShelfKind, Number(id)) : acc;
   }, props.shelf);
 
   const platformName = (id: number | null | undefined) => {
@@ -94,7 +90,7 @@ export function ShelfActions(props: {
           listLink={listLink}
           onPick={(row) => {
             setNotice(null);
-            setOpen(row.list);
+            setOpen({ list: row.list, mode: row.mode, entryId: row.entryId });
           }}
         />
         <ShelfChips chips={shelfChips(shelf, shown)} />

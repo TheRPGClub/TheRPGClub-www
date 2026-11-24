@@ -28,6 +28,8 @@ export function ManagedReel(props: {
     manage.remove(entry.completion_id, titleOf(entry));
 
   const reel: ReelManage = {
+    isRemoved: (entry) =>
+      undo.held.has(entry.completion_id) || undo.gone.has(entry.completion_id),
     onEdit: (entry) => manage.edit(entry.completion_id),
     editor: (entry) =>
       manage.editing === entry.completion_id &&

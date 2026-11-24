@@ -23,8 +23,8 @@ describe("completionHistory", () => {
   it("runs oldest first, undated first of all, and marks the one being edited", () => {
     const nodes = completionHistory(
       [
-        done(3, "2024-06-01T00:00:00Z"),
-        done(1, "2019-03-14T00:00:00Z", {
+        done(3, "2024-06-01T16:00:00Z"),
+        done(1, "2019-03-14T16:00:00Z", {
           final_playtime_hrs: "38.0",
           platform: snes,
         }),
@@ -52,7 +52,7 @@ describe("firstCompletionLine", () => {
   it("names the first completion for the phone's slip", () => {
     expect(
       firstCompletionLine([
-        done(1, "2019-03-14T00:00:00Z", { platform: snes }),
+        done(1, "2019-03-14T16:00:00Z", { platform: snes }),
       ]),
     ).toEqual({ when: "14 Mar 2019", rest: "Main Story on SNES" });
     expect(firstCompletionLine([])).toBeNull();

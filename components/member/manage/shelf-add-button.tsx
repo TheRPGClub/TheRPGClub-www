@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Play, Plus } from "lucide-react";
 import type { Game } from "@/lib/api/types";
 import { resolveEntryId } from "@/lib/api/member-shelf-entry";
-import { entryForGame } from "@/lib/shelf-forms/manage";
+import { addPick } from "@/lib/shelf-forms/manage";
 import type { SimpleShelfKind } from "@/lib/shelf-forms/values";
 import { ShelfFormDialog } from "@/components/member/shelf-forms/shelf-form-dialog";
 import { AddBySearch } from "./add-by-search";
@@ -19,18 +19,19 @@ const ADD: Record<SimpleShelfKind, { label: string; short: string }> = {
 
 // The owner's add on a Now Playing, Backlog, Favorites or Collection page
 // (spec api#451, pick 3A): search for a game, then fill the list's own form.
-// A game already on the page opens its entry instead.
+// On Now Playing and Favorites a game already on the page opens its entry
+// instead (put back first if its removal is held); Backlog and Collection
+// may hold a game again, so they always add (addPick).
 export function ShelfAddButton({ kind }: { kind: SimpleShelfKind }) {
   const { owner, listName, entries, manage } = useShelfManageContext();
   const [game, setGame] = useState<Game | null>(null);
   const add = ADD[kind];
 
   const pick = (picked: Game) => {
-    const listed = entryForGame(entries, picked.game_id);
-    const listedId = listed && resolveEntryId(kind, listed);
-    if (listedId !== undefined && listedId !== null)
-      return manage.edit(listedId);
-    setGame(picked);
+    const next = addPick(kind, entries, picked.game_id, (entry) => resolveEntryId(kind, entry), manage.undo);
+    if (next.action === "add") return setGame(picked);
+    if (next.undoRemoval) manage.undo.undo(next.entryId);
+    manage.edit(next.entryId);
   };
 
   return (

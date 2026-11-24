@@ -126,21 +126,24 @@ export function completionProblems(values: CompletionValues, today: IsoDay): Com
 
 // The completion's payload. Logging one while the game is on Now Playing
 // takes it off unless "Keep it in Now Playing" is ticked; an edit never does.
+// An edit sends a day only when it changed, so a stored day is never
+// rewritten (or re-checked) by an edit that didn't touch it.
 export function completionPayload(
   gameId: number,
   values: CompletionValues,
-  context: { editing: boolean; onNowPlaying: boolean },
+  context: { original: GameCompletion | null; onNowPlaying: boolean },
 ): ShelfPayload {
   const playtime = parsePlaytime(values.playtime);
+  const { original } = context;
   const payload: ShelfPayload = {
     completion_type: values.completionType,
     platform_id: values.platformId,
-    started_at: values.started,
-    completed_at: values.finished,
     final_playtime_hrs: playtime.ok ? playtime.value : null,
     note: noteOrNull(values.note),
   };
-  if (context.editing) return payload;
+  if (!original || values.started !== dayOf(original.started_at)) payload.started_at = values.started;
+  if (!original || values.finished !== dayOf(original.completed_at)) payload.completed_at = values.finished;
+  if (original) return payload;
   return {
     gamedb_game_id: gameId,
     ...payload,
@@ -204,6 +207,7 @@ export interface ShelfRefusal {
 const REFUSALS: Record<string, ShelfRefusal> = {
   started_after_finished: { field: "started", message: "Started can't be after Finished." },
   finished_in_future: { field: "finished", message: "Finished can't be in the future." },
+  started_in_future: { field: "started", message: "Started can't be in the future." },
   added_in_future: { field: "started", message: "Started can't be in the future." },
   already_playing: { message: "This game is already on your Now Playing list." },
 };

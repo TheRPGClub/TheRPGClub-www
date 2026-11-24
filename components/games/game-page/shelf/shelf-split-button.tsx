@@ -16,7 +16,7 @@ export interface ShelfSplitButtonProps {
   gameTitle: string;
   // The foot's link to the member's own list page.
   listLink: { href: string; label: string };
-  onPick: (row: Pick<ShelfRow, "list" | "mode">) => void;
+  onPick: (row: Pick<ShelfRow, "list" | "mode" | "entryId">) => void;
 }
 
 // The game page's split button (spec api#451, 1A): the next step on its
@@ -56,7 +56,7 @@ export function ShelfSplitButton({ step, rows, gameTitle, listLink, onPick }: Sh
             <DropdownMenuGroup>
               <p className={`${headClass} mb-2.5`}>{head}</p>
               {rows.map((row) => (
-                <DropdownMenuItem key={row.list} aria-label={shelfRowLabel(row)} onClick={() => onPick(row)} className="-mx-1.5 items-center gap-3 px-1.5 py-2.25">
+                <DropdownMenuItem key={row.key} aria-label={shelfRowLabel(row)} onClick={() => onPick(row)} className="-mx-1.5 items-center gap-3 px-1.5 py-2.25">
                   <ShelfRowContent row={row} />
                 </DropdownMenuItem>
               ))}
@@ -89,7 +89,7 @@ export function ShelfSplitButton({ step, rows, gameTitle, listLink, onPick }: Sh
             </div>
             {rows.map((row) => (
               <Button
-                key={row.list}
+                key={row.key}
                 variant="pick-row"
                 size="bare"
                 aria-label={shelfRowLabel(row)}

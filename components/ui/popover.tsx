@@ -3,6 +3,7 @@
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { triggerSlot } from "@/components/ui/trigger-slot"
 
 // The shadcn popover (base-nova). Its look (the card, the field trigger) is
 // the Theme's, by data-slot and data-variant (api ADR-0008).
@@ -24,8 +25,10 @@ function PopoverTrigger({
 }: PopoverPrimitive.Trigger.Props & { variant?: "default" | "field" | "date-block" }) {
   return (
     <PopoverPrimitive.Trigger
-      data-slot="popover-trigger"
-      data-variant={variant}
+      // A default trigger rendered as a Button keeps the Button's slot and
+      // variant (triggerSlot).
+      {...(variant === "default" ? triggerSlot("popover-trigger", props.render) : { "data-slot": "popover-trigger" })}
+      {...(variant === "default" && props.render ? {} : { "data-variant": variant })}
       className={cn(
         variant === "date-block" &&
           "relative flex w-full min-w-0 flex-col items-stretch px-3 pt-2.5 pb-2.5 text-left outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50",

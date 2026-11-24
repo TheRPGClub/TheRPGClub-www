@@ -30,7 +30,7 @@ const completion = {
   note: "Got Shadow back.",
   completion_type: "Completionist",
   started_at: "2019-02-01",
-  completed_at: "2019-03-14T00:00:00.000Z",
+  completed_at: "2019-03-14T16:00:00.000Z",
   final_playtime_hrs: "38.0",
   created_at: "2019-03-14T10:00:00.000Z",
 } satisfies GameCompletion;
@@ -73,7 +73,7 @@ describe("completionPayload", () => {
   const values = completionStart({ nowPlaying, today: TODAY }).values;
 
   it("logs both days and takes the game off Now Playing", () => {
-    expect(completionPayload(42, values, { editing: false, onNowPlaying: true })).toEqual({
+    expect(completionPayload(42, values, { original: null, onNowPlaying: true })).toEqual({
       gamedb_game_id: 42,
       completion_type: "Main Story",
       platform_id: 3,
@@ -86,16 +86,30 @@ describe("completionPayload", () => {
   });
 
   it("keeps it on Now Playing when ticked", () => {
-    const kept = completionPayload(42, { ...values, keepNowPlaying: true }, { editing: false, onNowPlaying: true });
+    const kept = completionPayload(42, { ...values, keepNowPlaying: true }, { original: null, onNowPlaying: true });
     expect(kept).not.toHaveProperty("leave_now_playing");
   });
 
   it("sends no leave_now_playing for a game not on Now Playing, or on an edit", () => {
-    expect(completionPayload(42, values, { editing: false, onNowPlaying: false })).not.toHaveProperty("leave_now_playing");
-    const edit = completionPayload(42, { ...values, playtime: "41.5", note: "  Again " }, { editing: true, onNowPlaying: true });
+    expect(completionPayload(42, values, { original: null, onNowPlaying: false })).not.toHaveProperty("leave_now_playing");
+    const edit = completionPayload(42, { ...values, playtime: "41.5", note: "  Again " }, { original: completion, onNowPlaying: true });
     expect(edit).not.toHaveProperty("leave_now_playing");
     expect(edit).not.toHaveProperty("gamedb_game_id");
     expect(edit).toMatchObject({ final_playtime_hrs: 41.5, note: "Again" });
+  });
+
+  it("sends an edit's days only when they changed", () => {
+    const stored = completionStart({ entry: completion, today: TODAY }).values;
+    const untouched = completionPayload(42, { ...stored, note: "new note" }, { original: completion, onNowPlaying: false });
+    expect(untouched).not.toHaveProperty("started_at");
+    expect(untouched).not.toHaveProperty("completed_at");
+
+    const moved = completionPayload(42, { ...stored, finished: "2019-03-20" }, { original: completion, onNowPlaying: false });
+    expect(moved).toMatchObject({ completed_at: "2019-03-20" });
+    expect(moved).not.toHaveProperty("started_at");
+
+    const cleared = completionPayload(42, { ...stored, started: null }, { original: completion, onNowPlaying: false });
+    expect(cleared).toMatchObject({ started_at: null });
   });
 });
 
@@ -148,6 +162,7 @@ describe("shelfRefusal", () => {
     expect(shelfRefusal("started_after_finished", "x")).toEqual({ field: "started", message: "Started can't be after Finished." });
     expect(shelfRefusal("finished_in_future", "x").field).toBe("finished");
     expect(shelfRefusal("added_in_future", "x").field).toBe("started");
+    expect(shelfRefusal("started_in_future", "x").field).toBe("started");
     expect(shelfRefusal(undefined, "Couldn't save it.")).toEqual({ message: "Couldn't save it." });
   });
 });

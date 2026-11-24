@@ -13,13 +13,13 @@ const root = path.resolve(__dirname, "..");
 const read = (file: string) => readFileSync(path.join(root, file), "utf8");
 const primitiveFiles = readdirSync(path.join(root, "components/ui")).filter((f) => f.endsWith(".tsx"));
 
-// Every data-slot a primitive renders: data-slot="x", or slot: "x" in a
-// useRender state.
+// Every data-slot a primitive renders: data-slot="x", slot: "x" in a
+// useRender state, or a trigger's triggerSlot("x", render).
 function primitiveSlots(): Set<string> {
   const slots = new Set<string>();
   for (const file of primitiveFiles) {
     const text = read(`components/ui/${file}`);
-    for (const m of text.matchAll(/data-slot="([\w-]+)"|\bslot: "([\w-]+)"/g)) slots.add(m[1] ?? m[2]);
+    for (const m of text.matchAll(/data-slot="([\w-]+)"|\bslot: "([\w-]+)"|triggerSlot\("([\w-]+)"/g)) slots.add(m[1] ?? m[2] ?? m[3]);
   }
   return slots;
 }

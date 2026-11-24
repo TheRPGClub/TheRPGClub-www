@@ -1,4 +1,4 @@
-import { clubToday, daysBetween, type IsoDay } from "@/lib/challenges/dates";
+import { clubDayOf, clubToday, daysBetween, type IsoDay } from "@/lib/challenges/dates";
 
 export { clubToday, daysBetween, type IsoDay };
 
@@ -19,15 +19,17 @@ export function isIsoDay(value: unknown): value is IsoDay {
   return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
 }
 
-// The day a stored timestamp falls on, as the API reads it (its UTC date):
-// a completion's `completed_at`, a Now Playing entry's `added_at`. A plain
-// day (`started_at`) comes back as it is. Null when blank or unreadable.
+// The day a stored timestamp falls on: its club day (America/New_York), the
+// one day rule the API reads too (ClubDay.day_of, spec api#451). Covers a
+// completion's `completed_at` (stored at noon club time, so its UTC date is
+// the same day) and a Now Playing entry's `added_at` (a real moment, so a
+// club evening is still that club day, not the next UTC one). A plain day
+// (`started_at`) comes back as it is. Null when blank or unreadable.
 export function dayOf(value: string | null | undefined): IsoDay | null {
   if (!value) return null;
   if (isIsoDay(value)) return value;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString().slice(0, 10);
+  if (Number.isNaN(new Date(value).getTime())) return null;
+  return clubDayOf(value);
 }
 
 // A day as the calendar holds it (local midnight, so the grid shows that

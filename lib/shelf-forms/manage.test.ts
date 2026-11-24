@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { entryForGame, isOrderedKind, liftLine, listPosition, ordinal } from "./manage";
+import { addPick, isOrderedKind, liftLine, listPosition, ordinal } from "./manage";
 
 describe("ordinal", () => {
   it("names a place", () => {
@@ -34,14 +34,32 @@ describe("isOrderedKind", () => {
   });
 });
 
-describe("entryForGame", () => {
-  it("finds the page's entry for a game by its game or its id", () => {
-    const entries = [
-      { entry_id: 1, game: { game_id: 7 } },
-      { entry_id: 2, game: null, gamedb_game_id: 9 },
-    ];
-    expect(entryForGame(entries, 7)?.entry_id).toBe(1);
-    expect(entryForGame(entries, 9)?.entry_id).toBe(2);
-    expect(entryForGame(entries, 3)).toBeUndefined();
+describe("addPick", () => {
+  const entries = [
+    { entry_id: 1, game: { game_id: 7 } },
+    { entry_id: 2, game: { game_id: 9 } },
+  ];
+  const idOf = (e: { entry_id: number }) => e.entry_id;
+  const none = { held: new Set<number>(), gone: new Set<number>() };
+
+  it("adds another Backlog or Collection entry for a game already there", () => {
+    expect(addPick("backlog", entries, 7, idOf, none)).toEqual({ action: "add" });
+    expect(addPick("collection", entries, 7, idOf, none)).toEqual({ action: "add" });
+  });
+
+  it("opens the Now Playing or Favorites entry of a game already there", () => {
+    expect(addPick("now_playing", entries, 7, idOf, none)).toEqual({ action: "open", entryId: 1, undoRemoval: false });
+    expect(addPick("favorite", entries, 9, idOf, none)).toEqual({ action: "open", entryId: 2, undoRemoval: false });
+    expect(addPick("favorite", entries, 3, idOf, none)).toEqual({ action: "add" });
+  });
+
+  it("puts back and opens an entry whose removal is held behind Undo", () => {
+    const removal = { held: new Set([1]), gone: new Set<number>() };
+    expect(addPick("now_playing", entries, 7, idOf, removal)).toEqual({ action: "open", entryId: 1, undoRemoval: true });
+  });
+
+  it("adds a game whose entry was already removed", () => {
+    const removal = { held: new Set<number>(), gone: new Set([1]) };
+    expect(addPick("now_playing", entries, 7, idOf, removal)).toEqual({ action: "add" });
   });
 });

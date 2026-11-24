@@ -219,6 +219,7 @@ export async function reorderMemberShelfAction(
     method: "PATCH",
     body: JSON.stringify({ data: { position } }),
   });
+  if (!res.ok) return refusal(res);
   revalidateMemberPages(userId, kind);
-  return res.ok ? { ok: true, data: null } : refusal(res);
+  return { ok: true, data: null };
 }
