@@ -11,6 +11,7 @@ import { DoorsPicture } from "@/components/challenges/assignment/doors-picture";
 import { MemberMark } from "@/components/challenges/host-badge";
 import { Numeral } from "@/components/challenges/banner-numeral";
 import { BackLink } from "@/components/shell/back-link";
+import { MadeFrom } from "@/components/challenges/made-from";
 
 // The Challenge banner, shared by every Challenge page (surface brief
 // challenges-pool, 2D): the key art over the tint, under the black
@@ -67,6 +68,11 @@ export function ChallengeBanner({
               <FormatSquare format={challenge.challenge_format} />
               {FORMAT_NAME[challenge.challenge_format]}
             </Chip>
+            {challenge.pool?.game_list && (
+              <Chip className="max-w-full bg-foreground/8 text-dim-foreground">
+                <MadeFrom list={challenge.pool.game_list} />
+              </Chip>
+            )}
             {hostChip && (
               <Chip className="bg-foreground/8 text-dim-foreground">
                 <MemberMark

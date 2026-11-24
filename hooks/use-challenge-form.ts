@@ -3,7 +3,15 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createChallengeAction, updateChallengeAction } from "@/app/actions/challenges";
-import { addSource, removeSource, validateDraft, type ChallengeDraft, type DraftGame, type DraftSource } from "@/lib/challenges/form";
+import {
+  addSource,
+  newHandGames,
+  removeSource,
+  validateDraft,
+  type ChallengeDraft,
+  type DraftGame,
+  type DraftSource,
+} from "@/lib/challenges/form";
 import { leaveOut, moveGame, poolColumns, putBack, setTarget, stepTarget, type PoolSide } from "@/lib/challenges/pool-editor";
 import { usePoolPreview } from "@/hooks/use-pool-preview";
 
@@ -41,6 +49,9 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
   const [error, setError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
   const [saving, startSaving] = useTransition();
+  // The games an edit adds by hand to a list-linked Pool, while the "also
+  // add to the list?" prompt is open (www#172).
+  const [listPrompt, setListPrompt] = useState<DraftGame[] | null>(null);
   const preview = usePoolPreview(draft);
   const columns = poolColumns(draft, preview.sources);
   const errors = validateDraft(draft, preview.known ? columns.optionalCount : null);
@@ -59,11 +70,19 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
       setError(first);
       return;
     }
+    const added = edit && draft.format === "pool" && draft.gameList?.canAdd ? newHandGames(initial, draft) : [];
+    if (added.length > 0) setListPrompt(added);
+    else send(false);
+  };
+
+  const send = (addToList: boolean) => {
+    setListPrompt(null);
     startSaving(async () => {
       const result = edit
         ? await updateChallengeAction(edit.id, draft, {
             locked,
             closedForGood: edit.closedForGood,
+            addToList,
           })
         : await createChallengeAction(draft);
       if (!result.ok || !result.data) {
@@ -104,6 +123,14 @@ export function useChallengeForm(initial: ChallengeDraft, edit: EditTarget | nul
     // Closed for good.
     endDateLocked: edit?.closedForGood ?? false,
     save,
+    // The "also add to the list?" prompt: the games it names, then the save
+    // with or without them going into the list.
+    listPrompt,
+    saveWithList: send,
+    closeListPrompt: () => setListPrompt(null),
+    // A new Challenge started from a list can drop the link (its games stay
+    // Core); a saved link is for good.
+    unlinkList: edit ? null : () => setDraft((d) => ({ ...d, gameList: null })),
     addSource: (source: DraftSource) => setDraft((d) => addSource(d, source)),
     removeSource: (source: DraftSource) => setDraft((d) => removeSource(d, source)),
     // The Pool editor (lib/challenges/pool-editor).

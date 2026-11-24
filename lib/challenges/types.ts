@@ -68,6 +68,24 @@ export interface ChallengeListNotice {
   created_at: string;
 }
 
+// A Pool Proposal (api#447): a member asked for a game to join a Pool
+// Challenge, with an optional note to whoever decides.
+export type PoolProposalStatus = "pending" | "accepted" | "declined";
+
+export interface ChallengePoolProposal {
+  id: number;
+  challenge_id: number;
+  game?: ChallengePoolGame;
+  proposer?: ChallengeMember | null;
+  note?: string | null;
+  status: PoolProposalStatus;
+  accepted_as?: "core" | "optional" | null;
+  decider?: ChallengeMember | null;
+  decided_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ChallengeSlots {
   first_year: number | "birth_year";
   last_year: number | "current_year";

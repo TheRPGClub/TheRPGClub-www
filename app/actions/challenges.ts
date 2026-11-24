@@ -70,7 +70,7 @@ export async function createChallengeAction(draft: ChallengeDraft): Promise<Chal
 export async function updateChallengeAction(
   id: number,
   draft: ChallengeDraft,
-  options: { locked: boolean; closedForGood: boolean },
+  options: { locked: boolean; closedForGood: boolean; addToList?: boolean },
 ): Promise<ChallengeActionResult> {
   if (!validId(id)) return { ok: false, error: "That Challenge no longer exists." };
   const error = firstError(draft, options.locked);

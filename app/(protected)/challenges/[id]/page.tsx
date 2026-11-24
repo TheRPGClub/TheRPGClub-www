@@ -13,12 +13,13 @@ import { StaffMenu } from "@/components/challenges/staff-menu";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { RunActionButton } from "@/components/challenges/run-action-button";
 import { loadEditionPage } from "@/lib/challenges/edition-page";
+import { proposalsTab } from "@/components/challenges/proposals/proposals-panel";
 import { EditionView } from "@/components/challenges/assignment/edition-view";
 import { SlotsView } from "@/components/challenges/slots/slots-view";
 
-// A Challenge's page: its rules, Host and schedule, every member's Run, and
-// The Pool (`?view=pool`); an Assignment Challenge's Edition (`?edition=`,
-// else the current one). `dup` names the Challenges that already had this
+// A Challenge's page: its rules, Host and schedule, every member's Run,
+// The Pool (`?view=pool`) and its Pool Proposals (`?view=proposals`); an
+// Assignment Challenge's Edition (`?edition=`, else the current one). `dup` names the Challenges that already had this
 // one's name, right after it was created.
 export default async function ChallengePage({
   params,
@@ -105,10 +106,13 @@ export default async function ChallengePage({
     const data = await loadEditionPage(challenge, Number(edition) || null, viewer.id, page.today);
     return <EditionView page={page} data={data} badge={badge} tools={tools} notice={dupNotice} />;
   }
+  const shown = parseView(view, ["runs", "pool", "proposals"]);
+  const proposals = await proposalsTab(page, shown === "proposals");
   return (
     <ChallengeView
       page={page}
-      view={parseView(view, ["runs", "pool", "proposals"])}
+      view={shown}
+      proposals={proposals}
       played={parsePlayed(played)}
       showAll={all === "1"}
       badge={badge}

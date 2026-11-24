@@ -15,6 +15,7 @@ import { WordEditor } from "@/components/challenges/form/word-editor";
 import { AssignmentRules } from "@/components/challenges/form/assignment-rules";
 import { SlotsSentence } from "@/components/challenges/form/slots-sentence";
 import { YearRuler } from "@/components/challenges/form/year-ruler";
+import { AddToListDialog } from "@/components/challenges/form/add-to-list-dialog";
 
 // Create or edit a Challenge (surface brief challenges-form, 5D's sentence
 // with 5C's covers): the Format as three cards, the rules as one sentence of
@@ -92,6 +93,7 @@ export function ChallengeForm({
         </p>
       )}
       <MetaFields form={form} canHostForClub={staff && !edit} />
+      <AddToListDialog form={form} />
     </div>
   );
 }
