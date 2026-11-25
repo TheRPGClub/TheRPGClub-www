@@ -26,8 +26,11 @@ export function spineHours(minutes: number | null | undefined): string {
   return minutes ? formatPlaytime(minutes) : "No time";
 }
 
-// What a spine's paper tag says when it lifts.
+// What a spine's paper tag says when it lifts. No tag when the entry has no
+// `playtime_minutes` field at all (an older API), so only null or 0 reads
+// "No time".
 export function spineLift(minutes: number | null | undefined, sub: string | null) {
+  if (minutes === undefined) return undefined;
   return { hours: spineHours(minutes), sub };
 }
 

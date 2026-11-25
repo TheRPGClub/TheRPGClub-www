@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   coverState,
   dialArcs,
+  clampDone,
   dialPercent,
   formatPlaytime,
   memberGroups,
@@ -96,6 +97,10 @@ describe("dialPercent", () => {
     expect(dialPercent(1, 300)).toBe(1);
   });
 
+  it("reads 100 when done runs past total", () => {
+    expect(dialPercent(18, 16)).toBe(100);
+  });
+
   it("is null for an empty meter", () => {
     expect(dialPercent(0, 0)).toBeNull();
   });
@@ -186,5 +191,14 @@ describe("standing", () => {
     expect(standing(meters([16, 16], [20, 31], [4, 15]), "2025-03-10T12:00:00Z")).toBe("Conquered Mar 2025");
     expect(standing(meters([11, 16], [16, 31], [5, 15]), null)).toBe("5 Mainline to go");
     expect(standing(meters([0, 0], [3, 19], [3, 19]), null)).toBeNull();
+  });
+});
+
+describe("clampDone", () => {
+  it("keeps done between 0 and total", () => {
+    expect(clampDone(5, 16)).toBe(5);
+    expect(clampDone(18, 16)).toBe(16);
+    expect(clampDone(-1, 16)).toBe(0);
+    expect(clampDone(3, 0)).toBe(0);
   });
 });

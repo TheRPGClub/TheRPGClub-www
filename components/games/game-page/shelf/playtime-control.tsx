@@ -30,9 +30,10 @@ export function PlaytimeControl(props: Omit<PlaytimeEditorProps, "playtime" | "d
     playtime.clearError();
     setOpen(next ? which : null);
   };
-  // On phones the segment opens a sheet itself; on desktop the popover's
-  // trigger does.
-  const press = (which: Exclude<Open, null>) => (mobile ? { "aria-expanded": open === which, onClick: () => openChange(which)(true) } : {});
+  // On phones the segment opens a sheet (a dialog) itself; on desktop the
+  // popover's trigger does.
+  const press = (which: Exclude<Open, null>) =>
+    mobile ? { "aria-haspopup": "dialog" as const, "aria-expanded": open === which, onClick: () => openChange(which)(true) } : {};
   const chip = has ? playtimeChip(doc) : null;
 
   return (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatPlaytime, progressMemberAvatar, progressMemberName, rankMeter, standing, type RankedMember } from "@/lib/franchises/progress";
+import { clampDone, formatPlaytime, progressMemberAvatar, progressMemberName, rankMeter, standing, type RankedMember } from "@/lib/franchises/progress";
 import type { FranchiseProgressMeter } from "@/lib/franchises/types";
 import { cn } from "@/lib/utils";
 import { MemberMark } from "@/components/challenges/host-badge";
@@ -75,17 +75,18 @@ export function MemberRow({
 // One block per game, the done ones in paper; past 40 games the blocks
 // would vanish, so it is one bar filled to the share done.
 function Segments({ meter }: { meter: FranchiseProgressMeter }) {
+  const done = clampDone(meter.done, meter.total);
   if (meter.total > 40) {
     return (
       <span aria-hidden className="flex h-2.5 min-w-0 flex-1 overflow-hidden rounded-[1px] bg-muted">
-        <i className="bg-foreground" style={{ width: `${(meter.done / meter.total) * 100}%` }} />
+        <i className="bg-foreground" style={{ width: `${(done / meter.total) * 100}%` }} />
       </span>
     );
   }
   return (
     <span aria-hidden className="flex h-2.5 min-w-0 flex-1 gap-0.5">
       {Array.from({ length: meter.total }, (_, i) => (
-        <i key={i} className={cn("flex-1 rounded-[1px]", i < meter.done ? "bg-foreground" : "bg-muted")} />
+        <i key={i} className={cn("flex-1 rounded-[1px]", i < done ? "bg-foreground" : "bg-muted")} />
       ))}
     </span>
   );

@@ -37,7 +37,7 @@ export function dialArcs(done: number, total: number, geo: { width: number; stro
   const base = { width, height, cx, cy, r };
   if (!(total > 0)) return { ...base, empty: true, segments: [{ d: arc(Math.PI, 0), on: false }] };
 
-  const lit = Math.min(Math.max(done, 0), total);
+  const lit = clampDone(done, total);
   const step = Math.PI / total;
   const gap = total > 1 ? Math.min(0.05, 0.45 / total) : 0;
   const segments = Array.from({ length: total }, (_, i) => {
@@ -48,10 +48,17 @@ export function dialArcs(done: number, total: number, geo: { width: number; stro
   return { ...base, empty: false, segments };
 }
 
+// Games done, kept within 0 and the meter's total (a count that runs past it
+// fills the meter, never more).
+export function clampDone(done: number, total: number): number {
+  return Math.min(Math.max(done, 0), Math.max(total, 0));
+}
+
 // A whole percent, or null for an empty meter. It reads 100 only when every
 // game is done, and at least 1 once one is.
-export function dialPercent(done: number, total: number): number | null {
+export function dialPercent(rawDone: number, total: number): number | null {
   if (!(total > 0)) return null;
+  const done = clampDone(rawDone, total);
   const pct = Math.round((done / total) * 100);
   if (done < total && pct >= 100) return 99;
   if (done > 0 && pct === 0) return 1;
