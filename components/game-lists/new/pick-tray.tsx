@@ -1,18 +1,21 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import type { GameListGame } from "@/lib/game-lists/types";
 import { Button } from "@/components/ui/button";
-import { GameCover } from "@/components/issue/game-cover";
+import { TrayCovers } from "@/components/game-lists/new/tray-covers";
 
 // The tray along the foot of /lists/new (pick 3C): how many games are
-// picked in yellow Anton, their covers in the order picked (tap one to put
-// it back), and Create, which carries them in.
+// picked in yellow Anton, their covers in the order they'll go in (a Ranked
+// list's drag into a new order; each has a cross to put it back), and
+// Create, which carries them in.
 export function PickTray({
   picked,
   pending,
   error,
   blocked,
+  sortable,
+  onReorder,
   onUnpick,
   onCreate,
 }: {
@@ -21,6 +24,8 @@ export function PickTray({
   error: string | null;
   // Why Create can't be pressed yet; null when it can.
   blocked: string | null;
+  sortable: boolean;
+  onReorder: (ids: number[]) => void;
   onUnpick: (game: GameListGame) => void;
   onCreate: () => void;
 }) {
@@ -37,18 +42,7 @@ export function PickTray({
         {n === 0 ? (
           <p className="text-sm text-faint-foreground">Tap covers above to pick games, or create the list empty.</p>
         ) : (
-          <ul className="flex gap-1.5 overflow-x-auto pb-1" aria-label="Picked games">
-            {picked.map((game) => (
-              <li key={game.game_id} className="shrink-0">
-                <Button variant="pool-tile" size="bare" aria-label={`Unpick ${game.title}`} onClick={() => onUnpick(game)} className="group relative block">
-                  <GameCover title={game.title} coverUrl={game.cover_url} className="w-9" fallbackClassName="p-0.5 text-[0.5rem]" />
-                  <span aria-hidden className="absolute inset-0 hidden place-items-center rounded-sm bg-background/70 group-hover:grid [&_svg]:size-4">
-                    <X />
-                  </span>
-                </Button>
-              </li>
-            ))}
-          </ul>
+          <TrayCovers picked={picked} sortable={sortable} onReorder={onReorder} onRemove={onUnpick} />
         )}
         {error && <p role="alert" className="mt-2 text-sm text-destructive">{error}</p>}
         {blocked && !error && <p id="create-blocked" className="mt-2 text-sm text-dim-foreground">{blocked}</p>}

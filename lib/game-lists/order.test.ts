@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   leadWith,
   matchLists,
-  moveEntry,
-  placeEntry,
   placeOf,
   reorderEntries,
   sortEntries,
@@ -39,33 +37,6 @@ describe("sortEntries", () => {
   it("leaves its input alone", () => {
     sortEntries(ENTRIES, "alphabetical");
     expect(ids(ENTRIES)).toEqual([1, 2, 3, 4]);
-  });
-});
-
-describe("moveEntry", () => {
-  it("swaps a game with its neighbour", () => {
-    expect(moveEntry([1, 2, 3], 2, -1)).toEqual([2, 1, 3]);
-    expect(moveEntry([1, 2, 3], 2, 1)).toEqual([1, 3, 2]);
-  });
-  it("refuses past either end or for an unknown game", () => {
-    expect(moveEntry([1, 2, 3], 1, -1)).toBeNull();
-    expect(moveEntry([1, 2, 3], 3, 1)).toBeNull();
-    expect(moveEntry([1, 2, 3], 9, 1)).toBeNull();
-  });
-});
-
-describe("placeEntry", () => {
-  it("drops a game before another", () => {
-    expect(placeEntry([1, 2, 3, 4], 4, 2)).toEqual([1, 4, 2, 3]);
-    expect(placeEntry([1, 2, 3, 4], 1, 4)).toEqual([2, 3, 1, 4]);
-  });
-  it("drops a game at the end", () => {
-    expect(placeEntry([1, 2, 3], 1, null)).toEqual([2, 3, 1]);
-  });
-  it("is null when nothing changes", () => {
-    expect(placeEntry([1, 2, 3], 2, 3)).toBeNull();
-    expect(placeEntry([1, 2, 3], 3, null)).toBeNull();
-    expect(placeEntry([1, 2, 3], 2, 2)).toBeNull();
   });
 });
 

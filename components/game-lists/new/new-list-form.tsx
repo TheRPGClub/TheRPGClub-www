@@ -12,7 +12,8 @@ import { PickTray } from "@/components/game-lists/new/pick-tray";
 
 // /lists/new (pick 3C, settings first): the list's name, description,
 // order and who sees it, then a search to pick its first games into the
-// tray, which creates the list with them in the order picked. A game page's
+// tray (a Ranked list's drag into order there), which creates the list
+// with them in the tray's order. A game page's
 // New list arrives with that game already picked.
 export function NewListForm({ initialPicks, badge }: { initialPicks: GameListGame[]; badge?: ReactNode }) {
   const router = useRouter();
@@ -23,6 +24,9 @@ export function NewListForm({ initialPicks, badge }: { initialPicks: GameListGam
 
   const toggle = (game: GameListGame) =>
     setPicked((now) => (now.some((g) => g.game_id === game.game_id) ? now.filter((g) => g.game_id !== game.game_id) : [...now, game]));
+  // The tray's new order (every picked id, first to last).
+  const reorder = (ids: number[]) =>
+    setPicked((now) => ids.flatMap((id) => now.filter((g) => g.game_id === id)));
   const create = () =>
     startTransition(async () => {
       setError(null);
@@ -50,6 +54,8 @@ export function NewListForm({ initialPicks, badge }: { initialPicks: GameListGam
         pending={pending}
         error={error}
         blocked={draft.name.trim() ? null : "Name the list above to create it."}
+        sortable={draft.sort === "ranked"}
+        onReorder={reorder}
         onUnpick={toggle}
         onCreate={create}
       />
