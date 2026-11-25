@@ -166,10 +166,19 @@ export interface Game {
   nr_gotm_month_year?: string | null;
   now_playing?: UserNowPlaying[];
   completions?: GameCompletion[];
+  // The GOTY Vote Awards it won, newest year first (GET /games/:id only; left
+  // out for a caller who cannot use GOTY Vote).
+  goty_awards?: GotyAwardWon[];
   reviews?: Review[];
   reviews_count?: number;
   created_at: string;
   updated_at: string;
+}
+
+// One GOTY Vote Award a game won (the game page's badge).
+export interface GotyAwardWon {
+  year: number;
+  award: "gotm" | "nr_gotm" | "game_of_the_year";
 }
 
 export interface GameImage {

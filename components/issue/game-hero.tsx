@@ -3,8 +3,10 @@ import type { Game } from "@/lib/api/types";
 import { GameCover } from "@/components/issue/game-cover";
 import { GameHeroText } from "@/components/issue/game-hero-text";
 import { gameTrack } from "@/components/issue/game-track";
+import { GotyRosettes } from "@/components/issue/goty-rosettes";
 import { Starburst } from "@/components/issue/starburst";
 import { BackLink } from "@/components/shell/back-link";
+import { gotyRosettes } from "@/lib/games/goty-rosettes";
 import { cn } from "@/lib/utils";
 
 // A game's cover story (design www#156, round 3): full-bleed key art, the way
@@ -12,7 +14,8 @@ import { cn } from "@/lib/utils";
 // top-right on one line, then the box cover centred on and as tall as the
 // title block (title in two monumental lines, chips, blurb with IGDB beside
 // it). The club's panel (`panel`) sits on a translucent ink plate over the
-// hero's foot. The starburst is stamped only on a GOTM or NR-GOTM winner.
+// hero's foot. The starburst is stamped only on a GOTM or NR-GOTM winner;
+// a GOTY Vote Award turns it into a rosette (design www#191, option B).
 //
 // It bleeds to the edges of the app's content column, so it undoes the
 // layout's padding (px-4 py-6, sm:px-7) itself.
@@ -35,6 +38,8 @@ export function GameHero({
   lists?: ReactNode;
 }) {
   const track = gameTrack(game);
+  const rosettes = gotyRosettes(track, game.goty_awards);
+  const awards = rosettes.filter((r) => r.award).length;
   const art = game.art_url;
 
   return (
@@ -59,7 +64,9 @@ export function GameHero({
         )}
       />
 
-      {track && (
+      {awards > 0 ? (
+        <GotyRosettes rosettes={rosettes} />
+      ) : track && (
         <Starburst
           track={track}
           rotate={8}
@@ -82,7 +89,9 @@ export function GameHero({
       <div
         className={cn(
           "grid grid-cols-[84px_minmax(0,1fr)] items-center gap-x-3.5 gap-y-3.5 px-4 pb-4 sm:px-7 md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-7.5 md:px-8 md:pt-19 md:pb-5.5",
-          art || track ? "pt-[150px]" : "pt-16",
+          art || rosettes.length > 0 ? "pt-[150px]" : "pt-16",
+          // Room beside the title block for the rosettes and their tails.
+          awards > 0 && (rosettes.length > 1 ? "md:pr-64 lg:pr-80" : "md:pr-40 lg:pr-52"),
         )}
       >
         {/* As tall as the title block beside it, at 3:4 (the grid's second

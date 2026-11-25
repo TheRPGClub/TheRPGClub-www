@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 
 // The winner starburst: the Monthly Issue's signature mark. It belongs to GOTM
-// and NR-GOTM wins only, so it never decorates anything else. GOTM wears the
-// highlighter yellow with ink type, NR-GOTM its own violet with white type.
+// and NR-GOTM wins and the GOTY Vote's Awards only, so it never decorates
+// anything else. GOTM wears the highlighter yellow with ink type, NR-GOTM its
+// own violet with white type, Game of the Year paper with ink type.
 //
 // It is positioned by the caller (absolute inside a relative container) and
 // stamps in once on mount; reduced motion skips the stamp.
@@ -20,6 +21,11 @@ const TRACK = {
     fill: "fill-nr",
     text: "text-nr-foreground",
     lines: ["Non-RPG", "Game of", "the Month"],
+  },
+  goty: {
+    fill: "fill-foreground",
+    text: "text-background",
+    lines: ["Game", "of the", "Year"],
   },
 } as const;
 
