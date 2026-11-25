@@ -8,6 +8,7 @@ import {
 import { paginationOf } from "@/lib/api/pagination";
 import { groupByYear } from "@/components/issue/gotm-shared";
 import { ListPagination } from "@/components/list-pagination";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/templates/page-header";
 import { GotmDiptychRow } from "./gotm-diptych-row";
 import { GotmHistoryFilters } from "./gotm-history-filters";
@@ -30,9 +31,6 @@ export function GotmHistory({
   const { total, totalPages } = paginationOf(result?.meta ?? undefined, rounds.length);
   // The newest round leads the roll, only where the roll starts.
   const leadsWithNewest = filters.page === 1 && filters.sort === "desc" && !filters.year;
-  // Every year break is marked, except the opening one on the roll's first
-  // page and under a year filter, where the year is already plain.
-  const marksFirstYear = !leadsWithNewest && !filters.year;
 
   return (
     <div className="space-y-5">
@@ -55,7 +53,8 @@ export function GotmHistory({
       <div className="grid gap-4 lg:grid-cols-[4.5rem_minmax(0,1fr)] lg:gap-6">
         <GotmYearRail filters={filters} years={result?.meta?.years ?? []} />
 
-        <div className="min-w-0 space-y-6">
+        {/* Column 2 even when the rail has nothing to show. */}
+        <div className="min-w-0 space-y-6 lg:col-start-2">
           {!result ? (
             <EmptyState>Couldn&apos;t load the GOTM history. Try again in a moment.</EmptyState>
           ) : rounds.length === 0 ? (
@@ -70,11 +69,14 @@ export function GotmHistory({
                   aria-label={group.year ? String(group.year) : "Undated rounds"}
                   className="space-y-4.5 sm:space-y-3.5"
                 >
-                  {(gi > 0 || marksFirstYear) && (
-                    <h2 className="font-headline flex items-center gap-4 pt-2.5 text-[1.875rem] leading-none text-faint-foreground after:h-0.5 after:flex-1 after:bg-border">
-                      {group.year ?? "Undated"}
-                    </h2>
-                  )}
+                  <h2
+                    className={cn(
+                      "font-headline flex items-center gap-4 text-[1.875rem] leading-none text-faint-foreground after:h-0.5 after:flex-1 after:bg-border",
+                      gi > 0 && "pt-2.5",
+                    )}
+                  >
+                    {group.year ?? "Undated"}
+                  </h2>
                   <ol className="space-y-4.5 sm:space-y-3.5">
                     {group.rounds.map((round, ri) => (
                       <GotmDiptychRow

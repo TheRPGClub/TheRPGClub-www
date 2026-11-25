@@ -34,11 +34,6 @@ export const GOTM_KIND_OPTIONS: { value: GotmKind; label: string }[] = [
   { value: "nr_gotm", label: "NR-GOTM" },
 ];
 
-export const GOTM_SORT_OPTIONS: { value: GotmSort; label: string }[] = [
-  { value: "desc", label: "Newest first" },
-  { value: "asc", label: "Oldest first" },
-];
-
 // Only values the API accepts reach it; anything else falls back to the
 // default rather than turning into a 422. The page has no title search, so a
 // stray `q` is dropped and the API is never asked to search.

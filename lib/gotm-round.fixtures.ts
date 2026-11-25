@@ -33,6 +33,7 @@ export function nomination(
     nominated_at: "2026-11-02T12:00:00Z",
     user: nominator ? member(nominator) : null,
     game: g,
+    co_nominations: [],
     votes: null,
     runoff_votes: null,
     ...over,

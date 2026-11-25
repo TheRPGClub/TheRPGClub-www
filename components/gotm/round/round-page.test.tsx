@@ -2,10 +2,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { GotmHistoryFilters } from "@/lib/api/gotm-rounds";
 import type { GotmRoundDetail } from "@/lib/api/types";
+import type { DiscordLinkConfig } from "@/lib/gotm-links";
 import { RoundPage } from "./round-page";
 import { RoundPageSkeleton } from "./round-page-skeleton";
 import {
   category,
+  member,
   nomination,
   noWinnerRound,
   preNominationRound,
@@ -18,9 +20,9 @@ import {
 const noFilters: GotmHistoryFilters = { kind: "both", year: null, sort: "desc", page: 1 };
 
 // Static markup with entities decoded and tags stripped, for reading copy.
-function render(round: GotmRoundDetail | null, filters = noFilters) {
+function render(round: GotmRoundDetail | null, filters = noFilters, discord?: DiscordLinkConfig) {
   const html = renderToStaticMarkup(
-    <RoundPage roundNumber={round?.round_number ?? 144} round={round} filters={filters} />,
+    <RoundPage roundNumber={round?.round_number ?? 144} round={round} filters={filters} discord={discord} />,
   );
   const text = html
     .replace(/<[^>]+>/g, " ")
@@ -51,6 +53,61 @@ describe("RoundPage", () => {
     expect(text).toContain("Castlevania: Dominus Collection and Kingdoms of the Dump tied on 5");
     expect(text).toContain("Runoff 6");
     expect(text).toContain("won runoff 6–5");
+  });
+
+  it("says only 'Runoff' when no game in the runoff won", () => {
+    const round = votedRound();
+    const [castlevania] = round.nr_gotm.winners;
+    round.nr_gotm.winners = [{ ...castlevania, nomination: { ...castlevania.nomination!, runoff_votes: null } }];
+    const { text } = render(round);
+    expect(text).not.toContain("Won in a runoff");
+    expect(text).toContain("Runoff · 5");
+  });
+
+  it("names a game's other nominators under its nominator, reasons folded away", () => {
+    const co = (name: string, reason: string | null) => ({
+      user_id: `u-${name}`,
+      user: member(name),
+      reason,
+      nominated_at: "2026-11-03T12:00:00Z",
+    });
+    const round = roundDetail({
+      gotm: category({
+        voted: true,
+        winners: [winner("Avowed", nomination("Avowed", "turtle", { votes: 5 }))],
+        nominations: [
+          nomination("Split Fiction", "mask", {
+            votes: 4,
+            co_nominations: [co("jaguar", "Co-op night."), co("xergg", null)],
+          }),
+        ],
+      }),
+    });
+    const { html, text } = render(round);
+    expect(text).toContain("also nominated by jaguar and xergg");
+    expect(html).toContain('href="/members/u-jaguar"');
+    expect(html).toMatch(/<details[^>]*>[\s\S]*Their reasons[\s\S]*Co-op night\./);
+    expect(text).toContain("4 votes");
+  });
+
+  it("links each winner's Reddit post and Discord thread and the Category's voting results", () => {
+    const round = votedRound();
+    round.gotm.winners[0] = { ...round.gotm.winners[0], reddit_url: "https://reddit.example/144", thread_id: "777" };
+    round.gotm.voting_results_message_id = "888";
+    round.nr_gotm = category({ voting_results_message_id: "999", nominations: [nomination("Split Fiction", "mask")] });
+    const discord = { guildId: "1", announcementsChannelId: "2" };
+
+    const { html } = render(round, noFilters, discord);
+    expect(html).toContain('href="https://reddit.example/144"');
+    expect(html).toContain('href="https://discord.com/channels/1/777"');
+    expect(html).toContain('href="https://discord.com/channels/1/2/888"');
+    // A Category nobody won still links its voting results.
+    expect(html).toContain('href="https://discord.com/channels/1/2/999"');
+
+    // Without the Discord config only Reddit shows.
+    const plain = render(round).html;
+    expect(plain).toContain('href="https://reddit.example/144"');
+    expect(plain).not.toContain("discord.com");
   });
 
   it("a round without a vote shows no counts, in nomination order", () => {

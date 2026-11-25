@@ -27,24 +27,31 @@ function block(monthYear: string, titles: string[], nominations?: number): GotmR
 
 const R144: GotmRound = {
   round_number: 144,
+  closed: true,
   gotm: block("November 2026", ["Resonance: A Plague Tale Legacy"], 4),
   nr_gotm: block("November 2026", ["Castlevania: Dominus Collection"], 4),
 };
 const R137: GotmRound = {
   round_number: 137,
+  closed: true,
   gotm: block("April 2026", ["Avowed"], 4),
   nr_gotm: block("April 2026", [], 3),
 };
 const R120: GotmRound = {
   round_number: 120,
+  closed: true,
   gotm: block("November 2024", ["Metaphor: ReFantazio"], 0),
   nr_gotm: block("November 2024", ["Astro Bot"]),
 };
 
-function render(rounds: GotmRound[] | null, filters: Partial<GotmHistoryFilters> = {}) {
+function render(
+  rounds: GotmRound[] | null,
+  filters: Partial<GotmHistoryFilters> = {},
+  years: number[] = [2026, 2024],
+) {
   const result = rounds && {
     rounds,
-    meta: { page: 1, pages: 1, count: rounds.length, per: 10, prev: null, next: null, years: [2026, 2024] },
+    meta: { page: 1, pages: 1, count: rounds.length, per: 10, prev: null, next: null, years },
   };
   return renderToStaticMarkup(
     <GotmHistory filters={{ ...FILTERS, ...filters }} result={result} badge={null} />,
@@ -77,10 +84,32 @@ describe("GotmHistory", () => {
     expect(html).not.toContain("Avowed");
   });
 
-  it("says when a Category had no winner", () => {
+  it("says when a Category had no winner, with its nominated count as the small line", () => {
     const html = render([R137]);
     expect(html).toContain("Avowed");
-    expect(html).toContain("No NR-GOTM winner");
+    expect(html).toContain("No NR-GOTM winner this round");
+    expect(html).toContain("3 nominated");
+    expect(html).not.toContain("none took the month");
+  });
+
+  it("does not link a round still being decided and tags it Deciding", () => {
+    const html = render([{ ...R144, closed: false }, R137]);
+    expect(html).not.toContain('href="/gotm/144"');
+    expect(html).toContain('href="/gotm/137"');
+    expect(html.match(/Deciding/g)).toHaveLength(1);
+  });
+
+  it("heads every year group, the first one on page 1 included", () => {
+    const html = render([R144, R137, R120]);
+    expect(html).toMatch(/<h2[^>]*>2026<\/h2>/);
+    expect(html).toMatch(/<h2[^>]*>2024<\/h2>/);
+    expect(render([R144], { year: 2026 })).toMatch(/<h2[^>]*>2026<\/h2>/);
+  });
+
+  it("keeps the rows in the second column when the year rail has nothing to show", () => {
+    const html = render([], {}, []);
+    expect(html).not.toContain('aria-label="Year"');
+    expect(html).toMatch(/class="[^"]*lg:col-start-2[^"]*"/);
   });
 
   it("breaks headlines at the subtitle colon", () => {

@@ -1,17 +1,19 @@
 import type { GotmRoundCategory, GotmRoundDetail, VotingCategory } from "@/lib/api/types";
-import { categoryRows, nomineeCount, rowVotes, runoffSummary, votesLabel } from "@/lib/gotm-round";
-import { TRACK_LABEL, splitMonthYear } from "@/components/issue/gotm-shared";
+import { gotmLinks, type DiscordLinkConfig } from "@/lib/gotm-links";
+import { categoryRows, nomineeCount, rowVotes, runoffSummary, votesLabel, winnerLinks } from "@/lib/gotm-round";
+import { OutboundLinks, TRACK_LABEL, splitMonthYear } from "@/components/issue/gotm-shared";
 import { cn } from "@/lib/utils";
 import { RoundHeroPanel } from "./round-hero-panel";
 
 // The round's winners as a hinged diptych: GOTM's art left, NR-GOTM's right,
 // the round numeral between them. On phones the hinge drops (the page title
-// carries the number) and the halves sit side by side.
-export function RoundHero({ round }: { round: GotmRoundDetail }) {
+// carries the number) and the halves sit side by side. Each half carries its
+// Category's Reddit, Discord thread and voting-results links.
+export function RoundHero({ round, discord }: { round: GotmRoundDetail; discord: DiscordLinkConfig }) {
   const { month, year } = splitMonthYear(round.month_year);
   return (
     <div className="grid min-h-64 grid-cols-2 gap-1.5 md:min-h-74 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
-      <RoundHalf kind="gotm" category={round.gotm} />
+      <RoundHalf kind="gotm" category={round.gotm} discord={discord} />
       <div
         aria-hidden
         className="relative flex flex-col items-center justify-center border-y border-border before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-border max-md:hidden"
@@ -25,18 +27,34 @@ export function RoundHero({ round }: { round: GotmRoundDetail }) {
           </span>
         )}
       </div>
-      <RoundHalf kind="nr_gotm" category={round.nr_gotm} />
+      <RoundHalf kind="nr_gotm" category={round.nr_gotm} discord={discord} />
     </div>
   );
 }
 
-function RoundHalf({ kind, category }: { kind: VotingCategory; category: GotmRoundCategory }) {
+function RoundHalf({
+  kind,
+  category,
+  discord,
+}: {
+  kind: VotingCategory;
+  category: GotmRoundCategory;
+  discord: DiscordLinkConfig;
+}) {
   const winners = categoryRows(category).filter((r) => r.won);
-  if (winners.length === 0) return <NoWinnerPanel kind={kind} nominated={nomineeCount(category)} />;
+  if (winners.length === 0) {
+    return (
+      <NoWinnerPanel
+        kind={kind}
+        nominated={nomineeCount(category)}
+        links={gotmLinks({ votingResultsMessageId: category.voting_results_message_id }, discord)}
+      />
+    );
+  }
   const runoff = runoffSummary(category);
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      {winners.map((row) => {
+      {winners.map((row, i) => {
         const votes = rowVotes(category, row);
         const meta = [
           votes != null && votesLabel(votes),
@@ -48,6 +66,7 @@ function RoundHalf({ kind, category }: { kind: VotingCategory; category: GotmRou
             kind={kind}
             row={row}
             meta={meta.length ? meta.join(" · ") : null}
+            links={winnerLinks(category, row, i === 0, discord)}
             compact={winners.length > 1}
           />
         );
@@ -58,7 +77,15 @@ function RoundHalf({ kind, category }: { kind: VotingCategory; category: GotmRou
 
 // A Category nobody won (NR-GOTM in rounds 125, 127 and 137): a hatched
 // blank with a dashed foot bar instead of art.
-function NoWinnerPanel({ kind, nominated }: { kind: VotingCategory; nominated: number }) {
+function NoWinnerPanel({
+  kind,
+  nominated,
+  links,
+}: {
+  kind: VotingCategory;
+  nominated: number;
+  links: ReturnType<typeof gotmLinks>;
+}) {
   const nr = kind === "nr_gotm";
   return (
     <div
@@ -82,6 +109,7 @@ function NoWinnerPanel({ kind, nominated }: { kind: VotingCategory; nominated: n
           {nominated} nominated
         </p>
       )}
+      <OutboundLinks links={links} className={cn("mt-2", nr && "-mr-1 ml-0 justify-end")} />
     </div>
   );
 }

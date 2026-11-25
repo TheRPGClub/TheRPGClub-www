@@ -30,7 +30,13 @@ export function RoundColumn({ kind, category }: { kind: VotingCategory; category
       {rows.every((r) => !r.won) && (
         <ColumnLine kind={kind} label={`No ${TRACK_LABEL[kind]} winner this round`} />
       )}
-      {runoff && <ColumnLine kind={kind} label={`Won in a runoff · ${runoff.score}`} detail={runoff.tie} />}
+      {runoff && (
+        <ColumnLine
+          kind={kind}
+          label={`${runoff.won ? "Won in a runoff" : "Runoff"} · ${runoff.score}`}
+          detail={runoff.tie}
+        />
+      )}
       <ol>
         {rows.map((row) => (
           <RoundNominee key={row.key} kind={kind} row={row} votes={rowVotes(category, row)} max={max} />

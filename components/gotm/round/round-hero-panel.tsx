@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { VotingCategory } from "@/lib/api/types";
 import type { RoundRow } from "@/lib/gotm-round";
+import type { GotmCardLink } from "@/lib/gotm-links";
 import { WinnerMark } from "@/components/issue/browse-winner-mark";
-import { TRACK_LABEL, UNKNOWN_GAME_TITLE } from "@/components/issue/gotm-shared";
+import { OutboundLinks, TRACK_LABEL, UNKNOWN_GAME_TITLE } from "@/components/issue/gotm-shared";
 import { cn } from "@/lib/utils";
 import { Nominator } from "./round-nominator";
 
@@ -14,6 +15,7 @@ export function RoundHeroPanel({
   row,
   meta,
   compact,
+  links,
 }: {
   kind: VotingCategory;
   row: RoundRow;
@@ -21,6 +23,8 @@ export function RoundHeroPanel({
   meta: string | null;
   // Co-winners share the half, so the title steps down.
   compact: boolean;
+  // Reddit / Thread / Voting results, raised above the panel's link.
+  links: GotmCardLink[];
 }) {
   const title = row.game?.title ?? UNKNOWN_GAME_TITLE;
   // A subtitle takes the second line in the Category's accent; a title
@@ -76,6 +80,7 @@ export function RoundHeroPanel({
           {tail && <span className={cn("block", nr ? "text-nr-soft" : "text-highlight")}>{tail}</span>}
         </h2>
         <RoundHeroCredit row={row} meta={meta} nr={nr} />
+        <OutboundLinks links={links} className={cn("mt-2", nr && "-mr-1 ml-0 justify-end")} />
       </div>
     </article>
   );

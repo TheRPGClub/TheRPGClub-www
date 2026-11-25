@@ -95,12 +95,11 @@ export function GotmDiptychHalf({
         ) : (
           <>
             <h3 className="font-headline text-[1.125rem] leading-[1.02] text-dim-foreground uppercase sm:text-[1.875rem]">
-              No {label} winner
+              No {label} winner this round
             </h3>
             {nominationsCount > 0 && (
               <p className="font-label mt-1.5 text-[0.6875rem] font-semibold tracking-[0.1em] text-faint-foreground uppercase sm:text-[0.8125rem]">
                 {nominationsCount} nominated
-                <span className="hidden sm:inline"> · none took the month</span>
               </p>
             )}
           </>

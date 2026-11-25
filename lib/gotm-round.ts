@@ -3,7 +3,9 @@ import type {
   GotmRoundCategory,
   GotmRoundDetail,
   GotmRoundNomination,
+  GotmRoundWinner,
 } from "@/lib/api/types";
+import { gotmLinks, type DiscordLinkConfig, type GotmCardLink } from "@/lib/gotm-links";
 
 // The Round Page's reading of one Category: who won, every game in the
 // running in order, and how the vote went (spec api#483).
@@ -16,6 +18,8 @@ export interface RoundRow {
   gameId: number | null;
   game: Game | null;
   nomination: GotmRoundNomination | null;
+  // The winner's entry, for its Reddit post and Discord thread.
+  winner: GotmRoundWinner | null;
 }
 
 const nominatedAt = (n: GotmRoundNomination) => Date.parse(n.nominated_at) || 0;
@@ -41,6 +45,7 @@ export function categoryRows(category: GotmRoundCategory): RoundRow[] {
       gameId: w.gamedb_game_id,
       game: w.game ?? w.nomination?.game ?? null,
       nomination: w.nomination,
+      winner: w,
     }));
   const others = sortedNominations(category).map((n) => ({
     key: `n${n.nomination_id}`,
@@ -48,6 +53,7 @@ export function categoryRows(category: GotmRoundCategory): RoundRow[] {
     gameId: n.gamedb_game_id,
     game: n.game ?? null,
     nomination: n,
+    winner: null,
   }));
   return [...winners, ...others];
 }
@@ -72,6 +78,9 @@ export function roundHasNominations(round: GotmRoundDetail): boolean {
 }
 
 export interface RunoffSummary {
+  // Whether a game in the runoff won the Category (an admin may have picked
+  // a winner outside it, or none).
+  won: boolean;
   // The runoff counts, the winner's first: "6–5".
   score: string;
   // "A and B tied on 5", when the runoff games shared a first-round count.
@@ -93,9 +102,28 @@ export function runoffSummary(category: GotmRoundCategory): RunoffSummary | null
     inRunoff.length > 1 && firstRound.size === 1 && votes != null
       ? `${LIST.format(inRunoff.map((r) => r.game?.title ?? "Unknown game"))} tied on ${votes}`
       : null;
-  return { score, tie };
+  return { won: inRunoff.some((r) => r.won), score, tie };
 }
 
 export function votesLabel(count: number): string {
   return `${count} ${count === 1 ? "vote" : "votes"}`;
 }
+
+// The outbound links a winner panel carries: the game's Reddit post and
+// Discord thread, and on the Category's first panel its voting results.
+export function winnerLinks(
+  category: GotmRoundCategory,
+  row: RoundRow,
+  first: boolean,
+  config: DiscordLinkConfig,
+): GotmCardLink[] {
+  return gotmLinks(
+    {
+      redditUrl: row.winner?.reddit_url,
+      threadId: row.winner?.thread_id,
+      votingResultsMessageId: first ? category.voting_results_message_id : null,
+    },
+    config,
+  );
+}
+

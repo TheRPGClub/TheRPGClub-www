@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { GotmRoundDetail } from "@/lib/api/types";
 import { gotmHistoryHref, gotmRoundHref, type GotmHistoryFilters } from "@/lib/api/gotm-rounds";
 import { roundHasNominations } from "@/lib/gotm-round";
+import { NO_DISCORD_LINKS, type DiscordLinkConfig } from "@/lib/gotm-links";
 import { PageHeader } from "@/components/templates/page-header";
 import { RoundColumn } from "./round-column";
 import { RoundHero } from "./round-hero";
@@ -17,6 +18,7 @@ export function RoundPage({
   round,
   filters,
   badge,
+  discord = NO_DISCORD_LINKS,
 }: {
   roundNumber: number;
   // null when the round couldn't be read.
@@ -24,6 +26,9 @@ export function RoundPage({
   // The history's filters, kept on every way out.
   filters: GotmHistoryFilters;
   badge?: ReactNode;
+  // Where the Discord thread and voting-results links point (server-only
+  // env); without it only Reddit links show.
+  discord?: DiscordLinkConfig;
 }) {
   const back = { href: gotmHistoryHref(filters), label: "GOTM history" };
   if (!round) {
@@ -56,7 +61,7 @@ export function RoundPage({
         actions={<StepLinks round={round} filters={filters} />}
       />
       <div className="mt-4">
-        <RoundHero round={round} />
+        <RoundHero round={round} discord={discord} />
       </div>
       {roundHasNominations(round) ? (
         <div className="mt-6 grid gap-7 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">

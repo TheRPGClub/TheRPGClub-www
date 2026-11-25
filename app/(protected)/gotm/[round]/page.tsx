@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { fetchGotmRoundDetail, parseGotmHistoryFilters } from "@/lib/api/gotm-rounds";
+import { discordLinkConfig } from "@/lib/gotm-links";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { RoundPage } from "@/components/gotm/round/round-page";
 
@@ -32,6 +33,7 @@ export default async function GotmRoundPage({
       roundNumber={roundNumber}
       round={detail}
       filters={parseGotmHistoryFilters(raw)}
+      discord={discordLinkConfig()}
       badge={features.preview("voting_gotm") && <PreviewBadge />}
     />
   );

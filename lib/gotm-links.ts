@@ -12,6 +12,8 @@ export interface DiscordLinkConfig {
   announcementsChannelId: string | null;
 }
 
+export const NO_DISCORD_LINKS: DiscordLinkConfig = { guildId: null, announcementsChannelId: null };
+
 // Server-only: neither var is NEXT_PUBLIC_, so call this from server
 // components and pass the built links down.
 export function discordLinkConfig(): DiscordLinkConfig {

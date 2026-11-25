@@ -3,8 +3,9 @@ import type { GotmRound, GotmRoundGame, VotingCategory } from "@/lib/api/types";
 import type { GotmCardLink } from "@/lib/gotm-links";
 import { cn } from "@/lib/utils";
 
-// Pieces the GOTM history's two layouts (the ledger and the cover wall)
-// share: track naming, round dates, year grouping and the outbound link row.
+// Pieces the GOTM History (the Diptych), the Round Page and the issue's
+// cover panels share: track naming, round dates, year grouping, headline
+// splitting and the outbound link row.
 
 export const TRACK_LABEL: Record<VotingCategory, string> = {
   gotm: "GOTM",

@@ -3,6 +3,7 @@ import type { VotingCategory } from "@/lib/api/types";
 import { votesLabel, type RoundRow } from "@/lib/gotm-round";
 import { UNKNOWN_GAME_TITLE } from "@/components/issue/gotm-shared";
 import { cn } from "@/lib/utils";
+import { CoNominationReasons, CoNominators } from "./round-co-nominations";
 import { Nominator } from "./round-nominator";
 
 // One game in a Category's column: cover, title, nominator, the full reason
@@ -68,11 +69,13 @@ export function RoundNominee({
             <Nominator user={row.nomination.user} />
           </p>
         )}
+        <CoNominators nomination={row.nomination} />
         {reason && (
           <p className="mt-1.5 max-w-[65ch] text-[0.875rem] leading-relaxed whitespace-pre-line text-dim-foreground">
             {reason}
           </p>
         )}
+        <CoNominationReasons nomination={row.nomination} />
       </div>
       {votes != null && <VoteCount kind={kind} votes={votes} max={max} runoff={row.nomination?.runoff_votes ?? null} />}
     </li>
