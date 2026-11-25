@@ -57,5 +57,5 @@ function openingAward(vote: GotyVote): GotyAwardKey {
     const s = awardState(vote, a);
     return s === "runoff" || s === "tie";
   });
-  return live?.award ?? "game_of_the_year";
+  return live?.award ?? "gotm";
 }
