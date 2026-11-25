@@ -58,7 +58,6 @@ export function PlaytimeEditor({ playtime, userId, gameId, gameTitle, platforms,
             view={view}
             pending={pending}
             onKeep={(keep) => run(() => settlePlaytimeMismatchAction(userId, gameId, m.platform_id, keep))}
-            onKeepBoth={() => playtime.keepBoth(view.key)}
           />
         );
       })}

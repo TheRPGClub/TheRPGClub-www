@@ -7,6 +7,7 @@ import {
   memberGroups,
   monthYear,
   playtimeTag,
+  progressMemberAvatar,
   progressTabCount,
   rankMeter,
   standing,
@@ -151,6 +152,26 @@ describe("memberGroups", () => {
     const groups = memberGroups([member("a", "2024-01-02T12:00:00Z"), member("b", null), member("c", null)]);
     expect(groups.conquered.map((r) => [r.member.user.user_id, r.rank])).toEqual([["a", 1]]);
     expect(groups.going.map((r) => [r.member.user.user_id, r.rank])).toEqual([["b", 2], ["c", 3]]);
+  });
+});
+
+describe("progressMemberAvatar", () => {
+  const user = { user_id: "42" };
+
+  it("is their Discord avatar when the API knows its hash", () => {
+    expect(progressMemberAvatar({ ...user, discord_avatar: "abc", avatar_url: "/api/v1/users/42/avatar" }, "https://api.test")).toBe(
+      "https://cdn.discordapp.com/avatars/42/abc.png?size=64",
+    );
+  });
+
+  it("else the avatar the bot stores, on the API's address", () => {
+    expect(progressMemberAvatar({ ...user, discord_avatar: null, avatar_url: "/api/v1/users/42/avatar" }, "https://api.test")).toBe(
+      "https://api.test/api/v1/users/42/avatar",
+    );
+  });
+
+  it("is null with neither (an older API), for the initials", () => {
+    expect(progressMemberAvatar(user, "https://api.test")).toBeNull();
   });
 });
 

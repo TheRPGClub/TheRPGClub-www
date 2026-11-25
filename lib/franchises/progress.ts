@@ -1,3 +1,4 @@
+import { discordAvatarUrl } from "@/lib/auth-types";
 import type { FranchiseProgressGame, FranchiseProgressMember, FranchiseProgressMeters } from "./types";
 
 // The Progress tab's maths (design pick 1E with 1E1, spec api#457).
@@ -116,6 +117,18 @@ export function monthYear(iso: string): string {
 // username, then the Discord id (the API's rule).
 export function progressMemberName(user: { user_id: string; global_name: string | null; username: string | null }): string {
   return user.global_name || user.username || user.user_id;
+}
+
+// A member's picture in the table and the dials: their Discord avatar from
+// its hash, else the one the bot stores (its API path on the API's public
+// address; it 404s without one and the mark keeps the initials). Null when
+// the API sends neither, for the initials mark.
+export function progressMemberAvatar(
+  user: { user_id: string; discord_avatar?: string | null; avatar_url?: string | null },
+  apiBase: string = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http://localhost:3000",
+): string | null {
+  if (user.discord_avatar) return discordAvatarUrl(user.user_id, user.discord_avatar, 64);
+  return user.avatar_url ? `${apiBase}${user.avatar_url}` : null;
 }
 
 // What still stands between a member and the Conquest, for the line under

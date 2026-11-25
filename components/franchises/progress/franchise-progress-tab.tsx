@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { monthYear, progressMemberName } from "@/lib/franchises/progress";
+import { monthYear, progressMemberAvatar, progressMemberName } from "@/lib/franchises/progress";
 import type { FranchiseProgressView } from "@/lib/franchises/types";
 import { ButtonLink } from "@/components/ui/button";
 import { MemberMark } from "@/components/challenges/host-badge";
@@ -19,13 +19,14 @@ export function FranchiseProgressTab({ franchiseId, progress }: { franchiseId: n
   const user = members.find((m) => m.user.user_id === shown.user_id)?.user;
   const real = user ? progressMemberName(user) : theirs ? "This member" : "You";
   const name = theirs ? real : "You";
+  const avatar = user ? progressMemberAvatar(user) : null;
 
   return (
     <div>
       {preview && <PreviewBadge className="mb-3" />}
       {theirs && (
         <div className="mb-3.5 flex items-center gap-2.5 rounded-[3px] bg-card px-3 py-2 text-[0.92rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)]">
-          <MemberMark name={real} size={24} />
+          <MemberMark name={real} src={avatar} size={24} />
           <p className="min-w-0 truncate">
             <span className="hidden sm:inline">Viewing </span>
             <b className="font-semibold text-foreground">
@@ -43,7 +44,7 @@ export function FranchiseProgressTab({ franchiseId, progress }: { franchiseId: n
           </ButtonLink>
         </div>
       )}
-      <ProgressDials progress={shown} name={name} markName={real} />
+      <ProgressDials progress={shown} name={name} markName={real} markSrc={avatar} />
       <Legend />
       <ProgressWall key={shown.user_id} progress={shown} />
       <ProgressMembers franchiseId={franchiseId} members={members} viewerId={yours.user_id} selectedId={theirs?.user_id ?? null} />

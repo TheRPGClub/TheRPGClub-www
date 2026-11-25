@@ -8,7 +8,18 @@ import { ProgressDial } from "@/components/franchises/progress/progress-dial";
 // who they belong to and their Playtime across the Franchise. From `lg` the
 // side sits as a fourth column; below it, as a row under the dials. A
 // Conquest presses the stamp onto the Mainline dial.
-export function ProgressDials({ progress, name, markName }: { progress: FranchiseProgress; name: string; markName: string }) {
+export function ProgressDials({
+  progress,
+  name,
+  markName,
+  markSrc = null,
+}: {
+  progress: FranchiseProgress;
+  name: string;
+  markName: string;
+  // Their avatar, when the members table has them; else the initials.
+  markSrc?: string | null;
+}) {
   const { meters, conquered_at } = progress;
   const line = standing(meters, conquered_at) ?? "Nobody can Conquer it yet";
   const dial = "border-r border-border";
@@ -41,7 +52,7 @@ export function ProgressDials({ progress, name, markName }: { progress: Franchis
       </div>
       <div className="col-span-full flex items-center justify-between gap-4 pt-3.5 lg:col-span-1 lg:flex-col lg:items-start lg:justify-end lg:gap-2.5 lg:self-stretch lg:pt-0 lg:pl-[22px]">
         <div className="flex min-w-0 items-center gap-2.5">
-          <MemberMark name={markName} size={34} />
+          <MemberMark name={markName} src={markSrc} size={34} />
           <div className="min-w-0">
             <p className="font-headline truncate text-[1.35rem] leading-[0.9] lg:text-[1.6rem]">{name}</p>
             <p className="font-label mt-[3px] text-[0.74rem] leading-[1.2] font-bold tracking-[0.08em] text-faint-foreground">{line}</p>

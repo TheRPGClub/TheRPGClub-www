@@ -66,7 +66,8 @@ export async function deleteManualPlaytimeAction(userId: string, entryId: number
 }
 
 // Settle a mismatch: keep the Manual entry (the Provider's figure on that
-// platform stops counting) or the Provider's (the Manual entry goes).
+// platform stops counting), the Provider's (the Manual entry goes), or both
+// (both count and it is no longer flagged).
 export async function settlePlaytimeMismatchAction(
   userId: string,
   gameId: number,

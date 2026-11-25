@@ -129,7 +129,9 @@ export interface FranchiseProgress {
 // Conquered first (earliest first), then by Mainline (by `all` with no
 // Mainline games), then by Playtime.
 export interface FranchiseProgressMember {
-  user: UserSummary;
+  // With their avatar: the Discord hash from their last website login and
+  // the API path of the one the bot stores.
+  user: UserSummary & { discord_avatar?: string | null; avatar_url?: string | null };
   meters: FranchiseProgressMeters;
   conquered_at: string | null;
 }

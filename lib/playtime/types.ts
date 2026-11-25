@@ -30,12 +30,15 @@ export interface ManualPlaytimeEntry {
   note?: string | null;
   origin: "member" | "completion_seed";
   keeps_over_provider?: PlaytimeProvider | null;
+  // The Provider whose figure on this platform counts alongside this entry,
+  // no longer a mismatch ("Keep both").
+  mismatch_acknowledged_provider?: PlaytimeProvider | null;
   created_at: string;
   updated_at: string;
 }
 
 // A Manual entry and a Provider on the same resolved platform, with no keep
-// chosen yet.
+// chosen yet (mine, the Provider's or both).
 export interface PlaytimeMismatch {
   platform_id: number;
   platform_name?: string | null;
@@ -51,6 +54,9 @@ export interface OpenPlaythrough {
   // The total set by hand when `manual`, else the Playtime gained since it
   // started.
   minutes: number;
+  // The member's Playtime when it started: its measured time is Playtime
+  // now minus this, floored at 0.
+  baseline_minutes?: number;
   manual: boolean;
 }
 
@@ -79,4 +85,6 @@ export interface GamePlaytime {
 }
 
 export type ManualPlaytimeMode = "add" | "set";
-export type MismatchKeep = "manual" | "provider";
+// Keep mine, keep the Provider's, or keep both (both count, no longer
+// flagged).
+export type MismatchKeep = "manual" | "provider" | "both";

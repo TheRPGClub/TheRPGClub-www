@@ -253,7 +253,8 @@ export function playthroughView(doc: GamePlaytime, nowPlayingAddedAt?: string | 
   const open = doc.playthrough;
   if (!open) return null;
   const started = dayOf(open.started_at);
-  const base = doc.total_minutes - open.minutes;
+  // The API's baseline; an older API without it leaves the difference.
+  const base = open.baseline_minutes ?? doc.total_minutes - open.minutes;
   return {
     id: open.id,
     clock: clockParts(open.minutes),

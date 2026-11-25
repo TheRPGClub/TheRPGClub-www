@@ -7,7 +7,9 @@ export type FranchiseViewKey = "games" | "progress" | "history";
 // 1E): Anton words on the 2px paper rule, the current one paper over a 4px
 // paper bar, each with its count (Progress counts the viewer's Mainline,
 // "11/16"). The view is kept in the address (`?view=history`). An action
-// (Link a game, in edit mode) sits at the rule's right.
+// (Link a game, in edit mode) sits at the rule's right, and wraps under the
+// words when there's no room; the words themselves stay on one row (tighter
+// on phones, and again under 390px, so all three fit with long counts).
 export function FranchiseSwitch({
   franchiseId,
   current,
@@ -21,7 +23,7 @@ export function FranchiseSwitch({
 }) {
   return (
     <div className="mt-8 mb-5 flex flex-wrap items-baseline gap-x-6 gap-y-3 border-b-2 border-foreground pb-2">
-      <nav aria-label="Views" className="contents">
+      <nav aria-label="Views" className="flex min-w-0 items-baseline gap-x-3 min-[390px]:gap-x-4 sm:gap-x-6">
         {views.map((view) => {
           const on = view.key === current;
           return (
@@ -31,7 +33,7 @@ export function FranchiseSwitch({
               scroll={false}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "font-headline relative inline-flex items-baseline gap-2 text-[1.45rem] leading-[0.9] sm:text-[1.875rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
+                "font-headline relative inline-flex shrink-0 items-baseline gap-1.5 whitespace-nowrap text-[1.3rem] min-[390px]:text-[1.45rem] sm:gap-2 leading-[0.9] sm:text-[1.875rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
                 on
                   ? "text-foreground after:absolute after:inset-x-0 after:-bottom-3 after:h-1 after:bg-foreground after:content-['']"
                   : "text-faint-foreground hover:text-foreground",
