@@ -4,10 +4,11 @@ import type { User } from "@/lib/api/types";
 
 // The API as the wall sees it: path -> [status, body].
 const answers = new Map<string, [number, unknown]>();
-vi.mock("@/lib/api", () => ({
-  apiFetch: async (path: string) => {
-    const [status, body] = answers.get(path) ?? [404, null];
-    return new Response(body == null ? null : JSON.stringify(body), { status });
+// The wall reads the members through the shared (club-wide) cache.
+vi.mock("@/lib/api/shared", () => ({
+  fetchMembers: async (query: string) => {
+    const [status, body] = answers.get(`/api/v1/users?${query}`) ?? [404, null];
+    return status === 200 ? (body as { data: unknown[] }).data : null;
   },
 }));
 

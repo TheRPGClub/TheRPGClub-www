@@ -9,6 +9,7 @@ import type {
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { EMPTY_SHELF, type GameShelf, type ShelfShown } from "./shelf";
+import { fetchPlatforms } from "@/lib/api/shared";
 
 // The game page's read of where the signed-in member's lists stand on this
 // game (spec api#451, 1A). Now Playing and Game Completions come with the
@@ -52,12 +53,12 @@ export async function fetchGameShelf(game: Game, userId: string, shown: ShelfSho
   const base = `/api/v1/users/${userId}`;
   const gameId = game.game_id;
   const [platforms, backlog, favorite, collection] = await Promise.all([
-    readList<Platform>("/api/v1/platforms?per=100"),
+    fetchPlatforms(),
     shown.backlog ? readList<UserBacklog>(`${base}/backlog?game_id=${gameId}&per=${PER_GAME}`) : null,
     shown.favorite ? readFavorite(base, gameId) : null,
     shown.collection ? readList<GameCollection>(`${base}/collections?game_id=${gameId}&per=${PER_GAME}`) : null,
   ]);
-  const platformList = platforms?.data ?? [];
+  const platformList = platforms ?? [];
   const byId = new Map(platformList.map((p) => [p.platform_id, p]));
   const mine = <T extends { user_id: string }>(entries: T[] | undefined) => (entries ?? []).filter((e) => e.user_id === userId);
   const ofGame = <T extends { gamedb_game_id: number | null }>(entries: T[] | undefined) =>

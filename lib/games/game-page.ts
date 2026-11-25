@@ -9,7 +9,6 @@ import type {
   Release,
   Review,
   Thread,
-  UserSummary,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
@@ -18,6 +17,7 @@ import { draftOfGame } from "@/lib/reviews/drafts";
 import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
 import { gameEditViewer } from "@/lib/games/game-edit/tabs";
+import { fetchMemberDirectory } from "@/lib/api/shared";
 
 // The game page's reads. The page itself only gates and fills the detail
 // template; its sections stream their own reads from here.
@@ -146,16 +146,8 @@ export async function fetchGameAchievementSets(
 // directory. Empty when it can't be read: names then fall back to the
 // Completions' users.
 export async function fetchRingMemberNames(): Promise<Map<string, string>> {
-  try {
-    const res = await apiFetch(`/api/v1/users?per=500`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    });
-    if (!res.ok) return new Map();
-    const { data }: ApiCollection<UserSummary> = await res.json();
-    return new Map(data.map((user) => [user.user_id, memberName(user)]));
-  } catch {
-    return new Map();
-  }
+  const data = await fetchMemberDirectory(MEMBERS_REVALIDATE_SECONDS);
+  return new Map((data ?? []).map((user) => [user.user_id, memberName(user)]));
 }
 
 // The game's linked Discord threads for the hero panel, or null when the read

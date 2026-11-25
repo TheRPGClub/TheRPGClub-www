@@ -3,13 +3,13 @@ import type {
   ApiCollection,
   CommonCompletion,
   CommonCompletionMeta,
-  Platform,
   User,
 } from "@/lib/api/types";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { paginationOf } from "@/lib/api/pagination";
 import { commonCompletionsQuery, type CompareFilters } from "@/lib/completions-compare";
 import { fetchMember } from "@/lib/members/member-page";
+import { fetchMemberDirectory, fetchPlatforms } from "@/lib/api/shared";
 
 // Compare completions: the overlap diagram ("only A / both / only B") over a
 // contact sheet of the shared games.
@@ -65,10 +65,6 @@ export function compareMembers(allUsers: User[], ownerId: string, withId: string
   return { members, rightName };
 }
 
-async function readAll<T>(res: Response): Promise<T[]> {
-  return res.ok ? ((await res.json()) as ApiCollection<T>).data : [];
-}
-
 type CommonBody = ApiCollection<CommonCompletion> & { meta: CommonCompletionMeta };
 
 async function compareResult(
@@ -96,12 +92,10 @@ async function compareResult(
 // read (a 404).
 export async function loadComparePage(id: string, filters: CompareFilters) {
   const comparable = filters.with !== null && filters.with !== id;
-  const [user, membersRes, platformsRes, commonRes] = await Promise.all([
+  const [user, allMembers, platforms, commonRes] = await Promise.all([
     fetchMember(id),
-    apiFetch(`/api/v1/users?per=500`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    }),
-    apiFetch(`/api/v1/platforms?per=100`, { next: { revalidate: 3600 } }),
+    fetchMemberDirectory<User>(MEMBERS_REVALIDATE_SECONDS),
+    fetchPlatforms(),
     comparable
       ? apiFetch(
           `/api/v1/users/${id}/completions/common?${commonCompletionsQuery(filters, COMPARE_PAGE_SIZE)}`,
@@ -111,11 +105,11 @@ export async function loadComparePage(id: string, filters: CompareFilters) {
   ]);
   if (!user) return null;
   const body: CommonBody | null = commonRes?.ok ? await commonRes.json() : null;
-  const { members, rightName } = compareMembers(await readAll<User>(membersRes), id, filters.with);
+  const { members, rightName } = compareMembers(allMembers ?? [], id, filters.with);
   return {
     user,
     members,
-    platforms: await readAll<Platform>(platformsRes),
+    platforms: platforms ?? [],
     result: await compareResult(filters, comparable, commonRes, body),
     overlap: completionOverlap(body?.meta ?? null),
     left: { id, name: compareNameOf(user) },
