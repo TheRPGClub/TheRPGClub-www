@@ -74,6 +74,15 @@ describe("GotyPage", () => {
     expect(html).not.toContain("Reminder");
   });
 
+  it("opens on GOTM of the Year, in the Year So Far and while voting", () => {
+    const selected = (html: string) => {
+      const tab = html.match(/<[^>]*role="tab"[^>]*aria-selected="true"[^>]*>([\s\S]*?)<\/button>/);
+      return tab?.[1] ?? "";
+    };
+    expect(selected(render(gotyVote({ phase: "upcoming", voting_open: false, club_releases: [] })))).toContain("GOTM of the Year");
+    expect(selected(render(gotyVote()))).toContain("GOTM of the Year");
+  });
+
   it("upcoming: no release played yet, and how it works with the real dates", () => {
     const html = render(gotyVote({ phase: "upcoming", voting_open: false, club_releases: [] }));
     expect(html).toContain("No release from this year played yet.");

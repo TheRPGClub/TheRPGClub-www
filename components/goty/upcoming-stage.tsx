@@ -11,7 +11,7 @@ import { YearSoFarPanel } from "./year-so-far-panel";
 // on Game of the Year, the night's headline Award, as the vote does.
 export function UpcomingStage({ vote }: { vote: GotyVote }) {
   return (
-    <Tabs defaultValue="game_of_the_year" className="flex flex-col gap-5">
+    <Tabs defaultValue="gotm" className="flex flex-col gap-5">
       <TabsList variant="envelope" aria-label="The year so far, by Award" activateOnFocus>
         {vote.awards.map((a) => (
           <AwardEnvelopeTab key={a.award} award={a} env={envelope(vote, a, 0, 0)} />
