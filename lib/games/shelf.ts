@@ -154,8 +154,7 @@ function onState(shelf: GameShelf, list: "now_playing" | "favorite", platform: P
       return join(day ? `Since ${shortDay(day)}` : "Playing", platform(shelf.nowPlaying?.platform_id));
     }
     case "favorite":
-      // rank 0: its place couldn't be read.
-      return shelf.favorite?.rank ? `No. ${shelf.favorite.rank} of ${shelf.favorite.of}` : "On your Favorites";
+      return "On your Favorites";
   }
 }
 
@@ -221,7 +220,7 @@ export function shelfRows(shelf: GameShelf, shown: ShelfShown, platform: Platfor
 export interface ShelfChip {
   list: ShelfList;
   label: string;
-  // A figure set big beside the label ("×2", "No. 2").
+  // A figure set big beside the label ("×2").
   figure?: string;
 }
 
@@ -238,7 +237,8 @@ export function shelfChips(shelf: GameShelf, shown: ShelfShown): ShelfChip[] {
   const times = (n: number) => (n > 1 ? { figure: `×${n}` } : {});
   if (shown.backlog && shelf.backlog.length > 0) chips.push({ list: "backlog", label: "In Backlog", ...times(shelf.backlog.length) });
   if (shown.favorite && shelf.favorite) {
-    chips.push({ list: "favorite", label: "Favorite", ...(shelf.favorite.rank ? { figure: `No. ${shelf.favorite.rank}` } : {}) });
+    // Just that it's a Favorite: its rank is the Favorites page's business.
+    chips.push({ list: "favorite", label: "Favorite" });
   }
   if (shown.collection && shelf.collection.length > 0) {
     const [first] = shelf.collection;

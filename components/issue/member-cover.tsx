@@ -1,11 +1,10 @@
 import type { Game, Platform } from "@/lib/api/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { memberAvatarSrc } from "@/lib/members/avatar";
 import { cn } from "@/lib/utils";
 
 // The member department's shared pieces: a 3:4 cover with its title fallback
 // and platform tab, and the member's avatar disc.
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
 export function platformShort(platform: Platform | null | undefined): string | null {
   if (!platform) return null;
@@ -86,7 +85,7 @@ export function MemberAvatar({
 }) {
   return (
     <Avatar variant="inverse" className={cn("size-10 after:hidden", className)}>
-      <AvatarImage src={`${API_BASE}/api/v1/users/${userId}/avatar`} alt="" />
+      <AvatarImage src={memberAvatarSrc(userId)} alt="" />
       <AvatarFallback
         className={cn(
           "font-headline",

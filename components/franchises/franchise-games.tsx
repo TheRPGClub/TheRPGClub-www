@@ -37,7 +37,8 @@ export function FranchiseGames({
           No games are linked to this Franchise yet.
         </p>
       )}
-      {mainline.length > 0 && (
+      {/* Editing shows Mainline even empty, so there's somewhere to put one. */}
+      {(mainline.length > 0 || editor.editing) && (
         <section aria-label="Mainline">
           <SectionHeading
             title="Mainline"
@@ -46,12 +47,18 @@ export function FranchiseGames({
             className="mt-0"
           />
           <div className="mt-4">
-            <FranchiseWall entries={mainline} kind="run" editor={editor} label="Mainline games, in release order" />
+            {mainline.length > 0 ? (
+              <FranchiseWall entries={mainline} kind="run" editor={editor} label="Mainline games, in release order" />
+            ) : (
+              <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+                No Mainline games yet. Star a Spin-off to make it Mainline.
+              </p>
+            )}
           </div>
         </section>
       )}
       {(other.length > 0 || editor.editing) && (
-        <section aria-label="Spin-offs" className={cn(mainline.length > 0 && "mt-10")}>
+        <section aria-label="Spin-offs" className={cn((mainline.length > 0 || editor.editing) && "mt-10")}>
           <SectionHeading title="Spin-offs" count={`${layout.counts.other} game${layout.counts.other === 1 ? "" : "s"} · the box set`} />
           <div className="mt-4 rounded-sm border border-border bg-card px-3 pt-4 pb-5 sm:px-5">
             <FranchiseWall entries={other} kind="box" editor={editor} label="Spin-offs" extra={addTile} />

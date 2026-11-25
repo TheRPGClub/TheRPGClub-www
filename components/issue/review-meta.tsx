@@ -1,5 +1,6 @@
 import { MAX_RATING } from "@/lib/api/rating";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { memberAvatarSrc } from "@/lib/members/avatar";
 import { cn } from "@/lib/utils";
 
 // The small parts every review surface shares: the reviewer's disc, the
@@ -12,8 +13,6 @@ export {
   type ScoredFacet,
 } from "@/components/issue/review-meta-facets";
 export { FacetBars } from "@/components/issue/review-meta-facet-bars";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3000";
 
 export { formatReviewDate } from "@/lib/reviews/review-date";
 
@@ -47,7 +46,7 @@ export function ReviewerAvatar({
       )}
     >
       <AvatarImage
-        src={`${API_BASE}/api/v1/users/${userId}/avatar`}
+        src={memberAvatarSrc(userId)}
         alt=""
       />
       <AvatarFallback className="font-label font-extrabold text-[length:inherit]">

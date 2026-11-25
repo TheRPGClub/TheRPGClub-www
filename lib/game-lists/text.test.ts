@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addedTag, gamesCount, placeLabel, privateNote, updatedText } from "@/lib/game-lists/text";
+import { addedTag, gamesCount, privateNote, updatedText } from "@/lib/game-lists/text";
 
 const NOW = new Date("2026-11-24T15:00:00Z");
 
@@ -19,14 +19,6 @@ describe("addedTag", () => {
   it("says Today, else the short date", () => {
     expect(addedTag("2026-11-24T00:10:00Z", NOW)).toBe("Today");
     expect(addedTag("2026-11-03T00:10:00Z", NOW)).toBe("3 Nov");
-  });
-});
-
-describe("placeLabel", () => {
-  it("numbers a ranked list and names the others", () => {
-    expect(placeLabel({ sort: "ranked" }, 2, 10)).toEqual({ big: "No. 2", small: "of 10" });
-    expect(placeLabel({ sort: "alphabetical" }, 2, 10)).toEqual({ big: "A to Z", small: "10 games" });
-    expect(placeLabel({ sort: "added" }, 1, 1)).toEqual({ big: "Date added", small: "1 game" });
   });
 });
 

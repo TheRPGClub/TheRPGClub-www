@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { SHELF_ICONS } from "./shelf-row";
 
 // Where the game already is on the member's lists, beside the split button
-// (1A): "Playing since 9 Nov", "Completed ×2", "Favorite No. 2". A game on
+// (1A): "Playing since 9 Nov", "Completed ×2", "Favorite". A game on
 // none says so in quiet label caps.
 export function ShelfChips({ chips }: { chips: ShelfChip[] }) {
   if (chips.length === 0) {

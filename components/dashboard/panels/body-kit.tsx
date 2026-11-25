@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { UserSummary } from "@/lib/api/types";
-import { avatarSrc, memberAvatarPath } from "@/lib/codex/avatar";
+import { avatarSrc, memberAvatarPath } from "@/lib/members/avatar";
 import { memberName } from "@/lib/achievements";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberMark } from "@/components/challenges/host-badge";

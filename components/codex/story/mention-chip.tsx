@@ -1,7 +1,7 @@
 "use client";
 
 import { PlateElement, type PlateElementProps } from "platejs/react";
-import { avatarSrc, memberAvatarPath } from "@/lib/codex/avatar";
+import { avatarSrc, memberAvatarPath } from "@/lib/members/avatar";
 import type { MentionNode } from "@/lib/codex/story-schema";
 import { MemberMark } from "@/components/challenges/host-badge";
 

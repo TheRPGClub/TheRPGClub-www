@@ -1,7 +1,7 @@
 import { Cake } from "lucide-react";
 import { fetchUpcomingBirthdays } from "@/lib/api/birthdays";
 import { clubToday } from "@/lib/challenges/dates";
-import { avatarSrc, memberAvatarPath } from "@/lib/codex/avatar";
+import { avatarSrc, memberAvatarPath } from "@/lib/members/avatar";
 import { birthdayLine } from "@/lib/dashboard/birthdays";
 import { PANELS } from "@/lib/dashboard/panels";
 import { Badge } from "@/components/ui/badge";

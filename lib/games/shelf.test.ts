@@ -69,7 +69,7 @@ describe("shelfRows", () => {
       ["completed", "14 Mar 2019 · Main Story", "Edit"],
       ["completed", "Another run", "Log another"],
       ["backlog", "Not on it", "Add"],
-      ["favorite", "No. 2 of 10", "Edit"],
+      ["favorite", "On your Favorites", "Edit"],
       ["collection", "Physical · Switch", "Edit"],
       ["collection", "Another copy or platform", "Add another"],
     ]);
@@ -118,7 +118,7 @@ describe("shelfChips", () => {
       { list: "now_playing", label: "Playing since 9 Nov" },
       { list: "completed", label: "Completed", figure: "×2" },
       { list: "backlog", label: "In Backlog" },
-      { list: "favorite", label: "Favorite", figure: "No. 2" },
+      { list: "favorite", label: "Favorite" },
       { list: "collection", label: "Physical" },
     ]);
   });

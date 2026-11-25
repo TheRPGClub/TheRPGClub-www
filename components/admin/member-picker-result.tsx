@@ -1,7 +1,7 @@
 import type { User } from "@/lib/api/types";
 import { memberName } from "@/lib/achievements";
-import { discordAvatarUrl } from "@/lib/auth-types";
 import { ComboboxItem } from "@/components/ui/combobox";
+import { MemberAvatar } from "@/components/issue/member-cover";
 
 // One member in the member picker's list: avatar, name, handle (and "left
 // the server"), and a Pick tag that fills yellow while the row is lit.
@@ -12,8 +12,7 @@ export function MemberPickerResult({ user }: { user: User }) {
       variant="result"
       className="group/result grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-3 px-2.5 py-2 text-left"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- a small Discord avatar, already sized by Discord's CDN */}
-      <img src={discordAvatarUrl(user.user_id, user.discord_avatar, 64)} alt="" className="size-8 rounded-full bg-card" />
+      <MemberAvatar userId={user.user_id} name={memberName(user)} className="size-8" fallbackClassName="text-sm" />
       <span className="min-w-0">
         <span className="block truncate font-semibold">{memberName(user)}</span>
         <span className="block truncate text-xs text-faint-foreground">
