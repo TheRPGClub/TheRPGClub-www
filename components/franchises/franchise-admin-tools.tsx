@@ -44,7 +44,7 @@ export function FranchiseAdminTools({ franchise, games }: { franchise: { franchi
         onConfirm={async () => {
           const result = await deleteFranchiseAction(franchise.franchise_id);
           if (!result.ok) return { error: result.error };
-          router.push("/games");
+          router.push("/franchises");
         }}
       >
         {games === 1 ? "Its 1 game stays" : `Its ${games} games stay`} in GameDB without this Franchise, and Pools built from

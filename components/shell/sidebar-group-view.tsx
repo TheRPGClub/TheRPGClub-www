@@ -46,13 +46,14 @@ export function SidebarGroupView({
         {group.pages.map((page) => {
           const Icon = PAGE_ICON[page.key];
           const label = pageLabel(page, nav.votingPhase);
+          const pins = pinnable && page.pinnable !== false;
           return (
-            <SidebarPageItem key={page.key} page={page} nav={nav} pressable={pinnable}>
+            <SidebarPageItem key={page.key} page={page} nav={nav} pressable={pins}>
               <SidebarMenuButton
                 variant="entry"
                 render={<Link href={page.href} />}
                 isActive={nav.current?.key === page.key}
-                aria-keyshortcuts={pinnable ? ROW_MENU_KEYS : undefined}
+                aria-keyshortcuts={pins ? ROW_MENU_KEYS : undefined}
                 className="grid h-auto grid-cols-[18px_minmax(0,1fr)_auto] items-start gap-x-2.5 gap-y-px p-2 [&_svg]:size-[17px]"
               >
                 <Icon className="mt-0.5 text-dim-foreground group-data-active/menu-button:text-gotm-foreground" />
@@ -62,7 +63,7 @@ export function SidebarGroupView({
                 <PageBadges page={page} nav={nav} className="col-start-3 row-start-1 flex gap-1 self-center" />
                 <span className="col-start-2 text-[0.78rem] leading-[1.3]">{page.note}</span>
               </SidebarMenuButton>
-              {pinnable && <EntryPin page={page} nav={nav} badged={hasBadges(page, nav)} />}
+              {pins && <EntryPin page={page} nav={nav} badged={hasBadges(page, nav)} />}
             </SidebarPageItem>
           );
         })}
