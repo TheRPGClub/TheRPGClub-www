@@ -48,6 +48,9 @@ const tabsListVariants = cva(
         // masthead: /settings' tabs, each name in Anton with its state under
         // it, the open one marked by the red you-are-here bar on the rule.
         masthead: "w-full items-end justify-start gap-x-8 p-0 group-data-horizontal/tabs:h-auto",
+        // envelope: /goty's three Award envelopes, a card each topped by its
+        // Award's ink; each tab sets --tab-ink.
+        envelope: "grid w-full grid-cols-3 items-stretch gap-1.5 p-0 group-data-horizontal/tabs:h-auto sm:gap-2.5",
       },
     },
     defaultVariants: {

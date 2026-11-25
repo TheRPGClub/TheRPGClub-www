@@ -159,6 +159,9 @@ const buttonVariants = cva(
         // A quiet text action under a control that backs out of a change
         // (Keep the game).
         "quiet-link": "",
+        // www#192: the GOTY Vote. Game of the Year's own action, in its
+        // Award's paper ink (as default is GOTM's and nr NR-GOTM's).
+        paper: "",
         // A row's own label that picks the row (a chronology line's member):
         // no look of its own, the focus ring kept.
         "row-label": "",

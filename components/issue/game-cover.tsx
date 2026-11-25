@@ -26,7 +26,7 @@ export function GameHeadline({
   title: string;
   accentClassName?: string;
   className?: string;
-  as?: "h1" | "h2" | "p";
+  as?: "h1" | "h2" | "h3" | "p";
 }) {
   const [first, second] = splitGameTitle(title);
   return (

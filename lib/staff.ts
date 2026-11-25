@@ -109,6 +109,7 @@ export type StaffSectionKey =
   | "voting"
   | "rounds"
   | "nominations"
+  | "goty"
   | "synonyms"
   | "versions"
   | "presence"
@@ -189,6 +190,16 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     blurb: "Remove a nomination with a reason; the bot posts the change.",
     line: "Take a nomination out of the round with a reason; the bot posts the change.",
     jobKinds: ["nomination_deleted"],
+  },
+  {
+    key: "goty",
+    href: "/admin/goty",
+    label: "GOTY Vote",
+    tier: "admin",
+    group: "voting",
+    blurb: "Move the GOTY Vote's dates, settle a tie, or remove a Game of the Year nomination with a reason.",
+    line: "Move the GOTY Vote's dates, settle a tie, or remove a Game of the Year nomination.",
+    jobKinds: ["goty_nomination_deleted"],
   },
   // The bot
   {

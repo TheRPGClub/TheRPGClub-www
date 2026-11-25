@@ -15,6 +15,7 @@ export type SidebarGroupKey = "play" | "games" | "club" | "staff";
 export type PinnedPageKey =
   | "voting"
   | "gotm_history"
+  | "goty"
   | "challenges"
   | "games"
   | "lists"
@@ -64,6 +65,7 @@ export const GROUP_LABEL: Record<SidebarGroupKey, string> = {
 export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "voting", href: "/voting", label: "Voting", note: "This round's picks and the vote", group: "play", feature: "voting_gotm" },
   { key: "gotm_history", href: "/gotm", label: "GOTM history", note: "Every round's winners", group: "play", feature: "voting_gotm" },
+  { key: "goty", href: "/goty", label: "GOTY Vote", note: "The year's three Awards", group: "play", feature: "goty_vote" },
   { key: "challenges", href: "/challenges", label: "Challenges", note: "Years Alive, Seasonal, Secret Santa", group: "play", feature: "challenges" },
   { key: "games", href: "/games", label: "Games", note: "The club's GameDB catalogue", group: "games", feature: "game_index" },
   { key: "lists", href: "/lists", label: "Lists", note: "Members' and the club's Game Lists", group: "games", feature: "game_lists" },

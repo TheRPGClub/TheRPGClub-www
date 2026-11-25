@@ -1,5 +1,6 @@
 import {
   Award,
+  Crown,
   BellRing,
   CalendarDays,
   ClipboardCheck,
@@ -35,6 +36,7 @@ export const SETTINGS_HREF = "/settings";
 export const PAGE_ICON: Record<PinnedPageKey, NavIcon> = {
   voting: Vote,
   gotm_history: Trophy,
+  goty: Crown,
   challenges: Flag,
   games: Library,
   lists: ListOrdered,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 // The notice slip: the one way the site says "that didn't work". A paper slip
 // pinned at a tilt over whatever it is about (the front page's cover art, the
@@ -12,6 +13,7 @@ export function NoticeSlip({
   children,
   action,
   dismissHref,
+  onDismiss,
   role = "status",
   className,
 }: {
@@ -21,6 +23,8 @@ export function NoticeSlip({
   action?: React.ReactNode;
   // Where the dismiss control goes: the same page without the notice.
   dismissHref?: string;
+  // Or a dismiss that clears it in place (a dropped-vote notice).
+  onDismiss?: () => void;
   // "alert" when the page opens on a failure, "status" for a softer note.
   role?: "alert" | "status";
   // Placement only.
@@ -45,7 +49,19 @@ export function NoticeSlip({
           <X className="size-4.5" aria-hidden />
         </Link>
       )}
-      <p className={cn("font-headline text-[2rem] leading-[0.9] sm:text-[2.2rem]", dismissHref && "pr-8")}>
+      {onDismiss && !dismissHref && (
+        <Button
+          type="button"
+          variant="inverse-ghost"
+          size="icon"
+          aria-label="Dismiss"
+          onClick={onDismiss}
+          className="absolute top-2 right-2"
+        >
+          <X className="size-4.5" aria-hidden />
+        </Button>
+      )}
+      <p className={cn("font-headline text-[2rem] leading-[0.9] sm:text-[2.2rem]", (dismissHref || onDismiss) && "pr-8")}>
         {title}
       </p>
       <div className="mt-2.5 text-[0.95rem] leading-[1.45] text-background/75 [&_strong]:font-semibold [&_strong]:text-background">

@@ -1,3 +1,4 @@
+import type { GotyAwardWon } from "@/lib/api/goty";
 import type { ReviewFacets } from "@/lib/reviews/facets";
 import type { Birthday } from "@/lib/birthday";
 
@@ -166,6 +167,9 @@ export interface Game {
   nr_gotm_month_year?: string | null;
   now_playing?: UserNowPlaying[];
   completions?: GameCompletion[];
+  // The GOTY Vote Awards it won, newest year first (GET /games/:id only; left
+  // out for a caller who cannot use GOTY Vote).
+  goty_awards?: GotyAwardWon[];
   reviews?: Review[];
   reviews_count?: number;
   created_at: string;
@@ -1023,6 +1027,7 @@ export type BotJobKind =
   | "giveaway_claim_notice"
   | "giveaway_hub_refresh"
   | "nomination_deleted"
+  | "goty_nomination_deleted"
   | "suggestion_submitted"
   | "suggestion_outcome"
   | "voting_poll_wakeup"
