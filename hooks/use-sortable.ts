@@ -238,7 +238,19 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
       copy.removeAttribute("id");
       copy.dataset.sortGhost = "";
       delete copy.dataset.sortState;
-      Object.assign(copy.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px`, transform: "none" });
+      // Inline, so no utility class on the item (relative, a margin) can
+      // pull the copy out of place.
+      Object.assign(copy.style, {
+        position: "fixed",
+        zIndex: "60",
+        margin: "0",
+        pointerEvents: "none",
+        left: `${box.left}px`,
+        top: `${box.top}px`,
+        width: `${box.width}px`,
+        height: `${box.height}px`,
+        transform: "none",
+      });
       document.body.appendChild(copy);
       ghost.current = { el: copy, dx: at.x - box.left, dy: at.y - box.top };
       document.body.dataset.sorting = "";
