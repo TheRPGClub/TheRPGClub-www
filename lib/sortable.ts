@@ -79,6 +79,25 @@ export function stepFrom<Z extends string, Id extends SortId>(
   return null;
 }
 
+// One keyboard step where a zone's order isn't the member's to set (a
+// Franchise's release order, a Pool): straight into the next zone that takes
+// it, at its near end. Null when there's none.
+export function jumpFrom<Z extends string, Id extends SortId>(
+  zones: SortZones<Z, Id>,
+  order: readonly Z[],
+  id: Id,
+  dir: -1 | 1,
+  canDrop: (id: Id, to: Z) => boolean = () => true,
+): { zone: Z; index: number } | null {
+  const from = zoneOf(zones, id);
+  if (from === null) return null;
+  for (let z = order.indexOf(from) + dir; z >= 0 && z < order.length; z += dir) {
+    const zone = order[z];
+    if (canDrop(id, zone)) return { zone, index: dir > 0 ? 0 : zones[zone].length };
+  }
+  return null;
+}
+
 // Whether two orders differ.
 export function zonesChanged<Z extends string, Id extends SortId>(a: SortZones<Z, Id>, b: SortZones<Z, Id>): boolean {
   return (Object.keys(a) as Z[]).some((z) => a[z].length !== b[z].length || a[z].some((id, i) => id !== b[z][i]));

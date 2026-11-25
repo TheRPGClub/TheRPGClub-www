@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { insertionIndex, moveTo, stepFrom, zoneOf, zonesChanged } from "@/lib/sortable";
+import { insertionIndex, jumpFrom, moveTo, stepFrom, zoneOf, zonesChanged } from "@/lib/sortable";
 
 const zones = () => ({ main: [1, 2, 3], other: [4, 5], addons: [] as number[] });
 
@@ -53,6 +53,16 @@ describe("stepFrom", () => {
   it("skips a zone that refuses the item and stops at the ends", () => {
     expect(stepFrom(zones(), order, 5, 1, (_, to) => to !== "addons")).toBeNull();
     expect(stepFrom(zones(), order, 1, -1)).toBeNull();
+  });
+});
+
+describe("jumpFrom", () => {
+  const order = ["main", "other", "addons"] as const;
+
+  it("goes straight to the next zone that takes it", () => {
+    expect(jumpFrom(zones(), order, 2, 1)).toEqual({ zone: "other", index: 0 });
+    expect(jumpFrom(zones(), order, 4, 1, (_, to) => to !== "addons")).toBeNull();
+    expect(jumpFrom(zones(), order, 4, -1)).toEqual({ zone: "main", index: 3 });
   });
 });
 

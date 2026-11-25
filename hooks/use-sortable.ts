@@ -13,6 +13,7 @@ import {
 } from "react";
 import {
   insertionIndex,
+  jumpFrom,
   moveTo,
   stepFrom,
   zoneOf,
@@ -44,6 +45,9 @@ export interface SortableOptions<Z extends string, Id extends SortId> {
   layout: SortLayout | Partial<Record<Z, SortLayout>>;
   onDrop: (next: SortZones<Z, Id>, move: SortMove<Z, Id>) => void;
   canDrop?: (id: Id, to: Z) => boolean;
+  // A zone's order isn't the member's to set (a Franchise's release order,
+  // a Pool): an item only changes zone, and the arrows jump between zones.
+  fixedOrder?: boolean;
   disabled?: boolean;
   // Names for the screen reader's running commentary.
   name: (id: Id) => string;
@@ -168,6 +172,7 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
     const { canDrop } = optsRef.current;
     if (canDrop && !canDrop(cur.id, zone)) return setOverZone(null);
     setOverZone(zone);
+    if (optsRef.current.fixedOrder && zone === zoneOf(z, cur.id)) return;
     const others = z[zone].filter((id) => id !== cur.id);
     const boxes = others.map((id) => rects.current.get(id)).filter((r): r is SortRect => !!r);
     const index = insertionIndex(boxes, x, y, layoutOf(zone));
@@ -319,7 +324,8 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
         e.preventDefault();
         const z = previewRef.current ?? saved;
         const dir = e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 1;
-        const step = stepFrom(z, Object.keys(z) as Z[], id, dir, optsRef.current.canDrop);
+        const { canDrop, fixedOrder } = optsRef.current;
+        const step = (fixedOrder ? jumpFrom : stepFrom)(z, Object.keys(z) as Z[], id, dir, canDrop);
         if (!step) return;
         const next = moveTo(z, id, step.zone, step.index);
         stepping.current = true;
