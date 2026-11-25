@@ -8,7 +8,7 @@ import {
 import { PROVIDER_LABEL } from "@/lib/achievements";
 
 // What the hub says when there is nothing to show: a page past the end, a
-// Provider with nothing yet, no Highlights yet, or nobody linked at all.
+// Provider with nothing yet, or nobody linked at all.
 
 export function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: string }) {
   if (filters.page > 1) {
@@ -23,21 +23,7 @@ export function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: s
   }
   if (hasFeedFilters(filters)) {
     const provider = PROVIDER_LABEL[filters.provider!];
-    return (
-      <EmptyState>
-        {filters.view === "highlights"
-          ? `No ${provider} Highlights yet.`
-          : `No ${provider} Unlocks yet.`}
-      </EmptyState>
-    );
-  }
-  if (filters.view === "highlights") {
-    return (
-      <EmptyState>
-        No Highlights yet. Platinums, Masteries, Completions and ultra-rare
-        Unlocks land here.
-      </EmptyState>
-    );
+    return <EmptyState>No {provider} Unlocks yet.</EmptyState>;
   }
   // Nobody has linked anything: point the viewer at their own Linked
   // Accounts.

@@ -242,6 +242,21 @@
     line-height: var(--headline-leading);
 }
 
+/* Anton's glyph box reaches well above a headline's tight line box (leading
+   0.8-0.95), and a heading, as the later sibling, takes the clicks meant for
+   whatever sits just above it: a back link, a view switch, a filter. So a
+   headline that isn't itself a control lets the pointer through to what is
+   under it (its own card or link still gets the click); a control inside
+   one takes the pointer back. */
+@layer base {
+    :is(.font-headline, [data-slot="dialog-title"], [data-slot="card-title"], [data-slot="alert-dialog-title"]):not(a, button, label, summary, input, textarea, select, [role="button"], [role="tab"], [tabindex], [contenteditable]) {
+        pointer-events: none;
+    }
+    :is(.font-headline, [data-slot="dialog-title"], [data-slot="card-title"], [data-slot="alert-dialog-title"]) :is(a, button, label, summary, input, textarea, select, [role="button"], [role="tab"], [tabindex], [contenteditable]) {
+        pointer-events: auto;
+    }
+}
+
 /* The label voice: tracked condensed caps for nav, chips, buttons, meta. */
 @utility font-label {
     font-family: var(--font-cond);

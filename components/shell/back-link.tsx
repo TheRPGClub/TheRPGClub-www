@@ -11,7 +11,8 @@ import { cn } from "@/lib/utils";
 // It sits above the title that follows it (relative z-10): an Anton title
 // set tighter than its font's ascent (DeskHeader's leading-[0.85]) has a
 // glyph box reaching up over the link, and as the later sibling it would
-// take the click.
+// take the click. Headlines also let the pointer through (globals.css), so
+// this holds even where the title is wrapped in a positioned block.
 export function BackLink({
   href,
   label,

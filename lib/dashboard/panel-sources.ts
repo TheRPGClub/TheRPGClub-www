@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import type {
   AchievementFeedCard,
-  AchievementUnlock,
+  AchievementSetProgress,
   BacklogPickResponse,
   GameSummary,
   Suggestion,
@@ -14,6 +14,8 @@ import { PANEL_ITEMS } from "@/lib/dashboard/panels";
 import { dailyPickSeed } from "@/lib/dashboard/panel-items";
 import { clubToday } from "@/lib/challenges/dates";
 import { upcomingReleasesTag } from "@/lib/hidden-platforms";
+import { fetchNewsStamp } from "@/lib/api/news";
+import { newsFeedTag } from "@/lib/news-category-preferences";
 import type { ReviewFeedEntry } from "@/lib/reviews/feed";
 
 // Each Dashboard Panel's read (spec api#421, "Panel data"): one endpoint a
@@ -41,6 +43,8 @@ async function readData<T>(path: string, init: RequestInit = FETCH): Promise<T[]
 }
 
 const per = `per=${PANEL_ITEMS}`;
+// The Mine achievements panel's sets: two rows of two.
+const MY_SETS = 4;
 const user = (id: string) => `/api/v1/users/${encodeURIComponent(id)}`;
 
 // The platform an entry was logged on (Platform, or null).
@@ -110,7 +114,16 @@ export interface ChallengeEvent {
 }
 
 // News in the member's saved categories (no `category`: the API applies them).
-export const readNews = () => readData<NewsItem>(`/api/v1/news_items?${per}`);
+// Keyed by the News Feed Stamp like /news (`v`, which the API ignores), so a
+// new item shows on the next visit instead of after the minute's cache, and
+// tagged per member so a News Category Preferences save expires it too.
+export async function readNews(id: string) {
+  const stamp = await fetchNewsStamp();
+  const v = stamp ? `&v=${encodeURIComponent(stamp)}` : "";
+  return readData<NewsItem>(`/api/v1/news_items?${per}${v}`, {
+    next: { revalidate: 60, tags: [newsFeedTag(id)] },
+  });
+}
 export const readClubNowPlaying = () => readData<PanelNowPlaying>(`/api/v1/now_playing?${per}`);
 export const readMyNowPlaying = (id: string) => readData<PanelNowPlaying>(`${user(id)}/now_playing?${per}`, FRESH);
 // The API leaves out the member's Hidden Platforms by itself. Tagged like
@@ -120,7 +133,9 @@ export const readReleases = (id: string) =>
     next: { revalidate: 60, tags: [upcomingReleasesTag(id)] },
   });
 export const readClubAchievements = () => readData<AchievementFeedCard>(`/api/v1/achievements/feed?view=latest&${per}`);
-export const readMyUnlocks = (id: string) => readData<AchievementUnlock>(`${user(id)}/achievements/unlocks?${per}`);
+// The member's sets closest to done (at least one Unlock, no Completion).
+export const readMySets = (id: string) =>
+  readData<AchievementSetProgress>(`${user(id)}/achievements/sets?status=in_progress&sort=progress&per=${MY_SETS}`);
 export const readChallengeActivity = () => readData<ChallengeEvent>(`/api/v1/challenge_activity?${per}`);
 export const readMyRuns = (id: string) => readData<ChallengeRun>(`${user(id)}/challenge_runs?status=active&${per}`, FRESH);
 export const readClubCompletions = () => readData<PanelCompletion>(`/api/v1/completions/recent?${per}`);

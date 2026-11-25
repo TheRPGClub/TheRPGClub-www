@@ -10,7 +10,7 @@ import { PreviewBadge } from "@/components/feature/preview-badge";
 import { HubPage } from "@/components/achievements/hub/hub-page";
 import { HubSkeleton } from "@/components/achievements/hub/hub-skeleton";
 
-// The community hub (`?view=latest|highlights`, `?provider=`, `?page=`).
+// The community hub (`?provider=`, `?page=`).
 
 export default async function AchievementsHubPage({
   searchParams,
@@ -20,7 +20,7 @@ export default async function AchievementsHubPage({
   const filters = parseFeedFilters(await searchParams);
 
   return (
-    <Suspense fallback={<HubSkeleton view={filters.view} />}>
+    <Suspense fallback={<HubSkeleton />}>
       <AchievementsHub filters={filters} />
     </Suspense>
   );

@@ -58,7 +58,7 @@ export function ChallengeBanner({
         className="absolute inset-0 bg-linear-to-r from-background/96 via-background/82 via-45% to-background/15"
       />
       {/* The way back to the Challenges, on the banner's top edge. */}
-      <BackLink href="/challenges" label="Challenges" onArt className="absolute top-4 left-4 z-10 mb-0 sm:left-7 md:top-5" />
+      <BackLink href="/challenges" label="Challenges" onArt className="absolute top-4 left-4 z-20 mb-0 sm:left-7 md:top-5" />
       <div className="relative z-10 flex w-full flex-col gap-4 px-4 pt-16 pb-5 sm:px-7 sm:pb-[26px] lg:flex-row lg:items-end lg:gap-10">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">

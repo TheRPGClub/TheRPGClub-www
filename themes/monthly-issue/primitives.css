@@ -44,11 +44,6 @@
                     @apply text-foreground before:absolute before:inset-x-3 before:-top-px before:h-[3px] before:bg-gotm;
                 }
             }
-            /* The round button: the yellow burst is the whole look; a press
-               sinks it a touch, focus rings it in paper. */
-            &[data-variant="round"] {
-                @apply rounded-full border-0 transition-transform focus-visible:ring-2 focus-visible:ring-foreground active:scale-95 motion-reduce:transition-none;
-            }
             &[data-variant="default"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-primary text-primary-foreground hover:bg-gotm/85;
             }
@@ -1139,6 +1134,12 @@
         }
         [data-slot="tabs-list"][data-variant="provider"] [data-slot="tabs-trigger"] {
             @apply font-label rounded-t-[3px] bg-card font-extrabold tracking-[0.06em] text-dim-foreground shadow-[inset_0_3px_0_var(--tab-ink)] transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-highlight data-active:bg-(--tab-ink) data-active:text-provider-foreground data-active:shadow-none;
+        }
+        [data-slot="tabs-list"][data-variant="provider-chip"] [data-slot="tabs-trigger"] {
+            @apply font-label h-[26px] rounded-xs bg-transparent px-2.5 text-[0.8rem] font-extrabold tracking-[0.06em] text-(--tab-ink) shadow-[inset_0_0_0_1.5px_var(--tab-ink)] transition-[filter] hover:brightness-125 focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight;
+            &[data-active] {
+                @apply bg-(--tab-ink) text-provider-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)] hover:brightness-100;
+            }
         }
         [data-slot="tabs-list"][data-variant="index"] [data-slot="tabs-trigger"] {
             @apply font-label rounded-t-md bg-card font-extrabold tracking-[0.06em] text-faint-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-highlight;

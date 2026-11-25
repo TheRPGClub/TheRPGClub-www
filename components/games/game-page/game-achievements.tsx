@@ -5,29 +5,22 @@ import {
 import {
   groupSetsByProvider,
   pickInitialTab,
+  setMembers,
   setSwitchLabel,
 } from "@/lib/achievements/game-page";
-import { getSetTint } from "@/lib/achievements/tint";
-import { ClubSetPage } from "@/components/achievements/club-set-page";
-import { GameAchievementTabs } from "@/components/achievements/game-achievement-tabs";
-import { DetailSection } from "@/components/templates/detail-template";
+import { Showcase } from "@/components/achievements/showcase/showcase";
 
-// The Achievement showcase: one composite page per Achievement Set, behind
-// Provider tabs (only the Providers with a set). Each page rings every
-// Achievement with the members who hold it and signs its Completions in the
-// margin. A game without sets (or a read that fails) shows nothing, so the
+// The game page's last section: the game's Achievements per service, where
+// the viewer and the club stand in each set, and who has each one (on
+// hover). A game without sets (or a read that fails) shows nothing, so the
 // page doesn't apologise for it.
 export async function GameAchievements({
   gameId,
-  coverUrl,
-  viewerId,
   ach,
   achSet,
 }: {
   gameId: number;
-  coverUrl: string | null;
-  viewerId: string | null;
-  // The Achievement tab and set to open (`?ach=steam&ach_set=3`).
+  // The service and set to open (`?ach=steam&ach_set=3`).
   ach?: string;
   achSet?: string;
 }) {
@@ -36,43 +29,20 @@ export async function GameAchievements({
   const tabs = groupSetsByProvider(sets);
   const initial = pickInitialTab(tabs, ach, achSet);
   if (!initial) return null;
-
-  const [names, tints] = await Promise.all([
-    fetchRingMemberNames(),
-    Promise.all(
-      sets.map((set) =>
-        getSetTint({ coverUrl, iconUrl: set.icon_url, setId: set.id }),
-      ),
-    ),
-  ]);
-  const tintOf = new Map(sets.map((set, i) => [set.id, tints[i]]));
+  const names = await fetchRingMemberNames();
 
   return (
-    <DetailSection
-      id="game-achievements"
-      title="Achievements"
-      className="mt-10"
-      headingClassName="mb-5"
-    >
-      <GameAchievementTabs
-        initialProvider={initial.provider}
-        initialSetId={initial.setId}
-        tabs={tabs.map((tab) => ({
-          provider: tab.provider,
-          sets: tab.sets.map((set) => ({
-            id: set.id,
-            label: setSwitchLabel(set, tab.sets),
-            page: (
-              <ClubSetPage
-                set={set}
-                tint={tintOf.get(set.id)!}
-                names={names}
-                viewerId={viewerId}
-              />
-            ),
-          })),
-        }))}
-      />
-    </DetailSection>
+    <Showcase
+      initialProvider={initial.provider}
+      initialSetId={initial.setId}
+      tabs={tabs.map((tab) => ({
+        provider: tab.provider,
+        sets: tab.sets.map((set) => ({
+          set,
+          label: setSwitchLabel(set, tab.sets),
+          members: setMembers(set, names),
+        })),
+      }))}
+    />
   );
 }

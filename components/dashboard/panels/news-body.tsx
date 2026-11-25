@@ -10,8 +10,8 @@ import type { BodyProps } from "./panel-body";
 
 // Latest News: the member's saved categories (the API applies them), each
 // item as a small frame of its art footed in its News Category's ink.
-export async function NewsBody({ wide }: BodyProps) {
-  const items = await readNews();
+export async function NewsBody({ viewer, wide }: BodyProps) {
+  const items = await readNews(viewer.id);
   const now = Date.now();
   return listBody({
     rows: items,

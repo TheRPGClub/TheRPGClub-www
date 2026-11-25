@@ -6,7 +6,6 @@ import { binderNameSize } from "@/lib/member-achievements";
 import { MemberAvatar } from "@/components/issue/member-cover";
 import { cn } from "@/lib/utils";
 import { BinderTotals, LinkedAccountChips } from "../member-binder";
-import { RarestUnlocks } from "../rarest-unlocks";
 
 const NAME_SIZE = {
   xl: "text-[6rem] sm:text-[7.75rem]",
@@ -16,8 +15,8 @@ const NAME_SIZE = {
   xs: "text-[2rem] sm:text-[2.25rem]",
 } as const;
 
-// The binder's left page: who the member is, their totals, Linked
-// Accounts and four rarest Unlocks.
+// The binder's left page: who the member is, their totals and Linked
+// Accounts.
 export function BinderMemberPage({
   summary,
   userId,
@@ -73,19 +72,6 @@ export function BinderMemberPage({
             </Link>
           )}
         </div>
-
-        {summary.rarest_unlocks.length > 0 && (
-          <div className="border-t border-border pt-3">
-            <h2 className="font-label text-[0.78rem] tracking-[0.1em] text-faint-foreground">
-              Rarest Unlocks
-            </h2>
-            <RarestUnlocks
-              unlocks={summary.rarest_unlocks}
-              userId={userId}
-              className="mt-4"
-            />
-          </div>
-        )}
       </div>
     </section>
   );
