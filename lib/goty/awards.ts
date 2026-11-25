@@ -1,7 +1,7 @@
 import type { GameSummary, UserSummary } from "@/lib/api/types";
-import type { GotyAward, GotyAwardKey, GotyAwardResult, GotyDecidedBy, GotyNomination, GotyVote } from "./types";
-import { etShort } from "./dates";
+import type { GotyAward, GotyAwardKey, GotyAwardResult, GotyDecidedBy, GotyNomination, GotyVote, GotyWonIn } from "./types";
 import { awardState, pageStage } from "./view";
+import { CLUB_RELEASES_MAX } from "./year-so-far";
 
 // Per-Award copy and numbers for /goty: the envelope's figure and status,
 // the result rows, who nominated what. Pure, shared by the page and tests.
@@ -36,9 +36,12 @@ export function envelope(vote: GotyVote, award: GotyAward, nominatedGames: numbe
   const goty = award.award === "game_of_the_year";
   const stage = pageStage(vote);
   if (stage === "upcoming") {
+    // The Year So Far: releases members played, never nominations. The API
+    // sends at most CLUB_RELEASES_MAX, so a full list means "at least".
+    const played = vote.club_releases?.length ?? 0;
     return goty
-      ? { figure: "3", status: `nominations each, from ${etShort(vote.nominations_open_at)}` }
-      : { figure: String(award.ballot.length), status: "games on the ballot" };
+      ? { figure: played >= CLUB_RELEASES_MAX ? `${CLUB_RELEASES_MAX}+` : String(played), status: "releases played" }
+      : { figure: String(award.ballot.length), status: "winners so far" };
   }
   if (stage === "nominating") {
     return goty
@@ -157,3 +160,58 @@ export const AWARD_INK: Record<GotyAwardKey, string> = {
   nr_gotm: "var(--color-nr)",
   game_of_the_year: "var(--color-foreground)",
 };
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+// A round's month from its raw label: "January 2026", "Jan 2026" or
+// "2026-01". Anything else comes back null.
+function roundMonth(monthYear: string): string | null {
+  const numeric = /^\s*\d{4}-(\d{1,2})\s*$/.exec(monthYear);
+  if (numeric) return MONTHS[Number(numeric[1]) - 1] ?? null;
+  const word = /^\s*([A-Za-z]{3,})\.?\s+\d{4}\s*$/.exec(monthYear)?.[1].toLowerCase();
+  return (word && MONTHS.find((m) => m.toLowerCase().startsWith(word.slice(0, 3)))) || null;
+}
+
+// A label the month reader couldn't place, shown as sent but without its
+// year (every round on the ballot is the vote's year): "Summer special".
+function roundFallback(monthYear: string): string {
+  return monthYear.replace(/\b\d{4}\b/g, "").replace(/[\s,/-]+$|^[\s,/-]+/g, "").replace(/\s{2,}/g, " ");
+}
+
+// Where a GOTM / NR-GOTM of the Year candidate won, as the ballot labels
+// it: "Round 50 · January", or "Rounds 51 + 59 · Feb, Oct" for two wins.
+// One month slot per round, in round order, so the nth month is always the
+// nth round's: a round with no readable month holds its slot with "?"
+// (none readable drops the month part). Empty when the game carries no win
+// (Game of the Year candidates).
+export function wonInLabel(wonIn: readonly GotyWonIn[] | undefined): string {
+  if (!wonIn?.length) return "";
+  const single = wonIn.length === 1;
+  const rounds = `${single ? "Round" : "Rounds"} ${wonIn.map((w) => w.round_number).join(" + ")}`;
+  const months = wonIn.map((w) => {
+    const month = roundMonth(w.month_year);
+    if (month) return single ? month : month.slice(0, 3);
+    return roundFallback(w.month_year);
+  });
+  if (months.every((m) => !m)) return rounds;
+  return `${rounds} · ${months.map((m) => m || "?").join(", ")}`;
+}
+
+// The label for a game on an Award's ballot, joined by id (the winner,
+// result and tally carry no won_in of their own).
+export function wonInFor(award: GotyAward, gameId: number): string {
+  return wonInLabel(award.ballot.find((g) => g.game_id === gameId)?.won_in);
+}

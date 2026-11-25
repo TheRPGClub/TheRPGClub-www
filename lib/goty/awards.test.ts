@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decidedLine, envelope, nominatedBy, nominatedGames, nominationGame, ownVoteCount, resultRows } from "./awards";
+import { decidedLine, envelope, wonInLabel, wonInFor, nominatedBy, nominatedGames, nominationGame, ownVoteCount, resultRows } from "./awards";
 import { castLocally, syncFromServer } from "./cast";
 import { eligibilityNote, gotyError } from "./copy";
 import { award, gotyVote, nomination } from "./test-fixtures";
@@ -16,9 +16,19 @@ describe("envelope", () => {
     expect(envelope(vote, vote.awards[0], 7, 0).status).toBe("games, no nominating");
   });
 
-  it("dates Game of the Year's nominations from the vote, not 1 January", () => {
-    const vote = gotyVote({ phase: "upcoming", nominations_open_at: "2027-01-08T17:00:00Z" });
-    expect(envelope(vote, vote.awards[2], 0, 0).status).toBe("nominations each, from 8 Jan");
+  it("holds the Year So Far while upcoming: winners so far, releases played (never nominations)", () => {
+    const vote = gotyVote({ phase: "upcoming", club_releases: [{ game: { game_id: 9, title: "G", cover_url: null }, members_played: 3 }] });
+    expect(envelope(vote, vote.awards[0], 0, 0)).toEqual({ figure: "4", status: "winners so far" });
+    expect(envelope(vote, vote.awards[2], 0, 0)).toEqual({ figure: "1", status: "releases played" });
+    expect(envelope(gotyVote({ phase: "upcoming" }), vote.awards[2], 0, 0).figure).toBe("0");
+  });
+
+  it("says 48+ releases played when the API's capped list is full", () => {
+    const release = (id: number) => ({ game: { game_id: id, title: `G${id}`, cover_url: null }, members_played: 1 });
+    const full = gotyVote({ phase: "upcoming", club_releases: Array.from({ length: 48 }, (_, i) => release(i + 1)) });
+    expect(envelope(full, full.awards[2], 0, 0).figure).toBe("48+");
+    const under = gotyVote({ phase: "upcoming", club_releases: Array.from({ length: 47 }, (_, i) => release(i + 1)) });
+    expect(envelope(under, under.awards[2], 0, 0).figure).toBe("47");
   });
 
   it("counts the ballot's own votes once it has them, else the API's", () => {
@@ -124,5 +134,67 @@ describe("copy", () => {
     expect(gotyError({ error: "nomination_cap_reached" }, 422)).toMatch(/three nominations/);
     expect(gotyError({ error: "not_released_in_year" }, 422, 2026)).toBe("Only games first released in 2026 can be nominated.");
     expect(gotyError({ error: "other", message: "Server said no" }, 422)).toBe("Server said no");
+  });
+});
+
+describe("wonInLabel", () => {
+  it("names one win by its round and full month", () => {
+    expect(wonInLabel([{ round_number: 50, month_year: "January 2026" }])).toBe("Round 50 · January");
+  });
+
+  it("joins two wins with short months", () => {
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "February 2026" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · Feb, Oct");
+  });
+
+  it("reads legacy month labels", () => {
+    expect(wonInLabel([{ round_number: 7, month_year: "Jan 2026" }])).toBe("Round 7 · January");
+    expect(wonInLabel([{ round_number: 8, month_year: "2026-03" }])).toBe("Round 8 · March");
+    expect(wonInLabel([{ round_number: 9, month_year: "sept 2026" }])).toBe("Round 9 · September");
+  });
+
+  it("keeps an unreadable month as sent, without its year, and drops a blank one", () => {
+    expect(wonInLabel([{ round_number: 9, month_year: "Summer special" }])).toBe("Round 9 · Summer special");
+    expect(wonInLabel([{ round_number: 9, month_year: "Summer special 2026" }])).toBe("Round 9 · Summer special");
+    expect(wonInLabel([{ round_number: 9, month_year: "2026" }])).toBe("Round 9");
+    expect(wonInLabel([{ round_number: 9, month_year: "" }])).toBe("Round 9");
+  });
+
+  it("keeps one month slot per round, so months never shift onto the wrong round", () => {
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · ?, Oct");
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "Summer 2026" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · Summer, Oct");
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "" },
+        { round_number: 59, month_year: " " },
+      ]),
+    ).toBe("Rounds 51 + 59");
+  });
+
+  it("says nothing with no wins or no key", () => {
+    expect(wonInLabel([])).toBe("");
+    expect(wonInLabel(undefined)).toBe("");
+  });
+});
+
+describe("wonInFor", () => {
+  it("joins a game to its ballot entry by id", () => {
+    const a = award("gotm", { ballot: [{ game_id: 4, title: "Game 4", won_in: [{ round_number: 53, month_year: "April 2026" }] }] });
+    expect(wonInFor(a, 4)).toBe("Round 53 · April");
+    expect(wonInFor(a, 5)).toBe("");
   });
 });

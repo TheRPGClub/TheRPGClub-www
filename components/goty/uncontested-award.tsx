@@ -1,8 +1,10 @@
 import type { GotyAward, GotyVote } from "@/lib/goty/types";
 import { etDay } from "@/lib/goty/dates";
+import { wonInLabel } from "@/lib/goty/awards";
 import { Badge } from "@/components/ui/badge";
 import { GameHeadline } from "@/components/issue/game-cover";
 import { AwardCover } from "./award-cover";
+import { BallotNote } from "./ballot-note";
 
 // An Award with a single candidate: no vote, it wins at close. Its cover
 // beside an "Uncontested" chip, the game's two-line headline and why.
@@ -14,6 +16,7 @@ export function UncontestedAward({ vote, award }: { vote: GotyVote; award: GotyA
       <div>
         <Badge tone="outline">Uncontested</Badge>
         <GameHeadline as="h2" title={game.title} className="mt-2.5 mb-3 text-5xl leading-[0.9] sm:text-[4.5rem]" />
+        <BallotNote label={wonInLabel(game.won_in)} className="-mt-1.5 mb-3" />
         <p className="max-w-[52ch] text-dim-foreground">
           {game.title} is the only game on the {award.name} ballot, so it wins when voting closes on{" "}
           {etDay(vote.voting_closes_at)}. There is nothing to vote on here.

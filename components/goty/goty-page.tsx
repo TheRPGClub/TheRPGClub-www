@@ -6,15 +6,19 @@ import { PageHeader } from "@/components/templates/page-header";
 import { GotyBanner } from "./goty-banner";
 import { GotyHistory } from "./goty-history";
 import { UpcomingStage } from "./upcoming-stage";
+import { HowItWorks } from "./how-it-works";
 import { NominatingStage } from "./nominating-stage";
 import { AwardStage } from "./award-stage";
 import { DecidedStage } from "./decided-stage";
+import { NextYearSoFar } from "./next-year-so-far";
 
 // /goty, design pick C "Awards Night" (www#191): a ceremony, one Award at a
 // time. A banner over the year's winner covers carries the clock and the
 // schedule; under it the stage for the phase (the three Awards, the
 // nominations, the Award envelopes and their ballots, the runoff face-off,
-// a cover story per decided Award); then every decided year.
+// a cover story per decided Award, or before nominations the Year So Far
+// and how it works); a decided vote stays current for 30 days, with next
+// year's Year So Far under its results; then every other decided year.
 export function GotyPage({
   data,
   viewerId,
@@ -24,13 +28,18 @@ export function GotyPage({
   viewerId: string | undefined;
   badge: ReactNode;
 }) {
-  const { current, history, now } = data;
+  const { current, next, history, now } = data;
   if (!current) {
     return (
       <div className="space-y-8">
         <PageHeader title="GOTY Vote" badge={badge} />
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
-          No GOTY Vote yet. Each year&apos;s vote is set up by 1 December.
+        <p
+          role={data.unreachable ? "alert" : undefined}
+          className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground"
+        >
+          {data.unreachable
+            ? "Couldn't reach the club's server for this year's GOTY Vote. Try again in a moment."
+            : "No GOTY Vote yet. Each year's GOTY Vote starts on 1 January."}
         </p>
         <GotyHistory years={history} />
       </div>
@@ -43,6 +52,7 @@ export function GotyPage({
     <div className="flex flex-col gap-6.5 md:gap-9">
       <GotyBanner vote={current} now={now} badge={badge} />
       {stage === "upcoming" && <UpcomingStage vote={current} />}
+      {stage === "upcoming" && <HowItWorks vote={current} />}
       {stage === "nominating" && (
         <NominatingStage vote={current} nominations={data.nominations} nominated={nominated} viewerId={viewerId} />
       )}
@@ -50,6 +60,7 @@ export function GotyPage({
         <AwardStage vote={current} nominated={nominated} viewerId={viewerId} />
       )}
       {stage === "decided" && <DecidedStage vote={current} />}
+      {stage === "decided" && next && <NextYearSoFar vote={next} />}
       <GotyHistory years={history} />
     </div>
   );

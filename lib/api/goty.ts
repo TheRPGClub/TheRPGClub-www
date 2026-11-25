@@ -71,11 +71,25 @@ export interface GotyAwardTally {
   games?: { gamedb_game_id: number; votes: number; runoff_votes: number }[];
 }
 
+// Where a GOTM / NR-GOTM of the Year candidate won: one per round, in round
+// order. `month_year` is the round's raw label ("January 2026", or a legacy
+// "Jan 2026" / "2026-01"), so the site formats it (api#479).
+export interface GotyWonIn {
+  round_number: number;
+  month_year: string;
+}
+
+// A ballot game. GOTM / NR-GOTM of the Year candidates carry `won_in`; Game
+// of the Year candidates have no such key.
+export interface GotyBallotGame extends GameSummary {
+  won_in?: GotyWonIn[];
+}
+
 export interface GotyAward {
   award: GotyAwardKey;
   name: string;
   // The candidates once voting opened, else the live ballot.
-  ballot: GameSummary[];
+  ballot: GotyBallotGame[];
   cap: number;
   runoff_ballot: number[];
   // Tied games still awaiting the runoff or an admin.
@@ -87,12 +101,23 @@ export interface GotyAward {
   winner?: GotyAwardWinner | null;
 }
 
-// GET /api/v1/goty_votes/:year.
+// A game first released in the year that members have completed, have in
+// Now Playing or have reviewed: the Year So Far's Game of the Year side
+// (api#482). Not a nomination.
+export interface GotyClubRelease {
+  game: GameSummary;
+  members_played: number;
+}
+
+// GET /api/v1/goty_votes/:year (and /current).
 export interface GotyVote extends GotyVoteSummary {
   candidates_frozen_at?: string | null;
   pending_ties: Partial<Record<GotyAwardKey, number[]>>;
   runoff_ties: Partial<Record<GotyAwardKey, number[]>>;
   awards: GotyAward[];
+  // Only while the phase is `upcoming` (absent otherwise): most members
+  // played first, at most 48.
+  club_releases?: GotyClubRelease[];
 }
 
 // A Game of the Year nomination (no reason: owner decision, api#473).
@@ -112,7 +137,8 @@ export interface GotyNominationDeletedResponse {
   meta?: { announce_job_id: number | null };
 }
 
-// GET /api/v1/games/:id/goty_eligibility?year=.
+// GET /api/v1/games/:id/goty_eligibility?year=, and each item of the
+// batch read GET /api/v1/games/goty_eligibility?year=&game_ids= (api#478).
 export interface GotyEligibility {
   game_id: number;
   year: number;
@@ -162,6 +188,10 @@ export async function readGoty<T>(path: string, empty: T): Promise<GotyRead<T>> 
 
 export const GOTY_VOTES_PATH = "/api/v1/goty_votes?per=100";
 export const gotyVotePath = (year: number) => `/api/v1/goty_votes/${year}`;
+// The Current GOTY Vote (api#482): the one taking nominations or votes,
+// else one waiting on a tally, runoff or tie, else one decided within the
+// last 30 days (its results stay up), else the upcoming one. 404 when none.
+export const GOTY_CURRENT_PATH = "/api/v1/goty_votes/current";
 export const gotyNominationsPath = (year: number) => `/api/v1/goty_votes/${year}/nominations?per=500`;
 
 // Every year's GOTY Vote, newest first.
@@ -173,7 +203,41 @@ export function fetchGotyVote(year: number): Promise<GotyVote | null> {
   return read<GotyVote | null>(gotyVotePath(year), null);
 }
 
+// The Current GOTY Vote in full, or null (none yet, or a failed read).
+export function fetchGotyCurrent(): Promise<GotyVote | null> {
+  return read<GotyVote | null>(GOTY_CURRENT_PATH, null);
+}
+
 // The year's Game of the Year nominations, oldest first.
 export function fetchGotyNominations(year: number): Promise<GotyNomination[]> {
   return read<GotyNomination[]>(gotyNominationsPath(year), []);
+}
+
+// The batch eligibility read takes at most this many ids (api#478).
+export const GOTY_ELIGIBILITY_MAX_IDS = 50;
+
+// Many games' eligibility for the year in one request, keyed by game id.
+// The API leaves unknown ids out, so items are matched by `game_id`, never
+// by position. A failed read is the empty map. Only positive whole ids are
+// sent (the API refuses the whole batch over one bad id), and a 422 is
+// logged: it means this side sent something the API won't take, a bug
+// rather than an outage.
+export async function fetchGotyEligibilities(
+  year: number,
+  gameIds: number[],
+): Promise<Record<number, GotyEligibility>> {
+  const ids = [...new Set(gameIds.filter((id) => Number.isInteger(id) && id > 0))].slice(0, GOTY_ELIGIBILITY_MAX_IDS);
+  if (!ids.length) return {};
+  try {
+    const res = await apiFetch(`/api/v1/games/goty_eligibility?year=${year}&game_ids=${ids.join(",")}`, { cache: "no-store" });
+    if (res.status === 422) {
+      const body = await res.json().catch(() => null);
+      console.error("GOTY eligibility batch refused (422)", { year, ids, body });
+    }
+    if (!res.ok) return {};
+    const items = ((await res.json()) as { data: GotyEligibility[] }).data;
+    return Object.fromEntries(items.map((item) => [item.game_id, item]));
+  } catch {
+    return {};
+  }
 }

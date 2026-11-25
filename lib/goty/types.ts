@@ -5,7 +5,9 @@ export type {
   GotyAwardKey,
   GotyAwardResult,
   GotyAwardWinner,
+  GotyBallotGame,
   GotyCastResult,
+  GotyClubRelease,
   GotyDecidedBy,
   GotyEligibility,
   GotyNomination,
@@ -13,4 +15,5 @@ export type {
   GotyVote,
   GotyVoteSummary,
   GotyVoteWinner,
+  GotyWonIn,
 } from "@/lib/api/goty";

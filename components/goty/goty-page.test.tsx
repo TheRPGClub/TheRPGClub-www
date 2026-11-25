@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { gotyVote, nomination } from "@/lib/goty/test-fixtures";
+import { games, gotyVote, nomination } from "@/lib/goty/test-fixtures";
 import type { GotyVote } from "@/lib/goty/types";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
@@ -16,8 +16,18 @@ const { GotyPage } = await import("./goty-page");
 
 const NOW = Date.parse("2027-01-16T17:00:00Z");
 
-function render(current: GotyVote | null, { history = [] as GotyVote[], nominations = [] as ReturnType<typeof nomination>[] } = {}) {
-  return renderToStaticMarkup(<GotyPage data={{ current, nominations, history, now: NOW }} viewerId="me" badge={null} />);
+function render(
+  current: GotyVote | null,
+  {
+    history = [] as GotyVote[],
+    nominations = [] as ReturnType<typeof nomination>[],
+    next = null as GotyVote | null,
+    unreachable = false,
+  } = {},
+) {
+  return renderToStaticMarkup(
+    <GotyPage data={{ current, unreachable, nominations, next, history, now: NOW }} viewerId="me" badge={null} />,
+  );
 }
 
 describe("GotyPage", () => {
@@ -25,12 +35,60 @@ describe("GotyPage", () => {
     expect(render(null)).toContain("No GOTY Vote yet");
   });
 
-  it("upcoming: the countdown and the three Awards", () => {
-    const html = render(gotyVote({ phase: "upcoming", voting_open: false }), {});
+  it("tells a failed read from no GOTY Vote, keeping the history", () => {
+    const past = gotyVote({ year: 2025, phase: "decided", voting_open: false });
+    const html = render(null, { unreachable: true, history: [past] });
+    expect(html).toContain("Couldn&#x27;t reach the club&#x27;s server");
+    expect(html).not.toContain("No GOTY Vote yet");
+    expect(html).toContain("Winners by year");
+  });
+
+  it("upcoming: the countdown and the Year So Far in the three envelopes", () => {
+    const ballot = [{ game_id: 1, title: "Game 1", won_in: [{ round_number: 50, month_year: "January 2026" }] }];
+    const html = render(
+      gotyVote(
+        {
+          phase: "upcoming",
+          voting_open: false,
+          candidates_frozen_at: null,
+          club_releases: [
+            { game: { game_id: 20, title: "Release 20", cover_url: null }, members_played: 4 },
+            { game: { game_id: 21, title: "Release 21", cover_url: null }, members_played: 1 },
+          ],
+        },
+        { gotm: { ballot }, nr_gotm: { ballot: [] } },
+      ),
+    );
     expect(html).toContain("until nominations open");
-    expect(html).toContain("Every GOTM winner from the 2026 rounds");
-    expect(html).toContain("Members nominate up to 3 games first released in 2026");
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("winners so far");
+    expect(html).toContain("releases played");
+    expect(html).toContain("Round 50 · January");
+    expect(html).toContain("They become GOTM of the Year&#x27;s ballot");
+    expect(html).toContain("No 2026 NR-GOTM round has a winner yet");
+    expect(html).toContain("Release 20");
+    expect(html).toContain("members played");
+    expect(html).toContain("member played");
+    expect(html).toContain("These are not nominations");
+    expect(html).not.toMatch(/aria-label="Vote/);
     expect(html).not.toContain("Reminder");
+  });
+
+  it("upcoming: no release played yet, and how it works with the real dates", () => {
+    const html = render(gotyVote({ phase: "upcoming", voting_open: false, club_releases: [] }));
+    expect(html).toContain("No release from this year played yet.");
+    expect(html).toContain("How it works");
+    expect(html).toContain("Fri 1 Jan 2027, 12:00 AM ET");
+    expect(html).toContain("Fri 15 Jan 2027, 12:00 PM ET");
+    expect(html).toContain("3 nominations each");
+    expect(html).toContain("The vote cap");
+    expect(html).toContain("Runoffs");
+  });
+
+  it("never shows the Year So Far or how it works once nominations open", () => {
+    const html = render(gotyVote({ phase: "nominating", nominations_open: true, voting_open: false }));
+    expect(html).not.toContain("How it works");
+    expect(html).not.toContain("releases played");
   });
 
   it("nominating: the viewer's hand, the search and every nomination, no reasons", () => {
@@ -54,6 +112,29 @@ describe("GotyPage", () => {
     expect(html).toContain('aria-label="Voted: Game 1"');
     expect(html).toContain('aria-label="Vote: Game 2"');
     expect(html).toContain("Next: GOTM of the Year");
+  });
+
+  it("voting: GOTM / NR-GOTM of the Year candidates say where they won, a two-win game both", () => {
+    const ballot = [
+      { game_id: 1, title: "Game 1", won_in: [{ round_number: 50, month_year: "January 2026" }] },
+      { game_id: 2, title: "Game 2", won_in: [{ round_number: 51, month_year: "February 2026" }, { round_number: 59, month_year: "October 2026" }] },
+      { game_id: 3, title: "Game 3", won_in: [{ round_number: 52, month_year: "Mar 2026" }] },
+    ];
+    const html = render(
+      gotyVote({}, { gotm: { ballot }, nr_gotm: { ballot: [{ game_id: 5, title: "Game 5", won_in: [{ round_number: 54, month_year: "2026-05" }] }, { game_id: 6, title: "Game 6", won_in: [] }] } }),
+    );
+    expect(html).toContain("Round 50 · January");
+    expect(html).toContain("Rounds 51 + 59 · Feb, Oct");
+    expect(html).toContain("Round 52 · March");
+    expect(html).toContain("Round 54 · May");
+  });
+
+  it("voting: Game of the Year candidates keep who nominated them", () => {
+    const html = render(gotyVote({}, { game_of_the_year: { ballot: [{ game_id: 10, title: "Game 10" }, { game_id: 11, title: "Game 11" }] } }), {
+      nominations: [nomination(1, 10, "a", "Tavi")],
+    });
+    expect(html).toContain("Nominated by Tavi");
+    expect(html).not.toMatch(/Rounds? \d/);
   });
 
   it("voting: a member sees no counts, and the copy says so", () => {
@@ -97,15 +178,78 @@ describe("GotyPage", () => {
     expect(html).toContain("Decided: Game 1");
   });
 
-  it("decided: a cover story per Award with its tally, and the year in the history", () => {
+  it("runoff: a tied GOTM of the Year face-off and the decided NR-GOTM story say where each game won", () => {
+    const ballot = [
+      { game_id: 3, title: "Game 3", won_in: [{ round_number: 51, month_year: "February 2026" }, { round_number: 59, month_year: "October 2026" }] },
+      { game_id: 4, title: "Game 4", won_in: [{ round_number: 60, month_year: "November 2026" }] },
+    ];
+    const html = render(
+      gotyVote(
+        { phase: "runoff", voting_open: false, runoff_open: true, runoff_opens_at: "2027-01-18T05:00:00Z", runoff_closes_at: "2027-01-19T04:59:59Z" },
+        {
+          gotm: {
+            ballot,
+            runoff_ballot: [3, 4],
+            pending_tie: [3, 4],
+            tally: { counts_hidden: false, runoff_counts_hidden: true, games: [{ gamedb_game_id: 3, votes: 11, runoff_votes: 0 }, { gamedb_game_id: 4, votes: 11, runoff_votes: 0 }] },
+          },
+          nr_gotm: {
+            ballot: [{ game_id: 7, title: "Game 7", won_in: [{ round_number: 50, month_year: "January 2026" }] }],
+            winner: { gamedb_game_id: 7, decided_by: "vote", game: { game_id: 7, title: "Game 7" } },
+            result: [{ gamedb_game_id: 7, votes: 9, runoff_votes: 0, voters: [] }],
+          },
+          game_of_the_year: { winner: { gamedb_game_id: 1, decided_by: "vote", game: { game_id: 1, title: "Game 1" } } },
+        },
+      ),
+    );
+    expect(html).toContain('aria-label="Vote: Game 3"');
+    expect(html).toContain("Rounds 51 + 59 · Feb, Oct");
+    expect(html).toContain("Round 60 · November");
+    expect(html).toContain("Round 50 · January");
+  });
+
+  it("decided: a cover story per Award with its tally, the history below without it", () => {
     const won = { winner: { gamedb_game_id: 1, decided_by: "vote" as const, game: { game_id: 1, title: "Game 1" } }, result: [{ gamedb_game_id: 1, votes: 14, runoff_votes: 0, voters: [] }, { gamedb_game_id: 2, votes: 3, runoff_votes: 0, voters: [] }] };
-    const vote = gotyVote({ phase: "decided", voting_open: false, decided_at: "2027-01-19T06:00:00Z" }, { gotm: won, nr_gotm: { ballot: [] }, game_of_the_year: won });
-    const html = render(vote, { history: [vote] });
+    const gotmBallot = [{ game_id: 1, title: "Game 1", won_in: [{ round_number: 53, month_year: "April 2026" }] }, ...games([2, 3, 4])];
+    const vote = gotyVote({ phase: "decided", voting_open: false, decided_at: "2027-01-19T06:00:00Z" }, { gotm: { ...won, ballot: gotmBallot }, nr_gotm: { ballot: [] }, game_of_the_year: won });
+    const past = gotyVote({ year: 2025, phase: "decided", voting_open: false }, { nr_gotm: { ballot: [] } });
+    const html = render(vote, { history: [past] });
     expect(html).toContain("GOTM of the Year 2026");
     expect(html).toContain("Final tally · top 2 of 4");
     expect(html).toContain("won by vote");
+    expect(html.match(/Round 53 · April/g)).toHaveLength(1);
     expect(html).toContain("NR-GOTM of the Year 2026 was not given");
     expect(html).toContain("Winners by year");
     expect(html).toContain("No candidates that year.");
+    // The current year is on the stage, not repeated in the history.
+    expect(html).not.toContain('md:text-[4.5rem]">2026<');
+  });
+
+  it("decided and still current: the results, then next year's Year So Far, then the history", () => {
+    const won = { winner: { gamedb_game_id: 1, decided_by: "vote" as const, game: { game_id: 1, title: "Game 1" } } };
+    const vote = gotyVote({ phase: "decided", voting_open: false }, { gotm: won, nr_gotm: won, game_of_the_year: won });
+    const next = gotyVote(
+      {
+        year: 2027,
+        name: "GOTY Vote 2027",
+        phase: "upcoming",
+        voting_open: false,
+        nominations_open_at: "2028-01-01T05:00:00Z",
+        club_releases: [{ game: { game_id: 40, title: "Release 40", cover_url: null }, members_played: 2 }],
+      },
+      { gotm: { ballot: [{ game_id: 30, title: "Game 30", won_in: [{ round_number: 62, month_year: "January 2027" }] }] }, nr_gotm: { ballot: [] } },
+    );
+    const past = gotyVote({ year: 2025, phase: "decided", voting_open: false });
+    const html = render(vote, { next, history: [past] });
+    const story = html.indexOf("GOTM of the Year 2026");
+    const soFar = html.indexOf("2027 so far");
+    const history = html.indexOf("Winners by year");
+    expect(story).toBeGreaterThan(-1);
+    expect(soFar).toBeGreaterThan(story);
+    expect(history).toBeGreaterThan(soFar);
+    expect(html).toContain("releases played");
+    expect(html).toContain("Release 40");
+    expect(html).toContain("Round 62 · January");
+    expect(html).not.toContain("How it works");
   });
 });

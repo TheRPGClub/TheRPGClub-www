@@ -89,8 +89,8 @@ describe("gotyClock", () => {
 describe("gotyTimeline", () => {
   it("lists the phase steps only, no reminders", () => {
     const { ticks } = gotyTimeline(gotyVote(), NOW);
-    expect(ticks.map((t) => t.name)).toEqual(["Set up", "Nominations open", "Voting opens", "Voting closes", "Runoff, if tied"]);
-    expect(ticks.map((t) => t.date)).toEqual(["1 Dec", "1 Jan", "15 Jan", "17 Jan", "18 Jan"]);
+    expect(ticks.map((t) => t.name)).toEqual(["The year so far", "Nominations open", "Voting opens", "Voting closes", "Runoff, if tied"]);
+    expect(ticks.map((t) => t.date)).toEqual(["1 Jan 2026", "1 Jan", "15 Jan", "17 Jan", "18 Jan"]);
   });
 
   it("places Now between the steps it falls between, and at the end once decided", () => {
@@ -98,6 +98,13 @@ describe("gotyTimeline", () => {
     expect(now).toBeGreaterThan(66);
     expect(now).toBeLessThan(82);
     expect(gotyTimeline(gotyVote({ phase: "decided" }), NOW).now).toBe(100);
+  });
+
+  it("walks Now through the year while upcoming", () => {
+    const july = Date.parse("2026-07-02T12:00:00Z");
+    const { now } = gotyTimeline(gotyVote({ phase: "upcoming" }), july);
+    expect(now).toBeGreaterThan(13);
+    expect(now).toBeLessThan(17);
   });
 });
 
