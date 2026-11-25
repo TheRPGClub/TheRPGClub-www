@@ -359,3 +359,6 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
     status: { id: describedBy, text: status },
   };
 }
+
+// What `item(id)` spreads onto an item, for components that take it as a prop.
+export type SortItemProps = ReturnType<ReturnType<typeof useSortable<string, SortId>>["item"]>;
