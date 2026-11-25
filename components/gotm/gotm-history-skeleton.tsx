@@ -1,26 +1,27 @@
 import { PageHeader } from "@/components/templates/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// The GOTM history while the archive loads: the rail and three ledger rows.
+// The GOTM History while the archive loads: the year rail and three diptych
+// rows, a leaf either side of the hinge.
 export function GotmHistorySkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader title="GOTM history" />
-      <div className="grid gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[15rem_minmax(0,1fr)]">
-        <div className="space-y-2">
-          <Skeleton variant="control" className="h-9.5 w-full" />
-          <Skeleton variant="control" className="h-9.5 w-full" />
-          <Skeleton variant="control" className="h-9.5 w-full" />
+      <div className="grid gap-4 lg:grid-cols-[4.5rem_minmax(0,1fr)] lg:gap-6">
+        <div className="flex gap-3 lg:flex-col">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} variant="control" className="h-7 w-14" />
+          ))}
         </div>
-        <div className="space-y-5">
+        <div className="space-y-3.5">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="grid gap-4 xl:grid-cols-[8.5rem_minmax(0,1.6fr)_minmax(0,1fr)]"
+              className="grid h-50 grid-cols-2 gap-1.5 sm:h-57 sm:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] sm:gap-0"
             >
-              <Skeleton variant="card" className="h-20 w-28" />
-              <Skeleton variant="card" className="h-49" />
-              <Skeleton variant="card" className="h-49" />
+              <Skeleton variant="card" className="h-full" />
+              <div aria-hidden className="hidden sm:block" />
+              <Skeleton variant="card" className="h-full" />
             </div>
           ))}
         </div>

@@ -24,15 +24,14 @@ export type GotmSort = "desc" | "asc";
 export interface GotmHistoryFilters {
   kind: GotmKind;
   year: number | null;
-  q: string;
   sort: GotmSort;
   page: number;
 }
 
 export const GOTM_KIND_OPTIONS: { value: GotmKind; label: string }[] = [
-  { value: "both", label: "GOTM & NR-GOTM" },
-  { value: "gotm", label: "GOTM only" },
-  { value: "nr_gotm", label: "NR-GOTM only" },
+  { value: "both", label: "Both" },
+  { value: "gotm", label: "GOTM" },
+  { value: "nr_gotm", label: "NR-GOTM" },
 ];
 
 export const GOTM_SORT_OPTIONS: { value: GotmSort; label: string }[] = [
@@ -41,7 +40,8 @@ export const GOTM_SORT_OPTIONS: { value: GotmSort; label: string }[] = [
 ];
 
 // Only values the API accepts reach it; anything else falls back to the
-// default rather than turning into a 422.
+// default rather than turning into a 422. The page has no title search, so a
+// stray `q` is dropped and the API is never asked to search.
 export function parseGotmHistoryFilters(raw: RawSearchParams): GotmHistoryFilters {
   const kind = firstParam(raw.kind);
   const sort = firstParam(raw.sort);
@@ -51,7 +51,6 @@ export function parseGotmHistoryFilters(raw: RawSearchParams): GotmHistoryFilter
   return {
     kind: kind === "gotm" || kind === "nr_gotm" ? kind : "both",
     year: year && /^\d{4}$/.test(year) ? Number(year) : null,
-    q: (firstParam(raw.q) ?? "").trim(),
     sort: sort === "asc" ? "asc" : "desc",
     page: Number.isFinite(page) && page > 1 ? page : 1,
   };
@@ -62,7 +61,6 @@ function filterParams(filters: GotmHistoryFilters): URLSearchParams {
   const ps = new URLSearchParams();
   if (filters.kind !== "both") ps.set("kind", filters.kind);
   if (filters.year) ps.set("year", String(filters.year));
-  if (filters.q) ps.set("q", filters.q);
   if (filters.sort !== "desc") ps.set("sort", filters.sort);
   return ps;
 }
