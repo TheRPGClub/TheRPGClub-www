@@ -1,25 +1,23 @@
 import { describe, expect, it } from "vitest";
 
-import type { GameCompletion, User } from "@/lib/api/types";
+import type { CommonCompletionMeta, User } from "@/lib/api/types";
 import { compareMembers, completionOverlap } from "@/lib/members/compare-page";
 
-const history = (games: number[], capped = false) => ({
-  entries: games.map((gamedb_game_id) => ({ gamedb_game_id }) as GameCompletion),
-  capped,
-});
+const meta = (overlap?: CommonCompletionMeta["overlap"]) =>
+  ({ left_user_id: "1", right_user_id: "2", overlap }) as CommonCompletionMeta;
 
 describe("completionOverlap", () => {
-  it("counts distinct games only one member finished, and those both did", () => {
-    expect(completionOverlap(history([1, 2, 2, 3]), history([3, 4, 4, 5, 6]))).toEqual({
+  it("reads the API's distinct-game overlap", () => {
+    expect(completionOverlap(meta({ only_left: 2, both: 1, only_right: 3 }))).toEqual({
       onlyLeft: 2,
       both: 1,
       onlyRight: 3,
     });
   });
 
-  it("is left out unless both whole histories were read", () => {
-    expect(completionOverlap(null, history([1]))).toBeNull();
-    expect(completionOverlap(history([1]), history([1], true))).toBeNull();
+  it("is left out when the API doesn't send it, or the read failed", () => {
+    expect(completionOverlap(meta())).toBeNull();
+    expect(completionOverlap(null)).toBeNull();
   });
 });
 
