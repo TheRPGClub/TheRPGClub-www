@@ -231,6 +231,16 @@ const buttonVariants = cva(
         // and ringed in yellow while open (aria-expanded).
         split: "",
         "split-caret": "",
+        // api#457: the game page's Playtime control (2D+F), one light split
+        // control outlined in paper beside the split button. playtime is
+        // the chip (an Anton figure, a hairline, "Playthrough 14 h" in dim
+        // label caps, a yellow dot part while a mismatch waits), playtime-
+        // plus its small "+" segment, and playtime-add the "+ Add Playtime"
+        // alone when there is none yet. Open (aria-expanded), a segment
+        // lights and rings in yellow.
+        playtime: "",
+        "playtime-plus": "",
+        "playtime-add": "",
       },
       size: {
         default:

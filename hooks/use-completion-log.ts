@@ -25,11 +25,13 @@ export function useCompletionLog(input: {
   gameId: number;
   entry?: GameCompletion | null;
   nowPlaying?: UserNowPlaying | null;
+  // The open Playthrough's minutes: a new completion's hours start there.
+  playthroughMinutes?: number | null;
   today: IsoDay;
   onSaved: (saved: ShelfSaved) => void;
 }) {
-  const { userId, gameId, entry, nowPlaying, today } = input;
-  const [start] = useState(() => completionStart({ entry, nowPlaying, today }));
+  const { userId, gameId, entry, nowPlaying, playthroughMinutes, today } = input;
+  const [start] = useState(() => completionStart({ entry, nowPlaying, playthroughMinutes, today }));
   const [values, setValues] = useState<CompletionValues>(start.values);
   const [tried, setTried] = useState(false);
   const entryId = entry ? (resolveEntryId("completed", entry) ?? null) : null;

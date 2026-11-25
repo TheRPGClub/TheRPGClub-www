@@ -2102,7 +2102,10 @@
         /* The game page's split button and shelf chips (api#451, 1A). */
         [data-slot="button"][data-variant="split"],
         :is([data-slot="button"], [data-slot="dropdown-menu-trigger"])[data-variant="split-caret"],
-        [data-slot="badge"][data-tone="shelf"] {
+        [data-slot="badge"][data-tone="shelf"],
+        [data-slot="button"][data-variant="playtime"],
+        [data-slot="button"][data-variant="playtime-plus"],
+        [data-slot="button"][data-variant="playtime-add"] {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
