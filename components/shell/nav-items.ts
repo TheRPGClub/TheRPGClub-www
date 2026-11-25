@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Flag,
   Gift,
+  Layers,
   LayoutDashboard,
   Library,
   ListOrdered,
@@ -22,7 +23,7 @@ import {
   Vote,
 } from "lucide-react";
 import type { VotingPhase } from "@/lib/api/voting-round";
-import type { PinnedPageKey, SidebarGroupKey } from "@/lib/sidebar";
+import type { SidebarGroupKey, SidebarPageKey } from "@/lib/sidebar";
 
 export { isCurrent } from "@/lib/sidebar";
 
@@ -33,12 +34,13 @@ export const SETTINGS_HREF = "/settings";
 
 // Each page's icon, by its Pinned Page key (lib/sidebar.ts): a key without
 // one is a type error.
-export const PAGE_ICON: Record<PinnedPageKey, NavIcon> = {
+export const PAGE_ICON: Record<SidebarPageKey, NavIcon> = {
   voting: Vote,
   gotm_history: Trophy,
   goty: Crown,
   challenges: Flag,
   games: Library,
+  franchises: Layers,
   lists: ListOrdered,
   reviews: MessageSquareQuote,
   releases: CalendarDays,

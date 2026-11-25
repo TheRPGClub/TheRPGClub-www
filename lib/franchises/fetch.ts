@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
 import type { FranchiseChange, FranchisePage, FranchiseProgress, FranchiseProgressMember } from "./types";
+import { browseApiPath, type BrowseQuery, type FranchiseTile } from "./browse";
 
 // Server-side reads for /franchises/:id. Never cached: the page carries the
 // viewer's rights and shows an edit at once.
@@ -53,6 +54,28 @@ export async function fetchFranchiseProgressMembers(id: number): Promise<Franchi
     const res = await apiFetch(`/api/v1/franchises/${id}/progress/members`, { cache: "no-store" });
     if (!res.ok) return null;
     return ((await res.json()) as ApiCollection<FranchiseProgressMember>).data;
+  } catch {
+    return null;
+  }
+}
+
+export const BROWSE_PER = 48;
+
+export interface FranchiseTilePage {
+  tiles: FranchiseTile[];
+  total: number;
+  pages: number;
+}
+
+// A page of the /franchises index (api#488), or null when the read fails:
+// the wall then says so rather than failing the page. Never cached here:
+// the tiles carry the viewer's Progress (the API caches the rest).
+export async function fetchFranchiseTiles(query: BrowseQuery, per = BROWSE_PER): Promise<FranchiseTilePage | null> {
+  try {
+    const res = await apiFetch(browseApiPath(query, per), { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as ApiCollection<FranchiseTile>;
+    return { tiles: body.data, total: body.meta?.count ?? body.data.length, pages: body.meta?.pages ?? 1 };
   } catch {
     return null;
   }

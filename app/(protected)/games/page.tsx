@@ -1,10 +1,12 @@
 import { Suspense } from "react";
+import { Layers } from "lucide-react";
 import { requireFeature } from "@/lib/session";
 import { fetchGames, numberFormat } from "@/lib/games/games-index";
 import { parseWinner } from "@/lib/games/index-href";
 import { anyFacet, parseFacets, type FacetKey } from "@/lib/games/index-facets";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { PageHeader } from "@/components/templates/page-header";
+import { ButtonLink } from "@/components/ui/button";
 import { GamesSearchForm } from "@/components/games/games-search-form";
 import { GamesGrid } from "@/components/games/index/games-grid";
 import { GamesLead } from "@/components/games/index/games-lead";
@@ -53,6 +55,12 @@ export default async function GamesPage({
         title="Games"
         badge={features.preview("game_index") && <PreviewBadge />}
         count={clubTotal ? `${clubTotal} in the club's GameDB` : undefined}
+        actions={
+          <ButtonLink href="/franchises" variant="outline">
+            <Layers data-icon="inline-start" />
+            Franchises
+          </ButtonLink>
+        }
       />
 
       <div className="flex flex-wrap items-center gap-2.5">
