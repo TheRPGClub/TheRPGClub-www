@@ -7,8 +7,9 @@ import type { GameFranchiseRef } from "@/lib/franchises/types";
 // the game's (`parent_igdb_id`), so a game with a parent is an Add-on in
 // every Franchise it is in, whatever its Mainline mark. Regulars and above
 // (the API's gate, the same as Game Threads') stage links, new Franchises,
-// unlinks, Mainline and the parent; Save all creates, links, sets Mainline,
-// sets the parent, then unlinks.
+// unlinks, Mainline and the parent; Save all creates (each new Franchise is
+// made bare, then linked by its own call), links, sets Mainline, sets the
+// parent, then unlinks.
 
 export type { GameFranchiseRef };
 
@@ -56,11 +57,13 @@ export interface FranchisesStage {
   parent?: { game_id: number; name: string } | null;
 }
 
+// `created` names a Franchise this save makes: its id is 0 in the plan and
+// filled in (`bind`) from the create's `madeId` once that saved.
 export type FranchiseCall =
-  | { kind: "franchise.create"; name: string; mainline: boolean; parentGameId?: number | null }
-  | { kind: "franchise.link"; franchiseId: number; mainline: boolean; parentGameId?: number | null }
+  | { kind: "franchise.create"; name: string; madeId?: number }
+  | { kind: "franchise.link"; franchiseId: number; created?: string; mainline: boolean; parentGameId?: number | null }
   | { kind: "franchise.mainline"; franchiseId: number; mainline: boolean }
-  | { kind: "franchise.parent"; franchiseId: number; parentGameId: number | null }
+  | { kind: "franchise.parent"; franchiseId: number; created?: string; parentGameId: number | null }
   | { kind: "franchise.unlink"; franchiseId: number };
 
 const EMPTY: FranchisesStage = { link: [], create: [], unlink: [], mainline: [] };
@@ -68,12 +71,15 @@ const EMPTY: FranchisesStage = { link: [], create: [], unlink: [], mainline: [] 
 const linked = (loaded: GameFranchises, id: number) => loaded.franchises.find((f) => f.franchise_id === id);
 const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
-// Whether the staged parent changes the loaded one.
+// Whether the staged parent changes the loaded one. A loaded parent read
+// with the game has no id, only a name, so a pick is matched on that.
 function parentChanged(loaded: GameFranchises, staged: FranchisesStage): boolean {
   const p = staged.parent;
   if (p === undefined) return false;
   if (p === null) return loaded.parent !== null;
-  return loaded.parent?.game_id !== p.game_id;
+  if (!loaded.parent) return true;
+  if (loaded.parent.game_id !== null) return loaded.parent.game_id !== p.game_id;
+  return !sameName(loaded.parent.name, p.name);
 }
 
 // The game's parent with the stage applied.
@@ -99,20 +105,30 @@ function effective(loaded: GameFranchises, staged: FranchisesStage) {
 const callKey = (c: FranchiseCall) =>
   c.kind === "franchise.create" ? `c${c.name.trim().toLowerCase()}` : `${c.kind}${c.franchiseId}`;
 
-// The calls that save the stage. The parent goes through the Franchise link
-// endpoint, so it rides on a Franchise the game is in: a loaded one (before
-// any unlink), else the first new link, else the first new Franchise.
+// The ids of the Franchises `saved` made, by lowercased name.
+function madeIds(saved: FranchiseCall[]): Map<string, number> {
+  const made = new Map<string, number>();
+  for (const c of saved) {
+    if (c.kind === "franchise.create" && c.madeId !== undefined) made.set(c.name.trim().toLowerCase(), c.madeId);
+  }
+  return made;
+}
+
+// The calls that save the stage. A new Franchise is made bare and then
+// linked by its own call, so a link refused after a create leaves a
+// Franchise the retry links (see `remaining`) rather than makes again. The
+// parent goes through the Franchise link endpoint, so it rides on a
+// Franchise the game is in: a loaded one (before any unlink), else the first
+// new link, else its own call on the first new Franchise once it is linked.
 function planCalls(loaded: GameFranchises, staged: FranchisesStage): FranchiseCall[] {
   const e = effective(loaded, staged);
   const parentId = e.parent === undefined ? undefined : (e.parent?.game_id ?? null);
   const carrier = parentId === undefined ? null : loaded.franchises[0] ? "loaded" : e.link[0] ? "link" : "create";
   return [
-    ...e.create.map((c, i) => ({
-      kind: "franchise.create" as const,
-      name: c.name,
-      mainline: c.mainline,
-      ...(carrier === "create" && i === 0 ? { parentGameId: parentId } : {}),
-    })),
+    ...e.create.flatMap((c) => [
+      { kind: "franchise.create" as const, name: c.name },
+      { kind: "franchise.link" as const, franchiseId: 0, created: c.name, mainline: c.mainline },
+    ]),
     ...e.link.map((f, i) => ({
       kind: "franchise.link" as const,
       franchiseId: f.franchise_id,
@@ -122,6 +138,9 @@ function planCalls(loaded: GameFranchises, staged: FranchisesStage): FranchiseCa
     ...e.mainline.map((m) => ({ kind: "franchise.mainline" as const, franchiseId: m.franchise_id, mainline: m.mainline })),
     ...(carrier === "loaded"
       ? [{ kind: "franchise.parent" as const, franchiseId: loaded.franchises[0].franchise_id, parentGameId: parentId ?? null }]
+      : []),
+    ...(carrier === "create"
+      ? [{ kind: "franchise.parent" as const, franchiseId: 0, created: e.create[0].name, parentGameId: parentId ?? null }]
       : []),
     ...e.unlink.map((franchiseId) => ({ kind: "franchise.unlink" as const, franchiseId })),
   ];
@@ -153,17 +172,29 @@ export const franchisesSection: GameEditSection<GameFranchises, FranchisesStage,
       parent: e.parent === undefined ? loaded.parent : e.parent,
     };
   },
+  bind: (call, saved) => {
+    if (!("created" in call) || call.created === undefined) return call;
+    const id = madeIds(saved).get(call.created.trim().toLowerCase());
+    return id === undefined ? call : { ...call, franchiseId: id };
+  },
+  // A new Franchise that was made but not linked stays as a link to it, so
+  // the retry doesn't make it again.
   remaining: (loaded, staged, saved) => {
     const done = new Set(saved.map(callKey));
+    const made = madeIds(saved);
     const e = effective(loaded, staged);
-    const carrier = planCalls(loaded, staged).find((c) => "parentGameId" in c && c.parentGameId !== undefined);
+    const madeLinks = e.create.flatMap((c) => {
+      const id = made.get(c.name.trim().toLowerCase());
+      return id === undefined || done.has(`franchise.link${id}`) ? [] : [{ franchise_id: id, name: c.name, mainline: c.mainline }];
+    });
     const next: FranchisesStage = {
-      create: e.create.filter((c) => !done.has(`c${c.name.trim().toLowerCase()}`)),
-      link: e.link.filter((f) => !done.has(`franchise.link${f.franchise_id}`)),
+      create: e.create.filter((c) => !made.has(c.name.trim().toLowerCase())),
+      link: [...e.link.filter((f) => !done.has(`franchise.link${f.franchise_id}`)), ...madeLinks],
       mainline: e.mainline.filter((m) => !done.has(`franchise.mainline${m.franchise_id}`)),
       unlink: e.unlink.filter((id) => !done.has(`franchise.unlink${id}`)),
     };
-    if (e.parent !== undefined && !(carrier && done.has(callKey(carrier)))) next.parent = e.parent;
+    const parentSaved = saved.some((c) => "parentGameId" in c && c.parentGameId !== undefined);
+    if (e.parent !== undefined && !parentSaved) next.parent = e.parent;
     return next;
   },
 };
@@ -284,6 +315,8 @@ export function moveFranchise(
 // Stages a Franchise from a lane's + Add slot: a found one (`franchise_id`)
 // or a new one by name, in the lane's role. Mainline in and Spin-off of
 // clear an Add-on's parent; Add-on of sets `parent` when the game has none.
+// Add-on of keeps the Franchise's Mainline mark (loaded, or staged with its
+// link): an Add-on counts as one whatever the mark.
 export function stageFranchiseInLane(
   loaded: GameFranchises,
   staged: FranchisesStage | undefined,
@@ -291,7 +324,7 @@ export function stageFranchiseInLane(
   role: FranchiseRole,
   parent?: { game_id: number; name: string },
 ): FranchisesStage | undefined {
-  const mainline = role === "mainline";
+  const mainline = role === "addon" ? keptMainline(loaded, staged, franchise) : role === "mainline";
   let next =
     "franchise_id" in franchise
       ? stageFranchiseLink(loaded, staged, franchise, mainline)
@@ -302,6 +335,16 @@ export function stageFranchiseInLane(
     next = stageFranchiseParent(loaded, next, null);
   }
   return next;
+}
+
+function keptMainline(
+  loaded: GameFranchises,
+  staged: FranchisesStage | undefined,
+  franchise: { franchise_id: number } | { name: string },
+): boolean {
+  if (!("franchise_id" in franchise)) return false;
+  const id = franchise.franchise_id;
+  return linked(loaded, id)?.mainline ?? staged?.link.find((f) => f.franchise_id === id)?.mainline ?? false;
 }
 
 // Drops whatever is staged for the row (its Undo).

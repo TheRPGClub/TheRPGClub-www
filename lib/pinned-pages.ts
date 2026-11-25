@@ -16,7 +16,7 @@ const FALLBACK_LIMIT = 6;
 export const PINS_NOT_SAVED = "Couldn't save your Pinned Pages";
 
 const PIN_KEYS = new Set<string>([
-  ...CLUB_PAGES.flatMap((p) => (p.pinnable === false ? [] : [p.key])),
+  ...CLUB_PAGES.map((p) => p.key),
   ...Object.values(STAFF_PAGE).map((p) => p.key),
 ]);
 

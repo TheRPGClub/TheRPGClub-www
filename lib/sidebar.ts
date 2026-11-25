@@ -18,6 +18,7 @@ export type PinnedPageKey =
   | "goty"
   | "challenges"
   | "games"
+  | "franchises"
   | "lists"
   | "reviews"
   | "releases"
@@ -35,13 +36,11 @@ export type PinnedPageKey =
   | "public_reminders"
   | "suggestion_review";
 
-// Every page the sidebar lists: the Pinned Page keys, plus pages the API
-// can't pin yet (`pinnable: false`).
-export type SidebarPageKey = PinnedPageKey | "franchises";
+// Every page the sidebar lists: each is a Pinned Page.
+export type SidebarPageKey = PinnedPageKey;
 
 export interface SidebarPage {
-  // The Pinned Page key the API knows it by (or the page's own key, for one
-  // that can't be pinned).
+  // The Pinned Page key the API knows it by.
   key: SidebarPageKey;
   href: string;
   label: string;
@@ -52,9 +51,6 @@ export interface SidebarPage {
   // Matched only on its own path, not the pages below it (the staff desk,
   // whose tools sit under /admin).
   exact?: boolean;
-  // Not a Pinned Page the API knows (PinnedPages::PAGES), so it offers no
-  // pin: Franchises (www#206), until the API lists it.
-  pinnable?: false;
 }
 
 export interface SidebarGroup {
@@ -76,7 +72,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "goty", href: "/goty", label: "GOTY Vote", note: "The year's three Awards", group: "play", feature: "goty_vote" },
   { key: "challenges", href: "/challenges", label: "Challenges", note: "Years Alive, Seasonal, Secret Santa", group: "play", feature: "challenges" },
   { key: "games", href: "/games", label: "Games", note: "The club's GameDB catalogue", group: "games", feature: "game_index" },
-  { key: "franchises", href: "/franchises", label: "Franchises", note: "Every series as a box set", group: "games", pinnable: false },
+  { key: "franchises", href: "/franchises", label: "Franchises", note: "Every series as a box set", group: "games" },
   { key: "lists", href: "/lists", label: "Lists", note: "Members' and the club's Game Lists", group: "games", feature: "game_lists" },
   { key: "reviews", href: "/reviews", label: "Reviews", note: "Every member's reviews, newest first", group: "games", feature: "reviews" },
   { key: "releases", href: RELEASES_PATH, label: "Releases", note: "What's coming out, by region", group: "games", feature: "release_calendar" },
@@ -122,7 +118,7 @@ export function sidebarGroups(
 // they can't see are skipped, not lost.
 export function pinnedPages(groups: readonly SidebarGroup[], keys: readonly string[]): SidebarPage[] {
   const byKey = new Map<string, SidebarPage>(
-    groups.flatMap((g) => g.pages).flatMap((p) => (p.pinnable === false ? [] : [[p.key, p] as const])),
+    groups.flatMap((g) => g.pages).map((p) => [p.key, p] as const),
   );
   return keys.flatMap((k) => byKey.get(k) ?? []);
 }

@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { browseHref, type FranchiseSort } from "@/lib/franchises/browse";
 import {
+  searchInput,
+  searchPushed,
+  searchTyped,
+  searchUrlChanged,
+} from "@/lib/franchises/search-input";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -13,29 +19,46 @@ import { Label } from "@/components/ui/label";
 
 const DEBOUNCE_MS = 400;
 
-// "Find a Franchise": searches as you type (debounced) and on Enter, from
-// page one under the same sort. A search looks through every name, so it
-// lets go of a picked letter. "/" anywhere on the page outside a field
+// "Find a Franchise": searches as you type (debounced, replacing the
+// history entry) and on Enter (a new one), from page one under the same
+// sort. A search looks through every name, so it lets go of a picked
+// letter. Its own searches landing late never overwrite what was typed
+// since; anything else that changes the URL drops a pending search
+// (lib/franchises/search-input). "/" anywhere on the page outside a field
 // jumps to it.
 export function FranchiseSearch({
   q,
   sort,
+  href,
 }: {
   q: string;
   sort: FranchiseSort;
+  // The page's URL, as browseHref writes it.
+  href: string;
 }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState(q);
-  // Back/forward or a link changed the URL's search: follow it.
-  const [synced, setSynced] = useState(q);
-  if (synced !== q) {
-    setSynced(q);
-    setQuery(q);
+  const [state, setState] = useState(() => searchInput(href, q));
+  // Bumped when another change to the URL drops the pending search.
+  const [dropped, setDropped] = useState(0);
+  if (state.seen !== href) {
+    const { next, cancel } = searchUrlChanged(state, href, q);
+    setState(next);
+    if (cancel) setDropped((n) => n + 1);
   }
+  const query = state.query;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const go = (value: string) =>
-    router.push(browseHref({ q: value, sort }), { scroll: false });
+  const go = (value: string, replace: boolean) => {
+    const to = browseHref({ q: value, sort });
+    setState((s) => searchPushed(s, to, value.trim()));
+    if (replace) router.replace(to, { scroll: false });
+    else router.push(to, { scroll: false });
+  };
+
+  useEffect(() => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+  }, [dropped]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -60,7 +83,7 @@ export function FranchiseSearch({
       onSubmit={(e) => {
         e.preventDefault();
         if (timer.current) clearTimeout(timer.current);
-        go(query);
+        go(query, false);
       }}
     >
       <InputGroup
@@ -83,9 +106,9 @@ export function FranchiseSearch({
           value={query}
           onChange={(e) => {
             const value = e.target.value;
-            setQuery(value);
+            setState((s) => searchTyped(s, value));
             if (timer.current) clearTimeout(timer.current);
-            timer.current = setTimeout(() => go(value), DEBOUNCE_MS);
+            timer.current = setTimeout(() => go(value, true), DEBOUNCE_MS);
           }}
           className="h-full p-0 text-[0.95rem] md:text-[0.95rem]"
         />

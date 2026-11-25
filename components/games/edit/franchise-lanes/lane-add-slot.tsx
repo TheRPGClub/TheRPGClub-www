@@ -48,6 +48,13 @@ export function LaneAddSlot({
   hint?: string;
 }) {
   const [pending, setPending] = useState<Pick | null>(null);
+  // A slot closed from outside (another lane's slot opened) forgets the
+  // Franchise it was asking a parent for.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    if (!open) setPending(null);
+  }
   const close = () => {
     setPending(null);
     onClose();

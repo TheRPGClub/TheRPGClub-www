@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   browseApiPath,
   browseHref,
+  emptyWall,
   parseBrowseQuery,
   progressPercent,
   tagCounts,
@@ -118,5 +119,31 @@ describe("tile text", () => {
   it("fills the progress bar", () => {
     expect(progressPercent({ done: 9, total: 16 })).toBe(56);
     expect(progressPercent({ done: 0, total: 0 })).toBe(0);
+  });
+});
+
+describe("emptyWall", () => {
+  const base = { q: "", letter: null, sort: "az" as const, page: 1 };
+
+  it("says a page past the end is past the last page, with a link to page one", () => {
+    expect(emptyWall({ ...base, letter: "M", sort: "games", page: 9 })).toEqual({
+      text: "Page 9 is past the last page.",
+      action: { href: "/franchises?letter=M&sort=games", label: "Go to page 1" },
+    });
+  });
+
+  it("says nothing matches a search or letter, offering every Franchise", () => {
+    expect(emptyWall({ ...base, q: "zzz" })).toEqual({
+      text: "No Franchise matches “zzz”.",
+      action: { href: "/franchises", label: "Show every Franchise" },
+    });
+    expect(emptyWall({ ...base, letter: "#", sort: "plays" })).toEqual({
+      text: "No Franchise starts with anything but a letter.",
+      action: { href: "/franchises?sort=plays", label: "Show every Franchise" },
+    });
+  });
+
+  it("says there are no Franchises yet on page one of the whole wall", () => {
+    expect(emptyWall(base)).toEqual({ text: "No Franchises yet.", action: null });
   });
 });

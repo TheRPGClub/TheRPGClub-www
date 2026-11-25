@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { fetchFranchiseTiles } from "@/lib/franchises/fetch";
-import { browseHref, type BrowseQuery } from "@/lib/franchises/browse";
+import { browseHref, emptyWall, type BrowseQuery } from "@/lib/franchises/browse";
 import { ButtonLink } from "@/components/ui/button";
 import { ListPagination } from "@/components/list-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,7 @@ const WALL =
 
 // The wall of box sets: a page of the index under its search, letter and
 // sort, then the page numbers. An empty search or letter says so and
-// offers the whole wall back.
+// offers the whole wall back; a page past the end offers page one.
 export async function FranchiseBoxWall({ query }: { query: BrowseQuery }) {
   const result = await fetchFranchiseTiles(query);
   if (!result)
@@ -19,22 +19,18 @@ export async function FranchiseBoxWall({ query }: { query: BrowseQuery }) {
       <Empty>Couldn&apos;t load the Franchises. Try again in a moment.</Empty>
     );
   if (result.tiles.length === 0) {
-    const narrowed = query.q || query.letter;
+    const empty = emptyWall(query);
     return (
       <Empty>
-        {query.q
-          ? `No Franchise matches “${query.q}”.`
-          : query.letter
-            ? `No Franchise starts with ${query.letter === "#" ? "anything but a letter" : query.letter}.`
-            : "No Franchises yet."}
-        {narrowed && (
+        {empty.text}
+        {empty.action && (
           <ButtonLink
-            href={browseHref({ sort: query.sort })}
+            href={empty.action.href}
             variant="outline"
             size="sm"
             className="mt-4"
           >
-            Show every Franchise
+            {empty.action.label}
           </ButtonLink>
         )}
       </Empty>
