@@ -1,63 +1,64 @@
-import Form from "next/form";
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { ArrowDownUp } from "lucide-react";
 import {
-  GOTM_HISTORY_PATH,
-  GOTM_SORT_OPTIONS,
+  GOTM_KIND_OPTIONS,
+  gotmHistoryHref,
   type GotmHistoryFilters as Filters,
+  type GotmKind,
 } from "@/lib/api/gotm-rounds";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { SubmitOnChangeSelect } from "./submit-on-change-select";
+import { cn } from "@/lib/utils";
 
-// The archive's title search and sort, a GET form beside the page title. The
-// track and year come from the side rail, so they ride along as hidden
-// fields. Submitting drops `page`, so a new search starts from the first
-// page; changing the sort submits straight away. The fields are
-// uncontrolled, so the caller keys this on the current URL to re-sync them
-// after back/forward or a link.
+// The GOTM History's Category switch (Both / GOTM / NR-GOTM) and its order,
+// as links beside the page title. Each keeps the year and starts from the
+// first page. There is no title search on this page.
+
+const KIND_SWATCH: Partial<Record<GotmKind, string>> = {
+  gotm: "bg-gotm",
+  nr_gotm: "bg-nr",
+};
+
 export function GotmHistoryFilters({ filters }: { filters: Filters }) {
+  const href = (change: Partial<Filters>) =>
+    gotmHistoryHref({ ...filters, ...change, page: 1 });
+  const oldestFirst = filters.sort === "asc";
+
   return (
-    <Form
-      action={GOTM_HISTORY_PATH}
-      role="search"
-      className="flex w-full flex-wrap items-center gap-2 sm:w-auto"
-    >
-      {filters.kind !== "both" && <Input type="hidden" name="kind" value={filters.kind} />}
-      {filters.year && <Input type="hidden" name="year" value={filters.year} />}
-      {/* The group pads its field after an addon; here the gap spaces them. */}
-      <InputGroup
-        variant="search"
-        className="h-9.5 min-w-0 flex-1 basis-full gap-2 px-3 has-[>[data-align=inline-start]]:[&>input]:pl-0 sm:w-72 sm:flex-none sm:basis-auto"
+    <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2.5 sm:w-auto">
+      <nav
+        aria-label="Category"
+        className="flex flex-1 basis-full overflow-hidden rounded-sm border border-border sm:flex-none sm:basis-auto"
       >
-        <InputGroupAddon className="p-0">
-          <Search aria-hidden className="size-4 shrink-0" />
-        </InputGroupAddon>
-        <InputGroupInput
-          type="search"
-          name="q"
-          defaultValue={filters.q}
-          placeholder="Search titles…"
-          aria-label="Search titles"
-          className="h-full p-0 text-sm md:text-sm"
-        />
-      </InputGroup>
-      <SubmitOnChangeSelect
-        name="sort"
-        defaultValue={filters.sort}
-        aria-label="Sort"
-        options={GOTM_SORT_OPTIONS}
-        className="px-2.5 text-[0.92rem] data-[size=default]:h-9.5"
-      />
-      {/* Enter submits the search; the button is there for anyone who
-          doesn't reach for it. */}
-      <Button type="submit" variant="search" className="h-9.5 px-3 text-[0.92rem]">
-        Search
-      </Button>
-    </Form>
+        {GOTM_KIND_OPTIONS.map((option) => {
+          const active = option.value === filters.kind;
+          const swatch = KIND_SWATCH[option.value];
+          return (
+            <Link
+              key={option.value}
+              href={href({ kind: option.value })}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "font-label flex flex-1 items-center justify-center gap-2 border-r border-border px-2 py-2.25 text-[0.82rem] whitespace-nowrap sm:px-4 font-semibold tracking-[0.12em] uppercase transition-colors last:border-r-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-highlight sm:flex-none",
+                active
+                  ? "bg-highlight text-highlight-foreground"
+                  : "text-dim-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {swatch && (
+                <span aria-hidden className={cn("size-2 shrink-0 rounded-[1px]", swatch)} />
+              )}
+              {option.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <Link
+        href={href({ sort: oldestFirst ? "desc" : "asc" })}
+        className="font-label inline-flex items-center gap-1.5 py-2 text-[0.82rem] font-semibold tracking-[0.12em] text-dim-foreground uppercase transition-colors hover:text-highlight"
+      >
+        <ArrowDownUp aria-hidden className="size-3.5" />
+        {oldestFirst ? "Oldest first" : "Newest first"}
+        <span className="sr-only">, switch to {oldestFirst ? "newest" : "oldest"} first</span>
+      </Link>
+    </div>
   );
 }

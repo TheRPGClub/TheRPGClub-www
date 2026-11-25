@@ -10,7 +10,6 @@ export async function GamesLead() {
   const history = await fetchGotmRounds({
     kind: "both",
     year: null,
-    q: "",
     sort: "desc",
     page: 1,
   });
