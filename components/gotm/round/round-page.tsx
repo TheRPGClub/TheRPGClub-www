@@ -65,9 +65,9 @@ export function RoundPage({
       </div>
       {roundHasNominations(round) ? (
         <div className="mt-6 grid gap-7 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
-          <RoundColumn kind="gotm" category={round.gotm} />
+          <RoundColumn kind="gotm" category={round.gotm} discord={discord} />
           <div aria-hidden className="relative before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-border max-md:hidden" />
-          <RoundColumn kind="nr_gotm" category={round.nr_gotm} />
+          <RoundColumn kind="nr_gotm" category={round.nr_gotm} discord={discord} />
         </div>
       ) : (
         <p className="mt-6 flex items-stretch gap-5 rounded-sm border border-border bg-card px-5 py-5 text-[1.0625rem] md:px-7 md:py-6">

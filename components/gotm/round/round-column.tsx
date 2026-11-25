@@ -1,13 +1,24 @@
+import type { ReactNode } from "react";
 import type { GotmRoundCategory, VotingCategory } from "@/lib/api/types";
 import { categoryRows, nomineeCount, rowVotes, runoffSummary, voteTotals, votesLabel } from "@/lib/gotm-round";
-import { TRACK_LABEL } from "@/components/issue/gotm-shared";
+import { gotmLinks, NO_DISCORD_LINKS, type DiscordLinkConfig } from "@/lib/gotm-links";
+import { OutboundLinks, TRACK_LABEL } from "@/components/issue/gotm-shared";
 import { cn } from "@/lib/utils";
 import { RoundNominee } from "./round-nominee";
 
 // One Category's column under the diptych: its head (nominee count, votes
 // cast or "In nomination order"), a runoff or no-winner line, then every
-// game, winners first.
-export function RoundColumn({ kind, category }: { kind: VotingCategory; category: GotmRoundCategory }) {
+// game, winners first. A Category nobody won has no hero panel, so its
+// no-winner line carries the voting-results link.
+export function RoundColumn({
+  kind,
+  category,
+  discord = NO_DISCORD_LINKS,
+}: {
+  kind: VotingCategory;
+  category: GotmRoundCategory;
+  discord?: DiscordLinkConfig;
+}) {
   const rows = categoryRows(category);
   const nominees = nomineeCount(category);
   const { total, max } = voteTotals(category);
@@ -28,7 +39,15 @@ export function RoundColumn({ kind, category }: { kind: VotingCategory; category
         </p>
       </header>
       {rows.every((r) => !r.won) && (
-        <ColumnLine kind={kind} label={`No ${TRACK_LABEL[kind]} winner this round`} />
+        <ColumnLine
+          kind={kind}
+          label={`No ${TRACK_LABEL[kind]} winner this round`}
+          detail={
+            <OutboundLinks
+              links={gotmLinks({ votingResultsMessageId: category.voting_results_message_id }, discord)}
+            />
+          }
+        />
       )}
       {runoff && (
         <ColumnLine
@@ -46,9 +65,9 @@ export function RoundColumn({ kind, category }: { kind: VotingCategory; category
   );
 }
 
-function ColumnLine({ kind, label, detail }: { kind: VotingCategory; label: string; detail?: string | null }) {
+function ColumnLine({ kind, label, detail }: { kind: VotingCategory; label: string; detail?: ReactNode }) {
   return (
-    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 border-b border-border py-2.5 text-[0.875rem] text-dim-foreground">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 border-b border-border py-2.5 text-[0.875rem] text-dim-foreground">
       <span
         className={cn(
           "font-label rounded-xs border px-2 py-0.5 text-[0.75rem] font-semibold tracking-[0.12em] whitespace-nowrap text-foreground uppercase",
@@ -58,6 +77,6 @@ function ColumnLine({ kind, label, detail }: { kind: VotingCategory; label: stri
         {label}
       </span>
       {detail}
-    </p>
+    </div>
   );
 }

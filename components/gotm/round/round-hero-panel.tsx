@@ -9,13 +9,15 @@ import { Nominator } from "./round-nominator";
 
 // One winner's half of the Round Page's diptych: key art under a scrim, the
 // Category chip, the two-line Anton title and who put it forward. GOTM's
-// caption sits left, NR-GOTM's right, so the pair faces the hinge.
+// caption sits left, NR-GOTM's right (`mirrored`), so the pair faces the
+// hinge; a Category spanning the row sets every caption left.
 export function RoundHeroPanel({
   kind,
   row,
   meta,
   compact,
   links,
+  mirrored = kind === "nr_gotm",
 }: {
   kind: VotingCategory;
   row: RoundRow;
@@ -25,6 +27,8 @@ export function RoundHeroPanel({
   compact: boolean;
   // Reddit / Thread / Voting results, raised above the panel's link.
   links: GotmCardLink[];
+  // Caption and starburst flush right.
+  mirrored?: boolean;
 }) {
   const title = row.game?.title ?? UNKNOWN_GAME_TITLE;
   // A subtitle takes the second line in the Category's accent; a title
@@ -51,7 +55,7 @@ export function RoundHeroPanel({
       />
       <WinnerMark
         track={kind}
-        className={cn("absolute top-3 size-14 md:size-16", nr ? "right-3" : "left-3")}
+        className={cn("absolute top-3 size-14 md:size-16", mirrored ? "right-3" : "left-3")}
       />
       {row.gameId && (
         <Link
@@ -60,7 +64,7 @@ export function RoundHeroPanel({
           className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none focus-visible:ring-inset"
         />
       )}
-      <div className={cn("mt-auto w-full px-3 pt-20 pb-4 md:px-5 md:pb-5", nr && "text-right")}>
+      <div className={cn("mt-auto w-full px-3 pt-20 pb-4 md:px-5 md:pb-5", mirrored && "text-right")}>
         <span
           className={cn(
             "font-label mb-2 inline-block rounded-xs px-1.75 py-0.5 text-[0.75rem] font-extrabold tracking-[0.14em] uppercase",
@@ -79,14 +83,14 @@ export function RoundHeroPanel({
           <span className="block">{lead}</span>
           {tail && <span className={cn("block", nr ? "text-nr-soft" : "text-highlight")}>{tail}</span>}
         </h2>
-        <RoundHeroCredit row={row} meta={meta} nr={nr} />
-        <OutboundLinks links={links} className={cn("mt-2", nr && "-mr-1 ml-0 justify-end")} />
+        <RoundHeroCredit row={row} meta={meta} mirrored={mirrored} />
+        <OutboundLinks links={links} className={cn("mt-2", mirrored && "-mr-1 ml-0 justify-end")} />
       </div>
     </article>
   );
 }
 
-function RoundHeroCredit({ row, meta, nr }: { row: RoundRow; meta: string | null; nr: boolean }) {
+function RoundHeroCredit({ row, meta, mirrored }: { row: RoundRow; meta: string | null; mirrored: boolean }) {
   const reason = row.nomination?.reason?.trim();
   return (
     <>
@@ -105,7 +109,7 @@ function RoundHeroCredit({ row, meta, nr }: { row: RoundRow; meta: string | null
         <p
           className={cn(
             "mt-1.5 line-clamp-2 max-w-[26rem] text-[0.875rem] leading-snug text-dim-foreground max-md:hidden",
-            nr && "ml-auto",
+            mirrored && "ml-auto",
           )}
         >
           {reason}
