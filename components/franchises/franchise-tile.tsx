@@ -1,20 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Paperclip, Plus, Star, X } from "lucide-react";
+import { Paperclip, Plus, X } from "lucide-react";
 import type { FranchiseGame } from "@/lib/franchises/types";
 import type { FranchiseEditor } from "@/hooks/use-franchise-editor";
+import type { FranchiseItemProps } from "@/hooks/use-franchise-board";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GameCover } from "@/components/issue/game-cover";
 
-// One cover on the Franchise page, linking to its game. In edit mode it
-// carries the Mainline star (top left) and Unlink (top right); a game just
-// unlinked is greyed with a plus to link it back. A game with Add-ons gets
-// the paper insert that opens them.
+// One cover on the Franchise page, linking to its game. In edit mode the
+// cover drags to another section (`item`) and carries Unlink (top right); a
+// game just unlinked is greyed with a plus to link it back, and doesn't
+// drag. A game with Add-ons gets the paper insert that opens them.
 export function FranchiseTile({
   game,
   editor,
+  item,
   gone,
   caption,
   addOns,
@@ -24,6 +26,8 @@ export function FranchiseTile({
 }: {
   game: FranchiseGame;
   editor: FranchiseEditor;
+  // The drag board's props for this cover (edit mode).
+  item?: FranchiseItemProps;
   // Unlinked while editing.
   gone?: boolean;
   caption: React.ReactNode;
@@ -32,37 +36,21 @@ export function FranchiseTile({
   onToggleAddOns?: () => void;
   fallbackClassName?: string;
 }) {
-  const busy = editor.busy === `star:${game.game_id}` || editor.busy === `x:${game.game_id}`;
+  const busy = editor.busy === `move:${game.game_id}` || editor.busy === `x:${game.game_id}`;
   return (
-    <li className={cn("relative min-w-0", busy && "opacity-60")}>
+    <li {...(gone ? {} : item)} className={cn("relative min-w-0", busy && "opacity-60")}>
       {editor.editing && (
-        <>
-          {!gone && (
-            <Button
-              variant="cover-token"
-              size="icon-xs"
-              aria-pressed={game.mainline}
-              aria-label={game.mainline ? `Move ${game.title} to Spin-offs` : `Make ${game.title} Mainline`}
-              title={game.mainline ? "Mainline" : "Make Mainline"}
-              disabled={editor.pending}
-              onClick={() => editor.setMainline(game, !game.mainline)}
-              className="absolute top-1.5 left-1.5 z-10"
-            >
-              <Star />
-            </Button>
-          )}
-          <Button
-            variant="cover-token"
-            size="icon-xs"
-            aria-label={gone ? `Link ${game.title} again` : `Unlink ${game.title}`}
-            title={gone ? "Link again" : "Unlink"}
-            disabled={editor.pending}
-            onClick={() => (gone ? editor.relink(game) : editor.unlink(game))}
-            className="absolute top-1.5 right-1.5 z-10"
-          >
-            {gone ? <Plus /> : <X />}
-          </Button>
-        </>
+        <Button
+          variant="cover-token"
+          size="icon-xs"
+          aria-label={gone ? `Link ${game.title} again` : `Unlink ${game.title}`}
+          title={gone ? "Link again" : "Unlink"}
+          disabled={editor.pending}
+          onClick={() => (gone ? editor.relink(game) : editor.unlink(game))}
+          className="absolute top-1.5 right-1.5 z-10"
+        >
+          {gone ? <Plus /> : <X />}
+        </Button>
       )}
       <Link
         href={`/games/${game.game_id}`}

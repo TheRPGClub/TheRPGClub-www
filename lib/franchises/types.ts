@@ -23,6 +23,24 @@ export interface FranchiseGame {
   mainline: boolean;
   source: FranchiseLinkSource;
   parent_game_name: string | null;
+  // Its parent was set by hand (absent from an older API).
+  parent_locked?: boolean;
+}
+
+// A game's link as PUT /franchises/:id/games/:game_id answers it (api
+// 30db0b9). The parent fields name the game it's an Add-on of (null for
+// none); `parent_locked` is a parent set by hand, which IGDB re-imports keep.
+export interface FranchiseGameLink {
+  franchise_id: number;
+  game_id: number;
+  source: FranchiseLinkSource;
+  mainline: boolean;
+  created_at: string;
+  created_by: string | null;
+  parent_game_id: number | null;
+  parent_igdb_id: number | null;
+  parent_game_name: string | null;
+  parent_locked: boolean;
 }
 
 export interface FranchiseAddOnParent {
@@ -54,6 +72,9 @@ export type FranchiseChangeAction =
   | "unlink"
   | "mainline_on"
   | "mainline_off"
+  // A game's Add-on parent set or cleared by hand; `after.parent_game_name`
+  // is the new parent (null: no longer an Add-on).
+  | "parent"
   | "create"
   | "rename"
   | "merge"
