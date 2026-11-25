@@ -10,7 +10,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/templates/page-header";
 import { NameDialog } from "@/components/franchises/name-dialog";
 
-// The Franchise page's head: the way back to Games, the name in Anton with
+// The Franchise page's head: the way back to Franchises, the name in Anton with
 // "Franchise" beside it, and its tally (Mainline, Spin-offs, Add-ons; never
 // where it came from). Regulars and above get New Franchise and Edit Franchise, which
 // turns the Games view into the editor (Done editing ends it).
@@ -33,7 +33,7 @@ export function FranchiseHeader({
   const router = useRouter();
   return (
     <PageHeader
-      back={{ href: "/games", label: "Games" }}
+      back={{ href: "/franchises", label: "Franchises" }}
       title={page.name}
       count="Franchise"
       actions={
