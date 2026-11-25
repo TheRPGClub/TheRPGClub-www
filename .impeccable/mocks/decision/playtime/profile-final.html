@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile Hours Final</title>
+<meta name="description" content="3F+: the final profile mock for game hours: spine tags, shelf totals, Now playing corners and the banner total.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- profile context ---------- */
+.pbn{position:relative;height:250px;margin:-24px -28px 0;overflow:hidden;background:var(--muted)}
+.pbn .art{opacity:.55}
+.pbn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(11 11 13/.96) 0%,rgb(11 11 13/.7) 45%,rgb(11 11 13/.2) 100%)}
+.pbn .in{position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;gap:22px;padding:24px 28px}
+.pbn .bav{box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.pbn h1{font:400 5.2rem/.86 Anton;text-transform:uppercase}
+.pbn .by{font:700 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pbn .by .chip{height:22px}
+.pshell .pbn{height:230px;margin:-20px -16px 0}
+.pshell .pbn .in{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+.pshell .pbn h1{font-size:3.2rem}
+.np{display:flex;gap:14px;align-items:flex-end}
+.np .bk{display:flex;gap:10px;align-items:flex-end}
+.np .bk b{display:block;font:400 1.05rem/.95 Anton;text-transform:uppercase;max-width:150px}
+.np .bk small{font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ctx{opacity:.55}
+/* shelf head: monumental count + title on the left */
+.case{display:grid;grid-template-columns:190px minmax(0,1fr);gap:28px;margin-top:40px}
+.case .lead .num{font:400 6rem/.8 Anton;letter-spacing:-.01em}
+.case .lead h2{font:400 2.2rem/.9 Anton;text-transform:uppercase;margin-top:10px;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.case .lead p{color:var(--faint);font:700 .78rem/1.35 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;margin-top:10px}
+.case .lead .btn{margin-top:14px}
+.pshell .case{grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.pshell .case .lead{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-items:end}
+.pshell .case .lead .num{font-size:4.2rem;grid-row:span 2}
+.pshell .case .lead h2{font-size:1.8rem;margin:0}
+.pshell .case .lead p{margin-top:6px}
+.pshell .case .lead .btn{grid-column:1/-1;margin-top:12px;justify-self:start}
+
+
+/* ---------- the shipped profile: Now Playing books and the bookcase ---------- */
+.np2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.book{position:relative;isolation:isolate;display:flex;aspect-ratio:16/9;border-radius:2.4px;overflow:hidden;background:#000}
+.book>img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:60% 30%}
+.book::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgb(11 11 13/.95) 0%,rgb(11 11 13/.6) 45%,rgb(11 11 13/.05) 100%)}
+.book .in{margin-top:auto;padding:16px}
+.book .t{font:400 1.75rem/.95 Anton;text-transform:uppercase;display:block}
+.book .l{display:flex;align-items:center;gap:6px;margin-top:6px;font:700 .8rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.book .l svg.lucide{width:14px;height:14px}
+.book .l b{color:var(--fg);font-weight:700}
+.book .q{display:block;margin-top:6px;font-size:.82rem;font-style:italic;color:var(--dim)}
+.case2{border-top:2px solid var(--fg);margin-top:36px}
+.shelf{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:24px;padding-top:20px;border-bottom:6px solid var(--muted);box-shadow:0 1px 0 var(--border)}
+.shelf .hd3{display:flex;flex-direction:column;gap:6px;padding-bottom:16px}
+.shelf .hd3 .c{font:400 3.9rem/.82 Anton}
+.shelf .hd3 h2{font:400 1.65rem/1 Anton;text-transform:uppercase}
+.shelf .hd3 p{font-size:.82rem;color:var(--faint);line-height:1.35}
+.shelf .hd3 p b{color:var(--fg);font-weight:600}
+.shelf .hd3 .lk{font:800 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:inline-flex;align-items:center;gap:6px;margin-top:4px}
+.shelf .hd3 .lk svg.lucide{width:14px;height:14px}
+.shelf .hd3 .pt2{font:400 1.9rem/.9 Anton;margin-top:6px}
+.shelf .hd3 .pt2 small{display:block;font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.sp{display:flex;align-items:flex-end;gap:4px;min-height:15.5rem;overflow:hidden}
+.spine{position:relative;width:52px;flex:none;border-radius:2px 2px 0 0;background:var(--muted);overflow:hidden}
+.spine img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.spine::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(0 0 0/.45),transparent 30%,transparent 70%,rgb(0 0 0/.5))}
+.spine .tg{position:absolute;left:0;right:0;top:8px;z-index:2;text-align:center;font:800 .66rem/1.1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.spine .tg b{display:block;font:400 1.05rem/1 Anton;color:var(--fg);letter-spacing:0;margin-top:3px}
+.spine .tg b.z{font:800 .62rem/1 "Barlow Condensed";color:var(--faint);letter-spacing:.06em;margin-top:4px}
+.spine .ti{position:absolute;bottom:12px;left:50%;z-index:2;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;font:400 1.2rem/1 Anton;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:calc(100% - 64px);text-shadow:0 1px 6px rgb(0 0 0/.8)}
+.spine.lift{transform:translateY(-14px);box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.more{align-self:flex-end;padding:0 0 14px 12px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.pshell .np2{grid-template-columns:1fr}
+.pshell .shelf{grid-template-columns:1fr;gap:10px}
+.pshell .shelf .hd3{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding-bottom:0}
+.pshell .shelf .hd3 .c{font-size:2.5rem}.pshell .shelf .hd3 h2{font-size:1.5rem}
+.pshell .shelf .hd3 p{width:100%}
+.pshell .spine{width:44px}
+/* 3D: Playthrough tag on a book */
+.ptag{position:absolute;right:10px;top:10px;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:2px;background:rgb(11 11 13/.78);box-shadow:inset 0 0 0 1px rgb(244 244 240/.25);font:800 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.ptag b{font:400 1rem/1 Anton;color:var(--fg);letter-spacing:0}
+.ptag svg.lucide{width:13px;height:13px}
+/* 3E: hours on the shelf lip */
+.lipwrap{display:flex;flex-direction:column;min-width:0}
+.lip{display:flex;gap:4px;height:22px;align-items:center;margin-bottom:-28px;position:relative;top:6px}
+.lip span{width:52px;flex:none;text-align:center;font:400 .95rem/1 Anton;color:var(--fg)}
+.lip span.z{font:800 .6rem/1 "Barlow Condensed";letter-spacing:.06em;color:var(--faint)}
+.shelf.lipped{padding-bottom:30px}
+.bclock{position:absolute;right:14px;top:12px;text-align:right}
+.bclock b{display:block;font:400 2.6rem/.85 Anton;text-shadow:0 1px 8px rgb(0 0 0/.85)}
+.bclock small{font:800 .68rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-shadow:0 1px 8px rgb(0 0 0/.85)}
+.pstat{display:flex;gap:26px;margin-top:12px}
+.pstat div b{display:block;font:400 2rem/.9 Anton}
+.pstat div small{font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+/* 3F: the tag on a lifted spine */
+.htag{position:absolute;z-index:5;background:var(--fg);color:var(--bg);border-radius:2px;padding:8px 10px;box-shadow:0 12px 30px rgb(0 0 0/.5);transform:rotate(-2deg);white-space:nowrap}
+.htag b{display:block;font:400 1.5rem/.9 Anton}
+.htag small{display:block;font:800 .68rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:rgb(11 11 13/.72);margin-top:3px}
+.sortl{display:inline-flex;gap:2px;margin-top:6px}
+.sortl span{font:800 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:5px 6px;border-radius:2px}
+.sortl span.on{background:var(--fg);color:var(--bg)}
+.sp.rel{position:relative;overflow:visible}
+.ctag{position:absolute;right:10px;top:10px;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:2px;background:rgb(11 11 13/.8);box-shadow:inset 0 0 0 1px rgb(244 244 240/.25);font:800 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.ctag b{font:400 1.15rem/1 Anton;color:var(--fg);letter-spacing:0}
+.ctag .s{width:1px;height:16px;background:rgb(244 244 240/.3)}
+.ctag svg.lucide{width:14px;height:14px}
+.podium{display:flex;align-items:flex-end;gap:4px;margin-right:8px}
+.pod{display:flex;flex-direction:column}
+.plinth{width:52px;background:var(--muted);box-shadow:inset 0 1px 0 rgb(244 244 240/.15)}
+.spine .tg.nm{font:400 1.5rem/1 Anton;color:var(--fg);top:8px}
+.shelf .hd3 .pt2{margin-top:2px}
+.pshell .plinth{width:44px}
+.states .fr.ph{max-width:390px}
+.pshell .ctag{height:26px;font-size:.66rem;padding:0 7px}.pshell .ctag b{font-size:.95rem}
+</style></head>
+<body><script>
+/* ---------------- profile context ---------------- */
+const profBanner = (k, ph) => {
+  const m = M[k];
+  return `<div class="pbn">${artBg(k === "mara" ? "metaphor" : "wukong")}<div class="in">
+    <span class="av bav" style="--s:${ph ? 64 : 104}px;--c:${m.c}">${m.n[0]}</span>
+    <div><h1>${m.n}</h1><div class="by">@${m.n.toLowerCase().replace(/ /g, "")} <span>·</span> In the club since ${k === "mara" ? "Mar 2021" : "Jun 2023"}<span class="chip ols sm">${m.role}</span><span class="chip sm">Member</span></div></div></div></div>`;
+};
+const nowPlaying = (k, ph) => {
+  const gs = k === "mara" ? ["ff6", "metaphor"] : ["wuchang", "nioh2"];
+  return `<div class="ctx"><div class="sec" style="margin-top:28px"><h2>Now Playing</h2><span class="n lb">2 games</span></div>
+  <div class="np">${gs.map((g) => `<div class="bk">${cover(g, ph ? 58 : 70)}<div><b>${esc(G[g].t)}</b><small>Since ${g === "ff6" ? "9 Nov" : "2 Oct"}</small></div></div>`).join("")}</div></div>`;
+};
+const belowCtx = (ph) => `<div class="ctx"><div class="case" style="margin-top:36px"><div class="lead"><div class="num">${ph ? 41 : 41}</div><h2>Completed</h2></div><div class="empty" style="border-style:solid;color:var(--faint)">The Completed shelf continues below.</div></div></div>`;
+
+/* Mara's lists. [game, tag, hours] */
+const NP = [["ff6", "Switch", "9 Nov", 180, 14, "Pixel Remaster. Doing the Dragons this time."], ["metaphor", "PC", "2 Oct", 46, 46, ""], ["ff7rb", "PS5", "18 Sep", 19, 19, "Saving Gold Saucer for last."]];
+const DONE2 = [["octo", "Nov 26", 64], ["liesofp", "Oct 26", 41], ["p3r", "Sep 26", 88], ["wukong", "Aug 26", 47], ["ff16", "Jul 26", 52], ["dq11", "Jun 26", 97], ["hades", "May 26", 112], ["ct", "Apr 26", 23], ["p4g", "Mar 26", 76], ["bg3", "Feb 26", 143], ["ff10", "Jan 26", 92], ["disco", "Dec 25", 34], ["outer", "Nov 25", 19], ["elden", "Oct 25", 0]];
+const BACK = [["ff12", "PS4", 0], ["ff13", "PC", 22], ["yakuza0", "PC", 0], ["nioh", "PC", 8], ["ds3", "PS4", 0], ["toa", "PC", 0], ["kh3", "PS4", 3], ["tob", "PC", 0], ["dsr", "Switch", 0]];
+const hOf = (h) => (h ? `<b>${hrs(h)}</b>` : `<b class="z">No time</b>`);
+const H = (k, i) => 218 + ((k.length * 37 + i * 11) % 27);
+const spine = (k, tag, i, o = {}) => `<div class="spine ${o.lift ? "lift" : ""}" style="height:${H(k, i)}px">${G[k].cover ? `<img src="${G[k].cover}" alt="" onerror="this.remove()">` : ""}<span class="tg">${tag}${o.h !== undefined ? hOf(o.h) : ""}</span><span class="ti">${esc(G[k].t)}</span></div>`;
+const book = (r, o = {}) => `<div class="book">${G[r[0]].art ? `<img src="${G[r[0]].art}" alt="" onerror="this.remove()">` : ""}${o.top ? o.top(r) : ""}<span class="in"><span class="t">${esc(G[r[0]].t)}</span><span class="l">${ic("gamepad-2")}${r[1]} · since ${r[2]}${o.line ? o.line(r) : ""}</span>${r[5] ? `<span class="q">“${r[5]}”</span>` : ""}</span></div>`;
+const npSec = (o = {}, ph) => `<div class="sec" style="margin-top:28px"><h2>Now playing</h2><span class="n lb">3</span><span class="r"><span class="lnk">See all</span></span></div><div class="np2">${NP.slice(0, ph ? 2 : 3).map((r) => book(r, o)).join("")}</div>`;
+const shelf = (label, count, blurb, rows, o = {}) => `<section class="shelf ${o.lipped ? "lipped" : ""}"><div class="hd3"><span class="c">${count}</span><h2>${label}</h2><p>${blurb}</p>${o.headX || ""}<span class="lk">Open list ${ic("arrow-right")}</span></div>
+<div class="lipwrap"><div class="sp ${o.rel ? "rel" : ""}">${rows.join("")}${o.more ? `<span class="more">+${o.more} more ${ic("arrow-right")}</span>` : ""}${o.over || ""}</div>${o.lip || ""}</div></section>`;
+const doneTotal = DONE2.reduce((a, r) => a + r[2], 0);
+const pTop = (ph) => profBanner("mara", ph);
+/* ================= 3F+: the final profile mock ================= */
+const NPF = [["ff6", "Switch", "9 Nov", 180, 14, "Pixel Remaster. Doing the Dragons this time."], ["metaphor", "PC", "2 Oct", 46, 0, ""], ["ff7rb", "PS5", "18 Sep", 19, 19, "Saving Gold Saucer for last."]];
+const FAV = [["ct", 23], ["ff6", 180], ["p5r", 131], ["disco", 34], ["bg3", 143], ["elden", 0], ["outer", 19], ["dq11", 97], ["metaphor", 46], ["hades", 112]];
+const COL = [["ff16", "PS5", 52], ["ff7rb", "PS5", 19], ["metaphor", "PC", 46], ["p3r", "PC", 88], ["octo", "Switch", 64], ["dq11", "Switch", 97], ["ff6", "Switch", 30], ["wukong", "PC", 47], ["hades", "Switch", 112], ["liesofp", "PC", 41], ["yakuza0", "PC", 0], ["nioh", "PC", 8]];
+const sum = (rows, i) => rows.reduce((a, r) => a + r[i], 0);
+const bannerF = (ph) => pTop(ph).replace('</div></div></div></div>', `</div><div class="pstat"><div><b>6,912 h</b><small>Playtime, all games</small></div><div><b>141</b><small>Completed</small></div></div></div></div></div>`);
+const cornerF = (r) => `<span class="ctag">${ic("timer")}<b>${hrs(r[3])}</b>${r[4] ? `<span class="s"></span>Playthrough <b>${r[4]} h</b>` : ""}</span>`;
+const npF = (ph) => `<div class="sec" style="margin-top:28px"><h2>Now playing</h2><span class="n lb">3</span><span class="r"><span class="lnk">See all</span></span></div><div class="np2">${NPF.slice(0, ph ? 2 : 3).map((r) => book(r, { top: cornerF })).join("")}</div>`;
+const headF = (h, sort) => `<span class="pt2">${hrs(h)}<small>Playtime</small></span>${sort ? `<span class="sortl">${sort}</span>` : ""}`;
+const sortS = (a, b, on) => `<span class="${on ? "" : "on"}">${a}</span><span class="${on ? "on" : ""}">${b}</span>`;
+const tagF = (k, h, sub, left, top = -6) => `<div class="htag" style="left:${left}px;top:${top}px"><b>${hrs(h)}</b><small>${esc(G[k].t)}<br>${sub}</small></div>`;
+const podium = (rows, liftAt) => {
+  const order = [1, 0, 2], step = [56, 40, 28];
+  return `<div class="podium">${order.map((i) => `<div class="pod"><div class="spine ${liftAt === i ? "lift" : ""}" style="height:206px">${G[rows[i][0]].cover ? `<img src="${G[rows[i][0]].cover}" alt="" onerror="this.remove()">` : ""}<span class="tg nm">${i + 1}</span><span class="ti">${esc(G[rows[i][0]].t)}</span></div><div class="plinth" style="height:${step[i]}px"></div></div>`).join("")}</div>`;
+};
+const favShelf = (ph) => {
+  const rows = FAV.slice(0, ph ? 5 : 10);
+  return shelf("Favorites", 10, "Ranked by Mara.", [podium(FAV), ...rows.slice(3).map((r, i) => `<div class="spine" style="height:206px">${G[r[0]].cover ? `<img src="${G[r[0]].cover}" alt="" onerror="this.remove()">` : ""}<span class="tg nm">${i + 4}</span><span class="ti">${esc(G[r[0]].t)}</span></div>`)], { headX: headF(sum(FAV, 1), sortS("Ranked", "Most played")) });
+};
+const doneShelf = (ph, o = {}) => {
+  const rows = o.sorted ? [...DONE2].sort((a, b) => b[2] - a[2]) : DONE2;
+  const li = o.lift ?? -1;
+  const r = rows[li];
+  return shelf("Completed", 141, o.sorted ? "Most played on the left." : "Newest on the left.", rows.slice(0, ph ? 6 : 14).map((x, i) => spine(x[0], o.sorted ? `${x[2]}h` : x[1], i, { lift: i === li })),
+    { more: ph ? 0 : 127, rel: 1, over: r ? tagF(r[0], r[2], `Completed ${r[1]}`, li * (ph ? 48 : 56) - 4) : "", headX: headF(5240, sortS("Newest", "Most played", o.sorted)) });
+};
+const backShelf = (ph) => shelf("Backlog", 24, "Oldest first.", BACK.slice(0, ph ? 6 : 9).map((r, i) => spine(r[0], r[1], i)), { more: ph ? 0 : 15, headX: headF(33, sortS("Oldest", "Most played")) });
+const colShelf = (ph) => shelf("Collection", 63, "Newest on the left.", COL.slice(0, ph ? 6 : 12).map((r, i) => spine(r[0], r[1], i)), { more: ph ? 0 : 51, headX: headF(2110, sortS("Newest", "Most played")) });
+const fpBody = (ph, o = {}) => `${bannerF(ph)}${npF(ph)}<div class="case2" style="padding-top:${o.lift !== undefined ? 34 : 0}px">${favShelf(ph)}${doneShelf(ph, o)}${backShelf(ph)}${colShelf(ph)}</div>`;
+const fpDesk = () => desk(fpBody(0, { lift: 2 }), "members", { h: 2020 });
+const fpPhone = () => phone(fpBody(1, { lift: 2 }), "you", { h: 2300 });
+const fpSorted = () => desk(`${bannerF(0)}<div class="case2" style="padding-top:34px">${doneShelf(0, { sorted: 1, lift: 0 })}</div>`, "members", { h: 680 });
+const fpPhoneTop = () => phone(`${bannerF(1)}${npF(1)}`, "you", { h: 844 });
+
+page({
+  title: "3F+: game hours on the profile, final",
+  lede: `One final mock that revises <b>3F</b> with the owner's notes. Kept from 3F: the <b>paper tag</b> that hangs off a spine when it lifts (hover, focus, or a tap on phones) with its hours, and each shelf's <b>sort</b> (Newest or Ranked, and Most played). New: each shelf's <b>Playtime total</b> printed under its heading, each Now playing book's <b>hours in its top-right corner</b> with the open Playthrough beside them, and the member's <b>Playtime across all games</b> in the banner (as in 3E). The shelves are the real profile's four: Favorites (on the podium), Completed, Backlog and Collection.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara, own profile"], ["Shelves", "as shipped: podium Favorites, 52px spines, month or platform tags"]],
+  surfaces: [{ id: "s3fp", title: "3F+ · Profile game hours", sub: "/members/[id] · the final mock", brief: `Spine heights stay decorative and never encode hours. A shelf's total counts each game's Playtime once, even if it sits on the shelf twice (Backlog and Collection allow it). Metaphor has no open Playthrough (it was abandoned), so its corner shows the hours alone.`,
+    options: [
+      { code: "3F+", short: "Final", title: "Tags, totals, corners and the banner", idea: `<b>Banner</b>: 6,912 h of Playtime beside the Completed count. <b>Now playing</b>: "180 h · Playthrough 14 h" in each book's top-right corner. <b>Shelves</b>: each heading carries its Playtime ("Completed" over "5,240 h"), with the sort under it; a lifted spine shows its paper tag.`,
+        desk: ["Desktop · Persona 3 Reload lifted on Completed", fpDesk()], phone: ["Phone · a tapped spine shows the tag", fpPhone()],
+        more: [["Completed sorted Most played, Baldur's Gate 3 lifted", fpSorted()], ["Phone · the banner and Now playing corners", fpPhoneTop(), "ph"]],
+        notes: [`On a phone the tag stays until another spine is tapped or the page scrolls; a second tap opens the game.`, `The banner total counts every game once, across every list and none.`] },
+    ] }],
+});
+
+</script></body></html>

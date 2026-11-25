@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playtime Control Final</title>
+<meta name="description" content="2D+F: the final game page Playtime control, a light chip with a + segment beside the list button.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="sa-kit.css">
+<script src="sa-kit.js"></script>
+<style>
+/* ---------- the shipped list control (shelf actions 1A, www#178) ---------- */
+/* ---------- 1A: split button + state chips ---------- */
+.act{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.split{display:inline-flex;flex:none}
+.split .btn:first-child{border-radius:2.4px 0 0 2.4px}
+.split .btn.ic{border-radius:0 2.4px 2.4px 0;box-shadow:inset 1px 0 0 rgb(11 11 13/.4)}
+.split.open .btn.ic{box-shadow:inset 1px 0 0 rgb(11 11 13/.4),0 0 0 3px rgb(255 212 0/.3)}
+.yst{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px;border-radius:2px;background:rgb(11 11 13/.55);box-shadow:inset 0 0 0 1px rgb(244 244 240/.22);font:700 .8rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+.yst svg.lucide{width:14px;height:14px;color:var(--dim)}
+.yst b{font:400 1rem/1 Anton;letter-spacing:0}
+.act .none{font:700 .82rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-left:4px}
+.menu{width:410px}
+.pfoot{border-top:1px solid var(--border);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;align-items:center}
+.pshell .act{margin-top:14px}
+.pshell .split{display:flex;width:100%}
+.pshell .split .btn:first-child{flex:1}
+
+
+/* ---------- Playtime ---------- */
+.ptchip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 11px;border-radius:2.4px;box-shadow:inset 0 0 0 1.5px var(--fg);background:rgb(11 11 13/.55);color:var(--fg);font:800 .84rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;position:relative}
+.ptchip svg.lucide{width:16px;height:16px;color:var(--dim)}
+.ptchip b{font:400 1.25rem/1 Anton;letter-spacing:0}
+.ptchip .sep{width:1px;height:18px;background:rgb(244 244 240/.3)}
+.ptchip .pt{color:var(--dim)}
+.ptchip .pt b{font-size:1rem;color:var(--fg)}
+.ptchip .fl{width:8px;height:8px;border-radius:50%;background:var(--hl)}
+.ptchip.open{box-shadow:inset 0 0 0 1.5px var(--hl),0 0 0 3px rgb(255 212 0/.3)}
+.ptchip.none{box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px;color:var(--dim);background:transparent}
+.yst.clock b{font-size:1rem}
+.yst .fl{width:7px;height:7px;border-radius:50%;background:var(--hl)}
+.ptl{display:inline-flex;align-items:baseline;gap:6px;font:800 .8rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim);text-decoration:underline;text-decoration-color:var(--gotm);text-decoration-thickness:2px;text-underline-offset:4px;white-space:nowrap}
+.ptl b{font:400 1.2rem/1 Anton;color:var(--fg);letter-spacing:0}
+.ptl .fl{width:7px;height:7px;border-radius:50%;background:var(--hl);align-self:center;margin-left:2px}
+.spt{display:inline-flex;flex:none}
+.spt .btn:first-child{border-radius:2.4px 0 0 2.4px}
+.spt .btn.ic{border-radius:0 2.4px 2.4px 0;box-shadow:inset 0 0 0 1px rgb(141 141 135/.6);margin-left:-1px}
+.spt .btn b{font:400 1.2rem/1 Anton;letter-spacing:0}
+.ptsub{display:flex;align-items:center;gap:8px;margin-top:10px;font:700 .8rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.ptsub b{color:var(--fg)}
+.ptsub .dot{width:8px;height:8px;border-radius:50%;background:var(--hl)}
+.states .fr.ph{max-width:390px}
+/* the editor */
+.ed{width:460px}
+.ed .tot,.sheet .tot,.sside .tot{display:flex;align-items:baseline;gap:10px;margin:2px 0 10px}
+.ed .tot b,.sheet .tot b,.sside .tot b{font:400 2.6rem/.85 Anton}
+.ed .tot span,.sheet .tot span,.sside .tot span{font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.mis{border:1.5px solid var(--hl);border-radius:3px;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start;margin-bottom:6px}
+.mis>svg.lucide{color:var(--hl);margin-top:2px;width:16px;height:16px}
+.mis p{color:var(--dim);font-size:.88rem;line-height:1.4}
+.mis p b{color:var(--fg);font-weight:600}
+.mis .acts{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.stag{display:inline-flex;align-items:center;gap:6px;font:800 .78rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+.stag svg.lucide{width:14px;height:14px;color:var(--faint)}
+.stag em{font-style:normal;color:var(--faint);font-weight:700}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.srow>.stag{grid-column:1;grid-row:1}
+.srow .d{grid-column:1;grid-row:2;color:var(--dim);font-size:.84rem;min-width:0}
+.srow .d small{font:700 .7rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-left:4px}
+.srow .ac{grid-column:1/-1;grid-row:3;display:flex;gap:6px;margin-top:4px}
+.srow .ac:empty{display:none}
+.srow .h{grid-column:2;grid-row:1/3;font:400 1.45rem/1 Anton;text-align:right}
+.srow.flag{background:rgb(255 212 0/.07);padding-left:8px;padding-right:8px;margin:0 -8px}
+.ptb{margin-top:14px;background:var(--muted);border-radius:3px;padding:12px 14px}
+.ptb .h6{display:flex;align-items:center;gap:8px;font:400 1.2rem/1 Anton;text-transform:uppercase}
+.ptb .h6 .open{margin-left:auto;font:800 .7rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--bg);background:var(--fg);padding:4px 6px 3px;border-radius:2px}
+.ptb .clock{font:400 3.2rem/.85 Anton;margin-top:10px}
+.ptb .clock small{font-size:.42em;color:var(--faint);margin:0 4px 0 2px}
+.ptb p{font-size:.86rem;color:var(--dim);margin-top:6px}
+.ptb p b{color:var(--fg);font-weight:600}
+.ptb .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ptb .past{margin-top:10px;border-top:1px solid var(--bs);padding-top:8px;display:flex;justify-content:space-between;font:700 .74rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.ptb .past b{font:400 1.05rem/1 Anton;color:var(--fg)}
+.edit{background:var(--muted);border-radius:3px;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:inset 0 0 0 1px var(--hl);margin-top:6px}
+.edit .fld{width:84px}
+/* side sheet (2A's), anchored to the page */
+.sside{position:absolute;top:0;right:0;bottom:0;width:480px;z-index:30;background:var(--card);border-left:2px solid var(--fg);padding:20px 22px;box-shadow:-24px 0 60px rgb(0 0 0/.6);overflow:hidden}
+.sside h5{font:400 1.9rem/.9 Anton;text-transform:uppercase;padding-bottom:10px;border-bottom:2px solid var(--fg);display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.sside h5 .x{margin-left:auto;color:var(--faint)}
+.dimall{position:absolute;inset:0;z-index:25;background:rgb(0 0 0/.55)}
+.empty-ed p{color:var(--dim);font-size:.9rem;margin-top:4px}
+.empty-ed .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ptctl{display:inline-flex;align-items:stretch;height:36px;border-radius:2.4px;box-shadow:inset 0 0 0 1.5px var(--fg);background:rgb(11 11 13/.55);flex:none}
+.ptctl .seg1{display:inline-flex;align-items:center;gap:7px;padding:0 11px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--fg);white-space:nowrap;border-radius:2.4px 0 0 2.4px}
+.ptctl .seg1 svg.lucide{width:16px;height:16px;color:var(--dim)}
+.ptctl .seg1 b{font:400 1.25rem/1 Anton;letter-spacing:0}
+.ptctl .seg1 .sep{width:1px;height:18px;background:rgb(244 244 240/.3)}
+.ptctl .seg1 .pt{color:var(--dim)}.ptctl .seg1 .pt b{font-size:1rem;color:var(--fg)}
+.ptctl .seg1 .fl{width:8px;height:8px;border-radius:50%;background:var(--hl)}
+.ptctl .seg2{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:34px;border-left:1px solid rgb(244 244 240/.35);color:var(--fg);border-radius:0 2.4px 2.4px 0;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase}
+.ptctl .seg2 svg.lucide{width:16px;height:16px}
+.ptctl .seg2.solo{width:auto;padding:0 12px;border-left:0;border-radius:2.4px}
+.ptctl .open{background:rgb(244 244 240/.12);box-shadow:inset 0 0 0 1.5px var(--hl)}
+.ptctl.none{box-shadow:none;outline:1.5px dashed var(--bs);outline-offset:-1.5px;background:transparent}
+.ptctl.none .seg2{color:var(--dim)}
+.qa{width:380px}
+.flab2{display:block;font:700 .78rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:10px 0 6px}
+.qrow{display:flex;align-items:center;gap:8px}
+.sheet .qrow,.sheet .bt{display:flex}
+</style></head>
+<body><script>
+const S = FF6;
+const val = (s, k) => s[k] && (k === "done" ? s.done.length : true);
+/* ---------- 1A ---------- */
+const stChips = (s) => [
+  s.np && `<span class="yst">${ic("gamepad-2")}Playing since ${s.np.short}</span>`,
+  s.done.length && `<span class="yst">${ic("flag")}Completed <b>×${s.done.length}</b></span>`,
+  s.bl && `<span class="yst">${ic("hourglass")}In Backlog</span>`,
+  s.fav && `<span class="yst">${ic("heart")}Favorite <b>No. ${s.fav.rank}</b></span>`,
+  s.col && `<span class="yst">${ic("archive")}${s.col.own}</span>`,
+].filter(Boolean).join("");
+const primary = (s) => (s.np ? [ic("flag"), "Log a completion"] : s.done.length ? [ic("flag"), "Log another completion"] : [ic("gamepad-2"), "Start playing"]);
+const splitA = (s, open, ph) => { const [i, t] = primary(s); return `<span class="split ${open ? "open" : ""}"><span class="btn hl">${i}${t}</span><span class="btn hl ic" aria-label="All your lists">${ic("chevron-down")}</span></span>`; };
+const menuRows = (s, hov) => LISTS5.map((l) => {
+  const on = val(s, l.k);
+  const go = l.k === "done" ? `<span class="go ${on ? "" : "add"}">${ic("plus")}${on ? "Log another" : "Log one"}</span>` : on ? `<span class="go">${ic("pencil")}Edit</span>` : `<span class="go add">${ic("plus")}Add</span>`;
+  return `<div class="mr ${on ? "on" : ""} ${hov === l.k ? "hov" : ""}"><span class="mi">${on ? ic("check") : ic(l.i)}</span><span class="nm"><b>${l.n}</b><small>${stateLine(s, l.k) || "Not on it"}</small></span>${go}</div>`;
+}).join("");
+const menuA = (s, hov, cls = "") => `<div class="pop menu ${cls}"><h5>Your lists<small>Final Fantasy VI</small></h5>${menuRows(s, hov)}<div class="pfoot"><span class="tl">Your Completed list</span><span class="faint lb">${ic("keyboard")} ↑ ↓ to move</span></div></div>`;
+const actA = (s, open, ph) => `<div class="act">${open ? `<span class="anc">${splitA(s, 1)}${menuA(s, "done")}</span>` : splitA(s, 0, ph)}${s.np || s.done.length || s.fav || s.col ? stChips(s) : `<span class="none">Not on your lists</span>`}</div>`;
+const menuSheet = (s) => `<h5>Your lists<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5>${menuRows(s)}`;
+
+/* ---------- Mara's Final Fantasy VI Playtime ---------- */
+const hrs = (h) => `${Number(h).toLocaleString("en-GB")} h`;
+const SRC = { steam: ["Steam", "monitor"], ra: ["RetroAchievements", "joystick"], psn: ["PSN", "gamepad-2"], man: ["Manual", "pencil"] };
+const srcTag = (k, plat = "") => `<span class="stag">${ic(SRC[k][1])}${SRC[k][0]}${plat ? `<em>${plat}</em>` : ""}</span>`;
+const SOURCES = [
+  { s: "steam", plat: "PC", d: "Pixel Remaster", w: "today 06:00", h: 42 },
+  { s: "ra", plat: "SNES", d: "Final Fantasy III (US)", w: "today 06:00", h: 48 },
+  { s: "psn", plat: "PS4", d: "Final Fantasy VI", w: "new on 3 Nov", h: 29, flag: 1 },
+  { s: "man", plat: "Switch", d: "“From my save file”", w: "set 2 Nov", h: 30 },
+  { s: "man", plat: "PS4", d: "“Old note from 2023”", w: "set 14 Mar 2024", h: 31, flag: 1 },
+];
+const TOTAL = SOURCES.reduce((a, x) => a + x.h, 0);
+const srow = (x, o = {}) => `<div class="srow ${x.flag ? "flag" : ""}">${srcTag(x.s, x.plat)}<div class="d">${x.d}<small>${x.w}</small></div>${x.s === "man" && !o.noAct ? `<div class="ac"><span class="btn xs">${ic("plus")}Add time</span><span class="btn xs">Set total</span><span class="btn xs gh ic" title="Remove">${ic("trash-2")}</span></div>` : `<div class="ac"></div>`}<span class="h">${hrs(x.h)}</span></div>`;
+const mismatch = `<div class="mis">${ic("triangle-alert")}<p><b>PSN now reports 29 h on PS4; your manual PS4 entry says 31 h.</b> Both count, so PS4 may be in twice.</p><div class="acts"><span class="btn xs hl">Keep PSN's 29 h</span><span class="btn xs">Keep my 31 h</span><span class="btn xs gh">Keep both</span></div></div>`;
+const ptBlock = (o = {}) => `<div class="ptb"><div class="h6">Playthrough<span class="open">Open</span></div><div class="clock">14<small>h</small>20<small>m</small></div>
+<p>Since <b>9 Nov</b>, when you added it to Now Playing. Counted from <b>166 h</b>. Logging a completion closes it.</p>
+<div class="acts"><span class="btn xs hl">${ic("flag")}Log a completion</span><span class="btn xs">${ic("pencil")}Set its total</span><span class="btn xs ds">Abandon</span></div>
+<div class="past"><span>Before · Mar 2019 · Main Story</span><b>38 h</b></div></div>`;
+const editorBody = (o = {}) => `<div class="tot"><b>${hrs(TOTAL)}</b><span>Final Fantasy VI · every source added up</span></div>${mismatch}
+${SOURCES.map((x, i) => srow(x) + (o.editAt === i ? `<div class="edit"><span class="seg sm"><span class="on">Add time</span><span>Set total</span></span><div class="fld focus"><span class="v">+ 3</span><span class="caret"></span></div><span class="faint" style="font-size:.82rem">30 h to 33 h</span><span class="btn xs hl" style="margin-left:auto">Save</span></div>` : "")).join("")}
+<div style="margin-top:10px"><span class="btn sm">${ic("plus")}Add Manual Playtime</span></div>${o.noPt ? "" : ptBlock()}`;
+const popEd = (o = {}) => `<div class="pop ed ${o.cls || ""}"><h5>Your Playtime<span class="x">${ic("x")}</span></h5>${editorBody(o)}</div>`;
+const emptyEd = () => `<div class="pop ed empty-ed"><h5>Your Playtime<span class="x">${ic("x")}</span></h5><p>No Playtime on Final Fantasy VI yet. Link Steam, RetroAchievements or PSN in Settings and it fills in at the next Sync Window, or add your own.</p>
+<div class="edit" style="box-shadow:inset 0 0 0 1px var(--bs)"><span class="lb" style="color:var(--faint)">Platform</span><div class="fld" style="width:120px"><span class="v">Switch</span></div><div class="fld"><span class="v">12</span></div><span class="faint">h</span><span class="btn xs hl" style="margin-left:auto">Add</span></div>
+<div class="acts"><span class="btn sm">${ic("play")}Start a Playthrough</span><span class="tl">Link an account</span></div></div>`;
+/* the row: split button, then o.pt where the option puts Playtime, then the state chips */
+const row = (s, o = {}) => `<div class="act">${o.lead || ""}${splitA(s, 0, o.ph)}${o.pt || ""}${s.np || s.done.length || s.fav || s.col ? (o.chips || stChips(s)) : `<span class="none">Not on your lists</span>`}${o.tail || ""}</div>${o.under || ""}`;
+const EMPTYS = EMPTY;
+/* ================= 2D+F: the chip with a + segment ================= */
+const quickAdd = () => `<div class="pop qa"><h5>Add Playtime<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5>
+<span class="flab2">Platform</span><div class="fld"><span class="v">Switch · your Manual Playtime, 30 h</span><span class="end">${ic("chevron-down")}</span></div>
+<span class="flab2">Hours</span><div class="qrow"><span class="seg sm"><span class="on">Add</span><span>Set total</span></span><div class="fld focus" style="width:84px"><span class="v">3</span><span class="caret"></span></div><span class="faint" style="font-size:.86rem">30 h to 33 h</span></div>
+<p class="faint" style="font-size:.8rem;margin-top:10px">Steam, RetroAchievements and PSN fill in on their own; this is for play they don't see.</p>
+<div class="bt"><span class="btn sm gh">Cancel</span><span class="btn sm hl">Add 3 h</span></div></div>`;
+const ctl = (open, o = {}) => {
+  const main = o.none
+    ? ""
+    : `<span class="seg1 ${open === "ed" ? "open" : ""}">${ic("timer")}<b>${hrs(TOTAL)}</b><span class="sep"></span><span class="pt">Playthrough <b>14 h</b></span><span class="fl" title="1 to check"></span></span>`;
+  const plus = o.none ? `<span class="seg2 solo ${open === "qa" ? "open" : ""}">${ic("plus")}Add Playtime</span>` : `<span class="seg2 ${open === "qa" ? "open" : ""}" title="Add Playtime">${ic("plus")}</span>`;
+  return `<span class="anc"><span class="ptctl ${o.none ? "none" : ""}">${main}${plus}</span>${open === "ed" ? popEd() : open === "qa" ? quickAdd() : ""}</span>`;
+};
+const pDesk = (open, h = 760, s = S, o = {}) => G_DESK({ actions: row(s, { pt: ctl(open, o) }), plate: s === S ? { mine: 1 } : {}, h });
+const df1 = () => pDesk(null);
+const df2 = () => pDesk("qa", 900);
+const df3 = () => pDesk("ed", 1300);
+const df4 = () => pDesk(null, 760, EMPTYS, { none: 1 });
+const df5 = () => pDesk("qa", 900, EMPTYS, { none: 1 });
+const dfPh = () => G_PH({ actions: row(S, { pt: ctl(null), ph: 1 }), plate: { mine: 1 } });
+const dfPhEd = () => PSHEET(G_PH({ actions: row(S, { pt: ctl(null), ph: 1 }), plate: { mine: 1 } }), `<h5>Your Playtime<small>Final Fantasy VI</small><span class="x">${ic("x")}</span></h5>${editorBody().replace(/<div class="ptb">[\s\S]*$/, "")}<p class="faint" style="font-size:.82rem;margin-top:10px">Your Playthrough card follows the sources.</p>`);
+const dfPhQa = () => PSHEET(G_PH({ actions: row(S, { pt: ctl(null), ph: 1 }), plate: { mine: 1 } }), quickAdd().replace('<div class="pop qa">', "<div>").replace(/<\/div>$/, "</div>"), 844);
+
+page({
+  title: "2D+F: Playtime by your lists, final",
+  lede: `One final mock mixing <b>2D</b> and <b>2F</b>. 2D's light, paper-outlined chip sits beside the list button ("180 h · Playthrough 14 h", a yellow dot while a mismatch waits) and opens the full editor. 2F's <b>+</b> is now a small segment of the same chip, so the two read as <b>one light split control</b>; it opens a quick <b>Add Playtime</b>: platform, hours, Add or Set total. 2F's line of caps under the row is gone; the Playthrough lives in the chip.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara"], ["Control", "shelf actions 1A as shipped, plus the Playtime chip"], ["Yellow", "the list button's next step, the mismatch dot, Save"]],
+  surfaces: [{ id: "s2df", title: "2D+F · Game page Playtime", sub: "/games/[id] · the final mock", brief: `The editor is 2D's: the total, the mismatch with its three ways out, every source with Add time / Set total on Manual rows, Add Manual Playtime, and the Playthrough card (Log a completion, Set its total, Abandon, the earlier one). With no Playthrough open the chip reads just "180 h".`,
+    options: [
+      { code: "2D+F", short: "Final", title: "One light split control", idea: `<b>Default</b>: the chip and its + segment beside the yellow split button. Pressing the <b>chip</b> opens the editor (a popover on desktop, a bottom sheet on phones); pressing <b>+</b> opens the quick Add Playtime. With <b>no Playtime yet</b> the control is just "+ Add Playtime".`,
+        desk: ["Desktop · default", df1()], phone: ["Phone · default", dfPh()],
+        more: [["Desktop · + pressed, quick Add Playtime", df2()], ["Desktop · the chip pressed, the editor", df3()], ["Desktop · no Playtime yet", df4()], ["Desktop · no Playtime yet, + Add Playtime pressed", df5()], ["Phone · the editor as a bottom sheet", dfPhEd(), "ph"], ["Phone · quick Add Playtime as a bottom sheet", dfPhQa(), "ph"]],
+        notes: [`The + defaults the platform to the one you last added to, else the one on your Now Playing entry.`, `Add and Set total both work on Manual Playtime only; a Provider's figure is never edited here.`] },
+    ] }],
+});
+
+</script></body></html>
