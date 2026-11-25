@@ -101,8 +101,22 @@ describe("gotyEligibilityAction", () => {
     expect(ids).toHaveLength(50);
   });
 
-  it("leaves every game pickable when the check fails", async () => {
-    answers = [[422, { error: "too_many_game_ids" }]];
+  it("sends only positive whole ids", async () => {
+    answers = [[200, { data: [] }]];
+    await gotyEligibilityAction(2026, [0, -3, 1.5, 4, Number.NaN]);
+    expect(calls.map((c) => c.path)).toEqual(["/api/v1/games/goty_eligibility?year=2026&game_ids=4"]);
+  });
+
+  it("leaves every game pickable when the check fails, logging a refusal", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    answers = [[422, { error: "invalid_game_ids" }]];
+    expect(await gotyEligibilityAction(2026, [1, 2])).toEqual({});
+    expect(log).toHaveBeenCalledWith(
+      "GOTY eligibility batch refused (422)",
+      expect.objectContaining({ year: 2026, ids: [1, 2], body: { error: "invalid_game_ids" } }),
+    );
+    log.mockRestore();
+    answers = [[503, {}]];
     expect(await gotyEligibilityAction(2026, [1, 2])).toEqual({});
     answers = ["throw"];
     expect(await gotyEligibilityAction(2026, [1, 2])).toEqual({});
@@ -114,6 +128,7 @@ describe("gotyEligibilityAction", () => {
     session = { principal: { id: "me" } };
     expect(await gotyEligibilityAction(12, [1])).toEqual({});
     expect(await gotyEligibilityAction(2026, [1.5])).toEqual({});
+    expect(await gotyEligibilityAction(2026, [0, -1])).toEqual({});
     expect(calls).toEqual([]);
   });
 });

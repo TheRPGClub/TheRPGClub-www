@@ -23,6 +23,14 @@ describe("envelope", () => {
     expect(envelope(gotyVote({ phase: "upcoming" }), vote.awards[2], 0, 0).figure).toBe("0");
   });
 
+  it("says 48+ releases played when the API's capped list is full", () => {
+    const release = (id: number) => ({ game: { game_id: id, title: `G${id}`, cover_url: null }, members_played: 1 });
+    const full = gotyVote({ phase: "upcoming", club_releases: Array.from({ length: 48 }, (_, i) => release(i + 1)) });
+    expect(envelope(full, full.awards[2], 0, 0).figure).toBe("48+");
+    const under = gotyVote({ phase: "upcoming", club_releases: Array.from({ length: 47 }, (_, i) => release(i + 1)) });
+    expect(envelope(under, under.awards[2], 0, 0).figure).toBe("47");
+  });
+
   it("counts the ballot's own votes once it has them, else the API's", () => {
     const vote = gotyVote({}, { gotm: { own_votes: [1] }, nr_gotm: { runoff_ballot: [1, 2], own_votes: [1, 2], own_runoff_votes: [] } });
     expect(ownVoteCount(vote.awards[0])).toBe(1);
@@ -149,9 +157,32 @@ describe("wonInLabel", () => {
     expect(wonInLabel([{ round_number: 9, month_year: "sept 2026" }])).toBe("Round 9 · September");
   });
 
-  it("keeps an unreadable month as it is, and drops a blank one", () => {
+  it("keeps an unreadable month as sent, without its year, and drops a blank one", () => {
     expect(wonInLabel([{ round_number: 9, month_year: "Summer special" }])).toBe("Round 9 · Summer special");
+    expect(wonInLabel([{ round_number: 9, month_year: "Summer special 2026" }])).toBe("Round 9 · Summer special");
+    expect(wonInLabel([{ round_number: 9, month_year: "2026" }])).toBe("Round 9");
     expect(wonInLabel([{ round_number: 9, month_year: "" }])).toBe("Round 9");
+  });
+
+  it("keeps one month slot per round, so months never shift onto the wrong round", () => {
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · ?, Oct");
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "Summer 2026" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · Summer, Oct");
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "" },
+        { round_number: 59, month_year: " " },
+      ]),
+    ).toBe("Rounds 51 + 59");
   });
 
   it("says nothing with no wins or no key", () => {

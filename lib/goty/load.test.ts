@@ -38,11 +38,42 @@ describe("loadGotyPage", () => {
     expect(data.nominations).toEqual([]);
   });
 
+  it("keeps a decided current vote, with next year's Year So Far and the history without it", async () => {
+    answers[LIST] = [200, { data: [{ year: 2027, phase: "upcoming" }, { year: 2026, phase: "decided" }, { year: 2025, phase: "decided" }] }];
+    answers[CURRENT] = [200, { data: { year: 2026, phase: "decided" } }];
+    answers["/api/v1/goty_votes/2027"] = [200, { data: { year: 2027, phase: "upcoming", club_releases: [] } }];
+    answers["/api/v1/goty_votes/2025"] = [200, { data: { year: 2025, phase: "decided" } }];
+    const data = await loadGotyPage();
+    expect(data.current?.year).toBe(2026);
+    expect(data.next?.year).toBe(2027);
+    expect(data.nominations).toEqual([]);
+    expect(data.history.map((v) => v.year)).toEqual([2025]);
+  });
+
+  it("reads no next year when it isn't upcoming or doesn't exist", async () => {
+    answers[LIST] = [200, { data: [{ year: 2026, phase: "decided" }] }];
+    answers[CURRENT] = [200, { data: { year: 2026, phase: "decided" } }];
+    expect((await loadGotyPage()).next).toBeNull();
+    answers[LIST] = [200, { data: [{ year: 2027, phase: "nominating" }, { year: 2026, phase: "decided" }] }];
+    expect((await loadGotyPage()).next).toBeNull();
+  });
+
+  it("says the server is down when the current read fails, keeping the history", async () => {
+    answers[LIST] = [200, { data: [{ year: 2025, phase: "decided" }] }];
+    answers[CURRENT] = [503, {}];
+    answers["/api/v1/goty_votes/2025"] = [200, { data: { year: 2025, phase: "decided" } }];
+    const data = await loadGotyPage();
+    expect(data.current).toBeNull();
+    expect(data.unreachable).toBe(true);
+    expect(data.history.map((v) => v.year)).toEqual([2025]);
+  });
+
   it("falls back to no current vote on a 404, keeping the history", async () => {
     answers[LIST] = [200, { data: [{ year: 2025, phase: "decided" }] }];
     answers["/api/v1/goty_votes/2025"] = [200, { data: { year: 2025, phase: "decided" } }];
     const data = await loadGotyPage();
     expect(data.current).toBeNull();
+    expect(data.unreachable).toBe(false);
     expect(data.history.map((v) => v.year)).toEqual([2025]);
   });
 });

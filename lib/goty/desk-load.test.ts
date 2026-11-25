@@ -66,4 +66,17 @@ describe("loadGotyDesk", () => {
     answers[NOMS] = "throw";
     expect(await loadGotyDesk()).toEqual({ state: "unreachable" });
   });
+
+  it("opens an explicit year even when the current read fails", async () => {
+    answers[CURRENT] = [503, {}];
+    expect(await loadGotyDesk("2026")).toMatchObject({ state: "ready", vote: { year: 2026 } });
+    // Not a year the list has: the desk needs current to pick, so it can't.
+    expect(await loadGotyDesk("1999")).toEqual({ state: "unreachable" });
+  });
+
+  it("opens on a decided Current GOTY Vote (results stay up 30 days)", async () => {
+    answers[LIST] = [200, { data: [{ year: 2027, phase: "upcoming" }, { year: 2026, phase: "decided" }] }];
+    answers[CURRENT] = [200, { data: { year: 2026, phase: "decided" } }];
+    expect(await loadGotyDesk()).toMatchObject({ state: "ready", vote: { year: 2026, phase: "decided" }, years: [2027, 2026] });
+  });
 });

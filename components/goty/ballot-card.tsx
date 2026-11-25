@@ -3,7 +3,7 @@ import type { GotyAwardKey, GotyBallotGame } from "@/lib/goty/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AwardCover } from "./award-cover";
-import { WonInNote } from "./won-in-note";
+import { BallotNote } from "./ballot-note";
 
 // The Award's own action: red for GOTM, violet for NR-GOTM, paper for Game
 // of the Year (each Award votes in its own ink).
@@ -11,8 +11,10 @@ export const AWARD_BUTTON = { gotm: "default", nr_gotm: "nr", game_of_the_year: 
 export const AWARD_TONE = { gotm: "gotm", nr_gotm: "nr", game_of_the_year: "inverse" } as const;
 
 // A candidate on an Award's ballot: a big cover ringed in the Award's ink
-// once voted (with a Voted chip), the title in Anton, who nominated it (Game
-// of the Year) or where it won ("Round 50 · January"), its count once counts show, and the Vote toggle.
+// once voted (with a Voted chip), the title in Anton, its note (who
+// nominated it for Game of the Year, or where a GOTM / NR-GOTM of the Year
+// candidate won: "Round 50 · January"), its count once counts show, and the
+// Vote toggle.
 export function BallotCard({
   award,
   game,
@@ -53,7 +55,7 @@ export function BallotCard({
         }
       />
       <h3 className="font-headline mt-0.5 text-[1.2rem] leading-[0.95] break-words sm:text-[1.6rem]">{game.title}</h3>
-      <WonInNote label={note} />
+      <BallotNote label={note} />
       <div className="mt-auto flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5">
         {count !== null && (
           <span className="flex items-baseline gap-1.25">

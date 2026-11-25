@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { GameHeadline } from "@/components/issue/game-cover";
 import { AWARD_TONE } from "./ballot-card";
 import { StoryTally } from "./story-tally";
-import { WonInNote } from "./won-in-note";
+import { BallotNote } from "./ballot-note";
 
 // A headline's second line in its Award's accent, as the Cover Story sets
 // a GOTM winner's in yellow and an NR-GOTM winner's in soft violet.
@@ -52,7 +52,7 @@ export function AwardStory({ vote, award, compact = false }: { vote: GotyVote; a
           className={cn("max-w-[11ch] text-5xl leading-[0.9]", compact ? "md:text-[3.2rem]" : "md:text-[5rem]")}
         />
         <DecidedLine line={decidedLine(award)} />
-        <WonInNote label={wonInFor(award, game.game_id)} className="-mt-1.5" />
+        <BallotNote label={wonInFor(award, game.game_id)} className="-mt-1.5" />
       </div>
       <StoryTally award={award} rows={rows} compact={compact} />
     </article>

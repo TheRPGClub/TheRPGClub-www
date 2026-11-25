@@ -11,7 +11,7 @@ import { GameHeadline } from "@/components/issue/game-cover";
 import { VoteError } from "@/components/voting/vote-error";
 import { AwardCover } from "./award-cover";
 import { AWARD_BUTTON } from "./ballot-card";
-import { WonInNote } from "./won-in-note";
+import { BallotNote } from "./ballot-note";
 
 // A tied Award's runoff as a face-off: the tied games side by side with
 // their first count between them ("11 / Tied / 11"), one vote each while
@@ -50,7 +50,7 @@ export function RunoffFaceOff({
               <div className="flex min-w-0 flex-1 flex-col gap-3">
                 <AwardCover award={award.award} game={game} ringed={mine} fallbackClassName="text-2xl" />
                 <GameHeadline as="h3" title={game.title} className="text-[1.4rem] leading-[0.9] sm:text-[2.6rem]" />
-                <WonInNote label={wonInLabel(game.won_in)} className="-mt-1.5" />
+                <BallotNote label={wonInLabel(game.won_in)} className="-mt-1.5" />
                 {open && (
                   <Button
                     type="button"

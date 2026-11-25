@@ -188,8 +188,9 @@ export async function readGoty<T>(path: string, empty: T): Promise<GotyRead<T>> 
 
 export const GOTY_VOTES_PATH = "/api/v1/goty_votes?per=100";
 export const gotyVotePath = (year: number) => `/api/v1/goty_votes/${year}`;
-// The Current GOTY Vote (api#482): the one taking nominations or votes, or
-// waiting on a tally, runoff or tie; else the upcoming one. 404 when none.
+// The Current GOTY Vote (api#482): the one taking nominations or votes,
+// else one waiting on a tally, runoff or tie, else one decided within the
+// last 30 days (its results stay up), else the upcoming one. 404 when none.
 export const GOTY_CURRENT_PATH = "/api/v1/goty_votes/current";
 export const gotyNominationsPath = (year: number) => `/api/v1/goty_votes/${year}/nominations?per=500`;
 
@@ -217,16 +218,26 @@ export const GOTY_ELIGIBILITY_MAX_IDS = 50;
 
 // Many games' eligibility for the year in one request, keyed by game id.
 // The API leaves unknown ids out, so items are matched by `game_id`, never
-// by position. A failed read is the empty map.
+// by position. A failed read is the empty map. Only positive whole ids are
+// sent (the API refuses the whole batch over one bad id), and a 422 is
+// logged: it means this side sent something the API won't take, a bug
+// rather than an outage.
 export async function fetchGotyEligibilities(
   year: number,
   gameIds: number[],
 ): Promise<Record<number, GotyEligibility>> {
-  const ids = [...new Set(gameIds)].slice(0, GOTY_ELIGIBILITY_MAX_IDS);
+  const ids = [...new Set(gameIds.filter((id) => Number.isInteger(id) && id > 0))].slice(0, GOTY_ELIGIBILITY_MAX_IDS);
   if (!ids.length) return {};
-  const items = await read<GotyEligibility[]>(
-    `/api/v1/games/goty_eligibility?year=${year}&game_ids=${ids.join(",")}`,
-    [],
-  );
-  return Object.fromEntries(items.map((item) => [item.game_id, item]));
+  try {
+    const res = await apiFetch(`/api/v1/games/goty_eligibility?year=${year}&game_ids=${ids.join(",")}`, { cache: "no-store" });
+    if (res.status === 422) {
+      const body = await res.json().catch(() => null);
+      console.error("GOTY eligibility batch refused (422)", { year, ids, body });
+    }
+    if (!res.ok) return {};
+    const items = ((await res.json()) as { data: GotyEligibility[] }).data;
+    return Object.fromEntries(items.map((item) => [item.game_id, item]));
+  } catch {
+    return {};
+  }
 }

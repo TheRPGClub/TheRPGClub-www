@@ -14,6 +14,13 @@ export function etDateTime(iso: string): string {
   return `${get("weekday")} ${get("day")} ${get("month")}, ${get("hour")}:${get("minute")} ${get("dayPeriod")} ET`;
 }
 
+// "Fri 15 Jan 2027, 12:00 PM ET": for a date read away from the banner's
+// countdown, where "Fri 1 Jan" alone could be last January or next.
+export function etDateTimeYear(iso: string): string {
+  const get = parts(iso, { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" });
+  return `${get("weekday")} ${get("day")} ${get("month")} ${get("year")}, ${get("hour")}:${get("minute")} ${get("dayPeriod")} ET`;
+}
+
 // "Fri 15 Jan"
 export function etDay(iso: string): string {
   const get = parts(iso, { weekday: "short", day: "numeric", month: "short" });

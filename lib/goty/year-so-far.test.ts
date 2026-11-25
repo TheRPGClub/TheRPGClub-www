@@ -39,9 +39,9 @@ describe("howItWorks", () => {
     const how = howItWorks(gotyVote({ phase: "upcoming" }));
     expect(how.awards.map((a) => a.name)).toEqual(["GOTM of the Year", "NR-GOTM of the Year", "Game of the Year"]);
     expect(how.dates).toEqual([
-      { step: "Nominations open", when: "Fri 1 Jan, 12:00 AM ET" },
-      { step: "Voting opens", when: "Fri 15 Jan, 12:00 PM ET" },
-      { step: "Voting closes", when: "Sun 17 Jan, 11:59 PM ET" },
+      { step: "Nominations open", when: "Fri 1 Jan 2027, 12:00 AM ET" },
+      { step: "Voting opens", when: "Fri 15 Jan 2027, 12:00 PM ET" },
+      { step: "Voting closes", when: "Sun 17 Jan 2027, 11:59 PM ET" },
       { step: "Runoff, if tied", when: "Right after voting closes, for a day" },
     ]);
     expect(how.rules.map((r) => r.title)).toEqual(["3 nominations each", "The vote cap", "Runoffs"]);
@@ -49,6 +49,6 @@ describe("howItWorks", () => {
 
   it("dates a scheduled runoff", () => {
     const how = howItWorks(gotyVote({ runoff_opens_at: "2027-01-18T05:00:00Z", runoff_closes_at: "2027-01-19T05:00:00Z" }));
-    expect(how.dates[3]).toEqual({ step: "Runoff", when: "Mon 18 Jan, 12:00 AM ET to Tue 19 Jan, 12:00 AM ET" });
+    expect(how.dates[3]).toEqual({ step: "Runoff", when: "Mon 18 Jan 2027, 12:00 AM ET to Tue 19 Jan 2027, 12:00 AM ET" });
   });
 });

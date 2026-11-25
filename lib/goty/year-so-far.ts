@@ -1,5 +1,5 @@
 import type { GotyAward, GotyAwardKey, GotyClubRelease, GotyVote } from "./types";
-import { etDateTime, etDayYear } from "./dates";
+import { etDateTimeYear, etDayYear } from "./dates";
 
 // The Year So Far (api#482): what an upcoming GOTY Vote shows before its
 // nominations open. The year's GOTM and NR-GOTM winners to date (they become
@@ -44,13 +44,15 @@ export interface HowItWorks {
 }
 
 // The how-it-works section: the three Awards, the vote's real dates and
-// the rules (3 nominations each, the vote cap, runoffs).
+// the rules (3 nominations each, the vote cap, runoffs). Every date carries
+// its year: the section is read in, say, November, and "Fri 1 Jan" alone
+// reads as the January just gone.
 export function howItWorks(vote: GotyVote): HowItWorks {
   const y = vote.year;
   const name = (key: GotyAwardKey, fallback: string) => vote.awards.find((a) => a.award === key)?.name ?? fallback;
   const runoff =
     vote.runoff_opens_at && vote.runoff_closes_at
-      ? `${etDateTime(vote.runoff_opens_at)} to ${etDateTime(vote.runoff_closes_at)}`
+      ? `${etDateTimeYear(vote.runoff_opens_at)} to ${etDateTimeYear(vote.runoff_closes_at)}`
       : `Right after voting closes, for a day`;
   return {
     awards: [
@@ -59,9 +61,9 @@ export function howItWorks(vote: GotyVote): HowItWorks {
       { key: "game_of_the_year", name: name("game_of_the_year", "Game of the Year"), text: `The best game first released in ${y}. Members nominate, then everyone votes on the nominations.` },
     ],
     dates: [
-      { step: "Nominations open", when: etDateTime(vote.nominations_open_at) },
-      { step: "Voting opens", when: etDateTime(vote.voting_opens_at) },
-      { step: "Voting closes", when: etDateTime(vote.voting_closes_at) },
+      { step: "Nominations open", when: etDateTimeYear(vote.nominations_open_at) },
+      { step: "Voting opens", when: etDateTimeYear(vote.voting_opens_at) },
+      { step: "Voting closes", when: etDateTimeYear(vote.voting_closes_at) },
       { step: vote.runoff_opens_at ? "Runoff" : "Runoff, if tied", when: runoff },
     ],
     rules: [

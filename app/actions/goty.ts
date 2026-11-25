@@ -136,5 +136,5 @@ export async function gotyEligibilityAction(
   gameIds: number[],
 ): Promise<Record<number, GotyEligibility>> {
   if (!(await getSession()) || !validYear(year)) return {};
-  return fetchGotyEligibilities(year, gameIds.filter(Number.isInteger));
+  return fetchGotyEligibilities(year, gameIds);
 }
