@@ -79,6 +79,8 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
   const zoneEls = useRef(new Map<Z, HTMLElement>());
   const rects = useRef(new Map<Id, SortRect>());
   const first = useRef<Map<Id, DOMRect> | null>(null);
+  // Only our own slides are cancelled: an item's entrance animation is its own.
+  const slides = useRef(new Map<Id, Animation>());
   const previewRef = useRef<SortZones<Z, Id> | null>(null);
   const ghost = useRef<{ el: HTMLElement; dx: number; dy: number } | null>(null);
   const pointer = useRef({ x: 0, y: 0 });
@@ -115,7 +117,8 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
   useLayoutEffect(() => {
     const before = first.current;
     first.current = null;
-    items.current.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+    slides.current.forEach((a) => a.cancel());
+    slides.current.clear();
     measure();
     if (!before || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     items.current.forEach((el, id) => {
@@ -124,7 +127,7 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
       if (!a || !b) return;
       const dx = a.left - b.left;
       const dy = a.top - b.top;
-      if (dx || dy) el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: "none" }], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+      if (dx || dy) slides.current.set(id, el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: "none" }], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" }));
     });
   }, [preview, measure]);
 
