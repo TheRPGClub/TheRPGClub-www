@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { GameHero } from "@/components/issue/game-hero";
-import type { Game, GotyAwardWon } from "@/lib/api/types";
+import type { GotyAwardWon } from "@/lib/api/goty";
+import type { Game } from "@/lib/api/types";
 
 const game = (over: Partial<Game> = {}): Game =>
   ({

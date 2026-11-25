@@ -10,6 +10,13 @@ export type GotyAwardKey = "gotm" | "nr_gotm" | "game_of_the_year";
 
 export const GOTY_AWARDS: readonly GotyAwardKey[] = ["gotm", "nr_gotm", "game_of_the_year"];
 
+// One Award a game won: GET /api/v1/games/:id `goty_awards` (the game page's
+// badge), newest year first.
+export interface GotyAwardWon {
+  year: number;
+  award: GotyAwardKey;
+}
+
 // Derived by the API at read time; `closed` is the gap between a window
 // closing and the sweep's tally.
 export type GotyPhase = "upcoming" | "nominating" | "voting" | "closed" | "runoff" | "tie" | "decided";

@@ -1,3 +1,4 @@
+import type { GotyAwardWon } from "@/lib/api/goty";
 import type { ReviewFacets } from "@/lib/reviews/facets";
 import type { Birthday } from "@/lib/birthday";
 
@@ -173,12 +174,6 @@ export interface Game {
   reviews_count?: number;
   created_at: string;
   updated_at: string;
-}
-
-// One GOTY Vote Award a game won (the game page's badge).
-export interface GotyAwardWon {
-  year: number;
-  award: "gotm" | "nr_gotm" | "game_of_the_year";
 }
 
 export interface GameImage {

@@ -1,4 +1,5 @@
-import type { GotyAwardWon } from "@/lib/api/types";
+import type { GotyAwardWon } from "@/lib/api/goty";
+import { GOTY_AWARD_SHORT } from "@/lib/goty-desk";
 
 // The game page's winner marks (design www#191, option B "Rosettes"): the
 // track's starburst, with ribbon tails when the game also holds that track's
@@ -13,14 +14,8 @@ export interface Rosette {
   award: { year: number; name: string; tail: string } | null;
 }
 
-export const GOTY_AWARD_NAMES: Record<GotyAwardWon["award"], string> = {
-  gotm: "GOTM of the Year",
-  nr_gotm: "NR-GOTM of the Year",
-  game_of_the_year: "Game of the Year",
-};
-
 function awardOf(won: GotyAwardWon): NonNullable<Rosette["award"]> {
-  const name = GOTY_AWARD_NAMES[won.award];
+  const name = GOTY_AWARD_SHORT[won.award];
   // The paper burst already reads "Game of the Year", so its tails carry the
   // year alone; a track burst reads "Game of the Month", so its tails name
   // the Award.
