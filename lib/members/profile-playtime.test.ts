@@ -9,9 +9,10 @@ import {
 } from "@/lib/members/profile-playtime";
 
 describe("formatPlaytime", () => {
-  it("is whole hours with a thousands separator", () => {
+  it("is whole hours with a thousands separator, a tenth under 10 h", () => {
     expect(formatPlaytime(180 * 60)).toBe("180 h");
-    expect(formatPlaytime(6912 * 60 + 59)).toBe("6,912 h");
+    expect(formatPlaytime(6912 * 60 + 20)).toBe("6,912 h");
+    expect(formatPlaytime(390)).toBe("6.5 h");
   });
 
   it("is minutes under an hour, and 0 h for none", () => {

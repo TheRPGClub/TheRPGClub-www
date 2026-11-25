@@ -1,3 +1,5 @@
+import { hoursText } from "@/lib/playtime/view";
+
 // Game hours on a member's profile (spec api#457, 3F+): the banner's total,
 // each shelf's total, and the hours on each Now Playing book and spine. The
 // API counts the minutes (Playtime::Ledger); this only reads and words them.
@@ -33,12 +35,9 @@ export function profilePlaytime(user: { playtime?: ProfilePlaytimePayload | null
 
 export type ProfilePlaytime = NonNullable<ReturnType<typeof profilePlaytime>>;
 
-// "180 h", "6,912 h"; under an hour "45 m". Whole hours, rounded down, as the
-// bot's receipts read the hour part.
+// "180 h", "6,912 h", "6.5 h", "45 m": the game page's wording (www#185).
 export function formatPlaytime(minutes: number | null | undefined): string {
-  const total = Math.max(0, Math.round(minutes ?? 0));
-  if (total > 0 && total < 60) return `${total} m`;
-  return `${Math.floor(total / 60).toLocaleString("en-US")} h`;
+  return hoursText(Math.max(0, Math.round(minutes ?? 0)));
 }
 
 // A shelf's order: its own ("default": Ranked, Newest, the member's queue)
