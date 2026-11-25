@@ -1,21 +1,17 @@
-import type { GameCompletion } from "@/lib/api/types";
-import {
-  completionMonth,
-  completionYear,
-} from "@/lib/members/member-lists";
+import type { CompletionMonth } from "@/lib/members/completions";
 
-// The completed-games page reads a year at a time. Its year dial is built
-// from the member's whole completion history (read at the API's largest page
-// size), since no endpoint summarises completions by year; the list itself is
-// the API's own `year`-filtered, paginated read.
+// The completed-games page reads a year at a time. Its year dial and month
+// jumps are built from the member's completions tallied by month (the API's
+// `completions/months`); the list itself is the API's own `year`-filtered,
+// paginated read.
 
 // "2026" | "unknown" | "all"
 export type CompletedYearKey = string;
 
 export interface CompletedYearInput {
   userId: string;
-  // The whole history, or null when it couldn't be read.
-  history: { entries: GameCompletion[]; capped: boolean } | null;
+  // Every month's tally, or null when they couldn't be read.
+  months: CompletionMonth[] | null;
   yearParam: string;
   q: string;
   pageSize: number;
@@ -27,18 +23,16 @@ const isYear = (key: string) => /^\d{4}$/.test(key);
 // list link, and each month of the shown year with the page it starts on.
 export function completedYearView({
   userId,
-  history,
+  months,
   yearParam,
   q,
   pageSize,
 }: CompletedYearInput) {
-  // Year → count, and year → its completions in the API's order.
+  // Year → count, summed from the month tallies.
   const yearCounts = new Map<string, number>();
-  const byYear = new Map<string, GameCompletion[]>();
-  for (const entry of history?.entries ?? []) {
-    const year = completionYear(entry.completed_at) ?? "unknown";
-    yearCounts.set(year, (yearCounts.get(year) ?? 0) + 1);
-    byYear.set(year, [...(byYear.get(year) ?? []), entry]);
+  for (const { month, count } of months ?? []) {
+    const year = month?.slice(0, 4) ?? "unknown";
+    yearCounts.set(year, (yearCounts.get(year) ?? 0) + count);
   }
   const yearKeys = [...yearCounts.keys()]
     .filter((k) => k !== "unknown")
@@ -48,7 +42,7 @@ export function completedYearView({
   const valid = (k: string) => k === "all" || k === "unknown" || isYear(k);
   const year: CompletedYearKey = valid(yearParam)
     ? yearParam
-    : q || !history || yearKeys.length === 0
+    : q || !months || yearKeys.length === 0
       ? "all"
       : yearKeys[0];
 
@@ -68,25 +62,21 @@ export function completedYearView({
     href: hrefFor(key, 1, ""),
   }));
 
-  // Newest completion first, then newest entry: the page order.
+  // The list runs newest completion first, so a year's months run newest
+  // first too, and each starts right after the ones before it.
   const monthJumps = new Map<string, { count: number; href: string }>();
   if (isYear(year) && !q) {
-    const inYear = [...(byYear.get(year) ?? [])].sort(
-      (a, b) =>
-        (b.completed_at ?? "").localeCompare(a.completed_at ?? "") ||
-        b.created_at.localeCompare(a.created_at),
-    );
-    inYear.forEach((entry, i) => {
-      const month = completionMonth(entry.completed_at);
-      if (!month) return;
-      const hit = monthJumps.get(month);
-      if (hit) hit.count += 1;
-      else
-        monthJumps.set(month, {
-          count: 1,
-          href: `${hrefFor(year, Math.floor(i / pageSize) + 1)}#m-${month}`,
-        });
-    });
+    const inYear = (months ?? [])
+      .filter((m): m is { month: string; count: number } => m.month?.startsWith(`${year}-`) ?? false)
+      .sort((a, b) => b.month.localeCompare(a.month));
+    let before = 0;
+    for (const { month, count } of inYear) {
+      monthJumps.set(month, {
+        count,
+        href: `${hrefFor(year, Math.floor(before / pageSize) + 1)}#m-${month}`,
+      });
+      before += count;
+    }
   }
 
   return { year, base, hrefFor, dialYears, monthJumps };

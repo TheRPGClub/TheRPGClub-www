@@ -62,13 +62,6 @@ export default async function CompletedGamesPage({
           displayName={displayName}
           manage={owner !== null}
         />
-
-        {page.cappedAt !== null && (
-          <p className="text-xs text-faint-foreground">
-            The year dial covers the first {page.cappedAt} completions only; use
-            All to reach the rest.
-          </p>
-        )}
       </MemberListTemplate>
     </ShelfManageProvider>
   );
