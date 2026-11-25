@@ -3,6 +3,7 @@ import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import { MemberShelf, PodiumSpines, Spine } from "@/components/issue/member-shelf";
 import { memberListHref } from "@/lib/members/member-lists";
 import { memberName } from "@/lib/achievements";
+import { addedMonth } from "@/lib/members/profile-playtime";
 import {
   MOST_PLAYED_BLURB,
   mobileCut,
@@ -25,7 +26,7 @@ export function FavoritesShelf({ profile }: { profile: MemberProfile }) {
     href: spineHref(entry),
     game: entry.game,
     title: entry.game?.title ?? "Unknown game",
-    lift: spineLift(entry.playtime_minutes, mostPlayed ? "Favorite" : `Favorite No. ${i + 1}`),
+    lift: spineLift(entry.playtime_minutes, favoriteSub(mostPlayed ? null : i + 1, addedMonth(entry.added_at))),
   });
   const podium = mostPlayed ? [] : favorites.slice(0, 3);
   return (
@@ -61,4 +62,11 @@ export function FavoritesShelf({ profile }: { profile: MemberProfile }) {
       ))}
     </MemberShelf>
   );
+}
+
+// A lifted favorite's tag: its rank (when ranked) and when it was added,
+// "Favorite No. 3 · Sep 26", or "Favorited Sep 26" sorted Most played.
+function favoriteSub(rank: number | null, added: string | null): string {
+  if (rank == null) return added ? `Favorited ${added}` : "Favorite";
+  return added ? `Favorite No. ${rank} · ${added}` : `Favorite No. ${rank}`;
 }

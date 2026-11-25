@@ -5,7 +5,7 @@ import { MemberShelf, Spine } from "@/components/issue/member-shelf";
 import { platformShort } from "@/components/issue/member-cover";
 import { memberListHref } from "@/lib/members/member-lists";
 import type { GameCollection, UserBacklog } from "@/lib/api/types";
-import type { ShelfPlaytime } from "@/lib/members/profile-playtime";
+import { addedMonth, type ShelfAdded, type ShelfPlaytime } from "@/lib/members/profile-playtime";
 import {
   MOST_PLAYED_BLURB,
   mobileCut,
@@ -18,14 +18,16 @@ import { ShelfPlaytimeHead } from "@/components/member/profile/shelf-playtime-he
 import { SpineLiftRow } from "@/components/member/profile/spine-lift-row";
 
 // The backlog and collection shelves: a row of spines, each tagged with its
-// platform (or, sorted Most played, its hours). These lists carry no dates,
-// so a lifted spine's tag names the platform.
+// platform (or, sorted Most played, its hours). A lifted spine's tag says
+// when it was added ("Backlogged Sep 26"); an older API without the date
+// names the platform instead ("Backlog · PS4").
 
-type Entry = (UserBacklog | GameCollection) & ShelfPlaytime;
+type Entry = (UserBacklog | GameCollection) & ShelfPlaytime & ShelfAdded;
 
-function spines(entries: Entry[], kind: "backlog" | "collection", mostPlayed: boolean, sub: string) {
+function spines(entries: Entry[], kind: "backlog" | "collection", mostPlayed: boolean, sub: string, verb: string) {
   return entries.map((entry, i) => {
     const platform = platformShort(entry.platform);
+    const added = addedMonth(entry.added_at);
     return (
       <Spine
         key={resolveEntryId(kind, entry) ?? i}
@@ -33,7 +35,7 @@ function spines(entries: Entry[], kind: "backlog" | "collection", mostPlayed: bo
         game={entry.game}
         title={entry.game?.title ?? "Unknown game"}
         tag={mostPlayed ? spineHours(entry.playtime_minutes) : platform}
-        lift={spineLift(entry.playtime_minutes, platform ? `${sub} · ${platform}` : sub)}
+        lift={spineLift(entry.playtime_minutes, added ? `${verb} ${added}` : platform ? `${sub} · ${platform}` : sub)}
         className={mobileCut(i)}
       />
     );
@@ -75,7 +77,7 @@ export function BacklogShelf({ profile }: { profile: MemberProfile }) {
       more={shelfMore(user.user_id, "backlog", counts.backlog, entries.length)}
       empty="Nothing queued up."
     >
-      {spines(entries, "backlog", mostPlayed, "Backlog")}
+      {spines(entries, "backlog", mostPlayed, "Backlog", "Backlogged")}
     </MemberShelf>
   );
 }
@@ -104,7 +106,7 @@ export function CollectionShelf({ profile }: { profile: MemberProfile }) {
       more={shelfMore(user.user_id, "collection", counts.collection, entries.length)}
       empty="No owned games tracked."
     >
-      {spines(entries, "collection", mostPlayed, "Owned")}
+      {spines(entries, "collection", mostPlayed, "Owned", "Added")}
     </MemberShelf>
   );
 }

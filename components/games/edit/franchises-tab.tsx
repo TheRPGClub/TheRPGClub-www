@@ -17,7 +17,7 @@ import { FranchiseLinkSearch } from "@/components/games/edit/franchise-link-sear
 import { FranchiseRowItem } from "@/components/games/edit/franchise-row";
 
 // The Franchises tab (design pick 7A, "staged rows, Save all"): the game's
-// Series read only, then one ruled row per Franchise with a Mainline / Other
+// Series read only, then one ruled row per Franchise with a Mainline / Spin-offs
 // control that hugs its two words, and Unlink. Changes stage with Edited,
 // Added and Removing marks, each with an Undo, until Save all.
 export function FranchisesTab({

@@ -24,6 +24,7 @@ import {
   profilePlaytime,
   shelfSortQuery,
   type NowPlayingPlaytime,
+  type ShelfAdded,
   type ShelfPlaytime,
   type ShelfSorts,
 } from "@/lib/members/profile-playtime";
@@ -101,7 +102,7 @@ export async function loadMemberProfile(
     await Promise.all([
       fetchMember<UserProfile & { journal?: JournaledGame[] } & Parameters<typeof profilePlaytime>[0]>(id),
       getSession(),
-      fetchPreview<UserFavorite & ShelfPlaytime>(
+      fetchPreview<UserFavorite & ShelfPlaytime & ShelfAdded>(
         `${users}/favorites?per=${SHELF_LIMIT}${shelfSortQuery(sorts.favorites)}`,
       ),
       showRead,
@@ -112,11 +113,11 @@ export async function loadMemberProfile(
             `${users}/completions?per=${SHELF_LIMIT}${shelfSortQuery(sorts.completed)}`,
             show.completed,
           ),
-          fetchPreview<UserBacklog & ShelfPlaytime>(
+          fetchPreview<UserBacklog & ShelfPlaytime & ShelfAdded>(
             `${users}/backlog?per=${SHELF_LIMIT}${shelfSortQuery(sorts.backlog)}`,
             show.backlog,
           ),
-          fetchPreview<GameCollection & ShelfPlaytime>(
+          fetchPreview<GameCollection & ShelfPlaytime & ShelfAdded>(
             `${users}/collections?per=${SHELF_LIMIT}${shelfSortQuery(sorts.collection)}`,
             show.collection,
           ),

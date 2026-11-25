@@ -39,7 +39,7 @@ const FF6: GamePlaytime = {
     ],
   },
   mismatches: [{ platform_id: 48, platform_name: "PS4", provider: "psn", provider_minutes: h(29), manual_playtime_id: 12, manual_minutes: h(31) }],
-  playthrough: { id: 7, started_at: "2026-11-09T18:12:00Z", minutes: 860, manual: false },
+  playthrough: { id: 7, started_at: "2026-11-09T18:12:00Z", minutes: 860, baseline_minutes: 166 * 60 - 20, manual: false },
   playthroughs: [
     { id: 5, started_at: "2019-01-20T10:00:00Z", ended_at: "2019-03-14T16:00:00Z", end_reason: "completed", minutes: h(38), manual: false, completion_id: 5 },
     { id: 6, started_at: "2025-10-01T10:00:00Z", ended_at: "2025-11-02T16:00:00Z", end_reason: "abandoned", minutes: h(6), manual: false, completion_id: null },
@@ -197,6 +197,11 @@ describe("the Playthrough card", () => {
       manual: false,
       minutes: 860,
     });
+  });
+
+  it("counts from the Playthrough's baseline, even when Playtime fell below it", () => {
+    const fell = { ...FF6, total_minutes: h(100), playthrough: { ...FF6.playthrough!, minutes: 0, baseline_minutes: h(150) } };
+    expect(playthroughView(fell)).toMatchObject({ countedFrom: "150 h", clock: { h: 0, m: 0 } });
   });
 
   it("counts from nothing for a total set by hand, and is null with none open", () => {

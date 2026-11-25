@@ -1,12 +1,28 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  addedMonth,
   formatPlaytime,
   parseShelfSorts,
   profilePlaytime,
   shelfSortHref,
   shelfSortQuery,
 } from "@/lib/members/profile-playtime";
+
+describe("addedMonth", () => {
+  it("reads an added date as the club's month and short year", () => {
+    expect(addedMonth("2026-09-26T15:00:00.000Z")).toBe("Sep 26");
+  });
+
+  it("uses the club's day: just past midnight UTC is still the day before in New York", () => {
+    expect(addedMonth("2026-10-01T02:00:00.000Z")).toBe("Sep 26");
+  });
+
+  it("is null without a date (an older API)", () => {
+    expect(addedMonth(undefined)).toBeNull();
+    expect(addedMonth("nonsense")).toBeNull();
+  });
+});
 
 describe("formatPlaytime", () => {
   it("is whole hours with a thousands separator, a tenth under 10 h", () => {

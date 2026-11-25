@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatPlaytime, progressMemberName, rankMeter, standing, type RankedMember } from "@/lib/franchises/progress";
+import { formatPlaytime, progressMemberAvatar, progressMemberName, rankMeter, standing, type RankedMember } from "@/lib/franchises/progress";
 import type { FranchiseProgressMeter } from "@/lib/franchises/types";
 import { cn } from "@/lib/utils";
 import { MemberMark } from "@/components/challenges/host-badge";
@@ -47,7 +47,7 @@ export function MemberRow({
           {rank}
         </span>
         <span className="flex min-w-0 items-center gap-2.5 font-semibold">
-          <MemberMark name={progressMemberName(member.user)} size={28} />
+          <MemberMark name={progressMemberName(member.user)} src={progressMemberAvatar(member.user)} size={28} />
           <span className="min-w-0">
             <span className="block truncate">{name}</span>
             {line && (

@@ -4,7 +4,7 @@ import type { GameFranchiseRef } from "@/lib/franchises/types";
 // Franchises (spec api#442, design pick 7A): the Franchises the game is in,
 // and whether it is Mainline in each. Regulars and above (the API's gate,
 // the same as Game Threads') stage links to Franchises found by name, new
-// Franchises made from the search, unlinks, and Mainline / Other per
+// Franchises made from the search, unlinks, and Mainline / Spin-offs per
 // Franchise; Save all creates, links, then sets Mainline, then unlinks.
 
 export type { GameFranchiseRef };
@@ -100,7 +100,7 @@ function tidy(s: FranchisesStage): FranchisesStage | undefined {
   return s.link.length + s.create.length + s.unlink.length + s.mainline.length > 0 ? s : undefined;
 }
 
-// Stages a link to `franchise`, as Other. Linking a Franchise staged for
+// Stages a link to `franchise`, as a Spin-off. Linking a Franchise staged for
 // unlink undoes the unlink; one already linked or staged does nothing.
 export function stageFranchiseLink(
   loaded: GameFranchiseRef[],
@@ -115,7 +115,7 @@ export function stageFranchiseLink(
   return { ...s, link: [...s.link, { franchise_id: franchise.franchise_id, name: franchise.name, mainline: false }] };
 }
 
-// Stages making a Franchise called `name` with the game in it, as Other.
+// Stages making a Franchise called `name` with the game in it, as a Spin-off.
 export function stageFranchiseCreate(staged: FranchisesStage | undefined, name: string): FranchisesStage | undefined {
   const s = staged ?? EMPTY;
   const trimmed = name.trim();
@@ -136,7 +136,7 @@ export function stageFranchiseUnlink(
 // A row's key: `f<id>` for a Franchise, `new:<name>` for one to make.
 export type FranchiseRowKey = string;
 
-// Sets the game Mainline (true) or Other (false) in the row's Franchise.
+// Sets the game Mainline (true) or a Spin-off (false) in the row's Franchise.
 export function stageFranchiseMainline(
   loaded: GameFranchiseRef[],
   staged: FranchisesStage | undefined,

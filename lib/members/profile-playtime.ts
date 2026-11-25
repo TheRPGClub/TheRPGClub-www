@@ -1,4 +1,6 @@
+import { monthShort } from "@/lib/members/member-lists";
 import { hoursText } from "@/lib/playtime/view";
+import { dayOf } from "@/lib/shelf-forms/dates";
 
 // Game hours on a member's profile (spec api#457, 3F+): the banner's total,
 // each shelf's total, and the hours on each Now Playing book and spine. The
@@ -8,6 +10,19 @@ import { hoursText } from "@/lib/playtime/view";
 export interface ShelfPlaytime {
   // 0 with no Playtime, null for an entry with no game.
   playtime_minutes?: number | null;
+}
+
+// The date the Backlog, Collection and Favorites list items were added
+// (the API's fix pass for spec api#457), for a lifted spine's tag.
+export interface ShelfAdded {
+  added_at?: string | null;
+}
+
+// "Sep 26": the club month and short year an entry was added, as the
+// Completed shelf words its dates. Null without one.
+export function addedMonth(addedAt: string | null | undefined): string | null {
+  const day = dayOf(addedAt);
+  return day ? `${monthShort(day.slice(0, 7))} ${day.slice(2, 4)}` : null;
 }
 
 export interface NowPlayingPlaytime extends ShelfPlaytime {
