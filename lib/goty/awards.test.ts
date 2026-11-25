@@ -16,9 +16,11 @@ describe("envelope", () => {
     expect(envelope(vote, vote.awards[0], 7, 0).status).toBe("games, no nominating");
   });
 
-  it("dates Game of the Year's nominations from the vote, not 1 January", () => {
-    const vote = gotyVote({ phase: "upcoming", nominations_open_at: "2027-01-08T17:00:00Z" });
-    expect(envelope(vote, vote.awards[2], 0, 0).status).toBe("nominations each, from 8 Jan");
+  it("holds the Year So Far while upcoming: winners so far, releases played (never nominations)", () => {
+    const vote = gotyVote({ phase: "upcoming", club_releases: [{ game: { game_id: 9, title: "G", cover_url: null }, members_played: 3 }] });
+    expect(envelope(vote, vote.awards[0], 0, 0)).toEqual({ figure: "4", status: "winners so far" });
+    expect(envelope(vote, vote.awards[2], 0, 0)).toEqual({ figure: "1", status: "releases played" });
+    expect(envelope(gotyVote({ phase: "upcoming" }), vote.awards[2], 0, 0).figure).toBe("0");
   });
 
   it("counts the ballot's own votes once it has them, else the API's", () => {

@@ -25,12 +25,52 @@ describe("GotyPage", () => {
     expect(render(null)).toContain("No GOTY Vote yet");
   });
 
-  it("upcoming: the countdown and the three Awards", () => {
-    const html = render(gotyVote({ phase: "upcoming", voting_open: false }), {});
+  it("upcoming: the countdown and the Year So Far in the three envelopes", () => {
+    const ballot = [{ game_id: 1, title: "Game 1", won_in: [{ round_number: 50, month_year: "January 2026" }] }];
+    const html = render(
+      gotyVote(
+        {
+          phase: "upcoming",
+          voting_open: false,
+          candidates_frozen_at: null,
+          club_releases: [
+            { game: { game_id: 20, title: "Release 20", cover_url: null }, members_played: 4 },
+            { game: { game_id: 21, title: "Release 21", cover_url: null }, members_played: 1 },
+          ],
+        },
+        { gotm: { ballot }, nr_gotm: { ballot: [] } },
+      ),
+    );
     expect(html).toContain("until nominations open");
-    expect(html).toContain("Every GOTM winner from the 2026 rounds");
-    expect(html).toContain("Members nominate up to 3 games first released in 2026");
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("winners so far");
+    expect(html).toContain("releases played");
+    expect(html).toContain("Round 50 · January");
+    expect(html).toContain("They become GOTM of the Year&#x27;s ballot");
+    expect(html).toContain("No 2026 NR-GOTM round has a winner yet");
+    expect(html).toContain("Release 20");
+    expect(html).toContain("members played");
+    expect(html).toContain("member played");
+    expect(html).toContain("These are not nominations");
+    expect(html).not.toMatch(/aria-label="Vote/);
     expect(html).not.toContain("Reminder");
+  });
+
+  it("upcoming: no release played yet, and how it works with the real dates", () => {
+    const html = render(gotyVote({ phase: "upcoming", voting_open: false, club_releases: [] }));
+    expect(html).toContain("No release from this year played yet.");
+    expect(html).toContain("How it works");
+    expect(html).toContain("Fri 1 Jan, 12:00 AM ET");
+    expect(html).toContain("Fri 15 Jan, 12:00 PM ET");
+    expect(html).toContain("3 nominations each");
+    expect(html).toContain("The vote cap");
+    expect(html).toContain("Runoffs");
+  });
+
+  it("never shows the Year So Far or how it works once nominations open", () => {
+    const html = render(gotyVote({ phase: "nominating", nominations_open: true, voting_open: false }));
+    expect(html).not.toContain("How it works");
+    expect(html).not.toContain("releases played");
   });
 
   it("nominating: the viewer's hand, the search and every nomination, no reasons", () => {

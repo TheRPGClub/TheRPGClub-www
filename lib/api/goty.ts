@@ -101,12 +101,23 @@ export interface GotyAward {
   winner?: GotyAwardWinner | null;
 }
 
-// GET /api/v1/goty_votes/:year.
+// A game first released in the year that members have completed, have in
+// Now Playing or have reviewed: the Year So Far's Game of the Year side
+// (api#482). Not a nomination.
+export interface GotyClubRelease {
+  game: GameSummary;
+  members_played: number;
+}
+
+// GET /api/v1/goty_votes/:year (and /current).
 export interface GotyVote extends GotyVoteSummary {
   candidates_frozen_at?: string | null;
   pending_ties: Partial<Record<GotyAwardKey, number[]>>;
   runoff_ties: Partial<Record<GotyAwardKey, number[]>>;
   awards: GotyAward[];
+  // Only while the phase is `upcoming` (absent otherwise): most members
+  // played first, at most 48.
+  club_releases?: GotyClubRelease[];
 }
 
 // A Game of the Year nomination (no reason: owner decision, api#473).
@@ -177,6 +188,9 @@ export async function readGoty<T>(path: string, empty: T): Promise<GotyRead<T>> 
 
 export const GOTY_VOTES_PATH = "/api/v1/goty_votes?per=100";
 export const gotyVotePath = (year: number) => `/api/v1/goty_votes/${year}`;
+// The Current GOTY Vote (api#482): the one taking nominations or votes, or
+// waiting on a tally, runoff or tie; else the upcoming one. 404 when none.
+export const GOTY_CURRENT_PATH = "/api/v1/goty_votes/current";
 export const gotyNominationsPath = (year: number) => `/api/v1/goty_votes/${year}/nominations?per=500`;
 
 // Every year's GOTY Vote, newest first.
@@ -186,6 +200,11 @@ export function fetchGotyVotes(): Promise<GotyVoteSummary[]> {
 
 export function fetchGotyVote(year: number): Promise<GotyVote | null> {
   return read<GotyVote | null>(gotyVotePath(year), null);
+}
+
+// The Current GOTY Vote in full, or null (none yet, or a failed read).
+export function fetchGotyCurrent(): Promise<GotyVote | null> {
+  return read<GotyVote | null>(GOTY_CURRENT_PATH, null);
 }
 
 // The year's Game of the Year nominations, oldest first.

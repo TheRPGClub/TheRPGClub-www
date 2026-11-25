@@ -1163,7 +1163,7 @@
            open one is a paper card with ink type and a paper diamond
            pointing down at its ballot. */
         [data-slot="tabs-list"][data-variant="envelope"] [data-slot="tabs-trigger"] {
-            @apply rounded-[3.2px] border-0 bg-card text-dim-foreground shadow-[inset_0_4px_0_var(--tab-ink)] transition-colors after:bottom-[-9px] after:left-1/2 after:size-4 after:-translate-x-1/2 after:rotate-45 after:bg-foreground hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight data-active:bg-foreground data-active:text-background data-active:after:opacity-100;
+            @apply rounded-[3.2px] border-0 bg-card text-dim-foreground shadow-[inset_0_4px_0_var(--tab-ink)] transition-colors after:bottom-[-9px] after:left-1/2 after:size-4 after:-translate-x-1/2 after:rotate-45 after:bg-foreground hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight data-active:bg-foreground data-active:hover:bg-foreground data-active:text-background data-active:after:opacity-100;
         }
         /* Toggle switcher: a switch between alternatives in place; the
            segment rests in the faint ink. */

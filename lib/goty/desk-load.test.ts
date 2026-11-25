@@ -15,6 +15,7 @@ const { loadGotyDesk } = await import("./desk-load");
 const LIST = "/api/v1/goty_votes?per=100";
 const VOTE = "/api/v1/goty_votes/2026";
 const NOMS = "/api/v1/goty_votes/2026/nominations?per=500";
+const CURRENT = "/api/v1/goty_votes/current";
 
 beforeEach(() => {
   answers = {
@@ -29,6 +30,21 @@ describe("loadGotyDesk", () => {
     expect(await loadGotyDesk()).toMatchObject({ state: "ready", vote: { year: 2026 }, years: [2026], nominations: [] });
   });
 
+  it("opens on the Current GOTY Vote; an explicit year still wins", async () => {
+    answers[LIST] = [200, { data: [{ year: 2027, phase: "upcoming" }, { year: 2026, phase: "nominating" }] }];
+    answers[CURRENT] = [200, { data: { year: 2026, phase: "nominating" } }];
+    answers["/api/v1/goty_votes/2027"] = [200, { data: { year: 2027, phase: "upcoming" } }];
+    answers["/api/v1/goty_votes/2027/nominations?per=500"] = [200, { data: [] }];
+    expect(await loadGotyDesk()).toMatchObject({ state: "ready", vote: { year: 2026 }, years: [2027, 2026] });
+    expect(await loadGotyDesk("2027")).toMatchObject({ state: "ready", vote: { year: 2027 } });
+    expect(await loadGotyDesk("1999")).toMatchObject({ state: "ready", vote: { year: 2026 } });
+  });
+
+  it("falls back to the newest year when none is current (404)", async () => {
+    answers[LIST] = [200, { data: [{ year: 2026, phase: "decided" }] }];
+    expect(await loadGotyDesk()).toMatchObject({ state: "ready", vote: { year: 2026 } });
+  });
+
   it("is empty when there is no GOTY Vote, or the Feature is Off (404)", async () => {
     answers[LIST] = [200, { data: [] }];
     expect(await loadGotyDesk()).toEqual({ state: "empty" });
@@ -39,6 +55,10 @@ describe("loadGotyDesk", () => {
   it("tells an outage from an empty desk", async () => {
     answers[LIST] = "throw";
     expect(await loadGotyDesk()).toEqual({ state: "unreachable" });
+    answers[LIST] = [200, { data: [] }];
+    answers[CURRENT] = [503, {}];
+    expect(await loadGotyDesk()).toEqual({ state: "unreachable" });
+    delete answers[CURRENT];
     answers[LIST] = [200, { data: [{ year: 2026, phase: "nominating" }] }];
     answers[VOTE] = [503, {}];
     expect(await loadGotyDesk()).toEqual({ state: "unreachable" });

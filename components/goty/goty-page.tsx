@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/templates/page-header";
 import { GotyBanner } from "./goty-banner";
 import { GotyHistory } from "./goty-history";
 import { UpcomingStage } from "./upcoming-stage";
+import { HowItWorks } from "./how-it-works";
 import { NominatingStage } from "./nominating-stage";
 import { AwardStage } from "./award-stage";
 import { DecidedStage } from "./decided-stage";
@@ -14,7 +15,8 @@ import { DecidedStage } from "./decided-stage";
 // time. A banner over the year's winner covers carries the clock and the
 // schedule; under it the stage for the phase (the three Awards, the
 // nominations, the Award envelopes and their ballots, the runoff face-off,
-// a cover story per decided Award); then every decided year.
+// a cover story per decided Award, or before nominations the Year So Far
+// and how it works); then every decided year.
 export function GotyPage({
   data,
   viewerId,
@@ -30,7 +32,7 @@ export function GotyPage({
       <div className="space-y-8">
         <PageHeader title="GOTY Vote" badge={badge} />
         <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
-          No GOTY Vote yet. Each year&apos;s vote is set up by 1 December.
+          No GOTY Vote yet. Each year&apos;s GOTY Vote starts on 1 January.
         </p>
         <GotyHistory years={history} />
       </div>
@@ -43,6 +45,7 @@ export function GotyPage({
     <div className="flex flex-col gap-6.5 md:gap-9">
       <GotyBanner vote={current} now={now} badge={badge} />
       {stage === "upcoming" && <UpcomingStage vote={current} />}
+      {stage === "upcoming" && <HowItWorks vote={current} />}
       {stage === "nominating" && (
         <NominatingStage vote={current} nominations={data.nominations} nominated={nominated} viewerId={viewerId} />
       )}

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import type { NominatedGame } from "@/lib/goty/awards";
-import { AWARD_INK, envelope, ownVoteCount } from "@/lib/goty/awards";
+import { envelope, ownVoteCount } from "@/lib/goty/awards";
 import type { GotyAwardKey, GotyVote } from "@/lib/goty/types";
 import { awardState, nextAward } from "@/lib/goty/view";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { AwardEnvelopeTab } from "./award-envelope-tab";
 import { AwardPanel } from "./award-panel";
 
 // Voting, counting and the runoff: the three Award envelopes switch the
@@ -29,25 +30,7 @@ export function AwardStage({
       <TabsList variant="envelope" aria-label="Awards" activateOnFocus>
         {vote.awards.map((a) => {
           const env = envelope(vote, a, nominated.length, ownVoteCount(a, local[a.award]));
-          return (
-            <TabsTrigger
-              key={a.award}
-              value={a.award}
-              style={{ "--tab-ink": AWARD_INK[a.award] } as CSSProperties}
-              className="grid h-auto grid-cols-1 content-start items-start justify-items-start gap-1.5 px-2 py-2.5 text-left whitespace-normal sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-3 sm:gap-y-1.5 sm:px-4 sm:py-3.5"
-            >
-              <span className="font-headline text-base leading-[0.9] sm:text-2xl">{a.name}</span>
-              {env.figure && (
-                <span className="font-headline text-[1.7rem] leading-[0.8] sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:self-center sm:text-[2.6rem]">
-                  {env.figure}
-                  {env.of && <span className="opacity-55">{env.of}</span>}
-                </span>
-              )}
-              <span className="font-label text-[0.7rem] font-extrabold tracking-[0.08em] uppercase sm:text-[0.82rem]">
-                {env.status}
-              </span>
-            </TabsTrigger>
-          );
+          return <AwardEnvelopeTab key={a.award} award={a} env={env} />;
         })}
       </TabsList>
       {vote.awards.map((a) => (

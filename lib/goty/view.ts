@@ -108,19 +108,25 @@ export interface TimelineTick {
 const SLOTS = [0, 30, 66, 82, 96];
 
 export function gotyTimeline(vote: GotyVoteSummary, now: number): { ticks: TimelineTick[]; now: number } {
-  // The sweep sets the year up by 1 December; a schedule moved earlier
-  // than that keeps a month before nominations open.
-  const opens = new Date(vote.nominations_open_at).getTime();
-  const setUp = new Date(Math.min(Date.UTC(vote.year, 11, 1, 5), opens - 31 * DAY_MS)).toISOString();
+  // A GOTY Vote exists from 1 January (ET) of its own year and shows the
+  // Year So Far until nominations open (api#482), so the line starts there.
+  const yearStart = new Date(Date.UTC(vote.year, 0, 1, 5)).toISOString();
   const runoffAt = vote.runoff_closes_at ?? new Date(new Date(vote.voting_closes_at).getTime() + DAY_MS).toISOString();
   const steps: [string, string][] = [
-    [setUp, "Set up"],
+    [yearStart, "The year so far"],
     [vote.nominations_open_at, "Nominations open"],
     [vote.voting_opens_at, "Voting opens"],
     [vote.voting_closes_at, "Voting closes"],
     [runoffAt, vote.runoff_opens_at ? "Runoff" : "Runoff, if tied"],
   ];
-  const ticks = steps.map(([iso, name], i) => ({ at: SLOTS[i], date: etShort(iso), name, major: i < 3 }));
+  const ticks = steps.map(([iso, name], i) => ({
+    at: SLOTS[i],
+    // The year's own 1 January carries its year, so it doesn't read as
+    // the next January's nominations.
+    date: i === 0 ? `${etShort(iso)} ${vote.year}` : etShort(iso),
+    name,
+    major: i < 3,
+  }));
   if (vote.phase === "decided") return { ticks, now: 100 };
   const times = steps.map(([iso]) => new Date(iso).getTime());
   let pos = 0;

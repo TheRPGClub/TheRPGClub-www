@@ -9,8 +9,8 @@ const SECTION = staffSection("goty");
 
 // /admin/goty, the GOTY Vote desk (www#194): the year's dates, a tie a
 // runoff left, and its Game of the Year nominations, each removable with a
-// reason the bot posts. Opens on the GOTY Vote still running (else the
-// newest); `?year=` picks another.
+// reason the bot posts. Opens on the Current GOTY Vote (api#482, else
+// the newest); `?year=` picks another.
 export default async function GotyDeskPage({ searchParams }: { searchParams: Promise<{ year?: string | string[] }> }) {
   const session = await requireAuth();
   if (!canUseTier(session.membership, SECTION.tier)) {
@@ -31,7 +31,7 @@ export default async function GotyDeskPage({ searchParams }: { searchParams: Pro
         >
           {down
             ? "Couldn't reach the club's server, so the GOTY Vote can't be read. Try again in a moment."
-            : "No GOTY Vote to run yet. The club creates each year's by December 1."}
+            : "No GOTY Vote to run yet. The club creates each year's on 1 January."}
         </p>
       </div>
     );

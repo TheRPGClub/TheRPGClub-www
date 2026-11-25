@@ -1,6 +1,5 @@
 import type { GameSummary, UserSummary } from "@/lib/api/types";
 import type { GotyAward, GotyAwardKey, GotyAwardResult, GotyDecidedBy, GotyNomination, GotyVote, GotyWonIn } from "./types";
-import { etShort } from "./dates";
 import { awardState, pageStage } from "./view";
 
 // Per-Award copy and numbers for /goty: the envelope's figure and status,
@@ -36,9 +35,10 @@ export function envelope(vote: GotyVote, award: GotyAward, nominatedGames: numbe
   const goty = award.award === "game_of_the_year";
   const stage = pageStage(vote);
   if (stage === "upcoming") {
+    // The Year So Far: releases members played, never nominations.
     return goty
-      ? { figure: "3", status: `nominations each, from ${etShort(vote.nominations_open_at)}` }
-      : { figure: String(award.ballot.length), status: "games on the ballot" };
+      ? { figure: String(vote.club_releases?.length ?? 0), status: "releases played" }
+      : { figure: String(award.ballot.length), status: "winners so far" };
   }
   if (stage === "nominating") {
     return goty

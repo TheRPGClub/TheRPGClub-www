@@ -7,6 +7,7 @@ export type {
   GotyAwardWinner,
   GotyBallotGame,
   GotyCastResult,
+  GotyClubRelease,
   GotyDecidedBy,
   GotyEligibility,
   GotyNomination,
