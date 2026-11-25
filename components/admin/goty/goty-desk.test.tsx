@@ -61,13 +61,26 @@ const render = (v: GotyVote, now: number) =>
   );
 
 describe("GotyDesk", () => {
-  it("while nominating: removable nominations and every date open", () => {
+  it("while nominating: removable nominations, the nominations' opening locked", () => {
     const html = render(vote(), OPENS - 3 * DAY);
     expect(html).toContain("GOTY Vote 2026 · Nominations open · 1 nomination · voting opens in 3 days");
     expect(html).toContain("Remove the nomination of Metaphor: ReFantazio by Mara");
     expect(html).toContain("Save dates");
-    expect(html).not.toMatch(/disabled=""[^>]*type="datetime-local"|type="datetime-local"[^>]*disabled=""/);
+    expect(html).toContain("Nominations have opened, so their opening stays.");
+    expect(html.match(/type="datetime-local"/g)).toHaveLength(3);
+    expect(html.match(/disabled=""[^>]*type="datetime-local"|type="datetime-local"[^>]*disabled=""/g)).toHaveLength(1);
     expect(html).not.toContain("tie break");
+  });
+
+  it("before nominations open: every date open", () => {
+    const html = render(vote({ phase: "upcoming", nominations_open: false }), Date.parse("2026-12-20T00:00:00Z"));
+    expect(html).not.toMatch(/disabled=""[^>]*type="datetime-local"|type="datetime-local"[^>]*disabled=""/);
+  });
+
+  it("is keyed by year, so switching years starts the desk afresh", () => {
+    const props = { years: [2026, 2025], nominations: [], viewerId: "1", viewerName: "Admin", now: OPENS };
+    expect(GotyDesk({ vote: vote(), ...props }).key).toBe("2026");
+    expect(GotyDesk({ vote: vote({ year: 2025 }), ...props }).key).toBe("2025");
   });
 
   it("while voting: the nominations are in and only the close moves", () => {

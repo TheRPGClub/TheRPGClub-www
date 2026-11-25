@@ -29,8 +29,11 @@ export function GotyDesk({
   now: number;
 }) {
   const ties = tiedAwards(vote);
+  // Keyed by year: moving between years on the year links is a soft
+  // navigation, and without the key the dates draft, the removed and held
+  // nominations and the tie pick would carry over to the other year.
   return (
-    <div className="flex flex-col">
+    <div key={vote.year} className="flex flex-col">
       <BackLink {...STAFF_DESK_BACK} />
       <header className="grid items-end gap-x-7 gap-y-1.5 border-b-2 border-foreground pb-3.5 md:grid-cols-[auto_minmax(0,1fr)]">
         <p aria-hidden className="font-headline text-[5.5rem] leading-[0.8] md:text-[8rem]">

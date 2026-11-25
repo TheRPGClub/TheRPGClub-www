@@ -21,6 +21,7 @@ export function BallotCard({
   voted,
   canVote,
   pending,
+  busy,
   onVote,
 }: {
   award: GotyAwardKey;
@@ -29,7 +30,10 @@ export function BallotCard({
   count: number | null;
   voted: boolean;
   canVote: boolean;
+  // This card's vote is being cast (its spinner).
   pending: boolean;
+  // Any vote on the Award is being cast: every Vote button waits.
+  busy: boolean;
   onVote: () => void;
 }) {
   return (
@@ -65,7 +69,7 @@ export function BallotCard({
             variant={voted ? "outline" : AWARD_BUTTON[award]}
             aria-pressed={voted}
             aria-label={`${voted ? "Voted" : "Vote"}: ${game.title}`}
-            disabled={pending}
+            disabled={busy}
             onClick={onVote}
             className="flex-1 sm:max-w-36"
           >

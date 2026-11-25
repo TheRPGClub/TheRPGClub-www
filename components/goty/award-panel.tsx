@@ -18,6 +18,7 @@ export function AwardPanel({
   viewerId,
   onNext,
   nextName,
+  onVotes,
 }: {
   vote: GotyVote;
   award: GotyAward;
@@ -25,6 +26,8 @@ export function AwardPanel({
   viewerId: string | undefined;
   onNext: () => void;
   nextName: string;
+  // The ballot's own votes as they change, for the envelope's count.
+  onVotes: (votes: number[]) => void;
 }) {
   const state = awardState(vote, award);
   switch (state) {
@@ -40,7 +43,7 @@ export function AwardPanel({
       );
     case "runoff":
     case "tie":
-      return <RunoffFaceOff vote={vote} award={award} open={state === "runoff"} />;
+      return <RunoffFaceOff vote={vote} award={award} open={state === "runoff" && vote.runoff_open} onVotes={onVotes} />;
     case "ballot":
     case "counting":
       return (
@@ -52,6 +55,7 @@ export function AwardPanel({
           open={state === "ballot"}
           onNext={onNext}
           nextName={nextName}
+          onVotes={onVotes}
         />
       );
   }

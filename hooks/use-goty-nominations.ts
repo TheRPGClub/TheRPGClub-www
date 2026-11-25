@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { nominateGotyAction, replaceGotyAction, withdrawGotyAction } from "@/app/actions/goty";
+import { nominateGotyAction, replaceGotyAction, withdrawGotyAction, type GotySwapResult } from "@/app/actions/goty";
 import type { GotyNomination } from "@/lib/goty/types";
 
 // The viewer's Game of the Year nominations on /goty: the game picked in
@@ -13,14 +13,23 @@ export function useGotyNominations(year: number) {
   const [picked, setPicked] = useState<{ game_id: number; title: string } | null>(null);
   const [replacing, setReplacing] = useState<GotyNomination | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // The nomination being withdrawn, so only its card shows the spinner.
+  const [withdrawing, setWithdrawing] = useState<number | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const run = (work: () => Promise<{ ok: boolean; error?: string }>) => {
+  const run = (work: () => Promise<Pick<GotySwapResult, "ok" | "error" | "restored">>) => {
     setError(null);
     startTransition(async () => {
       const result = await work();
+      setWithdrawing(null);
       if (!result.ok) {
         setError(result.error ?? "That didn't save. Try again.");
+        // A failed Swap withdrew the old nomination and put it back (a new
+        // id) or lost it: follow it, so a retry doesn't name a deleted id.
+        if (result.restored !== undefined) {
+          setReplacing(result.restored ?? null);
+          router.refresh();
+        }
         return;
       }
       setPicked(null);
@@ -58,7 +67,11 @@ export function useGotyNominations(year: number) {
       setError(null);
     },
     submit,
-    withdraw: (n: GotyNomination) => run(() => withdrawGotyAction(year, n.id)),
+    withdrawing,
+    withdraw: (n: GotyNomination) => {
+      setWithdrawing(n.id);
+      run(() => withdrawGotyAction(year, n.id));
+    },
   };
 }
 

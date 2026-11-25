@@ -10,8 +10,9 @@ export interface DeletedGotyNomination {
   jobId: number | null;
 }
 
-// The bot's notice in the nomination channel (job goty_nomination_deleted,
-// bot#1583), naming the GOTY Vote so it can't read as the month's round.
+// The bot's notice in the nomination channel (job goty_nomination_deleted),
+// worded as the bot posts it (buildGotyNominationDeletedNotice, bot#1583):
+// "@A deleted @B's GOTY Vote 2026 Game of the Year nomination "X". Reason: ..."
 export function GotyNominationNotice({
   vote,
   deleter,
@@ -30,8 +31,8 @@ export function GotyNominationNotice({
   const mention = "rounded-xs bg-foreground/12 px-1 font-semibold text-foreground";
   return (
     <p className={cn("text-[0.9rem] leading-[1.45] text-dim-foreground", className)}>
-      <span className={mention}>@{deleter}</span> removed <span className={mention}>@{nominator}</span>
-      &apos;s Game of the Year nomination{title && <> &ldquo;{title}&rdquo;</>} for {vote.name}. Reason:{" "}
+      <span className={mention}>@{deleter}</span> deleted <span className={mention}>@{nominator}</span>
+      &apos;s GOTY Vote {vote.year} Game of the Year nomination{title && <> &ldquo;{title}&rdquo;</>}. Reason:{" "}
       <span className="text-foreground">{reason}</span>
     </p>
   );

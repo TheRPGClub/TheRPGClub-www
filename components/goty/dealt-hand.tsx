@@ -1,4 +1,5 @@
 import { ArrowLeftRight, Loader2, Trash2 } from "lucide-react";
+import { nominationGame } from "@/lib/goty/awards";
 import type { GotyNomination } from "@/lib/goty/types";
 import type { GotyNominationsState } from "@/hooks/use-goty-nominations";
 import { cn } from "@/lib/utils";
@@ -26,7 +27,7 @@ export function DealtHand({
       {[0, 1, 2].map((i) => {
         const n = mine[i];
         const tilt = cn("motion-safe:transition-transform", TILT[i]);
-        if (!n?.game) {
+        if (!n) {
           return (
             <li key={i} className={cn("flex min-h-[170px] flex-col justify-center gap-1 rounded-[3.2px] border-2 border-dashed border-highlight p-4.5", tilt)}>
               <span className="font-headline text-[2.6rem] leading-[0.8] text-highlight">0{i + 1}</span>
@@ -36,6 +37,7 @@ export function DealtHand({
           );
         }
         const swapping = state.replacing?.id === n.id;
+        const game = nominationGame(n);
         return (
           <li
             key={n.id}
@@ -45,9 +47,9 @@ export function DealtHand({
               tilt,
             )}
           >
-            <AwardCover award="game_of_the_year" game={n.game} fallbackClassName="text-base" />
+            <AwardCover award="game_of_the_year" game={game} fallbackClassName="text-base" />
             <div className="min-w-0">
-              <h3 className="font-headline text-[1.6rem] leading-[0.95] break-words">{n.game.title}</h3>
+              <h3 className="font-headline text-[1.6rem] leading-[0.95] break-words">{game.title}</h3>
               {swapping && <p className="mt-1.5 text-[0.82rem] text-highlight">Pick the game to put in its place below.</p>}
               {open && (
                 <div className="-ml-2 mt-2 flex flex-wrap gap-0.5">
@@ -56,7 +58,7 @@ export function DealtHand({
                     {swapping ? "Keep it" : "Swap"}
                   </Button>
                   <Button type="button" variant="destructive-ghost" size="sm" disabled={state.pending} onClick={() => state.withdraw(n)}>
-                    {state.pending ? <Loader2 className="motion-safe:animate-spin" /> : <Trash2 data-icon="inline-start" />}
+                    {state.withdrawing === n.id ? <Loader2 className="motion-safe:animate-spin" /> : <Trash2 data-icon="inline-start" />}
                     Withdraw
                   </Button>
                 </div>

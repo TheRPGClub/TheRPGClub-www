@@ -62,14 +62,16 @@ export const GOTY_DATE_LABEL: Record<GotyDateKey, string> = {
   voting_closes_at: "Voting closes",
 };
 
-// Which dates may still move, as the API rules them (api#474): nothing once
-// decided; once voting has opened only the close, and only while the main
-// vote is still open; before that all three.
+// Which dates may still move, as the API rules them (api#474 and its review
+// fixes): nothing once decided; the nominations' opening only until
+// nominations open; once voting has opened only the close, and only until
+// the main vote is tallied (`closed_at`).
 export function movableDates(vote: GotyVoteSummary, now: number): ReadonlySet<GotyDateKey> {
-  if (vote.decided_at || vote.phase === "decided") return new Set();
+  if (vote.decided_at || vote.phase === "decided" || vote.closed_at) return new Set();
   if (now >= Date.parse(vote.voting_opens_at)) {
     return vote.phase === "voting" ? new Set(["voting_closes_at"]) : new Set();
   }
+  if (now >= Date.parse(vote.nominations_open_at)) return new Set(["voting_opens_at", "voting_closes_at"]);
   return new Set(GOTY_DATE_KEYS);
 }
 
@@ -78,6 +80,17 @@ export function datesLockedReason(vote: GotyVoteSummary, now: number): string | 
   if (movableDates(vote, now).size > 0) return null;
   if (vote.decided_at || vote.phase === "decided") return `${vote.name} is decided, so its dates are history.`;
   return `Voting for ${vote.name} has closed, so its dates can't move.`;
+}
+
+// The Dates card's note: why some dates are shut, or how a move behaves.
+export function datesNote(vote: GotyVoteSummary, now: number): string {
+  const movable = movableDates(vote, now);
+  const locked = datesLockedReason(vote, now);
+  if (locked) return locked;
+  if (!movable.has("voting_opens_at")) return "Voting has opened, so only the close can move. Closing it now ends the vote early.";
+  const follows = "Move the vote's opening alone and its close follows to the end of that weekend.";
+  if (!movable.has("nominations_open_at")) return `Your time. Nominations have opened, so their opening stays. ${follows}`;
+  return `Your time. ${follows}`;
 }
 
 export type GotyDates = Record<GotyDateKey, number>;

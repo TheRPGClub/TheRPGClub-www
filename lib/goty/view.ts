@@ -30,8 +30,8 @@ export type AwardState =
   | "uncontested" // one candidate: it wins at close, nothing to vote on
   | "empty" // no candidates: not given this year
   | "counting" // voting closed, tally pending
-  | "runoff" // in its runoff, open for votes
-  | "tie" // tied (runoff pending, closed or tied again): an admin decides
+  | "runoff" // in its runoff: open for votes, or closed with its count to come
+  | "tie" // tied again after the runoff (or with none): an admin decides
   | "won"; // has its winner
 
 export function awardState(vote: GotyVote, award: GotyAward): AwardState {
@@ -40,7 +40,9 @@ export function awardState(vote: GotyVote, award: GotyAward): AwardState {
   if (frozen && award.ballot.length === 0) return "empty";
   if (award.ballot.length === 1) return "uncontested";
   if (vote.phase === "voting") return "ballot";
-  if (award.runoff_ballot.length > 0 && vote.runoff_open) return "runoff";
+  // `closed` after a runoff is the gap before the runoff's tally: the
+  // runoff may still find a winner, so it isn't yet a tie for an admin.
+  if (award.runoff_ballot.length > 0 && (vote.runoff_open || vote.phase === "closed")) return "runoff";
   if (award.pending_tie.length > 0 || award.runoff_ballot.length > 0) return "tie";
   if (vote.phase === "decided") return "empty";
   return "counting";
@@ -78,6 +80,14 @@ export function gotyClock(vote: GotyVoteSummary, now: number): GotyClock {
       if (vote.runoff_open && vote.runoff_closes_at) {
         const h = left(at(vote.runoff_closes_at), HOUR_MS);
         return { figure: String(h), label: `${h === 1 ? "Hour" : "Hours"} of runoff left`, detail: `Closes ${etDateTime(vote.runoff_closes_at)}` };
+      }
+      const opens = vote.runoff_opens_at ? Date.parse(vote.runoff_opens_at) : NaN;
+      if (opens > now) {
+        const h = left(opens - now, HOUR_MS);
+        return { figure: String(h), label: `${h === 1 ? "Hour" : "Hours"} until the runoff`, detail: `Opens ${etDateTime(vote.runoff_opens_at!)}` };
+      }
+      if (vote.phase === "closed") {
+        return { figure: "0", label: "Runoff closed", detail: "Counting the runoff. The results land here shortly." };
       }
       return { figure: "0", label: "Runoff closed", detail: "A tie is left for an admin to settle." };
     }
@@ -124,6 +134,17 @@ export function gotyTimeline(vote: GotyVoteSummary, now: number): { ticks: Timel
     pos = i === times.length - 1 ? 100 : SLOTS[i];
   }
   return { ticks, now: Math.max(0, Math.min(100, pos)) };
+}
+
+// The line under a runoff's face-off: open until when, counting, or tied
+// again and waiting for an admin.
+export function runoffNote(vote: GotyVote, award: GotyAward, games: number, open: boolean): string {
+  if (open && vote.runoff_closes_at) {
+    const these = games === 2 ? "two" : String(games);
+    return `${award.name} tied in the first count. The runoff has only these ${these}, one vote each, until ${etDateTime(vote.runoff_closes_at)}. If it ties again, an admin decides.`;
+  }
+  if (vote.phase === "closed") return `${award.name}'s runoff has closed. Its votes are being counted.`;
+  return `${award.name} is still tied. An admin picks the winner.`;
 }
 
 export const AWARD_ORDER: readonly GotyAwardKey[] = ["gotm", "nr_gotm", "game_of_the_year"];

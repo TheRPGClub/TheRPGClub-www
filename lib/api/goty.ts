@@ -143,16 +143,37 @@ async function read<T>(path: string, empty: T): Promise<T> {
   }
 }
 
+// A read that tells "nothing there" from "couldn't ask": a 404 (no such
+// year, or the goty_vote Feature Off for this caller) is the empty value,
+// while any other refusal or an unreachable API is a failure, so a desk can
+// say the server is down rather than that there is nothing to run.
+export type GotyRead<T> = { ok: true; data: T } | { ok: false };
+
+export async function readGoty<T>(path: string, empty: T): Promise<GotyRead<T>> {
+  try {
+    const res = await apiFetch(path, { cache: "no-store" });
+    if (res.status === 404) return { ok: true, data: empty };
+    if (!res.ok) return { ok: false };
+    return { ok: true, data: ((await res.json()) as { data: T }).data };
+  } catch {
+    return { ok: false };
+  }
+}
+
+export const GOTY_VOTES_PATH = "/api/v1/goty_votes?per=100";
+export const gotyVotePath = (year: number) => `/api/v1/goty_votes/${year}`;
+export const gotyNominationsPath = (year: number) => `/api/v1/goty_votes/${year}/nominations?per=500`;
+
 // Every year's GOTY Vote, newest first.
 export function fetchGotyVotes(): Promise<GotyVoteSummary[]> {
-  return read<GotyVoteSummary[]>("/api/v1/goty_votes?per=100", []);
+  return read<GotyVoteSummary[]>(GOTY_VOTES_PATH, []);
 }
 
 export function fetchGotyVote(year: number): Promise<GotyVote | null> {
-  return read<GotyVote | null>(`/api/v1/goty_votes/${year}`, null);
+  return read<GotyVote | null>(gotyVotePath(year), null);
 }
 
 // The year's Game of the Year nominations, oldest first.
 export function fetchGotyNominations(year: number): Promise<GotyNomination[]> {
-  return read<GotyNomination[]>(`/api/v1/goty_votes/${year}/nominations?per=500`, []);
+  return read<GotyNomination[]>(gotyNominationsPath(year), []);
 }

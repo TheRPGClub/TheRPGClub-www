@@ -1,5 +1,6 @@
 import type { GameSummary, UserSummary } from "@/lib/api/types";
 import type { GotyAward, GotyAwardKey, GotyAwardResult, GotyDecidedBy, GotyNomination, GotyVote } from "./types";
+import { etShort } from "./dates";
 import { awardState, pageStage } from "./view";
 
 // Per-Award copy and numbers for /goty: the envelope's figure and status,
@@ -13,8 +14,22 @@ export interface Envelope {
   status: string;
 }
 
+// A nomination's game, or a stand-in when the API sent none (a game since
+// removed from GameDB), so the nomination still shows and can be withdrawn.
+export function nominationGame(n: GotyNomination): GameSummary {
+  return n.game ?? { game_id: n.gamedb_game_id, title: `Game #${n.gamedb_game_id}`, cover_url: null };
+}
+
 export function gameTitle(award: GotyAward, id: number): string {
   return award.ballot.find((g) => g.game_id === id)?.title ?? award.winner?.game?.title ?? "A game";
+}
+
+// How many votes the envelope counts as the viewer's: the ballot's own
+// (optimistic) list once it has reported one, else the API's, from the
+// runoff while the Award has one.
+export function ownVoteCount(award: GotyAward, local?: readonly number[]): number {
+  if (local) return local.length;
+  return award.runoff_ballot.length ? award.own_runoff_votes.length : award.own_votes.length;
 }
 
 export function envelope(vote: GotyVote, award: GotyAward, nominatedGames: number, ownVotes: number): Envelope {
@@ -22,7 +37,7 @@ export function envelope(vote: GotyVote, award: GotyAward, nominatedGames: numbe
   const stage = pageStage(vote);
   if (stage === "upcoming") {
     return goty
-      ? { figure: "3", status: "nominations each, from 1 Jan" }
+      ? { figure: "3", status: `nominations each, from ${etShort(vote.nominations_open_at)}` }
       : { figure: String(award.ballot.length), status: "games on the ballot" };
   }
   if (stage === "nominating") {
@@ -41,6 +56,7 @@ export function envelope(vote: GotyVote, award: GotyAward, nominatedGames: numbe
     case "ballot":
       return { figure: String(ownVotes), of: `/${award.cap}`, status: "your votes" };
     case "runoff":
+      if (!vote.runoff_open) return { figure: "", status: "Counting the runoff" };
       return { figure: String(ownVotes), of: "/1", status: "runoff vote" };
     case "tie":
       return { figure: String(award.pending_tie.length || award.runoff_ballot.length), status: "tied · an admin decides" };

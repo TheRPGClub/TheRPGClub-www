@@ -18,7 +18,14 @@ export interface GotyResult<T> {
   error?: string;
 }
 
+// A failed Swap also says what became of the nomination it was replacing:
+// put back (a new nomination, with a new id) or lost.
+export interface GotySwapResult extends GotyResult<GotyNomination> {
+  restored?: GotyNomination | null;
+}
+
 const SIGNED_OUT = { ok: false, error: "You must be signed in." } as const;
+const UNREACHABLE = "Couldn't reach the club's server. Try again.";
 
 async function refused<T>(res: Response, year: number): Promise<GotyResult<T>> {
   const body = await res.json().catch(() => null);
@@ -29,19 +36,32 @@ function validYear(year: number): boolean {
   return Number.isInteger(year) && year > 1900 && year < 3000;
 }
 
-async function postNomination(year: number, gameId: number): Promise<GotyResult<GotyNomination>> {
-  const res = await apiFetch(`/api/v1/goty_votes/${year}/nominations`, {
-    method: "POST",
-    body: JSON.stringify({ data: { gamedb_game_id: gameId } }),
-  });
-  if (!res.ok) return refused(res, year);
-  return { ok: true, data: ((await res.json()) as { data: GotyNomination }).data };
+// One write to the API: its refusal in the member's words, and an
+// unreachable API (or an unreadable answer) as a plain failure rather than
+// a throw into the error boundary.
+async function send<T>(year: number, path: string, init: RequestInit, read: (res: Response) => Promise<T>): Promise<GotyResult<T>> {
+  try {
+    const res = await apiFetch(path, init);
+    if (!res.ok) return refused(res, year);
+    return { ok: true, data: await read(res) };
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
 }
 
-async function deleteNomination(year: number, id: number): Promise<GotyResult<null>> {
-  const res = await apiFetch(`/api/v1/goty_votes/${year}/nominations/${id}`, { method: "DELETE" });
-  if (!res.ok) return refused(res, year);
-  return { ok: true, data: null };
+const dataOf = async <T,>(res: Response) => ((await res.json()) as { data: T }).data;
+
+function postNomination(year: number, gameId: number): Promise<GotyResult<GotyNomination>> {
+  return send(
+    year,
+    `/api/v1/goty_votes/${year}/nominations`,
+    { method: "POST", body: JSON.stringify({ data: { gamedb_game_id: gameId } }) },
+    dataOf<GotyNomination>,
+  );
+}
+
+function deleteNomination(year: number, id: number): Promise<GotyResult<null>> {
+  return send(year, `/api/v1/goty_votes/${year}/nominations/${id}`, { method: "DELETE" }, async () => null);
 }
 
 export async function nominateGotyAction(year: number, gameId: number): Promise<GotyResult<GotyNomination>> {
@@ -62,13 +82,15 @@ export async function withdrawGotyAction(year: number, nominationId: number): Pr
 
 // Swap one of the member's nominations for another game. The API has no
 // edit (a nomination is only its game), so this withdraws the old one and
-// nominates the new; if the new one is refused, the old one goes back.
+// nominates the new; if the new one is refused, the old one goes back (as a
+// new nomination, returned in `restored`), and if even that fails the
+// member is told the old one is gone.
 export async function replaceGotyAction(
   year: number,
   nominationId: number,
   oldGameId: number,
   newGameId: number,
-): Promise<GotyResult<GotyNomination>> {
+): Promise<GotySwapResult> {
   if (!(await getSession())) return SIGNED_OUT;
   if (!validYear(year) || ![nominationId, oldGameId, newGameId].every(Number.isInteger)) {
     return { ok: false, error: "Pick a game." };
@@ -76,9 +98,15 @@ export async function replaceGotyAction(
   const removed = await deleteNomination(year, nominationId);
   if (!removed.ok) return { ok: false, error: removed.error };
   const added = await postNomination(year, newGameId);
-  if (!added.ok) await postNomination(year, oldGameId);
   revalidatePath("/goty");
-  return added;
+  if (added.ok) return added;
+  const restore = await postNomination(year, oldGameId);
+  if (restore.ok) return { ok: false, error: added.error, restored: restore.data ?? null };
+  return {
+    ok: false,
+    restored: null,
+    error: `${added.error ?? "The new game was refused."} Your old nomination was withdrawn and couldn't be put back, so nominate it again if you still want it.`,
+  };
 }
 
 export async function castGotyVoteAction(
@@ -88,13 +116,14 @@ export async function castGotyVoteAction(
 ): Promise<GotyResult<GotyCastResult>> {
   if (!(await getSession())) return SIGNED_OUT;
   if (!validYear(year) || !Number.isInteger(gameId)) return { ok: false, error: "Pick a game." };
-  const res = await apiFetch(`/api/v1/goty_votes/${year}/votes`, {
-    method: "POST",
-    body: JSON.stringify({ data: { award, gamedb_game_id: gameId } }),
-  });
-  if (!res.ok) return refused(res, year);
-  revalidatePath("/goty");
-  return { ok: true, data: ((await res.json()) as { data: GotyCastResult }).data };
+  const result = await send(
+    year,
+    `/api/v1/goty_votes/${year}/votes`,
+    { method: "POST", body: JSON.stringify({ data: { award, gamedb_game_id: gameId } }) },
+    dataOf<GotyCastResult>,
+  );
+  if (result.ok) revalidatePath("/goty");
+  return result;
 }
 
 // Whether each game may be nominated for the year, for greying out search

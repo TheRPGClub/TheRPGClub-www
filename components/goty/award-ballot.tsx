@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import type { NominatedGame } from "@/lib/goty/awards";
 import { gameTitle, nominatedBy, votesFor } from "@/lib/goty/awards";
 import type { GotyAward, GotyVote } from "@/lib/goty/types";
-import { useGotyVotes } from "@/hooks/use-goty-votes";
+import { useGotyVotes, useReportVotes } from "@/hooks/use-goty-votes";
 import { Button } from "@/components/ui/button";
 import { NoticeSlip } from "@/components/issue/notice-slip";
 import { VoteError } from "@/components/voting/vote-error";
@@ -23,6 +23,7 @@ export function AwardBallot({
   open,
   onNext,
   nextName,
+  onVotes,
 }: {
   vote: GotyVote;
   award: GotyAward;
@@ -31,8 +32,10 @@ export function AwardBallot({
   open: boolean;
   onNext: () => void;
   nextName: string;
+  onVotes: (votes: number[]) => void;
 }) {
   const votes = useGotyVotes({ year: vote.year, award: award.award, initial: award.own_votes, cap: award.cap });
+  useReportVotes(votes.votes, onVotes);
   const goty = award.award === "game_of_the_year";
   const nominations = new Map(nominated.map((n) => [n.game.game_id, n]));
   const hidden = award.tally.counts_hidden;
@@ -43,7 +46,10 @@ export function AwardBallot({
           {open ? (
             <>
               Vote for up to <b className="text-foreground">{award.cap}</b> of {award.ballot.length}. Voting for a game
-              again takes the vote back. Counts stay hidden until close.
+              again takes the vote back.{" "}
+              {hidden
+                ? "Counts stay hidden until close."
+                : "Members can't see the counts until close; you see them as staff."}
             </>
           ) : (
             "Voting has closed. The votes are being counted."
@@ -70,6 +76,7 @@ export function AwardBallot({
             voted={votes.votes.includes(game.game_id)}
             canVote={open}
             pending={votes.pending === game.game_id}
+            busy={votes.busy}
             onVote={() => votes.vote(game.game_id)}
           />
         ))}

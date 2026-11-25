@@ -16,3 +16,18 @@ export function castLocally(votes: readonly number[], gameId: number, cap: numbe
   }
   return { votes: [...votes, gameId], dropped: null };
 }
+
+// The ballot's local votes against the API's list from a refresh. The
+// API's list is taken only while no vote is in flight; one that lands
+// mid-flight is noted as seen but not applied, so a refresh started by an
+// earlier vote can't overwrite the vote being cast (the in-flight vote's
+// own answer settles the list). Null when nothing changes.
+export function syncFromServer(
+  local: { votes: number[]; synced: string },
+  server: readonly number[],
+  inFlight: boolean,
+): { votes: number[]; synced: string } | null {
+  const key = server.join(",");
+  if (key === local.synced) return null;
+  return { votes: inFlight ? local.votes : [...server], synced: key };
+}

@@ -12,7 +12,10 @@ import { cn } from "@/lib/utils";
 const INK: Record<RosetteBurst, { fill: string; band: string; letters: string }> = {
   gotm: { fill: "fill-gotm", band: "bg-gotm text-gotm-foreground", letters: "text-[1.45rem]" },
   nr_gotm: { fill: "fill-nr", band: "bg-nr text-nr-foreground", letters: "text-[1.2rem]" },
-  goty: { fill: "fill-foreground", band: "bg-foreground text-background", letters: "text-[1.6rem]" },
+  // Game of the Year's band carries the year alone, sitting higher on the
+  // burst than a track's, so its lettering is set smaller and lifted clear
+  // of the band.
+  goty: { fill: "fill-foreground", band: "bg-foreground text-background", letters: "-top-3 text-[1.4rem]" },
 };
 
 function Tails({ burst, tail, year }: { burst: RosetteBurst; tail: string; year: number }) {

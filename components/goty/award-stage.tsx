@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 import type { NominatedGame } from "@/lib/goty/awards";
-import { AWARD_INK, envelope } from "@/lib/goty/awards";
+import { AWARD_INK, envelope, ownVoteCount } from "@/lib/goty/awards";
 import type { GotyAwardKey, GotyVote } from "@/lib/goty/types";
 import { awardState, nextAward } from "@/lib/goty/view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,11 +21,14 @@ export function AwardStage({
   viewerId: string | undefined;
 }) {
   const [award, setAward] = useState<GotyAwardKey>(() => openingAward(vote));
+  // Each ballot's own votes as it reports them, so an envelope counts the
+  // vote the moment it is cast, as the ballot below it does.
+  const [local, setLocal] = useState<Partial<Record<GotyAwardKey, number[]>>>({});
   return (
     <Tabs value={award} onValueChange={(v) => setAward(v as GotyAwardKey)} className="flex flex-col gap-5">
       <TabsList variant="envelope" aria-label="Awards" activateOnFocus>
         {vote.awards.map((a) => {
-          const env = envelope(vote, a, nominated.length, a.runoff_ballot.length ? a.own_runoff_votes.length : a.own_votes.length);
+          const env = envelope(vote, a, nominated.length, ownVoteCount(a, local[a.award]));
           return (
             <TabsTrigger
               key={a.award}
@@ -56,6 +59,7 @@ export function AwardStage({
             viewerId={viewerId}
             onNext={() => setAward(nextAward(a.award))}
             nextName={vote.awards.find((x) => x.award === nextAward(a.award))?.name ?? ""}
+            onVotes={(votes) => setLocal((l) => ({ ...l, [a.award]: votes }))}
           />
         </TabsContent>
       ))}

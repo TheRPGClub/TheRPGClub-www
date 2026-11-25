@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { decidedLine, envelope, nominatedBy, nominatedGames, resultRows } from "./awards";
-import { castLocally } from "./cast";
+import { decidedLine, envelope, nominatedBy, nominatedGames, nominationGame, ownVoteCount, resultRows } from "./awards";
+import { castLocally, syncFromServer } from "./cast";
 import { eligibilityNote, gotyError } from "./copy";
 import { award, gotyVote, nomination } from "./test-fixtures";
 
@@ -14,6 +14,23 @@ describe("envelope", () => {
     const vote = gotyVote({ phase: "nominating" });
     expect(envelope(vote, vote.awards[2], 7, 0)).toEqual({ figure: "7", status: "games nominated so far" });
     expect(envelope(vote, vote.awards[0], 7, 0).status).toBe("games, no nominating");
+  });
+
+  it("dates Game of the Year's nominations from the vote, not 1 January", () => {
+    const vote = gotyVote({ phase: "upcoming", nominations_open_at: "2027-01-08T17:00:00Z" });
+    expect(envelope(vote, vote.awards[2], 0, 0).status).toBe("nominations each, from 8 Jan");
+  });
+
+  it("counts the ballot's own votes once it has them, else the API's", () => {
+    const vote = gotyVote({}, { gotm: { own_votes: [1] }, nr_gotm: { runoff_ballot: [1, 2], own_votes: [1, 2], own_runoff_votes: [] } });
+    expect(ownVoteCount(vote.awards[0])).toBe(1);
+    expect(ownVoteCount(vote.awards[0], [1, 3])).toBe(2);
+    expect(ownVoteCount(vote.awards[1])).toBe(0);
+  });
+
+  it("counts a closed runoff rather than offering its vote", () => {
+    const vote = gotyVote({ phase: "closed", voting_open: false, runoff_opens_at: "2027-01-18T05:00:00Z" }, { gotm: { runoff_ballot: [1, 2] } });
+    expect(envelope(vote, vote.awards[0], 0, 1)).toEqual({ figure: "", status: "Counting the runoff" });
   });
 
   it("names a decided Award's winner", () => {
@@ -58,8 +75,28 @@ describe("nominations", () => {
     expect(list[0].ownNominationId).toBe(3);
   });
 
+  it("stands in for a nomination whose game the API didn't send", () => {
+    expect(nominationGame({ ...nomination(4, 12, "me"), game: null })).toEqual({ game_id: 12, title: "Game #12", cover_url: null });
+    expect(nominationGame(nomination(4, 12, "me")).title).toBe("Game 12");
+  });
+
   it("credits nominators with the viewer as you", () => {
     expect(nominatedBy(nominatedGames(noms, "me")[0], "me")).toBe("Nominated by you, Juno");
+  });
+});
+
+describe("syncFromServer", () => {
+  it("takes the API's list when no vote is in flight", () => {
+    expect(syncFromServer({ votes: [1], synced: "1" }, [1, 2], false)).toEqual({ votes: [1, 2], synced: "1,2" });
+    expect(syncFromServer({ votes: [1, 2], synced: "1,2" }, [1, 2], false)).toBeNull();
+  });
+
+  it("notes but doesn't apply a list that lands while a vote is in flight", () => {
+    // Voted 1 (refresh pending), then 3: the refresh for 1 must not erase 3,
+    // and must not be applied later once 3 lands either.
+    const midFlight = syncFromServer({ votes: [1, 3], synced: "" }, [1], true);
+    expect(midFlight).toEqual({ votes: [1, 3], synced: "1" });
+    expect(syncFromServer(midFlight!, [1], false)).toBeNull();
   });
 });
 

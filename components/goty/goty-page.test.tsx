@@ -56,6 +56,19 @@ describe("GotyPage", () => {
     expect(html).toContain("Next: GOTM of the Year");
   });
 
+  it("voting: a member sees no counts, and the copy says so", () => {
+    const html = render(gotyVote());
+    expect(html).toContain("Counts stay hidden until close.");
+    expect(html).not.toMatch(/<span[^>]*>(vote|votes)<\/span>/);
+  });
+
+  it("voting: staff see the counts, and the copy says members don't", () => {
+    const tally = { counts_hidden: false, runoff_counts_hidden: false, games: [{ gamedb_game_id: 1, votes: 5, runoff_votes: 0 }] };
+    const html = render(gotyVote({}, { gotm: { tally }, nr_gotm: { tally }, game_of_the_year: { tally } }));
+    expect(html).toContain("Members can&#x27;t see the counts until close; you see them as staff.");
+    expect(html).not.toContain("Counts stay hidden until close.");
+  });
+
   it("voting: an uncontested Award has nothing to vote on", () => {
     const html = render(gotyVote({}, { game_of_the_year: { ballot: [{ game_id: 9, title: "Quiet Moon" }] } }));
     expect(html).toContain("Uncontested");

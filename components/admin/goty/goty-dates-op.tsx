@@ -6,7 +6,7 @@ import { moveGotyDatesAction } from "@/app/actions/goty-desk";
 import type { GotyVote } from "@/lib/api/goty";
 import {
   changedDates,
-  datesLockedReason,
+  datesNote,
   datesRefusal,
   GOTY_DATE_KEYS,
   movableDates,
@@ -22,8 +22,9 @@ import { GotyDateField } from "./goty-date-field";
 
 // The Dates card: the GOTY Vote's three movable dates as plain fields in
 // the viewer's zone, saved together. Only the dates the API still lets move
-// are open (api#474); moving the vote's opening alone lets the close follow
-// to the end of that weekend.
+// are open (api#474: nominations' opening until nominations open, the close
+// until the main vote is tallied); moving the vote's opening alone lets the
+// close follow to the end of that weekend.
 export function GotyDatesOp({ vote, now }: { vote: GotyVote; now: number }) {
   const isClient = useIsClient();
   const saved = savedDates(vote);
@@ -33,7 +34,6 @@ export function GotyDatesOp({ vote, now }: { vote: GotyVote; now: number }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const changed = Object.keys(changedDates(saved, draft)).length > 0;
-  const locked = datesLockedReason(vote, now);
 
   const save = () => {
     setError(null);
@@ -54,12 +54,7 @@ export function GotyDatesOp({ vote, now }: { vote: GotyVote; now: number }) {
 
   return (
     <Op icon={CalendarClock} title="Dates">
-      <OpText>
-        {locked ??
-          (movable.size === 1
-            ? "Voting has opened, so only the close can move. Closing it now ends the vote early."
-            : "Your time. Move the vote's opening alone and its close follows to the end of that weekend.")}
-      </OpText>
+      <OpText>{datesNote(vote, now)}</OpText>
       <div className="space-y-2.5">
         {GOTY_DATE_KEYS.map((key) => (
           <GotyDateField

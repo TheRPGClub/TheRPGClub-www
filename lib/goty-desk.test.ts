@@ -3,6 +3,7 @@ import type { GotyAward, GotyVote, GotyVoteSummary } from "@/lib/api/goty";
 import {
   changedDates,
   datesLockedReason,
+  datesNote,
   datesRefusal,
   gotyStatusLine,
   movableDates,
@@ -92,12 +93,26 @@ describe("gotyStatusLine", () => {
 });
 
 describe("movableDates", () => {
-  it("moves all three before voting opens", () => {
-    expect([...movableDates(summary(), OPENS - DAY)]).toEqual(["nominations_open_at", "voting_opens_at", "voting_closes_at"]);
+  it("moves all three before nominations open", () => {
+    expect([...movableDates(summary({ phase: "upcoming" }), NOMS - DAY)]).toEqual([
+      "nominations_open_at",
+      "voting_opens_at",
+      "voting_closes_at",
+    ]);
+  });
+
+  it("locks the nominations' opening once nominations opened", () => {
+    expect([...movableDates(summary(), OPENS - DAY)]).toEqual(["voting_opens_at", "voting_closes_at"]);
   });
 
   it("moves only the close while voting is open", () => {
     expect([...movableDates(summary({ phase: "voting" }), OPENS + DAY)]).toEqual(["voting_closes_at"]);
+  });
+
+  it("locks the close once the main vote is tallied, whatever the phase reads", () => {
+    const tallied = summary({ phase: "voting", closed_at: "2027-01-17T00:00:00Z" });
+    expect(movableDates(tallied, OPENS + DAY).size).toBe(0);
+    expect(datesLockedReason(tallied, OPENS + DAY)).toMatch(/has closed/);
   });
 
   it("moves nothing once voting closed or the vote is decided", () => {
@@ -106,6 +121,17 @@ describe("movableDates", () => {
       /decided/,
     );
     expect(datesLockedReason(summary(), OPENS - DAY)).toBeNull();
+  });
+});
+
+describe("datesNote", () => {
+  it("says which dates are shut and how a move behaves", () => {
+    expect(datesNote(summary({ phase: "upcoming" }), NOMS - DAY)).toBe(
+      "Your time. Move the vote's opening alone and its close follows to the end of that weekend.",
+    );
+    expect(datesNote(summary(), OPENS - DAY)).toMatch(/^Your time\. Nominations have opened, so their opening stays\./);
+    expect(datesNote(summary({ phase: "voting" }), OPENS + DAY)).toMatch(/only the close can move/);
+    expect(datesNote(summary({ phase: "closed", closed_at: "2027-01-18T05:00:00Z" }), CLOSES + DAY)).toMatch(/has closed/);
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { awardState, gotyClock, gotyTimeline, nextAward, pageStage } from "./view";
+import { awardState, gotyClock, gotyTimeline, nextAward, pageStage, runoffNote } from "./view";
 import { award, gotyVote } from "./test-fixtures";
 
 const NOW = Date.parse("2027-01-16T17:00:00Z");
@@ -33,6 +33,14 @@ describe("awardState", () => {
     expect(awardState(gotyVote({ phase: "tie" }), award("gotm", { runoff_ballot: [1, 2], pending_tie: [1, 2] }))).toBe("tie");
   });
 
+  it("stays in its runoff while the runoff's count is pending, not a tie for an admin", () => {
+    const closed = gotyVote({ phase: "closed", runoff_open: false, runoff_opens_at: "2027-01-18T05:00:00Z", runoff_closes_at: "2027-01-19T04:59:59Z" });
+    const tied = award("gotm", { runoff_ballot: [1, 2], pending_tie: [1, 2] });
+    expect(awardState(closed, tied)).toBe("runoff");
+    expect(runoffNote(closed, tied, 2, false)).toBe("GOTM of the Year's runoff has closed. Its votes are being counted.");
+    expect(runoffNote(gotyVote({ phase: "tie" }), tied, 2, false)).toBe("GOTM of the Year is still tied. An admin picks the winner.");
+  });
+
   it("is counting while closed, and not given once decided without a winner", () => {
     expect(awardState(gotyVote({ phase: "closed" }), award("gotm"))).toBe("counting");
     expect(awardState(gotyVote({ phase: "decided" }), award("gotm"))).toBe("empty");
@@ -53,6 +61,22 @@ describe("gotyClock", () => {
       Date.parse("2027-01-18T11:00:00Z"),
     );
     expect(clock).toMatchObject({ figure: "18", label: "Hours of runoff left" });
+  });
+
+  it("counts the runoff, or says when it opens, rather than handing it to an admin", () => {
+    const counting = gotyClock(
+      gotyVote({ phase: "closed", runoff_open: false, runoff_opens_at: "2027-01-18T05:00:00Z", runoff_closes_at: "2027-01-19T04:59:59Z" }),
+      Date.parse("2027-01-19T05:30:00Z"),
+    );
+    expect(counting).toMatchObject({ label: "Runoff closed", detail: "Counting the runoff. The results land here shortly." });
+    const coming = gotyClock(
+      gotyVote({ phase: "closed", runoff_open: false, runoff_opens_at: "2027-01-18T05:00:00Z", runoff_closes_at: "2027-01-19T04:59:59Z" }),
+      Date.parse("2027-01-18T02:00:00Z"),
+    );
+    expect(coming).toMatchObject({ figure: "3", label: "Hours until the runoff", detail: "Opens Mon 18 Jan, 12:00 AM ET" });
+    expect(gotyClock(gotyVote({ phase: "tie", runoff_opens_at: "2027-01-18T05:00:00Z" }), Date.parse("2027-01-20T00:00:00Z")).detail).toBe(
+      "A tie is left for an admin to settle.",
+    );
   });
 
   it("says when it was decided", () => {
