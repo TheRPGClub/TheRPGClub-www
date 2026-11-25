@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 
 // One role lane (design pick edit-lanes): its name in Anton with a count and
 // a quiet hint at the left, then (`lead`, the Add-on parent line) its
-// Franchises, the + Add slot (`slot`) and a note. Empty, it says so before
+// Franchises as context cards stacked full width (www#208), the + Add slot
+// (`slot`) and a note. Empty, it says so before
 // the slot.
 export function FranchiseLane({
   role,
@@ -43,13 +44,13 @@ export function FranchiseLane({
       </div>
       <div className="flex min-w-0 flex-col gap-2.5">
         {lead}
+        {rows.length > 0 && (
+          <ul aria-label={`${copy.title}: Franchises`} className="flex flex-col gap-3">
+            {rows.map(renderRow)}
+          </ul>
+        )}
         <div className="flex flex-wrap content-start items-center gap-2.5">
           {rows.length === 0 && <p className="mr-1.5 text-[0.92rem] text-faint-foreground">{empty ?? copy.empty}</p>}
-          {rows.length > 0 && (
-            <ul aria-label={`${copy.title}: Franchises`} className="contents">
-              {rows.map(renderRow)}
-            </ul>
-          )}
           {slot}
         </div>
         {note && <p className="text-[0.86rem] text-faint-foreground">{note}</p>}

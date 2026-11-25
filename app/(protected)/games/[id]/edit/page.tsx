@@ -66,6 +66,7 @@ export default async function GameEditPage({
       gameId={gameId}
       title={game.title}
       coverUrl={game.cover_url}
+      releaseYear={game.initial_release_date ? Number(game.initial_release_date.slice(0, 4)) : null}
       artUrl={game.art_url}
       record={{
         text: { description: game.description, featured_video_url: game.featured_video_url },

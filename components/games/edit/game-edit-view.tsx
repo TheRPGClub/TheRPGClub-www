@@ -23,6 +23,8 @@ export interface GameEditViewProps {
   gameId: number;
   title: string;
   coverUrl: string | null;
+  // Its first release year: where it lands on a Franchise's run.
+  releaseYear: number | null;
   artUrl: string | null;
   record: GameEditRecord;
   // Sections whose read failed, with why: shown, but not editable.
