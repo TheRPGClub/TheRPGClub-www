@@ -4,19 +4,62 @@ import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import { MemberShelf, Spine } from "@/components/issue/member-shelf";
 import { platformShort } from "@/components/issue/member-cover";
 import { memberListHref } from "@/lib/members/member-lists";
-import { mobileCut, shelfMore, spineHref } from "@/components/member/profile/shelf-parts";
+import type { GameCollection, UserBacklog } from "@/lib/api/types";
+import type { ShelfPlaytime } from "@/lib/members/profile-playtime";
+import {
+  MOST_PLAYED_BLURB,
+  mobileCut,
+  shelfMore,
+  spineHours,
+  spineHref,
+  spineLift,
+} from "@/components/member/profile/shelf-parts";
+import { ShelfPlaytimeHead } from "@/components/member/profile/shelf-playtime-head";
+import { SpineLiftRow } from "@/components/member/profile/spine-lift-row";
 
 // The backlog and collection shelves: a row of spines, each tagged with its
-// platform.
+// platform (or, sorted Most played, its hours). These lists carry no dates,
+// so a lifted spine's tag names the platform.
+
+type Entry = (UserBacklog | GameCollection) & ShelfPlaytime;
+
+function spines(entries: Entry[], kind: "backlog" | "collection", mostPlayed: boolean, sub: string) {
+  return entries.map((entry, i) => {
+    const platform = platformShort(entry.platform);
+    return (
+      <Spine
+        key={resolveEntryId(kind, entry) ?? i}
+        href={spineHref(entry)}
+        game={entry.game}
+        title={entry.game?.title ?? "Unknown game"}
+        tag={mostPlayed ? spineHours(entry.playtime_minutes) : platform}
+        lift={spineLift(entry.playtime_minutes, platform ? `${sub} · ${platform}` : sub)}
+        className={mobileCut(i)}
+      />
+    );
+  });
+}
 
 export function BacklogShelf({ profile }: { profile: MemberProfile }) {
-  const { user, counts, isSelf } = profile;
+  const { user, counts, isSelf, playtime, sorts } = profile;
   const entries = profile.lists.backlog.data;
+  const mostPlayed = sorts.backlog === "most_played";
   return (
     <MemberShelf
       label="Backlog"
       count={counts.backlog}
-      blurb="Queued up."
+      blurb={mostPlayed ? MOST_PLAYED_BLURB : "Queued up."}
+      aside={
+        <ShelfPlaytimeHead
+          userId={user.user_id}
+          shelf="backlog"
+          label="Backlog"
+          minutes={playtime?.shelves.backlog}
+          sorts={sorts}
+          ownOrder="Queued"
+        />
+      }
+      Row={SpineLiftRow}
       links={[
         { href: memberListHref(user.user_id, "backlog"), label: "Open list" },
         ...(isSelf
@@ -32,42 +75,36 @@ export function BacklogShelf({ profile }: { profile: MemberProfile }) {
       more={shelfMore(user.user_id, "backlog", counts.backlog, entries.length)}
       empty="Nothing queued up."
     >
-      {entries.map((entry, i) => (
-        <Spine
-          key={resolveEntryId("backlog", entry) ?? i}
-          href={spineHref(entry)}
-          game={entry.game}
-          title={entry.game?.title ?? "Unknown game"}
-          tag={platformShort(entry.platform)}
-          className={mobileCut(i)}
-        />
-      ))}
+      {spines(entries, "backlog", mostPlayed, "Backlog")}
     </MemberShelf>
   );
 }
 
 export function CollectionShelf({ profile }: { profile: MemberProfile }) {
-  const { user, counts } = profile;
+  const { user, counts, playtime, sorts } = profile;
   const entries = profile.lists.collection.data;
+  const mostPlayed = sorts.collection === "most_played";
   return (
     <MemberShelf
       label="Collection"
       count={counts.collection}
-      blurb="Owned, by platform."
+      blurb={mostPlayed ? MOST_PLAYED_BLURB : "Owned, newest on the left."}
+      aside={
+        <ShelfPlaytimeHead
+          userId={user.user_id}
+          shelf="collection"
+          label="Collection"
+          minutes={playtime?.shelves.collection}
+          sorts={sorts}
+          ownOrder="Newest"
+        />
+      }
+      Row={SpineLiftRow}
       links={[{ href: memberListHref(user.user_id, "collection"), label: "Open list" }]}
       more={shelfMore(user.user_id, "collection", counts.collection, entries.length)}
       empty="No owned games tracked."
     >
-      {entries.map((entry, i) => (
-        <Spine
-          key={resolveEntryId("collection", entry) ?? i}
-          href={spineHref(entry)}
-          game={entry.game}
-          title={entry.game?.title ?? "Unknown game"}
-          tag={platformShort(entry.platform)}
-          className={mobileCut(i)}
-        />
-      ))}
+      {spines(entries, "collection", mostPlayed, "Owned")}
     </MemberShelf>
   );
 }

@@ -3,8 +3,10 @@ import { DetailSection, SectionLink } from "@/components/templates/detail-templa
 import { NowPlayingBooks } from "@/components/issue/member-now-playing";
 import { memberListHref } from "@/lib/members/member-lists";
 import { ProfileEmpty } from "@/components/member/profile/profile-empty";
+import { PlaytimeCorner } from "@/components/member/profile/playtime-corner";
 
-// What the member is playing now, open on the desk (face-on key art).
+// What the member is playing now, open on the desk (face-on key art), each
+// book with its hours in the corner.
 export function ProfileNowPlaying({ profile }: { profile: MemberProfile }) {
   const { user, counts, lists } = profile;
   const nowPlaying = lists.nowPlaying.data;
@@ -21,7 +23,10 @@ export function ProfileNowPlaying({ profile }: { profile: MemberProfile }) {
       className="space-y-4.5"
     >
       {nowPlaying.length > 0 ? (
-        <NowPlayingBooks entries={nowPlaying} />
+        <NowPlayingBooks
+          entries={nowPlaying}
+          corner={(entry) => <PlaytimeCorner entry={entry} />}
+        />
       ) : (
         <ProfileEmpty>Nothing in progress right now.</ProfileEmpty>
       )}
