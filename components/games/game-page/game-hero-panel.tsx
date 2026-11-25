@@ -2,6 +2,7 @@ import { Suspense, type CSSProperties, type ReactNode } from "react";
 import type { Game } from "@/lib/api/types";
 import { uniqueUsers } from "@/lib/api/game-counts";
 import { fetchGameThreads, type GamePageShow } from "@/lib/games/game-page";
+import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { latestMember } from "@/lib/games/hero-panel";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +20,9 @@ const plateClass =
 // Playing now and Completed by share one. Sections the viewer isn't shown
 // (or a game without threads) leave the rest to share the width.
 export async function GameHeroPanel({ game, show }: { game: Game; show: GamePageShow }) {
+  // Start Time to beat's read now: GameHltb only renders once the threads
+  // are in, and picks this same read up (fetchSavedHltb is per-request).
+  void fetchSavedHltb(game.game_id);
   const threads = await fetchGameThreads(game.game_id);
   const playing = game.now_playing ?? [];
   const completions = game.completions ?? [];

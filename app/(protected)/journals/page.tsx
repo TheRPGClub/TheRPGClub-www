@@ -15,10 +15,13 @@ export default async function JournalsPage({
 }: {
   searchParams: Promise<RawSearchParams>;
 }) {
-  await requireAuth();
-  const features = await requireFeature("journals");
   const query = parseArchiveQuery(await searchParams);
-  const archive = await loadJournalArchive(query);
+  // The read doesn't need the session, so it starts alongside the gate.
+  const [, features, archive] = await Promise.all([
+    requireAuth(),
+    requireFeature("journals"),
+    loadJournalArchive(query),
+  ]);
   const { entryTotal, contributorTotal } = archive;
 
   return (

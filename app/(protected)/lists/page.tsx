@@ -11,10 +11,14 @@ export default async function ListsPage({
 }: {
   searchParams: Promise<{ q?: string | string[]; game?: string | string[] }>;
 }) {
-  await requireAuth();
-  const features = await requireFeature("game_lists");
   const { q, gameId } = parseListsQuery(await searchParams);
-  const page = await loadListsIndex(q, gameId);
+  // The read doesn't need the session, so it starts alongside the gate
+  // rather than after it.
+  const [, features, page] = await Promise.all([
+    requireAuth(),
+    requireFeature("game_lists"),
+    loadListsIndex(q, gameId),
+  ]);
   const badge = features.preview("game_lists") && <PreviewBadge />;
   if (!page) {
     return (

@@ -28,9 +28,12 @@ async function GotmHistoryContent({ filters }: { filters: Filters }) {
   // The archive read needs auth, so confirm a session first rather than make
   // an unauthenticated fetch that can only 401; see lib/api/gotm-rounds.ts.
   // The session read is memoised per request.
-  await requireAuth();
-  const features = await requireFeature("voting_gotm");
-  const result = await fetchGotmRounds(filters);
+  // The read doesn't need the session, so it starts alongside the gate.
+  const [, features, result] = await Promise.all([
+    requireAuth(),
+    requireFeature("voting_gotm"),
+    fetchGotmRounds(filters),
+  ]);
 
   return (
     <GotmHistory
