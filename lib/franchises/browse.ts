@@ -74,6 +74,27 @@ export function browseHref(query: Partial<BrowseQuery>): string {
   return `${FRANCHISES_PATH}${ps.size ? `?${ps}` : ""}`;
 }
 
+// What an empty wall says, and the way back: a page past the end goes to
+// page one, an empty search or letter to every Franchise.
+export function emptyWall(query: BrowseQuery): {
+  text: string;
+  action: { href: string; label: string } | null;
+} {
+  if (query.page > 1)
+    return {
+      text: `Page ${query.page} is past the last page.`,
+      action: { href: browseHref({ ...query, page: 1 }), label: "Go to page 1" },
+    };
+  const every = { href: browseHref({ sort: query.sort }), label: "Show every Franchise" };
+  if (query.q) return { text: `No Franchise matches “${query.q}”.`, action: every };
+  if (query.letter)
+    return {
+      text: `No Franchise starts with ${query.letter === "#" ? "anything but a letter" : query.letter}.`,
+      action: every,
+    };
+  return { text: "No Franchises yet.", action: null };
+}
+
 // The API read's query for a page of tiles.
 export function browseApiPath(query: BrowseQuery, per: number): string {
   const ps = new URLSearchParams({

@@ -73,9 +73,9 @@ describe("pinnedPages", () => {
     expect(pinnedPages(groups, ["voting", "games", "members", "news"]).map((p) => p.key)).toEqual(["games", "members"]);
   });
 
-  it("never pins a page the API can't pin (Franchises)", () => {
+  it("pins Franchises like any other page", () => {
     const groups = sidebarGroups(undefined, flags());
-    expect(pinnedPages(groups, ["franchises", "games"]).map((p) => p.key)).toEqual(["games"]);
+    expect(pinnedPages(groups, ["franchises", "games"]).map((p) => p.key)).toEqual(["franchises", "games"]);
   });
 });
 

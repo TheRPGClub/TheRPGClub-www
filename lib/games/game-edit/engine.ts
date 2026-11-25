@@ -10,7 +10,10 @@
 // that save them, and what its record looks like once they have. The engine
 // knows nothing of any one section.
 
-export type StepResult = { ok: true } | { ok: false; error: string };
+// A step that made something (a new Franchise) answers with its id, which
+// the engine keeps on the saved call as `madeId` for the section's later
+// calls (`bind`) and its `remaining`.
+export type StepResult = { ok: true; madeId?: number } | { ok: false; error: string };
 
 // The viewer's gates: Admin-or-above, and the API's Regulars-or-staff gate
 // for Game Threads.
@@ -38,6 +41,10 @@ export interface GameEditSection<Loaded, Staged, Call extends { kind: string }> 
   // What stays staged when only `saved` of the planned calls went through
   // before one failed. Without it the whole stage stays.
   remaining?(loaded: Loaded, staged: Staged, saved: Call[]): Staged;
+  // A planned call filled in from what the calls saved before it made (a
+  // saved call carries the id its step made as `madeId`), just before it
+  // runs. Without it calls run as planned.
+  bind?(call: Call, saved: Call[]): Call;
 }
 
 export interface SectionSpec {
@@ -139,10 +146,11 @@ export function createGameEditSave<M extends SectionMap<M>>(sections: EditSectio
       const label = s.label;
       let error = entry.error;
       const saved: { kind: string }[] = [];
-      for (const c of entry.calls) {
+      for (const planned of entry.calls) {
         if (error) break;
+        const c = s.bind ? s.bind(planned, saved) : planned;
         const result = await call[c.kind](c).catch((): StepResult => ({ ok: false, error: UNREACHABLE }));
-        if (result.ok) saved.push(c);
+        if (result.ok) saved.push(result.madeId === undefined ? c : ({ ...c, madeId: result.madeId } as typeof c));
         else error = result.error;
       }
       if (error) {

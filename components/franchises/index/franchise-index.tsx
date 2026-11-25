@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import type { BrowseQuery } from "@/lib/franchises/browse";
+import { browseHref, type BrowseQuery } from "@/lib/franchises/browse";
 import { PageHeader } from "@/components/templates/page-header";
 import { FranchiseSearch } from "@/components/franchises/index/franchise-search";
 import { FranchiseSortSwitch } from "@/components/franchises/index/franchise-sort";
@@ -35,7 +35,7 @@ export function FranchiseIndex({
         actions={canCreate && <NewFranchiseButton />}
       />
       <div className="flex flex-wrap items-center gap-3.5">
-        <FranchiseSearch q={query.q} sort={query.sort} />
+        <FranchiseSearch q={query.q} sort={query.sort} href={browseHref(query)} />
         <FranchiseSortSwitch query={query} />
       </div>
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1fr)_1.5rem] lg:gap-x-6 lg:space-y-0">

@@ -23,6 +23,9 @@ export function EditSection({
       <div className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-b-2 border-foreground pt-1.5 pb-2">
         <h2 className="flex items-center gap-3 font-headline text-[1.65rem] leading-none">
           {title}
+          {/* A space between, so the heading reads "Franchises Didn't save"
+              (the flex gap only spaces it on screen). */}
+          {error && " "}
           {error && (
             <StagedMark kind="fail">
               <TriangleAlert aria-hidden className="size-3" />

@@ -24,11 +24,12 @@ import {
 } from "@/app/actions/game-edit-releases";
 import { loadGameFranchisesAction, loadGameThreadsAction, loadVersionsAction } from "@/app/actions/game-edit-reads";
 import {
-  createFranchiseWithGameAction,
+  createFranchiseAction,
   linkFranchiseGameAction,
   unlinkFranchiseGameAction,
   type FranchiseResult,
 } from "@/app/actions/franchises";
+import type { FranchiseColumns } from "@/lib/franchises/types";
 import {
   gameEditSave,
   recordAfterSave,
@@ -87,8 +88,7 @@ export function useGameEdit(
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
-    "franchise.create": (call) =>
-      createFranchiseWithGameAction(call.name, gameId, call.mainline, parentOption(call.parentGameId)).then(franchiseStep),
+    "franchise.create": (call) => createFranchiseAction(call.name).then(madeStep),
     "franchise.link": (call) =>
       linkFranchiseGameAction(call.franchiseId, gameId, call.mainline || undefined, parentOption(call.parentGameId)).then(
         franchiseStep,
@@ -207,6 +207,13 @@ function parentOption(parentGameId: number | null | undefined): { parent_game_id
 
 function franchiseStep(result: FranchiseResult<unknown>): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error };
+}
+
+// A made Franchise's id, for the calls that link it.
+function madeStep(result: FranchiseResult<FranchiseColumns>): StepResult {
+  if (!result.ok) return result;
+  if (!result.data) return { ok: false, error: "The Franchise was made, but its id didn't come back. Refresh to link it." };
+  return { ok: true, madeId: result.data.franchise_id };
 }
 
 export type GameEdit = ReturnType<typeof useGameEdit>;
