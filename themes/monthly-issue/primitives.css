@@ -1157,6 +1157,14 @@
         [data-slot="tabs-list"][data-variant="masthead"] [data-slot="tabs-trigger"] {
             @apply rounded-none bg-transparent font-normal tracking-normal text-faint-foreground shadow-none transition-colors after:bottom-[-1px] after:h-[3px] after:bg-gotm hover:text-dim-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight data-active:bg-transparent data-active:text-foreground data-active:shadow-none data-active:after:opacity-100;
         }
+        /* envelope (/goty, www#192): the three Award envelopes. Each is an
+           ink-2 card topped by a 4px rule in its Award's ink (--tab-ink),
+           its name and figure in Anton, a status line in label type; the
+           open one is a paper card with ink type and a paper diamond
+           pointing down at its ballot. */
+        [data-slot="tabs-list"][data-variant="envelope"] [data-slot="tabs-trigger"] {
+            @apply rounded-[3.2px] border-0 bg-card text-dim-foreground shadow-[inset_0_4px_0_var(--tab-ink)] transition-colors after:bottom-[-9px] after:left-1/2 after:size-4 after:-translate-x-1/2 after:rotate-45 after:bg-foreground hover:bg-muted focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-highlight data-active:bg-foreground data-active:text-background data-active:after:opacity-100;
+        }
         /* Toggle switcher: a switch between alternatives in place; the
            segment rests in the faint ink. */
         [data-slot="toggle"][data-variant="switcher"],
@@ -1365,6 +1373,12 @@
         /* The yellow donate panel: its eye on the key field, its platform
            choices (ink outlines, the picked one an ink block with yellow
            type) and its region field (the panel's pale field). */
+        /* paper (/goty, www#192): Game of the Year's own action. Its
+           Award's ink is paper, so the button is a paper block with ink
+           type, dropping to 85% on hover, like the track buttons. */
+        [data-slot="button"][data-variant="paper"] {
+            @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring bg-foreground text-background hover:bg-foreground/85;
+        }
         [data-slot="button"][data-variant="inverse-ghost"] {
             @apply rounded-sm border-0 text-background transition-colors hover:bg-background/10;
         }

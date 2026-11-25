@@ -40,6 +40,29 @@ export interface GotyVoteSummary {
   nominations_open: boolean;
   voting_open: boolean;
   runoff_open: boolean;
+  // Each Award's winner once the year is decided; empty before (api#476).
+  winners?: GotyVoteWinner[];
+}
+
+export interface GotyAwardWinner {
+  gamedb_game_id: number;
+  decided_by: GotyDecidedBy;
+  game?: GameSummary | null;
+}
+
+export interface GotyVoteWinner extends GotyAwardWinner {
+  award: GotyAwardKey;
+  name: string;
+}
+
+// An Award's full result once the year is decided: every candidate with its
+// votes and voters.
+export interface GotyAwardResult {
+  gamedb_game_id: number;
+  votes: number;
+  runoff_votes: number;
+  voters?: UserSummary[];
+  runoff_voters?: UserSummary[];
 }
 
 export interface GotyAwardTally {
@@ -60,7 +83,8 @@ export interface GotyAward {
   own_votes: number[];
   own_runoff_votes: number[];
   tally: GotyAwardTally;
-  winner?: { gamedb_game_id: number; decided_by: GotyDecidedBy; game?: GameSummary | null } | null;
+  result?: GotyAwardResult[] | null;
+  winner?: GotyAwardWinner | null;
 }
 
 // GET /api/v1/goty_votes/:year.
@@ -86,6 +110,27 @@ export interface GotyNomination {
 export interface GotyNominationDeletedResponse {
   deleted: boolean;
   meta?: { announce_job_id: number | null };
+}
+
+// GET /api/v1/games/:id/goty_eligibility?year=.
+export interface GotyEligibility {
+  game_id: number;
+  year: number;
+  eligible: boolean;
+  reason?: "not_released_in_year" | "release_unknown" | null;
+  released_on?: string | null;
+  date_precision?: "day" | "month" | "quarter" | "year" | "tba" | null;
+  source?: "release" | "initial_release_date" | null;
+}
+
+// POST /api/v1/goty_votes/:year/votes.
+export interface GotyCastResult {
+  action: "voted" | "unvoted";
+  vote?: { gamedb_game_id: number; game?: GameSummary | null } | null;
+  removed_votes: { gamedb_game_id: number; game?: GameSummary | null }[];
+  cap: number;
+  runoff: boolean;
+  warning?: string | null;
 }
 
 async function read<T>(path: string, empty: T): Promise<T> {
