@@ -1,5 +1,4 @@
 import type { GameList } from "@/lib/game-lists/types";
-import { SORT_LABEL } from "@/lib/game-lists/types";
 
 // The few words Game Lists print about themselves. Days are UTC days, as
 // across the club's pages. Client-safe.
@@ -41,12 +40,6 @@ export function gamesCount(n: number): string {
   return `${n} ${n === 1 ? "game" : "games"}`;
 }
 
-// A list's place line on a game page card: "No. 2" over "of 10" when the
-// list is ranked, else the order's name over its size.
-export function placeLabel(list: Pick<GameList, "sort">, place: number, of: number): { big: string; small: string } {
-  if (list.sort === "ranked") return { big: `No. ${place}`, small: `of ${of}` };
-  return { big: SORT_LABEL[list.sort], small: gamesCount(of) };
-}
 
 // The Profile shelf's note under its count.
 export function privateNote(lists: readonly Pick<GameList, "visibility">[], own: boolean): string {

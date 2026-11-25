@@ -3,7 +3,7 @@ import { requireAuth, requireFeature } from "@/lib/session";
 import { isRegularOrStaff } from "@/lib/staff";
 import { readStory } from "@/lib/codex/lore-story";
 import { LORE_PATH } from "@/lib/codex/paths";
-import { memberAvatarPath } from "@/lib/codex/avatar";
+import { memberAvatarPath } from "@/lib/members/avatar";
 import { PreviewBadge } from "@/components/feature/preview-badge";
 import { LoreDesk } from "@/components/codex/desk/lore-desk";
 import { LoreAuthor } from "@/components/codex/lore/lore-author";

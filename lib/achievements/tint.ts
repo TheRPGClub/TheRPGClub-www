@@ -19,25 +19,37 @@ export async function getSetTint({
   setId: number | string;
 }): Promise<SetTint> {
   for (const url of [coverUrl, iconUrl]) {
-    if (!url) continue;
+    if (!url || recentlyFailed(url)) continue;
     try {
       const tint = await sampleCached(url);
       if (tint) return tint;
     } catch {
-      // Unreachable or unreadable image: try the next one, uncached, so a
-      // transient failure is retried on the next render.
+      // Unreachable or unreadable image: try the next one. The failure isn't
+      // cached for good (it may be transient), but it is skipped for an hour,
+      // so a dead icon can't hold every render of the page for its timeout.
+      failedAt.set(url, Date.now());
     }
   }
   return fallbackTint(setId);
 }
 
 const MAX_BYTES = 8 * 1024 * 1024;
+const RETRY_AFTER_MS = 60 * 60 * 1000;
+const failedAt = new Map<string, number>();
+
+function recentlyFailed(url: string): boolean {
+  const at = failedAt.get(url);
+  if (at === undefined) return false;
+  if (Date.now() - at < RETRY_AFTER_MS) return true;
+  failedAt.delete(url);
+  return false;
+}
 
 // Throws on a fetch or decode failure (not cached); returns null for an
 // image with no vivid colour (cached, it won't change).
 async function sampleImage(url: string): Promise<SetTint | null> {
   const res = await fetch(url, {
-    signal: AbortSignal.timeout(5000),
+    signal: AbortSignal.timeout(2500),
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`tint: ${res.status} for ${url}`);

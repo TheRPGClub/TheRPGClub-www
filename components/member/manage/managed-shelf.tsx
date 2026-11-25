@@ -10,19 +10,18 @@ import type {
 } from "@/lib/shelf-forms/values";
 import { EntryEditor } from "./entry-editor";
 import { EntryTools } from "./entry-tools";
-import { LiftBar } from "./lift-bar";
+import { SortStatus } from "@/components/sortable/sort-status";
 import { RemovedHole, UndoLines } from "./removed-hole";
-import { ShelfCard } from "./shelf-card";
 import { useShelfManageContext } from "./shelf-manage-context";
 
 const titleOf = (entry: SimpleShelfEntry) =>
   entry.game?.title ?? "Unknown game";
 
 // A Now Playing, Backlog, Favorites or Collection page as its owner sees it
-// (spec api#451, pick 3A): today's cards, each with Edit, Move (ordered
-// lists) and Remove on its picture. Edit opens the entry in place across
-// its row; a removed entry leaves a dashed hole with Undo; an ordered list
-// moves an entry by dragging it or with the lift bar.
+// (spec api#451, pick 3A): today's cards, each with Edit and Remove on its
+// picture. Edit opens the entry in place across its row; a removed entry
+// leaves a dashed hole with Undo. On an ordered list the card itself drags
+// (Make Room); sorting rests while an entry is open or a removal is held.
 export function ManagedShelf<T extends SimpleShelfEntry>({
   kind,
   entries,
@@ -48,15 +47,20 @@ export function ManagedShelf<T extends SimpleShelfEntry>({
       return id === undefined ? [] : [[id, e] as const];
     }),
   );
+  const { undo } = manage;
   const ordered = isOrderedKind(kind);
   const order = useShelfOrder({
     userId: owner.userId,
     kind,
-    ids: [...byId.keys()],
+    // A removed entry is gone from the API too, so places skip it.
+    ids: [...byId.keys()].filter((id) => !undo.gone.has(id)),
     offset,
+    disabled: !ordered || manage.editing !== null || manage.held.length > 0,
+    name: (id) => {
+      const e = byId.get(id);
+      return e ? titleOf(e) : "Entry";
+    },
   });
-  const { undo } = manage;
-  const lifted = order.lifted !== null ? byId.get(order.lifted) : undefined;
 
   return (
     <div className="space-y-4">
@@ -66,15 +70,15 @@ export function ManagedShelf<T extends SimpleShelfEntry>({
           Couldn&apos;t move it: {order.error}
         </p>
       )}
-      {lifted && <LiftBar order={order} title={titleOf(lifted)} />}
-      <ul className={gridClass}>
+      {ordered && <SortStatus status={order.status} />}
+      <ul {...order.zone("list")} className={gridClass}>
         {order.order.map((id, index) => {
           const entry = byId.get(id);
-          if (!entry || undo.gone.has(id)) return null;
+          if (!entry) return null;
           const title = titleOf(entry);
           if (undo.held.has(id)) {
             return (
-              <li key={id}>
+              <li key={id} {...order.item(id)}>
                 <RemovedHole
                   title={title}
                   wide={wide}
@@ -85,7 +89,7 @@ export function ManagedShelf<T extends SimpleShelfEntry>({
           }
           if (manage.editing === id && entry.game) {
             return (
-              <li key={id} className="col-span-full">
+              <li key={id} {...order.item(id)} className="col-span-full">
                 <EntryEditor
                   kind={kind}
                   userId={owner.userId}
@@ -99,23 +103,19 @@ export function ManagedShelf<T extends SimpleShelfEntry>({
               </li>
             );
           }
-          const isLifted = order.lifted === id;
           return (
-            <ShelfCard key={id} id={id} order={order} ordered={ordered}>
-              {renderCard(entry, offset + index + 1)}
-              <EntryTools
-                title={title}
-                lifted={isLifted}
-                onEdit={entry.game ? () => manage.edit(id) : undefined}
-                onMove={
-                  ordered
-                    ? () => (isLifted ? order.cancel() : order.pickUp(id))
-                    : undefined
-                }
-                onRemove={() => manage.remove(id, title)}
-                className={wide ? "top-2 right-2" : undefined}
-              />
-            </ShelfCard>
+            // The li stays unclassed: its lifted copy is position: fixed.
+            <li key={id} {...order.item(id)}>
+              <div className="relative">
+                {renderCard(entry, offset + index + 1)}
+                <EntryTools
+                  title={title}
+                  onEdit={entry.game ? () => manage.edit(id) : undefined}
+                  onRemove={() => manage.remove(id, title)}
+                  className={wide ? "top-2 right-2" : undefined}
+                />
+              </div>
+            </li>
           );
         })}
       </ul>

@@ -1,6 +1,9 @@
 "use client";
 
 import type { ChallengeFormState } from "@/hooks/use-challenge-form";
+import { useSortable } from "@/hooks/use-sortable";
+import type { PoolSide } from "@/lib/challenges/pool-editor";
+import { SortStatus } from "@/components/sortable/sort-status";
 import { SearchProblemNote } from "@/components/search-problem-note";
 import { PoolSearch } from "@/components/challenges/form/pool-search";
 import { PoolSection } from "@/components/challenges/form/pool-section";
@@ -12,10 +15,23 @@ import { LeftOut } from "@/components/challenges/form/left-out";
 // a game as Core or Optional, then Core on top and Optional below as cover
 // walls (8B's tiles), split by the rule. Optional carries its sources and the
 // target stepper (8A); Left out sits under both. A cover moves by its switch
-// or by dragging it onto the other section. The Pool stays editable once
-// Runs exist.
+// or by dragging it onto the other section (the Make Room Rule; a section's
+// order isn't the Host's to set). The Pool stays editable once Runs exist.
 export function PoolBuilder({ form }: { form: ChallengeFormState }) {
   const { columns, preview, errors } = form;
+  const all = [...columns.core, ...columns.optional];
+  const lookup = new Map(all.map((g) => [g.game_id, g]));
+  const sort = useSortable<PoolSide, number>({
+    zones: { core: columns.core.map((g) => g.game_id), optional: columns.optional.map((g) => g.game_id) },
+    layout: "grid",
+    fixedOrder: true,
+    name: (id) => lookup.get(id)?.title ?? "Game",
+    zoneName: (z) => (z === "core" ? "Core" : "Optional"),
+    onDrop: (_, move) => {
+      const game = lookup.get(move.id);
+      if (game && move.from !== move.to) form.moveGame(game, move.to);
+    },
+  });
   const plural = (n: number, word: string) => `${n} ${n === 1 ? word : `${word}s`}`;
   return (
     <section aria-labelledby="pool-heading" className="mt-[34px]">
@@ -37,8 +53,9 @@ export function PoolBuilder({ form }: { form: ChallengeFormState }) {
           side="core"
           title="Core"
           count={plural(columns.core.length, "game")}
-          games={columns.core}
           empty="No Core Games yet. Every Run must Clear each Core Game: add one with the search, or drag an Optional Game here."
+          sort={sort}
+          lookup={lookup}
           onMove={form.moveGame}
           onLeaveOut={form.leaveOut}
         >
@@ -49,8 +66,9 @@ export function PoolBuilder({ form }: { form: ChallengeFormState }) {
           title="Optional"
           count={preview.loading ? "Counting…" : plural(columns.optionalCount, "game")}
           aside={<TargetStepper form={form} />}
-          games={columns.optional}
           empty="No Optional Games yet. Add a Franchise or Series, search for a game, or drag a Core Game here."
+          sort={sort}
+          lookup={lookup}
           onMove={form.moveGame}
           onLeaveOut={form.leaveOut}
         >
@@ -68,6 +86,7 @@ export function PoolBuilder({ form }: { form: ChallengeFormState }) {
         </p>
       )}
       <LeftOut games={columns.leftOut} onPutBack={form.putBack} />
+      <SortStatus status={sort.status} />
     </section>
   );
 }

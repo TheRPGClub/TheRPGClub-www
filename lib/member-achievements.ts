@@ -40,8 +40,8 @@ export const SET_SORT_LABEL: Record<AchievementSetsSort, string> = {
 
 export const DEFAULT_SET_SORT: AchievementSetsSort = "recent";
 
-// Page sizes: 48 sets fill 1, 2 and 3 columns evenly.
-export const SETS_PER_PAGE = 48;
+// Page sizes: ten sets a page keeps the index quick (each row samples a tint).
+export const SETS_PER_PAGE = 10;
 export const UNLOCKS_PER_PAGE = 50;
 
 export interface SetsFilter {

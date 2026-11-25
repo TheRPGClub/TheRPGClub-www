@@ -1,39 +1,33 @@
 "use client";
 
 import { X } from "lucide-react";
+import type { SortItemProps } from "@/hooks/use-sortable";
 import type { EditorGame, PoolSide } from "@/lib/challenges/pool-editor";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GameCover } from "@/components/issue/game-cover";
 
-export const POOL_GAME_TYPE = "application/x-rpgclub-pool-game";
-
 // A cover in the Pool editor (pick 8, 8B's tiles): a Core Game is ringed in
 // the Challenge tint's hi, an Optional one sits plain; a paper "New" tag
 // marks a game that joined in the last 14 days and "Added" one picked by
 // hand. Under it the switch moves it between Core and Optional or leaves it
-// out (the keyboard and phone way); dragging the cover onto the other
-// section does the same.
+// out; dragging the cover onto the other section does the same (`item`,
+// from useSortable in the Pool builder).
 export function PoolTile({
   game,
   side,
+  item,
   onMove,
   onLeaveOut,
 }: {
   game: EditorGame;
   side: PoolSide;
+  item: SortItemProps;
   onMove: (to: PoolSide) => void;
   onLeaveOut: () => void;
 }) {
   return (
-    <li
-      draggable
-      onDragStart={(event) => {
-        event.dataTransfer.setData(POOL_GAME_TYPE, JSON.stringify({ ...game, from: side }));
-        event.dataTransfer.effectAllowed = "move";
-      }}
-      className="flex cursor-grab flex-col gap-1.5 active:cursor-grabbing"
-    >
+    <li {...item} className="flex flex-col gap-1.5">
       <div
         title={game.title}
         className={cn(

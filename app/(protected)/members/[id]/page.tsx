@@ -35,7 +35,8 @@ export default async function MemberPage({
       className="space-y-10"
       hero={
         <div className="flex flex-col">
-          <BackLink href="/members" label="Members" />
+          {/* Your own page is a destination, not a stop in the directory. */}
+          {!profile.isSelf && <BackLink href="/members" label="Members" />}
           <ProfileBanner profile={profile} />
         </div>
       }

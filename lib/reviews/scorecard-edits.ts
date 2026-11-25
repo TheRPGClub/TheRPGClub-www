@@ -100,16 +100,6 @@ export function withCustomFacet(card: ReviewFacets): { card: ReviewFacets; key: 
   return { card: withWeights(next), key };
 }
 
-// The card with the facet at `index` swapped `delta` places, or the same card
-// when that would leave the list.
-export function moveFacet(card: ReviewFacets, index: number, delta: number): ReviewFacets {
-  const order = [...card.order];
-  const target = index + delta;
-  if (target < 0 || target >= order.length) return card;
-  [order[index], order[target]] = [order[target], order[index]];
-  return withOrder(card, order);
-}
-
 // "Even split" is offered whenever it would change something, so a card
 // already sitting on an even split doesn't advertise a no-op button.
 export function canEvenSplit(card: ReviewFacets): boolean {

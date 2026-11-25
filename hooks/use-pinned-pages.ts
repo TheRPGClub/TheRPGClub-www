@@ -2,7 +2,7 @@
 
 import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { savePinnedPagesAction } from "@/app/actions/pinned-pages";
-import { movePin, pinsFull, placePin, togglePin, type PinRules } from "@/lib/pinned-pages";
+import { pinsFull, reorderPins, togglePin, type PinRules } from "@/lib/pinned-pages";
 
 const NOTICE_MS = 6000;
 
@@ -49,7 +49,7 @@ export function usePinnedPages(initial: readonly string[], rules: PinRules) {
     dismiss: () => setFailure(null),
     // Full: the control says so and nothing is dropped.
     toggle: (key: string) => save(togglePin(keys, key, rules)),
-    move: (key: string, by: -1 | 1) => save(movePin(keys, key, by)),
-    place: (key: string, before: string | null) => save(placePin(keys, key, before)),
+    // The drawn rows in their new order, after a drag.
+    reorder: (order: readonly string[]) => save(reorderPins(keys, order)),
   };
 }

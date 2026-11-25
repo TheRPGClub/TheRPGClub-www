@@ -27,22 +27,24 @@ export default async function MemberAchievementsPage({
 }) {
   const [{ id }, raw] = await Promise.all([params, searchParams]);
   const query = parseMemberAchievementsQuery(raw);
-  const userPath = `/api/v1/users/${id}`;
-
-  const [features, session, userRes, result] = await Promise.all([
+  // The binder's right page doesn't wait on the summary: both start at
+  // once, and the pages are dropped when there's no summary to show.
+  const [features, session, result, pages] = await Promise.all([
     requireFeature("achievement_hub"),
     getSession(),
-    apiFetch(userPath, { cache: "no-store" }),
     fetchAchievementSummary(id),
+    fetchBinderPages(id, query),
   ]);
 
   const isSelf = session?.principal.discord_id === id;
   if (result.status === "none" && !isSelf) notFound();
-  if (!userRes.ok) notFound();
-  const { data: user }: ApiSingle<User> = await userRes.json();
-  const displayName = memberName(user);
 
   if (result.status !== "ok") {
+    // Only here is the name read on its own: the summary carries it.
+    const userRes = await apiFetch(`/api/v1/users/${id}`, { cache: "no-store" });
+    if (!userRes.ok) notFound();
+    const { data: user }: ApiSingle<User> = await userRes.json();
+    const displayName = memberName(user);
     return (
       <MemberListTemplate
         userId={id}
@@ -61,12 +63,10 @@ export default async function MemberAchievementsPage({
     );
   }
 
-  const pages = await fetchBinderPages(id, query);
-
   return (
     <BinderPage
       userId={id}
-      displayName={displayName}
+      displayName={memberName(result.summary.user)}
       isSelf={isSelf}
       summary={result.summary}
       query={query}

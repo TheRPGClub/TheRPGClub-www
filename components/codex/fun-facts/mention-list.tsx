@@ -2,8 +2,8 @@
 
 import type { MentionPicker } from "@/hooks/use-mention-picker";
 import { memberName } from "@/lib/achievements";
-import { discordAvatarUrl } from "@/lib/auth-types";
 import { cn } from "@/lib/utils";
+import { MemberAvatar } from "@/components/issue/member-cover";
 
 // The @ mention picker's list under the Fun Fact field (5D): "Mention a
 // member", the matching members with the lit one ringed in yellow, and the
@@ -47,8 +47,7 @@ export function MentionList({
               i === lit && "bg-card shadow-[inset_0_0_0_1.5px_var(--color-highlight)]",
             )}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element -- a small Discord avatar, already sized by Discord's CDN */}
-            <img src={discordAvatarUrl(user.user_id, user.discord_avatar, 64)} alt="" className="size-6.5 rounded-full bg-card" />
+            <MemberAvatar userId={user.user_id} name={memberName(user)} className="size-6.5 shrink-0" fallbackClassName="text-xs" />
             <span className="min-w-0 flex-1 truncate">{memberName(user)}</span>
             {user.username && <span className="truncate text-xs text-faint-foreground">@{user.username}</span>}
           </div>

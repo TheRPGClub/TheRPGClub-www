@@ -10,7 +10,7 @@ import {
   removeGameFromListAction,
   updateGameListAction,
 } from "@/app/actions/game-lists";
-import { moveEntry, placeEntry, reorderEntries, sortEntries } from "@/lib/game-lists/order";
+import { reorderEntries, sortEntries } from "@/lib/game-lists/order";
 import type { GameList, GameListSort, ListFeedsChallenges } from "@/lib/game-lists/types";
 
 // A Game List page's editor state (pick 2D): the list as last saved, with
@@ -43,8 +43,8 @@ export function useGameListBoard(initial: GameList) {
     });
   }
 
-  const reorder = (ids: number[] | null) =>
-    ids && change({ ...list, entries: reorderEntries(list.entries ?? [], ids) }, () => orderGameListAction(list.id, ids));
+  const reorder = (ids: number[]) =>
+    change({ ...list, entries: reorderEntries(list.entries ?? [], ids) }, () => orderGameListAction(list.id, ids));
 
   return {
     list,
@@ -54,8 +54,8 @@ export function useGameListBoard(initial: GameList) {
     takeover,
     dismissError: () => setError(null),
     closeTakeover: () => setTakeover(null),
-    move: (gameId: number, step: -1 | 1) => reorder(moveEntry(ranked, gameId, step)),
-    place: (gameId: number, before: number | null) => reorder(placeEntry(ranked, gameId, before)),
+    // A ranked list's new order (every game id, first to last).
+    reorder,
     setSort: (sort: GameListSort) => change({ ...list, sort }, () => updateGameListAction(list.id, { sort })),
     setPrivate: (on: boolean, confirm = false) =>
       change(

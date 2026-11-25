@@ -32,10 +32,10 @@ export function BinderTotals({
         </dt>
       </div>
       {rest.length > 0 && (
-        <div className="grid grid-cols-4 gap-x-3 gap-y-4">
+        <div className="flex flex-wrap gap-x-6 gap-y-4">
           {rest.map((stat) => (
             <div key={stat.key} className="flex flex-col-reverse gap-1.5">
-              <dt className="font-label max-w-[9ch] text-[0.74rem] leading-[1.1] tracking-[0.08em] text-faint-foreground">
+              <dt className="font-label text-[0.74rem] leading-[1.1] tracking-[0.08em] whitespace-nowrap text-faint-foreground">
                 {label(stat)}
               </dt>
               <dd className="font-headline text-[2rem] leading-[0.8] text-foreground">
@@ -59,7 +59,7 @@ export function LinkedAccountChips({
 }) {
   if (accounts.length === 0) return null;
   return (
-    <ul aria-label="Linked Accounts" className={cn("flex flex-col items-start gap-1.5", className)}>
+    <ul aria-label="Linked Accounts" className={cn("flex flex-wrap items-start gap-1.5", className)}>
       {accounts.map((account) => (
         <li key={account.provider} className="max-w-full">
           <ProviderBadge

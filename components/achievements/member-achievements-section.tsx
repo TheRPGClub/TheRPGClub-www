@@ -35,7 +35,7 @@ export function MemberAchievementsSection({
       />
       <div className="flex flex-col gap-5 rounded-md bg-card px-5 py-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:px-7">
         <BinderTotals totals={summary.totals} linked={linked} className="w-full max-w-[24rem]" />
-        <LinkedAccountChips accounts={summary.linked_accounts} className="flex-row flex-wrap" />
+        <LinkedAccountChips accounts={summary.linked_accounts} />
       </div>
     </section>
   );

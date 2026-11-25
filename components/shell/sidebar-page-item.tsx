@@ -1,9 +1,8 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 import type { SidebarPage } from "@/lib/sidebar";
 import { useLongPress } from "@/hooks/use-long-press";
-import type { PinDragRow } from "@/hooks/use-pin-drag";
+import type { useSortable } from "@/hooks/use-sortable";
 import type { SidebarNavModel } from "@/components/shell/sidebar-page";
 import { SidebarPageMenu } from "@/components/shell/sidebar-page-menu";
 
@@ -11,31 +10,36 @@ import { SidebarPageMenu } from "@/components/shell/sidebar-page-menu";
 // on the row's link. The menu key (ContextMenu) does too.
 export const ROW_MENU_KEYS = "Shift+F10";
 
+// A sortable row's props (useSortable's `item(id)`).
+export type SortItemProps = ReturnType<ReturnType<typeof useSortable>["item"]>;
+
 const opensMenu = (e: React.KeyboardEvent) => e.key === "ContextMenu" || (e.shiftKey && e.key === "F10");
 
 // A page's row in the sidebar (a group's entry or a Pinned row). With
-// `pressable`, a long press on a touchscreen or Shift+F10 / the menu key
-// opens the row's menu; a tap still follows the link. Off on the icon rail
-// and its panel, where there is no pinning. A Pinned row passes `drag`: it
-// can be dragged, shows the drop line, and its menu has Move up and down.
+// `pressable`, Shift+F10 / the menu key opens the row's menu, and so does a
+// long press on a touchscreen; a tap still follows the link. Off on the icon
+// rail and its panel, where there is no pinning. A Pinned row passes `sort`:
+// the row itself drags (Make Room), so on touch a press and hold lifts it
+// instead of opening the menu; touch unpins from the page's entry in its
+// section, where the long press still opens the menu.
 export function SidebarPageItem({
   page,
   nav,
   pressable,
-  drag,
+  sort,
   children,
 }: {
   page: SidebarPage;
   nav: SidebarNavModel;
   pressable: boolean;
-  drag?: PinDragRow;
+  sort?: SortItemProps;
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLLIElement>(null);
   const [open, setOpen] = useState(false);
   // The keyboard opened the menu: focus goes back to the row's link.
   const byKey = useRef(false);
-  const press = useLongPress(pressable, () => {
+  const press = useLongPress(pressable && !sort, () => {
     byKey.current = false;
     setOpen(true);
   });
@@ -46,15 +50,8 @@ export function SidebarPageItem({
   };
   const link = () => ref.current?.querySelector<HTMLElement>("[data-slot=sidebar-menu-button]") ?? null;
 
-  // A move re-inserts the row, which drops focus; keep it on the row.
-  const at = nav.pins.keys.indexOf(page.key);
-  useLayoutEffect(() => {
-    if (!byKey.current || open) return;
-    const active = document.activeElement;
-    if (!active || active === document.body) link()?.focus({ preventScroll: true });
-  }, [at, open]);
-
   const onKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
+    sort?.onKeyDown(e);
     if (!pressable || !opensMenu(e) || !e.currentTarget.contains(e.target as Node)) return;
     e.preventDefault();
     byKey.current = true;
@@ -64,30 +61,26 @@ export function SidebarPageItem({
   return (
     // No text selection or link preview under a holding finger.
     <SidebarMenuItem
-      ref={ref}
       {...press.handlers}
-      {...drag?.handlers}
+      {...sort}
+      ref={(el: HTMLLIElement | null) => {
+        ref.current = el;
+        sort?.ref(el);
+      }}
       onKeyDown={onKeyDown}
       // The menu key's own context menu, after it opened this one.
       onContextMenu={(e) => {
         if (byKey.current && open) e.preventDefault();
         else if ("onContextMenu" in press.handlers) press.handlers.onContextMenu(e);
       }}
-      className={cn("[-webkit-touch-callout:none] [@media(hover:none)]:select-none", drag?.dragging && "opacity-40")}
+      className="[-webkit-touch-callout:none] [@media(hover:none)]:select-none"
     >
       {children}
-      {drag?.edge && (
-        <span
-          aria-hidden
-          className={cn("pointer-events-none absolute inset-x-1 z-10 h-0.5 bg-highlight", drag.edge === "before" ? "-top-0.5" : "-bottom-0.5")}
-        />
-      )}
       {pressable && (
         <SidebarPageMenu
           page={page}
           nav={nav}
           anchor={ref}
-          reorder={drag !== undefined}
           open={open}
           onOpenChange={change}
           finalFocus={() => (byKey.current ? (link() ?? true) : true)}

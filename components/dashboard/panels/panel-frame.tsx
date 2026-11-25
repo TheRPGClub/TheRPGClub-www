@@ -5,9 +5,10 @@ import { PANELS, type PanelKey, type PanelViewer } from "@/lib/dashboard/panels"
 import { MemberMark } from "@/components/challenges/host-badge";
 import { cn } from "@/lib/utils";
 
-// How a panel stands in edit mode: lifted while dragged, ringed in signal
-// orange when its change didn't save (the final round's "Not saved").
-export type PanelFrameState = "idle" | "dragging" | "failed";
+// How a panel stands in edit mode: ringed in signal orange when its change
+// didn't save (the final round's "Not saved"). A drag's look is CSS on the
+// wrapper's data-sort-* attributes.
+export type PanelFrameState = "idle" | "failed";
 
 // One Dashboard Panel (unify pick B): an ink card like the NR-GOTM feature,
 // topped by a 4px rule in the panel's own ink. The head (its name in Anton,
@@ -41,7 +42,6 @@ export function PanelFrame({
       style={{ "--panel-ink": `var(--panel-${spec.ink})` } as CSSProperties}
       className={cn(
         "@container min-w-0 rounded-sm bg-card px-4 pt-4.5 pb-2.5 shadow-[inset_0_4px_0_var(--panel-ink)] transition-[opacity,box-shadow] sm:px-5 sm:pt-5 sm:pb-3",
-        state === "dragging" && "opacity-45 shadow-[inset_0_4px_0_var(--panel-ink),inset_0_0_0_2px_var(--color-highlight)]",
         state === "failed" && "shadow-[inset_0_4px_0_var(--panel-ink),inset_0_0_0_2px_var(--color-destructive)]",
       )}
       {...rest}

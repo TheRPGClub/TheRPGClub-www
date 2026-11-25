@@ -6,11 +6,10 @@ import { useRouter } from "next/navigation";
 import { FileUp } from "lucide-react";
 import type { ManagedList } from "@/lib/members/managed-lists";
 import { cn } from "@/lib/utils";
-import { ManageListsRow } from "./manage-lists-row";
 
 // The edit page's section switcher: a sticky rail of its sections (a strip of
-// tabs on phones), with only the chosen section shown, then the Imports link
-// and the "Manage your lists" row. The choice lives in the URL hash, so
+// tabs on phones), with only the chosen section shown, then the Imports link.
+// The choice lives in the URL hash, so
 // `/edit#socials` (where the imports send a member to link an account) opens
 // straight onto that section. A list's old hash (`/edit#backlog`, from before
 // the lists moved to their own pages) is sent on to that list's page.
@@ -105,7 +104,6 @@ export function EditSections({
             </li>
           )}
         </ul>
-        <ManageListsRow lists={lists} />
       </nav>
 
       <div key={current.id} className="min-w-0">

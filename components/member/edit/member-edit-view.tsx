@@ -19,7 +19,7 @@ export function MemberEditView({
   data: MemberEditData;
   // Whether the Linked Accounts section shows (the hub's flag).
   linked: boolean;
-  // The list pages the "Manage your lists" row links to.
+  // The list pages an old list hash (`/edit#backlog`) is sent on to.
   lists: ManagedList[];
   // Null when there's nothing to import.
   importsHref: string | null;

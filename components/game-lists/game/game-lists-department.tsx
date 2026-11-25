@@ -37,7 +37,7 @@ export function GameListsDepartment({ gameId, gameTitle, data }: { gameId: numbe
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {data.cards.map((card) => (
-            <GameListCard key={card.list.id} card={card} gameId={gameId} />
+            <GameListCard key={card.list.id} card={card} />
           ))}
         </div>
       )}

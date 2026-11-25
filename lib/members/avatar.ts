@@ -8,3 +8,8 @@ export function avatarSrc(path: string | null | undefined): string | null {
 export function memberAvatarPath(userId: string): string {
   return `/api/v1/users/${userId}/avatar`;
 }
+
+// The browser-ready avatar URL for a member: the one every avatar disc uses.
+export function memberAvatarSrc(userId: string): string {
+  return avatarSrc(memberAvatarPath(userId))!;
+}

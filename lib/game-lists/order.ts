@@ -1,7 +1,7 @@
 import type { GameList, GameListEntry, GameListGame, GameListSort } from "@/lib/game-lists/types";
 import { memberName } from "@/lib/game-lists/types";
 
-// The orders a Game List can be read in and the moves its editor makes, kept
+// The orders a Game List can be read in and the renumbering its editor does, kept
 // pure so the page and its tests agree with the API (api#446): Ranked by
 // position, A to Z by title ignoring case, Date added newest first; ties
 // fall back to the ranked position. Client-safe.
@@ -24,28 +24,6 @@ export function sortEntries(entries: readonly GameListEntry[], sort: GameListSor
     });
   }
   return copy.sort(byPosition);
-}
-
-// The ranked order with one game moved a step up (-1) or down (1); null at
-// either end or for a game not in it.
-export function moveEntry(ids: readonly number[], id: number, step: -1 | 1): number[] | null {
-  const from = ids.indexOf(id);
-  const to = from + step;
-  if (from < 0 || to < 0 || to >= ids.length) return null;
-  const next = [...ids];
-  [next[from], next[to]] = [next[to], next[from]];
-  return next;
-}
-
-// The ranked order with one game dropped before another (null: at the end);
-// null when nothing would change.
-export function placeEntry(ids: readonly number[], id: number, before: number | null): number[] | null {
-  if (!ids.includes(id) || id === before) return null;
-  const rest = ids.filter((x) => x !== id);
-  const at = before === null ? rest.length : rest.indexOf(before);
-  if (at < 0) return null;
-  const next = [...rest.slice(0, at), id, ...rest.slice(at)];
-  return next.every((x, i) => x === ids[i]) ? null : next;
 }
 
 // Entries renumbered to a new ranked order (the ids in that order).

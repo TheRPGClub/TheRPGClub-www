@@ -86,16 +86,6 @@ export function nextRoundDefaults(
   };
 }
 
-// The list with the item at `from` moved to `to` (both clamped).
-export function moveItem<T>(list: readonly T[], from: number, to: number): T[] {
-  const next = [...list];
-  if (from < 0 || from >= next.length) return next;
-  const target = Math.max(0, Math.min(next.length - 1, to));
-  const [item] = next.splice(from, 1);
-  next.splice(target, 0, item);
-  return next;
-}
-
 // A Reddit URL as it is saved: trimmed, blank as null. Anything that isn't
 // an http(s) URL is refused with a reason.
 export function normalizeRedditUrl(raw: string): { url: string | null; error?: string } {
