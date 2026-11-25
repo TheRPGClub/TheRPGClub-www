@@ -73,7 +73,7 @@ async function fetchRoundNominations(
 export async function loadDashboard(features: FeatureView) {
   const [round, history, voting] = await Promise.all([
     fetchCurrentGotmRound(),
-    fetchGotmRounds({ kind: "both", year: null, q: "", sort: "desc", page: 1 }),
+    fetchGotmRounds({ kind: "both", year: null, sort: "desc", page: 1 }),
     fetchVotingRound(),
   ]);
   const [{ nominations, now }, counts] = await Promise.all([

@@ -889,6 +889,8 @@ export interface GotmRoundBlock {
   month_year: string;
   voting_results_message_id: string | null;
   games: GotmRoundGame[];
+  // Nominations of this kind in the round; 0 before they were recorded.
+  nominations_count?: number;
 }
 
 export interface GotmRound {

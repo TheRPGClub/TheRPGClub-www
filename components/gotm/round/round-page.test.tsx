@@ -15,7 +15,7 @@ import {
   winner,
 } from "@/lib/gotm-round.fixtures";
 
-const noFilters: GotmHistoryFilters = { kind: "both", year: null, q: "", sort: "desc", page: 1 };
+const noFilters: GotmHistoryFilters = { kind: "both", year: null, sort: "desc", page: 1 };
 
 // Static markup with entities decoded and tags stripped, for reading copy.
 function render(round: GotmRoundDetail | null, filters = noFilters) {
