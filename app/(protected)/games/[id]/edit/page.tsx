@@ -74,7 +74,7 @@ export default async function GameEditPage({
         releases: releases ?? [],
         versions: (relations?.alternates ?? []).map(alternateVersion),
         hltb: hltb ?? null,
-        franchises: gameFranchiseRefs(relations?.franchises ?? []),
+        franchises: gameFranchiseRefs(relations?.franchises ?? [], game.parent_igdb_id ? (game.parent_game_name ?? "A game not in GameDB") : null),
       }}
       series={relations?.collection?.name ?? null}
       unavailable={unavailable}

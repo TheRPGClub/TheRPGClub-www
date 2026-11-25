@@ -2,7 +2,7 @@
 version: 1
 slug: "franchise-page"
 primary_target: "app/(protected)/franchises/[id]/page.tsx"
-related_targets: ["components/franchises/franchise-view.tsx","components/franchises/franchise-games.tsx","components/franchises/franchise-wall.tsx","components/franchises/franchise-tile.tsx","components/franchises/franchise-history.tsx","components/games/edit/franchises-tab.tsx","components/games/edit/franchise-row.tsx","components/games/game-page/game-details.tsx"]
+related_targets: ["components/franchises/franchise-view.tsx","components/franchises/franchise-games.tsx","components/franchises/franchise-wall.tsx","components/franchises/franchise-tile.tsx","components/franchises/franchise-history.tsx","components/games/edit/franchises-tab.tsx","components/games/edit/franchise-lanes/franchise-role-lane.tsx","components/games/edit/franchise-lanes/lane-franchise.tsx","components/games/edit/franchise-lanes/lane-add-slot.tsx","components/games/game-page/game-details.tsx"]
 ---
 
 # Surface: Franchise page (/franchises/:id), the Franchises tab on Game Edit, and Series labels

@@ -1,78 +1,84 @@
 "use client";
 
+import { useState } from "react";
 import { Lock } from "lucide-react";
-import type { FranchisesStage, GameFranchiseRef } from "@/lib/games/game-edit";
+import type { FranchisesStage, GameFranchises } from "@/lib/games/game-edit";
 import {
-  franchisePicked,
-  franchiseStagedForCreate,
-  franchisesView,
-  stageFranchiseCreate,
-  stageFranchiseLink,
-  stageFranchiseMainline,
-  stageFranchiseUnlink,
-  unstageFranchise,
+  effectiveParent,
+  FRANCHISE_ROLES,
+  franchiseLanes,
+  franchisesSection,
+  type FranchiseRole,
 } from "@/lib/games/game-edit/franchises";
 import { EditSection } from "@/components/games/edit/edit-section";
-import { FranchiseLinkSearch } from "@/components/games/edit/franchise-link-search";
-import { FranchiseRowItem } from "@/components/games/edit/franchise-row";
+import { FranchiseRoleLane } from "@/components/games/edit/franchise-lanes/franchise-role-lane";
 
-// The Franchises tab (design pick 7A, "staged rows, Save all"): the game's
-// Series read only, then one ruled row per Franchise with a Mainline / Spin-offs
-// control that hugs its two words, and Unlink. Changes stage with Edited,
-// Added and Removing marks, each with an Undo, until Save all.
+// The Franchises tab (design pick edit-lanes, www#207): the game's Series
+// read only, then three role lanes, Mainline in, Spin-off of and Add-on of,
+// each listing its Franchises with its own + Add slot. Changes stage with
+// Edited, Added and Removing marks, each with an Undo, until Save all.
 export function FranchisesTab({
+  gameId,
   loaded,
   staged,
   error,
   series,
   onStage,
 }: {
-  loaded: GameFranchiseRef[];
+  gameId: number;
+  loaded: GameFranchises;
   staged: FranchisesStage | undefined;
   error?: string;
   series: string | null;
   onStage: (next: FranchisesStage | undefined) => void;
 }) {
-  const rows = franchisesView(loaded, staged);
+  // The one open + Add slot; a parent asked for in Add-on of (a move into
+  // it, or Change) opens that lane's slot on its parent search.
+  const [open, setOpen] = useState<FranchiseRole | null>(null);
+  const [asking, setAsking] = useState<{ key: string | null } | null>(null);
+  const lanes = franchiseLanes(loaded, staged);
+  const count = staged ? franchisesSection.changes(loaded, staged) : 0;
+  const isAddOn = !!effectiveParent(loaded, staged);
 
   return (
     <EditSection
       title="Franchises"
       error={error}
-      actions={
-        <FranchiseLinkSearch
-          picked={(id) => franchisePicked(loaded, staged, id)}
-          staged={(name) => franchiseStagedForCreate(staged, name)}
-          onPick={(f) => onStage(stageFranchiseLink(loaded, staged, f))}
-          onCreate={(name) => onStage(stageFranchiseCreate(staged, name))}
-        />
-      }
+      actions={count > 0 && <span className="font-label text-[0.8rem] font-extrabold tracking-[0.08em] text-highlight">{count} staged</span>}
     >
       {series && (
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border pb-3 text-[0.92rem] text-dim-foreground">
           <span className="font-label w-22 text-[0.78rem] font-bold tracking-[0.08em] text-faint-foreground">Series</span>
           <span className="font-semibold text-foreground">{series}</span>
-          <span className="font-label inline-flex items-center gap-1 text-[0.72rem] font-bold tracking-[0.07em] text-faint-foreground">
-            <Lock aria-hidden className="size-3" />
-            From IGDB, read only
-          </span>
+          <Lock role="img" aria-label="Read only" className="size-3.5 text-faint-foreground" />
         </p>
       )}
-      {rows.length === 0 ? (
-        <p className="py-6 text-[0.95rem] text-faint-foreground">This game isn&apos;t in a Franchise yet.</p>
-      ) : (
-        <ul aria-label="Franchises">
-          {rows.map((row) => (
-            <FranchiseRowItem
-              key={row.key}
-              row={row}
-              onMainline={(mainline) => onStage(stageFranchiseMainline(loaded, staged, row.key, mainline))}
-              onUnlink={() => row.franchise_id && onStage(stageFranchiseUnlink(loaded, staged, row.franchise_id))}
-              onUndo={() => onStage(unstageFranchise(staged, row.key))}
-            />
-          ))}
-        </ul>
-      )}
+      {FRANCHISE_ROLES.map((role) => (
+        <FranchiseRoleLane
+          key={role}
+          role={role}
+          gameId={gameId}
+          loaded={loaded}
+          staged={staged}
+          lanes={lanes}
+          isAddOn={isAddOn}
+          open={open === role}
+          asking={role === "addon" ? asking : null}
+          onOpen={() => {
+            setOpen(role);
+            setAsking(null);
+          }}
+          onClose={() => {
+            setOpen(null);
+            setAsking(null);
+          }}
+          onAsk={(key) => {
+            setOpen("addon");
+            setAsking({ key });
+          }}
+          onStage={onStage}
+        />
+      ))}
     </EditSection>
   );
 }
