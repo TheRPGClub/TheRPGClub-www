@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Pencil, Plus } from "lucide-react";
+import { Flag, Pencil, Plus } from "lucide-react";
 import type { GameList } from "@/lib/game-lists/types";
 import { gamesCount } from "@/lib/game-lists/text";
 import { useGameListBoard } from "@/hooks/use-game-list-board";
@@ -24,6 +24,7 @@ export function ListBoard({
   now,
   badge,
   startChallengeHref = null,
+  challengeHref = null,
 }: {
   initial: GameList;
   // Only the owner changes who sees a list.
@@ -32,6 +33,8 @@ export function ListBoard({
   badge?: ReactNode;
   // "Start a Challenge" from this list (www#172): its games become Core.
   startChallengeHref?: string | null;
+  // The Challenge this list feeds, which takes the Start button's place.
+  challengeHref?: string | null;
 }) {
   const board = useGameListBoard(initial);
   const { list, entries } = board;
@@ -50,8 +53,14 @@ export function ListBoard({
         count={gamesCount(list.entry_count)}
         actions={
           !editing &&
-          (startChallengeHref || list.viewer.can_edit) && (
+          (startChallengeHref || challengeHref || list.viewer.can_edit) && (
             <>
+              {challengeHref && list.challenge && (
+                <ButtonLink href={challengeHref} variant="outline" title="The Challenge this list feeds">
+                  <Flag aria-hidden />
+                  <span className="max-w-56 truncate">{list.challenge.name}</span>
+                </ButtonLink>
+              )}
               {startChallengeHref && list.entry_count > 0 && (
                 <ButtonLink href={startChallengeHref} variant="outline">
                   <Plus aria-hidden />

@@ -48,6 +48,12 @@ describe("canStartFromList", () => {
     expect(canStartFromList(list({ club: true, owner: null }), { id: "2", staff: true })).toBe(true);
     expect(canStartFromList(list({ club: true, owner: null }), { id: "1", staff: false })).toBe(false);
   });
+
+  it("refuses a list that already feeds a Challenge", () => {
+    const feeding = { challenge: { id: 3, name: "Souls Autumn" } };
+    expect(canStartFromList(list(feeding), { id: "1", staff: false })).toBe(false);
+    expect(canStartFromList(list({ ...feeding, club: true, owner: null }), { id: "2", staff: true })).toBe(false);
+  });
 });
 
 describe("draftFromList", () => {
