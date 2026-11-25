@@ -107,7 +107,7 @@ export function describeChange(change: FranchiseChange): ChangePart[] {
     case "mainline_on":
       return [{ text: "marked " }, game, { text: " Mainline" }];
     case "mainline_off":
-      return [{ text: "moved " }, game, { text: " to Other" }];
+      return [{ text: "moved " }, game, { text: " to Spin-offs" }];
     case "create":
       return [{ text: "created this Franchise" }];
     case "rename": {

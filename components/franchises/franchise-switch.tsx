@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export type FranchiseViewKey = "games" | "history";
+export type FranchiseViewKey = "games" | "progress" | "history";
 
-// The Games / History switch (design pick 6C): two Anton words on the 2px
-// paper rule, the current one paper over a 4px paper bar, each with its
-// count. The view is kept in the address (`?view=history`). An action (Link
-// a game, in edit mode) sits at the rule's right.
+// The Games / Progress / History switch (design pick 6C; Progress from pick
+// 1E): Anton words on the 2px paper rule, the current one paper over a 4px
+// paper bar, each with its count (Progress counts the viewer's Mainline,
+// "11/16"). The view is kept in the address (`?view=history`). An action
+// (Link a game, in edit mode) sits at the rule's right.
 export function FranchiseSwitch({
   franchiseId,
   current,
@@ -15,7 +16,7 @@ export function FranchiseSwitch({
 }: {
   franchiseId: number;
   current: FranchiseViewKey;
-  views: { key: FranchiseViewKey; label: string; count: number }[];
+  views: { key: FranchiseViewKey; label: string; count: number | string }[];
   action?: React.ReactNode;
 }) {
   return (
@@ -30,7 +31,7 @@ export function FranchiseSwitch({
               scroll={false}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "font-headline relative inline-flex items-baseline gap-2 text-[1.875rem] leading-[0.9] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
+                "font-headline relative inline-flex items-baseline gap-2 text-[1.45rem] leading-[0.9] sm:text-[1.875rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight",
                 on
                   ? "text-foreground after:absolute after:inset-x-0 after:-bottom-3 after:h-1 after:bg-foreground after:content-['']"
                   : "text-faint-foreground hover:text-foreground",

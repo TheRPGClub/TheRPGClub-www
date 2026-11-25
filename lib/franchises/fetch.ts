@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, ApiSingle } from "@/lib/api/types";
-import type { FranchiseChange, FranchisePage } from "./types";
+import type { FranchiseChange, FranchisePage, FranchiseProgress, FranchiseProgressMember } from "./types";
 
 // Server-side reads for /franchises/:id. Never cached: the page carries the
 // viewer's rights and shows an edit at once.
@@ -26,6 +26,33 @@ export async function fetchFranchiseChanges(id: number): Promise<{ changes: Fran
     if (!res.ok) return null;
     const body = (await res.json()) as ApiCollection<FranchiseChange>;
     return { changes: body.data, total: body.meta?.count ?? body.data.length };
+  } catch {
+    return null;
+  }
+}
+
+// A member's Franchise Progress (the viewer's without `userId`), or null when
+// the `franchise_progress` Feature is closed to the viewer (the API's 404),
+// the member is unknown, or the read fails: the page then goes without the
+// Progress tab rather than failing.
+export async function fetchFranchiseProgress(id: number, userId?: string): Promise<FranchiseProgress | null> {
+  const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+  try {
+    const res = await apiFetch(`/api/v1/franchises/${id}/progress${query}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiSingle<FranchiseProgress>).data;
+  } catch {
+    return null;
+  }
+}
+
+// The Progress tab's Members table, in the API's order, or null when the
+// read fails.
+export async function fetchFranchiseProgressMembers(id: number): Promise<FranchiseProgressMember[] | null> {
+  try {
+    const res = await apiFetch(`/api/v1/franchises/${id}/progress/members`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return ((await res.json()) as ApiCollection<FranchiseProgressMember>).data;
   } catch {
     return null;
   }

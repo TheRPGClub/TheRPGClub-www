@@ -8,7 +8,7 @@ import { SectionHeading } from "@/components/templates/page-header";
 import { AddOnDrawer } from "@/components/franchises/add-on-drawer";
 import { FranchiseWall } from "@/components/franchises/franchise-wall";
 
-// The Games view (design pick 6B): the Mainline run, then the Other games in
+// The Games view (design pick 6B): the Mainline run, then the spin-offs in
 // the box set, then any Add-ons of games outside the Franchise. In edit mode
 // the whole view sits inside a yellow rule, every cover carries its star and
 // x, and the box set ends in the dashed Link a game tile.
@@ -51,10 +51,10 @@ export function FranchiseGames({
         </section>
       )}
       {(other.length > 0 || editor.editing) && (
-        <section aria-label="Other" className={cn(mainline.length > 0 && "mt-10")}>
-          <SectionHeading title="Other" count={`${layout.counts.other} game${layout.counts.other === 1 ? "" : "s"} · the box set`} />
+        <section aria-label="Spin-offs" className={cn(mainline.length > 0 && "mt-10")}>
+          <SectionHeading title="Spin-offs" count={`${layout.counts.other} game${layout.counts.other === 1 ? "" : "s"} · the box set`} />
           <div className="mt-4 rounded-sm border border-border bg-card px-3 pt-4 pb-5 sm:px-5">
-            <FranchiseWall entries={other} kind="box" editor={editor} label="Other games" extra={addTile} />
+            <FranchiseWall entries={other} kind="box" editor={editor} label="Spin-offs" extra={addTile} />
           </div>
         </section>
       )}
