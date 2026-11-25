@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile Franchises Options</title>
+<meta name="description" content="Design options for the Franchises section of a member profile: a meter row per played Franchise, Conquered first.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- profile context ---------- */
+.pbn{position:relative;height:250px;margin:-24px -28px 0;overflow:hidden;background:var(--muted)}
+.pbn .art{opacity:.55}
+.pbn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(11 11 13/.96) 0%,rgb(11 11 13/.7) 45%,rgb(11 11 13/.2) 100%)}
+.pbn .in{position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;gap:22px;padding:24px 28px}
+.pbn .bav{box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.pbn h1{font:400 5.2rem/.86 Anton;text-transform:uppercase}
+.pbn .by{font:700 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pbn .by .chip{height:22px}
+.pshell .pbn{height:230px;margin:-20px -16px 0}
+.pshell .pbn .in{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+.pshell .pbn h1{font-size:3.2rem}
+.np{display:flex;gap:14px;align-items:flex-end}
+.np .bk{display:flex;gap:10px;align-items:flex-end}
+.np .bk b{display:block;font:400 1.05rem/.95 Anton;text-transform:uppercase;max-width:150px}
+.np .bk small{font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ctx{opacity:.55}
+/* shelf head: monumental count + title on the left */
+.case{display:grid;grid-template-columns:190px minmax(0,1fr);gap:28px;margin-top:40px}
+.case .lead .num{font:400 6rem/.8 Anton;letter-spacing:-.01em}
+.case .lead h2{font:400 2.2rem/.9 Anton;text-transform:uppercase;margin-top:10px;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.case .lead p{color:var(--faint);font:700 .78rem/1.35 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;margin-top:10px}
+.case .lead .btn{margin-top:14px}
+.pshell .case{grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.pshell .case .lead{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-items:end}
+.pshell .case .lead .num{font-size:4.2rem;grid-row:span 2}
+.pshell .case .lead h2{font-size:1.8rem;margin:0}
+.pshell .case .lead p{margin-top:6px}
+.pshell .case .lead .btn{grid-column:1/-1;margin-top:12px;justify-self:start}
+
+
+/* ---------- 3A: meter rows ---------- */
+.frows{min-width:0}
+.fr3{display:grid;grid-template-columns:56px minmax(0,1fr) 300px 110px;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);position:relative}
+.fr3:first-child{padding-top:0}
+.fr3 .nm b{display:block;font:400 1.7rem/.95 Anton;text-transform:uppercase}
+.fr3 .nm small{display:block;font:700 .76rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.fr3 .ms{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fr3 .ms .mtr .nm{font-size:1.45rem}
+.fr3 .ms .mtr .nmlab{font:700 .66rem/1 "Barlow Condensed";letter-spacing:.07em;margin-top:5px;color:var(--faint)}
+.fr3 .h{text-align:right;font:400 2rem/.9 Anton}
+.fr3 .h small{display:block;font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.fr3 .cs{position:absolute;left:300px;top:50%;transform:translateY(-50%)}
+.divl{font:700 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 0 10px;border-bottom:1px solid var(--bs)}
+.pshell .fr3{grid-template-columns:44px minmax(0,1fr) 70px;gap:6px 12px}
+.pshell .fr3 .ms{grid-column:1/-1;grid-row:2}
+.pshell .fr3 .h{grid-column:3;grid-row:1}
+.fr3 .nm .cstamp{margin:8px 0 0 4px}
+.pshell .fr3 .nm b{font-size:1.3rem}
+.pshell .fr3 .h{font-size:1.5rem}
+/* ---------- 3B: the trophy shelf ---------- */
+.plaques{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.plq{position:relative;background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:18px 20px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:end;overflow:hidden}
+.plq .fan{display:flex;align-items:flex-end}
+.plq .fan .cv{box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.plq .fan .cv+.cv{margin-left:-26px}
+.plq .fan .cv:nth-child(1){transform:rotate(-4deg)}.plq .fan .cv:nth-child(2){transform:rotate(1.5deg) translateY(-4px)}.plq .fan .cv:nth-child(3){transform:rotate(-1deg)}.plq .fan .cv:nth-child(4){transform:rotate(2deg)}.plq .fan .cv:nth-child(5){transform:rotate(-2deg)}
+.plq h3{font:400 2.2rem/.9 Anton;text-transform:uppercase}
+.plq p{font:700 .78rem/1.35 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+.plq p b{color:var(--fg)}
+.plq .st{display:block;margin:0 0 12px 2px}
+.prow{display:grid;grid-template-columns:minmax(0,1.1fr) 120px 120px 120px 90px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.prow .t b{font:400 1.35rem/1 Anton;text-transform:uppercase}
+.prow .t small{display:block;font:700 .72rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.prow .mtr .nm{font-size:1.3rem}
+.prow .mtr .nmlab{display:none}
+.prow .h{text-align:right;font:400 1.6rem/1 Anton}
+.pshell .plaques{grid-template-columns:1fr}
+.pshell .prow.hd{display:none}
+.pshell .prow{grid-template-columns:repeat(3,1fr);gap:6px 8px}
+.pshell .prow .t{grid-column:1/3}
+.pshell .prow .h{grid-column:3;grid-row:1}
+/* ---------- 3C: the dial wall ---------- */
+.wall3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 22px}
+.dw{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.dw .mtr .nmlab{display:none}
+.dw h3{font:400 1.45rem/.95 Anton;text-transform:uppercase;margin-top:12px}
+.dw .sub{display:flex;gap:14px;justify-content:center;margin-top:8px;font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.dw .sub b{display:block;font:400 1.2rem/1 Anton;color:var(--fg);letter-spacing:0}
+.dw .hh{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+.dw .hh b{color:var(--fg)}
+.dw .st{position:absolute;right:4px;top:6px}
+.pshell .wall3{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}
+.pshell .dw h3{font-size:1.1rem}
+</style></head>
+<body><script>
+/* ---------------- profile context ---------------- */
+const profBanner = (k, ph) => {
+  const m = M[k];
+  return `<div class="pbn">${artBg(k === "mara" ? "metaphor" : "wukong")}<div class="in">
+    <span class="av bav" style="--s:${ph ? 64 : 104}px;--c:${m.c}">${m.n[0]}</span>
+    <div><h1>${m.n}</h1><div class="by">@${m.n.toLowerCase().replace(/ /g, "")} <span>·</span> In the club since ${k === "mara" ? "Mar 2021" : "Jun 2023"}<span class="chip ols sm">${m.role}</span><span class="chip sm">Member</span></div></div></div></div>`;
+};
+const nowPlaying = (k, ph) => {
+  const gs = k === "mara" ? ["ff6", "metaphor"] : ["wuchang", "nioh2"];
+  return `<div class="ctx"><div class="sec" style="margin-top:28px"><h2>Now Playing</h2><span class="n lb">2 games</span></div>
+  <div class="np">${gs.map((g) => `<div class="bk">${cover(g, ph ? 58 : 70)}<div><b>${esc(G[g].t)}</b><small>Since ${g === "ff6" ? "9 Nov" : "2 Oct"}</small></div></div>`).join("")}</div></div>`;
+};
+const belowCtx = (ph) => `<div class="ctx"><div class="case" style="margin-top:36px"><div class="lead"><div class="num">${ph ? 41 : 41}</div><h2>Completed</h2></div><div class="empty" style="border-style:solid;color:var(--faint)">The Completed shelf continues below.</div></div></div>`;
+
+game("suik", "Suikoden II", 1998, null);
+/* Mara's played Franchises; Conquered ones first */
+const FR = [
+  { n: "Persona", c: "p5r", main: [5, 5], all: [8, 19], spin: [3, 14], h: 412, conq: "Feb 2026", covers: ["p5r", "p4g", "p3r"] },
+  { n: "Chrono", c: "ct", main: [2, 2], all: [2, 3], spin: [0, 1], h: 61, conq: "Jul 2025", covers: ["ct", "cc2"] },
+  { n: "Final Fantasy", c: "ff6", main: [11, 16], all: [16, 31], spin: [5, 15], h: 949 },
+  { n: "Dragon Quest", c: "dq11", main: [4, 11], all: [5, 24], spin: [1, 13], h: 286 },
+  { n: "Dark Souls", c: "ds3", main: [2, 3], all: [2, 4], spin: [0, 1], h: 143 },
+  { n: "Kingdom Hearts", c: "kh3", main: [1, 3], all: [2, 12], spin: [1, 9], h: 88 },
+  { n: "Tales of", c: "toa", main: [0, 0], all: [3, 19], spin: [3, 19], h: 164 },
+];
+const md = (f, k) => ({ k, name: { main: "Mainline", all: "Everything", spin: "Spin-offs" }[k], n: f[k][0], m: f[k][1], h: 0 });
+const mini = (f, k, w = 92) => {
+  const d = md(f, k);
+  return d.m ? `<div class="mtr"><div class="dial">${gauge(d.n, d.m, { w, sw: Math.round(w * 0.11) })}<div class="rd"><div class="nm">${d.n}<span>/${d.m}</span></div></div></div><div class="nmlab">${d.name} · ${pct(d.n, d.m)}%</div></div>`
+    : `<div class="mtr off"><div class="dial">${gauge(0, 0, { w, empty: 1, sw: Math.round(w * 0.11) })}<div class="rd"><div class="none" style="font-size:.62rem">None marked</div></div></div><div class="nmlab">${d.name}</div></div>`;
+};
+const lead = (ph, n = 7) => `<div class="lead"><div class="num">${n}</div><h2>Franchises</h2><p>2 Conquered · ${hrs(FR.reduce((a, f) => a + f.h, 0))} of Playtime</p></div>`;
+const ctxTop = (ph) => profBanner("mara", ph) + nowPlaying("mara", ph);
+
+/* ================= 3A ================= */
+const rowA = (f) => `<div class="fr3">${cover(f.c, 56, { fs: 8 })}<div class="nm"><b>${f.n}</b>${f.conq ? stamp(f.conq, "sm") : ""}<small>${f.conq ? `` : f.main[1] ? `${f.main[1] - f.main[0]} Mainline to go` : "No Mainline games marked yet"}</small></div>
+<div class="ms">${mini(f, "main")}${mini(f, "all")}${mini(f, "spin")}</div><div class="h">${hrs(f.h)}<small>Playtime</small></div></div>`;
+const secA = (ph, n = 7) => `<div class="case">${lead(ph)}<div class="frows">${FR.slice(0, 2).map(rowA).join("")}<div class="divl">Still going</div>${FR.slice(2, n).map(rowA).join("")}</div></div>`;
+const a3desk = () => desk(ctxTop(0) + secA(0), "members", { h: 1260 });
+const a3phone = () => phone(ctxTop(1) + secA(1, 5), "you", { h: 1500 });
+const a3other = () => desk(`<div class="case"><div class="lead"><div class="num">3</div><h2>Franchises</h2><p>Rowan · 1 Conquered</p></div><div class="frows">${rowA({ n: "Final Fantasy", c: "ff6", main: [16, 16], all: [19, 31], spin: [3, 15], h: 1210, conq: "Mar 2025" })}<div class="divl">Still going</div>${rowA({ n: "Suikoden", c: "suik", main: [1, 5], all: [1, 7], spin: [0, 2], h: 54 })}${rowA({ n: "Dragon Quest", c: "dq11", main: [2, 11], all: [2, 24], spin: [0, 13], h: 131 })}</div></div>`, "members", { h: 560 });
+
+/* ================= 3B ================= */
+const plaque = (f) => `<div class="plq"><div class="fan">${f.covers.map((k) => cover(k, 84, { fs: 11 })).join("")}</div><div><span class="st">${stamp(f.conq, "sm")}</span><h3>${f.n}</h3><p><b>${f.main[0]} of ${f.main[1]}</b> Mainline · <b>${hrs(f.h)}</b></p><p>Also ${f.spin[0]} of ${f.spin[1]} spin-offs</p></div></div>`;
+const prowB = (f) => `<div class="prow"><div class="t"><b>${f.n}</b><small>${f.main[1] ? `${pct(f.main[0], f.main[1])}% of Mainline` : "No Mainline games marked yet"}</small></div>${mini(f, "main", 110)}${mini(f, "all", 110)}${mini(f, "spin", 110)}<div class="h">${hrs(f.h)}</div></div>`;
+const secB = (ph, n = 7) => `<div class="case">${lead(ph)}<div><div class="plaques">${FR.slice(0, 2).map(plaque).join("")}</div>
+<div class="prow hd" style="border-bottom:2px solid var(--fg);padding-bottom:6px;margin-top:22px;font:700 .74rem/1 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase;color:var(--faint)"><span>Still going</span><span style="text-align:center">Mainline</span><span style="text-align:center">Everything</span><span style="text-align:center">Spin-offs</span><span style="text-align:right">Playtime</span></div>
+${FR.slice(2, n).map(prowB).join("")}</div></div>`;
+const b3desk = () => desk(ctxTop(0) + secB(0), "members", { h: 1300 });
+const b3phone = () => phone(ctxTop(1) + secB(1, 5), "you", { h: 1700 });
+
+/* ================= 3C ================= */
+const dial = (f) => {
+  const d = md(f, "main");
+  const g = d.m ? `<div class="mtr"><div class="dial">${gauge(d.n, d.m, { w: 190, sw: 18, ticks: 1 })}<div class="rd"><div class="nm">${d.n}<span>/${d.m}</span></div><div class="pc">${pct(d.n, d.m)}% Mainline</div></div></div></div>`
+    : `<div class="mtr off"><div class="dial">${gauge(0, 0, { w: 190, empty: 1 })}<div class="rd"><div class="none">No Mainline games yet</div></div></div></div>`;
+  return `<div class="dw">${g}<h3>${f.n}</h3><div class="sub"><span><b>${f.all[0]}/${f.all[1]}</b>Everything</span><span><b>${f.spin[0]}/${f.spin[1]}</b>Spin-offs</span></div><div class="hh"><b>${hrs(f.h)}</b> Playtime</div>${f.conq ? `<span class="st">${stamp(f.conq, "sm")}</span>` : ""}</div>`;
+};
+const secC = (ph, n = 7) => `<div class="case">${lead(ph)}<div class="wall3">${FR.slice(0, n).map(dial).join("")}</div></div>`;
+const c3desk = () => desk(ctxTop(0) + secC(0), "members", { h: 1180 });
+const c3phone = () => phone(ctxTop(1) + secC(1, 4), "you", { h: 1400 });
+
+page({
+  title: "Franchise Progress: the profile",
+  lede: `Options for a <b>Franchises</b> section on a member's profile: one row per Franchise they have played (any Playtime or Game Completion in it), <b>Conquered first</b>, each with the three meters and its Playtime. It sits with the profile's shelves, under Now Playing and the Completed shelf (the dimmed parts are context). Example: Mara, <b>7 Franchises</b>, Conquered <b>Persona</b> and <b>Chrono</b>. Shown with the Franchise Progress Feature on.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara on her own profile"], ["Order", "Conquered (newest first), then by Playtime"]],
+  surfaces: [{ id: "s3", title: "3 · Profile Franchises", sub: "/members/[id] · 3 options", brief: `A member who has played no Franchise shows no section on someone else's view (the Empty Track Rule); on their own profile it is a dashed slip pointing to Franchise pages. Each row links to the Franchise page.`,
+    options: [
+      { code: "3A", short: "Rows", title: "Meter rows on the shelf", idea: `The bookcase's <b>shelf head</b> (a monumental count and "Franchises" on the left), then one <b>ruled row per Franchise</b>: cover, the name in Anton with how many Mainline games are left, the <b>three meters side by side</b>, and Playtime in Anton. Conquered rows come first with the stamp; a "Still going" rule splits them from the rest. <b>Recommended</b>: the user's "meter row" literally, and it scans down.`,
+        desk: ["Desktop · Mara's own profile", a3desk()], phone: ["Phone · meters drop under the name", a3phone()],
+        more: [["Another member · Rowan, one Conquered", a3other()]],
+        notes: [`Seven rows are about one screen; past ten, "Show all 14" folds the rest.`] },
+      { code: "3B", short: "Plaques", title: "Plaques, then the run sheet", idea: `Conquered Franchises get a <b>plaque</b> each: a fan of their Mainline covers at hand-placed tilts, the name, "5 of 5 Mainline · 412 h · Feb 2026" and the stamp. Everything still going sits under it as a <b>run sheet</b> with column heads (Mainline, Everything, Spin-offs, Playtime), so the meters line up and compare down the page.`,
+        desk: ["Desktop · plaques over the run sheet", b3desk()], phone: ["Phone · plaques stack", b3phone()],
+        notes: [`Most celebratory for Conquering; costs height when a member has many Conquered Franchises.`] },
+      { code: "3C", short: "Dial wall", title: "The dial wall", idea: `Each Franchise is <b>one big Mainline dial</b> with its name under it, and Everything and Spin-offs as two small numerals below; the Conquered ones carry their stamp with the date. Four across, Conquered first. The other two meters are numbers rather than dials, so the wall stays calm.`,
+        desk: ["Desktop · four across", c3desk()], phone: ["Phone · two across", c3phone()],
+        notes: [`Bends the "three meters" brief: only Mainline is drawn as a meter here.`] },
+    ] }],
+});
+</script></body></html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playtime Options</title>
+<meta name="description" content="Design options for Playtime, Playthroughs and Franchise Progress (meters and Conquered) on the website.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<style>
+.grp{margin-top:56px}
+.grp>h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;font:400 2.6rem/.9 Anton;text-transform:uppercase;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.grp>h2 a:hover{color:var(--hl)}
+.grp>h2 small{font:700 .9rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.grp>h2 .open{margin-left:auto;font:800 .9rem/1 "Barlow Condensed";letter-spacing:.07em;color:var(--dim);display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-decoration-color:var(--gotm);text-decoration-thickness:2px;text-underline-offset:4px}
+.grp>h2 .open:hover{color:var(--hl)}
+.sf .sub{font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:14px}
+.thumbs{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:10px;margin-top:14px}
+.thumbs a{display:block;position:relative;border-radius:3px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--bs);aspect-ratio:16/10;background:var(--card)}
+.thumbs a img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.thumbs a b{position:absolute;left:0;top:0;background:var(--bg);color:var(--hl);font:400 1.25rem/1 Anton;padding:5px 8px 4px;border-radius:0 0 3px 0}
+.thumbs a:hover{box-shadow:inset 0 0 0 2px var(--hl)}
+.ol{margin-top:14px;max-width:130ch}
+.ol li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--border);line-height:1.45;color:var(--dim)}
+.ol li>a{font:400 1.25rem/1.1 Anton;color:var(--hl)}
+.ol li b{color:var(--fg);font-weight:600}
+.ol li .rec{display:inline-block;margin-left:8px;font:800 .7rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;background:var(--fg);color:var(--bg);padding:3px 5px 2px;border-radius:2px;vertical-align:2px}
+.decided{margin-top:64px}
+.decided>h2{font:400 2.6rem/.9 Anton;text-transform:uppercase;padding-bottom:10px;border-bottom:2px solid var(--fg);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+.decided>h2 small{font:700 .9rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.decided ul{margin-top:12px;max-width:100ch}
+.decided li{padding:8px 0;border-top:1px solid var(--border);color:var(--dim);line-height:1.5}
+.decided li b{color:var(--fg);font-weight:600}
+.botcard{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin-top:22px;padding:18px 20px;border:1px solid var(--bs);border-radius:3px}
+.botcard p{color:var(--dim);max-width:80ch;flex:1 1 380px}
+.botcard p b{color:var(--fg);font-weight:600}
+</style></head>
+<body><div class="gx" id="root"></div>
+<script>
+const GROUPS = [
+  { title: "Franchise page", href: "franchise.html", sub: "/franchises/[id] · the three meters, the checklist, Conquered", o: [
+    { c: "1A", r: 1, n: "The gauge strip", d: "Three equal meters across the top of the Games view, Conquered by at the end; the cover run is the checklist (paper check tab, unfinished covers grey, Playtime under each)." },
+    { c: "1B", n: "A third view: Your progress", d: "Games · Your progress · History. One big needle meter with a three-way switch, beside a ruled ledger of every game with its Game Completion type, date and Playtime." },
+    { c: "1C", n: "The cluster in the masthead", d: "An instrument cluster on the masthead rule beside the name (Mainline large, the other two small); Playtime tags on every cover's foot." },
+    { c: "1D", n: "The side rail", d: "A sticky 23rem Your progress rail: three rows of meter, name, big percentage and Playtime, then the total and Conquered by; covers keep their art." } ] },
+  { title: "Game page", href: "game.html", sub: "/games/[id] · Playtime, Manual Playtime, the mismatch, Playthroughs", o: [
+    { c: "2A", n: "A block on the hero plate", d: "Your Playtime as a fifth hero-plate block beside Time to beat (total, a source bar, the Playthrough clock); everything editable in a side sheet." },
+    { c: "2B", r: 1, n: "The timesheet department", d: "A full-width department under Row 3: a ruled ledger of sources with Add time / Set total on Manual rows, beside the Playthrough card (clock, Log Game Completion, Set its total, Abandon, earlier Playthroughs)." },
+    { c: "2C", n: "The tape measure", d: "One tape from 0 to 180 h: sources as blocks on top, Playthroughs as brackets on the same scale below, so the time played outside any Playthrough shows as gaps." } ] },
+  { title: "Profile", href: "profile.html", sub: "/members/[id] · Franchises section, Conquered first", o: [
+    { c: "3A", r: 1, n: "Meter rows on the shelf", d: "The shelf head (monumental count) and one ruled row per Franchise: cover, name with the stamp or what's left, three meters, Playtime." },
+    { c: "3B", n: "Plaques, then the run sheet", d: "Each Conquered Franchise a plaque with a fan of its Mainline covers and the stamp; the rest a run sheet with column heads so meters line up." },
+    { c: "3C", n: "The dial wall", d: "One big Mainline dial per Franchise, four across, the other two as numerals under it." } ] },
+];
+const DECIDED = [
+  "<b>\"Other\" becomes \"Spin-offs\"</b> on the Franchise page (the box set heading and the tally), so it matches the meters. The glossary has no term for it yet; say if it should stay \"Other\".",
+  "<b>The Conquered stamp is paper ink</b> pressed at -8deg, a new mark. It is never foil (that stays with Platinum, Mastery and Completion) and never a starburst (winners only).",
+  "<b>No new colour.</b> Meters fill in paper; yellow is only calls to action, the needle in 1B and the mismatch; Provider colours stay on achievement surfaces, so Steam, RetroAchievements and PSN are plain names here.",
+  "<b>A meter with no games</b> (a Franchise with no Mainline marked) is a dashed arc with \"No Mainline games yet\", never 0/0.",
+  "<b>A game counts once per meter</b> however many Game Completions it has; Add-ons are never in any meter.",
+  "<b>Manual time added while a Playthrough is open counts toward it</b>, like synced time. A Provider that starts reporting mid-Playthrough would jump it too; the member fixes that with Set its total. Say if new Provider time should be kept out.",
+  "<b>Members see other members' meters and Playtime</b> on profiles and the Franchise page's Conquered by; the game page shows only your own Playtime.",
+  "<b>The mismatch offers three ways out</b>: keep the Provider's figure (deletes the manual entry), keep yours (the Provider's figure for that platform stops counting), or keep both.",
+];
+const ic = (n) => `<i data-lucide="${n}"></i>`;
+document.getElementById("root").innerHTML = `<h1>Playtime: website options</h1>
+<p class="lede">The /impeccable options pass for <b>Playtime</b>, <b>Playthroughs</b> and <b>Franchise Progress</b> (glossary and ADR 0015 on api branch docs/playtime). Pick one option per surface, or mix them ("1A's strip with 1B's ledger as a view"). Every option is drawn at desktop (1280) and phone (390) width with its key states. Real content: Mara's <b>Final Fantasy</b> (11 of 16 Mainline, 5 of 15 spin-offs) and her <b>Final Fantasy VI</b> (180 h from Steam, RetroAchievements, PSN and two Manual Playtime entries, a Playthrough open since 9 Nov). The bot's messages are in <a href="../playtime-bot/index.html"><b>../playtime-bot/</b></a>.</p>
+<div class="gx-keys"><span>Today <b>Wed 25 Nov 2026</b></span><span>Viewer <b>Mara, a Regular</b></span><span>Members <b>invented</b></span><span>Art <b>Steam covers; Anton fallback where a game has none</b></span><span>Franchise Progress <b>a Feature in Preview</b></span><span>Playtime <b>ungated</b></span></div>
+${GROUPS.map((g) => `<section class="grp"><h2><a href="${g.href}">${g.title}</a><small>${g.sub}</small><a class="open" href="${g.href}">Open the options ${ic("arrow-right")}</a></h2>
+<div class="sf"><div class="thumbs" style="--n:${g.o.length}">${g.o.map((o) => `<a href="${g.href}#o${o.c.toLowerCase()}"><img src="png/${o.c.toLowerCase()}-desk.png" alt="Option ${o.c}" loading="lazy"><b>${o.c}</b></a>`).join("")}</div>
+<ul class="ol">${g.o.map((o) => `<li><a href="${g.href}#o${o.c.toLowerCase()}">${o.c}</a><span><b>${o.n}.</b> ${o.d}${o.r ? '<span class="rec">Recommended</span>' : ""}</span></li>`).join("")}</ul></div></section>`).join("")}
+<section class="grp"><h2><a href="../playtime-bot/index.html">The bot</a><small>Conquest post · /playtime add · game view</small></h2>
+<div class="botcard"><p>The <b>Conquest post</b> in the completions channel (4A-4C), <b>/playtime add</b> and its replies (5A-5C) and Playtime in the <b>game view</b> (6A-6C), drawn as Discord messages. Recommended: <b>4B</b>, <b>5B</b>, <b>6B</b>.</p><a class="btn hl" href="../playtime-bot/index.html">Open the bot options ${ic("arrow-right")}</a></div></section>
+<section class="decided"><h2>Already decided in these mocks<small>Say if any is wrong</small></h2><ul>${DECIDED.map((d) => `<li>${d}</li>`).join("")}</ul></section>`;
+lucide.createIcons();
+</script></body></html>

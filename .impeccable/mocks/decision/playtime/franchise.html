@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Franchise Progress Options</title>
+<meta name="description" content="Design options for Franchise Progress on the Franchise page: three meters, the per-game checklist with Playtime, Conquered and Conquered by.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+.cw{position:relative}
+/* ---------- 1A: the gauge strip ---------- */
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 270px;gap:0;margin:6px 0 30px;border-bottom:1px solid var(--border);padding-bottom:22px}
+.strip>.mtr{border-right:1px solid var(--border);padding:4px 10px 0}
+.strip .cbcol{padding:4px 0 0 22px}
+.strip .cbcol h4,.rail h4,.clus h4{font:400 1.3rem/1 Anton;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--bs);margin-bottom:12px;display:flex;align-items:baseline;gap:8px}
+.strip .cbcol h4 span,.rail h4 span,.clus h4 span{font:700 .78rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.cbl{display:flex;flex-direction:column;gap:10px}
+.pshell .strip{grid-template-columns:repeat(3,minmax(0,1fr));padding-bottom:16px;margin-bottom:18px}
+.pshell .strip>.mtr{padding:0 2px}
+.pshell .strip>.mtr:nth-child(3){border-right:0}
+.pshell .mtr .nm{font-size:1.9rem}
+.pshell .mtr .nmlab{font-size:.95rem;margin-top:8px}
+.pshell .mtr .pc{font-size:.85rem}
+.pshell .mtr .hh{font-size:.68rem}
+.pshell .cbp{display:flex;align-items:center;gap:10px;margin:0 0 20px;font-size:.86rem;color:var(--dim)}
+.pshell .cbp b{color:var(--fg);font-weight:600}
+.legend{display:flex;gap:16px;align-items:center;font:700 .76rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i.k{width:14px;height:14px;background:var(--fg);border-radius:1px;display:inline-grid;place-items:center}
+.legend i.u{width:14px;height:14px;background:#55555c;border-radius:1px}
+/* ---------- 1B: the progress view ---------- */
+.prog{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
+.dialcard{background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:22px 20px 20px;position:sticky;top:0}
+.dialcard .seg{display:flex;margin-top:18px}
+.dialcard .seg span{flex:1;flex-direction:column;height:auto;padding:8px 4px;gap:4px;justify-content:center;text-align:center;line-height:1.05}
+.dialcard .seg span b{font:400 1.2rem/1 Anton;letter-spacing:0}
+.dialcard .tot{display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:18px;padding-top:12px;font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.dialcard .tot>span>b{display:block;font:400 1.9rem/.9 Anton;color:var(--fg);letter-spacing:0}
+.ledg{width:100%}
+.ledg .lh,.ledg .lr{display:grid;grid-template-columns:36px 32px minmax(0,1fr) 132px 92px 60px;gap:12px;align-items:center}
+.ledg .lh{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:0 0 8px;border-bottom:2px solid var(--fg)}
+.ledg .lr{padding:7px 0;border-bottom:1px solid var(--border);font-size:.94rem}
+.ledg .lr .rn{font:400 1.45rem/1 Anton;text-align:right}
+.ledg .lr .t{font-weight:600}
+.ledg .lr .t small{display:block;font:700 .72rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.ledg .lr .ck{display:inline-flex;align-items:center;gap:6px;font:800 .78rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.ledg .lr .ck i.b{width:20px;height:20px;border-radius:2px;display:grid;place-items:center;background:var(--fg);color:var(--bg)}
+.ledg .lr .ck i.b svg.lucide{width:14px;height:14px;stroke-width:3}
+.ledg .lr .ck i.e{width:20px;height:20px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--bs)}
+.ledg .lr .ck.no{color:var(--faint)}
+.ledg .lr .h{text-align:right;font:400 1.25rem/1 Anton}
+.ledg .lr .h.z{color:var(--faint)}
+.ledg .lr.off{opacity:.45}
+.ledg .grp{font:400 1.25rem/1 Anton;text-transform:uppercase;padding:18px 0 6px;border-bottom:1px solid var(--bs);display:flex;gap:10px;align-items:baseline}
+.ledg .grp span{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.pshell .ledg .lh,.pshell .ledg .lr{grid-template-columns:26px 28px minmax(0,1fr) 78px 46px;gap:8px}
+.pshell .ledg .lr>:nth-child(5),.pshell .ledg .lh>:nth-child(5){display:none}
+.pshell .ledg .lr .ck{font-size:.68rem}
+.pshell .ledg .lr .rn{font-size:1.1rem}
+/* ---------- 1C: the head cluster ---------- */
+.chead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;border-bottom:2px solid var(--fg);padding-bottom:12px}
+.chead h1{font:400 3.75rem/.9 Anton;text-transform:uppercase}
+.chead .act{display:flex;gap:8px;margin-top:14px}
+.clus{display:flex;align-items:flex-end;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:14px 18px 12px;position:relative}
+.clus .mtr .nmlab{font-size:1rem;margin-top:8px}
+.clus .mtr.lead .nm{font-size:3.6rem}
+.clus .mtr:not(.lead) .nm{font-size:2rem}
+.clus .mtr:not(.lead){opacity:1}
+.clus .sp{width:1px;align-self:stretch;background:var(--border);margin:0 8px}
+.cbline{display:flex;align-items:center;gap:14px;margin:14px 0 4px;font-size:.9rem;color:var(--dim)}
+.cbline .lb{color:var(--faint)}
+.cbline b{color:var(--fg);font-weight:600}
+.tagh{position:absolute;left:6px;bottom:6px;z-index:2;background:rgb(11 11 13/.86);color:var(--fg);font:400 .95rem/1 Anton;padding:4px 6px 3px;border-radius:2px}
+.tagh.z{color:var(--faint);font:700 .68rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;padding:5px 6px 4px}
+.pshell .chead{grid-template-columns:minmax(0,1fr)}
+.pshell .chead h1{font-size:2.6rem}
+.pshell .clus{justify-content:space-between;padding:12px 10px 10px}
+/* ---------- 1D: the side rail ---------- */
+.two{display:grid;grid-template-columns:minmax(0,1fr) 23rem;gap:28px;align-items:start}
+.two .run{grid-template-columns:repeat(6,minmax(0,1fr))}
+.two .box .wall{grid-template-columns:repeat(7,minmax(0,1fr))}
+.rail{position:sticky;top:0;background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:18px 18px 16px}
+.rrow{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.rrow .mtr .nm{font-size:1.9rem}
+.rrow .mtr .nmlab{display:none}
+.two .ptl,.run.p .ptl{font-size:.64rem;letter-spacing:.05em}
+.rrow .tx b{display:block;font:400 1.35rem/1 Anton;text-transform:uppercase}
+.rrow .tx .p{font:400 2.4rem/.9 Anton;margin-top:4px}
+.rrow .tx .p span{font-size:.45em;color:var(--faint);margin-left:3px}
+.rrow .tx small{display:block;font:700 .76rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.rrow .tx small b{display:inline;font:inherit;color:var(--fg)}
+.rail .tot{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 4px}
+.rail .tot b{font:400 2.6rem/.9 Anton}
+.rail .tot span{font:700 .78rem/1.3 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:right}
+.rail .cbl{margin-top:4px}
+.pshell .rail{position:static;margin-bottom:22px}
+.pshell .rrow{grid-template-columns:96px minmax(0,1fr)}
+</style></head>
+<body><script>
+/* ---------- shared: the Franchise page as picked (6B Games, 6C switch) ---------- */
+const startBtn = `<span class="btn hl">${ic("flag")}Start a Challenge</span>`;
+const fhead = () => `<a class="back">${ic("arrow-left")}Games</a><div class="hd"><h1>Final Fantasy</h1><span class="n lb">Franchise</span><div class="act"><span class="btn">${ic("folder-plus")}New Franchise</span><span class="btn">${ic("pencil")}Edit Franchise</span>${startBtn}</div></div>
+<p class="tally"><b>16 Mainline</b> · 15 spin-offs · 8 Add-ons · From IGDB, 2 linked by hand</p>`;
+const phead = () => `<a class="pback" aria-label="Back to Games">${ic("arrow-left")}</a><div class="hd"><h1>Final Fantasy</h1></div><p class="tally"><b>16 Mainline</b> · 15 spin-offs · 8 Add-ons</p>`;
+const sw = (v = "g", third) => `<div class="vsw paper"><span class="${v === "g" ? "on" : ""}">Games<em>31</em></span>${third ? `<span class="${v === "p" ? "on" : ""}">${third}<em>16/31</em></span>` : ""}<span class="${v === "h" ? "on" : ""}">History<em>7</em></span></div>`;
+const meter = (d, o = {}) => {
+  const w = o.w || 210;
+  const body = d.m
+    ? `<div class="dial ${o.needle ? "nd" : ""}">${gauge(d.n, d.m, { w, ticks: o.ticks, needle: o.needle, sw: o.sw })}<div class="rd"><div class="nm">${d.n}<span>/${d.m}</span></div>${o.noPct ? "" : `<div class="pc">${pct(d.n, d.m)}%</div>`}</div></div>`
+    : `<div class="dial">${gauge(0, 0, { w, empty: 1 })}<div class="rd"><div class="none">No Mainline games yet</div></div></div>`;
+  return `<div class="mtr ${d.m ? "" : "off"} ${o.cls || ""}">${body}<div class="nmlab">${d.name}</div>${o.noH ? "" : `<div class="hh">${d.m ? `<b>${hrs(d.h)}</b> Playtime` : o.emptyNote || "A Regular marks them with Edit Franchise"}</div>`}${o.stamp || ""}</div>`;
+};
+const cbWho = (c, s = 28) => `<span class="who">${av(c.w, s)}<span><b>${M[c.w].n}</b><small>${c.d}</small></span></span>`;
+/* a Mainline cover in the run, with the done tab, the numeral and the Playtime */
+const runIt = (k, i, o = {}) => {
+  const done = DONE.has(k), h = PT[k];
+  const ads = FF_ADDONS[k] || [];
+  const tag = o.tagH ? (h ? `<span class="tagh">${hrs(h)}</span>` : `<span class="tagh z">Not played</span>`) : "";
+  return `<div class="it"><div class="cw">${cover(k, 100, { fs: 15, cls: o.dimUndone && !done ? "undone" : "" })}${done && !o.noTab ? `<span class="dn">${ic("check")}</span>` : ""}${tag}</div>
+  <div class="num"><b>${ROMAN[i]}</b><span>${G[k].y}</span></div>${o.ptl ? `<div class="ptl"><span>${done ? "Completed" : h ? "Played" : "Not played"}</span><b>${h ? hrs(h) : ""}</b></div>` : ""}${ads.length && o.ins ? `<span class="ins">${ic("paperclip")}${ads.length} Add-on${ads.length > 1 ? "s" : ""}</span>` : ""}</div>`;
+};
+const boxIt = (k, o = {}) => {
+  const done = DONE.has(k), h = PT[k];
+  const tag = o.tagH ? (h ? `<span class="tagh" style="font-size:.8rem">${hrs(h)}</span>` : "") : "";
+  return `<div class="it"><div class="cw">${cover(k, 80, { fs: 10, cls: o.dimUndone && !done ? "undone" : "" })}${done ? `<span class="dn sm">${ic("check")}</span>` : ""}${tag}</div><p>${esc(G[k].t)}<small>${G[k].y}${!o.tagH && h ? ` · ${hrs(h)}` : ""}</small></p></div>`;
+};
+const run = (o = {}, keys = FF_MAIN) => `<div class="run ${o.p ? "p" : ""}">${keys.map((k) => runIt(k, FF_MAIN.indexOf(k), o)).join("")}</div>`;
+const box = (o = {}, keys = FF_SPIN) => `<div class="box ${o.p ? "p" : ""}"><div class="wall">${keys.map((k) => boxIt(k, o)).join("")}</div></div>`;
+const mainSec = (o = {}) => `<div class="sec"><h2>Mainline</h2><span class="n lb">16 games, by release</span>${o.legend ? `<div class="r">${o.legend}</div>` : ""}</div>`;
+const spinSec = `<div class="sec"><h2>Spin-offs</h2><span class="n lb">15 games · the box set</span></div>`;
+const legend = `<span class="legend"><span><i class="k"></i>Game Completion</span><span><i class="u"></i>Not yet</span></span>`;
+
+/* ================= 1A ================= */
+const stripA = (ms, cb = CONQ, o = {}) => `<div class="strip">${ms.map((d) => meter(d, { w: o.w || 220, stamp: o.stampOn === d.k ? `<span style="position:absolute;right:6px;top:-4px">${stamp(o.stampSub || "")}</span>` : "" })).join("")}
+<div class="cbcol"><h4>Conquered by<span>${cb.length}</span></h4><div class="cbl">${cb.map((c) => cbWho(c)).join("")}</div><p class="faint" style="font-size:.82rem;margin-top:12px">Every Mainline game, any Game Completion.</p></div></div>`;
+const a1desk = () => desk(`${fhead()}${sw("g")}${stripA([FFM.main, FFM.all, FFM.spin])}${mainSec({ legend })}${run({ dimUndone: 1, ptl: 1, ins: 1 })}${spinSec}${box({ dimUndone: 1 })}`, "franchises");
+const a1phone = () => phone(`${phead()}${sw("g")}<div class="strip">${[FFM.main, FFM.all, FFM.spin].map((d) => meter({ ...d, name: d.k === "all" ? "Everything" : d.name }, { w: 104, sw: 11 })).join("")}</div>
+<div class="cbp"><span class="avs">${CONQ.map((c) => av(c.w, 26)).join("")}</span><span>Conquered by <b>Loot Hoarder</b>, <b>Rowan</b> and <b>Jun</b></span></div>
+<div class="sec"><h2>Mainline</h2><span class="n lb">16</span></div>${run({ p: 1, dimUndone: 1, ptl: 1 }, FF_MAIN.slice(0, 9))}`, "games", { h: 1180 });
+const a1conq = () => desk(`${fhead()}${sw("g")}${stripA([{ ...FFM.main, n: 16, h: 812 }, { ...FFM.all, n: 22, h: 1104 }, { ...FFM.spin, n: 6, h: 292 }], [...CONQ, { w: "mara", d: "Today" }], { stampOn: "main", stampSub: "25 Nov 2026" })}<div class="empty" style="border-style:solid">The run follows, every Mainline cover with its tab.</div>`, "franchises", { h: 520 });
+const TALES = { main: { k: "main", name: "Mainline", n: 0, m: 0, h: 0 }, all: { k: "all", name: "Mainline + spin-offs", n: 3, m: 19, h: 164 }, spin: { k: "spin", name: "Spin-offs", n: 3, m: 19, h: 164 } };
+const a1empty = () => desk(`<a class="back">${ic("arrow-left")}Games</a><div class="hd"><h1>Tales of</h1><span class="n lb">Franchise</span><div class="act"><span class="btn">${ic("pencil")}Edit Franchise</span>${startBtn}</div></div><p class="tally"><b>0 Mainline</b> · 19 spin-offs · From IGDB</p>${sw("g")}${stripA([TALES.main, TALES.all, TALES.spin], [])}<div class="empty" style="border-style:solid">Nobody can Conquer Tales of until a Regular marks its Mainline games.</div>`, "franchises", { h: 520 });
+
+/* ================= 1B ================= */
+const ledRow = (k, i, isMain) => {
+  const done = DONE.has(k), h = PT[k];
+  const ct = { ff6: "Completionist", ff10: "Main + Side", ff12: "Main + Side", fft: "Completionist" }[k] || "Main Story";
+  return `<div class="lr"><span class="rn">${isMain ? ROMAN[i] : ""}</span>${cover(k, 30, { fs: 5 })}<span class="t">${esc(G[k].t)}<small>${G[k].y}${(FF_ADDONS[k] || []).length ? ` · ${(FF_ADDONS[k] || []).length} Add-ons, not counted` : ""}</small></span>
+  <span class="ck ${done ? "" : "no"}">${done ? `<i class="b">${ic("check")}</i>${ct}` : `<i class="e"></i>${h ? "Played" : "Not played"}`}</span><span class="faint" style="font-size:.86rem">${done ? ({ ff6: "Oct 2025", ff16: "Aug 2024", ff15: "Feb 2023" }[k] || "2019 to 2022") : ""}</span><span class="h ${h ? "" : "z"}">${h ? hrs(h) : "0 h"}</span></div>`;
+};
+const ledger = (o = {}) => `<div class="ledg"><div class="lh"><span style="text-align:right">No.</span><span></span><span>Game</span><span>Game Completion</span><span>Finished</span><span style="text-align:right">Playtime</span></div>
+${o.only !== "spin" ? `<div class="grp">Mainline<span>11 of 16</span></div>${FF_MAIN.slice(0, o.n || 16).map((k, i) => ledRow(k, i, 1)).join("")}` : ""}
+${o.only !== "main" ? `<div class="grp">Spin-offs<span>5 of 15</span></div>${FF_SPIN.slice(0, o.ns || 15).map((k) => ledRow(k, 0, 0)).join("")}` : ""}</div>`;
+const dialB = (sel = "all", o = {}) => {
+  const d = FFM[sel];
+  return `<div class="dialcard"><div style="display:grid;justify-items:center">${meter(d, { w: o.w || 270, needle: 1, ticks: 1, noH: 1 })}</div>
+  <div class="seg">${["main", "all", "spin"].map((k) => `<span class="${k === sel ? "on" : ""}"><b>${FFM[k].n}/${FFM[k].m}</b>${k === "all" ? "Everything" : FFM[k].name}</span>`).join("")}</div>
+  <div class="tot"><span>Playtime<b>${hrs(d.h)}</b></span><span style="text-align:right">To Conquer<b>5 left</b></span></div>
+  <div class="tot" style="display:block"><span style="display:block;margin-bottom:10px">Conquered by 3</span><div class="cbl">${CONQ.map((c) => cbWho(c, 26)).join("")}</div></div></div>`;
+};
+const b1desk = () => desk(`${fhead()}${sw("p", "Your progress")}<div class="prog">${dialB("all")}${ledger({ ns: 9 })}</div>`, "franchises", { h: 1240 });
+const b1phone = () => phone(`${phead()}${sw("p", "Progress").replace("<em>16/31</em>", "")}<div class="prog" style="grid-template-columns:1fr;gap:20px">${dialB("main", { w: 230 }).replace("position:sticky", "position:static")}${ledger({ only: "main", n: 7 })}</div>`, "games", { h: 1300 });
+const b1spin = () => desk(`${fhead()}${sw("p", "Your progress")}<div class="prog">${dialB("spin")}${ledger({ only: "spin", ns: 8 })}</div>`, "franchises", { h: 760 });
+
+/* ================= 1C ================= */
+const clusterC = (ms = FFM, o = {}) => `<div class="clus">${meter(ms.spin, { w: 120, sw: 12, noH: 1, cls: "" })}<span class="sp"></span>${meter(ms.main, { w: o.lw || 210, sw: 20, ticks: 1, noH: 1, cls: "lead", stamp: o.stamp || "" })}<span class="sp"></span>${meter({ ...ms.all, name: "Everything" }, { w: 120, sw: 12, noH: 1 })}</div>`;
+const cheadC = (o = {}) => `<a class="back">${ic("arrow-left")}Games</a><div class="chead"><div><h1>Final Fantasy</h1><p class="tally" style="margin-top:8px"><b>16 Mainline</b> · 15 spin-offs · 8 Add-ons · From IGDB, 2 linked by hand</p><div class="act"><span class="btn sm">${ic("pencil")}Edit Franchise</span><span class="btn sm hl">${ic("flag")}Start a Challenge</span></div></div>${clusterC(o.ms, o)}</div>
+<div class="cbline"><span class="lb">Conquered by</span><span class="avs">${(o.cb || CONQ).map((c) => av(c.w, 26)).join("")}</span><span><b>Loot Hoarder</b> Jan 2024, <b>Rowan</b> Mar 2025, <b>Jun</b> Aug 2026${o.you ? ", <b>you</b> today" : ""}</span><span style="margin-left:auto" class="faint">Your Playtime <b>${hrs(o.ms ? o.ms.all.h : FFM.all.h)}</b> · Mainline <b>${hrs(o.ms ? o.ms.main.h : FFM.main.h)}</b></span></div>`;
+const c1desk = () => desk(`${cheadC()}${sw("g")}${mainSec()}${run({ tagH: 1, ins: 1 })}${spinSec}${box({ tagH: 1 })}`, "franchises");
+const c1phone = () => phone(`<a class="pback" aria-label="Back to Games">${ic("arrow-left")}</a><div class="chead"><div><h1>Final Fantasy</h1><p class="tally" style="margin-top:6px"><b>16 Mainline</b> · 15 spin-offs</p></div>${clusterC(FFM, { lw: 150 }).replace(/width="(\d+)" height/g, (m, w) => m)}</div>
+<div class="cbline" style="flex-wrap:wrap;gap:8px"><span class="lb">Conquered by</span><span class="avs">${CONQ.map((c) => av(c.w, 24)).join("")}</span><span class="faint" style="width:100%">Your Playtime <b>${hrs(FFM.all.h)}</b></span></div>${sw("g")}<div class="sec"><h2>Mainline</h2><span class="n lb">16</span></div>${run({ p: 1, tagH: 1 }, FF_MAIN.slice(0, 9))}`, "games", { h: 1180 });
+const CONQ_MS = { main: { ...FFM.main, n: 16, h: 812 }, all: { ...FFM.all, n: 22, h: 1104 }, spin: { ...FFM.spin, n: 6, h: 292 } };
+const c1conq = () => desk(`${cheadC({ ms: CONQ_MS, you: 1, cb: [...CONQ, { w: "mara" }], stamp: `<span style="position:absolute;left:50%;top:36%;transform:translateX(-50%)">${stamp("16 of 16 · 25 Nov 2026", "lg")}</span>` })}${sw("g")}<div class="empty" style="border-style:solid">The run follows with every cover tagged with your Playtime.</div>`, "franchises", { h: 480 });
+
+/* ================= 1D ================= */
+const railRow = (d, o = {}) => `<div class="rrow">${meter(d, { w: o.w || 132, sw: 13, noH: 1, noPct: 1 })}<div class="tx"><b>${d.name}</b><div class="p">${pct(d.n, d.m)}<span>%</span></div><small><b>${hrs(d.h)}</b> Playtime</small></div></div>`;
+const railD = (o = {}) => `<aside class="rail"><h4>Your progress<span>Mara</span></h4>${railRow(FFM.main, o)}${railRow(FFM.all, o)}${railRow(FFM.spin, o)}
+<div class="tot"><b>${hrs(FFM.all.h)}</b><span>Playtime across<br>the Franchise</span></div>
+<h4 style="margin-top:16px">Conquered by<span>3</span></h4><div class="cbl">${CONQ.map((c) => cbWho(c, 26)).join("")}</div>
+<p class="faint" style="font-size:.82rem;margin-top:14px;border-top:1px solid var(--border);padding-top:10px">Add-ons never count. Conquered means every Mainline game has a Game Completion.</p></aside>`;
+const d1desk = () => desk(`${fhead()}${sw("g")}<div class="two"><div>${mainSec().replace('style=""', "")}${run({ ptl: 1, ins: 1 })}${spinSec}${box({})}</div>${railD()}</div>`, "franchises");
+const d1phone = () => phone(`${phead()}${sw("g")}${railD({ w: 96 })}<div class="sec"><h2>Mainline</h2><span class="n lb">16</span></div>${run({ p: 1, ptl: 1 }, FF_MAIN.slice(0, 6))}`, "games", { h: 1300 });
+const d1other = () => desk(`${fhead().replace(`<span class="btn">${ic("folder-plus")}New Franchise</span><span class="btn">${ic("pencil")}Edit Franchise</span>`, "")}<div class="two"><div>${mainSec()}${run({ noTab: 1 }, FF_MAIN.slice(0, 12))}</div><aside class="rail"><h4>Your progress<span>Tavi</span></h4><div class="empty" style="margin:6px 0 10px">You haven't played a Final Fantasy game yet. Your meters start with your first Playtime or Game Completion.</div><h4 style="margin-top:16px">Conquered by<span>3</span></h4><div class="cbl">${CONQ.map((c) => cbWho(c, 26)).join("")}</div></aside></div>`, "franchises", { h: 760 });
+
+page({
+  title: "Franchise Progress: the Franchise page",
+  lede: `Options for <b>Franchise Progress</b> inside the picked Franchise page (6B Games under the 6C Games / History switch). Each member gets <b>three meters</b>, upward semicircles with one segment per game: <b>Mainline</b>, <b>Mainline + spin-offs</b> and <b>Spin-offs</b>, each with N/M, the percentage under it and the Playtime of its games. Add-ons never count, and any Game Completion fills a segment. A member who holds a Game Completion for every Mainline game has <b>Conquered</b> the Franchise, and stays Conquered when new Mainline games arrive. The example is Mara's Final Fantasy: <b>11 of 16 Mainline</b>, 5 of 15 spin-offs, <b>${hrs(FFM.all.h)}</b> of Playtime. Franchise Progress is a Feature in Preview.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara, a Regular"], ["Paper", "a Game Completion"], ["Yellow", "only calls to action and the needle"], ["Members", "invented"]],
+  surfaces: [{ id: "s1", title: "1 · Franchise page", sub: "/franchises/[id] · 4 options", brief: `Every option shows Mara on desktop and phone, then <b>the Conquered state</b> and <b>a Franchise with no Mainline games</b> (or a member with no Playtime). The <b>Conquered</b> stamp is paper ink pressed at -8deg: never foil (that is the Achievement Hub's) and never a starburst (that is a winner's).`,
+    options: [
+      { code: "1A", short: "Strip", title: "The gauge strip", idea: `<b>Three equal meters</b> run across the top of the Games view with <b>Conquered by</b> in a column at the end. The cover run below becomes the checklist: a game with a Game Completion keeps its colour and gets a <b>paper check tab</b>, the rest go grey, and every cover says "Completed 64 h", "Played 22 h" or "Not played". <b>Recommended</b>: it answers "how far am I" and "what's left" in one glance without a new view.`,
+        desk: ["Desktop · Mara, 11 of 16 Mainline", a1desk()], phone: ["Phone · three small meters, then the run", a1phone()],
+        more: [["Conquered · Mara finished XI and XIV today", a1conq()], ["No Mainline games yet · Tales of", a1empty()]],
+        notes: [`Greying the unfinished covers is the boldest part; if the run should stay in colour, drop the grey and keep the tab.`, `Phone shortens "Mainline + spin-offs" to "Everything" to fit three across.`] },
+      { code: "1B", short: "Progress view", title: "A third view: Your progress", idea: `Progress gets its <b>own word on the switch</b>: Games · Your progress · History. The view is <b>one big meter with a needle</b> and a three-way switch under it (each choice shows its N/M, so all three stay readable), Playtime and "5 left", and Conquered by. Beside it a <b>ruled ledger</b> is the checklist: numeral, cover, game, the Game Completion type, when, Playtime. The Games view itself stays exactly as picked.`,
+        desk: ["Desktop · Everything selected", b1desk()], phone: ["Phone · Mainline selected", b1phone()],
+        more: [["Spin-offs selected, the ledger narrows to them", b1spin()]],
+        notes: [`The densest checklist, and the only one that shows the Game Completion type and date per game.`, `The needle is the meter's one yellow mark; it moves only behind motion-safe.`] },
+      { code: "1C", short: "Cluster", title: "The cluster in the masthead", idea: `Your progress <b>is the page's monumental object</b>: an instrument cluster sits on the masthead rule beside the name, Mainline large and ticked in the middle, Spin-offs and Everything small on either side. Conquered by and your Playtime run along one line under the rule. Covers carry a <b>Playtime tag</b> on their foot and the check tab; nothing is greyed.`,
+        desk: ["Desktop · the cluster beside the name", c1desk()], phone: ["Phone · the cluster under the name", c1phone()],
+        more: [["Conquered · the stamp lands on the Mainline meter", c1conq()]],
+        notes: [`Most magazine-like: one big object, then ruled departments.`, `A member who has played none of the Franchise sees three dashed meters at 0; the line under the rule says so.`] },
+      { code: "1D", short: "Rail", title: "The side rail", idea: `The Games view splits: the run and the box set on the left (6 and 7 across), and a sticky <b>Your progress</b> rail on the right in the dashboard's 23rem: three rows of meter, name, a big percentage and Playtime, a Franchise total, Conquered by and one line on the rule. The covers keep their art and get a quiet "Completed 64 h" line.`,
+        desk: ["Desktop · the rail", d1desk()], phone: ["Phone · the rail opens the page", d1phone()],
+        more: [["A member with no Playtime yet · Tavi", d1other()]],
+        notes: [`Quietest on the covers; progress never competes with the art.`, `The rail drops covers from 8 to 6 across.`] },
+    ] }],
+});
+</script></body></html>

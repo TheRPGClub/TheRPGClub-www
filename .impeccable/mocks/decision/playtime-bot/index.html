@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playtime Bot Options</title>
+<meta name="description" content="Design options for the Conquest post, /playtime add and Playtime in the bot's game view.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0b0d;--ink-2:#141417;--ink-3:#1d1d22;--rule:#2a2a31;--rule-strong:#3a3a43;
+  --paper:#f4f4f0;--paper-dim:#b9b9b2;--paper-mute:#8d8d87;--hl:#ffd400;--hl-ink:#3a3200;
+  /* Discord classic dark */
+  --dc-chat:#313338;--dc-2:#2b2d31;--dc-3:#1e1f22;--dc-border:#3f4147;--dc-text:#dbdee1;--dc-head:#f2f3f5;
+  --dc-mute:#949ba4;--dc-sub:#b5bac1;--dc-blurple:#5865f2;--dc-link:#00a8fc;--dc-green:#248046;--dc-red:#da373c;--dc-grey:#4e5058;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ink);scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--ink);color:var(--paper);font:400 16px/1.5 Barlow,system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+::selection{background:var(--hl);color:var(--ink)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--hl);outline-offset:2px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--rule-strong);border-radius:2px}::-webkit-scrollbar-track{background:var(--ink)}
+
+/* ---------- shell ---------- */
+.mast{padding:56px clamp(16px,4vw,48px) 28px;max-width:1680px;margin:0 auto}
+.mast h1{font:400 clamp(2.6rem,6vw,4.6rem)/.9 Anton,Impact,sans-serif;text-transform:uppercase;margin:0;letter-spacing:.005em;padding-bottom:14px;border-bottom:2px solid var(--paper);text-wrap:balance}
+.mast h1 b{font-weight:400;color:var(--hl)}
+.mast .lede{max-width:72ch;color:var(--paper-dim);margin:18px 0 0;font-size:1.06rem}
+.mast .lede strong{color:var(--paper);font-weight:600}
+.keys{display:flex;flex-wrap:wrap;gap:8px 24px;margin:18px 0 0;padding:0;list-style:none;font:700 .82rem/1.3 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--paper-mute)}
+.keys li span{color:var(--paper)}
+nav.toc{position:sticky;top:0;z-index:20;background:rgba(11,11,13,.94);border-bottom:1px solid var(--rule);backdrop-filter:saturate(1.2)}
+nav.toc ol{list-style:none;margin:0 auto;padding:0 clamp(16px,4vw,48px);display:flex;gap:2px;overflow-x:auto;max-width:1680px;scrollbar-width:none}
+nav.toc a{display:block;padding:14px 12px 12px;font:700 .9rem/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--paper-dim);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent}
+nav.toc a b{font-family:Anton,Impact,sans-serif;font-weight:400;color:var(--paper);margin-right:6px;letter-spacing:0}
+nav.toc a:hover{color:var(--hl);border-bottom-color:var(--hl)}
+main{max-width:1680px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 96px}
+section.type{padding-top:56px}
+.type-h{display:flex;align-items:flex-end;gap:18px;border-bottom:2px solid var(--paper);padding-bottom:10px}
+.type-h .num{font:400 5rem/.8 Anton,Impact,sans-serif;color:var(--paper)}
+.type-h h2{font:400 clamp(1.8rem,3.4vw,2.6rem)/.95 Anton,Impact,sans-serif;text-transform:uppercase;margin:0}
+.type-brief{color:var(--paper-dim);max-width:72ch;margin:12px 0 28px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,640px),1fr));gap:40px 40px;align-items:start}
+.opt{min-width:0}
+.opt.wide{grid-column:1/-1}
+.opt.wide .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:0 40px;align-items:start}
+.opt-h{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid var(--rule-strong);padding-bottom:8px}
+.opt-h .code{font:400 2.4rem/.85 Anton,Impact,sans-serif;color:var(--hl)}
+.opt-h h3{margin:0;font:800 1.2rem/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em}
+.idea{margin:10px 0 16px;color:var(--paper);max-width:68ch}
+.notes{margin:14px 0 0;padding:0;list-style:none;color:var(--paper-dim);font-size:.94rem;max-width:68ch}
+.notes li{padding:6px 0;border-top:1px solid var(--rule)}
+.frame{margin:0 0 18px}
+.frame-cap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:baseline;font:700 .78rem/1.3 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--paper-mute);margin:0 0 6px}
+.frame-cap .what{color:var(--paper-dim)}
+.budget{white-space:normal;text-align:right}
+.budget.warn{color:#ff9d4d}
+
+/* ---------- discord ---------- */
+.dc{background:var(--dc-chat);border-radius:8px;overflow:hidden;font:400 16px/1.375 "Noto Sans","gg sans","Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--dc-text);box-shadow:0 1px 0 rgba(0,0,0,.2),0 8px 24px rgba(0,0,0,.35)}
+.dc-top{height:44px;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #26282c;box-shadow:0 1px 2px rgba(0,0,0,.2);font-weight:600;color:var(--dc-head);font-size:15px}
+.dc-top svg{width:20px;height:20px;color:#80848e}
+.dc-chat{padding:4px 0 18px;overflow-x:auto}
+.msg{padding:0 16px;margin-top:16px}
+.msg.cont{margin-top:4px}
+.m-row{display:flex;gap:16px;align-items:flex-start}
+.bot-av{width:40px;height:40px;flex:none;display:inline-block}
+.bot-av svg{width:100%;height:100%;display:block;background:#18191c;border-radius:50%}
+.bot-av.sm{width:16px;height:16px}
+.m-gap{width:40px;flex:none}
+.m-body{flex:1;min-width:0}
+.m-head{display:flex;align-items:center;gap:0;margin-bottom:2px;line-height:22px}
+.m-name{font-weight:500;color:var(--dc-head)}
+.app{display:inline-flex;align-items:center;gap:1px;margin-left:4px;height:15px;padding:0 4px 0 2px;border-radius:3px;background:var(--dc-blurple);color:#fff;font-size:10px;font-weight:600;line-height:15px}
+.app svg{width:13px;height:13px}
+.m-time{margin-left:8px;font-size:12px;color:var(--dc-mute)}
+.m-ref{position:relative;display:flex;align-items:center;gap:4px;padding-left:56px;margin-bottom:4px;font-size:14px;color:var(--dc-sub);line-height:18px}
+.m-ref .spine{position:absolute;left:36px;top:9px;width:18px;height:12px;border-left:2px solid #4e5058;border-top:2px solid #4e5058;border-top-left-radius:6px}
+.m-ref .ref-n{color:var(--dc-head);font-weight:500}
+.m-ref .ref-cmd{color:var(--dc-link)}
+.m-ref .ref-txt{color:var(--dc-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ref-av{margin-right:2px}
+.m-comps{display:flex;flex-direction:column;gap:8px;max-width:600px}
+.m-edited{font-size:10px;color:var(--dc-mute);margin-top:2px}
+.m-eph{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--dc-mute)}
+.m-eph svg{width:16px;height:16px}
+.m-reacts{display:flex;gap:4px;margin-top:6px}
+.react{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:8px;background:var(--dc-2);border:1px solid transparent;font-size:14px;font-weight:600;color:var(--dc-sub)}
+.react.me{background:rgba(88,101,242,.15);border-color:var(--dc-blurple);color:#c9cdfb}
+.r-e{font-size:16px;line-height:1}
+.m-thread{display:flex;align-items:center;gap:8px;margin-top:8px;max-width:480px;padding:8px 12px;border-radius:8px;background:var(--dc-2);font-size:14px}
+.m-thread svg{width:18px;height:18px;color:var(--dc-sub)}
+.t-n{font-weight:600;color:var(--dc-head)}
+.t-c{margin-left:auto;color:var(--dc-link);font-weight:600}
+
+.av{display:inline-grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;background:var(--av);color:#101012;font:700 calc(var(--s)*.5)/1 "Noto Sans",sans-serif;flex:none;vertical-align:middle}
+.m-av,.ref-av,.b-av,.d-emo{display:inline-grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;background:var(--av);color:#101012;font:700 calc(var(--s)*.5)/1 "Noto Sans",sans-serif;flex:none}
+.d-emo{width:1.375em;height:1.375em;font-size:inherit;vertical-align:-.3em;font-size:.95em}
+.d-emo{font-size:11px}
+.cv-text .d-emo{width:22px;height:22px;font-size:11px}
+
+/* components v2 */
+.cv-ctr{background:var(--dc-2);border:1px solid #3a3c42;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.cv-ctr.acc{box-shadow:inset 4px 0 0 var(--accent);padding-left:20px}
+.cv-text{min-width:0;overflow-wrap:anywhere}
+.cv-section{display:flex;gap:12px;align-items:flex-start}
+.cv-sec-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cv-acc{flex:none;display:flex}
+.cv-thumb .cov{width:64px;height:85px;border-radius:8px}
+.cv-sep{height:0}
+.cv-sep.div{border-top:1px solid #3f4147;margin:4px 0}
+.cv-sep.lg{margin:12px 0}
+.cv-row{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.cv-gallery{display:grid;gap:4px;border-radius:8px;overflow:hidden;max-width:100%}
+.cv-gallery .g-item{position:relative;overflow:hidden;background:#111214;aspect-ratio:1}
+.cv-gallery.n1 .g-item{aspect-ratio:auto}
+.cv-gallery.n2,.cv-gallery.n4{grid-template-columns:1fr 1fr}
+.cv-gallery.n3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
+.cv-gallery.n3 .g-item:first-child{grid-row:span 2;aspect-ratio:auto}
+.cv-gallery.n6,.cv-gallery.n9{grid-template-columns:repeat(3,1fr)}
+.cv-gallery.n5,.cv-gallery.n8{grid-template-columns:repeat(6,1fr)}
+.cv-gallery.n5 .g-item,.cv-gallery.n8 .g-item{grid-column:span 2}
+.cv-gallery.n5 .g-item:nth-child(-n+2),.cv-gallery.n8 .g-item:nth-child(-n+2){grid-column:span 3;aspect-ratio:3/2}
+.cv-gallery.n7,.cv-gallery.n10{grid-template-columns:repeat(3,1fr)}
+.cv-gallery.n7 .g-item:first-child,.cv-gallery.n10 .g-item:first-child{grid-column:span 3;aspect-ratio:16/7}
+.cv-gallery .gen{width:100%}
+.cv-gallery.n1 .g-item.gen{aspect-ratio:auto!important}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;border-radius:8px;font:500 14px/16px "Noto Sans",sans-serif;color:#fff;background:var(--dc-grey);white-space:nowrap;user-select:none}
+.btn.primary{background:var(--dc-blurple)}
+.btn.success{background:var(--dc-green)}
+.btn.danger{background:var(--dc-red)}
+.btn.link{background:var(--dc-grey)}
+.btn.ghost{background:transparent}
+.btn.disabled{opacity:.5}
+.b-ext{width:16px;height:16px}
+.b-av{margin-left:-4px}
+
+/* selects */
+.sel{width:100%;max-width:100%;position:relative}
+.sel-box{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 12px;background:var(--dc-3);border:1px solid var(--dc-3);border-radius:8px;font-size:15px;color:var(--dc-text)}
+.sel .ph{color:var(--dc-mute)}
+.sel .chev{width:20px;height:20px;color:var(--dc-sub)}
+.sel.open .sel-box{border-radius:8px 8px 0 0;border-color:#111214}
+.sel-menu{background:var(--dc-2);border:1px solid #111214;border-top:0;border-radius:0 0 8px 8px;padding:4px 0;max-height:none}
+.sopt{display:flex;gap:10px;align-items:center;padding:7px 12px;margin:0 4px;border-radius:4px}
+.sel-menu .sopt.on{background:#404249}
+.o-txt{display:flex;flex-direction:column;min-width:0}
+.o-l{color:var(--dc-text);font-size:15px;line-height:20px}
+.o-d{color:var(--dc-sub);font-size:13px;line-height:16px}
+.chk{width:20px;height:20px;border-radius:4px;border:2px solid #b5bac1;flex:none;position:relative}
+.chk.on{background:var(--dc-blurple);border-color:var(--dc-blurple)}
+.chk.on::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+
+/* markdown */
+.d-h1{font-size:24px;line-height:1.25;font-weight:700;color:var(--dc-head);margin:2px 0 4px}
+.d-h2{font-size:20px;line-height:1.3;font-weight:700;color:var(--dc-head);margin:2px 0 4px}
+.d-h3{font-size:16px;line-height:1.375;font-weight:700;color:var(--dc-head);margin:2px 0 2px}
+.d-h1+.d-h1,.d-line+.d-h3,.d-ol+.d-h3,.d-line+.d-h2{margin-top:10px}
+.d-sub{font-size:13px;line-height:1.35;color:var(--dc-mute)}
+.d-sub .d-mention,.d-sub .d-time{font-size:13px}
+.d-blank{height:10px}
+.d-quote{margin:2px 0;padding:0 8px 0 12px;border-left:4px solid #4e5058;border-radius:4px}
+.d-ul,.d-ol{margin:2px 0 2px;padding-left:24px}
+.d-ol li::marker{color:var(--dc-text)}
+.d-pre{margin:4px 0;background:var(--dc-3);border:1px solid #1a1b1e;border-radius:4px;padding:8px 10px;font:14px/1.3 "Noto Sans Mono",Consolas,"Andale Mono",monospace;color:var(--dc-text);overflow-x:auto;white-space:pre}
+.d-code{background:var(--dc-3);border-radius:4px;padding:.1em .3em;font:.85em/1 "Noto Sans Mono",Consolas,monospace}
+.d-mention{background:rgba(88,101,242,.3);color:#c9cdfb;font-weight:500;border-radius:3px;padding:0 2px}
+.d-mention.chan::before{content:"# ";opacity:.8}
+.d-time{background:rgba(78,80,88,.48);border-radius:3px;padding:0 2px}
+.d-link{color:var(--dc-link);text-decoration:none}
+strong{font-weight:700;color:inherit}
+.sq{display:inline-block;width:1.1em;height:1.1em;border-radius:3px;vertical-align:-.18em;margin:0 1px}
+.sq.g{background:#78b159}.sq.y{background:#fdcb58}.sq.k{background:#31373d;box-shadow:inset 0 0 0 1px #4a5058}.sq.w{background:#e6e7e8}.sq.b{background:#55acee}
+
+/* covers (stand-ins for IGDB art) */
+.cov{position:relative;display:block;width:100%;aspect-ratio:3/4;overflow:hidden;background:
+  radial-gradient(120% 80% at 70% 15%,color-mix(in srgb,var(--c2) 55%,transparent),transparent 60%),
+  linear-gradient(165deg,var(--c1) 0%,color-mix(in srgb,var(--c1) 70%,#000) 100%)}
+.cov::before{content:"";position:absolute;left:50%;top:38%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(45deg);border:2px solid color-mix(in srgb,var(--c2) 80%,transparent);opacity:.55}
+.cov::after{content:"";position:absolute;inset:5px;border:1px solid rgba(255,255,255,.12)}
+.cov.fill{height:100%;aspect-ratio:auto}
+.cov-t{position:absolute;left:0;right:0;bottom:0;padding:16px 7px 7px;background:linear-gradient(transparent,rgba(0,0,0,.78));font:700 11px/1.05 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#fff}
+.gift-thumb{display:block;width:64px;height:85px;border-radius:8px;background:#1f4d36;position:relative;overflow:hidden}
+.gift-thumb::before{content:"";position:absolute;left:28px;top:0;bottom:0;width:8px;background:#e8c35a}
+.gift-thumb::after{content:"";position:absolute;top:36px;left:0;right:0;height:8px;background:#e8c35a}
+.strip{display:flex;gap:6px;padding:10px;background:#0d0d10}
+.strip .cov{flex:1;min-width:0}
+.strip.fill{height:100%;align-items:center}
+
+/* generated images, in the club's print style */
+.yp{background:#0b0b0d;color:var(--paper);padding:14px 14px 10px;font-family:Barlow,sans-serif;height:100%}
+.yp.mini{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;align-items:stretch;padding:10px}
+.yp-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--paper);padding-bottom:6px;margin-bottom:8px}
+.yp-name{font:400 26px/.9 Anton,Impact,sans-serif;text-transform:uppercase}
+.yp-cap{font:700 11px/1.2 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--paper-dim);margin-top:4px}
+.yp-num{font:400 40px/.8 Anton,Impact,sans-serif}
+.yp-num span{font-size:20px;color:var(--paper-mute)}
+.yp-row{display:grid;grid-template-columns:38px repeat(10,1fr);gap:3px;margin-bottom:3px;align-items:stretch}
+.yp-d{font:700 11px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em;color:var(--paper-mute);align-self:center}
+.yp-t{position:relative;aspect-ratio:3/4;border-radius:2px;overflow:hidden;display:block}
+.yp-t b{position:absolute;left:3px;bottom:2px;font:400 11px/1 Anton,Impact,sans-serif;color:#fff;text-shadow:0 1px 2px #000}
+.yp-t.open{border:1.5px dashed var(--rule-strong)}
+.yp-t.open b{color:var(--paper-mute);text-shadow:none}
+.yp.mini .yp-t b{font-size:13px;left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%)}
+.yp-t.ip{border:1.5px solid var(--paper-dim);background:repeating-linear-gradient(135deg,#1d1d22 0 4px,#26262c 4px 8px)}
+.yp-t.ip i{position:absolute;top:3px;left:0;right:0;text-align:center;font:700 7px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--paper);font-style:normal}
+.yp-t.void{visibility:hidden}
+.yp-key{display:flex;gap:14px;margin-top:8px;font:700 10px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--paper-mute)}
+.yp-key span{display:inline-flex;gap:5px;align-items:center}
+.yp-key .k{display:inline-block;width:9px;height:12px;border-radius:1px}
+.yp-key .k.on{background:#5a7fa0}.yp-key .k.ip{border:1.5px solid var(--paper-dim)}.yp-key .k.open{border:1.5px dashed var(--rule-strong)}.yp-key .k.ipo{border:1.5px solid var(--hl)}
+.st{background:#0b0b0d;color:var(--paper);padding:14px;height:100%}
+.st-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--paper);padding-bottom:6px;margin-bottom:6px;font:400 20px/1 Anton,Impact,sans-serif;text-transform:uppercase}
+.st-head span+span{font:700 11px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;color:var(--paper-dim)}
+.st-row{display:grid;grid-template-columns:96px 1fr 62px;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--rule)}
+.st-n{font:700 12px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:5px}
+.st-n::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--av)}
+.st-cells{display:flex;gap:3px}
+.st-c{width:21px;aspect-ratio:3/4;border-radius:2px;overflow:hidden;display:block}
+.st-c.open{border:1.5px dashed var(--rule-strong)}
+.st-c.ip{outline:1.5px solid var(--hl);outline-offset:-1.5px;opacity:.75}
+.st-tag{font:400 13px/1 Anton,Impact,sans-serif;text-align:right;color:var(--paper-dim)}
+.st-row.finished .st-tag{color:var(--paper)}
+.st-row.abandoned{opacity:.45}
+.gt{background:#0e1712;color:var(--paper);padding:14px;height:100%}
+.gt-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #e8c35a;padding-bottom:6px;margin-bottom:10px;font:400 22px/1 Anton,Impact,sans-serif;text-transform:uppercase}
+.gt-head span+span{font:700 11px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;color:#e8c35a}
+.gt-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 8px}
+.gt-c{min-width:0}.gt-c .cov{border-radius:2px}
+.gt-tag{margin-top:4px;display:inline-flex;gap:4px;align-items:baseline;background:#e8c35a;color:#1a1400;padding:2px 5px;border-radius:2px;font:800 10px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em;max-width:100%;overflow:hidden;white-space:nowrap}
+.gt-tag span{font-weight:600;opacity:.7}
+.gt-g{font:600 9px/1.15 "Barlow Condensed",sans-serif;text-transform:uppercase;color:var(--paper-dim);margin-top:3px;letter-spacing:.03em}
+
+/* modal */
+.modal-wrap{background:rgba(0,0,0,.72);padding:28px 16px;display:flex;justify-content:center}
+.modal{width:min(100%,460px);background:var(--dc-chat);border-radius:10px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.mo-head{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
+.mo-head .bot-av.sm{width:24px;height:24px}
+.mo-t{font-size:20px;font-weight:700;color:var(--dc-head);flex:1}
+.mo-x{color:var(--dc-sub);font-size:24px;line-height:1}
+.mo-body{padding:8px 16px 16px;display:flex;flex-direction:column;gap:18px}
+.ml-l{font-size:15px;font-weight:600;color:var(--dc-head);margin-bottom:2px}
+.ml-d{font-size:13px;color:var(--dc-sub);margin-bottom:6px}
+.ml-l+.ti,.ml-l+.rg,.ml-l+.sel{margin-top:6px}
+.req{color:#f23f43;margin-left:4px}
+.ti{background:var(--dc-3);border:1px solid var(--dc-3);border-radius:8px;padding:9px 12px;font-size:15px;color:var(--dc-text);position:relative}
+.ti.para{min-height:84px;padding-bottom:22px}
+.ti.ph{color:#6d6f78}
+.ti-count{position:absolute;right:10px;bottom:4px;font-size:11px;color:var(--dc-mute)}
+.rg{display:flex;flex-direction:column;gap:6px}
+.rg-row{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--dc-2);border:1px solid transparent}
+.rg-row.on{border-color:var(--dc-blurple);background:rgba(88,101,242,.1)}
+.rg-dot{width:20px;height:20px;border-radius:50%;border:2px solid #b5bac1;flex:none;position:relative}
+.rg-row.on .rg-dot{border-color:var(--dc-blurple)}
+.rg-row.on .rg-dot::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--dc-blurple)}
+.mo-foot{background:var(--dc-2);padding:14px 16px;display:flex;justify-content:flex-end;gap:8px}
+.mt{color:var(--dc-text)}
+
+/* autocomplete */
+.ac{padding:28px 16px 6px}
+.ac-pop{background:var(--dc-2);border:1px solid #111214;border-radius:8px;padding:6px 0;margin-bottom:8px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.ac-h{font-size:12px;font-weight:700;color:var(--dc-sub);letter-spacing:.02em;padding:4px 12px 8px}
+.ac-row{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;margin:0 6px;border-radius:4px}
+.ac-row.on{background:#404249}
+.ac-l{color:var(--dc-head)}
+.ac-d{color:var(--dc-sub);font-size:14px;white-space:nowrap}
+.cbar{min-height:44px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:8px 14px;background:#383a40;border-radius:8px}
+.cb-cmd{font-weight:600;color:var(--dc-head);margin-right:4px}
+.cb-opt{display:inline-flex;border-radius:4px;overflow:hidden;font-size:14px;line-height:22px}
+.cb-opt .k{background:#4e5058;color:var(--dc-sub);padding:0 6px}
+.cb-opt .v{background:#2b2d31;color:var(--dc-head);padding:0 6px;display:inline-flex;align-items:center}
+.cb-opt.focus{box-shadow:0 0 0 1px var(--dc-link)}
+.caret{display:inline-block;width:1px;height:16px;background:var(--dc-head);margin-left:1px}
+
+@media (max-width:560px){
+  .msg{padding:0 10px}.m-row{gap:10px}.bot-av,.m-gap{width:32px;height:32px}
+  .m-ref{padding-left:44px}.m-ref .spine{left:26px}
+  .type-h .num{font-size:3.6rem}
+  .btn{padding:0 10px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .caret{animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+}
+
+/* ---------- game lists additions ---------- */
+.d-line{min-height:1.375em}
+.m-plain{color:var(--dc-text);overflow-wrap:anywhere}
+.cv-thumb img,.cv-thumb .nocov{width:64px;height:85px;border-radius:8px;object-fit:cover;display:block;background:#1e1f22}
+.cv-thumb .nocov{display:grid;place-items:center;text-align:center;padding:6px;font:700 10px/1.1 "Noto Sans",sans-serif;color:var(--dc-mute)}
+.g-item img{width:100%;height:100%;object-fit:cover;display:block}
+.cv-gallery.n10{grid-template-columns:repeat(5,1fr)}
+.cv-gallery.n10 .g-item:first-child{grid-column:auto;aspect-ratio:3/4}
+.cv-gallery.n10 .g-item{aspect-ratio:3/4}
+.cv-gallery.n6 .g-item{aspect-ratio:3/4}
+.cv-gallery.n5 .g-item{aspect-ratio:3/4}
+.cv-gallery.n5 .g-item:nth-child(-n+2){aspect-ratio:3/4}
+.dm-top{gap:10px}
+.dm-top .m-av{margin-right:2px}
+.decide{margin:0 0 28px;padding:14px 18px;border:1px solid var(--rule-strong);border-radius:3px;max-width:96ch;color:var(--paper-dim)}
+.decide b{color:var(--hl);font:400 1.1rem/1 Anton,Impact,sans-serif;text-transform:uppercase;margin-right:8px;letter-spacing:.01em}
+.decide strong{color:var(--paper);font-weight:600}
+.intro{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:0 40px;margin:0 0 36px}
+.intro .frame{margin:0}
+.opt+.opt{margin-top:24px}
+.opts{grid-template-columns:minmax(0,1fr)}
+.btn .r-e{font-size:15px}
+.sel-box .val{color:var(--dc-text)}
+.sel-menu .sopt .o-l b{font-weight:600}
+.num{display:inline-block;min-width:1.9em;color:var(--dc-mute);font-weight:600}
+.u-msg .m-name{color:var(--av)}
+/* generated image, in the club's print style: the Pool shelf */
+.ps{background:#0b0b0d;color:var(--paper);padding:14px 14px 12px;font-family:Barlow,sans-serif}
+.ps-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--paper);padding-bottom:6px;margin-bottom:10px}
+.ps-name{font:400 26px/.9 Anton,Impact,sans-serif;text-transform:uppercase}
+.ps-name span{color:#9ab8f2}
+.ps-rule{font:700 11px/1.2 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--paper-dim);text-align:right}
+.ps-rule b{color:var(--paper);font-weight:700}
+.ps-lab{display:flex;align-items:baseline;gap:8px;font:400 16px/1 Anton,Impact,sans-serif;text-transform:uppercase;margin:8px 0 6px}
+.ps-lab small{font:700 10px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;color:var(--paper-mute)}
+.ps-row{display:grid;grid-template-columns:repeat(14,1fr);gap:3px}
+.ps-row.opt{grid-template-columns:repeat(12,1fr)}
+.ps-c{position:relative;aspect-ratio:3/4;border-radius:2px;overflow:hidden;background:#1d1d22;box-shadow:inset 0 0 0 1px rgba(244,244,240,.12)}
+.ps-c img{width:100%;height:100%;object-fit:cover;display:block}
+.ps-c .t{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2px;font:400 7px/1 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--paper-mute)}
+.ps-c .nw{position:absolute;left:2px;bottom:2px;background:var(--paper);color:#0b0b0d;font:800 7px/1 "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:2px 3px 1px;border-radius:1px}
+.ps-c.cl{box-shadow:0 0 0 2px #9ab8f2}
+.ps-foot{margin-top:9px;font:700 10px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--paper-mute)}
+
+/* ---------- playtime additions ---------- */
+.pr{background:#0b0b0d;color:var(--paper);padding:16px 16px 14px;font-family:Barlow,sans-serif;position:relative}
+.pr-top{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--paper);padding-bottom:8px}
+.pr-name{font:400 30px/.9 Anton,Impact,sans-serif;text-transform:uppercase}
+.pr-who{font:700 11px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim);text-align:right}
+.pr-who b{color:var(--paper)}
+.pr-mid{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:end;margin-top:12px}
+.pr-g{position:relative;display:grid;justify-items:center}
+.pr-g .n{position:absolute;bottom:0;font:400 40px/.8 Anton,Impact,sans-serif}
+.pr-g .n span{font-size:20px;color:var(--paper-mute)}
+.pr-stamp{position:absolute;left:44px;top:56px;transform:rotate(-8deg);border:2.5px solid var(--paper);outline:1px solid var(--paper);outline-offset:2px;padding:4px 10px 3px;background:#0b0b0d;font:400 22px/.9 Anton,Impact,sans-serif;text-transform:uppercase;box-shadow:0 6px 14px rgba(0,0,0,.45)}
+.pr-row{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.pr-c{position:relative;aspect-ratio:3/4;border-radius:2px;overflow:hidden;background:#1d1d22;box-shadow:inset 0 0 0 1px rgba(244,244,240,.12)}
+.pr-c img{width:100%;height:100%;object-fit:cover;display:block}
+.pr-c .t{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2px;font:400 8px/1 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--paper-mute)}
+.pr-c .r{position:absolute;left:2px;bottom:2px;background:#0b0b0d;color:var(--paper);font:400 9px/1 Anton,Impact,sans-serif;padding:2px 3px 1px;border-radius:1px}
+.pr-foot{margin-top:10px;font:700 11px/1.3 "Barlow Condensed",sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--paper-mute);display:flex;justify-content:space-between}
+.pr-foot b{color:var(--paper)}
+.d-code-block{font-family:"Noto Sans Mono",monospace;font-size:13px;line-height:1.5;background:#2b2d31;border:1px solid #1e1f22;border-radius:4px;padding:8px 10px;white-space:pre;color:var(--dc-text);margin:4px 0}
+</style>
+</head>
+<body>
+<header class="mast"><h1>Playtime <b>in Discord</b></h1>
+<p class="lede">Options for the bot's side of <strong>Playtime</strong> and <strong>Franchise Progress</strong>: the <strong>Conquest post</strong>, <strong>/playtime add</strong> and Playtime in the <strong>game view</strong>. <strong>Pick one per surface</strong>, or mix. Every mock uses only what the bot can send (plain content or Components V2, modals, autocomplete), with its component and character budget. The website's options are in <a href="../playtime/index.html">../playtime/</a>.</p>
+<ul class="keys"><li>Today <span>Wed 25 Nov 2026</span></li><li>Members <span>invented</span></li><li>Covers <span>Steam library art</span></li><li>Mara's Final Fantasy VI <span>180 h from 5 sources</span></li><li>Franchise Progress <span>Feature in Preview</span></li></ul>
+</header>
+<nav class="toc" aria-label="Surfaces"><ol><li><a href="#s4"><b>4</b>The Conquest post</a></li><li><a href="#s5"><b>5</b>/playtime add</a></li><li><a href="#s6"><b>6</b>Playtime in the game view</a></li></ol></nav><main><section class="type" id="s4"><header class="type-h"><span class="num">4</span><h2>The Conquest post</h2></header><p class="type-brief">When a Game Completion makes a member <strong>Conquer</strong> a Franchise (a Game Completion for every Mainline game), the bot says so in the completions channel. <strong>No pings.</strong> Conquests that already exist when the Feature launches, and ones reached through a Completionator import, are never posted. Gated by the Franchise Progress Feature.</p><div class="opts"><article class="opt wide" id="o4A"><header class="opt-h"><span class="code">4A</span><h3>A line on the completion post</h3></header><p class="idea">No new message: the Game Completion that finishes the last Mainline game gets <strong>one more line</strong> on its usual post in the completions channel. The member's name is plain text, never a ping.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">The completion post, with the Conquest line</span><span class="budget">plain content · 0/2000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>completions</span></div><div class="dc-chat"><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:02</span></div><div class="m-plain"><div class="d-h3">Mara</div><div class="d-line">Mara has added a game completion: <strong>Final Fantasy XIV</strong> - Main Story - 25/11/2026 - 380 hrs</div><div class="d-line">&nbsp;</div><div class="d-line">Game completion #31 for 2026</div><div class="d-line">&nbsp;</div><div class="d-line"><strong>Mara Conquered Final Fantasy.</strong> Every Mainline game, 16 of 16, with 812 h of Playtime across the Franchise. The 4th member to Conquer it.</div></div></div></div></div></div></div></figure></div><ul class="notes"><li>Quietest; it can't be missed because it rides the post people already read.</li><li>A Conquest from a Game Completion logged without announce:true posts nothing. Say if it should post on its own then.</li></ul></article><article class="opt wide" id="o4B"><header class="opt-h"><span class="code">4B</span><h3>Its own card under the completion</h3></header><p class="idea">Right after the completion post, a <strong>Conquest card</strong>: the headline, the date, a gallery of the Franchise's Mainline covers, the Playtime and who else has Conquered it, and a link to the Franchise page. <strong>Recommended</strong>: it reads as an event of its own without a new channel.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Completion post, then the Conquest card</span><span class="budget">16/40 components · 142/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>completions</span></div><div class="dc-chat"><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:02</span></div><div class="m-plain"><div class="d-h3">Mara</div><div class="d-line">Mara has added a game completion: <strong>Final Fantasy XIV</strong> - Main Story - 25/11/2026 - 380 hrs</div><div class="d-line">&nbsp;</div><div class="d-line">Game completion #31 for 2026</div></div></div></div></div><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:02</span></div><div class="m-comps"><div class="cv-ctr acc" style="--accent:#f4f4f0"><div class="cv-text"><div class="d-h2">Mara Conquered Final Fantasy</div><div class="d-sub">Every Mainline game · 16 of 16 · 25 Nov 2026</div></div><div class="cv-gallery n10"><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt="Final Fantasy VI" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/39140/library_600x900.jpg" alt="Final Fantasy VII" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1026680/library_600x900.jpg" alt="Final Fantasy VIII" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/377840/library_600x900.jpg" alt="Final Fantasy IX" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/359870/library_600x900.jpg" alt="Final Fantasy X" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/595520/library_600x900.jpg" alt="Final Fantasy XII" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/292120/library_600x900.jpg" alt="Final Fantasy XIII" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/39210/library_600x900.jpg" alt="Final Fantasy XIV" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/637650/library_600x900.jpg" alt="Final Fantasy XV" loading="lazy"></div><div class="g-item"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/2515020/library_600x900.jpg" alt="Final Fantasy XVI" loading="lazy"></div></div><div class="cv-text"><div class="d-line"><strong>812 h</strong> of Playtime in the Franchise. Joins Loot Hoarder, Rowan and Jun.</div></div></div><div class="cv-row"><span class="btn link"><span>Open Final Fantasy</span><svg class="b-ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="currentColor"/></svg></span></div></div></div></div></div></div></div></figure></div><ul class="notes"><li>The gallery holds 10 covers, so a long Franchise shows its latest 10 Mainline games with art.</li><li>The container's 3px edge is paper, not a Provider or track colour.</li></ul></article><article class="opt wide" id="o4C"><header class="opt-h"><span class="code">4C</span><h3>The printed Conquest</h3></header><p class="idea">The card is a <strong>generated image in the club's print style</strong>: the full Mainline meter with the Conquered stamp, all 16 Mainline covers numbered I to XVI (the Anton fallback where IGDB has none) and the Playtime, with one line of text under it.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Completion post, then the printed Conquest</span><span class="budget">6/40 components · 78/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>completions</span></div><div class="dc-chat"><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:02</span></div><div class="m-plain"><div class="d-h3">Mara</div><div class="d-line">Mara has added a game completion: <strong>Final Fantasy XIV</strong> - Main Story - 25/11/2026 - 380 hrs</div><div class="d-line">&nbsp;</div><div class="d-line">Game completion #31 for 2026</div></div></div></div></div><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:02</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-gallery n1"><div class="g-item gen"><div class="pr"><div class="pr-top"><span class="pr-name">Final Fantasy</span><span class="pr-who"><b>Mara</b> · 25 Nov 2026<br>4th member to Conquer it</span></div><div class="pr-mid"><div class="pr-g"><svg viewBox="0 0 190 97" width="190" height="97" aria-hidden="true"><path d="M 11.00 95.00 A 84.00 84.00 0 0 1 12.39 79.77" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 12.85 77.46 A 84.00 84.00 0 0 1 16.95 63.95" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 17.85 61.77 A 84.00 84.00 0 0 1 24.51 49.32" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 25.82 47.35 A 84.00 84.00 0 0 1 34.77 36.44" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 36.44 34.77 A 84.00 84.00 0 0 1 47.35 25.82" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 49.32 24.51 A 84.00 84.00 0 0 1 61.77 17.85" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 63.95 16.95 A 84.00 84.00 0 0 1 77.46 12.85" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 79.77 12.39 A 84.00 84.00 0 0 1 93.82 11.01" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 96.18 11.01 A 84.00 84.00 0 0 1 110.23 12.39" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 112.54 12.85 A 84.00 84.00 0 0 1 126.05 16.95" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 128.23 17.85 A 84.00 84.00 0 0 1 140.68 24.51" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 142.65 25.82 A 84.00 84.00 0 0 1 153.56 34.77" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 155.23 36.44 A 84.00 84.00 0 0 1 164.18 47.35" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 165.49 49.32 A 84.00 84.00 0 0 1 172.15 61.77" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 173.05 63.95 A 84.00 84.00 0 0 1 177.15 77.46" fill="none" stroke="#f4f4f0" stroke-width="18"/><path d="M 177.61 79.77 A 84.00 84.00 0 0 1 179.00 95.00" fill="none" stroke="#f4f4f0" stroke-width="18"/></svg><span class="n">16<span>/16</span></span><span class="pr-stamp">Conquered</span></div><div><div class="pr-row"><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173770/library_600x900.jpg" alt=""><span class="r">I</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173780/library_600x900.jpg" alt=""><span class="r">II</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173790/library_600x900.jpg" alt=""><span class="r">III</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173800/library_600x900.jpg" alt=""><span class="r">IV</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173810/library_600x900.jpg" alt=""><span class="r">V</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt=""><span class="r">VI</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/39140/library_600x900.jpg" alt=""><span class="r">VII</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1026680/library_600x900.jpg" alt=""><span class="r">VIII</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/377840/library_600x900.jpg" alt=""><span class="r">IX</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/359870/library_600x900.jpg" alt=""><span class="r">X</span></div><div class="pr-c"><span class="t">Final Fantasy XI</span><span class="r">XI</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/595520/library_600x900.jpg" alt=""><span class="r">XII</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/292120/library_600x900.jpg" alt=""><span class="r">XIII</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/39210/library_600x900.jpg" alt=""><span class="r">XIV</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/637650/library_600x900.jpg" alt=""><span class="r">XV</span></div><div class="pr-c"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/2515020/library_600x900.jpg" alt=""><span class="r">XVI</span></div></div></div></div><div class="pr-foot"><span>Every Mainline game · <b>812 h</b> of Playtime in the Franchise</span><span>Add-ons never count</span></div></div></div></div><div class="cv-text"><div class="d-line"><strong>Mara Conquered Final Fantasy.</strong> 812 h of Playtime. The 4th member to Conquer it.</div></div></div><div class="cv-row"><span class="btn link"><span>Open Final Fantasy</span><svg class="b-ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="currentColor"/></svg></span></div></div></div></div></div></div></div></figure></div><ul class="notes"><li>Most like the website; needs the bot to render an image (it already draws birthday banners), so it costs the most to build.</li><li>Fits every Mainline game, where the gallery stops at 10.</li></ul></article></div></section><section class="type" id="s5"><header class="type-h"><span class="num">5</span><h2>/playtime add</h2></header><p class="type-brief"><strong>/playtime add title platform hours [set]</strong> adds to (or with set:true, sets) the member's <strong>Manual Playtime</strong> for one game on one platform. Replies are ephemeral. Not gated: Playtime is part of every game page.</p><div class="intro"><figure class="frame"><figcaption class="frame-cap"><span class="what">Typing the command · platform autocompletes from GameDB, yours first</span><span class="budget">autocomplete, 25 max</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="ac"><div class="ac-pop"><div class="ac-h">PLATFORM · YOURS FIRST</div><div class="ac-row on"><span class="ac-l">Nintendo Switch</span><span class="ac-d">your Manual Playtime: 30 h</span></div><div class="ac-row"><span class="ac-l">Nintendo Switch 2</span><span class="ac-d"></span></div><div class="ac-row"><span class="ac-l">Super Nintendo</span><span class="ac-d">RetroAchievements reports 48 h</span></div></div><div class="cbar"><span class="cb-cmd">/playtime add</span><span class="cb-opt"><span class="k">title</span><span class="v">Final Fantasy VI (1994)</span></span><span class="cb-opt focus"><span class="k">platform</span><span class="v">sw<span class=caret></span></span></span><span class="cb-opt"><span class="k">hours</span><span class="v">3</span></span></div></div></div></div></figure></div><div class="opts"><article class="opt wide" id="o5A"><header class="opt-h"><span class="code">5A</span><h3>One line and Undo</h3></header><p class="idea">An ephemeral line that says what changed (from and to) and the new Playtime, with Undo. <strong>set:true</strong> says "Set" and shows what it was.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Add time, then set:true</span><span class="budget">4/40 components · 104/4000 chars · 4/40 components · 100/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/playtime add</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:10</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-line">Added <strong>3 h</strong> to your Switch Manual Playtime for <strong>Final Fantasy VI</strong>: 30 h to 33 h. Your Playtime is now <strong>183 h</strong>.</div></div></div><div class="cv-row"><span class="btn secondary"><span>Undo</span></span></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/playtime add set:true</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:11</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-line">Set your Switch Manual Playtime for <strong>Final Fantasy VI</strong> to <strong>41 h</strong> (was 30 h). Your Playtime is now <strong>191 h</strong>.</div></div></div><div class="cv-row"><span class="btn secondary"><span>Undo</span></span></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div></div></div></figure></div><ul class="notes"><li>Fastest to read; nothing about other sources or the Playthrough.</li></ul></article><article class="opt wide" id="o5B"><header class="opt-h"><span class="code">5B</span><h3>The receipt</h3></header><p class="idea">The reply is a <strong>receipt</strong>: the game's cover, the new total, every source with the changed one marked, the open Playthrough, and the mismatch as one plain line pointing to the website. <strong>Recommended</strong>: adding time is when members check whether the total is right.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Added 3 h, with the breakdown</span><span class="budget">9/40 components · 293/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/playtime add</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:10</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-section"><div class="cv-sec-text"><div class="cv-text"><div class="d-h3">Final Fantasy VI · 183 h</div><div class="d-sub">Added 3 h to Manual · Switch (30 h to 33 h)</div><div class="d-line">Steam · PC <strong>42 h</strong></div><div class="d-line">RetroAchievements · SNES <strong>48 h</strong></div><div class="d-line">PSN · PS4 <strong>29 h</strong></div><div class="d-line">Manual · Switch <strong>33 h</strong> <em>(+3)</em></div><div class="d-line">Manual · PS4 <strong>31 h</strong></div></div></div><div class="cv-acc"><span class="cv-thumb"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt="Final Fantasy VI cover" loading="lazy"></span></div></div><div class="cv-sep div"></div><div class="cv-text"><div class="d-line">Playthrough open since 9 Nov: <strong>17 h 20 m</strong></div><div class="d-sub">PSN and your manual PS4 entry may both count your PS4 time. Sort it out on the website.</div></div></div><div class="cv-row"><span class="btn secondary"><span>Undo</span></span><span class="btn link"><span>Open on the website</span><svg class="b-ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="currentColor"/></svg></span></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div></div></div></figure></div><ul class="notes"><li>The Playthrough grew by the 3 h too, because Manual time added while a Playthrough is open counts toward it.</li></ul></article><article class="opt wide" id="o5C"><header class="opt-h"><span class="code">5C</span><h3>Ask first when a Provider covers it</h3></header><p class="idea">Same reply as 5A, but when the platform is one a Provider already reports for this game, the bot <strong>asks before adding</strong>: "Steam already reports 42 h on PC", with Add anyway or Cancel. Catches the double count at the source.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Adding PC time on a Steam game, then a refusal</span><span class="budget">5/40 components · 209/4000 chars · refusal 2/40 components · 79/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/playtime add platform:PC hours:10</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:12</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-line"><strong>Steam already reports 42 h</strong> on PC for Final Fantasy VI. Manual Playtime adds on top, so this would count that time twice.</div><div class="d-sub">Manual Playtime is for play no Provider sees: another platform, a save file, an old note.</div></div></div><div class="cv-row"><span class="btn danger"><span>Add 10 h anyway</span></span><span class="btn secondary"><span>Cancel</span></span></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/playtime add</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:13</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-line">Hours must be more than 0 and at most 10,000, in steps of 0.25 h. You typed <strong>-3</strong>.</div></div></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div></div></div></figure></div><ul class="notes"><li>Can combine with 5A or 5B for the normal reply.</li><li>The red Add anyway is Discord's danger style; on the website the same warning is the yellow mismatch.</li></ul></article></div></section><section class="type" id="s6"><header class="type-h"><span class="num">6</span><h2>Playtime in the game view</h2></header><p class="type-brief">The bot's existing game view (<strong>/gamedb view</strong>) and its buttons. Today it shows the game, Time to beat and the shelf buttons.</p><div class="opts"><article class="opt wide" id="o6A"><header class="opt-h"><span class="code">6A</span><h3>A block in the view</h3></header><p class="idea">The game view gains a <strong>Playtime block</strong> for whoever ran the command, named so everyone reading knows whose it is: the total, the sources on one line and the open Playthrough.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Mara runs /gamedb view</span><span class="budget">11/40 components · 288/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/gamedb view</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:20</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-section"><div class="cv-sec-text"><div class="cv-text"><div class="d-h2">Final Fantasy VI</div><div class="d-sub">1994 · Square · RPG</div><div class="d-line">The Empire has rediscovered magic and means to use it&hellip;</div><div class="d-line"><strong>Time to beat</strong> Main 31 h · Extras 38 h · Complete 55 h</div></div></div><div class="cv-acc"><span class="cv-thumb"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt="Final Fantasy VI cover" loading="lazy"></span></div></div><div class="cv-sep div"></div><div class="cv-text"><div class="d-h3">Mara's Playtime · 180 h</div><div class="d-line">Steam 42 h · RetroAchievements 48 h · PSN 29 h · Manual Switch 30 h · Manual PS4 31 h</div><div class="d-sub">Playthrough open since 9 Nov: 14 h 20 m</div></div></div><div class="cv-row"><span class="btn primary"><span>Add to Now Playing List</span></span><span class="btn secondary"><span>View Featured Video</span></span><span class="btn secondary"><span>Add to Backlog</span></span><span class="btn secondary"><span>Add to Collection</span></span></div></div></div></div></div></div></div></figure></div><ul class="notes"><li>Simple, but a game view posted in a channel shows only its author's Playtime.</li></ul></article><article class="opt wide" id="o6B"><header class="opt-h"><span class="code">6B</span><h3>My Playtime, for whoever presses it</h3></header><p class="idea">The view gets a <strong>My Playtime</strong> button. Whoever presses it gets their own breakdown, ephemeral: a small table of sources, the total and the open Playthrough. <strong>Recommended</strong>: one posted view works for every member reading it.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">Mara's view, Mara presses it, then Tavi does</span><span class="budget">10/40 components · 141/4000 chars · reply 4/40 components · 395/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/gamedb view</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:20</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-section"><div class="cv-sec-text"><div class="cv-text"><div class="d-h2">Final Fantasy VI</div><div class="d-sub">1994 · Square · RPG</div><div class="d-line">The Empire has rediscovered magic and means to use it&hellip;</div><div class="d-line"><strong>Time to beat</strong> Main 31 h · Extras 38 h · Complete 55 h</div></div></div><div class="cv-acc"><span class="cv-thumb"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt="Final Fantasy VI cover" loading="lazy"></span></div></div></div><div class="cv-row"><span class="btn primary"><span>Add to Now Playing List</span></span><span class="btn secondary"><span>View Featured Video</span></span><span class="btn secondary"><span>Add to Backlog</span></span><span class="btn secondary"><span>Add to Collection</span></span><span class="btn secondary"><span>My Playtime</span></span></div></div></div></div></div><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:21</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-h3">Your Playtime · Final Fantasy VI</div><div class="d-code-block">Steam · PC                   42 h
+RetroAchievements · SNES     48 h
+PSN · PS4                    29 h
+Manual · Switch              30 h
+Manual · PS4                 31 h
+--------------------------------
+Playtime                    180 h</div><div class="d-line">Playthrough open since 9 Nov: <strong>14 h 20 m</strong></div><div class="d-sub">Add time with /playtime add. PSN and your manual PS4 entry may both count your PS4 time.</div></div></div><div class="cv-row"><span class="btn link"><span>Open on the website</span><svg class="b-ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="currentColor"/></svg></span></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div><div class="msg"><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:22</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-text"><div class="d-line">You have no Playtime on <strong>Final Fantasy VI</strong> yet.</div><div class="d-sub">Link Steam, RetroAchievements or PSN on the website, or add it with /playtime add.</div></div></div></div><div class="m-eph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C5.6 5 2 12 2 12s3.6 7 10 7 10-7 10-7-3.6-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></svg>Only you can see this · <a class="d-link" href="#" tabindex="-1">Dismiss message</a></div></div></div></div></div></div></figure></div><ul class="notes"><li>The table is a code block so the hours line up; it stays under 2,000 characters for any game.</li></ul></article><article class="opt wide" id="o6C"><header class="opt-h"><span class="code">6C</span><h3>The club&#x27;s Playtime, yours on the button</h3></header><p class="idea">The view shows the <strong>club's Playtime</strong> on the game (total, members, the top three) and a line on its Franchise, with 6B's <strong>My Playtime</strong> button for your own.</p><div class="frames"><figure class="frame"><figcaption class="frame-cap"><span class="what">The view with club Playtime</span><span class="budget">12/40 components · 286/4000 chars</span></figcaption><div class="dc"><div class="dc-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.9 3.2 9.8 8H6v2h3.3l-.9 4H5v2h3l-1 4.8h2L10 16h4l-1 4.8h2l1-4.8h3.9v-2h-3.4l.9-4H21V8h-3l1.1-4.8h-2L16 8h-4l1.1-4.8h-2.2zM11.4 10h4l-.9 4h-4l.9-4z"/></svg><span>general</span></div><div class="dc-chat"><div class="msg"><div class="m-ref"><span class="spine"></span><span class="ref-av" style="--av:#e8a38a;--s:16px" aria-hidden="true">M</span><span class="ref-n">Mara</span> used <span class="ref-cmd">/gamedb view</span></div><div class="m-row"><span class="bot-av" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon fill="#ff0000" points="39.0,20.0 33.2,24.8 34.6,32.2 27.0,32.1 23.3,38.7 17.6,33.8 10.5,36.5 9.3,29.0 2.1,26.5 6.0,20.0 2.1,13.5 9.3,11.0 10.5,3.5 17.6,6.2 23.3,1.3 27.0,7.9 34.6,7.8 33.2,15.2"/><text x="20" y="24.5" text-anchor="middle" font-size="11" font-weight="800" font-family="Anton,Impact,sans-serif" fill="#0b0b0d">RPG</text></svg></span><div class="m-body"><div class="m-head"><span class="m-name">GameDB</span><span class="app"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 5.1-5.1 1.1 1.1z" fill="currentColor"/></svg>APP</span><span class="m-time">Today at 21:20</span></div><div class="m-comps"><div class="cv-ctr"><div class="cv-section"><div class="cv-sec-text"><div class="cv-text"><div class="d-h2">Final Fantasy VI</div><div class="d-sub">1994 · Square · RPG</div><div class="d-line">The Empire has rediscovered magic and means to use it&hellip;</div><div class="d-line"><strong>Time to beat</strong> Main 31 h · Extras 38 h · Complete 55 h</div></div></div><div class="cv-acc"><span class="cv-thumb"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1173820/library_600x900.jpg" alt="Final Fantasy VI cover" loading="lazy"></span></div></div><div class="cv-sep div"></div><div class="cv-text"><div class="d-h3">Club Playtime · 1,240 h</div><div class="d-line">9 members · most: <strong>Rowan 212 h</strong>, Mara 180 h, Jun 151 h</div><div class="d-sub">Final Fantasy VI is Mainline in Final Fantasy, Conquered by 3 members.</div></div></div><div class="cv-row"><span class="btn primary"><span>Add to Now Playing List</span></span><span class="btn secondary"><span>View Featured Video</span></span><span class="btn secondary"><span>Add to Backlog</span></span><span class="btn secondary"><span>Add to Collection</span></span><span class="btn secondary"><span>My Playtime</span></span></div></div></div></div></div></div></div></figure></div><ul class="notes"><li>Needs a club Playtime figure from the API, which the spec doesn't have yet.</li></ul></article></div></section></main>
+</body></html>
