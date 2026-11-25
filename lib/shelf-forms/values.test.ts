@@ -50,6 +50,16 @@ describe("completionStart", () => {
     });
   });
 
+  it("pre-fills the hours from the open Playthrough (spec api#457)", () => {
+    expect(completionStart({ nowPlaying, playthroughMinutes: 860, today: TODAY }).values.playtime).toBe("14.33");
+    expect(completionStart({ playthroughMinutes: 120, today: TODAY }).values.playtime).toBe("2");
+    expect(completionStart({ playthroughMinutes: null, today: TODAY }).values.playtime).toBe("");
+  });
+
+  it("keeps an existing completion's hours over the open Playthrough", () => {
+    expect(completionStart({ entry: completion, playthroughMinutes: 860, today: TODAY }).values.playtime).toBe("38");
+  });
+
   it("leaves Started blank for a game not on Now Playing", () => {
     const start = completionStart({ today: TODAY });
     expect(start.startedFromNowPlaying).toBe(false);

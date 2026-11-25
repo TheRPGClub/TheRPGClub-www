@@ -12,6 +12,7 @@ interface Logging {
   game: Game;
   completions: GameCompletion[];
   nowPlaying: UserNowPlaying | null;
+  playthroughMinutes: number | null;
 }
 
 // "Log a completion" on the owner's Completed page (spec api#451, pick 3A):
@@ -30,6 +31,7 @@ export function CompletionAddButton() {
       game,
       completions: found?.completions ?? [],
       nowPlaying: found?.nowPlaying ?? null,
+      playthroughMinutes: found?.playthroughMinutes ?? null,
     });
   };
 
@@ -51,6 +53,7 @@ export function CompletionAddButton() {
           game={logging.game}
           completions={logging.completions}
           nowPlaying={logging.nowPlaying}
+          playthroughMinutes={logging.playthroughMinutes}
           platforms={owner.platforms}
           onSaved={(saved) => {
             setLogging(null);
