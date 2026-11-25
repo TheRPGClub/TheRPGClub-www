@@ -245,11 +245,11 @@ export function useSortable<Z extends string, Id extends SortId>(opts: SortableO
         zIndex: "60",
         margin: "0",
         pointerEvents: "none",
-        left: `${box.left}px`,
-        top: `${box.top}px`,
+        left: "0px",
+        top: "0px",
         width: `${box.width}px`,
         height: `${box.height}px`,
-        transform: "none",
+        transform: `translate(${box.left}px,${box.top}px)`,
       });
       document.body.appendChild(copy);
       ghost.current = { el: copy, dx: at.x - box.left, dy: at.y - box.top };
