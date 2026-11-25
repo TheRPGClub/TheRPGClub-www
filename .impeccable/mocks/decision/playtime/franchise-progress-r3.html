@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Progress Tab Games</title>
+<meta name="description" content="Round 3: three visual ways to show your games on the Franchise page's Progress tab.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+.cw{position:relative}
+/* the viewer's dials */
+.yours{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 230px;gap:0;align-items:end;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.yours>.mtr{border-right:1px solid var(--border);padding:0 8px}
+.yours .yside{padding-left:22px;align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.yours .yside .who{display:flex;align-items:center;gap:10px}
+.yours .yside .who b{font:400 1.6rem/.9 Anton;text-transform:uppercase}
+.yours .yside .who small{display:block;font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.yours .yside .tot{font:400 2.6rem/.85 Anton}
+.yours .yside .tot small{display:block;font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.viewing{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:8px 12px;background:var(--card);border-radius:3px;box-shadow:inset 0 0 0 1px var(--bs);font-size:.92rem;color:var(--dim)}
+.viewing b{color:var(--fg);font-weight:600}
+.viewing .lnk{margin-left:auto}
+.pshell .yours{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pshell .yours .yside{grid-column:1/-1;padding:14px 0 0;flex-direction:row;align-items:center;justify-content:space-between}
+.pshell .yours>.mtr:nth-child(3){border-right:0}
+.pshell .mtr .nm{font-size:1.9rem}.pshell .mtr .nmlab{font-size:.95rem;margin-top:8px}.pshell .mtr .hh{font-size:.68rem}
+/* per-game Playtime: two compact ledgers */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.pg h3{font:400 1.35rem/1 Anton;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid var(--fg);display:flex;gap:10px;align-items:baseline}
+.pg h3 span{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.gr{display:grid;grid-template-columns:34px 22px minmax(0,1fr) 64px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.gr .rn{font:400 1.15rem/1 Anton;text-align:right}
+.gr .b{width:18px;height:18px;border-radius:2px;display:grid;place-items:center;background:var(--fg);color:var(--bg)}
+.gr .b svg.lucide{width:12px;height:12px;stroke-width:3}
+.gr .e{width:18px;height:18px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--bs)}
+.gr .t{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr .h{text-align:right;font:400 1.1rem/1 Anton}
+.gr .h.z{color:var(--faint);font:700 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.pshell .pg{grid-template-columns:1fr;gap:18px}
+/* 1E leaderboard */
+.lb2{margin-top:30px}
+.lbh,.lbr{display:grid;grid-template-columns:34px minmax(0,1.3fr) 150px minmax(0,1.4fr) 90px 90px 90px;gap:14px;align-items:center}
+.lbh{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:8px;border-bottom:2px solid var(--fg)}
+.lbr{padding:9px 6px;margin:0 -6px;border-bottom:1px solid var(--border);border-radius:2.4px}
+.lbr .rk{font:400 1.4rem/1 Anton;text-align:right;color:var(--faint)}
+.lbr .m{display:flex;align-items:center;gap:10px;font-weight:600;min-width:0}
+.lbr .m small{display:block;font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.lbr .bar{display:flex;gap:2px;height:10px;flex:1;min-width:0}
+.lbr .bar i{flex:1;background:#303037;border-radius:1px}
+.lbr .bar i.on{background:var(--fg)}
+.lbr .bw{display:flex;align-items:center;gap:10px}
+.lbr .bw b{font:400 1.2rem/1 Anton;white-space:nowrap}
+.lbr .bw b span{color:var(--faint);font-size:.75em}
+.lbr .n{font:400 1.15rem/1 Anton;text-align:right}
+.lbr .n span{color:var(--faint);font-size:.75em}
+.lbr.you{background:rgb(255 212 0/.06)}
+.lbr.you .rk{color:var(--hl)}
+.lbr.sel{background:var(--muted);box-shadow:inset 0 0 0 1px var(--hl)}
+.lbr .cst .cstamp{transform:rotate(-4deg)}
+.grh{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 0 6px;display:flex;gap:8px;align-items:baseline}
+.grh b{font:400 1.15rem/1 Anton;color:var(--fg);letter-spacing:0}
+.pshell .lbh{display:none}
+.pshell .lbr{grid-template-columns:26px minmax(0,1fr) 72px;gap:4px 10px}
+.pshell .lbr .cst,.pshell .lbr .n.x{display:none}
+.pshell .lbr .bw{grid-column:2/-1;grid-row:2}
+.pshell .lbr .n.pt{grid-column:3;grid-row:1}
+/* 1F compare */
+.cmpbar{display:flex;align-items:center;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+.cmpbar .lb{color:var(--faint)}
+.pick{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 10px 0 6px;border-radius:2.4px;box-shadow:inset 0 0 0 1px var(--hl),0 0 0 3px rgb(255 212 0/.2);font:800 .95rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase}
+.pick svg.lucide{width:16px;height:16px;color:var(--faint)}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);gap:10px;align-items:start}
+.vs .vside{background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:14px 12px 12px}
+.vs .vside h4{display:flex;align-items:center;gap:10px;font:400 1.5rem/1 Anton;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--bs);margin-bottom:12px}
+.vs .vside h4 small{margin-left:auto;font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.vs .vside .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.vs .vside .trio .mtr .nm{font-size:2rem}.vs .vside .trio .mtr .nmlab{font-size:.9rem;margin-top:8px}
+.vs .mid{align-self:center;text-align:center;font:400 1.6rem/1 Anton;color:var(--faint)}
+.cmp{margin-top:22px}
+.cmph,.cmpr{display:grid;grid-template-columns:34px minmax(0,1fr) 130px 130px;gap:12px;align-items:center}
+.cmph{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:8px;border-bottom:2px solid var(--fg)}
+.cmpr{padding:5px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.cmpr .rn{font:400 1.15rem/1 Anton;text-align:right}
+.cmpr .c{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.cmpr .c b{font:400 1.05rem/1 Anton;min-width:46px;text-align:right}
+.cmpr .c b.z{color:var(--faint)}
+.cmpr.diff{background:rgb(244 244 240/.04)}
+.cbstrip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:10px 12px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--border)}
+.cbstrip .lb{color:var(--faint)}
+.cbstrip .p{display:inline-flex;align-items:center;gap:7px;font-size:.88rem;color:var(--dim);padding:3px 8px 3px 3px;border-radius:2.4px;box-shadow:inset 0 0 0 1px var(--bs)}
+.cbstrip .p b{color:var(--fg);font-weight:600}
+.cbstrip .p.on{box-shadow:inset 0 0 0 1.5px var(--hl)}
+.pshell .vs{grid-template-columns:1fr;gap:10px}
+.pshell .vs .mid{display:none}
+.pshell .cmph,.pshell .cmpr{grid-template-columns:24px minmax(0,1fr) 54px 54px;gap:8px}
+.pshell .cmpr .c .b,.pshell .cmpr .c .e{display:none}
+/* 1G dial grid */
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:12px 12px 10px;position:relative}
+.mc .hd2{display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--bs);margin-bottom:10px}
+.mc .hd2 b{font:400 1.2rem/1 Anton;text-transform:uppercase}
+.mc .hd2 small{margin-left:auto;font:400 1.05rem/1 Anton}
+.mc .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.mc .trio .mtr .nm{font-size:1.15rem}
+.mc .trio .mtr .pc{display:none}
+.mc .trio .mtr .nmlab{font:700 .62rem/1 "Barlow Condensed";letter-spacing:.07em;color:var(--faint);margin-top:4px}
+.mc .st{position:absolute;right:8px;bottom:-12px}
+.mc{margin-bottom:6px}
+.mc.you{box-shadow:inset 0 0 0 1.5px var(--hl)}
+.pshell .mgrid{grid-template-columns:1fr;gap:12px}
+.pshell .mc .trio .mtr .nm{font-size:1.15rem}
+/* ---------- round 3: the per-game part ---------- */
+.pgv{margin-top:24px}
+.wh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--fg);padding-bottom:6px;margin:22px 0 14px}
+.wh h3{font:400 1.6rem/1 Anton;text-transform:uppercase}
+.wh span{font:700 .78rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.wh b{margin-left:auto;font:400 1.4rem/1 Anton}
+.pgv .wh:first-child{margin-top:4px}
+.lg{display:flex;gap:16px;margin-top:18px;font:700 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.lg span{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:14px;height:18px;border-radius:2px;display:inline-block}
+.lg i.k{background:linear-gradient(135deg,#c44 0,#36c 100%)}
+.lg i.u{background:#77777c}
+.lg i.n{background:#3a3a40}
+/* grey and dim: unfinished and never played */
+.wi.p .cv img,.sc.p .cv img,.mt.p img{filter:grayscale(1) brightness(.62)}
+.wi.n .cv img,.sc.n .cv img,.mt.n img{filter:grayscale(1) brightness(.32)}
+.wi.n .cv .fb,.sc.n .cv .fb{opacity:.5}
+/* 1E1 walls */
+.wall8{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:20px 14px}
+.wall10{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:16px 10px}
+.wall8 .cv,.wall10 .cv{width:100%!important}
+.wi{min-width:0}
+.wi .num{display:flex;align-items:baseline;justify-content:space-between;margin-top:6px}
+.wi .num b{font:400 1.7rem/.9 Anton}
+.wi.p .num b,.wi.n .num b{color:var(--faint)}
+.wi .num span{color:var(--faint);font-size:.82rem}
+.wi p{font-size:.76rem;line-height:1.2;color:var(--dim);margin-top:5px}
+.ht{position:absolute;left:6px;bottom:6px;z-index:2;background:rgb(11 11 13/.86);color:var(--fg);font:400 1rem/1 Anton;padding:4px 6px 3px;border-radius:2px}
+.wall10 .ht{font-size:.82rem;left:4px;bottom:4px;padding:3px 5px 2px}
+.ht.z{font:800 .64rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:4px 5px 3px}
+.wall8.p{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}
+.wall10.p{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wall8.p .num b{font-size:1.3rem}
+/* 1E2 skyline */
+.skyw{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px}
+.lane-l{display:grid;grid-template-rows:1fr auto;font:700 .7rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lane-l span{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center}
+.lane-l span:first-child{align-self:end;margin-bottom:30px}
+.lane-l span:last-child{margin-top:20px;height:90px}
+.sky{display:flex;gap:4px;overflow:hidden}
+.col{display:flex;flex-direction:column;width:var(--cw);flex:none}
+.col .up{display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.col .dn2{display:flex;flex-direction:column;align-items:center}
+.col .rn{font:400 .9rem/1 Anton;margin-bottom:4px}
+.sc{position:relative;width:var(--cw)}
+.sc .cv{width:var(--cw)!important}
+.sc .dn.sm{width:14px;height:14px}.sc .dn.sm svg.lucide{width:10px;height:10px}
+.states .fr.ph{max-width:390px}
+.sb{width:calc(var(--cw) * .45);background:var(--fg);position:relative;margin:3px 0}
+.sc.p+.sb,.dn2 .sb{background:var(--fg)}
+.col .up .sb{border-radius:1px 1px 0 0}
+.sb em{position:absolute;left:50%;transform:translateX(-50%);top:-15px;font:400 .72rem/1 Anton;font-style:normal;white-space:nowrap;color:var(--fg)}
+.col .up .sc+.sb em{top:auto;bottom:calc(100% + 0px);display:none}
+.col .up .sb em{display:block;top:2px;left:16px;transform:none;writing-mode:vertical-rl;color:var(--dim)}
+.dn2 .sb em{top:2px;left:16px;transform:none;writing-mode:vertical-rl;color:var(--dim)}
+.col .axis{height:22px;border-top:2px solid var(--fg);position:relative}
+.col .axis span{position:absolute;left:0;top:4px;font:700 .7rem/1 "Barlow Condensed";letter-spacing:.04em;color:var(--faint)}
+/* 1E3 mosaic */
+.mos{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:72px;grid-auto-flow:dense;gap:6px}
+.mos.p{grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:52px;gap:4px}
+.mt{position:relative;border-radius:2.4px;overflow:hidden;background:var(--muted);box-shadow:inset 0 0 0 1px rgb(244 244 240/.12)}
+.mt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mt .fbk{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:4px;font:400 .62rem/1 Anton;text-transform:uppercase;color:var(--faint)}
+.mt img~.fbk{display:none}
+.mt::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgb(11 11 13/.85),transparent 55%);pointer-events:none}
+.mt .mh{position:absolute;left:6px;right:6px;bottom:5px;z-index:2;display:flex;align-items:baseline;justify-content:space-between;gap:4px}
+.mt .mh i{font:400 1.2rem/1 Anton;font-style:normal}
+.mt .mh b{font:400 1rem/1 Anton}
+.mt[style*="span 1"] .mh i{font-size:.85rem}.mt[style*="span 1"] .mh b{font-size:.75rem}
+.mt[style*="span 3"] .mh i{font-size:2.2rem}.mt[style*="span 3"] .mh b{font-size:1.6rem}
+.mt.n .mh b{display:none}
+.mt .dn{z-index:3}
+</style></head>
+<body><script>
+const startBtn = `<span class="btn hl">${ic("flag")}Start a Challenge</span>`;
+const fhead = (name = "Final Fantasy", tally = `<b>16 Mainline</b> · 15 spin-offs · 8 Add-ons · From IGDB, 2 linked by hand`) => `<a class="back">${ic("arrow-left")}Games</a><div class="hd"><h1>${name}</h1><span class="n lb">Franchise</span><div class="act"><span class="btn">${ic("folder-plus")}New Franchise</span><span class="btn">${ic("pencil")}Edit Franchise</span>${startBtn}</div></div><p class="tally">${tally}</p>`;
+const phead = () => `<a class="pback" aria-label="Back to Games">${ic("arrow-left")}</a><div class="hd"><h1>Final Fantasy</h1></div><p class="tally"><b>16 Mainline</b> · 15 spin-offs · 8 Add-ons</p>`;
+const sw = (n = "11/16") => `<div class="vsw paper"><span>Games<em>31</em></span><span class="on">Progress<em>${n}</em></span><span>History<em>7</em></span></div>`;
+const meter = (d, o = {}) => {
+  const w = o.w || 200;
+  const body = d.m
+    ? `<div class="dial">${gauge(d.n, d.m, { w, sw: o.sw })}<div class="rd"><div class="nm">${d.n}<span>/${d.m}</span></div><div class="pc">${pct(d.n, d.m)}%</div></div></div>`
+    : `<div class="dial">${gauge(0, 0, { w, empty: 1 })}<div class="rd"><div class="none">No Mainline games yet</div></div></div>`;
+  return `<div class="mtr ${d.m ? "" : "off"}">${body}<div class="nmlab">${d.name}</div>${o.noH ? "" : `<div class="hh">${d.m ? `<b>${hrs(d.h)}</b> Playtime` : "A Regular marks them with Edit Franchise"}</div>`}${o.stamp || ""}</div>`;
+};
+/* members on Final Fantasy: [key, mainN, allN, spinN, hours, conquered] */
+const MEM = [
+  ["loot", 16, 27, 11, 1640, "Jan 2024"], ["rowan", 16, 19, 3, 1210, "Mar 2025"], ["jun", 16, 21, 5, 980, "Aug 2026"],
+  ["mara", 11, 16, 5, 949, null], ["mog", 9, 12, 3, 610, null], ["owl", 7, 8, 1, 402, null], ["tavi", 3, 4, 1, 118, null], ["dice", 2, 6, 4, 233, null],
+];
+const trioOf = (r) => ({ main: { k: "main", name: "Mainline", n: r[1], m: 16, h: r[0] === "mara" ? FFM.main.h : Math.round(r[4] * 0.74) }, all: { k: "all", name: "Mainline + spin-offs", n: r[2], m: 31, h: r[4] }, spin: { k: "spin", name: "Spin-offs", n: r[3], m: 15, h: r[0] === "mara" ? FFM.spin.h : r[4] - Math.round(r[4] * 0.74) } });
+const yours = (who = "mara", o = {}) => {
+  const r = MEM.find((x) => x[0] === who), t = trioOf(r);
+  const w = o.w || 200;
+  const st = r[5] ? `<span style="position:absolute;right:4px;top:-6px">${stamp(r[5])}</span>` : "";
+  return `<div class="yours">${meter(t.main, { w, stamp: st, sw: o.sw })}${meter(o.w ? { ...t.all, name: "Everything" } : t.all, { w, sw: o.sw })}${meter(t.spin, { w, sw: o.sw })}
+  <div class="yside"><div class="who">${av(who, 34)}<div><b>${who === "mara" ? "You" : M[who].n}</b><small>${r[5] ? `Conquered ${r[5]}` : `${16 - r[1]} Mainline to go`}</small></div></div><div class="tot">${hrs(r[4])}<small>Playtime across the Franchise</small></div></div></div>`;
+};
+const grow = (k, isMain, who = "mara") => {
+  const done = who === "mara" ? DONE.has(k) : ["ff1","ff2","ff3","ff4","ff5","ff6","ff7","ff8","ff9","ff10","ff11","ff12","ff13","ff14","ff15","ff16","ff7r","cc","fft"].includes(k);
+  const h = who === "mara" ? PT[k] : (RH[k] || (done ? 24 : 0));
+  return `<div class="gr"><span class="rn">${isMain ? ROMAN[FF_MAIN.indexOf(k)] : ""}</span>${done ? `<span class="b">${ic("check")}</span>` : `<span class="e"></span>`}<span class="t">${esc(G[k].t)}</span><span class="h ${h ? "" : "z"}">${h ? hrs(h) : "Not played"}</span></div>`;
+};
+const perGame = (o = {}) => `<div class="pg"><div><h3>Mainline<span>${o.who === "rowan" ? "16 of 16" : "11 of 16"}</span></h3>${FF_MAIN.slice(0, o.n || 16).map((k) => grow(k, 1, o.who)).join("")}</div>${o.noSpin ? "" : `<div><h3>Spin-offs<span>${o.who === "rowan" ? "3 of 15" : "5 of 15"}</span></h3>${FF_SPIN.slice(0, o.ns || 15).map((k) => grow(k, 0, o.who)).join("")}</div>`}</div>`;
+const fold = (t) => `<p class="faint" style="font-size:.84rem;margin-top:10px">${t}</p>`;
+
+/* ================= 1E: the leaderboard ================= */
+const bar = (n, m) => `<span class="bar">${Array.from({ length: m }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
+const lbRow = (r, i, sel) => `<div class="lbr ${r[0] === "mara" ? "you" : ""} ${sel === r[0] ? "sel" : ""}"><span class="rk">${i + 1}</span><span class="m">${av(r[0], 28)}<span>${r[0] === "mara" ? "You" : M[r[0]].n}<small>${r[5] ? "Conquered " + r[5] : `${16 - r[1]} Mainline to go`}</small></span></span>
+<span class="cst">${r[5] ? stamp("", "sm") : ""}</span><span class="bw">${bar(r[1], 16)}<b>${r[1]}<span>/16</span></b></span><span class="n x">${r[2]}<span>/31</span></span><span class="n x">${r[3]}<span>/15</span></span><span class="n pt">${hrs(r[4])}</span></div>`;
+const board = (sel, n = 8) => `<div class="lb2"><div class="sec" style="margin-top:0"><h2>Members</h2><span class="n lb">8 have played it · press one to see their dials</span></div>
+<div class="lbh"><span></span><span>Member</span><span></span><span>Mainline</span><span style="text-align:right">Everything</span><span style="text-align:right">Spin-offs</span><span style="text-align:right">Playtime</span></div>
+<div class="grh"><b>Conquered by 3</b>in order</div>${MEM.slice(0, 3).map((r, i) => lbRow(r, i, sel)).join("")}
+<div class="grh"><b>Still going</b>by Mainline</div>${MEM.slice(3, n).map((r, i) => lbRow(r, i + 3, sel)).join("")}</div>`;
+const RDONE = new Set(["ff1","ff2","ff3","ff4","ff5","ff6","ff7","ff8","ff9","ff10","ff11","ff12","ff13","ff14","ff15","ff16","ff7r","cc","fft"]);
+const RH = { ff1: 21, ff2: 19, ff3: 26, ff4: 30, ff5: 41, ff6: 44, ff7: 51, ff8: 62, ff9: 58, ff10: 77, ff11: 340, ff12: 91, ff13: 48, ff14: 410, ff15: 39, ff16: 55, ff7r: 38, cc: 22, fft: 61, ff7rb: 12 };
+/* whose games: done set and hours */
+const WHO = { mara: { done: DONE, h: PT, main: "11 of 16", spin: "5 of 15", mh: FFM.main.h, sh: FFM.spin.h }, rowan: { done: RDONE, h: RH, main: "16 of 16", spin: "3 of 15", mh: 1077, sh: 133 } };
+const secH = (t, sub, h) => `<div class="wh"><h3>${t}</h3><span>${sub}</span><b>${hrs(h)}</b></div>`;
+const viewingBar = `<div class="viewing">${av("rowan", 24)}Viewing <b>Rowan's</b> progress, Conquered Mar 2025<span class="lnk">${ic("arrow-left")}Back to yours</span></div>`;
+const legend = `<span class="lg"><span><i class="k"></i>Game Completion</span><span><i class="u"></i>Played, not finished</span><span><i class="n"></i>Not played</span></span>`;
+
+/* ================= 1E1: the cover wall ================= */
+const wallIt = (k, w, isMain, big) => {
+  const d = WHO[w].done.has(k), h = WHO[w].h[k] || 0;
+  return `<div class="wi ${d ? "d" : h ? "p" : "n"}"><div class="cw">${cover(k, big ? 110 : 80, { fs: big ? 14 : 10 })}${d ? `<span class="dn">${ic("check")}</span>` : ""}<span class="ht ${h ? "" : "z"}">${h ? hrs(h) : "Not played"}</span></div>${isMain ? `<div class="num"><b>${ROMAN[FF_MAIN.indexOf(k)]}</b><span>${G[k].y}</span></div>` : `<p>${esc(G[k].t)}</p>`}</div>`;
+};
+const wallA = (w = "mara", o = {}) => `<div class="pgv">${secH("Mainline", WHO[w].main, WHO[w].mh)}<div class="wall8 ${o.p ? "p" : ""}">${FF_MAIN.slice(0, o.n || 16).map((k) => wallIt(k, w, 1, 1)).join("")}</div>
+${o.noSpin ? "" : `${secH("Spin-offs", WHO[w].spin, WHO[w].sh)}<div class="wall10 ${o.p ? "p" : ""}">${FF_SPIN.slice(0, o.ns || 15).map((k) => wallIt(k, w, 0, 0)).join("")}</div>`}</div>`;
+const a1desk = () => desk(`${fhead()}${sw()}${yours()}${legend}${wallA()}${board()}`, "franchises", { h: 2140 });
+const a1phone = () => phone(`${phead()}${sw()}${yours("mara", { w: 104, sw: 11 })}${wallA("mara", { p: 1, n: 9, ns: 6 })}${fold("Show all 31 games")}`, "games", { h: 1650 });
+const a1rowan = () => desk(`${fhead()}${sw()}${viewingBar}${yours("rowan")}${wallA("rowan")}${board("rowan", 5)}`, "franchises", { h: 2000 });
+const a1rowanPh = () => phone(`${phead()}${sw()}${viewingBar.replace("Viewing <b>Rowan's</b> progress, Conquered Mar 2025", "<b>Rowan</b>").replace("Back to yours", "Yours")}${yours("rowan", { w: 104, sw: 11 })}${wallA("rowan", { p: 1, n: 9, noSpin: 1 })}`, "games", { h: 1300 });
+
+/* ================= 1E2: the skyline by release year ================= */
+const ALLY = [...FF_MAIN, ...FF_SPIN].sort((a, b) => G[a].y - G[b].y || (FF_MAIN.includes(a) ? -1 : 1));
+const sky = (w = "mara", o = {}) => {
+  const keys = o.keys || ALLY, max = o.max || 180, H = o.H || 150, cw = o.cw || 34;
+  let lastY = 0;
+  const cols = keys.map((k) => {
+    const isM = FF_MAIN.includes(k), d = WHO[w].done.has(k), h = WHO[w].h[k] || 0, bh = h ? Math.max(6, Math.round((Math.min(h, max) / max) * H)) : 0;
+    const yr = G[k].y !== lastY ? (lastY = G[k].y) : null;
+    const cell = `<div class="sc ${d ? "d" : h ? "p" : "n"}">${cover(k, cw, { fs: 5 })}${d ? `<span class="dn sm">${ic("check")}</span>` : ""}</div>`;
+    const barEl = `<div class="sb" style="height:${bh}px">${h ? `<em>${h > max ? `${h}` : h}</em>` : ""}</div>`;
+    return `<div class="col">${isM ? `<div class="up" style="height:${H + cw * 1.33 + 26}px">${o.noRoman ? "" : `<span class="rn">${ROMAN[FF_MAIN.indexOf(k)]}</span>`}${cell}${barEl}</div><div class="axis">${yr ? `<span>${String(yr).slice(2)}</span>` : ""}</div><div class="dn2" style="height:${o.Hs || 90}px"></div>`
+      : `<div class="up" style="height:${H + cw * 1.33 + 26}px"></div><div class="axis">${yr ? `<span>${String(yr).slice(2)}</span>` : ""}</div><div class="dn2" style="height:${o.Hs || 90}px">${barEl.replace(`height:${bh}px`, `height:${Math.round(bh * (o.Hs || 90) / H)}px`)}${cell}</div>`}</div>`;
+  }).join("");
+  return `<div class="pgv">${secH("By release year", `${WHO[w].main} Mainline above · ${WHO[w].spin} spin-offs below · bars are Playtime`, WHO[w].mh + WHO[w].sh)}<div class="skyw"><div class="lane-l"><span>Mainline</span><span>Spin-offs</span></div><div class="sky" style="--cw:${cw}px">${cols}</div></div>${o.cap ? `<p class="faint" style="font-size:.82rem;margin-top:8px">${o.cap}</p>` : ""}</div>`;
+};
+const b1desk = () => desk(`${fhead()}${sw()}${yours()}${sky("mara", { cap: "XI and XIV are cut at 180 h so the rest stay readable. Years run 1987 to 2025, one column per game, oldest left." })}${board()}`, "franchises", { h: 1640 });
+const b1phone = () => phone(`${phead()}${sw()}${yours("mara", { w: 104, sw: 11 })}${sky("mara", { keys: ALLY.slice(0, 9), cw: 30, H: 110, Hs: 70, cap: "Swipe for 1994 to 2025 →" })}`, "games", { h: 1300 });
+const b1rowan = () => desk(`${fhead()}${sw()}${viewingBar}${yours("rowan")}${sky("rowan", { max: 120, cap: "Rowan's XI (340 h) and XIV (410 h) run off the top." })}`, "franchises", { h: 1100 });
+
+/* ================= 1E3: the heat mosaic ================= */
+const span = (h) => (h >= 150 ? 3 : h >= 45 ? 2 : 1);
+const mos = (w = "mara", keys, o = {}) => keys.map((k) => {
+  const d = WHO[w].done.has(k), h = WHO[w].h[k] || 0, s = span(h);
+  const src = G[k].art || G[k].cover;
+  return `<div class="mt ${d ? "d" : h ? "p" : "n"}" style="grid-column:span ${s};grid-row:span ${s}">${src ? `<img src="${src}" alt="" onerror="this.remove()">` : ""}<span class="fbk">${esc(G[k].t)}</span>${d ? `<span class="dn ${s === 1 ? "sm" : ""}">${ic("check")}</span>` : ""}<span class="mh">${FF_MAIN.includes(k) ? `<i>${ROMAN[FF_MAIN.indexOf(k)]}</i>` : ""}${h ? `<b>${hrs(h)}</b>` : ""}</span></div>`;
+}).join("");
+const mosaic = (w = "mara", o = {}) => `<div class="pgv">${secH("Mainline", WHO[w].main, WHO[w].mh)}<div class="mos ${o.p ? "p" : ""}">${mos(w, o.p ? FF_MAIN.slice(0, 10) : FF_MAIN)}</div>
+${o.noSpin ? "" : `${secH("Spin-offs", WHO[w].spin, WHO[w].sh)}<div class="mos ${o.p ? "p" : ""}">${mos(w, FF_SPIN)}</div>`}
+<p class="faint" style="font-size:.82rem;margin-top:8px">A tile grows with Playtime: 1 square under 45 h, 4 squares to 150 h, 9 above. Colour means a Game Completion.</p></div>`;
+const c1desk = () => desk(`${fhead()}${sw()}${yours()}${mosaic()}${board()}`, "franchises", { h: 1960 });
+const c1phone = () => phone(`${phead()}${sw()}${yours("mara", { w: 104, sw: 11 })}${mosaic("mara", { p: 1, noSpin: 1 })}`, "games", { h: 1350 });
+const c1rowan = () => desk(`${fhead()}${sw()}${viewingBar}${yours("rowan")}${mosaic("rowan", { noSpin: 1 })}`, "franchises", { h: 1100 });
+
+page({
+  title: "Round 3: Progress tab, your games",
+  lede: `The owner picked <b>1E</b> (dials, the Members table, press a member to swap). Its <b>dials and Members table stay exactly as they were</b>; only the per-game part between them changes, because the ruled list read as a ledger. Three visual ways to show which Mainline and spin-off games you've finished and how long you played each. Add-ons stay out. Pressing a member swaps this part to theirs too.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara, a Regular"], ["Colour", "a Game Completion"], ["Grey", "played or not, unfinished"]],
+  surfaces: [{ id: "s1e", title: "1E · Progress tab, your games", sub: "/franchises/[id]?view=progress · 3 options", brief: `Every option keeps 1E's dials above and the Members table below (drawn here in full on desktop). Each draws Mara's 16 Mainline and 15 spin-off games, then the same part after pressing <b>Rowan</b>.`,
+    options: [
+      { code: "1E1", short: "Cover wall", title: "The cover wall", idea: `Two walls, <b>Mainline</b> big with 6B's <b>Roman numerals</b> and <b>Spin-offs</b> smaller, each headed by its count and Playtime. A finished game is in <b>full colour with the paper check tab</b>; an unfinished one is <b>grey</b>, and one never played is grey and dimmer. Every cover carries a <b>Playtime tag</b> on its foot. <b>Recommended</b>: it is the Games tab's own look, so the two tabs read as one page, and "what's left" is every grey cover.`,
+        desk: ["Desktop · Mara", a1desk()], phone: ["Phone · three across", a1phone()],
+        more: [["Pressed Rowan · the walls swap to Rowan's", a1rowan()], ["Phone · pressed Rowan", a1rowanPh(), "ph"]],
+        notes: [`The phone shows the first nine Mainline games and six spin-offs, then Show all.`] },
+      { code: "1E2", short: "Skyline", title: "The skyline by release year", idea: `Every game in one row <b>by release year</b>, oldest left. Mainline stands <b>above</b> the year axis and spin-offs hang <b>below</b> it; each cover sits on a <b>bar as tall as its Playtime</b>, so the long ones rise like towers. Finished covers in colour with the check, the rest grey, Roman numerals over Mainline.`,
+        desk: ["Desktop · Mara, 1987 to 2025", b1desk()], phone: ["Phone · scrolls sideways", b1phone()],
+        more: [["Pressed Rowan · XI and XIV run off the top", b1rowan()]],
+        notes: [`Shows the Franchise's history and your habits at once; one very long game (an MMO) squashes the rest, so bars are cut at a cap.`, `On phones it scrolls sideways, the one horizontal scroll on the page.`] },
+      { code: "1E3", short: "Heat mosaic", title: "The heat mosaic", idea: `Each game is a tile of its key art, and <b>the tile grows with Playtime</b>: one square under 45 h, four to 150 h, nine above. Finished games in colour with the check, unfinished in grey, never played as a small grey square. Mainline tiles carry their numeral and hours.`,
+        desk: ["Desktop · Mara", c1desk()], phone: ["Phone", c1phone()],
+        more: [["Pressed Rowan · his two MMOs take the most room", c1rowan()]],
+        notes: [`Most striking; the order follows release but the packing moves tiles around, so finding "XII" takes a look.`] },
+    ] }],
+});
+
+</script></body></html>
