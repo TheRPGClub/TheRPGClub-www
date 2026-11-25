@@ -27,11 +27,9 @@ export interface SidebarPins {
   // No room for another visible pin: pinning another is refused.
   full: boolean;
   toggle: (key: string) => void;
-  // A pin one place up (-1) or down (1), and a dragged pin dropped before
-  // another (null: at the bottom). The visible order is saved; the API
-  // keeps hidden pins where they were.
-  move: (key: string, by: -1 | 1) => void;
-  place: (key: string, before: string | null) => void;
+  // The drawn Pinned rows in their new order, after a drag. The visible
+  // order is saved; the API keeps hidden pins where they were.
+  reorder: (order: readonly string[]) => void;
   // The last save failed and the list sprang back; `reason` is the API's
   // when it refused the list.
   failed: boolean;

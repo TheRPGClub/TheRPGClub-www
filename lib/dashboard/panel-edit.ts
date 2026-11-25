@@ -1,5 +1,5 @@
 import type { FeatureView } from "@/lib/features";
-import { PANELS, isPanelKey, type PanelKey } from "@/lib/dashboard/panels";
+import { PANELS, isPanelKey, type PanelKey, type PanelPlace } from "@/lib/dashboard/panels";
 
 // Edit mode on the dashboard (spec api#421, www#145): the member's shown
 // panels in their order and the Hidden tray, and the changes they make. Every
@@ -42,24 +42,27 @@ export type PanelChange =
   | { kind: "show"; key: PanelKey }
   | { kind: "hide"; key: PanelKey };
 
-// `key` one place up (-1) or down (+1); null at its end of the list.
-export function movePanel(keys: readonly PanelKey[], key: PanelKey, step: -1 | 1): PanelKey[] | null {
-  const at = keys.indexOf(key);
-  const to = at + step;
-  if (at < 0 || to < 0 || to >= keys.length) return null;
-  const next = [...keys];
-  [next[at], next[to]] = [next[to], next[at]];
-  return next;
+// The zones a drag in edit mode moves panels within (useSortable). Below
+// `lg`, or with only one column in use, the panels stand in one order: one
+// zone, "all". With both columns on screen each panel keeps its column, so
+// each column is a zone of its own and a panel moves among its own kind.
+export type PanelZone = "all" | PanelPlace;
+export type PanelZones = Record<PanelZone, PanelKey[]>;
+
+export function panelZones(keys: readonly PanelKey[], byColumn: boolean): PanelZones {
+  const wide = keys.filter((k) => PANELS[k].place === "wide");
+  const rail = keys.filter((k) => PANELS[k].place === "rail");
+  // Only the zones in use: the hook reads its zones from the object's keys.
+  if (byColumn && wide.length > 0 && rail.length > 0) return { wide, rail } as PanelZones;
+  return { all: [...keys] } as PanelZones;
 }
 
-// `key` dropped before `before` (null: at the end); null when nothing moves.
-export function placePanel(keys: readonly PanelKey[], key: PanelKey, before: PanelKey | null): PanelKey[] | null {
-  if (!keys.includes(key) || key === before) return null;
-  if (before !== null && !keys.includes(before)) return null;
-  const rest = keys.filter((k) => k !== key);
-  const at = before === null ? rest.length : rest.indexOf(before);
-  const next = [...rest.slice(0, at), key, ...rest.slice(at)];
-  return next.every((k, i) => k === keys[i]) ? null : next;
+// The member's one order back from the zones: one zone is the order itself;
+// per column, each column's new order fills the places its panels held.
+export function panelOrder(keys: readonly PanelKey[], zones: PanelZones): PanelKey[] {
+  if (zones.all) return [...zones.all];
+  const left = { wide: [...(zones.wide ?? [])], rail: [...(zones.rail ?? [])] };
+  return keys.map((k) => left[PANELS[k].place].shift() ?? k);
 }
 
 // A switched-on panel joins the end of the dashboard.

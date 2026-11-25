@@ -96,32 +96,18 @@ export function isPinKeyList(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((k) => typeof k === "string" && PIN_KEYS.has(k));
 }
 
-// The list with `key` moved one place up (-1) or down (1); null at the
-// end it would move past, or when the page isn't pinned.
-export function movePin(keys: readonly string[], key: string, by: -1 | 1): string[] | null {
-  const from = keys.indexOf(key);
-  const to = from + by;
-  if (from < 0 || to < 0 || to >= keys.length) return null;
-  const next = [...keys];
-  [next[from], next[to]] = [next[to], next[from]];
-  return next;
-}
-
-// The list with `key` dropped just before `before` (null: at the bottom), as
-// a drag places it; null when that leaves the order as it is or either page
-// isn't pinned.
-export function placePin(keys: readonly string[], key: string, before: string | null): string[] | null {
-  if (!keys.includes(key) || key === before) return null;
-  if (before !== null && !keys.includes(before)) return null;
-  const rest = keys.filter((k) => k !== key);
-  const at = before === null ? rest.length : rest.indexOf(before);
-  const next = [...rest.slice(0, at), key, ...rest.slice(at)];
+// The list after a drag reordered the rows the sidebar draws (`order`):
+// those pages take their places in the new order, and any key the sidebar
+// doesn't draw stays where it was. Null when nothing moved.
+export function reorderPins(keys: readonly string[], order: readonly string[]): string[] | null {
+  const queue = [...order];
+  const next = keys.map((k) => (order.includes(k) ? (queue.shift() ?? k) : k));
   return next.every((k, i) => k === keys[i]) ? null : next;
 }
 
-// What a page's row menu can do (www#136 on touch, www#137 adds the moves
-// on Pinned rows and opens it by keyboard too).
-export type PageMenuAction = "pin" | "unpin" | "move-up" | "move-down";
+// What a page's row menu can do (www#136 on touch, www#137 by keyboard).
+// Pinned rows reorder by dragging (hooks/use-sortable), not from the menu.
+export type PageMenuAction = "pin" | "unpin";
 
 export interface PageMenuItem {
   action: PageMenuAction;
@@ -133,24 +119,9 @@ export interface PageMenuItem {
 
 // The items of a row's menu, for the member's visible list `keys`: Unpin
 // while the page is pinned, else Pin to sidebar, disabled once there is no
-// room with the full-list message. A Pinned row (`reorder`) also gets Move up and Move
-// down, each disabled at its end of the list.
-export function pageMenuItems(
-  keys: readonly string[],
-  key: string,
-  rules: PinRules,
-  { reorder = false }: { reorder?: boolean } = {},
-): PageMenuItem[] {
-  const at = keys.indexOf(key);
-  if (at < 0) {
-    const full = pinsFull(keys, rules);
-    return [{ action: "pin", label: "Pin to sidebar", disabled: full, ...(full && { hint: pinsFullMessage(rules) }) }];
-  }
-  const unpin: PageMenuItem = { action: "unpin", label: "Unpin", disabled: false };
-  if (!reorder) return [unpin];
-  return [
-    unpin,
-    { action: "move-up", label: "Move up", disabled: at === 0 },
-    { action: "move-down", label: "Move down", disabled: at === keys.length - 1 },
-  ];
+// room with the full-list message.
+export function pageMenuItems(keys: readonly string[], key: string, rules: PinRules): PageMenuItem[] {
+  if (keys.includes(key)) return [{ action: "unpin", label: "Unpin", disabled: false }];
+  const full = pinsFull(keys, rules);
+  return [{ action: "pin", label: "Pin to sidebar", disabled: full, ...(full && { hint: pinsFullMessage(rules) }) }];
 }

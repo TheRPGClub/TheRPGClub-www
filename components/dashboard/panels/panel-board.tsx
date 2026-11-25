@@ -3,10 +3,10 @@
 import { useState, type ReactNode } from "react";
 import { Check, SlidersHorizontal } from "lucide-react";
 import type { PanelKey, PanelViewer } from "@/lib/dashboard/panels";
-import { hidePanel, movePanel, panelName, showPanel, type PanelChange } from "@/lib/dashboard/panel-edit";
+import { hidePanel, panelName, showPanel, type PanelChange } from "@/lib/dashboard/panel-edit";
 import { ordinal } from "@/lib/utils";
 import { useDashboardEdit } from "@/hooks/use-dashboard-edit";
-import { usePanelDrag } from "@/hooks/use-panel-drag";
+import { usePanelSort } from "@/hooks/use-panel-sort";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/templates/page-header";
 import { HiddenTray } from "./hidden-tray";
@@ -57,10 +57,11 @@ export function PanelBoard({
     edit.apply(next, what);
     const name = panelName(what.key);
     const at = ordinal(next.indexOf(what.key) + 1);
-    setSaid(what.kind === "hide" ? `${name} hidden.` : `${name} ${what.kind === "show" ? "shown" : "moved"}, ${at}.`);
+    setSaid(what.kind === "hide" ? `${name} hidden.` : `${name} shown, ${at}.`);
     requestAnimationFrame(() => focusControl(focusId));
   }
-  const drag = usePanelDrag(shown, (key, next) => change(next, { kind: "move", key }, `panel-switch-${key}`));
+  // A drop says itself (SortStatus) and leaves focus on the panel.
+  const sort = usePanelSort({ shown, editing, onMove: (next, key) => edit.apply(next, { kind: "move", key }) });
   const hidden = available.filter((key) => !shown.includes(key));
   // Only new panels the member can still switch on: a new one already shown
   // has no tray card to point at.
@@ -95,8 +96,8 @@ export function PanelBoard({
       />
       {editing && (
         <p className="font-label -mt-2 text-[0.78rem] font-bold tracking-[0.08em] text-faint-foreground">
-          <span className="hidden pointer-fine:inline">Editing · drag a panel by its grip, or use the arrows</span>
-          <span className="pointer-fine:hidden">Editing · use the arrows to move a panel</span>
+          <span className="hidden pointer-fine:inline">Editing · drag a panel to move it</span>
+          <span className="pointer-fine:hidden">Editing · press and hold a panel to move it</span>
         </p>
       )}
       <p aria-live="polite" className="sr-only">
@@ -104,13 +105,11 @@ export function PanelBoard({
       </p>
       {shown.length > 0 ? (
         <PanelGrid
-          shown={shown}
           viewer={viewer}
           bodies={bodies}
           editing={editing}
           failed={failure?.changes.length === 1 ? failure.changes[0].key : null}
-          drag={drag}
-          onMove={(key, step) => change(movePanel(shown, key, step), { kind: "move", key }, `panel-${step < 0 ? "up" : "down"}-${key}`)}
+          sort={sort}
           onHide={(key) => change(hidePanel(shown, key), { kind: "hide", key }, `tray-switch-${key}`)}
         />
       ) : (
@@ -132,7 +131,7 @@ export function PanelBoard({
   );
 }
 
-// A control by its id (the arrows), or the switch inside the element marked
+// A control by its id, or the switch inside the element marked
 // `data-focus` (a Base UI switch keeps its id on a hidden input).
 function focusControl(id: string) {
   const el =

@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   hidePanel,
   hiddenPanels,
-  movePanel,
   newPanels,
   panelName,
-  placePanel,
+  panelOrder,
+  panelZones,
+  type PanelZones,
   revertNote,
   revertNotes,
   withUndrawn,
@@ -40,34 +41,31 @@ describe("newPanels", () => {
   });
 });
 
-describe("movePanel", () => {
-  const keys: PanelKey[] = ["news", "releases", "codex"];
+describe("panelZones and panelOrder", () => {
+  // news, releases: wide; backlog_pick, now_playing_mine: rail.
+  const keys: PanelKey[] = ["news", "backlog_pick", "releases", "now_playing_mine"];
 
-  it("swaps with the neighbour", () => {
-    expect(movePanel(keys, "releases", -1)).toEqual(["releases", "news", "codex"]);
-    expect(movePanel(keys, "releases", 1)).toEqual(["news", "codex", "releases"]);
+  it("is one zone below lg or with one column in use", () => {
+    expect(panelZones(keys, false)).toEqual({ all: keys });
+    expect(panelZones(["news", "releases"], true)).toEqual({ all: ["news", "releases"] });
   });
 
-  it("refuses past either end or for a panel not shown", () => {
-    expect(movePanel(keys, "news", -1)).toBeNull();
-    expect(movePanel(keys, "codex", 1)).toBeNull();
-    expect(movePanel(keys, "reviews", 1)).toBeNull();
-  });
-});
-
-describe("placePanel", () => {
-  const keys: PanelKey[] = ["news", "releases", "codex"];
-
-  it("puts the panel before another, or at the end", () => {
-    expect(placePanel(keys, "codex", "news")).toEqual(["codex", "news", "releases"]);
-    expect(placePanel(keys, "news", null)).toEqual(["releases", "codex", "news"]);
+  it("is a zone per column with both in use", () => {
+    expect(panelZones(keys, true)).toEqual({ wide: ["news", "releases"], rail: ["backlog_pick", "now_playing_mine"] });
   });
 
-  it("is null when nothing moves", () => {
-    expect(placePanel(keys, "news", "releases")).toBeNull();
-    expect(placePanel(keys, "news", "news")).toBeNull();
-    expect(placePanel(keys, "codex", null)).toBeNull();
-    expect(placePanel(keys, "reviews", null)).toBeNull();
+  it("reads one zone back as the order", () => {
+    expect(panelOrder(keys, { all: ["releases", "news", "backlog_pick", "now_playing_mine"] } as PanelZones)).toEqual([
+      "releases",
+      "news",
+      "backlog_pick",
+      "now_playing_mine",
+    ]);
+  });
+
+  it("fills each column's places with its new order", () => {
+    const zones = { wide: ["releases", "news"], rail: ["now_playing_mine", "backlog_pick"] } as PanelZones;
+    expect(panelOrder(keys, zones)).toEqual(["releases", "now_playing_mine", "news", "backlog_pick"]);
   });
 });
 
