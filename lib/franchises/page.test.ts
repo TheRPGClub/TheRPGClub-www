@@ -67,8 +67,8 @@ describe("franchiseLayout", () => {
     expect(layout.strays.map((s) => s.parent?.title ?? null)).toEqual(["Kingdom Hearts", null]);
   });
 
-  it("counts each part and the hand links", () => {
-    expect(layout.counts).toEqual({ mainline: 2, other: 1, addOns: 4, manual: 2 });
+  it("counts only Mainline, Spin-offs and Add-ons, never where they came from", () => {
+    expect(layout.counts).toEqual({ mainline: 2, other: 1, addOns: 4 });
   });
 });
 
