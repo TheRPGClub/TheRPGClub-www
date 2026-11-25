@@ -88,12 +88,18 @@ export async function createFranchiseAction(name: string): Promise<FranchiseResu
 }
 
 // Creates a Franchise and links `gameId` to it (the Game Edit page's
-// "Create a Franchise" result, saved with Save all).
-export async function createFranchiseWithGameAction(name: string, gameId: number, mainline: boolean): Promise<FranchiseResult> {
+// "Create a Franchise" result, saved with Save all), with the game's Add-on
+// parent when `parent_game_id` is given.
+export async function createFranchiseWithGameAction(
+  name: string,
+  gameId: number,
+  mainline: boolean,
+  options: { parent_game_id?: number | null } = {},
+): Promise<FranchiseResult> {
   const created = await createFranchiseAction(name);
   if (!created.ok) return created;
   if (!created.data) return { ok: false, error: "The Franchise was made, but its id didn't come back. Refresh to link it." };
-  const linked = await linkFranchiseGameAction(created.data.franchise_id, gameId, mainline || undefined);
+  const linked = await linkFranchiseGameAction(created.data.franchise_id, gameId, mainline || undefined, options);
   return linked.ok ? { ok: true } : linked;
 }
 

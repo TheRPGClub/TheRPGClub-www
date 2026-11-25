@@ -6,7 +6,7 @@ import { imagesSection, type GameImageEntry, type ImageCall, type ImagesStage } 
 import { threadsSection, type GameThreadRef, type ThreadCall, type ThreadsStage } from "./threads";
 import { versionsSection, type AlternateVersion, type VersionCall, type VersionsStage } from "./versions";
 import { hltbSection, type HltbStage, type HltbTimes, type HltbUpsertCall } from "./hltb";
-import { franchisesSection, type FranchiseCall, type FranchisesStage, type GameFranchiseRef } from "./franchises";
+import { franchisesSection, type FranchiseCall, type FranchisesStage, type GameFranchises } from "./franchises";
 
 // The Game Edit save module's sections (spec api#437). To add one (Images,
 // Game Threads, Releases, Alternate Versions, HowLongToBeat):
@@ -23,7 +23,7 @@ export interface GameEditSections {
   releases: { loaded: Release[]; staged: ReleasesStage; call: ReleaseCall };
   versions: { loaded: AlternateVersion[]; staged: VersionsStage; call: VersionCall };
   hltb: { loaded: HltbTimes; staged: HltbStage; call: HltbUpsertCall };
-  franchises: { loaded: GameFranchiseRef[]; staged: FranchisesStage; call: FranchiseCall };
+  franchises: { loaded: GameFranchises; staged: FranchisesStage; call: FranchiseCall };
 }
 
 export type GameEditSectionKey = keyof GameEditSections;
@@ -51,7 +51,7 @@ export type { GameImageEntry, ImageCall, ImagesStage, ImageKind, PendingImage } 
 export type { GameThreadRef, ThreadRef, ThreadsStage } from "./threads";
 export type { ReleaseCall, ReleaseDraft, ReleaseFields, ReleasesStage } from "./releases";
 export { alternateVersion, type AlternateVersion, type VersionsStage } from "./versions";
-export { gameFranchiseRefs, type FranchisesStage, type GameFranchiseRef } from "./franchises";
+export { gameFranchiseRefs, type FranchisesStage, type GameFranchiseRef, type GameFranchises } from "./franchises";
 export { hltbFieldValue, type HltbField, type HltbStage, type HltbTimes, type HltbUpsertFields } from "./hltb";
 export {
   recordAfterSave,
