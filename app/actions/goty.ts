@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { getSession } from "@/lib/session";
+import { fetchGotyEligibilities } from "@/lib/api/goty";
 import { gotyError } from "@/lib/goty/copy";
 import type { GotyAwardKey, GotyCastResult, GotyEligibility, GotyNomination } from "@/lib/goty/types";
 
@@ -127,24 +128,13 @@ export async function castGotyVoteAction(
 }
 
 // Whether each game may be nominated for the year, for greying out search
-// results. A failed check is left out, and the search shows the game as
-// pickable (the API still refuses an ineligible nomination).
+// results, in one request per result set. A game the API didn't answer for
+// (or a failed check) is left out, and the search shows it as pickable (the
+// API still refuses an ineligible nomination).
 export async function gotyEligibilityAction(
   year: number,
   gameIds: number[],
 ): Promise<Record<number, GotyEligibility>> {
   if (!(await getSession()) || !validYear(year)) return {};
-  const ids = [...new Set(gameIds.filter(Number.isInteger))].slice(0, 12);
-  const checks = await Promise.all(
-    ids.map(async (id) => {
-      try {
-        const res = await apiFetch(`/api/v1/games/${id}/goty_eligibility?year=${year}`, { cache: "no-store" });
-        if (!res.ok) return null;
-        return ((await res.json()) as { data: GotyEligibility }).data;
-      } catch {
-        return null;
-      }
-    }),
-  );
-  return Object.fromEntries(checks.flatMap((c) => (c ? [[c.game_id, c]] : [])));
+  return fetchGotyEligibilities(year, gameIds.filter(Number.isInteger));
 }

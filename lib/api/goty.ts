@@ -112,7 +112,8 @@ export interface GotyNominationDeletedResponse {
   meta?: { announce_job_id: number | null };
 }
 
-// GET /api/v1/games/:id/goty_eligibility?year=.
+// GET /api/v1/games/:id/goty_eligibility?year=, and each item of the
+// batch read GET /api/v1/games/goty_eligibility?year=&game_ids= (api#478).
 export interface GotyEligibility {
   game_id: number;
   year: number;
@@ -176,4 +177,23 @@ export function fetchGotyVote(year: number): Promise<GotyVote | null> {
 // The year's Game of the Year nominations, oldest first.
 export function fetchGotyNominations(year: number): Promise<GotyNomination[]> {
   return read<GotyNomination[]>(gotyNominationsPath(year), []);
+}
+
+// The batch eligibility read takes at most this many ids (api#478).
+export const GOTY_ELIGIBILITY_MAX_IDS = 50;
+
+// Many games' eligibility for the year in one request, keyed by game id.
+// The API leaves unknown ids out, so items are matched by `game_id`, never
+// by position. A failed read is the empty map.
+export async function fetchGotyEligibilities(
+  year: number,
+  gameIds: number[],
+): Promise<Record<number, GotyEligibility>> {
+  const ids = [...new Set(gameIds)].slice(0, GOTY_ELIGIBILITY_MAX_IDS);
+  if (!ids.length) return {};
+  const items = await read<GotyEligibility[]>(
+    `/api/v1/games/goty_eligibility?year=${year}&game_ids=${ids.join(",")}`,
+    [],
+  );
+  return Object.fromEntries(items.map((item) => [item.game_id, item]));
 }
