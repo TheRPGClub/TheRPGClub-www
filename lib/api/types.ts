@@ -1032,6 +1032,7 @@ export type BotJobKind =
   | "giveaway_claim_notice"
   | "giveaway_hub_refresh"
   | "nomination_deleted"
+  | "goty_nomination_deleted"
   | "suggestion_submitted"
   | "suggestion_outcome"
   | "voting_poll_wakeup"

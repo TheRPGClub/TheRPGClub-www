@@ -103,6 +103,7 @@ const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
   giveaway_claim_notice: "Giveaway claim",
   giveaway_hub_refresh: "Giveaway hub",
   nomination_deleted: "Nomination change",
+  goty_nomination_deleted: "GOTY nomination change",
   suggestion_submitted: "New Suggestion",
   suggestion_outcome: "Suggestion outcome",
   voting_poll_wakeup: "Voting wake-up",
