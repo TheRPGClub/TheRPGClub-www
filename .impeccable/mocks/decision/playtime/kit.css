@@ -307,3 +307,9 @@ svg.lucide{width:18px;height:18px;flex:none;stroke-width:2}
 .overlay{position:relative}
 .pop{position:absolute;z-index:6}
 .pshell .vsw span{font-size:1.45rem}
+/* phone: the numbers sit under the arc, not over it, so they stay readable at small sizes */
+.pshell .mtr .dial .rd{position:static;margin-top:6px}
+.pshell .mtr .dial .rd .nm{font-size:1.7rem}
+.pshell .mtr .dial .rd .pc{margin-top:3px;font-size:.8rem}
+.pshell .mtr .dial .rd .none{margin-top:2px}
+.pshell .mtr .cstamp{transform:rotate(-8deg) scale(.62);transform-origin:top right}
