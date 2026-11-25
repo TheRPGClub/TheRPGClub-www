@@ -16,7 +16,7 @@ import {
 import { LANE_COPY } from "@/lib/games/game-edit/franchise-lanes-copy";
 import { FranchiseLane } from "@/components/games/edit/franchise-lanes/franchise-lane";
 import { LaneFranchise } from "@/components/games/edit/franchise-lanes/lane-franchise";
-import { LaneAddSlot, SlotPanel } from "@/components/games/edit/franchise-lanes/lane-add-slot";
+import { LaneAddSlot, SlotPanel, type SlotExtra } from "@/components/games/edit/franchise-lanes/lane-add-slot";
 import { AddOnParentLine } from "@/components/games/edit/franchise-lanes/add-on-parent-line";
 import { ParentGameSearch } from "@/components/games/edit/franchise-lanes/parent-game-search";
 
@@ -36,6 +36,7 @@ export function FranchiseRoleLane({
   onClose,
   onAsk,
   onStage,
+  suggest,
 }: {
   role: FranchiseRole;
   gameId: number;
@@ -49,6 +50,8 @@ export function FranchiseRoleLane({
   onClose: () => void;
   onAsk: (key: string | null) => void;
   onStage: (next: FranchisesStage | undefined) => void;
+  // The lane's suggestions (www#209; laneSuggestionSlot).
+  suggest?: { extra?: SlotExtra; omit?: (franchiseId: number) => boolean; hint?: string };
 }) {
   const copy = LANE_COPY[role];
   const addon = role === "addon";
@@ -77,6 +80,7 @@ export function FranchiseRoleLane({
       picked={(id) => franchisePicked(loaded, staged, id)}
       staged={(name) => franchiseStagedForCreate(staged, name)}
       onAdd={(franchise, parent) => onStage(stageFranchiseInLane(loaded, staged, franchise, role, parent))}
+      {...suggest}
     />
   );
 

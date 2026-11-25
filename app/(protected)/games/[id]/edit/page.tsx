@@ -12,6 +12,7 @@ import { fetchSavedHltb } from "@/lib/games/saved-hltb";
 import { gameEditViewer, parseGameEditTab } from "@/lib/games/game-edit/tabs";
 import { fetchGameRelations, fetchGameReleases } from "@/lib/games/game-page";
 import { fetchReleaseOptions } from "@/lib/games/game-edit/release-options";
+import { fetchFranchiseSuggestions } from "@/lib/games/game-edit/franchise-suggestions-read";
 import { GameEditView } from "@/components/games/edit/game-edit-view";
 import { listGameImagesAction } from "@/app/actions/game-images";
 
@@ -33,10 +34,11 @@ export default async function GameEditPage({
   const viewer = gameEditViewer(session.membership);
   if (!Number.isInteger(gameId) || gameId <= 0 || !viewer) notFound();
 
-  const [res, relations, hltb] = await Promise.all([
+  const [res, relations, hltb, suggestions] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`, { cache: "no-store" }),
     fetchGameRelations(gameId),
     viewer.admin ? fetchSavedHltb(gameId) : null,
+    fetchFranchiseSuggestions(gameId),
   ]);
   if (!res.ok) notFound();
   const { data: game }: ApiSingle<Game> = await res.json();
@@ -77,6 +79,8 @@ export default async function GameEditPage({
         franchises: gameFranchiseRefs(relations?.franchises ?? [], game.parent_igdb_id ? (game.parent_game_name ?? "A game not in GameDB") : null),
       }}
       series={relations?.collection?.name ?? null}
+      franchiseSuggestions={suggestions}
+      memberId={session.principal.id}
       unavailable={unavailable}
       releaseOptions={releaseOptions}
       canRefreshReleases={game.igdb_id != null}

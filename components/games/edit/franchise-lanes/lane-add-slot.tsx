@@ -8,11 +8,16 @@ import { ParentGameSearch } from "@/components/games/edit/franchise-lanes/parent
 
 type Pick = { franchise_id: number; name: string } | { name: string };
 type Parent = { game_id: number; name: string };
+// What `extra` gets: the slot's search text, and the slot's add (a parent
+// given skips asking for one).
+export type SlotExtra = (slot: { query: string; add: (franchise: Pick, parent?: Parent) => void }) => ReactNode;
 
 // A lane's + Add slot (design pick edit-lanes): a dashed "Add" that opens a
 // search to link or create a Franchise in the lane's role. In Add-on of, a
 // game with no parent then asks for it ("Pick the Franchise, then its parent
-// game"). `extra` shows above the search (the lane's suggestions, www#209).
+// game"). `extra` shows under the search field (the lane's suggestions,
+// www#209), and `omit` keeps what it lists out of the results. `hint` sits
+// in the closed Add ("1 suggested").
 export function LaneAddSlot({
   gameId,
   laneTitle,
@@ -25,6 +30,8 @@ export function LaneAddSlot({
   staged,
   onAdd,
   extra,
+  omit,
+  hint,
 }: {
   gameId: number;
   laneTitle: string;
@@ -36,30 +43,32 @@ export function LaneAddSlot({
   picked: (franchiseId: number) => boolean;
   staged: (name: string) => boolean;
   onAdd: (franchise: Pick, parent?: Parent) => void;
-  extra?: ReactNode;
+  extra?: SlotExtra;
+  omit?: (franchiseId: number) => boolean;
+  hint?: string;
 }) {
   const [pending, setPending] = useState<Pick | null>(null);
   const close = () => {
     setPending(null);
     onClose();
   };
-  const add = (franchise: Pick) => {
-    if (needsParent) return setPending(franchise);
-    onAdd(franchise);
+  const add = (franchise: Pick, parent?: Parent) => {
+    if (needsParent && !parent) return setPending(franchise);
+    onAdd(franchise, needsParent ? parent : undefined);
     close();
   };
 
   if (!open) {
     return (
-      <Button type="button" variant="add" className="h-12 px-4" aria-label={`Add a Franchise to ${laneTitle}`} onClick={onOpen}>
+      <Button type="button" variant="add" className="h-12 px-4" aria-label={`Add a Franchise to ${laneTitle}${hint ? `, ${hint}` : ""}`} onClick={onOpen}>
         <Plus data-icon="inline-start" />
         Add
+        {hint && <span className="text-highlight">· {hint}</span>}
       </Button>
     );
   }
   return (
     <SlotPanel label={`Add a Franchise to ${laneTitle}`}>
-      {extra}
       {pending ? (
         <ParentGameSearch
           gameId={gameId}
@@ -79,6 +88,8 @@ export function LaneAddSlot({
           onPick={(f) => add({ franchise_id: f.franchise_id, name: f.name })}
           onCreate={(name) => add({ name })}
           onClose={close}
+          between={extra && ((query) => extra({ query, add }))}
+          omit={omit}
         />
       )}
       <div className="flex justify-end border-t border-border px-2 py-1.5">

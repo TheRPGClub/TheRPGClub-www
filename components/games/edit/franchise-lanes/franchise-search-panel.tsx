@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Check, FolderPlus, LibraryBig, Plus } from "lucide-react";
 import type { FranchiseColumns } from "@/lib/franchises/types";
 import { useFranchiseSearch } from "@/hooks/use-franchise-search";
@@ -11,6 +11,8 @@ import { SlotSearchField } from "@/components/games/edit/franchise-lanes/slot-se
 // The search in a lane's + Add slot: find a Franchise by name and link it in
 // the lane's role (`roleLabel` on its button), or make one of that name when
 // none has it. A Franchise the game is in, or staged to be, reads "Linked".
+// `between` shows under the field (the lane's suggestions, given what is
+// typed); `omit` keeps a Franchise shown there out of the results.
 export function FranchiseSearchPanel({
   laneTitle,
   roleLabel,
@@ -19,6 +21,8 @@ export function FranchiseSearchPanel({
   onPick,
   onCreate,
   onClose,
+  between,
+  omit,
 }: {
   laneTitle: string;
   roleLabel: string;
@@ -28,15 +32,20 @@ export function FranchiseSearchPanel({
   onPick: (franchise: FranchiseColumns) => void;
   onCreate: (name: string) => void;
   onClose: () => void;
+  between?: (query: string) => ReactNode;
+  omit?: (franchiseId: number) => boolean;
 }) {
   const [query, setQuery] = useState("");
-  const { trimmed, hasQuery, results, loading, problem, settled } = useFranchiseSearch(query);
-  const exact = results.some((f) => f.name.trim().toLowerCase() === trimmed.toLowerCase());
+  const search = useFranchiseSearch(query);
+  const { trimmed, hasQuery, loading, problem, settled } = search;
+  const results = omit ? search.results.filter((f) => !omit(f.franchise_id)) : search.results;
+  const exact = search.results.some((f) => f.name.trim().toLowerCase() === trimmed.toLowerCase());
   const offerCreate = settled && !exact && !staged(trimmed);
 
   return (
     <>
       <SlotSearchField value={query} onChange={setQuery} onClose={onClose} label={`Find a Franchise for ${laneTitle}`} placeholder="Find a Franchise by name" />
+      {between?.(query)}
       {problem && (
         <div className="border-t border-border p-3">
           <SearchProblemNote problem={problem} />

@@ -7,22 +7,31 @@ import {
   effectiveParent,
   FRANCHISE_ROLES,
   franchiseLanes,
+  franchisePicked,
   franchisesSection,
   type FranchiseRole,
 } from "@/lib/games/game-edit/franchises";
+import type { FranchiseSuggestion } from "@/lib/games/game-edit/franchise-suggestions";
+import { LANE_COPY } from "@/lib/games/game-edit/franchise-lanes-copy";
+import { useDismissedSuggestions } from "@/hooks/use-dismissed-suggestions";
+import { laneSuggestionSlot } from "@/components/games/edit/franchise-lanes/lane-suggestions";
 import { EditSection } from "@/components/games/edit/edit-section";
 import { FranchiseRoleLane } from "@/components/games/edit/franchise-lanes/franchise-role-lane";
 
 // The Franchises tab (design pick edit-lanes, www#207): the game's Series
 // read only, then three role lanes, Mainline in, Spin-off of and Add-on of,
 // each listing its Franchises with its own + Add slot. Changes stage with
-// Edited, Added and Removing marks, each with an Undo, until Save all.
+// Edited, Added and Removing marks, each with an Undo, until Save all. The
+// + Add slots open on the game's Franchise suggestions (www#209), which the
+// member can dismiss for this game.
 export function FranchisesTab({
   gameId,
   loaded,
   staged,
   error,
   series,
+  suggestions = [],
+  memberId,
   onStage,
 }: {
   gameId: number;
@@ -30,6 +39,8 @@ export function FranchisesTab({
   staged: FranchisesStage | undefined;
   error?: string;
   series: string | null;
+  suggestions?: FranchiseSuggestion[];
+  memberId: string;
   onStage: (next: FranchisesStage | undefined) => void;
 }) {
   // The one open + Add slot; a parent asked for in Add-on of (a move into
@@ -39,6 +50,8 @@ export function FranchisesTab({
   const lanes = franchiseLanes(loaded, staged);
   const count = staged ? franchisesSection.changes(loaded, staged) : 0;
   const isAddOn = !!effectiveParent(loaded, staged);
+  const { isDismissed, dismiss } = useDismissedSuggestions(memberId, gameId);
+  const hidden = (id: number) => isDismissed(id) || franchisePicked(loaded, staged, id);
 
   return (
     <EditSection
@@ -77,6 +90,7 @@ export function FranchisesTab({
             setAsking({ key });
           }}
           onStage={onStage}
+          suggest={laneSuggestionSlot({ suggestions, lane: role, laneTitle: LANE_COPY[role].title, roleLabel: LANE_COPY[role].button, hidden, onDismiss: dismiss })}
         />
       ))}
     </EditSection>
