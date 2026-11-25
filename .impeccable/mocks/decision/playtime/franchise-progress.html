@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Franchise Progress Tab</title>
+<meta name="description" content="Round 2: a Progress tab on the Franchise page with your three dials, your per-game Playtime and other members' progress.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+.cw{position:relative}
+/* the viewer's dials */
+.yours{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 230px;gap:0;align-items:end;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.yours>.mtr{border-right:1px solid var(--border);padding:0 8px}
+.yours .yside{padding-left:22px;align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.yours .yside .who{display:flex;align-items:center;gap:10px}
+.yours .yside .who b{font:400 1.6rem/.9 Anton;text-transform:uppercase}
+.yours .yside .who small{display:block;font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.yours .yside .tot{font:400 2.6rem/.85 Anton}
+.yours .yside .tot small{display:block;font:700 .74rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.viewing{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:8px 12px;background:var(--card);border-radius:3px;box-shadow:inset 0 0 0 1px var(--bs);font-size:.92rem;color:var(--dim)}
+.viewing b{color:var(--fg);font-weight:600}
+.viewing .lnk{margin-left:auto}
+.pshell .yours{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pshell .yours .yside{grid-column:1/-1;padding:14px 0 0;flex-direction:row;align-items:center;justify-content:space-between}
+.pshell .yours>.mtr:nth-child(3){border-right:0}
+.pshell .mtr .nm{font-size:1.9rem}.pshell .mtr .nmlab{font-size:.95rem;margin-top:8px}.pshell .mtr .hh{font-size:.68rem}
+/* per-game Playtime: two compact ledgers */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.pg h3{font:400 1.35rem/1 Anton;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid var(--fg);display:flex;gap:10px;align-items:baseline}
+.pg h3 span{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.gr{display:grid;grid-template-columns:34px 22px minmax(0,1fr) 64px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.gr .rn{font:400 1.15rem/1 Anton;text-align:right}
+.gr .b{width:18px;height:18px;border-radius:2px;display:grid;place-items:center;background:var(--fg);color:var(--bg)}
+.gr .b svg.lucide{width:12px;height:12px;stroke-width:3}
+.gr .e{width:18px;height:18px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--bs)}
+.gr .t{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr .h{text-align:right;font:400 1.1rem/1 Anton}
+.gr .h.z{color:var(--faint);font:700 .72rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase}
+.pshell .pg{grid-template-columns:1fr;gap:18px}
+/* 1E leaderboard */
+.lb2{margin-top:30px}
+.lbh,.lbr{display:grid;grid-template-columns:34px minmax(0,1.3fr) 150px minmax(0,1.4fr) 90px 90px 90px;gap:14px;align-items:center}
+.lbh{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:8px;border-bottom:2px solid var(--fg)}
+.lbr{padding:9px 6px;margin:0 -6px;border-bottom:1px solid var(--border);border-radius:2.4px}
+.lbr .rk{font:400 1.4rem/1 Anton;text-align:right;color:var(--faint)}
+.lbr .m{display:flex;align-items:center;gap:10px;font-weight:600;min-width:0}
+.lbr .m small{display:block;font:700 .7rem/1.2 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.lbr .bar{display:flex;gap:2px;height:10px;flex:1;min-width:0}
+.lbr .bar i{flex:1;background:#303037;border-radius:1px}
+.lbr .bar i.on{background:var(--fg)}
+.lbr .bw{display:flex;align-items:center;gap:10px}
+.lbr .bw b{font:400 1.2rem/1 Anton;white-space:nowrap}
+.lbr .bw b span{color:var(--faint);font-size:.75em}
+.lbr .n{font:400 1.15rem/1 Anton;text-align:right}
+.lbr .n span{color:var(--faint);font-size:.75em}
+.lbr.you{background:rgb(255 212 0/.06)}
+.lbr.you .rk{color:var(--hl)}
+.lbr.sel{background:var(--muted);box-shadow:inset 0 0 0 1px var(--hl)}
+.lbr .cst .cstamp{transform:rotate(-4deg)}
+.grh{font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 0 6px;display:flex;gap:8px;align-items:baseline}
+.grh b{font:400 1.15rem/1 Anton;color:var(--fg);letter-spacing:0}
+.pshell .lbh{display:none}
+.pshell .lbr{grid-template-columns:26px minmax(0,1fr) 72px;gap:4px 10px}
+.pshell .lbr .cst,.pshell .lbr .n.x{display:none}
+.pshell .lbr .bw{grid-column:2/-1;grid-row:2}
+.pshell .lbr .n.pt{grid-column:3;grid-row:1}
+/* 1F compare */
+.cmpbar{display:flex;align-items:center;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+.cmpbar .lb{color:var(--faint)}
+.pick{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 10px 0 6px;border-radius:2.4px;box-shadow:inset 0 0 0 1px var(--hl),0 0 0 3px rgb(255 212 0/.2);font:800 .95rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase}
+.pick svg.lucide{width:16px;height:16px;color:var(--faint)}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);gap:10px;align-items:start}
+.vs .vside{background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:14px 12px 12px}
+.vs .vside h4{display:flex;align-items:center;gap:10px;font:400 1.5rem/1 Anton;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--bs);margin-bottom:12px}
+.vs .vside h4 small{margin-left:auto;font:700 .76rem/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint)}
+.vs .vside .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.vs .vside .trio .mtr .nm{font-size:2rem}.vs .vside .trio .mtr .nmlab{font-size:.9rem;margin-top:8px}
+.vs .mid{align-self:center;text-align:center;font:400 1.6rem/1 Anton;color:var(--faint)}
+.cmp{margin-top:22px}
+.cmph,.cmpr{display:grid;grid-template-columns:34px minmax(0,1fr) 130px 130px;gap:12px;align-items:center}
+.cmph{font:700 .74rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-bottom:8px;border-bottom:2px solid var(--fg)}
+.cmpr{padding:5px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.cmpr .rn{font:400 1.15rem/1 Anton;text-align:right}
+.cmpr .c{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.cmpr .c b{font:400 1.05rem/1 Anton;min-width:46px;text-align:right}
+.cmpr .c b.z{color:var(--faint)}
+.cmpr.diff{background:rgb(244 244 240/.04)}
+.cbstrip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:10px 12px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--border)}
+.cbstrip .lb{color:var(--faint)}
+.cbstrip .p{display:inline-flex;align-items:center;gap:7px;font-size:.88rem;color:var(--dim);padding:3px 8px 3px 3px;border-radius:2.4px;box-shadow:inset 0 0 0 1px var(--bs)}
+.cbstrip .p b{color:var(--fg);font-weight:600}
+.cbstrip .p.on{box-shadow:inset 0 0 0 1.5px var(--hl)}
+.pshell .vs{grid-template-columns:1fr;gap:10px}
+.pshell .vs .mid{display:none}
+.pshell .cmph,.pshell .cmpr{grid-template-columns:24px minmax(0,1fr) 54px 54px;gap:8px}
+.pshell .cmpr .c .b,.pshell .cmpr .c .e{display:none}
+/* 1G dial grid */
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:3.2px;padding:12px 12px 10px;position:relative}
+.mc .hd2{display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--bs);margin-bottom:10px}
+.mc .hd2 b{font:400 1.2rem/1 Anton;text-transform:uppercase}
+.mc .hd2 small{margin-left:auto;font:400 1.05rem/1 Anton}
+.mc .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.mc .trio .mtr .nm{font-size:1.15rem}
+.mc .trio .mtr .pc{display:none}
+.mc .trio .mtr .nmlab{font:700 .62rem/1 "Barlow Condensed";letter-spacing:.07em;color:var(--faint);margin-top:4px}
+.mc .st{position:absolute;right:8px;bottom:-12px}
+.mc{margin-bottom:6px}
+.mc.you{box-shadow:inset 0 0 0 1.5px var(--hl)}
+.pshell .mgrid{grid-template-columns:1fr;gap:12px}
+.pshell .mc .trio .mtr .nm{font-size:1.15rem}
+</style></head>
+<body><script>
+const startBtn = `<span class="btn hl">${ic("flag")}Start a Challenge</span>`;
+const fhead = (name = "Final Fantasy", tally = `<b>16 Mainline</b> · 15 spin-offs · 8 Add-ons · From IGDB, 2 linked by hand`) => `<a class="back">${ic("arrow-left")}Games</a><div class="hd"><h1>${name}</h1><span class="n lb">Franchise</span><div class="act"><span class="btn">${ic("folder-plus")}New Franchise</span><span class="btn">${ic("pencil")}Edit Franchise</span>${startBtn}</div></div><p class="tally">${tally}</p>`;
+const phead = () => `<a class="pback" aria-label="Back to Games">${ic("arrow-left")}</a><div class="hd"><h1>Final Fantasy</h1></div><p class="tally"><b>16 Mainline</b> · 15 spin-offs · 8 Add-ons</p>`;
+const sw = (n = "11/16") => `<div class="vsw paper"><span>Games<em>31</em></span><span class="on">Progress<em>${n}</em></span><span>History<em>7</em></span></div>`;
+const meter = (d, o = {}) => {
+  const w = o.w || 200;
+  const body = d.m
+    ? `<div class="dial">${gauge(d.n, d.m, { w, sw: o.sw })}<div class="rd"><div class="nm">${d.n}<span>/${d.m}</span></div><div class="pc">${pct(d.n, d.m)}%</div></div></div>`
+    : `<div class="dial">${gauge(0, 0, { w, empty: 1 })}<div class="rd"><div class="none">No Mainline games yet</div></div></div>`;
+  return `<div class="mtr ${d.m ? "" : "off"}">${body}<div class="nmlab">${d.name}</div>${o.noH ? "" : `<div class="hh">${d.m ? `<b>${hrs(d.h)}</b> Playtime` : "A Regular marks them with Edit Franchise"}</div>`}${o.stamp || ""}</div>`;
+};
+/* members on Final Fantasy: [key, mainN, allN, spinN, hours, conquered] */
+const MEM = [
+  ["loot", 16, 27, 11, 1640, "Jan 2024"], ["rowan", 16, 19, 3, 1210, "Mar 2025"], ["jun", 16, 21, 5, 980, "Aug 2026"],
+  ["mara", 11, 16, 5, 949, null], ["mog", 9, 12, 3, 610, null], ["owl", 7, 8, 1, 402, null], ["tavi", 3, 4, 1, 118, null], ["dice", 2, 6, 4, 233, null],
+];
+const trioOf = (r) => ({ main: { k: "main", name: "Mainline", n: r[1], m: 16, h: r[0] === "mara" ? FFM.main.h : Math.round(r[4] * 0.74) }, all: { k: "all", name: "Mainline + spin-offs", n: r[2], m: 31, h: r[4] }, spin: { k: "spin", name: "Spin-offs", n: r[3], m: 15, h: r[0] === "mara" ? FFM.spin.h : r[4] - Math.round(r[4] * 0.74) } });
+const yours = (who = "mara", o = {}) => {
+  const r = MEM.find((x) => x[0] === who), t = trioOf(r);
+  const w = o.w || 200;
+  const st = r[5] ? `<span style="position:absolute;right:4px;top:-6px">${stamp(r[5])}</span>` : "";
+  return `<div class="yours">${meter(t.main, { w, stamp: st, sw: o.sw })}${meter(o.w ? { ...t.all, name: "Everything" } : t.all, { w, sw: o.sw })}${meter(t.spin, { w, sw: o.sw })}
+  <div class="yside"><div class="who">${av(who, 34)}<div><b>${who === "mara" ? "You" : M[who].n}</b><small>${r[5] ? `Conquered ${r[5]}` : `${16 - r[1]} Mainline to go`}</small></div></div><div class="tot">${hrs(r[4])}<small>Playtime across the Franchise</small></div></div></div>`;
+};
+const grow = (k, isMain, who = "mara") => {
+  const done = who === "mara" ? DONE.has(k) : ["ff1","ff2","ff3","ff4","ff5","ff6","ff7","ff8","ff9","ff10","ff11","ff12","ff13","ff14","ff15","ff16","ff7r","cc","fft"].includes(k);
+  const h = who === "mara" ? PT[k] : (RH[k] || (done ? 24 : 0));
+  return `<div class="gr"><span class="rn">${isMain ? ROMAN[FF_MAIN.indexOf(k)] : ""}</span>${done ? `<span class="b">${ic("check")}</span>` : `<span class="e"></span>`}<span class="t">${esc(G[k].t)}</span><span class="h ${h ? "" : "z"}">${h ? hrs(h) : "Not played"}</span></div>`;
+};
+const perGame = (o = {}) => `<div class="pg"><div><h3>Mainline<span>${o.who === "rowan" ? "16 of 16" : "11 of 16"}</span></h3>${FF_MAIN.slice(0, o.n || 16).map((k) => grow(k, 1, o.who)).join("")}</div>${o.noSpin ? "" : `<div><h3>Spin-offs<span>${o.who === "rowan" ? "3 of 15" : "5 of 15"}</span></h3>${FF_SPIN.slice(0, o.ns || 15).map((k) => grow(k, 0, o.who)).join("")}</div>`}</div>`;
+const fold = (t) => `<p class="faint" style="font-size:.84rem;margin-top:10px">${t}</p>`;
+
+/* ================= 1E: the leaderboard ================= */
+const bar = (n, m) => `<span class="bar">${Array.from({ length: m }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
+const lbRow = (r, i, sel) => `<div class="lbr ${r[0] === "mara" ? "you" : ""} ${sel === r[0] ? "sel" : ""}"><span class="rk">${i + 1}</span><span class="m">${av(r[0], 28)}<span>${r[0] === "mara" ? "You" : M[r[0]].n}<small>${r[5] ? "Conquered " + r[5] : `${16 - r[1]} Mainline to go`}</small></span></span>
+<span class="cst">${r[5] ? stamp("", "sm") : ""}</span><span class="bw">${bar(r[1], 16)}<b>${r[1]}<span>/16</span></b></span><span class="n x">${r[2]}<span>/31</span></span><span class="n x">${r[3]}<span>/15</span></span><span class="n pt">${hrs(r[4])}</span></div>`;
+const board = (sel, n = 8) => `<div class="lb2"><div class="sec" style="margin-top:0"><h2>Members</h2><span class="n lb">8 have played it · press one to see their dials</span></div>
+<div class="lbh"><span></span><span>Member</span><span></span><span>Mainline</span><span style="text-align:right">Everything</span><span style="text-align:right">Spin-offs</span><span style="text-align:right">Playtime</span></div>
+<div class="grh"><b>Conquered by 3</b>in order</div>${MEM.slice(0, 3).map((r, i) => lbRow(r, i, sel)).join("")}
+<div class="grh"><b>Still going</b>by Mainline</div>${MEM.slice(3, n).map((r, i) => lbRow(r, i + 3, sel)).join("")}</div>`;
+const e1desk = () => desk(`${fhead()}${sw()}${yours()}${perGame({ ns: 8 })}${fold("7 more spin-offs · Show all")}${board()}`, "franchises", { h: 1700 });
+const e1phone = () => phone(`${phead()}${sw()}${yours("mara", { w: 104, sw: 11 })}${perGame({ n: 6, noSpin: 1 })}${fold("Show all 31 games")}${board(null, 6)}`, "games", { h: 1650 });
+const e1rowan = () => desk(`${fhead()}${sw()}<div class="viewing">${av("rowan", 24)}Viewing <b>Rowan's</b> progress, Conquered Mar 2025<span class="lnk">${ic("arrow-left")}Back to yours</span></div>${yours("rowan")}${perGame({ who: "rowan", n: 8, ns: 8 })}${board("rowan", 5)}`, "franchises", { h: 1260 });
+const TALES_MEM = [["grind", 0, 9, 9, 312], ["mara", 0, 3, 3, 164], ["jun", 0, 2, 2, 71]];
+const e1tales = () => desk(`${fhead("Tales of", "<b>0 Mainline</b> · 19 spin-offs · From IGDB")}${sw("3/19")}<div class="yours">${meter({ k: "main", name: "Mainline", n: 0, m: 0 })}${meter({ k: "all", name: "Mainline + spin-offs", n: 3, m: 19, h: 164 })}${meter({ k: "spin", name: "Spin-offs", n: 3, m: 19, h: 164 })}<div class="yside"><div class="who">${av("mara", 34)}<div><b>You</b><small>Nobody can Conquer it yet</small></div></div><div class="tot">164 h<small>Playtime across the Franchise</small></div></div></div>
+<div class="lb2"><div class="sec" style="margin-top:0"><h2>Members</h2><span class="n lb">3 have played it · ranked by Mainline + spin-offs until a Regular marks Mainline games</span></div>
+${TALES_MEM.map((r, i) => `<div class="lbr ${r[0] === "mara" ? "you" : ""}"><span class="rk">${i + 1}</span><span class="m">${av(r[0], 28)}<span>${r[0] === "mara" ? "You" : M[r[0]].n}</span></span><span class="cst"></span><span class="bw">${bar(r[2], 19)}<b>${r[2]}<span>/19</span></b></span><span class="n x">${r[2]}<span>/19</span></span><span class="n x">${r[3]}<span>/19</span></span><span class="n pt">${hrs(r[4])}</span></div>`).join("")}</div>`, "franchises", { h: 760 });
+
+/* ================= 1F: compare ================= */
+const sideT = (who) => { const r = MEM.find((x) => x[0] === who), t = trioOf(r); return `<div class="vside"><h4>${av(who, 28)}${who === "mara" ? "You" : M[who].n}<small>${hrs(r[4])}</small></h4><div class="trio">${meter(t.main, { w: 140, sw: 13, noH: 1, stamp: r[5] ? `<span style="position:absolute;right:-6px;top:-10px">${stamp("", "sm")}</span>` : "" })}${meter({ ...t.all, name: "Everything" }, { w: 140, sw: 13, noH: 1 })}${meter(t.spin, { w: 140, sw: 13, noH: 1 })}</div></div>`; };
+const RDONE = new Set(["ff1","ff2","ff3","ff4","ff5","ff6","ff7","ff8","ff9","ff10","ff11","ff12","ff13","ff14","ff15","ff16","ff7r","cc","fft"]);
+const RH = { ff1: 21, ff2: 19, ff3: 26, ff4: 30, ff5: 41, ff6: 44, ff7: 51, ff8: 62, ff9: 58, ff10: 77, ff11: 340, ff12: 91, ff13: 48, ff14: 410, ff15: 39, ff16: 55 };
+const cmpRow = (k) => {
+  const a = DONE.has(k), b = RDONE.has(k), ha = PT[k] || 0, hb = RH[k] || 0;
+  const c = (d, h) => `<span class="c">${d ? `<span class="gr" style="display:contents"><span class="b">${ic("check")}</span></span>` : `<span class="gr" style="display:contents"><span class="e"></span></span>`}<b class="${h ? "" : "z"}">${h ? hrs(h) : "0 h"}</b></span>`;
+  return `<div class="cmpr ${a !== b ? "diff" : ""}"><span class="rn">${ROMAN[FF_MAIN.indexOf(k)]}</span><span>${esc(G[k].t)}</span>${c(a, ha)}${c(b, hb)}</div>`;
+};
+const cbStrip = (on = "rowan") => `<div class="cbstrip"><span class="lb">Conquered by</span>${CONQ.map((c) => `<span class="p ${c.w === on ? "on" : ""}">${av(c.w, 22)}<b>${M[c.w].n}</b>${c.d}</span>`).join("")}</div>`;
+const f1desk = () => desk(`${fhead()}${sw()}${cbStrip()}<div class="cmpbar"><span class="lb">Compare with</span><span class="pick">${av("rowan", 24)}Rowan${ic("chevron-down")}</span><span class="faint" style="font-size:.86rem">or anyone who has played a Final Fantasy game</span></div>
+<div class="vs">${sideT("mara")}<span class="mid">vs</span>${sideT("rowan")}</div>
+<div class="cmp"><div class="cmph"><span></span><span>Mainline · the games you differ on are shaded</span><span style="text-align:right">You</span><span style="text-align:right">Rowan</span></div>${FF_MAIN.map(cmpRow).join("")}</div>${fold("Spin-offs follow the same way · 15 games")}`, "franchises", { h: 1300 });
+const f1phone = () => phone(`${phead()}${sw()}<div class="cmpbar"><span class="pick">${av("rowan", 24)}Rowan${ic("chevron-down")}</span></div><div class="vs">${sideT("mara")}${sideT("rowan")}</div>
+<div class="cmp"><div class="cmph"><span></span><span>Mainline</span><span style="text-align:right">You</span><span style="text-align:right">Rowan</span></div>${FF_MAIN.slice(0, 8).map(cmpRow).join("")}</div>`, "games", { h: 1350 });
+const f1solo = () => desk(`${fhead()}${sw()}${cbStrip(null)}<div class="cmpbar"><span class="lb">Compare with</span><span class="pick" style="box-shadow:inset 0 0 0 1px var(--bs)">${ic("users")}Pick a member${ic("chevron-down")}</span></div>${yours()}${perGame({ n: 8, ns: 8 })}`, "franchises", { h: 920 });
+
+/* ================= 1G: the dial grid ================= */
+const card = (r) => { const t = trioOf(r); return `<div class="mc ${r[0] === "mara" ? "you" : ""}"><div class="hd2">${av(r[0], 24)}<b>${r[0] === "mara" ? "You" : M[r[0]].n}</b><small>${hrs(r[4])}</small></div><div class="trio">${meter(t.main, { w: 86, sw: 9, noH: 1 })}${meter({ ...t.all, name: "Everything" }, { w: 86, sw: 9, noH: 1 })}${meter(t.spin, { w: 86, sw: 9, noH: 1 })}</div>${r[5] ? `<span class="st">${stamp(r[5], "sm")}</span>` : ""}</div>`; };
+const grid = (n = 8) => `<div class="sec"><h2>Members</h2><span class="n lb">8 have played it · Conquered first, then by Mainline</span></div><div class="grh" style="padding-top:0"><b>Conquered by 3</b></div><div class="mgrid" style="margin-top:4px">${MEM.slice(0, 3).map(card).join("")}</div><div class="grh"><b>Still going</b></div><div class="mgrid" style="margin-top:4px">${MEM.slice(3, n).map(card).join("")}</div>`;
+const g1desk = () => desk(`${fhead()}${sw()}${yours()}${perGame({ n: 8, ns: 8 })}${fold("Show all 31 games")}${grid()}`, "franchises", { h: 1560 });
+const g1phone = () => phone(`${phead()}${sw()}${yours("mara", { w: 104, sw: 11 })}${grid(5)}`, "games", { h: 1500 });
+
+page({
+  title: "Round 2: the Progress tab",
+  lede: `The meters move off the Games tab (which goes back to the picked <b>6B</b>, unchanged) into a third tab, <b>Progress</b>, beside Games and History. It holds <b>your three dials</b> (Mainline, Mainline + spin-offs, Spin-offs, each with N/M, % and its Playtime), <b>your Playtime per game</b>, and <b>other members' progress</b>, with Conquered by inside it. The three options differ in how you see the others. Example: Final Fantasy, 8 members have played it, 3 Conquered it.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara, a Regular"], ["Tab", "Progress, ?view=progress, members and up"], ["Yellow", "you, and what you picked"]],
+  surfaces: [{ id: "s1b", title: "1 · Franchise page, Progress tab", sub: "/franchises/[id]?view=progress · 3 options", brief: `Every option opens on your own dials and your per-game Playtime (a check for a Game Completion, the hours beside it). The tab's count is your Mainline progress ("11/16"). Members always see Progress; History stays Regulars and above.`,
+    options: [
+      { code: "1E", short: "Leaderboard", title: "The leaderboard", idea: `Under your dials and games, a <b>Members table</b>: Conquered by first (in the order they Conquered, with the stamp), then everyone still going by Mainline, each with a segmented Mainline bar, Everything, Spin-offs and Playtime. Your row is marked. <b>Pressing a member swaps the dials and the game list to theirs</b>, with "Back to yours". <b>Recommended</b>: one table answers "who's ahead" and "what did they play", and it keeps working with 40 members.`,
+        desk: ["Desktop · your dials, your games, the table", e1desk()], phone: ["Phone · the table drops to name, bar and Playtime", e1phone()],
+        more: [["Pressed Rowan · the dials and games are Rowan's", e1rowan()], ["No Mainline games yet · Tales of, ranked by Mainline + spin-offs", e1tales()]],
+        notes: [`Ties on Mainline break by Playtime.`, `Only members who have played the Franchise (any Playtime or Game Completion in it) are listed.`] },
+      { code: "1F", short: "Compare", title: "You versus one member", idea: `A <b>Conquered by</b> strip, then <b>Compare with [member]</b>: your trio and theirs side by side, and one game list with <b>two columns</b>, yours and theirs (check and hours each), the games you differ on shaded. Before you pick anyone it is just your dials and games.`,
+        desk: ["Desktop · you vs Rowan", f1desk()], phone: ["Phone · the two trios stack; hours only", f1phone()],
+        more: [["Before picking a member", f1solo()]],
+        notes: [`Best for "what has Rowan played that I haven't"; worst for seeing the whole club at once.`, `The picker lists everyone who has played the Franchise, Conquered first.`] },
+      { code: "1G", short: "Dial grid", title: "Everyone's dials", idea: `Under yours, <b>every member's trio as a small card</b>, four across: Conquered first with their stamp and date, then the rest by Mainline. Your own card is ringed. Pressing a card opens that member's game list (as 1E's swap).`,
+        desk: ["Desktop · the grid", g1desk()], phone: ["Phone · two across", g1phone()],
+        notes: [`Most visual; with many members the dials get small and the page long, so it pages at 24.`] },
+    ] }],
+});
+</script></body></html>

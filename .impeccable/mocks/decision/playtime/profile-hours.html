@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" data-mode="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile Game Hours</title>
+<meta name="description" content="Round 2: per-game Playtime on the member profile's Now Playing books and bookcase shelves.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<style>
+/* ---------- profile context ---------- */
+.pbn{position:relative;height:250px;margin:-24px -28px 0;overflow:hidden;background:var(--muted)}
+.pbn .art{opacity:.55}
+.pbn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(11 11 13/.96) 0%,rgb(11 11 13/.7) 45%,rgb(11 11 13/.2) 100%)}
+.pbn .in{position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;gap:22px;padding:24px 28px}
+.pbn .bav{box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.pbn h1{font:400 5.2rem/.86 Anton;text-transform:uppercase}
+.pbn .by{font:700 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pbn .by .chip{height:22px}
+.pshell .pbn{height:230px;margin:-20px -16px 0}
+.pshell .pbn .in{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+.pshell .pbn h1{font-size:3.2rem}
+.np{display:flex;gap:14px;align-items:flex-end}
+.np .bk{display:flex;gap:10px;align-items:flex-end}
+.np .bk b{display:block;font:400 1.05rem/.95 Anton;text-transform:uppercase;max-width:150px}
+.np .bk small{font:700 .72rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ctx{opacity:.55}
+/* shelf head: monumental count + title on the left */
+.case{display:grid;grid-template-columns:190px minmax(0,1fr);gap:28px;margin-top:40px}
+.case .lead .num{font:400 6rem/.8 Anton;letter-spacing:-.01em}
+.case .lead h2{font:400 2.2rem/.9 Anton;text-transform:uppercase;margin-top:10px;padding-bottom:10px;border-bottom:2px solid var(--fg)}
+.case .lead p{color:var(--faint);font:700 .78rem/1.35 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;margin-top:10px}
+.case .lead .btn{margin-top:14px}
+.pshell .case{grid-template-columns:minmax(0,1fr);gap:14px;margin-top:30px}
+.pshell .case .lead{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-items:end}
+.pshell .case .lead .num{font-size:4.2rem;grid-row:span 2}
+.pshell .case .lead h2{font-size:1.8rem;margin:0}
+.pshell .case .lead p{margin-top:6px}
+.pshell .case .lead .btn{grid-column:1/-1;margin-top:12px;justify-self:start}
+
+
+/* ---------- the shipped profile: Now Playing books and the bookcase ---------- */
+.np2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.book{position:relative;isolation:isolate;display:flex;aspect-ratio:16/9;border-radius:2.4px;overflow:hidden;background:#000}
+.book>img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:60% 30%}
+.book::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgb(11 11 13/.95) 0%,rgb(11 11 13/.6) 45%,rgb(11 11 13/.05) 100%)}
+.book .in{margin-top:auto;padding:16px}
+.book .t{font:400 1.75rem/.95 Anton;text-transform:uppercase;display:block}
+.book .l{display:flex;align-items:center;gap:6px;margin-top:6px;font:700 .8rem/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.book .l svg.lucide{width:14px;height:14px}
+.book .l b{color:var(--fg);font-weight:700}
+.book .q{display:block;margin-top:6px;font-size:.82rem;font-style:italic;color:var(--dim)}
+.case2{border-top:2px solid var(--fg);margin-top:36px}
+.shelf{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:24px;padding-top:20px;border-bottom:6px solid var(--muted);box-shadow:0 1px 0 var(--border)}
+.shelf .hd3{display:flex;flex-direction:column;gap:6px;padding-bottom:16px}
+.shelf .hd3 .c{font:400 3.9rem/.82 Anton}
+.shelf .hd3 h2{font:400 1.65rem/1 Anton;text-transform:uppercase}
+.shelf .hd3 p{font-size:.82rem;color:var(--faint);line-height:1.35}
+.shelf .hd3 p b{color:var(--fg);font-weight:600}
+.shelf .hd3 .lk{font:800 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:inline-flex;align-items:center;gap:6px;margin-top:4px}
+.shelf .hd3 .lk svg.lucide{width:14px;height:14px}
+.shelf .hd3 .pt2{font:400 1.9rem/.9 Anton;margin-top:6px}
+.shelf .hd3 .pt2 small{display:block;font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.sp{display:flex;align-items:flex-end;gap:4px;min-height:15.5rem;overflow:hidden}
+.spine{position:relative;width:52px;flex:none;border-radius:2px 2px 0 0;background:var(--muted);overflow:hidden}
+.spine img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.spine::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(0 0 0/.45),transparent 30%,transparent 70%,rgb(0 0 0/.5))}
+.spine .tg{position:absolute;left:0;right:0;top:8px;z-index:2;text-align:center;font:800 .66rem/1.1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.spine .tg b{display:block;font:400 1.05rem/1 Anton;color:var(--fg);letter-spacing:0;margin-top:3px}
+.spine .tg b.z{font:800 .62rem/1 "Barlow Condensed";color:var(--faint);letter-spacing:.06em;margin-top:4px}
+.spine .ti{position:absolute;bottom:12px;left:50%;z-index:2;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;font:400 1.2rem/1 Anton;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:calc(100% - 64px);text-shadow:0 1px 6px rgb(0 0 0/.8)}
+.spine.lift{transform:translateY(-14px);box-shadow:0 12px 30px rgb(0 0 0/.5)}
+.more{align-self:flex-end;padding:0 0 14px 12px;font:800 .84rem/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.pshell .np2{grid-template-columns:1fr}
+.pshell .shelf{grid-template-columns:1fr;gap:10px}
+.pshell .shelf .hd3{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding-bottom:0}
+.pshell .shelf .hd3 .c{font-size:2.5rem}.pshell .shelf .hd3 h2{font-size:1.5rem}
+.pshell .shelf .hd3 p{width:100%}
+.pshell .spine{width:44px}
+/* 3D: Playthrough tag on a book */
+.ptag{position:absolute;right:10px;top:10px;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:2px;background:rgb(11 11 13/.78);box-shadow:inset 0 0 0 1px rgb(244 244 240/.25);font:800 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.ptag b{font:400 1rem/1 Anton;color:var(--fg);letter-spacing:0}
+.ptag svg.lucide{width:13px;height:13px}
+/* 3E: hours on the shelf lip */
+.lipwrap{display:flex;flex-direction:column;min-width:0}
+.lip{display:flex;gap:4px;height:22px;align-items:center;margin-bottom:-28px;position:relative;top:6px}
+.lip span{width:52px;flex:none;text-align:center;font:400 .95rem/1 Anton;color:var(--fg)}
+.lip span.z{font:800 .6rem/1 "Barlow Condensed";letter-spacing:.06em;color:var(--faint)}
+.shelf.lipped{padding-bottom:30px}
+.bclock{position:absolute;right:14px;top:12px;text-align:right}
+.bclock b{display:block;font:400 2.6rem/.85 Anton;text-shadow:0 1px 8px rgb(0 0 0/.85)}
+.bclock small{font:800 .68rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-shadow:0 1px 8px rgb(0 0 0/.85)}
+.pstat{display:flex;gap:26px;margin-top:12px}
+.pstat div b{display:block;font:400 2rem/.9 Anton}
+.pstat div small{font:700 .72rem/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+/* 3F: the tag on a lifted spine */
+.htag{position:absolute;z-index:5;background:var(--fg);color:var(--bg);border-radius:2px;padding:8px 10px;box-shadow:0 12px 30px rgb(0 0 0/.5);transform:rotate(-2deg);white-space:nowrap}
+.htag b{display:block;font:400 1.5rem/.9 Anton}
+.htag small{display:block;font:800 .68rem/1.3 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:rgb(11 11 13/.72);margin-top:3px}
+.sortl{display:inline-flex;gap:2px;margin-top:6px}
+.sortl span{font:800 .74rem/1 "Barlow Condensed";letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:5px 6px;border-radius:2px}
+.sortl span.on{background:var(--fg);color:var(--bg)}
+.sp.rel{position:relative;overflow:visible}
+</style></head>
+<body><script>
+/* ---------------- profile context ---------------- */
+const profBanner = (k, ph) => {
+  const m = M[k];
+  return `<div class="pbn">${artBg(k === "mara" ? "metaphor" : "wukong")}<div class="in">
+    <span class="av bav" style="--s:${ph ? 64 : 104}px;--c:${m.c}">${m.n[0]}</span>
+    <div><h1>${m.n}</h1><div class="by">@${m.n.toLowerCase().replace(/ /g, "")} <span>·</span> In the club since ${k === "mara" ? "Mar 2021" : "Jun 2023"}<span class="chip ols sm">${m.role}</span><span class="chip sm">Member</span></div></div></div></div>`;
+};
+const nowPlaying = (k, ph) => {
+  const gs = k === "mara" ? ["ff6", "metaphor"] : ["wuchang", "nioh2"];
+  return `<div class="ctx"><div class="sec" style="margin-top:28px"><h2>Now Playing</h2><span class="n lb">2 games</span></div>
+  <div class="np">${gs.map((g) => `<div class="bk">${cover(g, ph ? 58 : 70)}<div><b>${esc(G[g].t)}</b><small>Since ${g === "ff6" ? "9 Nov" : "2 Oct"}</small></div></div>`).join("")}</div></div>`;
+};
+const belowCtx = (ph) => `<div class="ctx"><div class="case" style="margin-top:36px"><div class="lead"><div class="num">${ph ? 41 : 41}</div><h2>Completed</h2></div><div class="empty" style="border-style:solid;color:var(--faint)">The Completed shelf continues below.</div></div></div>`;
+
+/* Mara's lists. [game, tag, hours] */
+const NP = [["ff6", "Switch", "9 Nov", 180, 14, "Pixel Remaster. Doing the Dragons this time."], ["metaphor", "PC", "2 Oct", 46, 46, ""], ["ff7rb", "PS5", "18 Sep", 19, 19, "Saving Gold Saucer for last."]];
+const DONE2 = [["octo", "Nov 26", 64], ["liesofp", "Oct 26", 41], ["p3r", "Sep 26", 88], ["wukong", "Aug 26", 47], ["ff16", "Jul 26", 52], ["dq11", "Jun 26", 97], ["hades", "May 26", 112], ["ct", "Apr 26", 23], ["p4g", "Mar 26", 76], ["bg3", "Feb 26", 143], ["ff10", "Jan 26", 92], ["disco", "Dec 25", 34], ["outer", "Nov 25", 19], ["elden", "Oct 25", 0]];
+const BACK = [["ff12", "PS4", 0], ["ff13", "PC", 22], ["yakuza0", "PC", 0], ["nioh", "PC", 8], ["ds3", "PS4", 0], ["toa", "PC", 0], ["kh3", "PS4", 3], ["tob", "PC", 0], ["dsr", "Switch", 0]];
+const hOf = (h) => (h ? `<b>${hrs(h)}</b>` : `<b class="z">No time</b>`);
+const H = (k, i) => 218 + ((k.length * 37 + i * 11) % 27);
+const spine = (k, tag, i, o = {}) => `<div class="spine ${o.lift ? "lift" : ""}" style="height:${H(k, i)}px">${G[k].cover ? `<img src="${G[k].cover}" alt="" onerror="this.remove()">` : ""}<span class="tg">${tag}${o.h !== undefined ? hOf(o.h) : ""}</span><span class="ti">${esc(G[k].t)}</span></div>`;
+const book = (r, o = {}) => `<div class="book">${G[r[0]].art ? `<img src="${G[r[0]].art}" alt="" onerror="this.remove()">` : ""}${o.top ? o.top(r) : ""}<span class="in"><span class="t">${esc(G[r[0]].t)}</span><span class="l">${ic("gamepad-2")}${r[1]} · since ${r[2]}${o.line ? o.line(r) : ""}</span>${r[5] ? `<span class="q">“${r[5]}”</span>` : ""}</span></div>`;
+const npSec = (o = {}, ph) => `<div class="sec" style="margin-top:28px"><h2>Now playing</h2><span class="n lb">3</span><span class="r"><span class="lnk">See all</span></span></div><div class="np2">${NP.slice(0, ph ? 2 : 3).map((r) => book(r, o)).join("")}</div>`;
+const shelf = (label, count, blurb, rows, o = {}) => `<section class="shelf ${o.lipped ? "lipped" : ""}"><div class="hd3"><span class="c">${count}</span><h2>${label}</h2><p>${blurb}</p>${o.headX || ""}<span class="lk">Open list ${ic("arrow-right")}</span></div>
+<div class="lipwrap"><div class="sp ${o.rel ? "rel" : ""}">${rows.join("")}${o.more ? `<span class="more">+${o.more} more ${ic("arrow-right")}</span>` : ""}${o.over || ""}</div>${o.lip || ""}</div></section>`;
+const doneTotal = DONE2.reduce((a, r) => a + r[2], 0);
+const pTop = (ph) => profBanner("mara", ph);
+
+/* ================= 3D: hours on the spine head ================= */
+const d3body = (ph) => `${pTop(ph)}${npSec({ top: (r) => `<span class="ptag">${ic("timer")}Playthrough <b>${r[4]} h</b></span>`, line: (r) => ` · <b>${hrs(r[3])}</b>` }, ph)}
+<div class="case2">${shelf("Completed", 141, `Newest on the left. <b>${hrs(doneTotal)}</b> on these 14.`, DONE2.slice(0, ph ? 6 : 14).map((r, i) => spine(r[0], r[1], i, { h: r[2] })), { more: ph ? 0 : 127 })}
+${shelf("Backlog", 24, `Oldest first. <b>33 h</b> already in.`, BACK.slice(0, ph ? 6 : 9).map((r, i) => spine(r[0], r[1], i, { h: r[2] })), { more: ph ? 0 : 15 })}</div>`;
+const d3desk = () => desk(d3body(0), "members", { h: 1420 });
+const d3phone = () => phone(d3body(1), "you", { h: 1700 });
+
+/* ================= 3E: hours on the shelf lip ================= */
+const lip = (rows) => `<div class="lip">${rows.map((r) => (r[2] ? `<span>${r[2]}h</span>` : `<span class="z">0 h</span>`)).join("")}</div>`;
+const bannerE = (ph) => pTop(ph).replace('</div></div></div></div>', `</div><div class="pstat"><div><b>2,486 h</b><small>Playtime</small></div><div><b>141</b><small>Completed</small></div></div></div></div></div>`);
+const e3body = (ph) => `${bannerE(ph)}${npSec({ top: (r) => `<span class="bclock"><b>${r[4]} h</b><small>this Playthrough · ${hrs(r[3])} in all</small></span>` }, ph)}
+<div class="case2">${shelf("Completed", 141, "Newest on the left.", DONE2.slice(0, ph ? 6 : 14).map((r, i) => spine(r[0], r[1], i)), { lipped: 1, lip: lip(DONE2.slice(0, ph ? 6 : 14)), more: ph ? 0 : 127, headX: `<span class="pt2">${hrs(doneTotal)}<small>Playtime on this shelf</small></span>` })}
+${shelf("Backlog", 24, "Oldest first.", BACK.slice(0, ph ? 6 : 9).map((r, i) => spine(r[0], r[1], i)), { lipped: 1, lip: lip(BACK.slice(0, ph ? 6 : 9)), more: ph ? 0 : 15, headX: `<span class="pt2">33 h<small>Started on these</small></span>` })}</div>`;
+const e3desk = () => desk(e3body(0), "members", { h: 1500 });
+const e3phone = () => phone(e3body(1), "you", { h: 1780 });
+
+/* ================= 3F: the tag on a lifted spine ================= */
+const f3shelf = (sorted, ph) => {
+  const rows = sorted ? [...DONE2].sort((a, b) => b[2] - a[2]) : DONE2;
+  const n = ph ? 6 : 14, li = sorted ? 0 : 2;
+  const r = rows[li];
+  const over = `<div class="htag" style="left:${li * 56 - 4}px;top:-6px"><b>${hrs(r[2])}</b><small>${esc(G[r[0]].t)}<br>Completed ${r[1]}</small></div>`;
+  return shelf("Completed", 141, sorted ? "Most played on the left." : "Newest on the left.", rows.slice(0, n).map((x, i) => spine(x[0], sorted ? `${x[2]}h` : x[1], i, { lift: i === li })), { more: ph ? 0 : 127, rel: 1, over, headX: `<span class="sortl"><span class="${sorted ? "" : "on"}">Newest</span><span class="${sorted ? "on" : ""}">Most played</span></span>` });
+};
+const f3body = (ph, sorted) => `${pTop(ph)}${npSec({ line: (r) => ` · <b>${hrs(r[3])}</b>` }, ph)}<div class="case2" style="padding-top:40px">${f3shelf(sorted, ph)}</div>`;
+const f3desk = () => desk(f3body(0, 0), "members", { h: 900 });
+const f3phone = () => phone(f3body(1, 0), "you", { h: 1250 });
+const f3sorted = () => desk(f3body(0, 1), "members", { h: 900 });
+
+page({
+  title: "Round 2: game hours on the profile",
+  lede: `The profile's Franchises section is gone. Instead the profile shows <b>Playtime as game hours</b> on what it already has: <b>Now playing</b> (open books of key art) and the <b>bookcase</b> (Completed, Backlog, Collection, Favorites as closed spines). Each option adds the hours to the books and spines, shows the open <b>Playthrough</b> on a Now Playing book, and some add an optional total. Example: Mara's profile, as shipped.`,
+  keys: [["Today", "Wed 25 Nov 2026"], ["Viewer", "Mara, own profile"], ["Shelves", "drawn as shipped: 52px spines, month tags, newest left"]],
+  surfaces: [{ id: "s3b", title: "3 · Profile game hours", sub: "/members/[id] · 3 options", brief: `Only Completed and Backlog are drawn on the bookcase; Collection and Favorites take the same treatment. Spine heights stay decorative (they never encode hours, so a shelf never reads as a bar chart). Hours are visible to any member, like the shelves.`,
+    options: [
+      { code: "3D", short: "Spine head", title: "Hours on the spine head", idea: `Each spine's head keeps its tag (the month, the platform) and gains the <b>hours in Anton</b> under it ("No time" when there's none). Now playing books add the total to their platform line and a <b>Playthrough tag</b> in the corner. Each shelf's blurb gets its total ("888 h on these 14"). <b>Recommended</b>: hours where the eye already reads the month, nothing new to learn.`,
+        desk: ["Desktop · Now playing and two shelves", d3desk()], phone: ["Phone · six spines a shelf", d3phone()],
+        notes: [`A Backlog spine shows hours too: time put in before the game was finished or dropped.`] },
+      { code: "3E", short: "Shelf lip", title: "Hours printed on the shelf's edge", idea: `Spines stay untouched; the hours are <b>printed on the shelf's front edge</b> under each spine, like a library label. Each shelf head gets its Playtime as a second numeral, and the banner gets the <b>profile's total Playtime</b> beside the Completed count. Now playing books carry the open Playthrough as a big clock on the art.`,
+        desk: ["Desktop · hours on the lip, totals in the heads and banner", e3desk()], phone: ["Phone", e3phone()],
+        notes: [`The only option with a profile-wide total; it can ride any other option too.`, `Labels line up with spines only while spines stay 52px; on phones they are 44px.`] },
+      { code: "3F", short: "On lift", title: "A tag when a spine lifts", idea: `At rest nothing changes. When a spine <b>lifts</b> (the shipped hover and focus), a <b>paper tag</b> hangs off it: the hours, the title and when. Each shelf head gets a <b>Newest / Most played</b> sort, and Most played tags each spine with its hours instead of the month.`,
+        desk: ["Desktop · Persona 3 Reload lifted", f3desk()], phone: ["Phone · the tag on tap", f3phone()],
+        more: [["Most played first", f3sorted()]],
+        notes: [`Quietest; hours need a hover or the sort, so a phone user sees them only by tapping.`] },
+    ] }],
+});
+</script></body></html>

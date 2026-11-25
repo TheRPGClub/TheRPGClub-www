@@ -306,3 +306,4 @@ svg.lucide{width:18px;height:18px;flex:none;stroke-width:2}
 .big small{font-size:.38em;color:var(--faint);margin-left:4px;letter-spacing:0}
 .overlay{position:relative}
 .pop{position:absolute;z-index:6}
+.pshell .vsw span{font-size:1.45rem}
