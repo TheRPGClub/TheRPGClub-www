@@ -195,7 +195,7 @@ function asStep(result: GameLinkResult): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error ?? "That didn't save. Try again." };
 }
 
-function franchiseStep(result: FranchiseResult): StepResult {
+function franchiseStep(result: FranchiseResult<unknown>): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error };
 }
 

@@ -77,17 +77,25 @@ export function compareGames(a: Pick<FranchiseGame, "release_year" | "title">, b
 
 // A section's entries with the games unlinked while editing put back in
 // their place (greyed, `gone`), so an editor can link them again from where
-// they were. An unlinked game goes back to the section it was in.
+// they were. An unlinked game goes back to the section it was in. The live
+// entries keep their order (a drag in flight); each gone one goes before the
+// first entry released after it.
 export function withGone(
   entries: FranchiseEntry[],
   unlinked: FranchiseGame[],
   mainline: boolean,
 ): (FranchiseEntry & { gone: boolean })[] {
   const here = new Set(entries.map((e) => e.game_id));
+  const out = entries.map((e) => ({ ...e, gone: false }));
   const gone = unlinked
     .filter((g) => g.mainline === mainline && !here.has(g.game_id))
-    .map((g) => ({ ...g, numeral: null, addOns: [], gone: true }));
-  return [...entries.map((e) => ({ ...e, gone: false })), ...gone].sort(compareGames);
+    .map((g) => ({ ...g, numeral: null, addOns: [], gone: true }))
+    .sort(compareGames);
+  for (const g of gone) {
+    const at = out.findIndex((e) => compareGames(e, g) > 0);
+    out.splice(at === -1 ? out.length : at, 0, g);
+  }
+  return out;
 }
 
 // A history row as words: plain text with the names in `strong` parts.
@@ -108,6 +116,12 @@ export function describeChange(change: FranchiseChange): ChangePart[] {
       return [{ text: "marked " }, game, { text: " Mainline" }];
     case "mainline_off":
       return [{ text: "moved " }, game, { text: " to Spin-offs" }];
+    case "parent": {
+      const to = str(change.after?.parent_game_name);
+      return to
+        ? [{ text: "made " }, game, { text: " an Add-on of " }, { text: to, strong: true }]
+        : [{ text: "took " }, game, { text: " out of Add-ons" }];
+    }
     case "create":
       return [{ text: "created this Franchise" }];
     case "rename": {

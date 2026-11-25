@@ -8,9 +8,10 @@ import {
   unlinkFranchiseGameAction,
   type FranchiseResult,
 } from "@/app/actions/franchises";
+import type { FranchiseLinkData } from "@/lib/franchises/board";
 import type { FranchiseGame } from "@/lib/franchises/types";
 
-// The Franchise page's editor (design pick 6B): every press saves at once
+// The Franchise page's editor (design pick 6B): every press and drop saves at once
 // and lands in the history, then the page reads itself again. A game
 // unlinked while editing stays in its place, greyed, with a way to link it
 // back, until editing ends.
@@ -22,8 +23,9 @@ export function useFranchiseEditor(franchiseId: number) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function run(key: string, action: () => Promise<FranchiseResult>, after?: () => void) {
-    if (pending) return;
+  // `done` hears whether it saved (false too when another save is running).
+  function run(key: string, action: () => Promise<FranchiseResult<unknown>>, after?: () => void, done?: (ok: boolean) => void) {
+    if (pending) return done?.(false);
     setBusy(key);
     setError(null);
     startTransition(async () => {
@@ -35,6 +37,7 @@ export function useFranchiseEditor(franchiseId: number) {
         setError(result.error);
       }
       setBusy(null);
+      done?.(result.ok);
     });
   }
 
@@ -51,8 +54,14 @@ export function useFranchiseEditor(franchiseId: number) {
       if (!next) setUnlinked([]);
       setError(null);
     },
-    setMainline: (game: FranchiseGame, mainline: boolean) =>
-      run(`star:${game.game_id}`, () => linkFranchiseGameAction(franchiseId, game.game_id, mainline)),
+    // A drop on the board: Mainline or Spin-off, or whose Add-on it is.
+    place: (gameId: number, data: FranchiseLinkData, done?: (ok: boolean) => void) =>
+      run(
+        `move:${gameId}`,
+        () => linkFranchiseGameAction(franchiseId, gameId, data.mainline, { parent_game_id: data.parent_game_id }),
+        undefined,
+        done,
+      ),
     // An Add-on (`keep` false) just goes; its Undo is in the history.
     unlink: (game: FranchiseGame, keep = true) =>
       run(`x:${game.game_id}`, () => unlinkFranchiseGameAction(franchiseId, game.game_id), () => {

@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { FranchiseColumns } from "@/lib/franchises/types";
+import { franchiseLinkData } from "@/lib/franchises/board";
+import type { FranchiseColumns, FranchiseGameLink } from "@/lib/franchises/types";
 
 // Franchise editing (spec api#442). The API decides who may do what:
 // Regulars and above link, unlink, set Mainline, create and undo; Admins and
@@ -49,17 +50,26 @@ function touched(franchiseId: number, gameId?: number) {
   if (gameId) revalidatePath(`/games/${gameId}`);
 }
 
-// Links `gameId` (as a hand link when it wasn't linked), and sets Mainline
-// when `mainline` is given.
-export async function linkFranchiseGameAction(franchiseId: number, gameId: number, mainline?: boolean): Promise<FranchiseResult> {
+// Links `gameId` (as a hand link when it wasn't linked), sets Mainline when
+// `mainline` is given, and makes it an Add-on of `parent_game_id` (a GameDB
+// game) when that is given, or no one's Add-on when it is null. The API
+// refuses a parent with no IGDB id, nesting, or the game itself with a 422
+// whose message is shown as it is.
+export async function linkFranchiseGameAction(
+  franchiseId: number,
+  gameId: number,
+  mainline?: boolean,
+  options: { parent_game_id?: number | null } = {},
+): Promise<FranchiseResult<FranchiseGameLink>> {
   if (!validId(franchiseId) || !validId(gameId)) return { ok: false, error: "Pick a game to link." };
-  const data = mainline === undefined ? {} : { mainline };
-  const result = await send(`/api/v1/franchises/${franchiseId}/games/${gameId}`, {
+  const body = franchiseLinkData(gameId, mainline, options.parent_game_id);
+  if ("error" in body) return { ok: false, error: body.error };
+  const result = await send<FranchiseGameLink>(`/api/v1/franchises/${franchiseId}/games/${gameId}`, {
     method: "PUT",
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ data: body.data }),
   });
   if (result.ok) touched(franchiseId, gameId);
-  return result.ok ? { ok: true } : result;
+  return result;
 }
 
 export async function unlinkFranchiseGameAction(franchiseId: number, gameId: number): Promise<FranchiseResult> {
@@ -83,7 +93,8 @@ export async function createFranchiseWithGameAction(name: string, gameId: number
   const created = await createFranchiseAction(name);
   if (!created.ok) return created;
   if (!created.data) return { ok: false, error: "The Franchise was made, but its id didn't come back. Refresh to link it." };
-  return linkFranchiseGameAction(created.data.franchise_id, gameId, mainline || undefined);
+  const linked = await linkFranchiseGameAction(created.data.franchise_id, gameId, mainline || undefined);
+  return linked.ok ? { ok: true } : linked;
 }
 
 export async function renameFranchiseAction(franchiseId: number, name: string): Promise<FranchiseResult> {

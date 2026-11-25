@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { FranchiseEntry } from "@/lib/franchises/page";
 import type { FranchiseEditor } from "@/hooks/use-franchise-editor";
+import type { FranchiseItemProps } from "@/hooks/use-franchise-board";
 import { cn } from "@/lib/utils";
 import { FranchiseTile } from "@/components/franchises/franchise-tile";
 import { AddOnDrawer } from "@/components/franchises/add-on-drawer";
@@ -13,17 +14,23 @@ type WallEntry = FranchiseEntry & { gone: boolean };
 // run: big covers, each over its Roman numeral in Anton and its year. "box"
 // is the box set of Other games: smaller covers with their titles. An open
 // Add-on insert slides its drawer in under the row of its parent (the grid
-// packs dense, so the row closes up around it).
+// packs dense, so the row closes up around it). In edit mode every cover and
+// Add-on drags (`item`); the drawer sits beside its parent, not inside it, so
+// grabbing an Add-on lifts that Add-on.
 export function FranchiseWall({
   entries,
   kind,
   editor,
+  item,
+  onReparent,
   label,
   extra,
 }: {
   entries: WallEntry[];
   kind: "run" | "box";
   editor: FranchiseEditor;
+  item?: (id: number) => FranchiseItemProps;
+  onReparent?: (id: number) => void;
   label: string;
   // A last tile (Link a game, in edit mode).
   extra?: React.ReactNode;
@@ -46,6 +53,7 @@ export function FranchiseWall({
             key={e.game_id}
             game={e}
             editor={editor}
+            item={item?.(e.game_id)}
             gone={e.gone}
             addOns={e.addOns.length}
             open={open === e.game_id}
@@ -55,7 +63,10 @@ export function FranchiseWall({
           />
         );
         if (open !== e.game_id || e.addOns.length === 0) return [tile];
-        return [tile, <AddOnDrawer key={`drawer-${e.game_id}`} parent={e.title} games={e.addOns} editor={editor} />];
+        const drawer = (
+          <AddOnDrawer key={`drawer-${e.game_id}`} parent={e.title} games={e.addOns} editor={editor} item={item} onReparent={onReparent} />
+        );
+        return [tile, drawer];
       })}
       {extra && <li className="min-w-0">{extra}</li>}
     </ul>
