@@ -12,10 +12,11 @@ import { FranchiseHistory } from "@/components/franchises/franchise-history";
 import { FranchiseProgressTab } from "@/components/franchises/progress/franchise-progress-tab";
 import { FranchiseSwitch, type FranchiseViewKey } from "@/components/franchises/franchise-switch";
 import { LinkGameDialog } from "@/components/franchises/link-game-dialog";
+import { SeriesLine } from "@/components/franchises/series-line/series-line";
 
 // /franchises/:id (spec api#442, design pick 6: 6B's page with 6C's switch).
-// Games is the numbered Mainline run, Add-ons as inserts and the Other box
-// set; Edit Franchise turns it into the editor, where every press saves at
+// Games is The Series Line (spec api#487); Edit Franchise swaps it for the
+// editor (the numbered run, the box set and the Add-ons drop zone), where every press saves at
 // once. History is the change line with Undo. History is read through the
 // API's Regulars-and-above gate. Progress (pick 1E with 1E1) is the
 // viewer's dials, cover wall and the Members table, for everyone the
@@ -80,6 +81,8 @@ export function FranchiseView({
         <FranchiseHistory changes={history.changes} total={history.total} now={now} editor={editor} />
       ) : shown === "progress" && progress ? (
         <FranchiseProgressTab franchiseId={page.franchise_id} progress={progress} />
+      ) : !editing ? (
+        <SeriesLine layout={layout} />
       ) : (
         <FranchiseGames
           layout={layout}
