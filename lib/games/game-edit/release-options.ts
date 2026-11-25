@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { ApiCollection, Platform, Region } from "@/lib/api/types";
+import { fetchPlatforms } from "@/lib/api/shared";
 
 // The platforms and regions a Manual Release can be for (www#161), by name.
 // Empty lists when they can't be read.
@@ -21,7 +22,7 @@ async function list<T>(path: string): Promise<T[]> {
 
 export async function fetchReleaseOptions(): Promise<ReleaseOptions> {
   const [platforms, regions] = await Promise.all([
-    list<Platform>("/api/v1/platforms?per=500"),
+    fetchPlatforms().then((platforms) => platforms ?? []),
     list<Region>("/api/v1/regions?per=500"),
   ]);
   return {

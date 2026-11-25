@@ -11,10 +11,13 @@ import { ListBoard } from "@/components/game-lists/page/list-board";
 // Its owner (staff, for a club list) may start a Challenge from it, unless
 // it already feeds one: then the page links that Challenge instead.
 export default async function GameListPage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await requireAuth();
-  const features = await requireFeature("game_lists");
   const { id } = await params;
-  const list = await fetchGameList(Number.parseInt(id, 10));
+  // The read doesn't need the session, so it starts alongside the gate.
+  const [session, features, list] = await Promise.all([
+    requireAuth(),
+    requireFeature("game_lists"),
+    fetchGameList(Number.parseInt(id, 10)),
+  ]);
   if (!list) notFound();
   const viewer = { id: session.principal.discord_id, staff: isModeratorOrAbove(session.membership) };
   const challenges = features.canOpen("challenges");

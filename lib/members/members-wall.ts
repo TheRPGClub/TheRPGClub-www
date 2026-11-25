@@ -1,6 +1,6 @@
-import { apiFetch } from "@/lib/api";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
-import type { ApiCollection, User } from "@/lib/api/types";
+import type { User } from "@/lib/api/types";
+import { fetchMembers } from "@/lib/api/shared";
 
 // The club's contributor wall (/members): every current member with a club
 // role, staff first, and the switch that narrows it to staff or regulars.
@@ -47,13 +47,10 @@ export function parseShow(value: string | undefined): Show {
 // The wall's members, or null when the API can't be read.
 export async function fetchWallMembers(): Promise<WallMember[] | null> {
   try {
-    const res = await apiFetch(`/api/v1/users?per=${FETCH_LIMIT}`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    });
-    if (!res.ok) return null;
-    const body: ApiCollection<User> = await res.json();
+    const all = await fetchMembers<User>(`per=${FETCH_LIMIT}`, MEMBERS_REVALIDATE_SECONDS);
+    if (!all) return null;
     const members: WallMember[] = [];
-    for (const user of body.data) {
+    for (const user of all) {
       if (user.is_bot || user.server_left_at) continue;
       const role = highestRole(user);
       if (role) members.push({ user, role });

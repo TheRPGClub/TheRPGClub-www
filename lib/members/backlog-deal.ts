@@ -1,6 +1,5 @@
 import { apiFetch } from "@/lib/api";
 import type {
-  ApiCollection,
   BacklogPick,
   BacklogPickMeta,
   BacklogPickResponse,
@@ -11,6 +10,7 @@ import {
   pickSourceLabel,
   type BacklogPickParams,
 } from "@/lib/api/backlog-pick";
+import { fetchPlatforms } from "@/lib/api/shared";
 
 // The backlog picker deals a hand of three. The API draws one game per call
 // from a seeded shuffle walked by `position`, so the hand is the same seed
@@ -71,14 +71,7 @@ export async function dealHand(userId: string, filters: BacklogPickParams): Prom
 
 // The platform names for picks that carry no platform of their own.
 export async function loadPickPlatforms(): Promise<Platform[]> {
-  try {
-    const res = await apiFetch("/api/v1/platforms?per=100", { cache: "no-store" });
-    if (!res.ok) return [];
-    const body: ApiCollection<Platform> = await res.json();
-    return body.data;
-  } catch {
-    return [];
-  }
+  return (await fetchPlatforms()) ?? [];
 }
 
 // Why an empty hand is empty: the hours limit, the platform, or nothing left.

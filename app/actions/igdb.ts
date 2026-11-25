@@ -4,6 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import type { ApiSingle, Game, ReleaseRefreshMeta } from "@/lib/api/types";
 import { igdbErrorMessage, type IgdbAction } from "@/lib/igdb";
+import { PLATFORMS_TAG } from "@/lib/api/shared";
 
 export interface IgdbActionResult<T> {
   ok: boolean;
@@ -46,6 +47,10 @@ export async function addGameFromIgdbAction(
   if (res.status === 201) {
     // A new game: the index, its count and the newest shelf all change.
     updateTag("games");
+    // An import can add a platform (lib/api/shared.ts).
+    updateTag(PLATFORMS_TAG);
+  // An import can add a platform (lib/api/shared.ts).
+  updateTag(PLATFORMS_TAG);
     revalidatePath("/games");
   }
   return { ok: true, data: body.data };
@@ -70,6 +75,8 @@ export async function refreshReleasesAction(
 
   const body = (await res.json()) as { meta: ReleaseRefreshMeta };
   updateTag("games");
+  // An import can add a platform (lib/api/shared.ts).
+  updateTag(PLATFORMS_TAG);
   revalidatePath(`/games/${gameId}`);
   return { ok: true, data: body.meta };
 }

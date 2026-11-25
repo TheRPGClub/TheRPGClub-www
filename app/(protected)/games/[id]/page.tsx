@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { firstParam, gamePageGates, loadGamePage } from "@/lib/games/game-page";
 import { viewerOnGame } from "@/lib/games/viewer";
-import { accentForGame } from "@/lib/reviews/accent";
 import { GameJournalSection } from "@/components/journal/game-journal-section";
 import { FeaturedVideo } from "@/components/games/game-page/featured-video";
 import { GameAchievements } from "@/components/games/game-page/game-achievements";
@@ -10,8 +9,7 @@ import { GameBallotSection } from "@/components/games/game-page/game-ballot-sect
 import { GameFactsRow } from "@/components/games/game-page/game-facts-row";
 import { GamePageHero } from "@/components/games/game-page/game-page-hero";
 import { FactsRowSkeleton, GamePageSkeleton } from "@/components/games/game-page/game-page-skeleton";
-import { GameReviewsSection } from "@/components/games/game-page/game-reviews-section";
-import { DraftSlot } from "@/components/reviews/drafts/draft-slot";
+import { GameReviewsBlock } from "@/components/games/game-page/game-reviews-block";
 import { DetailTemplate } from "@/components/templates/detail-template";
 import { GameListsSection } from "@/components/game-lists/game/game-lists-section";
 
@@ -58,7 +56,7 @@ async function GameContent({
 }) {
   const page = await loadGamePage(gameId);
   if (!page) notFound();
-  const { game, session, features, show, reviews, reviewTotal, ownDraft } = page;
+  const { game, session, features, show } = page;
   const viewer = viewerOnGame(game, session?.principal.discord_id ?? null);
   const gates = gamePageGates(session?.membership);
 
@@ -77,24 +75,11 @@ async function GameContent({
         </Suspense>
       )}
       <FeaturedVideo game={game} />
+      {/* Its own reads (reviews, the viewer's Draft): streamed. */}
       {show.reviews && (
-        <GameReviewsSection
-          gameId={gameId}
-          reviews={reviews}
-          reviewTotal={reviewTotal}
-          viewer={viewer}
-          accent={accentForGame(game)}
-          draftSlot={
-            ownDraft && (
-              <DraftSlot
-                draft={ownDraft.draft}
-                now={ownDraft.now}
-                gameTitle={game.title}
-                coverUrl={game.cover_url}
-              />
-            )
-          }
-        />
+        <Suspense fallback={null}>
+          <GameReviewsBlock game={game} viewer={viewer} viewerId={session?.principal.discord_id ?? null} />
+        </Suspense>
       )}
       {/* In Game Lists, below Reviews (pick 5C): its own read, streamed. */}
       {show.gameLists && (

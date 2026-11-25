@@ -28,9 +28,12 @@ export default async function AchievementsHubPage({
 
 async function AchievementsHub({ filters }: { filters: Filters }) {
   // The feed needs auth; confirm a session before a fetch that can only 401.
-  const session = await requireAuth();
-  const features = await requireFeature("achievement_hub");
-  const feed = await fetchHubFeed(filters);
+  // The read doesn't need the session, so it starts alongside the gate.
+  const [session, features, feed] = await Promise.all([
+    requireAuth(),
+    requireFeature("achievement_hub"),
+    fetchHubFeed(filters),
+  ]);
 
   return (
     <HubPage

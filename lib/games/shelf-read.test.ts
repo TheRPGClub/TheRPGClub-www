@@ -16,6 +16,9 @@ vi.mock("@/lib/api", () => ({
   },
 }));
 
+// Platforms come through the shared (club-wide) cache.
+vi.mock("@/lib/api/shared", () => ({ fetchPlatforms: async () => [] }));
+
 const { fetchGameShelf } = await import("./shelf-read");
 
 const ALL: ShelfShown = { now_playing: true, completed: true, backlog: true, favorite: true, collection: true };
@@ -62,6 +65,7 @@ describe("fetchGameShelf", () => {
   it("reads nothing for a list the viewer isn't shown", async () => {
     await fetchGameShelf(game, "u", { ...ALL, backlog: false, favorite: false, collection: false });
 
-    expect(calls).toEqual(["/api/v1/platforms?per=100"]);
+    // Platforms come from the shared cache (mocked above), not a member read.
+    expect(calls).toEqual([]);
   });
 });

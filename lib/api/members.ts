@@ -1,6 +1,5 @@
-import { apiFetch } from "@/lib/api";
 import { memberName } from "@/lib/achievements";
-import type { ApiCollection, UserSummary } from "@/lib/api/types";
+import { fetchMembers } from "@/lib/api/shared";
 
 // How long the member directory (`/users`) is cached. Pages that list members
 // share it, and the "members" tag lets an update refresh them together.
@@ -23,14 +22,6 @@ export async function fetchMemberNames(
     if (unique.length === 0) return new Map();
     qs.set("discord_id", unique.join(","));
   }
-  try {
-    const res = await apiFetch(`/api/v1/users?${qs}`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    });
-    if (!res.ok) return new Map();
-    const { data }: ApiCollection<UserSummary> = await res.json();
-    return new Map(data.map((user) => [user.user_id, memberName(user)]));
-  } catch {
-    return new Map();
-  }
+  const data = await fetchMembers(qs.toString(), MEMBERS_REVALIDATE_SECONDS);
+  return new Map((data ?? []).map((user) => [user.user_id, memberName(user)]));
 }

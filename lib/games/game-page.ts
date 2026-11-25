@@ -9,7 +9,6 @@ import type {
   Release,
   Review,
   Thread,
-  UserSummary,
 } from "@/lib/api/types";
 import { paginationOf } from "@/lib/api/pagination";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
@@ -18,6 +17,7 @@ import { draftOfGame } from "@/lib/reviews/drafts";
 import { fetchOwnDrafts } from "@/lib/reviews/drafts-read";
 import { getSession, requireFeature } from "@/lib/session";
 import { gameEditViewer } from "@/lib/games/game-edit/tabs";
+import { fetchMemberDirectory } from "@/lib/api/shared";
 
 // The game page's reads. The page itself only gates and fills the detail
 // template; its sections stream their own reads from here.
@@ -31,39 +31,19 @@ export function firstParam(value: string | string[] | undefined): string | undef
   return Array.isArray(value) ? value[0] : value;
 }
 
-// The game, the session, the viewer's Features and the first reviews. Null
-// when the game can't be read (the page is then a 404). The game and the
-// session don't wait on the viewer's Features; only the Reviews read does.
+// The game, the session and the viewer's Features, read side by side. Null
+// when the game can't be read (the page is then a 404). The Reviews section
+// reads its own (loadGameReviews) and streams in, so it never holds up the
+// rest of the page.
 export async function loadGamePage(gameId: number) {
-  const featuresRead = requireFeature("game_index");
-  const sessionRead = getSession();
-  const [gameRes, session, features, reviewsRes, drafts] = await Promise.all([
+  const [gameRes, session, features] = await Promise.all([
     apiFetch(`/api/v1/games/${gameId}`),
-    sessionRead,
-    featuresRead,
-    featuresRead.then((f) =>
-      f.shown("reviews")
-        ? apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, {
-            cache: "no-store",
-          })
-        : null,
-    ),
-    // The viewer's own Draft of this game takes the compose prompt's place.
-    // The listing has no game filter, so the page looks through the newest.
-    Promise.all([featuresRead, sessionRead]).then(([f, s]) =>
-      f.shown("reviews") && s ? fetchOwnDrafts(s.principal.discord_id, { gameId, per: 5 }) : null,
-    ),
+    getSession(),
+    requireFeature("game_index"),
   ]);
   if (!gameRes.ok) return null;
   const { data: game }: ApiSingle<Game> = await gameRes.json();
 
-  let reviews: Review[] = [];
-  let reviewTotal: number | null = null;
-  if (reviewsRes?.ok) {
-    const body: ApiCollection<Review> = await reviewsRes.json();
-    reviews = body.data;
-    reviewTotal = paginationOf(body.meta, reviews.length).total;
-  }
   // The page's sections from other Features, each left out when this viewer
   // isn't shown it (flag or preference).
   const show = {
@@ -81,16 +61,26 @@ export async function loadGamePage(gameId: number) {
     // link to the Release Calendar follows that Feature.
     releaseCalendar: features.shown("release_calendar"),
   };
+  return { game, session, features, show };
+}
+
+// The first reviews of the game, and the viewer's own Draft of it (which
+// takes the compose prompt's place). The Drafts listing has no game filter,
+// so the page looks through the newest.
+export async function loadGameReviews(gameId: number, viewerId: string | null) {
+  const [reviewsRes, drafts] = await Promise.all([
+    apiFetch(`/api/v1/games/${gameId}/reviews?per=${REVIEWS_READ}`, { cache: "no-store" }),
+    viewerId ? fetchOwnDrafts(viewerId, { gameId, per: 5 }) : null,
+  ]);
+  let reviews: Review[] = [];
+  let reviewTotal: number | null = null;
+  if (reviewsRes.ok) {
+    const body: ApiCollection<Review> = await reviewsRes.json();
+    reviews = body.data;
+    reviewTotal = paginationOf(body.meta, reviews.length).total;
+  }
   const ownDraft = drafts ? draftOfGame(drafts.drafts, gameId) : null;
-  return {
-    game,
-    session,
-    features,
-    show,
-    reviews,
-    reviewTotal,
-    ownDraft: ownDraft && drafts ? { draft: ownDraft, now: drafts.now } : null,
-  };
+  return { reviews, reviewTotal, ownDraft: ownDraft && drafts ? { draft: ownDraft, now: drafts.now } : null };
 }
 
 export type GamePageShow = NonNullable<Awaited<ReturnType<typeof loadGamePage>>>["show"];
@@ -156,16 +146,8 @@ export async function fetchGameAchievementSets(
 // directory. Empty when it can't be read: names then fall back to the
 // Completions' users.
 export async function fetchRingMemberNames(): Promise<Map<string, string>> {
-  try {
-    const res = await apiFetch(`/api/v1/users?per=500`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    });
-    if (!res.ok) return new Map();
-    const { data }: ApiCollection<UserSummary> = await res.json();
-    return new Map(data.map((user) => [user.user_id, memberName(user)]));
-  } catch {
-    return new Map();
-  }
+  const data = await fetchMemberDirectory(MEMBERS_REVALIDATE_SECONDS);
+  return new Map((data ?? []).map((user) => [user.user_id, memberName(user)]));
 }
 
 // The game's linked Discord threads for the hero panel, or null when the read

@@ -369,6 +369,9 @@ export interface CommonCompletion {
 export interface CommonCompletionMeta extends CollectionMeta {
   left_user_id: string;
   right_user_id: string;
+  // Distinct games across both whole histories (filters don't apply); absent
+  // from an API older than TheRPGClub-api#467.
+  overlap?: { only_left: number; both: number; only_right: number };
 }
 
 export interface UserFavorite {

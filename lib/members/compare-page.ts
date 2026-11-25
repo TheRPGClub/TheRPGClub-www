@@ -3,25 +3,22 @@ import type {
   ApiCollection,
   CommonCompletion,
   CommonCompletionMeta,
-  GameCompletion,
-  Platform,
   User,
 } from "@/lib/api/types";
 import { MEMBERS_REVALIDATE_SECONDS } from "@/lib/api/members";
 import { paginationOf } from "@/lib/api/pagination";
 import { commonCompletionsQuery, type CompareFilters } from "@/lib/completions-compare";
-import { fetchAllCompletions } from "@/lib/members/completions";
 import { fetchMember } from "@/lib/members/member-page";
+import { fetchMemberDirectory, fetchPlatforms } from "@/lib/api/shared";
 
 // Compare completions: the overlap diagram ("only A / both / only B") over a
 // contact sheet of the shared games.
 //
 // The API's `completions/common` gives the shared games (filtered, paged)
-// but nothing about the games only one member finished. Those counts are
-// worked out here, exactly, from both members' full completion lists as
-// distinct games, and the diagram always covers both whole histories; the
-// filters narrow only the sheet below it. If either history can't be read in
-// full the diagram is left out rather than shown with a guess.
+// and, in its meta, the overlap counts over both members' whole histories as
+// distinct games: the diagram always covers both whole histories; the
+// filters narrow only the sheet below it. Without those counts (an older
+// API, or a failed read) the diagram is left out rather than guessed.
 
 // The bot pages shared completions 20 at a time; the sheet runs 24 so its
 // rows of six (four, two) come out even.
@@ -40,20 +37,15 @@ export type CompareResult =
 
 export type CompletionOverlap = { onlyLeft: number; both: number; onlyRight: number };
 
-type History = { entries: GameCompletion[]; capped: boolean } | null;
-
 export function compareNameOf(user: User): string {
   return user.global_name ?? user.username ?? user.user_id;
 }
 
-// Distinct games per member, then the overlap, from complete histories only.
-export function completionOverlap(left: History, right: History): CompletionOverlap | null {
-  if (!left || !right || left.capped || right.capped) return null;
-  const leftGames = new Set(left.entries.map((e) => e.gamedb_game_id));
-  const rightGames = new Set(right.entries.map((e) => e.gamedb_game_id));
-  let both = 0;
-  for (const game of leftGames) if (rightGames.has(game)) both += 1;
-  return { onlyLeft: leftGames.size - both, both, onlyRight: rightGames.size - both };
+// The diagram's counts from `completions/common`'s meta, or null without them.
+export function completionOverlap(meta: CommonCompletionMeta | null): CompletionOverlap | null {
+  const overlap = meta?.overlap;
+  if (!overlap) return null;
+  return { onlyLeft: overlap.only_left, both: overlap.both, onlyRight: overlap.only_right };
 }
 
 // The picker's members (active, not bots, not the page's own member) by
@@ -73,20 +65,17 @@ export function compareMembers(allUsers: User[], ownerId: string, withId: string
   return { members, rightName };
 }
 
-async function readAll<T>(res: Response): Promise<T[]> {
-  return res.ok ? ((await res.json()) as ApiCollection<T>).data : [];
-}
+type CommonBody = ApiCollection<CommonCompletion> & { meta: CommonCompletionMeta };
 
 async function compareResult(
   filters: CompareFilters,
   comparable: boolean,
   commonRes: Response | null,
+  body: CommonBody | null,
 ): Promise<CompareResult> {
   if (filters.with === null) return { kind: "none" };
   if (!comparable) return { kind: "self" };
-  if (commonRes?.ok) {
-    const body: ApiCollection<CommonCompletion> & { meta: CommonCompletionMeta } =
-      await commonRes.json();
+  if (body) {
     const { total, totalPages } = paginationOf(body.meta, body.data.length);
     return { kind: "ok", rows: body.data, total, totalPages };
   }
@@ -103,29 +92,26 @@ async function compareResult(
 // read (a 404).
 export async function loadComparePage(id: string, filters: CompareFilters) {
   const comparable = filters.with !== null && filters.with !== id;
-  const [user, membersRes, platformsRes, commonRes, leftAll, rightAll] = await Promise.all([
+  const [user, allMembers, platforms, commonRes] = await Promise.all([
     fetchMember(id),
-    apiFetch(`/api/v1/users?per=500`, {
-      next: { revalidate: MEMBERS_REVALIDATE_SECONDS, tags: ["members"] },
-    }),
-    apiFetch(`/api/v1/platforms?per=100`, { next: { revalidate: 3600 } }),
+    fetchMemberDirectory<User>(MEMBERS_REVALIDATE_SECONDS),
+    fetchPlatforms(),
     comparable
       ? apiFetch(
           `/api/v1/users/${id}/completions/common?${commonCompletionsQuery(filters, COMPARE_PAGE_SIZE)}`,
           { cache: "no-store" },
         )
       : null,
-    comparable ? fetchAllCompletions(id) : null,
-    comparable ? fetchAllCompletions(filters.with!) : null,
   ]);
   if (!user) return null;
-  const { members, rightName } = compareMembers(await readAll<User>(membersRes), id, filters.with);
+  const body: CommonBody | null = commonRes?.ok ? await commonRes.json() : null;
+  const { members, rightName } = compareMembers(allMembers ?? [], id, filters.with);
   return {
     user,
     members,
-    platforms: await readAll<Platform>(platformsRes),
-    result: await compareResult(filters, comparable, commonRes),
-    overlap: completionOverlap(leftAll, rightAll),
+    platforms: platforms ?? [],
+    result: await compareResult(filters, comparable, commonRes, body),
+    overlap: completionOverlap(body?.meta ?? null),
     left: { id, name: compareNameOf(user) },
     right: { id: filters.with ?? "", name: rightName },
   };

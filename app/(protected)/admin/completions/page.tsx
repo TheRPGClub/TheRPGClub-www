@@ -1,25 +1,18 @@
-import { apiFetch } from "@/lib/api";
-import type { ApiCollection, Platform } from "@/lib/api/types";
+import type { Platform } from "@/lib/api/types";
 import { igdbAddBlockedReason } from "@/lib/igdb";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, STAFF_DESK_BACK, staffSection } from "@/lib/staff";
 import { DeskHeader } from "@/components/templates/desk-header";
 import { CompletionForMemberForm } from "@/components/admin/completions/completion-for-member-form";
 import { StaffOnly } from "@/components/staff-only";
+import { fetchPlatforms } from "@/lib/api/shared";
 
 const SECTION = staffSection("completions");
 
 // Every GameDB platform, by name, for the platform select. Empty when the
 // list can't be read (the platform is optional).
-async function fetchPlatforms(): Promise<Platform[]> {
-  try {
-    const res = await apiFetch("/api/v1/platforms?per=500", { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const body = (await res.json()) as ApiCollection<Platform>;
-    return [...body.data].sort((a, b) => a.platform_name.localeCompare(b.platform_name));
-  } catch {
-    return [];
-  }
+async function platformsByName(): Promise<Platform[]> {
+  return [...((await fetchPlatforms()) ?? [])].sort((a, b) => a.platform_name.localeCompare(b.platform_name));
 }
 
 // /admin/completions: a Superadmin logs a Game Completion for another member,
@@ -30,7 +23,7 @@ export default async function CompletionForMemberPage() {
     return <StaffOnly title={SECTION.label} tier={SECTION.tier} />;
   }
 
-  const platforms = await fetchPlatforms();
+  const platforms = await platformsByName();
   const actorName = session.principal.global_name ?? session.principal.username;
 
   return (

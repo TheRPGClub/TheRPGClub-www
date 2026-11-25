@@ -1,10 +1,13 @@
 import "server-only";
+import { cache } from "react";
 import { apiFetch } from "@/lib/api";
 import type { Hltb } from "@/lib/hltb";
 
 // The game's saved HowLongToBeat times (the profile's `hltb` slice, no
-// scrape): null when there are none, undefined when the read failed.
-export async function fetchSavedHltb(gameId: number): Promise<Hltb | null | undefined> {
+// scrape): null when there are none, undefined when the read failed. Read
+// once per request, so the game page's hero panel can start it early and
+// GameHltb picks up the same read.
+export const fetchSavedHltb = cache(async (gameId: number): Promise<Hltb | null | undefined> => {
   try {
     const res = await apiFetch(`/api/v1/games/${gameId}/profile`, { cache: "no-store" });
     if (!res.ok) return undefined;
@@ -13,4 +16,4 @@ export async function fetchSavedHltb(gameId: number): Promise<Hltb | null | unde
   } catch {
     return undefined;
   }
-}
+});
