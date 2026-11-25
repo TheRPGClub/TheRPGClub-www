@@ -11,14 +11,18 @@ import {
   type FranchiseRole,
 } from "@/lib/games/game-edit/franchises";
 import { EditSection } from "@/components/games/edit/edit-section";
+import type { CardGame } from "@/lib/games/game-edit/franchise-card";
+import { useFranchiseRuns } from "@/hooks/use-franchise-runs";
 import { FranchiseRoleLane } from "@/components/games/edit/franchise-lanes/franchise-role-lane";
 
 // The Franchises tab (design pick edit-lanes, www#207): the game's Series
 // read only, then three role lanes, Mainline in, Spin-off of and Add-on of,
-// each listing its Franchises with its own + Add slot. Changes stage with
-// Edited, Added and Removing marks, each with an Undo, until Save all.
+// each listing its Franchises as context cards (www#208) with its own
+// + Add slot. Changes stage with Edited, Added and Removing marks, each
+// with an Undo, until Save all.
 export function FranchisesTab({
   gameId,
+  game,
   loaded,
   staged,
   error,
@@ -26,6 +30,7 @@ export function FranchisesTab({
   onStage,
 }: {
   gameId: number;
+  game: CardGame;
   loaded: GameFranchises;
   staged: FranchisesStage | undefined;
   error?: string;
@@ -39,6 +44,9 @@ export function FranchisesTab({
   const lanes = franchiseLanes(loaded, staged);
   const count = staged ? franchisesSection.changes(loaded, staged) : 0;
   const isAddOn = !!effectiveParent(loaded, staged);
+  // Each card's run, read again after a save changes the record.
+  const ids = [...lanes.mainline, ...lanes.spinoff, ...lanes.addon].flatMap((r) => (r.franchise_id && r.franchise_id > 0 ? [r.franchise_id] : []));
+  const runOf = useFranchiseRuns(ids, JSON.stringify(loaded));
 
   return (
     <EditSection
@@ -58,6 +66,8 @@ export function FranchisesTab({
           key={role}
           role={role}
           gameId={gameId}
+          game={game}
+          runOf={runOf}
           loaded={loaded}
           staged={staged}
           lanes={lanes}

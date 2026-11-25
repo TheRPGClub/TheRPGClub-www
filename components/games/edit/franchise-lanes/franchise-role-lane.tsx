@@ -2,6 +2,7 @@
 
 import type { FranchisesStage, GameFranchises } from "@/lib/games/game-edit";
 import {
+  effectiveParent,
   franchisePicked,
   franchiseStagedForCreate,
   moveFranchise,
@@ -14,6 +15,8 @@ import {
   type FranchiseRole,
 } from "@/lib/games/game-edit/franchises";
 import { LANE_COPY } from "@/lib/games/game-edit/franchise-lanes-copy";
+import type { CardGame } from "@/lib/games/game-edit/franchise-card";
+import type { FranchiseRunRead } from "@/hooks/use-franchise-runs";
 import { FranchiseLane } from "@/components/games/edit/franchise-lanes/franchise-lane";
 import { LaneFranchise } from "@/components/games/edit/franchise-lanes/lane-franchise";
 import { LaneAddSlot, SlotPanel } from "@/components/games/edit/franchise-lanes/lane-add-slot";
@@ -36,9 +39,14 @@ export function FranchiseRoleLane({
   onClose,
   onAsk,
   onStage,
+  game,
+  runOf,
 }: {
   role: FranchiseRole;
   gameId: number;
+  // The game as a tile on the cards' runs, and each Franchise's read.
+  game: CardGame;
+  runOf: (franchiseId: number) => FranchiseRunRead;
   loaded: GameFranchises;
   staged: FranchisesStage | undefined;
   lanes: FranchiseLanes;
@@ -106,6 +114,9 @@ export function FranchiseRoleLane({
         <LaneFranchise
           key={row.key}
           row={row}
+          read={row.franchise_id ? runOf(row.franchise_id) : null}
+          game={game}
+          parent={effectiveParent(loaded, staged)}
           onMove={(to) => (to === "addon" && !isAddOn ? onAsk(row.key) : onStage(moveFranchise(loaded, staged, row.key, to)))}
           onUnlink={() => row.franchise_id && onStage(stageFranchiseUnlink(loaded, staged, row.franchise_id))}
           onUndo={() => onStage(unstageFranchise(staged, row.key))}
