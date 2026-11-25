@@ -1,19 +1,21 @@
 import type { CSSProperties } from "react";
 import { Trophy } from "lucide-react";
 import type { GotyAward, GotyVote } from "@/lib/goty/types";
-import { AWARD_INK, decidedLine, resultRows } from "@/lib/goty/awards";
+import { AWARD_INK, decidedLine, resultRows, wonInFor } from "@/lib/goty/awards";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { GameHeadline } from "@/components/issue/game-cover";
 import { AWARD_TONE } from "./ballot-card";
 import { StoryTally } from "./story-tally";
+import { WonInNote } from "./won-in-note";
 
 // A headline's second line in its Award's accent, as the Cover Story sets
 // a GOTM winner's in yellow and an NR-GOTM winner's in soft violet.
 const ACCENT = { gotm: "text-highlight", nr_gotm: "text-nr-soft", game_of_the_year: "text-foreground" } as const;
 
 // A decided Award's cover story: the winner's art under the ink scrim, the
-// "<Award> <year>" chip, the two-line headline and how it won, with the
+// "<Award> <year>" chip, the two-line headline, how it won and the round it
+// won the month in (GOTM / NR-GOTM of the Year), with the
 // Award's tally beside it and a 4px foot in its ink. `compact` is the
 // smaller one shown under its envelope during another Award's runoff.
 export function AwardStory({ vote, award, compact = false }: { vote: GotyVote; award: GotyAward; compact?: boolean }) {
@@ -50,6 +52,7 @@ export function AwardStory({ vote, award, compact = false }: { vote: GotyVote; a
           className={cn("max-w-[11ch] text-5xl leading-[0.9]", compact ? "md:text-[3.2rem]" : "md:text-[5rem]")}
         />
         <DecidedLine line={decidedLine(award)} />
+        <WonInNote label={wonInFor(award, game.game_id)} className="-mt-1.5" />
       </div>
       <StoryTally award={award} rows={rows} compact={compact} />
     </article>

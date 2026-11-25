@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import type { NominatedGame } from "@/lib/goty/awards";
-import { gameTitle, nominatedBy, votesFor } from "@/lib/goty/awards";
+import { gameTitle, nominatedBy, votesFor, wonInLabel } from "@/lib/goty/awards";
 import type { GotyAward, GotyVote } from "@/lib/goty/types";
 import { useGotyVotes, useReportVotes } from "@/hooks/use-goty-votes";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,7 @@ export function AwardBallot({
             key={game.game_id}
             award={award.award}
             game={game}
-            note={goty ? nominatedBy(nominations.get(game.game_id), viewerId) : ""}
+            note={goty ? nominatedBy(nominations.get(game.game_id), viewerId) : wonInLabel(game.won_in)}
             count={hidden ? null : (votesFor(award, game.game_id) ?? 0)}
             voted={votes.votes.includes(game.game_id)}
             canVote={open}

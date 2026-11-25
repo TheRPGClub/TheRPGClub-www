@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decidedLine, envelope, nominatedBy, nominatedGames, nominationGame, ownVoteCount, resultRows } from "./awards";
+import { decidedLine, envelope, wonInLabel, wonInFor, nominatedBy, nominatedGames, nominationGame, ownVoteCount, resultRows } from "./awards";
 import { castLocally, syncFromServer } from "./cast";
 import { eligibilityNote, gotyError } from "./copy";
 import { award, gotyVote, nomination } from "./test-fixtures";
@@ -124,5 +124,44 @@ describe("copy", () => {
     expect(gotyError({ error: "nomination_cap_reached" }, 422)).toMatch(/three nominations/);
     expect(gotyError({ error: "not_released_in_year" }, 422, 2026)).toBe("Only games first released in 2026 can be nominated.");
     expect(gotyError({ error: "other", message: "Server said no" }, 422)).toBe("Server said no");
+  });
+});
+
+describe("wonInLabel", () => {
+  it("names one win by its round and full month", () => {
+    expect(wonInLabel([{ round_number: 50, month_year: "January 2026" }])).toBe("Round 50 · January");
+  });
+
+  it("joins two wins with short months", () => {
+    expect(
+      wonInLabel([
+        { round_number: 51, month_year: "February 2026" },
+        { round_number: 59, month_year: "October 2026" },
+      ]),
+    ).toBe("Rounds 51 + 59 · Feb, Oct");
+  });
+
+  it("reads legacy month labels", () => {
+    expect(wonInLabel([{ round_number: 7, month_year: "Jan 2026" }])).toBe("Round 7 · January");
+    expect(wonInLabel([{ round_number: 8, month_year: "2026-03" }])).toBe("Round 8 · March");
+    expect(wonInLabel([{ round_number: 9, month_year: "sept 2026" }])).toBe("Round 9 · September");
+  });
+
+  it("keeps an unreadable month as it is, and drops a blank one", () => {
+    expect(wonInLabel([{ round_number: 9, month_year: "Summer special" }])).toBe("Round 9 · Summer special");
+    expect(wonInLabel([{ round_number: 9, month_year: "" }])).toBe("Round 9");
+  });
+
+  it("says nothing with no wins or no key", () => {
+    expect(wonInLabel([])).toBe("");
+    expect(wonInLabel(undefined)).toBe("");
+  });
+});
+
+describe("wonInFor", () => {
+  it("joins a game to its ballot entry by id", () => {
+    const a = award("gotm", { ballot: [{ game_id: 4, title: "Game 4", won_in: [{ round_number: 53, month_year: "April 2026" }] }] });
+    expect(wonInFor(a, 4)).toBe("Round 53 · April");
+    expect(wonInFor(a, 5)).toBe("");
   });
 });

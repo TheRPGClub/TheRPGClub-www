@@ -71,11 +71,25 @@ export interface GotyAwardTally {
   games?: { gamedb_game_id: number; votes: number; runoff_votes: number }[];
 }
 
+// Where a GOTM / NR-GOTM of the Year candidate won: one per round, in round
+// order. `month_year` is the round's raw label ("January 2026", or a legacy
+// "Jan 2026" / "2026-01"), so the site formats it (api#479).
+export interface GotyWonIn {
+  round_number: number;
+  month_year: string;
+}
+
+// A ballot game. GOTM / NR-GOTM of the Year candidates carry `won_in`; Game
+// of the Year candidates have no such key.
+export interface GotyBallotGame extends GameSummary {
+  won_in?: GotyWonIn[];
+}
+
 export interface GotyAward {
   award: GotyAwardKey;
   name: string;
   // The candidates once voting opened, else the live ballot.
-  ballot: GameSummary[];
+  ballot: GotyBallotGame[];
   cap: number;
   runoff_ballot: number[];
   // Tied games still awaiting the runoff or an admin.
