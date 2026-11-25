@@ -1,12 +1,12 @@
 "use server";
 
 import { apiFetch } from "@/lib/api";
-import type { ApiCollection, ApiSingle, GameRelations, Thread } from "@/lib/api/types";
+import type { ApiCollection, ApiSingle, Game, GameRelations, Thread } from "@/lib/api/types";
 import {
   alternateVersion,
   gameFranchiseRefs,
   type AlternateVersion,
-  type GameFranchiseRef,
+  type GameFranchises,
   type GameThreadRef,
 } from "@/lib/games/game-edit";
 
@@ -39,8 +39,14 @@ export async function loadVersionsAction(gameId: number): Promise<AlternateVersi
   return body ? (body.data.alternates ?? []).map(alternateVersion) : null;
 }
 
-export async function loadGameFranchisesAction(gameId: number): Promise<GameFranchiseRef[] | null> {
+// The game's Franchises (its relations) and its Add-on parent (the game).
+export async function loadGameFranchisesAction(gameId: number): Promise<GameFranchises | null> {
   if (!validId(gameId)) return null;
-  const body = await read<ApiSingle<GameRelations>>(`/api/v1/games/${gameId}/relations`);
-  return body ? gameFranchiseRefs(body.data.franchises ?? []) : null;
+  const [body, game] = await Promise.all([
+    read<ApiSingle<GameRelations>>(`/api/v1/games/${gameId}/relations`),
+    read<ApiSingle<Game>>(`/api/v1/games/${gameId}`),
+  ]);
+  if (!body || !game) return null;
+  const { parent_igdb_id, parent_game_name } = game.data;
+  return gameFranchiseRefs(body.data.franchises ?? [], parent_igdb_id ? (parent_game_name ?? "A game not in GameDB") : null);
 }

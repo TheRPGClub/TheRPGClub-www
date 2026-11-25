@@ -36,7 +36,7 @@ describe("sidebarGroups", () => {
   it("groups every page for a member who is shown everything", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "goty", "challenges"],
-      games: ["games", "lists", "reviews", "releases", "achievements", "journals"],
+      games: ["games", "franchises", "lists", "reviews", "releases", "achievements", "journals"],
       club: ["members", "news", "codex", "giveaways", "suggestions"],
     });
   });
@@ -44,7 +44,7 @@ describe("sidebarGroups", () => {
   it("leaves out pages for Features the viewer isn't shown, and empty groups", () => {
     const features = [feature("voting_gotm", false), feature("game_index"), feature("news_hub")];
     expect(keys(sidebarGroups(features, flags()))).toEqual({
-      games: ["games"],
+      games: ["games", "franchises"],
       club: ["members", "news"],
     });
   });
@@ -72,6 +72,11 @@ describe("pinnedPages", () => {
     const groups = sidebarGroups([feature("game_index"), feature("news_hub", false)], flags());
     expect(pinnedPages(groups, ["voting", "games", "members", "news"]).map((p) => p.key)).toEqual(["games", "members"]);
   });
+
+  it("pins Franchises like any other page", () => {
+    const groups = sidebarGroups(undefined, flags());
+    expect(pinnedPages(groups, ["franchises", "games"]).map((p) => p.key)).toEqual(["franchises", "games"]);
+  });
 });
 
 describe("currentPage", () => {
@@ -86,8 +91,9 @@ describe("currentPage", () => {
     expect(at("/reviews/42")).toBe("reviews");
   });
 
-  it("keeps Games lit on a Franchise page", () => {
-    expect(at("/franchises/7")).toBe("games");
+  it("lights Franchises on the index and on a Franchise page", () => {
+    expect(at("/franchises")).toBe("franchises");
+    expect(at("/franchises/7")).toBe("franchises");
   });
 
   it("matches the staff desk only on its own path", () => {

@@ -18,6 +18,7 @@ export type PinnedPageKey =
   | "goty"
   | "challenges"
   | "games"
+  | "franchises"
   | "lists"
   | "reviews"
   | "releases"
@@ -35,9 +36,12 @@ export type PinnedPageKey =
   | "public_reminders"
   | "suggestion_review";
 
+// Every page the sidebar lists: each is a Pinned Page.
+export type SidebarPageKey = PinnedPageKey;
+
 export interface SidebarPage {
   // The Pinned Page key the API knows it by.
-  key: PinnedPageKey;
+  key: SidebarPageKey;
   href: string;
   label: string;
   note: string;
@@ -68,6 +72,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "goty", href: "/goty", label: "GOTY Vote", note: "The year's three Awards", group: "play", feature: "goty_vote" },
   { key: "challenges", href: "/challenges", label: "Challenges", note: "Years Alive, Seasonal, Secret Santa", group: "play", feature: "challenges" },
   { key: "games", href: "/games", label: "Games", note: "The club's GameDB catalogue", group: "games", feature: "game_index" },
+  { key: "franchises", href: "/franchises", label: "Franchises", note: "Every series as a box set", group: "games" },
   { key: "lists", href: "/lists", label: "Lists", note: "Members' and the club's Game Lists", group: "games", feature: "game_lists" },
   { key: "reviews", href: "/reviews", label: "Reviews", note: "Every member's reviews, newest first", group: "games", feature: "reviews" },
   { key: "releases", href: RELEASES_PATH, label: "Releases", note: "What's coming out, by region", group: "games", feature: "release_calendar" },
@@ -112,7 +117,9 @@ export function sidebarGroups(
 // The Pinned Pages the viewer can see, in the member's order; keys for pages
 // they can't see are skipped, not lost.
 export function pinnedPages(groups: readonly SidebarGroup[], keys: readonly string[]): SidebarPage[] {
-  const byKey = new Map<string, SidebarPage>(groups.flatMap((g) => g.pages).map((p) => [p.key, p]));
+  const byKey = new Map<string, SidebarPage>(
+    groups.flatMap((g) => g.pages).map((p) => [p.key, p] as const),
+  );
   return keys.flatMap((k) => byKey.get(k) ?? []);
 }
 
@@ -121,18 +128,13 @@ export function isCurrent(pathname: string, href: string, exact = false): boolea
   return pathname === href || (!exact && pathname.startsWith(href + "/"));
 }
 
-// Pages with no sidebar entry of their own that sit under another's:
-// Franchise pages are part of GameDB, so Games stays lit (www#168).
-const UNDER: [string, string][] = [["/franchises/", "/games/"]];
-
 // The page the viewer is on, by its longest matching path; null on a page
 // with a fixed place (Dashboard, Settings, a profile) or one not listed.
+// A Franchise's page sits under Franchises, which stays lit there (www#206).
 export function currentPage(groups: readonly SidebarGroup[], pathname: string): SidebarPage | null {
-  const under = UNDER.find(([prefix]) => pathname.startsWith(prefix));
-  const path = under ? under[1] + pathname.slice(under[0].length) : pathname;
   let best: SidebarPage | null = null;
   for (const page of groups.flatMap((g) => g.pages)) {
-    if (isCurrent(path, page.href, page.exact) && (!best || page.href.length > best.href.length)) {
+    if (isCurrent(pathname, page.href, page.exact) && (!best || page.href.length > best.href.length)) {
       best = page;
     }
   }

@@ -87,16 +87,6 @@ export async function createFranchiseAction(name: string): Promise<FranchiseResu
   return send<FranchiseColumns>("/api/v1/franchises", { method: "POST", body: JSON.stringify({ data: { name: trimmed } }) });
 }
 
-// Creates a Franchise and links `gameId` to it (the Game Edit page's
-// "Create a Franchise" result, saved with Save all).
-export async function createFranchiseWithGameAction(name: string, gameId: number, mainline: boolean): Promise<FranchiseResult> {
-  const created = await createFranchiseAction(name);
-  if (!created.ok) return created;
-  if (!created.data) return { ok: false, error: "The Franchise was made, but its id didn't come back. Refresh to link it." };
-  const linked = await linkFranchiseGameAction(created.data.franchise_id, gameId, mainline || undefined);
-  return linked.ok ? { ok: true } : linked;
-}
-
 export async function renameFranchiseAction(franchiseId: number, name: string): Promise<FranchiseResult> {
   const trimmed = name.trim();
   if (!validId(franchiseId)) return { ok: false, error: "That Franchise no longer exists." };

@@ -103,10 +103,14 @@ function sections(p: GameEditViewProps, edit: GameEdit): Record<GameEditSectionK
     ),
     franchises: (
       <FranchisesTab
+        gameId={p.gameId}
+        game={{ game_id: p.gameId, title: p.title, cover_url: p.coverUrl, release_year: p.releaseYear }}
         loaded={edit.record.franchises}
         staged={edit.stage.franchises}
         error={edit.errors.franchises}
         series={p.series}
+        suggestions={p.franchiseSuggestions}
+        memberId={p.memberId}
         onStage={(next) => edit.stageSection("franchises", next)}
       />
     ),

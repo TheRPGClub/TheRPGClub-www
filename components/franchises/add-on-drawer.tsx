@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CornerDownRight, Pencil, X } from "lucide-react";
+import { CornerDownRight, X } from "lucide-react";
 import type { FranchiseGame } from "@/lib/franchises/types";
 import type { FranchiseEditor } from "@/hooks/use-franchise-editor";
 import type { FranchiseItemProps } from "@/hooks/use-franchise-board";
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { GameCover } from "@/components/issue/game-cover";
 
 // The drawer an Add-on insert slides out: a full-width row under its
-// parent's row with each Add-on as a small cover, its name and year, and a
-// note on the ones a member linked by hand. In edit mode each drags (`item`)
+// parent's row with each Add-on as a small cover, its name and year (never
+// where the link came from). In edit mode each drags (`item`)
 // and gets "Another game" (make it an Add-on of a different game) and
 // Unlink. It is also how the Add-ons of games outside the Franchise are
 // listed, and the ones dropped into Add-ons that wait for their game.
@@ -44,11 +44,6 @@ export function AddOnDrawer({
               {g.title}
             </Link>
             <span className="text-[0.8rem] text-faint-foreground">{g.release_year ?? "TBA"}</span>
-            {g.source === "manual" && (
-              <span title="Linked by hand" className="text-dim-foreground">
-                <Pencil aria-label="Linked by hand" className="size-3" />
-              </span>
-            )}
             {editor.editing && onReparent && (
               <Button
                 variant="ghost"

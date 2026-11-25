@@ -15,7 +15,7 @@ import {
 } from "@/components/shell/sidebar-page-item";
 import { SortGrip } from "@/components/sortable/sort-grip";
 import { SortStatus } from "@/components/sortable/sort-status";
-import type { PinnedPageKey } from "@/lib/sidebar";
+import type { SidebarPageKey } from "@/lib/sidebar";
 
 // The member's Pinned Pages, in their order. In the expanded sidebar a row
 // itself drags into a new place (Make Room: mouse past 5px, touch press and
@@ -28,8 +28,8 @@ export function SidebarPinned({
   nav: SidebarNavModel;
   railed: boolean;
 }) {
-  const byKey = new Map<PinnedPageKey, (typeof nav.pinned)[number]>(nav.pinned.map((page) => [page.key, page]));
-  const sort = useSortable<"pins", PinnedPageKey>({
+  const byKey = new Map<SidebarPageKey, (typeof nav.pinned)[number]>(nav.pinned.map((page) => [page.key, page]));
+  const sort = useSortable<"pins", SidebarPageKey>({
     zones: { pins: nav.pinned.map((page) => page.key) },
     layout: "rows",
     onDrop: (next) => nav.pins.reorder(next.pins),

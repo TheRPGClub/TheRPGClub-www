@@ -10,9 +10,9 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/templates/page-header";
 import { NameDialog } from "@/components/franchises/name-dialog";
 
-// The Franchise page's head: the way back to Games, the name in Anton with
-// "Franchise" beside it, and its tally (Mainline, Spin-offs, Add-ons, where it
-// came from). Regulars and above get New Franchise and Edit Franchise, which
+// The Franchise page's head: the way back to Franchises, the name in Anton with
+// "Franchise" beside it, and its tally (Mainline, Spin-offs, Add-ons; never
+// where it came from). Regulars and above get New Franchise and Edit Franchise, which
 // turns the Games view into the editor (Done editing ends it).
 export function FranchiseHeader({
   page,
@@ -31,11 +31,9 @@ export function FranchiseHeader({
   canStartChallenge: boolean;
 }) {
   const router = useRouter();
-  const origin = page.igdb_franchise_id == null ? "Made by hand" : "From IGDB";
-  const manual = counts.manual > 0 ? `, ${counts.manual} linked by hand` : "";
   return (
     <PageHeader
-      back={{ href: "/games", label: "Games" }}
+      back={{ href: "/franchises", label: "Franchises" }}
       title={page.name}
       count="Franchise"
       actions={
@@ -92,10 +90,6 @@ export function FranchiseHeader({
           </span>
           <span>
             <b className="text-foreground">{counts.addOns}</b> Add-ons
-          </span>
-          <span>
-            {origin}
-            {manual}
           </span>
         </span>
       }
