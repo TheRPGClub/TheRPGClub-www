@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
-import type { GotmRound, GotmRoundsMeta } from "./types";
+import type { GotmRound, GotmRoundDetail, GotmRoundsMeta } from "./types";
 
 // Server-side reads for GOTM history (`/gotm_rounds`) and the current round
 // (`/gotm_rounds/current`), plus the archive page's filter parsing.
@@ -108,6 +108,29 @@ export async function fetchCurrentGotmRound(): Promise<GotmRound | null> {
     const res = await apiFetch("/api/v1/gotm_rounds/current", GOTM_FETCH);
     if (!res.ok) return null;
     return ((await res.json()) as { data: GotmRound }).data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// A Round Page's address. It carries the history's filters so the way back
+// (and stepping to the next round) returns to the same filtered page.
+export function gotmRoundHref(round: number, filters?: GotmHistoryFilters): string {
+  const ps = filters ? filterParams(filters) : new URLSearchParams();
+  if (filters && filters.page > 1) ps.set("page", String(filters.page));
+  return `${GOTM_HISTORY_PATH}/${round}${ps.size ? `?${ps}` : ""}`;
+}
+
+// One closed round for its Round Page. "not_found" for an open or unknown
+// round (404), null when the read failed.
+export async function fetchGotmRoundDetail(
+  round: number,
+): Promise<GotmRoundDetail | "not_found" | null> {
+  try {
+    const res = await apiFetch(`/api/v1/gotm_rounds/${round}`, GOTM_FETCH);
+    if (res.status === 404) return "not_found";
+    if (!res.ok) return null;
+    return ((await res.json()) as { data: GotmRoundDetail }).data ?? null;
   } catch {
     return null;
   }

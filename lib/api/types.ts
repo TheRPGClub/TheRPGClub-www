@@ -1684,3 +1684,38 @@ export interface SearchSynonymGroup {
   created_by: string | null;
   terms: SearchSynonym[];
 }
+
+// GOTM History: one closed round in full (GET /api/v1/gotm_rounds/:round, the
+// Round Page). Per Category, `winners` first (each with its own Nomination, or
+// null for a winner nobody nominated), then every other Nomination, which does
+// not repeat a winner's. `votes` is null when the Category had no vote, and
+// `runoff_votes` is null unless the game was in a runoff. Counts only, never
+// who voted. A nominator `user` is null for an imported placeholder
+// (`user_id` like `poll-import-N`).
+export interface GotmRoundNomination extends Nomination {
+  votes: number | null;
+  runoff_votes: number | null;
+}
+
+export interface GotmRoundWinner extends GotmRoundGame {
+  nomination: GotmRoundNomination | null;
+}
+
+export interface GotmRoundCategory {
+  month_year: string | null;
+  voting_results_message_id: string | null;
+  voted: boolean;
+  runoff: boolean;
+  winners: GotmRoundWinner[];
+  nominations: GotmRoundNomination[];
+}
+
+// `previous` / `next` are the neighbouring closed round numbers, or null.
+export interface GotmRoundDetail {
+  round_number: number;
+  month_year: string | null;
+  previous: number | null;
+  next: number | null;
+  gotm: GotmRoundCategory;
+  nr_gotm: GotmRoundCategory;
+}
