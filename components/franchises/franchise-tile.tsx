@@ -42,7 +42,7 @@ export function FranchiseTile({
               variant="cover-token"
               size="icon-xs"
               aria-pressed={game.mainline}
-              aria-label={game.mainline ? `Move ${game.title} to Other` : `Make ${game.title} Mainline`}
+              aria-label={game.mainline ? `Move ${game.title} to Spin-offs` : `Make ${game.title} Mainline`}
               title={game.mainline ? "Mainline" : "Make Mainline"}
               disabled={editor.pending}
               onClick={() => editor.setMainline(game, !game.mainline)}

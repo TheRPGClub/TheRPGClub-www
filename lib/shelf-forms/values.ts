@@ -9,6 +9,7 @@ import type {
 import { COMPLETION_NOTE_MAX } from "@/lib/completions";
 import { parsePlaytime } from "@/lib/imports/completionator";
 import { COMPLETION_TYPES, OWNERSHIP_TYPES } from "@/lib/member-shelf/entry-meta";
+import { playthroughHours } from "@/lib/playtime/view";
 import {
   completionDateProblems,
   dayOf,
@@ -74,14 +75,17 @@ export interface CompletionStart {
 }
 
 // A new Game Completion finishes today; when the game is on the member's Now
-// Playing, Started is the day they started it and the platform theirs. An
-// existing one opens as it is stored.
+// Playing, Started is the day they started it and the platform theirs. Its
+// hours come from the member's open Playthrough (spec api#457), which
+// logging it closes. An existing one opens as it is stored.
 export function completionStart(input: {
   entry?: GameCompletion | null;
   nowPlaying?: UserNowPlaying | null;
+  // The open Playthrough's time in minutes; null or absent with none open.
+  playthroughMinutes?: number | null;
   today: IsoDay;
 }): CompletionStart {
-  const { entry, nowPlaying, today } = input;
+  const { entry, nowPlaying, playthroughMinutes, today } = input;
   if (entry) {
     return {
       startedFromNowPlaying: false,
@@ -104,7 +108,7 @@ export function completionStart(input: {
       started,
       finished: today,
       platformId: nowPlaying?.platform_id ?? null,
-      playtime: "",
+      playtime: playthroughHours(playthroughMinutes),
       note: "",
       keepNowPlaying: false,
     },

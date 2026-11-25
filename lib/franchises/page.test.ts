@@ -115,7 +115,7 @@ describe("describeChange", () => {
   it("says what each action did", () => {
     expect(words(change({ action: "link" }))).toBe("linked Final Fantasy XVI");
     expect(words(change({ action: "mainline_on" }))).toBe("marked Final Fantasy XVI Mainline");
-    expect(words(change({ action: "mainline_off" }))).toBe("moved Final Fantasy XVI to Other");
+    expect(words(change({ action: "mainline_off" }))).toBe("moved Final Fantasy XVI to Spin-offs");
     expect(words(change({ action: "rename", before: { name: "FF series" }, after: { name: "Final Fantasy" } }))).toBe(
       "renamed FF series to Final Fantasy",
     );

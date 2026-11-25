@@ -11,7 +11,7 @@ import { GameCover } from "@/components/issue/game-cover";
 import { SearchProblemNote } from "@/components/search-problem-note";
 
 // "Link a game" (design 6B's dashed tile, 6C's search): find a GameDB game
-// and link it as Other or Mainline in one press. It saves at once.
+// and link it as a spin-off or Mainline in one press. It saves at once.
 export function LinkGameDialog({
   franchiseName,
   onPage,
@@ -71,8 +71,8 @@ export function LinkGameDialog({
                     </span>
                   ) : (
                     <span className="flex gap-1.5">
-                      <Button variant="outline" size="xs" disabled={editor.pending} aria-label={`Link ${game.title} as Other`} onClick={() => editor.link(game.game_id, false)}>
-                        {busy ? "Linking…" : "Other"}
+                      <Button variant="outline" size="xs" disabled={editor.pending} aria-label={`Link ${game.title} as a spin-off`} onClick={() => editor.link(game.game_id, false)}>
+                        {busy ? "Linking…" : "Spin-off"}
                       </Button>
                       <Button variant="outline" size="xs" disabled={editor.pending} aria-label={`Link ${game.title} as Mainline`} onClick={() => editor.link(game.game_id, true)}>
                         Mainline
