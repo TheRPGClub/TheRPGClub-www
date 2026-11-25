@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Star, Trash2, Undo2, X } from "lucide-react";
+import type { HTMLAttributes, Ref } from "react";
+import { Star, Trash2, Undo2, X } from "lucide-react";
 import type { ImageKind } from "@/lib/games/game-edit";
 import type { ImageTile as Tile } from "@/lib/games/game-edit/images";
 import { cn } from "@/lib/utils";
@@ -10,34 +11,35 @@ import { StagedMark } from "@/components/games/edit/edit-section";
 
 export interface ImageTileActions {
   onPrimary: () => void;
-  onMove: (by: -1 | 1) => void;
   onDelete: () => void;
   onUnstage: () => void;
 }
 
 // One image of a kind (design www#156 round 3): its art with its place
-// number and Primary mark, and its tools under it: star, move earlier or
-// later, delete. A staged delete is struck through and greyed with an Undo;
+// number and Primary mark, and its tools under it: star and delete. A placed
+// image is a sortable item (drag the tile itself; its tools keep their
+// clicks). A staged delete is struck through and greyed with an Undo;
 // a chosen file is a dashed yellow preview, "Uploads on save", with its
 // name and an X.
 export function ImageTile({
   tile,
   kind,
   index,
-  last,
   actions,
+  sortable,
 }: {
   tile: Tile;
   kind: ImageKind;
   index: number;
-  last: boolean;
   actions: ImageTileActions;
+  // useSortable's item(id), spread on the tile; unset for a pending upload.
+  sortable?: HTMLAttributes<HTMLElement> & { ref: Ref<HTMLElement> };
 }) {
   const preview = useFilePreview(tile.upload?.file);
   const src = tile.upload ? preview : tile.url;
   const name = tile.upload?.file.name ?? `${kind} ${index + 1}`;
   return (
-    <div className={cn("flex flex-col gap-1", kind === "cover" ? "w-25" : "w-42")}>
+    <div {...sortable} ref={sortable?.ref as Ref<HTMLDivElement>} className={cn("flex flex-col gap-1", kind === "cover" ? "w-25" : "w-42")}>
       <div
         className={cn(
           "relative overflow-hidden rounded-xs bg-muted",
@@ -88,8 +90,6 @@ export function ImageTile({
         ) : (
           <>
             <Tool label={`Make ${name} primary`} pressed={tile.primary} onClick={actions.onPrimary} icon={<Star className={cn(tile.primary && "fill-current text-highlight")} />} />
-            <Tool label={`Move ${name} earlier`} disabled={index === 0} onClick={() => actions.onMove(-1)} icon={<ArrowLeft />} />
-            <Tool label={`Move ${name} later`} disabled={last} onClick={() => actions.onMove(1)} icon={<ArrowRight />} />
             <span className="ml-auto" />
             <Tool label={`Delete ${name}`} onClick={actions.onDelete} icon={<Trash2 />} />
           </>

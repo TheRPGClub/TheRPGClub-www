@@ -5,7 +5,7 @@ import type { StepResult } from "./engine";
 import {
   imageKindView,
   imagesUntouched,
-  moveImage,
+  orderImages,
   setPrimaryImage,
   stageImageUpload,
   toggleImageDelete,
@@ -236,11 +236,15 @@ describe("Images staging", () => {
     ]);
   });
 
-  it("moves an image within its kind, and drops the order once it's back", () => {
-    let stage = moveImage(images, {}, "cover", 3, -1);
+  it("reorders a kind, and drops the order once it's back", () => {
+    let stage = orderImages(images, {}, "cover", [1, 3, 2]);
     expect(stage.order).toEqual({ cover: [1, 3, 2] });
-    stage = moveImage(images, stage, "cover", 3, 1);
+    stage = orderImages(images, stage, "cover", [1, 2, 3]);
     expect(imagesUntouched(stage)).toBe(true);
+  });
+
+  it("ignores ids not loaded and keeps any left out at the end", () => {
+    expect(orderImages(images, {}, "cover", [3, 99]).order).toEqual({ cover: [3, 1, 2] });
   });
 
   it("stars and unstars back to the loaded primary", () => {

@@ -230,13 +230,11 @@ export function setPrimaryImage(loaded: GameImageEntry[], staged: ImagesStage, k
   return { ...staged, primary: withKey(staged.primary, kind, ref === current ? undefined : ref) };
 }
 
-// Moves a loaded image one place earlier (-1) or later (+1) in its kind.
-export function moveImage(loaded: GameImageEntry[], staged: ImagesStage, kind: ImageKind, id: number, by: -1 | 1): ImagesStage {
-  const order = orderOf(loaded, staged, kind);
-  const from = order.indexOf(id);
-  const to = from + by;
-  if (from < 0 || to < 0 || to >= order.length) return staged;
-  [order[from], order[to]] = [order[to], order[from]];
+// A kind's loaded images put in `order` (as dragged); ids not loaded drop
+// out, and the order is dropped once it matches the record again.
+export function orderImages(loaded: GameImageEntry[], staged: ImagesStage, kind: ImageKind, order: number[]): ImagesStage {
   const original = loadedOfKind(loaded, kind).map((i) => i.image_id);
-  return { ...staged, order: withKey(staged.order, kind, sameOrder(order, original) ? undefined : order) };
+  const kept = order.filter((id) => original.includes(id));
+  const next = [...kept, ...original.filter((id) => !kept.includes(id))];
+  return { ...staged, order: withKey(staged.order, kind, sameOrder(next, original) ? undefined : next) };
 }
