@@ -1,7 +1,7 @@
 import { getFeatures, getSession } from "@/lib/session";
 import type { GameCompletion } from "@/lib/api/types";
 import { shownImportKinds } from "@/lib/imports/kinds";
-import { fetchAllCompletions } from "@/lib/members/completions";
+import { fetchCompletionMonths } from "@/lib/members/completions";
 import { completedYearView } from "@/lib/members/completed-years";
 import { fetchMember, fetchMemberList } from "@/lib/members/member-page";
 
@@ -18,10 +18,10 @@ export async function loadCompletedPage(
   id: string,
   { page, q, yearParam }: { page: number; q: string; yearParam: string },
 ) {
-  const [session, user, history] = await Promise.all([
+  const [session, user, months] = await Promise.all([
     getSession(),
     fetchMember(id),
-    fetchAllCompletions(id),
+    fetchCompletionMonths(id),
   ]);
   if (!user) return null;
   const isSelf = session?.principal.discord_id === id;
@@ -30,7 +30,7 @@ export async function loadCompletedPage(
 
   const view = completedYearView({
     userId: id,
-    history,
+    months,
     yearParam,
     q,
     pageSize: COMPLETED_PAGE_SIZE,
@@ -50,8 +50,6 @@ export async function loadCompletedPage(
     viewer: { signedIn: session !== null, isSelf, canImport },
     view,
     list,
-    // The dial covers only this many completions when the history was capped.
-    cappedAt: history?.capped ? history.entries.length : null,
   };
 }
 

@@ -1,26 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import type { GameCompletion } from "@/lib/api/types";
 import { completedYearView } from "@/lib/members/completed-years";
 
-// A completion as the year dial reads it: when it was finished, when it was
-// logged.
-const done = (completed_at: string | null, created_at = "2026-01-01T00:00:00Z") =>
-  ({ completed_at, created_at }) as GameCompletion;
-
-const history = {
-  entries: [
-    done("2025-03-01T00:00:00Z"),
-    done(null),
-    done("2026-08-09T10:00:00Z", "2026-08-10T00:00:00Z"),
-    done("2026-08-01T10:00:00Z"),
-    done("2026-03-15T10:00:00Z"),
-  ],
-  capped: false,
-};
+// The member's completions tallied by month, as the API's
+// `completions/months` returns them: newest first, undated last.
+const months = [
+  { month: "2026-08", count: 2 },
+  { month: "2026-03", count: 1 },
+  { month: "2025-03", count: 1 },
+  { month: null, count: 1 },
+];
 
 const view = (over: Partial<Parameters<typeof completedYearView>[0]> = {}) =>
-  completedYearView({ userId: "7", history, yearParam: "", q: "", pageSize: 2, ...over });
+  completedYearView({ userId: "7", months, yearParam: "", q: "", pageSize: 2, ...over });
 
 describe("completedYearView", () => {
   it("lists the years newest first, with undated completions last", () => {
@@ -31,11 +23,11 @@ describe("completedYearView", () => {
     ]);
   });
 
-  it("opens on the newest year, or every year while searching or without a history", () => {
+  it("opens on the newest year, or every year while searching or without any tallies", () => {
     expect(view().year).toBe("2026");
     expect(view({ q: "zelda" }).year).toBe("all");
-    expect(view({ history: null }).year).toBe("all");
-    expect(view({ history: { entries: [], capped: false } }).year).toBe("all");
+    expect(view({ months: null }).year).toBe("all");
+    expect(view({ months: [] }).year).toBe("all");
   });
 
   it("keeps a valid year from the URL and drops anything else", () => {
