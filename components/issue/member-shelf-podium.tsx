@@ -10,7 +10,12 @@ const STEP = ["h-14", "h-10", "h-7"];
 export function PodiumSpines({
   items,
 }: {
-  items: { href: string | null; game: Game | null | undefined; title: string }[];
+  items: {
+    href: string | null;
+    game: Game | null | undefined;
+    title: string;
+    lift?: { hours: string; sub: string | null };
+  }[];
 }) {
   return (
     <ol className="contents" aria-label="Top three">
@@ -26,6 +31,7 @@ export function PodiumSpines({
               game={item.game}
               title={item.title}
               height={206}
+              lift={item.lift}
             />
             <span
               className={cn(

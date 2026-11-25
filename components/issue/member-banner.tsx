@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Membership, UserSocial } from "@/lib/api/types";
 import type { ProfileBirthday } from "@/lib/birthday";
 import { MemberAvatar } from "@/components/issue/member-cover";
@@ -25,6 +26,7 @@ export function MemberBanner({
   art,
   birthday = null,
   owner,
+  stats,
 }: {
   userId: string;
   displayName: string;
@@ -39,6 +41,9 @@ export function MemberBanner({
   // importsHref: null when the viewer has nothing to import (no import
   // kind's Feature is shown).
   owner?: { editHref: string; importsHref: string | null } | null;
+  // A row of the member's figures under the name (the profile's Playtime and
+  // Completed count).
+  stats?: ReactNode;
 }) {
   const roles = roleList(membership);
   const tape = birthday?.today ? birthday.label : null;
@@ -106,6 +111,7 @@ export function MemberBanner({
           <BannerByline handle={handle} joined={joined} birthday={birthday} />
           {roles.length > 0 && <BannerRoles roles={roles} />}
           {socials.length > 0 && <BannerSocials socials={socials} />}
+          {stats}
         </div>
       </div>
 
