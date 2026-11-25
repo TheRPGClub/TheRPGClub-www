@@ -17,7 +17,7 @@ export interface FranchiseLayout {
   // Add-ons whose parent isn't in this Franchise (or not in GameDB), by
   // parent.
   strays: FranchiseAddOnGroup[];
-  counts: { mainline: number; other: number; addOns: number; manual: number };
+  counts: { mainline: number; other: number; addOns: number };
 }
 
 const ROMAN: [number, string][] = [
@@ -53,7 +53,6 @@ export function franchiseLayout(page: FranchisePage): FranchiseLayout {
     addOns: byParent.get(g.game_id) ?? [],
   });
   const addOns = page.games.add_ons.flatMap((g) => g.games);
-  const all = [...page.games.mainline, ...page.games.other, ...addOns];
   return {
     mainline: page.games.mainline.map((g, i) => entry(g, toRoman(i + 1))),
     other: page.games.other.map((g) => entry(g, null)),
@@ -62,7 +61,6 @@ export function franchiseLayout(page: FranchisePage): FranchiseLayout {
       mainline: page.games.mainline.length,
       other: page.games.other.length,
       addOns: addOns.length,
-      manual: all.filter((g) => g.source === "manual").length,
     },
   };
 }
