@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Gamepad2 } from "lucide-react";
 import type { UserNowPlaying } from "@/lib/api/types";
 import { resolveEntryId } from "@/lib/api/member-shelf-entry";
@@ -9,21 +10,24 @@ import { cn } from "@/lib/utils";
 // member's note under the title. The rest of a profile is closed spines on
 // the shelf; these are the ones on the desk.
 
-export function NowPlayingBooks({
+export function NowPlayingBooks<E extends UserNowPlaying>({
   entries,
   showSince = false,
+  corner,
   className,
 }: {
-  entries: UserNowPlaying[];
+  entries: E[];
   // The list page has room for when each was picked up.
   showSince?: boolean;
+  // Something pinned to each book's top-right corner (the profile's hours).
+  corner?: (entry: E) => ReactNode;
   className?: string;
 }) {
   return (
     <ul className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", className)}>
       {entries.map((entry, i) => (
         <li key={resolveEntryId("now_playing", entry) ?? i}>
-          <OpenBook entry={entry} showSince={showSince} />
+          <OpenBook entry={entry} showSince={showSince} corner={corner?.(entry)} />
         </li>
       ))}
     </ul>
@@ -33,9 +37,11 @@ export function NowPlayingBooks({
 export function OpenBook({
   entry,
   showSince,
+  corner,
 }: {
   entry: UserNowPlaying;
   showSince: boolean;
+  corner?: ReactNode;
 }) {
   const game = entry.game;
   const title = game?.title ?? "Unknown game";
@@ -61,6 +67,7 @@ export function OpenBook({
             : "bg-muted",
         )}
       />
+      {corner}
       <span className="mt-auto block p-4">
         <span className="font-headline block text-[1.75rem] leading-[0.95] text-balance">
           {title}

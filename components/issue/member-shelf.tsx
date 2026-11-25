@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 
 // The profile's bookcase: every list that isn't being read right now is a
@@ -20,6 +20,8 @@ export function MemberShelf({
   links,
   more,
   empty,
+  aside,
+  Row = "div",
   children,
 }: {
   label: string;
@@ -30,6 +32,12 @@ export function MemberShelf({
   // Remaining items past the spines shown, with where to see them.
   more?: { count: number; href: string };
   empty: string;
+  // Under the label and blurb, before the links (the profile's Playtime
+  // total and sort).
+  aside?: ReactNode;
+  // The row the spines stand in; the profile's hangs a tag off a lifted
+  // spine (SpineLiftRow).
+  Row?: "div" | ComponentType<{ className: string; children: ReactNode }>;
   children?: ReactNode;
 }) {
   const id = `shelf-${label.toLowerCase().replace(/\W+/g, "-")}`;
@@ -50,6 +58,7 @@ export function MemberShelf({
             {blurb}
           </p>
         )}
+        {aside}
         <div className="ml-auto flex flex-wrap gap-x-4 gap-y-1.5 sm:mt-1 sm:ml-0 sm:flex-col">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className={SPINE_LINK}>
@@ -61,7 +70,7 @@ export function MemberShelf({
       </div>
 
       {count > 0 && children ? (
-        <div className="flex min-h-0 items-end gap-1 overflow-hidden pt-4 sm:min-h-[15.5rem] sm:pt-0">
+        <Row className="flex min-h-0 items-end gap-1 overflow-hidden pt-4 sm:min-h-[15.5rem] sm:pt-0">
           {children}
           {more && more.count > 0 && (
             <div className="flex shrink-0 self-stretch items-end pb-3.5 pl-3 max-sm:hidden">
@@ -71,7 +80,7 @@ export function MemberShelf({
               </Link>
             </div>
           )}
-        </div>
+        </Row>
       ) : (
         <p className="self-center pb-5 text-sm text-faint-foreground sm:pb-4">
           {empty}

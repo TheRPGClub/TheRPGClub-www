@@ -23,6 +23,9 @@ export interface CompletionDialogProps {
   // The member's Now Playing entry for this game: Started comes from it and
   // logging takes the game off Now Playing unless kept.
   nowPlaying?: UserNowPlaying | null;
+  // The member's open Playthrough's minutes, which a new completion's hours
+  // start from (spec api#457).
+  playthroughMinutes?: number | null;
   // The completion to edit; none logs a new one.
   entry?: GameCompletion | null;
   platforms: Platform[];
@@ -55,6 +58,7 @@ function CompletionDialogBody({
   game,
   completions,
   nowPlaying,
+  playthroughMinutes,
   entry,
   platforms,
   today = clubToday(),
@@ -62,7 +66,7 @@ function CompletionDialogBody({
   onRemove,
   onPick,
 }: CompletionDialogProps & { titleId: string }) {
-  const log = useCompletionLog({ userId, gameId: game.game_id, entry, nowPlaying, today, onSaved });
+  const log = useCompletionLog({ userId, gameId: game.game_id, entry, nowPlaying, playthroughMinutes, today, onSaved });
   // On phones the timeline is folded away, so the slip names the game and
   // the first completion itself.
   const mobile = useIsMobile();

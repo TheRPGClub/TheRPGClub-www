@@ -47,6 +47,7 @@ export function ShelfFormsHost({
   game,
   shelf,
   platforms,
+  playthroughMinutes,
   onSaved,
   onRemove,
   onPickCompletion,
@@ -57,6 +58,8 @@ export function ShelfFormsHost({
   game: ShelfGame;
   shelf: GameShelf;
   platforms: Platform[];
+  // The open Playthrough's minutes: a new Game Completion's hours start there.
+  playthroughMinutes: number | null;
   onSaved: (saved: ShelfSaved) => void;
   onRemove: (list: ShelfList, entryId: number) => void;
   // Switch the open dialog to another of the member's Game Completions.
@@ -77,6 +80,7 @@ export function ShelfFormsHost({
         game={game}
         completions={shelf.completions}
         nowPlaying={entry ? null : shelf.nowPlaying}
+        playthroughMinutes={entry ? null : playthroughMinutes}
         entry={entry}
         platforms={platforms}
         onSaved={onSaved}

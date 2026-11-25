@@ -11,7 +11,7 @@ import { StagedMark } from "@/components/games/edit/edit-section";
 const MARK = { edited: "Edited", added: "Added", removing: "Removing" } as const;
 
 // One Franchise on the Franchises tab (design pick 7A): its name (linking to
-// its page), the Mainline / Other control hugging its two words, the staged
+// its page), the Mainline / Spin-offs control hugging its two words, the staged
 // mark with its Undo, and Unlink (or the x that drops a staged link).
 export function FranchiseRowItem({
   row,
@@ -48,7 +48,7 @@ export function FranchiseRowItem({
         size="sm"
         spacing={0}
         aria-label={`${row.name}: this game is`}
-        value={[row.mainline ? "mainline" : "other"]}
+        value={[row.mainline ? "mainline" : "spin-off"]}
         disabled={removing}
         onValueChange={(value) => value[0] && onMainline(value[0] === "mainline")}
         className="col-start-1 row-start-2 sm:col-start-2 sm:row-start-1"
@@ -56,8 +56,8 @@ export function FranchiseRowItem({
         <ToggleGroupItem value="mainline" className="px-3">
           Mainline
         </ToggleGroupItem>
-        <ToggleGroupItem value="other" className="px-3">
-          Other
+        <ToggleGroupItem value="spin-off" className="px-3">
+          Spin-offs
         </ToggleGroupItem>
       </ToggleGroup>
       <span className="col-start-2 row-start-2 flex items-center justify-end gap-2.5 sm:col-start-3 sm:row-start-1 sm:justify-start">

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { loadMemberProfile } from "@/lib/members/profile-page";
+import { parseShelfSorts } from "@/lib/members/profile-playtime";
 import { MemberAchievementsSection } from "@/components/achievements/member-achievements-section";
 import { BackLink } from "@/components/shell/back-link";
 import { ProfileBanner } from "@/components/member/profile/profile-banner";
@@ -18,11 +19,14 @@ import { ProfileLists } from "@/components/game-lists/profile/profile-lists";
 
 export default async function MemberPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  // Each shelf's sort (`?completed_sort=most_played`).
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { id } = await params;
-  const profile = await loadMemberProfile(id);
+  const [{ id }, search] = await Promise.all([params, searchParams]);
+  const profile = await loadMemberProfile(id, parseShelfSorts(search));
   if (!profile) notFound();
   const { show, achievements, runs, gameLists } = profile;
 

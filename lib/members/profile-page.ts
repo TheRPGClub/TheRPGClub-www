@@ -19,6 +19,15 @@ import { fetchAchievementSummary } from "@/lib/member-achievements-server";
 import { fetchMember } from "@/lib/members/member-page";
 import { memberCounts } from "@/lib/members/member-lists";
 import { fetchMemberGameLists } from "@/lib/game-lists/api";
+import {
+  parseShelfSorts,
+  profilePlaytime,
+  shelfSortQuery,
+  type NowPlayingPlaytime,
+  type ShelfAdded,
+  type ShelfPlaytime,
+  type ShelfSorts,
+} from "@/lib/members/profile-playtime";
 
 // A member's page reads as one idea: what they're playing now is open on the
 // desk (face-on key art), everything else is closed books on a bookcase, one
@@ -69,9 +78,13 @@ export function journalPreview(
 // preference) is left out, and so is its read. Favorites belongs to none, so
 // it, the profile and the session don't wait on the Features. Each list is
 // read on its own rather than from the profile's `previews` slice, which
-// doesn't always carry the joined game (and so the art). Null when the
-// member can't be read (a 404).
-export async function loadMemberProfile(id: string) {
+// doesn't always carry the joined game (and so the art), nor each game's
+// Playtime. A shelf sorted Most played is read in that order (`sorts`, from
+// the URL). Null when the member can't be read (a 404).
+export async function loadMemberProfile(
+  id: string,
+  sorts: ShelfSorts = parseShelfSorts({}),
+) {
   const showRead = getFeatures().then((features) => ({
     nowPlaying: features.shown("now_playing"),
     completed: features.shown("game_completions"),
@@ -87,16 +100,27 @@ export async function loadMemberProfile(id: string) {
   const users = `/api/v1/users/${id}`;
   const [user, session, favorites, show, [nowPlaying, completed, backlog, collection, reviews, achievements, runs, gameLists]] =
     await Promise.all([
-      fetchMember<UserProfile & { journal?: JournaledGame[] }>(id),
+      fetchMember<UserProfile & { journal?: JournaledGame[] } & Parameters<typeof profilePlaytime>[0]>(id),
       getSession(),
-      fetchPreview<UserFavorite>(`${users}/favorites?per=${SHELF_LIMIT}`),
+      fetchPreview<UserFavorite & ShelfPlaytime & ShelfAdded>(
+        `${users}/favorites?per=${SHELF_LIMIT}${shelfSortQuery(sorts.favorites)}`,
+      ),
       showRead,
       showRead.then((show) =>
         Promise.all([
-          fetchPreview<UserNowPlaying>(`${users}/now_playing?per=6`, show.nowPlaying),
-          fetchPreview<GameCompletion>(`${users}/completions?per=${SHELF_LIMIT}`, show.completed),
-          fetchPreview<UserBacklog>(`${users}/backlog?per=${SHELF_LIMIT}`, show.backlog),
-          fetchPreview<GameCollection>(`${users}/collections?per=${SHELF_LIMIT}`, show.collection),
+          fetchPreview<UserNowPlaying & NowPlayingPlaytime>(`${users}/now_playing?per=6`, show.nowPlaying),
+          fetchPreview<GameCompletion & ShelfPlaytime>(
+            `${users}/completions?per=${SHELF_LIMIT}${shelfSortQuery(sorts.completed)}`,
+            show.completed,
+          ),
+          fetchPreview<UserBacklog & ShelfPlaytime & ShelfAdded>(
+            `${users}/backlog?per=${SHELF_LIMIT}${shelfSortQuery(sorts.backlog)}`,
+            show.backlog,
+          ),
+          fetchPreview<GameCollection & ShelfPlaytime & ShelfAdded>(
+            `${users}/collections?per=${SHELF_LIMIT}${shelfSortQuery(sorts.collection)}`,
+            show.collection,
+          ),
           fetchPreview<Review>(`${users}/reviews?per=3`, show.reviews),
           show.achievements ? fetchAchievementSummary(id) : null,
           show.challenges ? loadMemberRuns(id) : null,
@@ -123,6 +147,10 @@ export async function loadMemberProfile(id: string) {
     show,
     counts,
     lists: { favorites, nowPlaying, completed, backlog, collection, reviews },
+    // The member's game hours (null from an API without them), and each
+    // shelf's order.
+    playtime: profilePlaytime(user),
+    sorts,
     achievements,
     runs,
     // The member's Game Lists the viewer may read; null when hidden or unread.

@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/templates/page-header";
 import { NameDialog } from "@/components/franchises/name-dialog";
 
 // The Franchise page's head: the way back to Games, the name in Anton with
-// "Franchise" beside it, and its tally (Mainline, Other, Add-ons, where it
+// "Franchise" beside it, and its tally (Mainline, Spin-offs, Add-ons, where it
 // came from). Regulars and above get New Franchise and Edit Franchise, which
 // turns the Games view into the editor (Done editing ends it).
 export function FranchiseHeader({
@@ -88,7 +88,7 @@ export function FranchiseHeader({
             <b className="text-foreground">{counts.mainline}</b> Mainline
           </span>
           <span>
-            <b className="text-foreground">{counts.other}</b> Other
+            <b className="text-foreground">{counts.other}</b> Spin-offs
           </span>
           <span>
             <b className="text-foreground">{counts.addOns}</b> Add-ons

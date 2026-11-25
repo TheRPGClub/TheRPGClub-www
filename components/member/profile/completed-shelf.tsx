@@ -7,18 +7,40 @@ import {
   memberListHref,
   monthShort,
 } from "@/lib/members/member-lists";
-import { mobileCut, shelfMore, spineHref } from "@/components/member/profile/shelf-parts";
+import {
+  MOST_PLAYED_BLURB,
+  mobileCut,
+  shelfMore,
+  spineHours,
+  spineHref,
+  spineLift,
+} from "@/components/member/profile/shelf-parts";
+import { ShelfPlaytimeHead } from "@/components/member/profile/shelf-playtime-head";
+import { SpineLiftRow } from "@/components/member/profile/spine-lift-row";
 
-// The completed shelf, newest on the left, each spine tagged with its month;
-// another member's can be compared with the viewer's.
+// The completed shelf, newest on the left (or Most played), each spine
+// tagged with its month (or its hours); another member's can be compared
+// with the viewer's.
 export function CompletedShelf({ profile }: { profile: MemberProfile }) {
-  const { user, counts, session, isSelf } = profile;
+  const { user, counts, session, isSelf, playtime, sorts } = profile;
   const entries = profile.lists.completed.data;
+  const mostPlayed = sorts.completed === "most_played";
   return (
     <MemberShelf
       label="Completed"
       count={counts.completed}
-      blurb="Newest on the left."
+      blurb={mostPlayed ? MOST_PLAYED_BLURB : "Newest on the left."}
+      aside={
+        <ShelfPlaytimeHead
+          userId={user.user_id}
+          shelf="completed"
+          label="Completed"
+          minutes={playtime?.shelves.completed}
+          sorts={sorts}
+          ownOrder="Newest"
+        />
+      }
+      Row={SpineLiftRow}
       links={[
         { href: memberListHref(user.user_id, "completed"), label: "Open list" },
         ...(session && !isSelf
@@ -36,13 +58,15 @@ export function CompletedShelf({ profile }: { profile: MemberProfile }) {
     >
       {entries.map((entry, i) => {
         const month = completionMonth(entry.completed_at);
+        const when = month ? `${monthShort(month)} ${month.slice(2, 4)}` : null;
         return (
           <Spine
             key={resolveEntryId("completed", entry) ?? i}
             href={spineHref(entry)}
             game={entry.game}
             title={entry.game?.title ?? "Unknown game"}
-            tag={month ? `${monthShort(month)} ${month.slice(2, 4)}` : null}
+            tag={mostPlayed ? spineHours(entry.playtime_minutes) : when}
+            lift={spineLift(entry.playtime_minutes, when ? `Completed ${when}` : "Completed")}
             className={mobileCut(i)}
           />
         );
