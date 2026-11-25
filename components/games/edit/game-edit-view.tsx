@@ -18,6 +18,7 @@ import { gameEditPanels } from "@/components/games/edit/game-edit-panels";
 import { SaveBar } from "@/components/games/edit/save-bar";
 import { SaveFailedSlip } from "@/components/games/edit/save-failed-slip";
 import type { ReleaseOptions } from "@/lib/games/game-edit/release-options";
+import type { FranchiseSuggestion } from "@/lib/games/game-edit/franchise-suggestions";
 
 export interface GameEditViewProps {
   gameId: number;
@@ -38,6 +39,10 @@ export interface GameEditViewProps {
   canRefreshReleases: boolean;
   // The game's IGDB collection, shown read only as its Series.
   series: string | null;
+  // The Franchises tab's suggestions (www#209; empty when unread), and the
+  // member, whose dismissals they honour.
+  franchiseSuggestions: FranchiseSuggestion[];
+  memberId: string;
 }
 
 // /games/:id/edit (spec api#437, design www#156 round 3): the band with the

@@ -19,7 +19,7 @@ import type { CardGame } from "@/lib/games/game-edit/franchise-card";
 import type { FranchiseRunRead } from "@/hooks/use-franchise-runs";
 import { FranchiseLane } from "@/components/games/edit/franchise-lanes/franchise-lane";
 import { LaneFranchise } from "@/components/games/edit/franchise-lanes/lane-franchise";
-import { LaneAddSlot, SlotPanel } from "@/components/games/edit/franchise-lanes/lane-add-slot";
+import { LaneAddSlot, SlotPanel, type SlotExtra } from "@/components/games/edit/franchise-lanes/lane-add-slot";
 import { AddOnParentLine } from "@/components/games/edit/franchise-lanes/add-on-parent-line";
 import { ParentGameSearch } from "@/components/games/edit/franchise-lanes/parent-game-search";
 
@@ -41,6 +41,7 @@ export function FranchiseRoleLane({
   onStage,
   game,
   runOf,
+  suggest,
 }: {
   role: FranchiseRole;
   gameId: number;
@@ -57,6 +58,7 @@ export function FranchiseRoleLane({
   onClose: () => void;
   onAsk: (key: string | null) => void;
   onStage: (next: FranchisesStage | undefined) => void;
+  suggest?: { extra?: SlotExtra; omit?: (franchiseId: number) => boolean; hint?: string }; // www#209, laneSuggestionSlot
 }) {
   const copy = LANE_COPY[role];
   const addon = role === "addon";
@@ -85,6 +87,7 @@ export function FranchiseRoleLane({
       picked={(id) => franchisePicked(loaded, staged, id)}
       staged={(name) => franchiseStagedForCreate(staged, name)}
       onAdd={(franchise, parent) => onStage(stageFranchiseInLane(loaded, staged, franchise, role, parent))}
+      {...suggest}
     />
   );
 
@@ -93,12 +96,9 @@ export function FranchiseRoleLane({
       role={role}
       rows={lanes[role]}
       last={addon}
-      lead={
-        addon &&
-        lanes.parent && (
-          <AddOnParentLine parent={lanes.parent} onChange={() => onAsk(null)} onUndo={() => onStage(unstageFranchiseParent(staged))} />
-        )
-      }
+      lead={addon && lanes.parent && (
+        <AddOnParentLine parent={lanes.parent} onChange={() => onAsk(null)} onUndo={() => onStage(unstageFranchiseParent(staged))} />
+      )}
       empty={!addon && isAddOn ? "An Add-on sits in Add-on of" : undefined}
       note={
         addon

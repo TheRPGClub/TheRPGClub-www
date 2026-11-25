@@ -109,6 +109,8 @@ function sections(p: GameEditViewProps, edit: GameEdit): Record<GameEditSectionK
         staged={edit.stage.franchises}
         error={edit.errors.franchises}
         series={p.series}
+        suggestions={p.franchiseSuggestions}
+        memberId={p.memberId}
         onStage={(next) => edit.stageSection("franchises", next)}
       />
     ),
