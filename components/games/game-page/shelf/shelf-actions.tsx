@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { removeMemberShelfEntryAction } from "@/app/actions/member-shelf";
 import { useUndoDelete } from "@/hooks/use-undo-delete";
 import type { ShelfSaved } from "@/hooks/use-shelf-save";
-import { resolveEntryId } from "@/lib/api/member-shelf-entry";
 import type { Platform } from "@/lib/api/types";
 import {
+  SHELF_LISTS,
   SHELF_ROUTES,
   SHELF_TITLES,
   nextStep,
@@ -15,9 +15,9 @@ import {
   shelfRows,
   withoutEntry,
   type GameShelf,
+  type ShelfList,
   type ShelfShown,
 } from "@/lib/games/shelf";
-import type { SimpleShelfEntry, SimpleShelfKind } from "@/lib/shelf-forms/values";
 import { UndoBar } from "@/components/admin/desk/undo-bar";
 import type { ShelfGame } from "@/components/member/shelf-forms/shelf-entry-form";
 import { ShelfChips } from "./shelf-chips";
@@ -26,8 +26,7 @@ import { ShelfSplitButton } from "./shelf-split-button";
 
 // A held removal: "<kind>:<entry id>", so a game put back on the list later
 // (a new entry) isn't hidden by an old removal.
-const heldKey = (kind: SimpleShelfKind, entryId: number) => `${kind}:${entryId}`;
-const KINDS: SimpleShelfKind[] = ["now_playing", "backlog", "favorite", "collection"];
+const heldKey = (list: ShelfList, entryId: number) => `${list}:${entryId}`;
 
 // The game page's list control for a signed-in member (spec api#451, 1A):
 // the split button and the state chips, the shared forms it opens, and a
@@ -46,7 +45,7 @@ export function ShelfActions(props: {
   const removal = useUndoDelete<string>({
     commit: async (key) => {
       const [kind, id] = key.split(":");
-      const result = await removeMemberShelfEntryAction(userId, kind as SimpleShelfKind, Number(id));
+      const result = await removeMemberShelfEntryAction(userId, kind as ShelfList, Number(id));
       if (!result.ok) return { error: result.error ?? "Couldn't remove it." };
       router.refresh();
     },
@@ -55,7 +54,7 @@ export function ShelfActions(props: {
   // The shelf as the member sees it: held and sent removals taken off.
   const shelf = [...removal.held, ...removal.gone].reduce((acc, key) => {
     const [kind, id] = key.split(":");
-    return KINDS.includes(kind as SimpleShelfKind) ? withoutEntry(acc, kind as SimpleShelfKind, Number(id)) : acc;
+    return SHELF_LISTS.includes(kind as ShelfList) ? withoutEntry(acc, kind as ShelfList, Number(id)) : acc;
   }, props.shelf);
 
   const platformName = (id: number | null | undefined) => {
@@ -71,11 +70,10 @@ export function ShelfActions(props: {
     setNotice(saved.leftNowPlaying ? "Logged. It left your Now Playing." : null);
     router.refresh();
   };
-  const onRemove = (kind: SimpleShelfKind, entry: SimpleShelfEntry) => {
-    const id = resolveEntryId(kind, entry);
+  const onRemove = (list: ShelfList, entryId: number) => {
     setOpen(null);
     setNotice(null);
-    if (id != null) removal.hold(heldKey(kind, id));
+    removal.hold(heldKey(list, entryId));
   };
 
   return (
@@ -99,7 +97,7 @@ export function ShelfActions(props: {
         <UndoBar
           key={key}
           className="max-w-md"
-          message={`Removed from ${SHELF_TITLES[key.split(":")[0] as SimpleShelfKind]}.`}
+          message={`Removed from ${SHELF_TITLES[key.split(":")[0] as ShelfList]}.`}
           delayMs={removal.delayMs}
           onUndo={() => removal.undo(key)}
         />
@@ -123,6 +121,7 @@ export function ShelfActions(props: {
         platforms={platforms}
         onSaved={onSaved}
         onRemove={onRemove}
+        onPickCompletion={(entryId) => setOpen({ list: "completed", mode: "edit", entryId })}
       />
     </div>
   );

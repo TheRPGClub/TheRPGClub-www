@@ -66,7 +66,8 @@ describe("shelfRows", () => {
     const rows = shelfRows(shelf({ nowPlaying: playing, completions: [completion(1, "2019-03-14T16:00:00Z")], favorite, collection }), ALL, names);
     expect(rows.map((r) => [r.list, r.state, r.action])).toEqual([
       ["now_playing", "Since 9 Nov · Switch", "Edit"],
-      ["completed", "Once · last 14 Mar 2019", "Log another"],
+      ["completed", "14 Mar 2019 · Main Story", "Edit"],
+      ["completed", "Another run", "Log another"],
       ["backlog", "Not on it", "Add"],
       ["favorite", "No. 2 of 10", "Edit"],
       ["collection", "Physical · Switch", "Edit"],
@@ -90,10 +91,15 @@ describe("shelfRows", () => {
     expect(row?.state).toBe("On your Favorites");
   });
 
-  it("counts completions and names the latest dated one", () => {
-    const [, done] = shelfRows(shelf({ completions: [completion(1, "2024-01-02"), completion(2, null), completion(3, "2019-03-14")] }), ALL);
-    expect(done.state).toBe("3 times · last 2 Jan 2024");
-    expect(shelfRows(shelf({ completions: [completion(1, null), completion(2, null)] }), ALL)[1].state).toBe("Twice");
+  it("gives each Game Completion its own row to edit, newest first, then Log another", () => {
+    const completions = [completion(1, "2024-01-02"), { ...completion(2, null), platform_id: 3 }, completion(3, "2019-03-14")];
+    const rows = shelfRows(shelf({ completions }), ALL, names).filter((r) => r.list === "completed");
+    expect(rows.map((r) => [r.key, r.state, r.mode, r.action, r.entryId])).toEqual([
+      ["completed:1", "2 Jan 2024 · Main Story", "edit", "Edit", 1],
+      ["completed:3", "14 Mar 2019 · Main Story", "edit", "Edit", 3],
+      ["completed:2", "No date · Main Story · Switch", "edit", "Edit", 2],
+      ["completed:log", "Another run", "log", "Log another", undefined],
+    ]);
     expect(shelfRows(EMPTY_SHELF, ALL)[1]).toMatchObject({ mode: "log", action: "Log one", on: false });
   });
 
@@ -139,5 +145,10 @@ describe("withoutEntry", () => {
   it("leaves a Collection's other copies", () => {
     const after = withoutEntry(shelf({ collection: [...collection, secondCopy] }), "collection", 6);
     expect(after.collection).toEqual([secondCopy]);
+  });
+
+  it("takes one Game Completion off and keeps the others", () => {
+    const after = withoutEntry(shelf({ completions: [completion(1, "2019-03-14"), completion(2, null)] }), "completed", 1);
+    expect(after.completions.map((c) => c.completion_id)).toEqual([2]);
   });
 });

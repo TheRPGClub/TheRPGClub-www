@@ -1,16 +1,19 @@
 import { pickTitle } from "@/lib/challenges/santa-pick";
 import type { HistoryNode } from "@/lib/shelf-forms/history";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 // The completion dialog's left column (spec api#451, 2B): the game's cover
 // and two-line title, then the member's Game Completions of it on a
 // timeline, oldest first, ending on a yellow node for the one being logged
-// (or ringing the one being edited).
+// (or lighting the one being edited). With `onPick`, each other completion
+// opens to be edited or removed.
 export function CompletionHistory({
   title,
   coverUrl,
   nodes,
   pending,
+  onPick,
 }: {
   title: string;
   coverUrl?: string | null;
@@ -18,6 +21,7 @@ export function CompletionHistory({
   // The new completion's node ("This one · 2nd time" / "Finishing 24 Nov
   // 2026"), or null when editing one already in `nodes`.
   pending: { label: string; when: string } | null;
+  onPick?: (completionId: number) => void;
 }) {
   const [first, second] = pickTitle(title).lines;
   return (
@@ -39,7 +43,13 @@ export function CompletionHistory({
       </h3>
       <ol className="relative pl-5.5 before:absolute before:top-1.5 before:bottom-1.5 before:left-[5px] before:w-0.5 before:bg-foreground">
         {nodes.map((node) => (
-          <Node key={node.completionId} lit={node.current} label={node.when} sub={node.facts} />
+          <Node
+            key={node.completionId}
+            lit={node.current}
+            label={node.when}
+            sub={node.facts}
+            onPick={onPick && !node.current ? () => onPick(node.completionId) : undefined}
+          />
         ))}
         {pending && <Node lit label={pending.label} sub={pending.when} />}
       </ol>
@@ -47,7 +57,15 @@ export function CompletionHistory({
   );
 }
 
-function Node({ lit, label, sub }: { lit: boolean; label: string; sub: string }) {
+function Node({ lit, label, sub, onPick }: { lit: boolean; label: string; sub: string; onPick?: () => void }) {
+  const text = (
+    <>
+      <b className={cn("block text-[0.95rem] font-semibold", lit && "text-highlight")}>{label}</b>
+      <small className="font-label block text-[0.72rem] leading-[1.3] font-bold tracking-[0.07em] text-faint-foreground uppercase">
+        {sub}
+      </small>
+    </>
+  );
   return (
     <li
       className={cn(
@@ -55,10 +73,13 @@ function Node({ lit, label, sub }: { lit: boolean; label: string; sub: string })
         lit ? "before:bg-highlight" : "before:bg-foreground",
       )}
     >
-      <b className={cn("block text-[0.95rem] font-semibold", lit && "text-highlight")}>{label}</b>
-      <small className="font-label block text-[0.72rem] leading-[1.3] font-bold tracking-[0.07em] text-faint-foreground uppercase">
-        {sub}
-      </small>
+      {onPick ? (
+        <Button variant="pick-row" size="bare" aria-label={`Edit your completion of ${label}`} className="-mx-1.5 -my-1 block w-[calc(100%+0.75rem)] px-1.5 py-1 text-left" onClick={onPick}>
+          {text}
+        </Button>
+      ) : (
+        text
+      )}
     </li>
   );
 }
