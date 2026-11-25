@@ -87,10 +87,15 @@ export function useGameEdit(
     "alternate.link": (call) => linkVersionAction(gameId, call.altGameId).then(stepResult),
     "alternate.unlink": (call) => unlinkVersionAction(gameId, call.altGameId).then(stepResult),
     "hltb.upsert": (call) => upsertHltbAction(gameId, call.fields),
-    "franchise.create": (call) => createFranchiseWithGameAction(call.name, gameId, call.mainline).then(franchiseStep),
+    "franchise.create": (call) =>
+      createFranchiseWithGameAction(call.name, gameId, call.mainline, parentOption(call.parentGameId)).then(franchiseStep),
     "franchise.link": (call) =>
-      linkFranchiseGameAction(call.franchiseId, gameId, call.mainline || undefined).then(franchiseStep),
+      linkFranchiseGameAction(call.franchiseId, gameId, call.mainline || undefined, parentOption(call.parentGameId)).then(
+        franchiseStep,
+      ),
     "franchise.mainline": (call) => linkFranchiseGameAction(call.franchiseId, gameId, call.mainline).then(franchiseStep),
+    "franchise.parent": (call) =>
+      linkFranchiseGameAction(call.franchiseId, gameId, undefined, { parent_game_id: call.parentGameId }).then(franchiseStep),
     "franchise.unlink": (call) => unlinkFranchiseGameAction(call.franchiseId, gameId).then(franchiseStep),
   };
   // Sections whose saved record only the API knows (new image and release
@@ -193,6 +198,11 @@ function stepResult(result: GameLinkResult): StepResult {
 // The game-links actions' answer as a save step's.
 function asStep(result: GameLinkResult): StepResult {
   return result.ok ? { ok: true } : { ok: false, error: result.error ?? "That didn't save. Try again." };
+}
+
+// A Franchise call's parent as the link action's option: absent keeps it.
+function parentOption(parentGameId: number | null | undefined): { parent_game_id?: number | null } {
+  return parentGameId === undefined ? {} : { parent_game_id: parentGameId };
 }
 
 function franchiseStep(result: FranchiseResult<unknown>): StepResult {

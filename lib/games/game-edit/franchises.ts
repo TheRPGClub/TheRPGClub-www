@@ -1,19 +1,43 @@
 import type { GameEditSection } from "./engine";
 import type { GameFranchiseRef } from "@/lib/franchises/types";
 
-// Franchises (spec api#442, design pick 7A): the Franchises the game is in,
-// and whether it is Mainline in each. Regulars and above (the API's gate,
-// the same as Game Threads') stage links to Franchises found by name, new
-// Franchises made from the search, unlinks, and Mainline / Spin-offs per
-// Franchise; Save all creates, links, then sets Mainline, then unlinks.
+// Franchises (spec api#442, role lanes api#487 / www#207): the Franchises the
+// game is in and its role in each, shown in three lanes: Mainline in,
+// Spin-off of and Add-on of. Mainline is per Franchise; an Add-on's parent is
+// the game's (`parent_igdb_id`), so a game with a parent is an Add-on in
+// every Franchise it is in, whatever its Mainline mark. Regulars and above
+// (the API's gate, the same as Game Threads') stage links, new Franchises,
+// unlinks, Mainline and the parent; Save all creates, links, sets Mainline,
+// sets the parent, then unlinks.
 
 export type { GameFranchiseRef };
 
-// The game's Franchises from its relations, by name.
-export function gameFranchiseRefs(franchises: { franchise_id: number; name: string; mainline?: boolean }[]): GameFranchiseRef[] {
-  return franchises
-    .map(({ franchise_id, name, mainline }) => ({ franchise_id, name, mainline: !!mainline }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+export type FranchiseRole = "mainline" | "spinoff" | "addon";
+export const FRANCHISE_ROLES: FranchiseRole[] = ["mainline", "spinoff", "addon"];
+
+// The game an Add-on belongs to. A loaded parent carries only its name (the
+// game read has no parent game id); a picked one carries its GameDB id.
+export interface GameParent {
+  game_id: number | null;
+  name: string;
+}
+
+export interface GameFranchises {
+  franchises: GameFranchiseRef[];
+  parent: GameParent | null;
+}
+
+// The game's Franchises from its relations, by name, and its parent.
+export function gameFranchiseRefs(
+  franchises: { franchise_id: number; name: string; mainline?: boolean }[],
+  parentName: string | null = null,
+): GameFranchises {
+  return {
+    franchises: franchises
+      .map(({ franchise_id, name, mainline }) => ({ franchise_id, name, mainline: !!mainline }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    parent: parentName ? { game_id: null, name: parentName } : null,
+  };
 }
 
 export interface FranchiseMainline {
@@ -27,21 +51,38 @@ export interface FranchisesStage {
   create: { name: string; mainline: boolean }[];
   unlink: number[];
   mainline: FranchiseMainline[];
+  // The game's new parent (a picked GameDB game), or null to clear it.
+  // Absent keeps the loaded one.
+  parent?: { game_id: number; name: string } | null;
 }
 
 export type FranchiseCall =
-  | { kind: "franchise.create"; name: string; mainline: boolean }
-  | { kind: "franchise.link"; franchiseId: number; mainline: boolean }
+  | { kind: "franchise.create"; name: string; mainline: boolean; parentGameId?: number | null }
+  | { kind: "franchise.link"; franchiseId: number; mainline: boolean; parentGameId?: number | null }
   | { kind: "franchise.mainline"; franchiseId: number; mainline: boolean }
+  | { kind: "franchise.parent"; franchiseId: number; parentGameId: number | null }
   | { kind: "franchise.unlink"; franchiseId: number };
 
 const EMPTY: FranchisesStage = { link: [], create: [], unlink: [], mainline: [] };
 
-const linked = (loaded: GameFranchiseRef[], id: number) => loaded.find((f) => f.franchise_id === id);
+const linked = (loaded: GameFranchises, id: number) => loaded.franchises.find((f) => f.franchise_id === id);
 const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
+// Whether the staged parent changes the loaded one.
+function parentChanged(loaded: GameFranchises, staged: FranchisesStage): boolean {
+  const p = staged.parent;
+  if (p === undefined) return false;
+  if (p === null) return loaded.parent !== null;
+  return loaded.parent?.game_id !== p.game_id;
+}
+
+// The game's parent with the stage applied.
+export function effectiveParent(loaded: GameFranchises, staged: FranchisesStage | undefined): GameParent | null {
+  return staged && staged.parent !== undefined ? staged.parent : loaded.parent;
+}
+
 // The staged changes that would change the record.
-function effective(loaded: GameFranchiseRef[], staged: FranchisesStage): FranchisesStage {
+function effective(loaded: GameFranchises, staged: FranchisesStage) {
   const unlink = staged.unlink.filter((id) => linked(loaded, id));
   return {
     link: staged.link.filter((f) => !linked(loaded, f.franchise_id)),
@@ -51,80 +92,143 @@ function effective(loaded: GameFranchiseRef[], staged: FranchisesStage): Franchi
       const f = linked(loaded, m.franchise_id);
       return f && f.mainline !== m.mainline && !unlink.includes(m.franchise_id);
     }),
+    parent: parentChanged(loaded, staged) ? staged.parent : undefined,
   };
 }
 
 const callKey = (c: FranchiseCall) =>
   c.kind === "franchise.create" ? `c${c.name.trim().toLowerCase()}` : `${c.kind}${c.franchiseId}`;
 
-export const franchisesSection: GameEditSection<GameFranchiseRef[], FranchisesStage, FranchiseCall> = {
+// The calls that save the stage. The parent goes through the Franchise link
+// endpoint, so it rides on a Franchise the game is in: a loaded one (before
+// any unlink), else the first new link, else the first new Franchise.
+function planCalls(loaded: GameFranchises, staged: FranchisesStage): FranchiseCall[] {
+  const e = effective(loaded, staged);
+  const parentId = e.parent === undefined ? undefined : (e.parent?.game_id ?? null);
+  const carrier = parentId === undefined ? null : loaded.franchises[0] ? "loaded" : e.link[0] ? "link" : "create";
+  return [
+    ...e.create.map((c, i) => ({
+      kind: "franchise.create" as const,
+      name: c.name,
+      mainline: c.mainline,
+      ...(carrier === "create" && i === 0 ? { parentGameId: parentId } : {}),
+    })),
+    ...e.link.map((f, i) => ({
+      kind: "franchise.link" as const,
+      franchiseId: f.franchise_id,
+      mainline: f.mainline,
+      ...(carrier === "link" && i === 0 ? { parentGameId: parentId } : {}),
+    })),
+    ...e.mainline.map((m) => ({ kind: "franchise.mainline" as const, franchiseId: m.franchise_id, mainline: m.mainline })),
+    ...(carrier === "loaded"
+      ? [{ kind: "franchise.parent" as const, franchiseId: loaded.franchises[0].franchise_id, parentGameId: parentId ?? null }]
+      : []),
+    ...e.unlink.map((franchiseId) => ({ kind: "franchise.unlink" as const, franchiseId })),
+  ];
+}
+
+const countOf = (e: ReturnType<typeof effective>) =>
+  e.link.length + e.create.length + e.unlink.length + e.mainline.length + (e.parent === undefined ? 0 : 1);
+
+export const franchisesSection: GameEditSection<GameFranchises, FranchisesStage, FranchiseCall> = {
   label: "Franchises",
   access: "threads",
-  changes: (loaded, staged) => {
+  changes: (loaded, staged) => countOf(effective(loaded, staged)),
+  check: (staged, loaded) => {
     const e = effective(loaded, staged);
-    return e.link.length + e.create.length + e.unlink.length + e.mainline.length;
+    if (e.parent === undefined || loaded.franchises.length + e.link.length + e.create.length > 0) return null;
+    return "Link the game to a Franchise to make it an Add-on.";
   },
-  plan: (loaded, staged) => {
-    const e = effective(loaded, staged);
-    return [
-      ...e.create.map((c) => ({ kind: "franchise.create" as const, name: c.name, mainline: c.mainline })),
-      ...e.link.map((f) => ({ kind: "franchise.link" as const, franchiseId: f.franchise_id, mainline: f.mainline })),
-      ...e.mainline.map((m) => ({ kind: "franchise.mainline" as const, franchiseId: m.franchise_id, mainline: m.mainline })),
-      ...e.unlink.map((franchiseId) => ({ kind: "franchise.unlink" as const, franchiseId })),
-    ];
-  },
+  plan: planCalls,
   apply: (loaded, staged) => {
     const e = effective(loaded, staged);
-    const kept = loaded
+    const kept = loaded.franchises
       .filter((f) => !e.unlink.includes(f.franchise_id))
       .map((f) => ({ ...f, mainline: e.mainline.find((m) => m.franchise_id === f.franchise_id)?.mainline ?? f.mainline }));
     // A new Franchise's id only the API knows: the page reads the record
     // back after the save, so a placeholder stands in until then.
     const made = e.create.map((c, i) => ({ franchise_id: -(i + 1), name: c.name.trim(), mainline: c.mainline }));
-    return [...kept, ...e.link, ...made].sort((a, b) => a.name.localeCompare(b.name));
+    return {
+      franchises: [...kept, ...e.link, ...made].sort((a, b) => a.name.localeCompare(b.name)),
+      parent: e.parent === undefined ? loaded.parent : e.parent,
+    };
   },
   remaining: (loaded, staged, saved) => {
     const done = new Set(saved.map(callKey));
     const e = effective(loaded, staged);
-    return {
+    const carrier = planCalls(loaded, staged).find((c) => "parentGameId" in c && c.parentGameId !== undefined);
+    const next: FranchisesStage = {
       create: e.create.filter((c) => !done.has(`c${c.name.trim().toLowerCase()}`)),
       link: e.link.filter((f) => !done.has(`franchise.link${f.franchise_id}`)),
       mainline: e.mainline.filter((m) => !done.has(`franchise.mainline${m.franchise_id}`)),
       unlink: e.unlink.filter((id) => !done.has(`franchise.unlink${id}`)),
     };
+    if (e.parent !== undefined && !(carrier && done.has(callKey(carrier)))) next.parent = e.parent;
+    return next;
   },
 };
 
 // The stage, or undefined once nothing is left in it.
 function tidy(s: FranchisesStage): FranchisesStage | undefined {
-  return s.link.length + s.create.length + s.unlink.length + s.mainline.length > 0 ? s : undefined;
+  const n = s.link.length + s.create.length + s.unlink.length + s.mainline.length;
+  if (n > 0 || s.parent !== undefined) return s;
+  return undefined;
 }
 
-// Stages a link to `franchise`, as a Spin-off. Linking a Franchise staged for
-// unlink undoes the unlink; one already linked or staged does nothing.
+// Sets the game's parent: a picked game, null to clear it. Setting it back
+// to the loaded one drops the change.
+export function stageFranchiseParent(
+  loaded: GameFranchises,
+  staged: FranchisesStage | undefined,
+  parent: { game_id: number; name: string } | null,
+): FranchisesStage | undefined {
+  const s: FranchisesStage = { ...(staged ?? EMPTY), parent };
+  if (!parentChanged(loaded, s)) delete s.parent;
+  return tidy(s);
+}
+
+// Drops a staged parent change (its Undo).
+export function unstageFranchiseParent(staged: FranchisesStage | undefined): FranchisesStage | undefined {
+  if (!staged || staged.parent === undefined) return staged;
+  const s = { ...staged };
+  delete s.parent;
+  return tidy(s);
+}
+
+// Stages a link to `franchise` as Mainline or a Spin-off. Linking a Franchise
+// staged for unlink undoes the unlink (and sets its Mainline); one already
+// staged takes the new Mainline.
 export function stageFranchiseLink(
-  loaded: GameFranchiseRef[],
+  loaded: GameFranchises,
   staged: FranchisesStage | undefined,
   franchise: { franchise_id: number; name: string },
+  mainline = false,
 ): FranchisesStage | undefined {
   const s = staged ?? EMPTY;
   if (linked(loaded, franchise.franchise_id)) {
-    return tidy({ ...s, unlink: s.unlink.filter((id) => id !== franchise.franchise_id) });
+    const kept = tidy({ ...s, unlink: s.unlink.filter((id) => id !== franchise.franchise_id) });
+    return stageFranchiseMainline(loaded, kept, `f${franchise.franchise_id}`, mainline);
   }
-  if (s.link.some((f) => f.franchise_id === franchise.franchise_id)) return staged;
-  return { ...s, link: [...s.link, { franchise_id: franchise.franchise_id, name: franchise.name, mainline: false }] };
+  if (s.link.some((f) => f.franchise_id === franchise.franchise_id)) {
+    return { ...s, link: s.link.map((f) => (f.franchise_id === franchise.franchise_id ? { ...f, mainline } : f)) };
+  }
+  return { ...s, link: [...s.link, { franchise_id: franchise.franchise_id, name: franchise.name, mainline }] };
 }
 
-// Stages making a Franchise called `name` with the game in it, as a Spin-off.
-export function stageFranchiseCreate(staged: FranchisesStage | undefined, name: string): FranchisesStage | undefined {
+// Stages making a Franchise called `name` with the game in it.
+export function stageFranchiseCreate(
+  staged: FranchisesStage | undefined,
+  name: string,
+  mainline = false,
+): FranchisesStage | undefined {
   const s = staged ?? EMPTY;
   const trimmed = name.trim();
   if (!trimmed || s.create.some((c) => sameName(c.name, trimmed))) return staged;
-  return { ...s, create: [...s.create, { name: trimmed, mainline: false }] };
+  return { ...s, create: [...s.create, { name: trimmed, mainline }] };
 }
 
 export function stageFranchiseUnlink(
-  loaded: GameFranchiseRef[],
+  loaded: GameFranchises,
   staged: FranchisesStage | undefined,
   franchiseId: number,
 ): FranchisesStage | undefined {
@@ -138,7 +242,7 @@ export type FranchiseRowKey = string;
 
 // Sets the game Mainline (true) or a Spin-off (false) in the row's Franchise.
 export function stageFranchiseMainline(
-  loaded: GameFranchiseRef[],
+  loaded: GameFranchises,
   staged: FranchisesStage | undefined,
   key: FranchiseRowKey,
   mainline: boolean,
@@ -158,6 +262,48 @@ export function stageFranchiseMainline(
   return tidy({ ...s, mainline: was.mainline === mainline ? rest : [...rest, { franchise_id: id, mainline }] });
 }
 
+// Moves a row to another lane. Into Mainline in or Spin-off of sets its
+// Mainline and, for an Add-on, clears the game's parent (so every Franchise
+// leaves Add-on of). Into Add-on of sets the game's parent, which the caller
+// asks for when the game has none.
+export function moveFranchise(
+  loaded: GameFranchises,
+  staged: FranchisesStage | undefined,
+  key: FranchiseRowKey,
+  to: FranchiseRole,
+  parent?: { game_id: number; name: string },
+): FranchisesStage | undefined {
+  if (to === "addon") {
+    if (effectiveParent(loaded, staged)) return staged;
+    return parent ? stageFranchiseParent(loaded, staged, parent) : staged;
+  }
+  const next = stageFranchiseMainline(loaded, staged, key, to === "mainline");
+  return effectiveParent(loaded, next) ? stageFranchiseParent(loaded, next, null) : next;
+}
+
+// Stages a Franchise from a lane's + Add slot: a found one (`franchise_id`)
+// or a new one by name, in the lane's role. Mainline in and Spin-off of
+// clear an Add-on's parent; Add-on of sets `parent` when the game has none.
+export function stageFranchiseInLane(
+  loaded: GameFranchises,
+  staged: FranchisesStage | undefined,
+  franchise: { franchise_id: number; name: string } | { name: string },
+  role: FranchiseRole,
+  parent?: { game_id: number; name: string },
+): FranchisesStage | undefined {
+  const mainline = role === "mainline";
+  let next =
+    "franchise_id" in franchise
+      ? stageFranchiseLink(loaded, staged, franchise, mainline)
+      : stageFranchiseCreate(staged, franchise.name, mainline);
+  if (role === "addon") {
+    if (!effectiveParent(loaded, next) && parent) next = stageFranchiseParent(loaded, next, parent);
+  } else if (effectiveParent(loaded, next)) {
+    next = stageFranchiseParent(loaded, next, null);
+  }
+  return next;
+}
+
 // Drops whatever is staged for the row (its Undo).
 export function unstageFranchise(staged: FranchisesStage | undefined, key: FranchiseRowKey): FranchisesStage | undefined {
   if (!staged) return undefined;
@@ -167,8 +313,8 @@ export function unstageFranchise(staged: FranchisesStage | undefined, key: Franc
   }
   const id = Number(key.slice(1));
   return tidy({
+    ...staged,
     link: staged.link.filter((f) => f.franchise_id !== id),
-    create: staged.create,
     unlink: staged.unlink.filter((x) => x !== id),
     mainline: staged.mainline.filter((m) => m.franchise_id !== id),
   });
@@ -181,32 +327,77 @@ export interface FranchiseRow {
   franchise_id: number | null;
   name: string;
   mainline: boolean;
+  role: FranchiseRole;
   mark: FranchiseMark;
 }
 
 // The tab's rows: the game's Franchises (with their staged Mainline and
-// unlink), then the staged links and new Franchises.
-export function franchisesView(loaded: GameFranchiseRef[], staged: FranchisesStage | undefined): FranchiseRow[] {
+// unlink), then the staged links and new Franchises, each in its lane.
+export function franchisesView(loaded: GameFranchises, staged: FranchisesStage | undefined): FranchiseRow[] {
   const e = effective(loaded, staged ?? EMPTY);
+  const addOn = !!effectiveParent(loaded, staged);
+  const role = (mainline: boolean): FranchiseRole => (addOn ? "addon" : mainline ? "mainline" : "spinoff");
   return [
-    ...loaded.map((f) => {
+    ...loaded.franchises.map((f) => {
       const change = e.mainline.find((m) => m.franchise_id === f.franchise_id);
       const removing = e.unlink.includes(f.franchise_id);
+      const mainline = change?.mainline ?? f.mainline;
       return {
         key: `f${f.franchise_id}`,
         franchise_id: f.franchise_id,
         name: f.name,
-        mainline: change?.mainline ?? f.mainline,
+        mainline,
+        role: role(mainline),
         mark: removing ? ("removing" as const) : change ? ("edited" as const) : null,
       };
     }),
-    ...e.link.map((f) => ({ key: `f${f.franchise_id}`, franchise_id: f.franchise_id, name: f.name, mainline: f.mainline, mark: "added" as const })),
-    ...e.create.map((c) => ({ key: `new:${c.name}`, franchise_id: null, name: c.name, mainline: c.mainline, mark: "added" as const })),
+    ...e.link.map((f) => ({
+      key: `f${f.franchise_id}`,
+      franchise_id: f.franchise_id,
+      name: f.name,
+      mainline: f.mainline,
+      role: role(f.mainline),
+      mark: "added" as const,
+    })),
+    ...e.create.map((c) => ({
+      key: `new:${c.name}`,
+      franchise_id: null,
+      name: c.name,
+      mainline: c.mainline,
+      role: role(c.mainline),
+      mark: "added" as const,
+    })),
   ];
 }
 
+export interface FranchiseLanes {
+  mainline: FranchiseRow[];
+  spinoff: FranchiseRow[];
+  addon: FranchiseRow[];
+  // The game's parent as staged, with its mark: Added (a new parent where
+  // there was none), Edited (another parent), Removing (cleared).
+  parent: { name: string; mark: FranchiseMark } | null;
+}
+
+export function franchiseLanes(loaded: GameFranchises, staged: FranchisesStage | undefined): FranchiseLanes {
+  const rows = franchisesView(loaded, staged);
+  const changed = staged ? parentChanged(loaded, staged) : false;
+  const now = effectiveParent(loaded, staged);
+  const parent = !changed
+    ? loaded.parent && { name: loaded.parent.name, mark: null }
+    : now
+      ? { name: now.name, mark: loaded.parent ? ("edited" as const) : ("added" as const) }
+      : loaded.parent && { name: loaded.parent.name, mark: "removing" as const };
+  return {
+    mainline: rows.filter((r) => r.role === "mainline"),
+    spinoff: rows.filter((r) => r.role === "spinoff"),
+    addon: rows.filter((r) => r.role === "addon"),
+    parent,
+  };
+}
+
 // Whether a search result is on the game already, or staged to be.
-export function franchisePicked(loaded: GameFranchiseRef[], staged: FranchisesStage | undefined, franchiseId: number): boolean {
+export function franchisePicked(loaded: GameFranchises, staged: FranchisesStage | undefined, franchiseId: number): boolean {
   if (linked(loaded, franchiseId)) return !staged?.unlink.includes(franchiseId);
   return !!staged?.link.some((f) => f.franchise_id === franchiseId);
 }
