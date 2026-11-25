@@ -12,11 +12,14 @@ const asDraft = (g: { game_id: number; title: string; cover_url?: string | null 
 });
 
 // Who may start a Challenge from a list (api#448): its owner, hosting it
-// themselves; staff, from a club list, for a club-hosted Challenge.
+// themselves; staff, from a club list, for a club-hosted Challenge. Never
+// from a list that already feeds a Challenge: one list, one Challenge, so
+// games added to it later always land in that Challenge.
 export function canStartFromList(
-  list: Pick<GameList, "club" | "owner">,
+  list: Pick<GameList, "club" | "owner" | "challenge">,
   viewer: { id: string; staff: boolean },
 ): boolean {
+  if (list.challenge) return false;
   return list.club ? viewer.staff : list.owner?.user_id === viewer.id;
 }
 

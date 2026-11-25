@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { requireAuth, requireFeature } from "@/lib/session";
 import { isModeratorOrAbove } from "@/lib/staff";
 import { emptyDraft } from "@/lib/challenges/form";
@@ -11,7 +12,9 @@ import { ChallengeForm } from "@/components/challenges/form/challenge-form";
 // staff may also make an Assignment one and host it for the club. `?list=`
 // starts a Pool from a Game List (its games as Core, the list linked) and
 // `?franchise=` from a Franchise (its Mainline games as Core, the Franchise
-// a source). A list the viewer can't start from opens an empty form.
+// a source). A list that already feeds a Challenge goes to that Challenge
+// (one list, one Challenge); one the viewer can't start from opens an empty
+// form.
 export default async function NewChallengePage({
   searchParams,
 }: {
@@ -42,6 +45,7 @@ async function startingDraft(listRaw: string | undefined, franchiseRaw: string |
   const listId = idOf(listRaw);
   if (listId) {
     const list = await fetchGameList(listId).catch(() => null);
+    if (list?.challenge) redirect(`/challenges/${list.challenge.id}`);
     return list && canStartFromList(list, viewer) ? draftFromList(list) : null;
   }
   const franchiseId = idOf(franchiseRaw);

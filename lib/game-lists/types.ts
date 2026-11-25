@@ -56,6 +56,9 @@ export interface GameList {
   // Its first (up to 4) games in its own sort's order.
   preview_games: GameListGame[];
   viewer: { can_edit: boolean; can_delete: boolean };
+  // The Pool Challenge the list feeds (null when none, or hidden). A list
+  // feeds one Challenge at most, so no other can start from it.
+  challenge?: { id: number; name: string } | null;
   // A single list only: every game, in its sort's order.
   entries?: GameListEntry[];
   created_at: string;
