@@ -53,10 +53,11 @@ export function FacetRow({
 
   // One line per category, so a full card of twelve stays short beside the
   // sheet: the name with its share under it, a small ruler, the score in
-  // Anton. The reorder and remove tools sit beside the share and show on
-  // hover or focus (always, on a screen with no hover).
+  // Anton. The remove tool sits beside the share and shows on hover or
+  // focus (always, on a screen with no hover). The row itself drags to
+  // reorder (FacetList); the ruler is a control, so it never starts a drag.
   return (
-    <div className="group/facet relative grid grid-cols-[7rem_minmax(0,1fr)_2.4rem] items-center gap-x-2.5 border-t border-border-strong py-1.5">
+    <div className="group/facet relative grid min-w-0 flex-1 grid-cols-[7rem_minmax(0,1fr)_2.4rem] items-center gap-x-2.5 py-1.5">
       <div className="min-w-0">
         <FacetName
           facetKey={facetKey}
@@ -96,23 +97,26 @@ export function FacetRow({
         </div>
       </div>
 
-      <Slider
-        className="min-w-0"
-        // An unscored facet rests at the floor with the readout showing "—",
-        // so it never passes for a deliberate 0 — which is a real score here.
-        value={score ?? MIN_RATING}
-        onValueChange={(next) => onScore(clampRating(typeof next === "number" ? next : next[0]))}
-        min={MIN_RATING}
-        max={MAX_RATING}
-        step={1}
-        disabled={disabled}
-        getAriaLabel={() => `${named}, out of ${MAX_RATING}`}
-        getAriaValueText={() => (unset ? "Not scored" : `${score} out of ${MAX_RATING}`)}
-        tone={style.sliderTone}
-        variant="ruler"
-        size="sm"
-        indicatorClassName={cn(unset && "opacity-0")}
-      />
+      {/* A pointer on the ruler sets a score; it must not lift the row. */}
+      <div data-no-drag="" className="min-w-0">
+        <Slider
+          className="min-w-0"
+          // An unscored facet rests at the floor with the readout showing "—",
+          // so it never passes for a deliberate 0 — which is a real score here.
+          value={score ?? MIN_RATING}
+          onValueChange={(next) => onScore(clampRating(typeof next === "number" ? next : next[0]))}
+          min={MIN_RATING}
+          max={MAX_RATING}
+          step={1}
+          disabled={disabled}
+          getAriaLabel={() => `${named}, out of ${MAX_RATING}`}
+          getAriaValueText={() => (unset ? "Not scored" : `${score} out of ${MAX_RATING}`)}
+          tone={style.sliderTone}
+          variant="ruler"
+          size="sm"
+          indicatorClassName={cn(unset && "opacity-0")}
+        />
+      </div>
 
       {/* The score's ink, carried by a box that draws nothing. */}
       <span className={cn("contents", unset ? "text-faint-foreground" : "text-foreground")}>

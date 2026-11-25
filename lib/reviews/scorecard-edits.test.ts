@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import type { ReviewFacets } from "./facets";
 import {
   canEvenSplit,
-  moveFacet,
   unpickedFacets,
   withCustomFacet,
   withLabel,
@@ -111,18 +110,6 @@ describe("withCustomFacet", () => {
     expect(next.order).toEqual(["story", "custom:2", "custom:3"]);
     expect(next.labels).toEqual({ "custom:3": "New category" });
     expect(next.weights).toEqual({ story: 38, "custom:2": 37, "custom:3": 25 });
-  });
-});
-
-describe("moveFacet", () => {
-  it("swaps a facet with its neighbour", () => {
-    expect(moveFacet(card(), 1, -1).order).toEqual(["music", "story"]);
-  });
-
-  it("leaves the card alone at either end", () => {
-    const start = card();
-    expect(moveFacet(start, 0, -1)).toBe(start);
-    expect(moveFacet(start, 1, 1)).toBe(start);
   });
 });
 
