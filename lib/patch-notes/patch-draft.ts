@@ -1,6 +1,7 @@
 import type { Value } from "platejs";
 
 import { patchValue } from "./patch-schema";
+import { mergeOrder, pendingChangeLine, PENDING_SECTIONS, type PendingChange } from "./pending-changes";
 import { PATCH_POST_MAX, patchText } from "./patch-text";
 
 // Writing a Patch (www#237, spec api#510): what a new Patch starts as, and
@@ -10,23 +11,31 @@ import { PATCH_POST_MAX, patchText } from "./patch-text";
 // The API's limit on a title.
 export const PATCH_TITLE_MAX = 100;
 
-// The sections a Patch's changes are sorted into; the API counts the items
-// under them.
-export const PATCH_SECTIONS = ["New", "Improved", "Fixed"] as const;
-
 const line = (text: string) => ({ type: "lic", children: [{ text }] });
 
 // A new Patch: an intro paragraph, then the New, Improved and Fixed
-// headings each over one empty bullet. Drafting the bullets from Pending
-// Changes is www#240's.
-export function patchTemplate(): Value {
+// headings, each over one bullet per covered Pending Change in its section
+// (its Patch note line, else its title; oldest first), or one empty bullet
+// when none is (www#240).
+export function patchTemplate(covered: readonly PendingChange[] = []): Value {
+  const merged = mergeOrder(covered);
   return [
     { type: "p", children: [{ text: "" }] },
-    ...PATCH_SECTIONS.flatMap((section) => [
-      { type: "h2", children: [{ text: section }] },
-      { type: "ul", children: [{ type: "li", children: [line("")] }] },
-    ]),
+    ...PENDING_SECTIONS.flatMap((section) => {
+      const lines = merged.filter((c) => c.section === section.key).map(pendingChangeLine);
+      return [
+        { type: "h2", children: [{ text: section.label }] },
+        { type: "ul", children: (lines.length > 0 ? lines : [""]).map((l) => ({ type: "li", children: [line(l)] })) },
+      ];
+    }),
   ] as Value;
+}
+
+// Whether `value` is still the template drafted from `covered`, untouched:
+// only then may ticking redraft it. Once staff write in it, the body and
+// the covers list go their own ways.
+export function isPatchTemplate(value: unknown, covered: readonly PendingChange[]): boolean {
+  return JSON.stringify(patchValue(value)) === JSON.stringify(patchValue(patchTemplate(covered)));
 }
 
 // A title as saved: spaces squeezed and trimmed, null when blank.
