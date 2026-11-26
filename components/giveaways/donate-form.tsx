@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition, type FormEvent } from "react";
 import { donateKeyAction } from "@/app/actions/giveaways";
 import type { Game } from "@/lib/api/types";
@@ -91,7 +92,10 @@ export function DonateForm({ donorName }: { donorName: string }) {
         <div className="mt-5 flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
           {done && (
             <p role="status" className="mr-auto text-sm font-semibold">
-              {done}
+              {done}{" "}
+              <Link href="/giveaways/donated" className="underline decoration-2 underline-offset-4">
+                See your donations
+              </Link>
             </p>
           )}
           <Button type="submit" variant="highlight" disabled={isPending} className="min-w-32">

@@ -14,7 +14,7 @@ import {
   type DonationInput,
 } from "@/lib/giveaways";
 
-const PAGES = ["/giveaways", "/giveaways/donate", "/giveaways/claimed"];
+const PAGES = ["/giveaways", "/giveaways/donate", "/giveaways/donated", "/giveaways/claimed"];
 
 function revalidate() {
   for (const page of PAGES) revalidatePath(page);
