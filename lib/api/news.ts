@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { NewsCategory, NewsCategoryKey, NewsFilters, NewsItem } from "@/lib/news";
+import { CATCHUP_NEW_SHOWN, markOf, NEWS_ROWS_PER, type CatchupMarkMeta } from "@/lib/news-catchup";
 import { newsFeedTag, type NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import type { CollectionMeta } from "./types";
 
@@ -15,14 +16,15 @@ import type { CollectionMeta } from "./types";
 // Each feed read also carries the News Feed Stamp (`v`, which the API
 // ignores), so a cached feed never outlives a change to the News Items: an
 // open page that sees the stamp move re-reads the page and gets a new one.
+// The feed's meta also carries the member's News Mark (api#496), so whatever
+// moves the mark expires the same tag.
 
-const NEWS_PER = 30;
 // The list is fixed in code on the API; it changes with an API release.
 const CATEGORIES_FETCH: RequestInit = { next: { revalidate: 3600 } };
 
 // The feed's meta (schema NewsFeedMeta): the page's counts for the filtered
 // result, plus what the category rail needs.
-export interface NewsFeedMeta extends CollectionMeta {
+export interface NewsFeedMeta extends CollectionMeta, CatchupMarkMeta {
   // Every News Category's count for the current search, ignoring the
   // category filter and the member's preferences.
   category_counts?: Partial<Record<NewsCategoryKey, number>>;
@@ -38,36 +40,42 @@ export interface NewsPage {
 // "not_found" when the API says the viewer can't use the News Hub (its flag
 // changed after the page's own gate ran), null when the read failed, so the
 // page can tell both from an empty feed.
-export async function fetchNews(
+type FeedRead = NewsPage | "not_found" | null;
+
+// What Catch-up reads (ticket www#221). `top`: page one of the whole view,
+// the hero and the mosaic, whose meta carries the member's News Mark and new
+// counts (api#496). `rows`: the page of Seen rows, the view up to the mark
+// (`until`), or the whole view without one. Show all (`filters.since`)
+// reads only the new list, a page at a time, into `rows`.
+export interface CatchupRead {
+  top: FeedRead;
+  rows: FeedRead;
+}
+
+export async function fetchCatchup(
   filters: NewsFilters,
   // The viewer's Discord id, for the feed's cache tag.
   userId: string,
   // The News Feed Stamp read before the feed, or null.
   stamp: string | null,
-): Promise<NewsPage | "not_found" | null> {
-  return readFeed(filters, userId, stamp, filters.page, NEWS_PER);
+): Promise<CatchupRead> {
+  const read = (page: number, per: number, bounds: Bounds = {}) =>
+    readFeed(filters, userId, stamp, page, per, bounds);
+  if (filters.since) {
+    return { top: null, rows: await read(filters.page, NEWS_ROWS_PER, { since: filters.since }) };
+  }
+  const top = await read(1, CATCHUP_NEW_SHOWN);
+  if (top === "not_found" || top === null) return { top, rows: top };
+  // The mark goes back exactly as the API gave it (microseconds), so the
+  // item it was set from counts as seen.
+  const mark = markOf(top.meta);
+  const rows = await read(filters.page, NEWS_ROWS_PER, mark ? { until: mark } : {});
+  return { top, rows };
 }
 
-// The items just past the page's two edges: the last of the page before
-// (null on page one) and the first of the page after (null past the end), so
-// a day band at an edge knows whether the day runs over the break. Each is
-// one item read on its own (`per=1`, whose page number is its position);
-// undefined when that read failed.
-export async function fetchNewsNeighbours(
-  filters: NewsFilters,
-  userId: string,
-  stamp: string | null,
-): Promise<{ before: NewsItem | null | undefined; after: NewsItem | null | undefined }> {
-  const at = async (position: number) => {
-    if (position < 1) return null;
-    const page = await readFeed(filters, userId, stamp, position, 1);
-    return page && page !== "not_found" ? (page.items[0] ?? null) : undefined;
-  };
-  const [before, after] = await Promise.all([
-    at((filters.page - 1) * NEWS_PER),
-    at(filters.page * NEWS_PER + 1),
-  ]);
-  return { before, after };
+interface Bounds {
+  since?: string;
+  until?: string;
 }
 
 async function readFeed(
@@ -76,8 +84,11 @@ async function readFeed(
   stamp: string | null,
   page: number,
   per: number,
-): Promise<NewsPage | "not_found" | null> {
+  bounds: Bounds,
+): Promise<FeedRead> {
   const ps = new URLSearchParams({ page: String(page), per: String(per) });
+  if (bounds.since) ps.set("since", bounds.since);
+  if (bounds.until) ps.set("until", bounds.until);
   // No category = the member's default view, which the API works out.
   if (filters.categories.length) ps.set("category", filters.categories.join(","));
   if (filters.q) ps.set("q", filters.q);

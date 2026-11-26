@@ -1,8 +1,8 @@
 import { PageHeader } from "@/components/templates/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// The News page while its feed loads: the header, the rail's rows (from
-// lg) and a band of card-shaped plates.
+// The News page while its feed loads: the masthead, the tabs' hairline, the
+// hero band's count and art, and the mosaic's first row.
 
 export function NewsSkeleton({ badge }: { badge: React.ReactNode }) {
   return (
@@ -10,24 +10,20 @@ export function NewsSkeleton({ badge }: { badge: React.ReactNode }) {
       <PageHeader
         title="News"
         badge={badge}
-        actions={<Skeleton variant="text" className="h-4 w-44" />}
+        actions={<Skeleton variant="control" className="h-9 w-72" />}
       />
-      <div className="gap-x-7 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <div className="hidden space-y-2 lg:block">
-          <Skeleton variant="text" className="h-4 w-32" />
-          {Array.from({ length: 7 }).map((_, i) => (
-            <Skeleton variant="text" key={i} className="h-[30px]" />
-          ))}
+      <Skeleton variant="text" className="h-8 w-48" />
+      <div className="grid gap-5 lg:min-h-[23.25rem] lg:grid-cols-[18.75rem_minmax(0,1fr)]">
+        <div className="space-y-3">
+          <Skeleton variant="text" className="h-32 w-40" />
+          <Skeleton variant="text" className="h-5 w-48" />
         </div>
-        <div className="@container min-w-0 space-y-3">
-          <Skeleton variant="control" className="h-9 w-24 lg:hidden" />
-          <Skeleton variant="text" className="h-7 w-56" />
-          <div className="grid gap-5 @xl:grid-cols-2 @3xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3]" />
-            ))}
-          </div>
-        </div>
+        <Skeleton className="min-h-[20rem]" />
+      </div>
+      <div className="grid gap-2.5 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-[9.125rem]" />
+        ))}
       </div>
     </div>
   );
