@@ -410,6 +410,9 @@
             &[data-variant="plate"] {
                 @apply rounded-none;
             }
+            &[data-variant="avatar"] {
+                @apply rounded-full;
+            }
         }
 
         /* Separator: a rule. */

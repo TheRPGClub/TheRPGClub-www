@@ -13,6 +13,8 @@ type SkeletonVariant =
   | "text"
   // An edge-to-edge plate: a banner or full-bleed art.
   | "plate"
+  // A member's avatar disc.
+  | "avatar"
 
 function Skeleton({
   className,

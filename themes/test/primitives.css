@@ -459,6 +459,11 @@
                 color: var(--accent-foreground);
                 border-color: var(--accent-foreground);
             }
+            &[data-variant="avatar"] {
+                background-color: var(--accent);
+                color: var(--accent-foreground);
+                border-radius: 9999px;
+            }
         }
         [data-slot="separator"] {
             background-color: var(--card);
