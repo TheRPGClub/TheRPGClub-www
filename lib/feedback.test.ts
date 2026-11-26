@@ -7,11 +7,14 @@ import {
   canEdit,
   canUpvote,
   canWithdraw,
+  dialogClosedHref,
   editFeedbackHref,
+  feedbackDialogState,
   feedbackPhase,
   giveFeedbackHref,
   issueRef,
   pinnedHref,
+  screenshotProblem,
   upvoteLabel,
   validateFeedbackInput,
 } from "@/lib/feedback";
@@ -106,5 +109,74 @@ describe("validateFeedbackInput", () => {
       ok: true,
       data: { kind: "suggestion", title: "a b", details: "c" },
     });
+  });
+});
+
+describe("validateFeedbackInput for a Bug Report", () => {
+  const bug = { kind: "bug_report", title: "Pick", where: "website", what_happened: " x ", expected: "y", steps: " " };
+
+  it("needs where, what happened and what was expected; steps are optional", () => {
+    expect(validateFeedbackInput(bug)).toEqual({
+      ok: true,
+      data: { kind: "bug_report", title: "Pick", where: "website", what_happened: "x", expected: "y", steps: null },
+    });
+    expect(validateFeedbackInput({ ...bug, where: null })).toMatchObject({ ok: false, error: expect.stringContaining("where") });
+    expect(validateFeedbackInput({ ...bug, where: "discord" }).ok).toBe(false);
+    expect(validateFeedbackInput({ ...bug, what_happened: "" }).ok).toBe(false);
+    expect(validateFeedbackInput({ ...bug, expected: " " }).ok).toBe(false);
+  });
+
+  it("drops details from a Bug Report and bug fields from the others", () => {
+    const res = validateFeedbackInput({ ...bug, details: "d" });
+    expect(res.ok && res.data.details).toBeFalsy();
+    const other = validateFeedbackInput({ ...bug, kind: "feature_request", details: "d" });
+    expect(other).toEqual({ ok: true, data: { kind: "feature_request", title: "Pick", details: "d" } });
+  });
+
+  it("caps the long fields", () => {
+    expect(validateFeedbackInput({ ...bug, steps: "s".repeat(4001) }).ok).toBe(false);
+  });
+});
+
+describe("screenshotProblem", () => {
+  it("takes PNG, JPEG and WebP up to 4 MB", () => {
+    expect(screenshotProblem({ type: "image/png", size: 1000 })).toBeNull();
+    expect(screenshotProblem({ type: "image/webp", size: 4 * 1024 * 1024 })).toBeNull();
+    expect(screenshotProblem({ type: "image/gif", size: 1000 })).toMatch(/PNG, JPEG or WebP/);
+    expect(screenshotProblem({ type: "image/jpeg", size: 4 * 1024 * 1024 + 1 })).toMatch(/4 MB/);
+    expect(screenshotProblem({ type: "image/jpeg", size: 0 })).toMatch(/empty/);
+  });
+});
+
+describe("feedbackDialogState", () => {
+  const args = { isNew: false, editId: 0, editItem: null, kind: "suggestion" as const, canGive: true, viewerId: "7" };
+
+  it("opens nothing without new or edit", () => {
+    expect(feedbackDialogState(args)).toBeNull();
+  });
+
+  it("opens create on the shown kind for those who can give feedback", () => {
+    expect(feedbackDialogState({ ...args, isNew: true })).toEqual({ mode: "create", kind: "suggestion" });
+    expect(feedbackDialogState({ ...args, isNew: true, canGive: false })).toMatchObject({ mode: "refused" });
+  });
+
+  it("opens edit only for the author's Pending Feedback", () => {
+    expect(feedbackDialogState({ ...args, editId: 1, editItem: base })).toEqual({ mode: "edit", feedback: base });
+    expect(feedbackDialogState({ ...args, editId: 1, editItem: base, viewerId: "8" })).toEqual({
+      mode: "refused",
+      message: "Only its author can edit it.",
+    });
+    expect(feedbackDialogState({ ...args, editId: 1, editItem: { ...base, status: "approved" } })).toMatchObject({
+      mode: "refused",
+      message: expect.stringContaining("reviewed"),
+    });
+    expect(feedbackDialogState({ ...args, editId: 9 })).toMatchObject({ mode: "refused" });
+  });
+});
+
+describe("dialogClosedHref", () => {
+  it("keeps the board's place and drops new and edit", () => {
+    expect(dialogClosedHref(new URLSearchParams("new=1&kind=bug_report"))).toBe("/feedback?kind=bug_report");
+    expect(dialogClosedHref(new URLSearchParams("edit=4"))).toBe("/feedback");
   });
 });

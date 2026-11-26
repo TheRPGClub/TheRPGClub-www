@@ -2,10 +2,12 @@ import type { ReactNode } from "react";
 import { MessageSquarePlus, Pin } from "lucide-react";
 import type { BoardData } from "@/lib/feedback-board";
 import { giveFeedbackHref, kindMeta } from "@/lib/feedback";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { BoardKindTabs } from "./board-kind-tabs";
 import { BoardList } from "./board-list";
 import { BoardStatusSwitch } from "./board-status-switch";
+import { PinnedScroll } from "./pinned-scroll";
 
 // The Feedback Board: today's pinned wall, straightened and split by kind.
 // One kind at a time behind its tab, Open (Approved, then Pending, then Done)
@@ -32,7 +34,12 @@ export function FeedbackBoard({
         <h1 className="font-headline flex-1 text-5xl text-balance sm:text-6xl">Feedback Board</h1>
         {badge && <div className="pb-2">{badge}</div>}
         {canVote && (
-          <ButtonLink href={giveFeedbackHref(kind)} variant="highlight" className="mb-1">
+          <ButtonLink
+            href={giveFeedbackHref(kind)}
+            render={<Link href={giveFeedbackHref(kind)} scroll={false} />}
+            variant="highlight"
+            className="mb-1"
+          >
             <MessageSquarePlus aria-hidden />
             Give feedback
           </ButtonLink>
@@ -64,6 +71,7 @@ export function FeedbackBoard({
       )}
 
       <BoardList board={board} viewerId={viewerId} canVote={canVote} pinned={pinned} />
+      <PinnedScroll id={pinned} />
     </div>
   );
 }

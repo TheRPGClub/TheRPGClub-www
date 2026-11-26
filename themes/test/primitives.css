@@ -2139,5 +2139,17 @@
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
         }
+        /* Give feedback (www#226). */
+        [data-slot="dialog-content"][data-variant="kind-card"],
+        [data-slot="dialog-title"][data-variant="kind"],
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="kind"],
+        [data-slot="input"][data-variant="kind-title"],
+        [data-slot="label"][data-variant="kind-switch"],
+        [data-slot="label"][data-variant="kind-choice"],
+        [data-slot="label"][data-variant="kind-drop"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
     }
 }

@@ -44,6 +44,15 @@ const labelVariants = cva("", {
       // got, how a game is owned), around its radio: an ink stroke with ink
       // type; the checked one fills with ink and takes paper type.
       "slip-choice": "",
+      // www#226: the Give feedback dialog, in its kind's ink (--k). A kind
+      // in the header's switch, on the ink itself: an ink-type outline, the
+      // chosen one filled with the page's ink. A choice (a Bug Report's
+      // Where) around its radio: an ink stroke, the chosen one filled with
+      // the ink. The screenshot drop zone around its file input: a dashed
+      // ink stroke, yellow while a file is dragged over it.
+      "kind-switch": "",
+      "kind-choice": "",
+      "kind-drop": "",
     },
   },
   defaultVariants: { variant: "default" },

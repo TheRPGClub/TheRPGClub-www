@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Pencil, ThumbsUp, Undo2 } from "lucide-react";
 import type { Feedback } from "@/lib/api/types";
 import { editFeedbackHref, upvoteLabel } from "@/lib/feedback";
@@ -49,7 +50,12 @@ export function BoardCardActions({
   return (
     <>
       {editable && (
-        <ButtonLink href={editFeedbackHref(feedback)} variant="card-action" className={FOOT_ACTION}>
+        <ButtonLink
+          href={editFeedbackHref(feedback)}
+          render={<Link href={editFeedbackHref(feedback)} scroll={false} />}
+          variant="card-action"
+          className={FOOT_ACTION}
+        >
           <Pencil aria-hidden />
           Edit
         </ButtonLink>
