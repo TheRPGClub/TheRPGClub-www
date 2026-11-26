@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isPatchTemplate, patchCount, patchFields, patchTemplate, patchTitleField } from "./patch-draft";
+import { dropEmptyItems, isPatchTemplate, patchCount, patchFields, patchTemplate, patchTitleField } from "./patch-draft";
 import type { PendingChange } from "./pending-changes";
 
 const t = (text: string) => ({ text });
@@ -78,7 +78,8 @@ describe("isPatchTemplate", () => {
 
   it("knows the untouched template drafted from what is covered, saved or not", () => {
     expect(isPatchTemplate(patchTemplate(covered), covered)).toBe(true);
-    expect(isPatchTemplate(patchFields("", patchTemplate(), null).rich_body, [])).toBe(true);
+    expect(isPatchTemplate(patchFields("", patchTemplate(), null, { keepEmpty: true }).rich_body, [])).toBe(true);
+    expect(isPatchTemplate(patchFields("", patchTemplate(covered), null).rich_body, covered)).toBe(true);
   });
 
   it("is false once staff have written in it, or for another covered set", () => {
@@ -121,6 +122,42 @@ describe("patchFields", () => {
 
   it("stores an empty Patch as no blocks and no text", () => {
     expect(patchFields("", [p("")], null)).toEqual({ title: null, rich_body: [], body: "", cut_body: "" });
+  });
+});
+
+describe("dropEmptyItems", () => {
+  const li = (text: string, nested?: unknown) => ({
+    type: "li",
+    children: [{ type: "lic", children: [t(text)] }, ...(nested ? [nested] : [])],
+  });
+  const ul = (...items: unknown[]) => ({ type: "ul", children: items });
+  const h2 = (text: string) => ({ type: "h2", children: [t(text)] });
+
+  it("drops empty bullets, and a heading left with none", () => {
+    const value = [p("Intro"), h2("New"), ul(li("A thing"), li(" ")), h2("Improved"), ul(li("")), h2("Fixed"), ul(li(""))];
+    expect(dropEmptyItems(value as never)).toEqual([p("Intro"), h2("New"), ul(li("A thing"))]);
+  });
+
+  it("keeps a heading over other writing, and an item whose nested list has text", () => {
+    const value = [h2("New"), ul(li("")), p("Written here"), ul(li("", ul(li("detail"), li(""))))];
+    expect(dropEmptyItems(value as never)).toEqual([h2("New"), p("Written here"), ul(li("", ul(li("detail"))))]);
+  });
+
+  it("leaves a heading that never had a list alone", () => {
+    expect(dropEmptyItems([h2("New"), h2("Fixed"), ul(li("x"))] as never)).toEqual([h2("New"), h2("Fixed"), ul(li("x"))]);
+  });
+});
+
+describe("patchFields drops empty bullets", () => {
+  it("never ships the template's empty bullets as \"- \"", () => {
+    const fields = patchFields("", patchTemplate(), null);
+    expect(fields.body).toBe("");
+    expect(fields.rich_body).toEqual([]);
+  });
+
+  it("keeps them when asked (a new draft keeps its template)", () => {
+    const fields = patchFields("", patchTemplate(), null, { keepEmpty: true });
+    expect(fields.body).toContain("## New");
   });
 });
 

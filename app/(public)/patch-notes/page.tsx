@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { siteUrl } from "@/lib/api/codex-write";
 import { fetchPatches } from "@/lib/api/patches";
 import { fetchVersions } from "@/lib/api/versions";
 import { featureView } from "@/lib/features";
@@ -25,7 +26,7 @@ export default async function PatchNotesPage() {
   const session = await getSession();
   const features = featureView(session?.features);
   if (session && !features.canOpen("patch_notes")) notFound();
-  const [patches, versions] = await Promise.all([fetchPatches(), fetchVersions()]);
+  const [patches, versions, origin] = await Promise.all([fetchPatches(), fetchVersions(), siteUrl()]);
   if (patches === "not_found") notFound();
   const seen = patchSeen(session);
   const newest = patches?.[0]?.number ?? null;
@@ -36,6 +37,7 @@ export default async function PatchNotesPage() {
         patches={patches}
         versions={versions}
         seen={seen}
+        siteUrl={origin}
         badge={features.preview("patch_notes") && <PreviewBadge />}
       />
       {shouldMovePatchMark(newest, seen) && <PatchMarkMover shown={newest} />}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { siteUrl } from "@/lib/api/codex-write";
 import { fetchPatchPendingChanges } from "@/lib/api/pending-changes";
 import { fetchStaffPatch } from "@/lib/api/patch-write";
+import { featureView } from "@/lib/features";
 import { requirePatchEditor } from "@/lib/patch-notes/editor-access";
 import { patchValue } from "@/lib/patch-notes/patch-schema";
 import { patchNumberParam } from "@/lib/patch-notes/paths";
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: PageProps<"/admin/patch-notes
 // /admin/patch-notes/:number/edit (www#237): one Patch in the two-step
 // editor. Admins and up; everyone else, and an unknown number, get the 404.
 export default async function PatchEditPage({ params }: PageProps<"/admin/patch-notes/[number]/edit">) {
-  await requirePatchEditor();
+  const session = await requirePatchEditor();
   const number = patchNumberParam((await params).number);
   if (number === null) notFound();
   const [patch, origin, pendingChanges] = await Promise.all([
@@ -37,6 +38,7 @@ export default async function PatchEditPage({ params }: PageProps<"/admin/patch-
       initialValue={value.length > 0 ? value : emptyRichTextValue()}
       siteUrl={origin}
       pendingChanges={pendingChanges}
+      preview={featureView(session.features).preview("patch_notes")}
     />
   );
 }

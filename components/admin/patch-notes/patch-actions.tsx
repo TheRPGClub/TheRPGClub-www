@@ -13,12 +13,20 @@ import { PatchPost } from "./patch-post";
 // (signal-orange outline) on a published Patch, Delete draft (signal-orange
 // ghost) on a draft, each behind the usual confirm. Length never blocks
 // either: past 4000 the post is cut.
-export function PatchActions({ editor }: { editor: PatchEditorState }) {
+export function PatchActions({
+  editor,
+  leave,
+  preview,
+}: {
+  editor: PatchEditorState;
+  leave: (path: string) => void;
+  preview: boolean;
+}) {
   const { patch, busy, published, dirty } = editor;
   const spin = (kind: "save" | "publish") => (busy === kind ? <Loader2 aria-hidden className="motion-safe:animate-spin" /> : null);
   return (
     <div className="flex flex-col gap-3 border-t border-border pt-3.5">
-      <PatchPost editor={editor} />
+      <PatchPost editor={editor} preview={preview} />
       {editor.error && (
         <p role="alert" className="text-[0.875rem] text-destructive">
           {editor.error}
@@ -55,7 +63,7 @@ export function PatchActions({ editor }: { editor: PatchEditorState }) {
             confirmLabel="Delete draft"
             pendingLabel="Deleting…"
             confirmIcon={<Trash2 aria-hidden />}
-            onConfirm={editor.remove}
+            onConfirm={() => editor.remove(leave)}
           />
         )}
         <Button type="button" variant="outline" onClick={() => void editor.save()} disabled={busy !== null || !dirty}>

@@ -12,6 +12,7 @@ import {
 } from "@/lib/patch-notes/pending-changes";
 
 const UNREACHED = "Couldn't reach the site. Check your connection and try again.";
+const UNREAD = "Saved, but the list didn't come back. Reload the page to see it.";
 
 // Step 1's state (www#240): the Pending Changes Patch `number` covers or
 // could, and its writes. Ticking saves the whole covered list at once;
@@ -52,7 +53,8 @@ export function usePatchScope(
       id,
       () => coverPendingChangesAction(number, ids),
       (result) => {
-        const next = applyCover(changes, number, result.covered ?? []);
+        if (!result.covered) return setError(UNREAD);
+        const next = applyCover(changes, number, result.covered);
         setChanges(next);
         onCovered(scope.covered, patchScope(next, number).covered);
       },
@@ -62,9 +64,10 @@ export function usePatchScope(
   function dismiss(id: number, undo = false) {
     void run(
       id,
-      () => dismissPendingChangeAction(id, undo),
+      () => dismissPendingChangeAction(number, id, undo),
       (result) => {
-        if (result.change && changes) setChanges(applyChange(changes, result.change));
+        if (!result.change) return setError(UNREAD);
+        if (changes) setChanges(applyChange(changes, result.change));
       },
     );
   }

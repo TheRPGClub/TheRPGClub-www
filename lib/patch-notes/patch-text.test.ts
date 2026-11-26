@@ -132,6 +132,29 @@ describe("patchText", () => {
     expect(result.cutMarkdown).toMatch(/^abcdefghi .* abcdefghi\.\.\.$/);
   });
 
+  it.each([
+    [".", "Done", "Done..."],
+    ["...", "Done", "Done..."],
+    ["\u2026", "Done", "Done..."],
+    ["!", "Done!", "Done!..."],
+    ["?", "Done?", "Done?..."],
+  ])("never reads as .... when the kept text ends in %s", (end, kept, shown) => {
+    const texts = ["1", "2", "3", "4"].map((n) => `${n}${words(999)}${end}`);
+    texts[2] = `3${words(999)} ${kept === "Done" ? `Done${end}` : kept}`;
+    const result = patchText(texts.map((text) => p(t(text))));
+    expect(result.cut).toBe(true);
+    expect(result.cutMarkdown.endsWith(` ${shown}`)).toBe(true);
+    expect(result.cutMarkdown).not.toMatch(/\.\.\.\.$|\u2026\.\.\.$/);
+    expect(result.cutMarkdown).toBe(richTextToDiscord(result.cutValue));
+  });
+
+  it("never cuts after an empty list item", () => {
+    const value = [p(t(words(3970))), ul(li("short"), li(""), li(words(200)))];
+    const result = patchText(value);
+    expect(result.cut).toBe(true);
+    expect(result.cutMarkdown.endsWith("- short...")).toBe(true);
+  });
+
   it("cuts a long first block even when it is a list item", () => {
     const result = patchText([ul(li(words(6000)), li("after"))]);
     expect(result.cut).toBe(true);

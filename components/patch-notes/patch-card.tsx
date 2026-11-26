@@ -3,7 +3,7 @@ import type { Value } from "platejs";
 import { ArrowRight } from "lucide-react";
 
 import { patchText } from "@/lib/patch-notes/patch-text";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { PatchBody } from "./patch-body";
 
 // The Patch card (www#236, The Stack's top card): the newest Patch on
@@ -15,13 +15,15 @@ import { PatchBody } from "./patch-body";
 // red rule, DESIGN.md).
 //
 // Pure and server-safe, with no API reads, so the client editor can render
-// it with its live value.
+// it with its live value. `siteUrl` makes the site's own links whole as the
+// save does, so the card cuts where the stored `cut_body` (the post) does.
 export function PatchCard({
   number,
   title,
   date,
   dateTime,
   value,
+  siteUrl = null,
   href,
   mark,
   headingLevel = 2,
@@ -35,12 +37,16 @@ export function PatchCard({
   dateTime?: string | null;
   // The whole Patch, sanitized: the card cuts it.
   value: Value;
-  href: string;
+  // The site's origin (siteUrl()), null when unknown.
+  siteUrl?: string | null;
+  // The Patch's page; null for a draft (the editor's preview), which has
+  // none yet, so "Read the full Patch" shows disabled.
+  href: string | null;
   // The unseen "NEW" chip (www#238), beside the date.
   mark?: ReactNode;
   headingLevel?: 2 | 3;
 }) {
-  const { cutValue } = patchText(value);
+  const { cutValue } = patchText(value, siteUrl ? { siteUrl } : {});
   const Heading = `h${headingLevel}` as const;
   return (
     <article
@@ -72,10 +78,17 @@ export function PatchCard({
         <p className="text-[0.9375rem] text-faint-foreground">Nothing written yet.</p>
       )}
       <div className="mt-3 flex justify-end border-t border-border pt-3">
-        <ButtonLink href={href}>
-          Read the full Patch<span className="sr-only"> {number}</span>
-          <ArrowRight aria-hidden data-icon="inline-end" />
-        </ButtonLink>
+        {href ? (
+          <ButtonLink href={href}>
+            Read the full Patch<span className="sr-only"> {number}</span>
+            <ArrowRight aria-hidden data-icon="inline-end" />
+          </ButtonLink>
+        ) : (
+          <Button type="button" disabled>
+            Read the full Patch<span className="sr-only"> {number} (once published)</span>
+            <ArrowRight aria-hidden data-icon="inline-end" />
+          </Button>
+        )}
       </div>
     </article>
   );

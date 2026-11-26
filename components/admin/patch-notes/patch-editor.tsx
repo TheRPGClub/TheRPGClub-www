@@ -37,19 +37,24 @@ export function PatchEditor({
   initialValue,
   siteUrl,
   pendingChanges,
+  preview = false,
 }: {
   patch: Patch;
   initialValue: Value;
   siteUrl: string | null;
   pendingChanges: PendingChange[] | null;
+  // Patch Notes is in Preview: the bot posts to the staff test channel.
+  preview?: boolean;
 }) {
   const editor = usePatchEditor(patch, initialValue, siteUrl);
   const guard = useLeaveGuard(editor.dirty);
   // Bumped to remount the sheet on a redrafted template.
   const [drafted, setDrafted] = useState(0);
   const untouched = (covered: PendingChange[]) => !editor.published && isPatchTemplate(editor.value, covered);
+  // Heard once the cover write is back: the text may have changed while it
+  // went, so it is checked as it stands now.
   const scope = usePatchScope(patch.number, pendingChanges, (before, after) => {
-    if (!untouched(before)) return;
+    if (editor.published || !isPatchTemplate(editor.currentValue(), before)) return;
     editor.setValue(patchTemplate(after));
     setDrafted((n) => n + 1);
   });
@@ -107,7 +112,7 @@ export function PatchEditor({
                   <PatchScopeStrip scope={scope.scope} onChange={() => setStep("scope")} />
                   <PatchSheet key={drafted} editor={editor} />
                 </div>
-                <PatchPreview editor={editor} actions={<PatchActions editor={editor} />} />
+                <PatchPreview editor={editor} actions={<PatchActions editor={editor} leave={guard.leaveTo} preview={preview} />} />
               </div>
             ),
           },

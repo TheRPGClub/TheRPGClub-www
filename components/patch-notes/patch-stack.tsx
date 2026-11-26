@@ -29,12 +29,15 @@ export function PatchStack({
   versions = null,
   badge,
   seen = NO_PATCH_SEEN,
+  siteUrl = null,
 }: {
   patches: Patch[] | null;
   // The current versions; null hides them.
   versions?: Versions | null;
   badge?: ReactNode;
   seen?: PatchSeen;
+  // The site's origin, so the card cuts where the post does.
+  siteUrl?: string | null;
 }) {
   const [newest, ...older] = patches ?? [];
   return (
@@ -55,6 +58,7 @@ export function PatchStack({
               date={patchDate(newest)}
               dateTime={newest.published_at}
               value={patchValue(newest.rich_body)}
+              siteUrl={siteUrl}
               href={patchPath(newest.number)}
               mark={isUnseenPatch(newest.number, seen) && <NewMark />}
             />

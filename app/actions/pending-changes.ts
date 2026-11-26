@@ -16,6 +16,9 @@ export async function coverPendingChangesAction(number: number, ids: number[]): 
   return result;
 }
 
-export async function dismissPendingChangeAction(id: number, undo: boolean): Promise<PendingChangeActionResult> {
-  return dismissPendingChange(id, undo === true);
+// Dismiss (or undo) from Patch `number`'s editor, whose page is read again.
+export async function dismissPendingChangeAction(number: number, id: number, undo: boolean): Promise<PendingChangeActionResult> {
+  const result = await dismissPendingChange(id, undo === true);
+  if (result.ok) revalidatePath(patchEditPath(number));
+  return result;
 }

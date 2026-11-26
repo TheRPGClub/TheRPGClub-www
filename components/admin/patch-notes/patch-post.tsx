@@ -18,17 +18,18 @@ import { Stamp } from "@/components/admin/desk/stamp";
 // published Patch (and on a draft whose post is coming down): where the
 // post stands ("Posted 26 Nov 14:05", "changed since"), the bot job's
 // stamp as on the desk's proof cards (Queued / Done / Failed), and Post to
-// #patch-notes or Update the post in highlighter yellow.
-export function PatchPost({ editor }: { editor: PatchEditorState }) {
+// #patch-notes or Update the post in highlighter yellow. In Preview a line
+// says the bot posts to the staff test channel instead.
+export function PatchPost({ editor, preview }: { editor: PatchEditorState; preview: boolean }) {
   const post = usePatchPost(editor);
   const { job } = post.view;
   if (!post.view.show) return null;
-  if (!job) return <PostBody editor={editor} post={post} job={null} />;
-  return <FollowedPost key={job.id} editor={editor} post={post} job={job} />;
+  if (!job) return <PostBody editor={editor} post={post} job={null} preview={preview} />;
+  return <FollowedPost key={job.id} editor={editor} post={post} job={job} preview={preview} />;
 }
 
 // Follows the job until it settles, then has the Patch read back.
-function FollowedPost({ editor, post, job }: { editor: PatchEditorState; post: PatchPostState; job: BotJob }) {
+function FollowedPost({ editor, post, job, preview }: { editor: PatchEditorState; post: PatchPostState; job: BotJob; preview: boolean }) {
   const state = useBotJob(job.id, job);
   const live = state.job ?? job;
   const wasOpen = useRef(!isBotJobSettled(job));
@@ -38,10 +39,27 @@ function FollowedPost({ editor, post, job }: { editor: PatchEditorState; post: P
     wasOpen.current = false;
     void settled(live);
   }, [live, settled]);
-  return <PostBody editor={editor} post={post} job={live} follow={state} />;
+  return <PostBody editor={editor} post={post} job={live} follow={state} preview={preview} />;
 }
 
-function PostBody({ editor, post, job, follow }: { editor: PatchEditorState; post: PatchPostState; job: BotJob | null; follow?: BotJobState }) {
+// Patch Notes in Preview posts to bot-dev (the bot's routing); once Live,
+// the next Update moves the post to #patch-notes.
+export const PREVIEW_NOTE =
+  "Patch Notes is in Preview, so the bot posts to the staff test channel, not #patch-notes. Once it's Live, the post's next update moves it there.";
+
+function PostBody({
+  editor,
+  post,
+  job,
+  follow,
+  preview,
+}: {
+  editor: PatchEditorState;
+  post: PatchPostState;
+  job: BotJob | null;
+  follow?: BotJobState;
+  preview: boolean;
+}) {
   const isClient = useIsClient();
   const { view, sending } = post;
   const copy = patchPostCopy(view, job, { dirty: editor.dirty });
@@ -64,6 +82,7 @@ function PostBody({ editor, post, job, follow }: { editor: PatchEditorState; pos
             {copy.line === "posted" && view.changed && !waiting && <span className="text-highlight"> · changed since</span>}
           </p>
           <p className={cn("mt-1 text-[0.8125rem] leading-[1.5] text-dim-foreground", copy.failed && "text-destructive")}>{copy.detail}</p>
+          {preview && <p className="mt-1 text-[0.8125rem] leading-[1.5] text-faint-foreground">{PREVIEW_NOTE}</p>}
           {post.error && (
             <p role="alert" className="mt-1 text-[0.8125rem] leading-[1.5] text-destructive">
               {post.error}

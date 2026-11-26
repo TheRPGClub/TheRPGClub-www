@@ -25,8 +25,10 @@ export function usePatchPost(editor: PatchEditorState) {
     setSending(step);
     setError(null);
     try {
-      const result = await postPatchAction(editor.patch.number, step, editor.dirty ? editor.draft() : null);
-      if (result.patch) editor.adopt(result.patch, { saved: true });
+      // Only what is sent is saved: text typed while it goes stays unsaved.
+      const sent = editor.dirty ? editor.draft() : null;
+      const result = await postPatchAction(editor.patch.number, step, sent);
+      if (result.patch) editor.adopt(result.patch, { saved: sent });
       if (!result.ok) return setError(result.error ?? UNREACHED);
       const base = result.patch ?? editor.patch;
       editor.adopt({ ...base, post_job: result.job ?? base.post_job });
