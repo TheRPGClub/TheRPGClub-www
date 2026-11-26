@@ -124,6 +124,11 @@
             &[data-variant="inverse"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-background text-foreground hover:bg-background/85 focus-visible:border-background;
             }
+            /* www#223: a News shelf's arrow, a paper disc over the art with
+               an ink chevron and a soft drop; yellow on hover. */
+            &[data-variant="scroll"] {
+                @apply rounded-full border-transparent bg-foreground text-background shadow-[0_2px_10px_rgb(0_0_0/0.45)] hover:bg-highlight hover:text-highlight-foreground focus-visible:border-highlight;
+            }
             &[data-variant="inverse-outline"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-transparent inset-ring-[1.5px] inset-ring-current hover:bg-current/10 focus-visible:border-current;
             }
