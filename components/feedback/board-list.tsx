@@ -1,6 +1,8 @@
 import type { BoardData } from "@/lib/feedback-board";
 import { kindMeta } from "@/lib/feedback";
+import { cn } from "@/lib/utils";
 import { BoardCard } from "./board-card";
+import { PIN_ROOM } from "./roadmap-pin";
 
 // The shown kind's wall, three across from `xl`, in the API's board order:
 // Open is Approved, then Pending, then Done; Closed is its Rejected,
@@ -33,7 +35,13 @@ export function BoardList({
     );
   }
   return (
-    <ul className="grid items-start gap-x-[22px] gap-y-6 pt-5 sm:grid-cols-2 xl:grid-cols-3">
+    <ul
+      className={cn(
+        "grid items-start gap-x-[22px] gap-y-6 pt-5 sm:grid-cols-2 xl:grid-cols-3",
+        // Room above each row for the Roadmap badges hanging over the cards.
+        rows.some((f) => f.roadmap) && PIN_ROOM,
+      )}
+    >
       {rows.map((f) => {
         const original = f.duplicate_of_id ? board.originals.get(f.duplicate_of_id) : undefined;
         return (
