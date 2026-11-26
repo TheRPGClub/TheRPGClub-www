@@ -1,0 +1,14 @@
+# Checks the pull request title versioning reads (spec TheRPGClub/TheRPGClub-api#510, ticket #243).
+# The required check reads "PR title / Title check".
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+
+jobs:
+  pr-title:
+    name: PR title
+    permissions:
+      contents: read
+    uses: TheRPGClub/TheRPGClub-api/.github/workflows/pr-title-reusable.yml@main
