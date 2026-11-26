@@ -48,35 +48,104 @@ export function kindMeta(kind: FeedbackKind): FeedbackKindMeta {
   return FEEDBACK_KINDS.find((k) => k.value === kind) ?? FEEDBACK_KINDS[0];
 }
 
-// The bot's limits on its /feedback modal.
+// The bot's limits on its /feedback modal (every long field takes 4000).
 export const FEEDBACK_TITLE_MAX = 256;
 export const FEEDBACK_DETAILS_MAX = 4000;
 
+// Where a Bug Report happened, in the API's words and the form's.
+export const FEEDBACK_WHERES = [
+  { value: "bot", label: "Bot" },
+  { value: "website", label: "Website" },
+] as const;
+
+export type FeedbackWhere = (typeof FEEDBACK_WHERES)[number]["value"];
+
+// What the form sends. A Feature Request or Suggestion has details; a Bug
+// Report has where, what happened, what was expected and (optionally) steps.
 export interface FeedbackInput {
   kind: FeedbackKind;
   title: string;
-  details: string;
+  details?: string;
+  where?: FeedbackWhere;
+  what_happened?: string;
+  expected?: string;
+  steps?: string | null;
 }
 
-// Check Feedback the way the bot's modal does: a kind, a title and details.
-// Returns the clean payload or the first problem.
-export function validateFeedbackInput(raw: {
+// The form as typed, before checking.
+export interface FeedbackDraft {
   kind: string | null;
   title: string;
-  details: string;
-}): { ok: true; data: FeedbackInput } | { ok: false; error: string } {
+  details?: string;
+  where?: string | null;
+  what_happened?: string;
+  expected?: string;
+  steps?: string;
+}
+
+type Checked<T> = { ok: true; value: T } | { ok: false; error: string };
+
+function longText(raw: string | undefined, missing: string | null, name: string): Checked<string> {
+  const text = (raw ?? "").trim();
+  if (!text && missing) return { ok: false, error: missing };
+  if (text.length > FEEDBACK_DETAILS_MAX) {
+    return { ok: false, error: `Keep ${name} to ${FEEDBACK_DETAILS_MAX} characters.` };
+  }
+  return { ok: true, value: text };
+}
+
+function isWhere(raw: unknown): raw is FeedbackWhere {
+  return FEEDBACK_WHERES.some((w) => w.value === raw);
+}
+
+function bugFields(raw: FeedbackDraft): Checked<Omit<FeedbackInput, "kind" | "title">> {
+  if (!isWhere(raw.where)) return { ok: false, error: "Say where it happened: the bot or the website." };
+  const happened = longText(raw.what_happened, "Say what happened.", "what happened");
+  if (!happened.ok) return happened;
+  const expected = longText(raw.expected, "Say what you expected to happen.", "what you expected");
+  if (!expected.ok) return expected;
+  const steps = longText(raw.steps, null, "the steps");
+  if (!steps.ok) return steps;
+  return {
+    ok: true,
+    value: { where: raw.where, what_happened: happened.value, expected: expected.value, steps: steps.value || null },
+  };
+}
+
+// Check Feedback the way the API and the bot's modal do: a kind and a title,
+// then details, or a Bug Report's where, what happened and what was expected
+// (steps optional). Returns the clean payload or the first problem.
+export function validateFeedbackInput(
+  raw: FeedbackDraft,
+): { ok: true; data: FeedbackInput } | { ok: false; error: string } {
   if (!isFeedbackKind(raw.kind)) return { ok: false, error: "Pick what kind of feedback it is." };
   const title = raw.title.replace(/\s+/g, " ").trim();
   if (!title) return { ok: false, error: "Give it a title." };
   if (title.length > FEEDBACK_TITLE_MAX) {
     return { ok: false, error: `Keep the title to ${FEEDBACK_TITLE_MAX} characters.` };
   }
-  const details = raw.details.trim();
-  if (!details) return { ok: false, error: "Say what it should do in the details." };
-  if (details.length > FEEDBACK_DETAILS_MAX) {
-    return { ok: false, error: `Keep the details to ${FEEDBACK_DETAILS_MAX} characters.` };
+  if (raw.kind === "bug_report") {
+    const bug = bugFields(raw);
+    return bug.ok ? { ok: true, data: { kind: raw.kind, title, ...bug.value } } : bug;
   }
-  return { ok: true, data: { kind: raw.kind, title, details } };
+  const details = longText(raw.details, "Say what it should do in the details.", "the details");
+  if (!details.ok) return details;
+  return { ok: true, data: { kind: raw.kind, title, details: details.value } };
+}
+
+// A Bug Report's screenshot. The API takes 5 MB, but the file goes through a
+// server action and Vercel refuses a function request body over about 4.5 MB
+// before Next sees it, so the website's cap is 4 MB (as the live event image).
+export const SCREENSHOT_MAX_BYTES = 4 * 1024 * 1024;
+export const SCREENSHOT_TYPES: readonly string[] = ["image/png", "image/jpeg", "image/webp"];
+export const SCREENSHOT_ACCEPT = SCREENSHOT_TYPES.join(",");
+
+// A problem with the picked screenshot, or null when the API will take it.
+export function screenshotProblem(file: { type: string; size: number }): string | null {
+  if (file.size === 0) return "That file is empty.";
+  if (!SCREENSHOT_TYPES.includes(file.type)) return "Use a PNG, JPEG or WebP image.";
+  if (file.size > SCREENSHOT_MAX_BYTES) return "The screenshot is larger than 4 MB. Crop it or save it as a JPEG.";
+  return null;
 }
 
 // Who may give feedback and upvote: Members role holders and staff, as the
@@ -176,6 +245,53 @@ export function giveFeedbackHref(kind?: FeedbackKind): string {
 
 export function editFeedbackHref(f: Pick<Feedback, "feedback_id">): string {
   return `/feedback?edit=${f.feedback_id}`;
+}
+
+// What the Give feedback dialog opens as, from the board's URL: `?new=1`
+// (of `kind`) for Members role holders and staff, `?edit=<id>` for the
+// author of a Pending one; anything else that asks for it says why not.
+export type FeedbackDialogState =
+  | { mode: "create"; kind: FeedbackKind }
+  | { mode: "edit"; feedback: Feedback }
+  | { mode: "refused"; message: string };
+
+export function feedbackDialogState({
+  isNew,
+  editId,
+  editItem,
+  kind,
+  canGive,
+  viewerId,
+}: {
+  isNew: boolean;
+  editId: number;
+  editItem: Feedback | null;
+  kind: FeedbackKind;
+  canGive: boolean;
+  viewerId: string;
+}): FeedbackDialogState | null {
+  if (editId > 0) {
+    if (!editItem) return { mode: "refused", message: "That Feedback no longer exists." };
+    if (canEdit(editItem, viewerId)) return { mode: "edit", feedback: editItem };
+    return {
+      mode: "refused",
+      message: isAuthor(editItem, viewerId)
+        ? "It has already been reviewed, so it can't be edited."
+        : "Only its author can edit it.",
+    };
+  }
+  if (!isNew) return null;
+  if (!canGive) return { mode: "refused", message: "Only Members role holders and staff can give feedback." };
+  return { mode: "create", kind };
+}
+
+// The board's URL once the dialog closes: the same, without `new` or `edit`.
+export function dialogClosedHref(params: URLSearchParams): string {
+  const qs = new URLSearchParams(params);
+  qs.delete("new");
+  qs.delete("edit");
+  const q = qs.toString();
+  return q ? `/feedback?${q}` : "/feedback";
 }
 
 // Where a Feedback sits on the board: its kind's tab, Open or Closed, and

@@ -37,7 +37,8 @@ export function BoardList({
       {rows.map((f) => {
         const original = f.duplicate_of_id ? board.originals.get(f.duplicate_of_id) : undefined;
         return (
-          <li key={f.feedback_id}>
+          // Keyed by its last change, so an edit re-seeds the card's state.
+          <li key={`${f.feedback_id}-${f.updated_at}`}>
             <BoardCard
               feedback={f}
               viewerId={viewerId}
