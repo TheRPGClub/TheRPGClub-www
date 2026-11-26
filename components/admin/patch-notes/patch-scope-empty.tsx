@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 
 // Step 1, "What's in it", before versioning exists (www#237): no Pending
 // Changes have arrived yet, so there is nothing to tick, and the Patch is
-// written by hand in step 2. Ticking and dismissing come with www#240.
+// written by hand in step 2. Once there are some, step 1 is PatchScope
+// (www#240).
 export function PatchScopeEmpty({ onWrite }: { onWrite: () => void }) {
   return (
     <section aria-labelledby="patch-scope-empty" className="max-w-[46rem] border-t-2 border-foreground pt-5">

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { siteUrl } from "@/lib/api/codex-write";
+import { fetchPatchPendingChanges } from "@/lib/api/pending-changes";
 import { fetchStaffPatch } from "@/lib/api/patch-write";
 import { requirePatchEditor } from "@/lib/patch-notes/editor-access";
 import { patchValue } from "@/lib/patch-notes/patch-schema";
@@ -19,7 +20,11 @@ export default async function PatchEditPage({ params }: PageProps<"/admin/patch-
   await requirePatchEditor();
   const number = patchNumberParam((await params).number);
   if (number === null) notFound();
-  const [patch, origin] = await Promise.all([fetchStaffPatch(number), siteUrl()]);
+  const [patch, origin, pendingChanges] = await Promise.all([
+    fetchStaffPatch(number),
+    siteUrl(),
+    fetchPatchPendingChanges(number),
+  ]);
   if (patch === "not_found") notFound();
   // A failed read is the error page's (its Try again), not a missing Patch.
   if (patch === null) throw new Error("Couldn't read this Patch");
@@ -31,6 +36,7 @@ export default async function PatchEditPage({ params }: PageProps<"/admin/patch-
       patch={patch}
       initialValue={value.length > 0 ? value : emptyRichTextValue()}
       siteUrl={origin}
+      pendingChanges={pendingChanges}
     />
   );
 }

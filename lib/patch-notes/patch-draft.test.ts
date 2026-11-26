@@ -1,10 +1,41 @@
 import { describe, expect, it } from "vitest";
 
-import { patchCount, patchFields, patchTemplate, patchTitleField } from "./patch-draft";
+import { isPatchTemplate, patchCount, patchFields, patchTemplate, patchTitleField } from "./patch-draft";
+import type { PendingChange } from "./pending-changes";
 
 const t = (text: string) => ({ text });
 const p = (text: string) => ({ type: "p", children: [t(text)] });
 const link = (url: string, text: string) => ({ type: "p", children: [{ type: "a", url, children: [t(text)] }] });
+
+function change(over: Partial<PendingChange> = {}): PendingChange {
+  return {
+    id: 1,
+    repo: "www",
+    pr_number: 10,
+    type: "feat",
+    title: "feat(www): a change",
+    version: "1.0.0",
+    patch_note: null,
+    section: "new",
+    status: "covered",
+    patch_number: 4,
+    created_at: "2026-11-01T00:00:00Z",
+    ...over,
+  };
+}
+
+type Node = { type?: string; text?: string; children?: Node[] };
+const textOf = (n: Node): string => n.text ?? (n.children ?? []).map(textOf).join("");
+
+// The template's bullets under each heading.
+function bullets(value: unknown[]): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  const nodes = value as Node[];
+  nodes.forEach((n, i) => {
+    if (n.type === "h2") out[textOf(n)] = (nodes[i + 1].children ?? []).map(textOf);
+  });
+  return out;
+}
 
 describe("patchTemplate", () => {
   it("starts with an intro, then New, Improved and Fixed over a bullet each", () => {
@@ -19,6 +50,41 @@ describe("patchTemplate", () => {
 
   it("comes back as a fresh value each time", () => {
     expect(patchTemplate()).not.toBe(patchTemplate());
+  });
+
+  it("drafts one bullet per covered Pending Change under its section, oldest first", () => {
+    const value = patchTemplate([
+      change({ id: 3, section: "fixed", title: "fix(www): stop the sidebar jumping", created_at: "2026-11-03" }),
+      change({ id: 1, section: "new", title: "feat(api): news feed", patch_note: "The news page knows what you've read.", created_at: "2026-11-01" }),
+      change({ id: 2, section: "new", title: "feat(bot): /patchnotes command", created_at: "2026-11-02" }),
+    ]);
+    expect(bullets(value)).toEqual({
+      New: ["The news page knows what you've read.", "feat(bot): /patchnotes command"],
+      Improved: [""],
+      Fixed: ["fix(www): stop the sidebar jumping"],
+    });
+    expect(value[0]).toEqual(p(""));
+  });
+
+  it("uses the title when the Patch note line is blank", () => {
+    expect(bullets(patchTemplate([change({ patch_note: "   ", title: "perf(api): faster lists", section: "improved" })])).Improved).toEqual([
+      "perf(api): faster lists",
+    ]);
+  });
+});
+
+describe("isPatchTemplate", () => {
+  const covered = [change({ id: 1 }), change({ id: 2, section: "fixed" })];
+
+  it("knows the untouched template drafted from what is covered, saved or not", () => {
+    expect(isPatchTemplate(patchTemplate(covered), covered)).toBe(true);
+    expect(isPatchTemplate(patchFields("", patchTemplate(), null).rich_body, [])).toBe(true);
+  });
+
+  it("is false once staff have written in it, or for another covered set", () => {
+    const written = [p("Hello all"), ...patchTemplate(covered).slice(1)];
+    expect(isPatchTemplate(written, covered)).toBe(false);
+    expect(isPatchTemplate(patchTemplate(covered), covered.slice(0, 1))).toBe(false);
   });
 });
 
