@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DeskSelect } from "@/components/admin/desk/desk-select";
 import { MemberField } from "@/components/issue/member-field";
 import { ReleaseDateField } from "@/components/games/edit/release-date-field";
-import { MILESTONE_BLURB_MAX, MILESTONE_NAME_MAX, milestoneDraft, milestonePayload } from "@/lib/roadmap/edit";
+import { MILESTONE_BLURB_MAX, MILESTONE_NAME_MAX, milestoneDraft, milestonePayload, withPrecision } from "@/lib/roadmap/edit";
 import type { RoadmapMilestone } from "@/lib/roadmap/types";
 import { useEditor } from "./editor-context";
 import { EditDialog } from "./edit-dialog";
@@ -66,7 +66,7 @@ export function MilestoneDialog({ milestone }: { milestone: RoadmapMilestone | n
               groups={[{ options: PRECISIONS }]}
               value={draft.date_precision}
               labelledBy={dateId}
-              onValueChange={(v) => setDraft({ ...draft, date_precision: v as DatePrecision })}
+              onValueChange={(v) => setDraft(withPrecision(draft, v as DatePrecision))}
             />
           </div>
           <ReleaseDateField

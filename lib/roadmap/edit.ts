@@ -4,6 +4,7 @@
 // dialog's default destination, and the item and Milestone forms. Every
 // function returns a new Roadmap and leaves its argument alone. Client-safe.
 import type { DatePrecision } from "@/lib/api/types";
+import { periodStart } from "@/lib/games/game-edit/releases";
 import { claimFeedback } from "./feedback";
 import { isShipped } from "./tree";
 import type { Roadmap, RoadmapArea, RoadmapFeedback, RoadmapItem, RoadmapMilestone } from "./types";
@@ -208,6 +209,12 @@ export function milestoneDraft(m?: RoadmapMilestone | null): MilestoneDraft {
     target_date: m?.target_date ?? null,
     date_precision: m?.date_precision ?? "tba",
   };
+}
+
+// The draft at a new Date Precision, its target date snapped to the first
+// day of its period there (none for TBA), as a Release's date is.
+export function withPrecision(d: MilestoneDraft, date_precision: DatePrecision): MilestoneDraft {
+  return { ...d, date_precision, target_date: periodStart(d.target_date, date_precision) };
 }
 
 export function milestonePayload(d: MilestoneDraft): { data: MilestonePayload } | { error: string } {
