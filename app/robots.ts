@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         "/$",
         "/join",
         "/codex/history",
+        "/patch-notes",
         "/share-card",
         "/_next/",
         "/favicon.ico",
