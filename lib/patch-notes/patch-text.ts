@@ -15,6 +15,8 @@ import { nodeText } from "@/lib/rich-text/text";
 //
 // When not even the first block or list item fits, that one is cut at the
 // last whole word that fits instead, so a Patch never reads as "..." alone.
+// A full stop or ellipsis the kept text ends in gives way to "...", so the
+// cut never reads "...."; an empty list item is never where it falls.
 //
 // It takes a value already through its schema's sanitizer, like the
 // converter it wraps.
@@ -68,15 +70,30 @@ function prefix(nodes: Node[], path: Path): Node[] {
   return rest.length > 0 ? [...kept, { ...nodes[at], children: prefix(children(nodes[at]), rest) }] : [...kept, nodes[at]];
 }
 
+// A full stop or ellipsis the kept text ends in, which "..." replaces so
+// the cut never reads as "...." ("!" and "?" stay: "Done!...").
+const SENTENCE_STOP = /[.\u2026]+\s*$/;
+
+function withoutStop(kids: Node[]): Node[] {
+  const last = kids.at(-1);
+  if (typeof last?.text !== "string" || !SENTENCE_STOP.test(last.text)) return kids;
+  return [...kids.slice(0, -1), { ...last, text: last.text.replace(SENTENCE_STOP, "") }];
+}
+
 // "..." as an unmarked text at the end of the last block holding text.
 function withMark(nodes: Node[]): Node[] {
   const last = nodes.at(-1);
   if (!last) return [{ type: "p", children: [{ text: PATCH_CUT_MARK }] }];
   const kids = children(last);
   const marked = kids.some((child) => typeof child.text === "string")
-    ? [...kids, { text: PATCH_CUT_MARK }]
+    ? [...withoutStop(kids), { text: PATCH_CUT_MARK }]
     : withMark(kids);
   return [...nodes.slice(0, -1), { ...last, children: marked }];
+}
+
+function nodeAt(nodes: Node[], path: Path): Node {
+  const [at, ...rest] = path;
+  return rest.length > 0 ? nodeAt(children(nodes[at]), rest) : nodes[at];
 }
 
 // The first `budget` characters of text, in reading order; elements after
@@ -123,12 +140,12 @@ export function patchText(value: Value, options: DiscordOptions = {}): PatchText
 
   const nodes = value as unknown as Node[];
   const fits = (cut: Node[]) => richTextToDiscord(cut, options).length <= PATCH_POST_MAX;
-  // A block Discord would not show (an empty paragraph) is never where the
-  // cut falls, so "..." always follows words.
+  // A block Discord would not show (an empty paragraph) or an empty list
+  // item is never where the cut falls, so "..." always follows words.
   const shown = (node: Node) => richTextToDiscord([node], options) !== "";
   let best: Node[] | null = null;
   for (const path of cutPoints(nodes)) {
-    if (path.length === 1 && !shown(nodes[path[0]])) continue;
+    if (path.length === 1 ? !shown(nodes[path[0]]) : nodeText(nodeAt(nodes, path)).trim() === "") continue;
     const cut = withMark(prefix(nodes, path));
     if (!fits(cut)) break;
     best = cut;
