@@ -22,7 +22,7 @@ export interface StaffDeskProps {
   jobsMeta: CollectionMeta | null;
   jobsError: string | null;
   scope: "all" | "mine";
-  pendingSuggestions: number | null;
+  pendingFeedback: number | null;
   tab: DeskTab;
   show: JobsShow;
   now: Date;

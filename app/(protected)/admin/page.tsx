@@ -1,7 +1,7 @@
 import { listBotJobsAction } from "@/app/actions/bot-jobs";
 import { listPresenceAction } from "@/app/actions/presence";
 import { fetchRecentLiveEvents } from "@/lib/api/live-events";
-import { fetchSuggestions } from "@/lib/api/suggestions";
+import { fetchFeedbackList } from "@/lib/api/feedback";
 import { fetchVotingRound } from "@/lib/api/voting-round";
 import { deskTabsFor, parseDeskTab, parseJobsShow } from "@/lib/desk-tabs";
 import { trayCards } from "@/lib/desk-tray";
@@ -38,7 +38,7 @@ export default async function StaffDeskPage({
   const [wire, round, pending, presence, events] = await Promise.all([
     listBotJobsAction(1),
     isAdminOrAbove(m) ? fetchVotingRound() : null,
-    isSuperadmin(m) ? fetchSuggestions(["pending"]) : null,
+    isSuperadmin(m) ? fetchFeedbackList({ statuses: ["pending"] }) : null,
     listPresenceAction(1, 1),
     fetchRecentLiveEvents(LIVE_EVENT_LOOKBACK),
   ]);
@@ -46,7 +46,7 @@ export default async function StaffDeskPage({
   const now = new Date();
   const readings = {
     round,
-    pendingSuggestions: pending ? pending.total : null,
+    pendingFeedback: pending ? pending.total : null,
     nowPlaying: presence.ok ? (presence.data?.[0]?.activity_name ?? null) : null,
     presenceCount: presence.ok && presence.meta ? presence.meta.count : null,
     upcomingLiveEvents: events ? upcomingNote(upcomingCount(events, now.getTime()), LIVE_EVENT_LOOKBACK) : null,
@@ -65,7 +65,7 @@ export default async function StaffDeskPage({
       jobsMeta={wire.meta ?? null}
       jobsError={wire.ok ? null : (wire.error ?? null)}
       scope={isAdminOrAbove(m) ? "all" : "mine"}
-      pendingSuggestions={readings.pendingSuggestions}
+      pendingFeedback={readings.pendingFeedback}
       tab={parseDeskTab(params.tab, tabs)}
       show={parseJobsShow(params.show)}
       now={now}

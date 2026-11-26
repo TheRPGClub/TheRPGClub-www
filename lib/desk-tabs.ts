@@ -47,7 +47,7 @@ export function parseJobsShow(raw: unknown): JobsShow {
 // Jobs no tool queues, filed under the group they belong to.
 const UNLISTED_KINDS: Partial<Record<BotJobKind, StaffGroup>> = {
   voting_poll_wakeup: "voting",
-  suggestion_submitted: "members",
+  feedback_submitted: "members",
 };
 
 // The group a job belongs to: the group of the tool that queues its kind;
@@ -70,19 +70,19 @@ export interface TabNote {
   tone?: "live" | "bad";
 }
 
-// A group's state: its live news (the round, pending Suggestions, the last
+// A group's state: its live news (the round, pending Feedback, the last
 // flag change), then what its jobs are doing ("1 queued", "2 failed").
 // Failures win the tone, then the open round.
 export function groupTabNote(
   group: StaffDeskGroup,
   notes: DeskNotes,
-  r: Pick<DeskReadings, "pendingSuggestions" | "jobs">,
+  r: Pick<DeskReadings, "pendingFeedback" | "jobs">,
   now: Date,
 ): TabNote {
   const parts: string[] = [];
   const mine = r.jobs.filter((j) => jobGroup(j.kind) === group.key);
   if (group.key === "voting" && notes.voting?.tone === "live") parts.push(notes.voting.text);
-  if (group.key === "members" && r.pendingSuggestions) parts.push(`${r.pendingSuggestions} pending`);
+  if (group.key === "members" && r.pendingFeedback) parts.push(`${r.pendingFeedback} pending`);
   if (group.key === "flags" && mine[0]) parts.push(`Changed ${agoText(mine[0].created_at, now)}`);
   const waiting = mine.filter(isWaiting).length;
   if (waiting) parts.push(`${waiting} queued`);

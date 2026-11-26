@@ -11,7 +11,7 @@ import { NewsBody } from "./news-body";
 import { NowPlayingClubBody, NowPlayingMineBody } from "./now-playing-bodies";
 import { ReleasesBody } from "./releases-body";
 import { ReviewsBody } from "./reviews-body";
-import { SuggestionsBody } from "./suggestions-body";
+import { FeedbackBody } from "./feedback-body";
 
 // Each panel key's items. Every body reads its own source and draws its
 // items, its empty note, or a short error when the read failed.
@@ -35,7 +35,7 @@ const BODIES: Record<PanelKey, (props: BodyProps) => Promise<React.ReactNode>> =
   reviews: ReviewsBody,
   journals: JournalsBody,
   giveaways: GiveawaysBody,
-  suggestions: SuggestionsBody,
+  feedback: FeedbackBody,
   codex: CodexBody,
   birthdays: BirthdaysBody,
 };

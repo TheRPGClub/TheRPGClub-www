@@ -41,17 +41,28 @@ function DialogOverlay({ className, ...props }: DialogPrimitive.Backdrop.Props) 
   )
 }
 
+// What the dialog is, drawn by each Theme by
+// [data-slot="dialog-content"][data-variant] (api ADR-0008).
+type DialogContentVariant =
+  // A sheet you read and dismiss.
+  | "default"
+  // www#226: the Give feedback dialog, a Feedback Board card inked by its
+  // kind (--k): the ink keyline round a card with no padding of its own.
+  | "kind-card"
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  variant = "default",
   ...props
-}: DialogPrimitive.Popup.Props & { showCloseButton?: boolean }) {
+}: DialogPrimitive.Popup.Props & { showCloseButton?: boolean; variant?: DialogContentVariant }) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
+        data-variant={variant}
         className={cn(
           "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-4 border p-5 text-sm sm:p-6",
           // Long copy has to stay reachable on a short window, so the popup
@@ -99,7 +110,8 @@ function DialogTitle({
   ...props
 }: DialogPrimitive.Title.Props & {
   // help: a help dialog's small title (an explainer), not a headline.
-  variant?: "default" | "help"
+  // kind (www#226): the Give feedback dialog's title on its kind's ink.
+  variant?: "default" | "help" | "kind"
 }) {
   return (
     <DialogPrimitive.Title

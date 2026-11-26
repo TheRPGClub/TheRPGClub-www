@@ -2,11 +2,11 @@ import type { DatePrecision, UpcomingRelease } from "@/lib/api/types";
 import { daysBetween, type IsoDay } from "@/lib/challenges/dates";
 import { weekdayOf } from "@/lib/release-calendar";
 import { MONTHS, precisionNote, shortDateLabel, utcDay } from "@/lib/releases";
-import type { ChallengeEvent, PanelSuggestion } from "@/lib/dashboard/panel-sources";
+import type { ChallengeEvent, PanelFeedback } from "@/lib/dashboard/panel-sources";
 
 // Pure helpers behind the Dashboard Panels' item rows: how long ago, a
 // release's date block, a Challenge event's sentence, what moved a
-// Suggestion. Client-safe.
+// Feedback. Client-safe.
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -94,15 +94,16 @@ export function eventSentence(event: Pick<ChallengeEvent, "kind" | "user" | "gam
   }
 }
 
-// What last moved a Suggestion (the time `sort=recent` orders by): its
-// submission, its review, a withdrawal, or else an upvote.
-export type SuggestionActivity = "submitted" | "approved" | "rejected" | "withdrawn" | "upvoted";
+// What last moved a Feedback (the time `sort=recent` orders by): its
+// submission, its review, a withdrawal, its issue closing, or else an upvote.
+export type FeedbackActivity = "submitted" | "approved" | "rejected" | "duplicate" | "withdrawn" | "done" | "upvoted";
 
-type ActivityFields = Pick<PanelSuggestion, "created_at" | "updated_at" | "reviewed_at" | "status" | "last_activity_at">;
+type ActivityFields = Pick<PanelFeedback, "created_at" | "updated_at" | "reviewed_at" | "status" | "last_activity_at"> &
+  Partial<Pick<PanelFeedback, "done_at">>;
 
-// When a Suggestion last moved: the API's `last_activity_at`, else its last
+// When a Feedback last moved: the API's `last_activity_at`, else its last
 // update. The row's label and its age both read this.
-export function suggestionActivityAt(s: Pick<ActivityFields, "created_at" | "updated_at" | "last_activity_at">): string {
+export function feedbackActivityAt(s: Pick<ActivityFields, "created_at" | "updated_at" | "last_activity_at">): string {
   return s.last_activity_at ?? s.updated_at ?? s.created_at;
 }
 
@@ -112,18 +113,23 @@ export function suggestionActivityAt(s: Pick<ActivityFields, "created_at" | "upd
 const SAME_MOMENT_MS = 1000;
 const sameMoment = (a: string, b: string) => Math.abs(Date.parse(a) - Date.parse(b)) <= SAME_MOMENT_MS;
 
-export function suggestionActivity(s: ActivityFields): SuggestionActivity {
-  const at = suggestionActivityAt(s);
+export function feedbackActivity(s: ActivityFields): FeedbackActivity {
+  const at = feedbackActivityAt(s);
   if (s.status === "withdrawn") return "withdrawn";
-  if (s.reviewed_at && sameMoment(at, s.reviewed_at)) return s.status === "rejected" ? "rejected" : "approved";
+  if (s.done_at && sameMoment(at, s.done_at)) return "done";
+  if (s.reviewed_at && sameMoment(at, s.reviewed_at)) {
+    return s.status === "rejected" || s.status === "duplicate" ? s.status : "approved";
+  }
   if (sameMoment(at, s.created_at)) return "submitted";
   return "upvoted";
 }
 
-export const SUGGESTION_ACTIVITY_LABEL: Record<SuggestionActivity, string> = {
+export const FEEDBACK_ACTIVITY_LABEL: Record<FeedbackActivity, string> = {
   submitted: "New",
   approved: "Approved",
   rejected: "Declined",
+  duplicate: "Duplicate",
+  done: "Done",
   withdrawn: "Withdrawn",
   upvoted: "Upvoted",
 };

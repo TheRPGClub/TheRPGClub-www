@@ -46,6 +46,11 @@ type InputVariant =
   // api#451: a field on a paper slip (the shelf forms): a pale field with
   // an ink stroke and an ink focus ring, since yellow on paper fails contrast.
   | "slip"
+  // www#226: a field on the Give feedback dialog, stroked in its kind's ink
+  // (--k), with the yellow focus; kind-title is its title, in the headline
+  // face.
+  | "kind"
+  | "kind-title"
 
 function Input({
   className,
