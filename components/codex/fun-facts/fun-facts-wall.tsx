@@ -41,7 +41,7 @@ export function FunFactsWall({
         back={CODEX_BACK}
         title="Fun Facts"
         badge={badge}
-        count={failed ? null : total}
+        count={failed ? null : partCount("fun_fact", total)}
         actions={<WallActions ids={ids} canAdd={canAdd} />}
       />
       {canAdd && (

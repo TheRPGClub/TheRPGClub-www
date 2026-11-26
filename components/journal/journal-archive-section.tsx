@@ -9,7 +9,7 @@ import { JournalVolumePreview } from "@/components/journal/journal-volume-previe
 export function JournalArchiveSection({ archive, query }: { archive: JournalArchive; query: ArchiveQuery }) {
   const { people, onShelf, pulled, pulledChapters } = archive;
   return (
-    <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className={pulled ? "grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px]" : "grid gap-7"}>
       <section aria-labelledby="journal-archive" className="min-w-0">
         <SectionHeading
           title={<span id="journal-archive">The archive</span>}

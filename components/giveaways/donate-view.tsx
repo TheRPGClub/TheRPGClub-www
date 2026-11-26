@@ -20,9 +20,8 @@ export function DonateView({
     <div className="space-y-6">
       <PageHeader
         back={{ href: "/giveaways", label: "Giveaways" }}
-        title="Giveaways"
+        title="Donate a key"
         badge={preview && <PreviewBadge />}
-        count="Donate and manage"
       />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,28.75rem)_minmax(0,1fr)] lg:gap-9">
         <div>

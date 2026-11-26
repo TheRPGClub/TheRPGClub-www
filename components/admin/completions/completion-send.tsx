@@ -30,7 +30,7 @@ export function CompletionSend({ f, onRestart }: { f: ReturnType<typeof useCompl
   }
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button type="submit" disabled={f.pending || !f.member || !f.game}>
+      <Button type="submit" variant="highlight" disabled={f.pending || !f.member || !f.game}>
         {f.pending && <Loader2 aria-hidden className="motion-safe:animate-spin" />}
         {f.announce ? "Log and announce" : "Log the completion"}
       </Button>

@@ -40,7 +40,7 @@ export function LoreDesk({
       <DeskLayout
         desk={desk}
         back={id ? `${LORE_PATH}/${id}` : LORE_PATH}
-        backLabel={id ? "Back to the Lore Entry" : "Back to Club Lore"}
+        backLabel={id ? "Lore Entry" : "Club Lore"}
         badge={badge}
         error={desk.error}
         remove={canDelete ? (className) => <LoreDelete id={id} className={className} /> : null}
