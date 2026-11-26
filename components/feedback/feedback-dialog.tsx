@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { FeedbackDialogState } from "@/lib/feedback";
+import { pinnedHref, type FeedbackDialogState } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { FeedbackForm } from "./feedback-form";
@@ -13,9 +13,10 @@ import { FeedbackForm } from "./feedback-form";
 // says why.
 export function FeedbackDialog({ state, closeHref }: { state: FeedbackDialogState | null; closeHref: string }) {
   const router = useRouter();
-  // A Bug Report saved but for its screenshot is on the board: close onto it.
-  const close = (savedId = 0) =>
-    router.replace(savedId ? `/feedback?pinned=${savedId}` : closeHref, { scroll: false });
+  // A Bug Report this dialog created but for its screenshot is on the
+  // board: close onto it. Cancelling an edit goes back to the board as it was.
+  const close = (createdId = 0) =>
+    router.replace(createdId ? pinnedHref({ feedback_id: createdId }) : closeHref, { scroll: false });
 
   return (
     <Dialog open={!!state} onOpenChange={(open) => !open && close()}>

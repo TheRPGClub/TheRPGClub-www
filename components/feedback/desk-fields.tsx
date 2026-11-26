@@ -16,11 +16,12 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 // The Feedback under review, read-only in the Sheet: its title in Anton,
-// who filed it (and, on a Bug Report, where), then its details or a Bug
-// Report's own fields and screenshot (a kind change keeps whatever it has).
+// who filed it (and, when it has one, where), then its details and any Bug
+// Report fields and screenshot it has: a kind change keeps what it was
+// filed with, so each shows whenever it is there, whatever the kind.
 export function DeskFields({ feedback: f }: { feedback: Feedback }) {
   const bug = f.kind === "bug_report";
-  const where = bug ? whereLabel(f.where) : null;
+  const where = whereLabel(f.where);
   const hits = bug ? "hit this too" : f.upvote_count === 1 ? "upvote" : "upvotes";
   const filed = [
     where,
@@ -36,17 +37,13 @@ export function DeskFields({ feedback: f }: { feedback: Feedback }) {
       </Field>
       <Field label={where ? "Where · Reporter" : "Filed by"}>{filed.join(" · ")}</Field>
       {f.details && <Field label="Details">{f.details}</Field>}
-      {bug && (
-        <>
-          {f.what_happened && <Field label="What happened">{f.what_happened}</Field>}
-          {f.expected && <Field label="What they expected">{f.expected}</Field>}
-          {f.steps && <Field label="Steps">{f.steps}</Field>}
-          {f.screenshot_url && (
-            <Field label="Screenshot">
-              <ScreenshotThumb url={f.screenshot_url} title={f.title} />
-            </Field>
-          )}
-        </>
+      {f.what_happened && <Field label="What happened">{f.what_happened}</Field>}
+      {f.expected && <Field label="What they expected">{f.expected}</Field>}
+      {f.steps && <Field label="Steps">{f.steps}</Field>}
+      {f.screenshot_url && (
+        <Field label="Screenshot">
+          <ScreenshotThumb url={f.screenshot_url} title={f.title} />
+        </Field>
       )}
     </dl>
   );

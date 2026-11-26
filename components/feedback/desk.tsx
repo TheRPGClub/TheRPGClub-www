@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Feedback } from "@/lib/api/types";
 import { FEEDBACK_KINDS } from "@/lib/feedback";
-import { laneRows } from "@/lib/feedback-desk";
+import { laneRows, rowsAfterDuplicate } from "@/lib/feedback-desk";
 import { STAFF_DESK_BACK } from "@/lib/staff";
 import { PageHeader } from "@/components/templates/page-header";
 import { DeskLane } from "./desk-lane";
@@ -33,7 +33,11 @@ export function FeedbackDesk({ rows: initial }: { rows: Feedback[] | null }) {
   }
 
   function decided(next: DeskDecision) {
-    setRows((all) => all.filter((r) => r.feedback_id !== next.feedback.feedback_id));
+    setRows((all) =>
+      next.originalId
+        ? rowsAfterDuplicate(all, next.feedback.feedback_id, next.originalId, next.original ?? null)
+        : all.filter((r) => r.feedback_id !== next.feedback.feedback_id),
+    );
     setDecision(next);
     setOpenId(null);
   }

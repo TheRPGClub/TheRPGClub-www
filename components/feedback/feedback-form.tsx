@@ -25,7 +25,7 @@ export function FeedbackForm({
 }: {
   kind: FeedbackKind;
   feedback: Feedback | null;
-  onCancel: (savedId: number) => void;
+  onCancel: (createdId: number) => void;
 }) {
   const form = useFeedbackForm({ kind: initialKind, feedback });
   const { kind, fields, set, pending, error } = form;
@@ -79,7 +79,7 @@ export function FeedbackForm({
               {error}
             </p>
           )}
-          <Button type="button" variant="ghost" onClick={() => onCancel(form.savedId)} disabled={pending}>
+          <Button type="button" variant="ghost" onClick={() => onCancel(form.createdId)} disabled={pending}>
             Cancel
           </Button>
           <Button type="submit" variant="highlight" disabled={pending}>

@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { renamedPanelKey } from "@/lib/dashboard/panels";
 
 // A member's Dashboard Panels (spec api#421, API api#422,
 // `GET /users/:id/dashboard_panels`): the panels they show and can see, in
@@ -30,8 +31,12 @@ export async function fetchDashboardPanels(userId: string): Promise<DashboardPan
     const data = body.data;
     if (!data || !Array.isArray(data.panels)) return null;
     return {
-      panels: data.panels.filter((key): key is string => typeof key === "string"),
-      catalogue: Array.isArray(data.catalogue) ? data.catalogue : [],
+      panels: [
+        ...new Set(data.panels.filter((key): key is string => typeof key === "string").map(renamedPanelKey)),
+      ],
+      catalogue: Array.isArray(data.catalogue)
+        ? data.catalogue.map((entry) => ({ ...entry, key: renamedPanelKey(entry.key) }))
+        : [],
       customised: data.customised === true,
     };
   } catch {

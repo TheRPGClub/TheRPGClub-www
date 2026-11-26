@@ -14,12 +14,12 @@ export function useDeskAction(onGone: () => void) {
 
   function run(
     action: () => Promise<FeedbackReviewResult>,
-    onOk: (saved: Feedback, jobId: number | null) => void,
+    onOk: (saved: Feedback, jobId: number | null, res: FeedbackReviewResult) => void,
   ) {
     setError(null);
     startTransition(async () => {
       const res = await action();
-      if (res.ok && res.data) return onOk(res.data, res.outcomeJobId ?? null);
+      if (res.ok && res.data) return onOk(res.data, res.outcomeJobId ?? null, res);
       setError(res.error ?? "Couldn't save the review.");
       if (res.stale) onGone();
     });

@@ -238,13 +238,23 @@ export function boardHref(kind: FeedbackKind, status: BoardStatus = "open"): str
 }
 
 // The deep links the Give feedback dialog (www#226) opens from: a new one
-// (of the shown kind) or the author's edit of a Pending one.
-export function giveFeedbackHref(kind?: FeedbackKind): string {
-  return kind ? `/feedback?new=1&kind=${kind}` : "/feedback?new=1";
+// (of the shown kind) or the author's edit of a Pending one. Both carry the
+// board's kind and status, so the board behind the dialog (and after it
+// closes) stays as it was.
+function boardQuery(kind: FeedbackKind | undefined, status: BoardStatus): string {
+  const qs = new URLSearchParams();
+  if (kind) qs.set("kind", kind);
+  if (status !== "open") qs.set("status", status);
+  const q = qs.toString();
+  return q ? `&${q}` : "";
 }
 
-export function editFeedbackHref(f: Pick<Feedback, "feedback_id">): string {
-  return `/feedback?edit=${f.feedback_id}`;
+export function giveFeedbackHref(kind?: FeedbackKind, status: BoardStatus = "open"): string {
+  return `/feedback?new=1${boardQuery(kind, status)}`;
+}
+
+export function editFeedbackHref(f: Pick<Feedback, "feedback_id" | "kind">, status: BoardStatus = "open"): string {
+  return `/feedback?edit=${f.feedback_id}${boardQuery(f.kind, status)}`;
 }
 
 // What the Give feedback dialog opens as, from the board's URL: `?new=1`
@@ -285,11 +295,20 @@ export function feedbackDialogState({
   return { mode: "create", kind };
 }
 
-// The board's URL once the dialog closes: the same, without `new` or `edit`.
-export function dialogClosedHref(params: URLSearchParams): string {
+// The board's URL once the dialog closes: the same, without `new` or
+// `edit`, on the kind and status the board shows (an `?edit=<id>` link from
+// Discord names no kind: the board took the edited one's).
+export function dialogClosedHref(
+  params: URLSearchParams,
+  board: { kind: FeedbackKind; status: BoardStatus },
+): string {
   const qs = new URLSearchParams(params);
   qs.delete("new");
   qs.delete("edit");
+  qs.delete("kind");
+  qs.delete("status");
+  if (board.kind !== FEEDBACK_KINDS[0].value) qs.set("kind", board.kind);
+  if (board.status !== "open") qs.set("status", board.status);
   const q = qs.toString();
   return q ? `/feedback?${q}` : "/feedback";
 }

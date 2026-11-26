@@ -40,14 +40,28 @@ export function pinRules(session: PinSession): PinRules {
   return {
     limit,
     room: Math.min(session.pinned_pages_room ?? limit, limit),
-    clubDefault: session.pinned_pages_default ?? FALLBACK_DEFAULT,
+    clubDefault: session.pinned_pages_default ? renamedPinKeys(session.pinned_pages_default) : FALLBACK_DEFAULT,
   };
+}
+
+// Pin keys the API has since renamed (the Suggestion Board became the
+// Feedback Board). The API migrates stored lists, but a session from before
+// the rename still carries the old keys until the member signs in again.
+const RENAMED_PIN_KEYS: Readonly<Record<string, string>> = {
+  suggestions: "feedback",
+  suggestion_review: "feedback_review",
+};
+
+// The list under today's keys, each once, so a save never sends a key the
+// API no longer takes.
+export function renamedPinKeys(keys: readonly string[]): string[] {
+  return [...new Set(keys.map((k) => RENAMED_PIN_KEYS[k] ?? k))];
 }
 
 // The session's list; an API without Pinned Pages yet sends none, and then
 // everyone has the club default.
 export function memberPins(sessionPins: readonly string[] | undefined, rules: PinRules): readonly string[] {
-  return sessionPins ?? rules.clubDefault;
+  return sessionPins ? renamedPinKeys(sessionPins) : rules.clubDefault;
 }
 
 // Whether the member saved their own list (Settings offers a reset then).

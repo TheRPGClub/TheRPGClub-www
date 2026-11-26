@@ -84,7 +84,8 @@ describe("board URLs", () => {
     expect(boardHref("bug_report", "closed")).toBe("/feedback?kind=bug_report&status=closed");
     expect(pinnedHref({ feedback_id: 9 })).toBe("/feedback?pinned=9");
     expect(giveFeedbackHref("bug_report")).toBe("/feedback?new=1&kind=bug_report");
-    expect(editFeedbackHref({ feedback_id: 9 })).toBe("/feedback?edit=9");
+    expect(giveFeedbackHref("suggestion", "closed")).toBe("/feedback?new=1&kind=suggestion&status=closed");
+    expect(editFeedbackHref({ feedback_id: 9, kind: "suggestion" })).toBe("/feedback?edit=9&kind=suggestion");
   });
 
   it("reads only known kinds and statuses", () => {
@@ -176,7 +177,15 @@ describe("feedbackDialogState", () => {
 
 describe("dialogClosedHref", () => {
   it("keeps the board's place and drops new and edit", () => {
-    expect(dialogClosedHref(new URLSearchParams("new=1&kind=bug_report"))).toBe("/feedback?kind=bug_report");
-    expect(dialogClosedHref(new URLSearchParams("edit=4"))).toBe("/feedback");
+    expect(
+      dialogClosedHref(new URLSearchParams("new=1&kind=bug_report&status=closed"), { kind: "bug_report", status: "closed" }),
+    ).toBe("/feedback?kind=bug_report&status=closed");
+    expect(dialogClosedHref(new URLSearchParams("edit=4"), { kind: "feature_request", status: "open" })).toBe("/feedback");
+  });
+
+  it("closes onto the board's kind when the link named none (an edit from Discord)", () => {
+    expect(dialogClosedHref(new URLSearchParams("edit=4"), { kind: "bug_report", status: "open" })).toBe(
+      "/feedback?kind=bug_report",
+    );
   });
 });

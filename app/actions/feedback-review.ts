@@ -2,7 +2,7 @@
 
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import { fetchFeedbackList } from "@/lib/api/feedback";
+import { fetchFeedbackItem, fetchFeedbackList } from "@/lib/api/feedback";
 import type { Feedback, FeedbackKind } from "@/lib/api/types";
 import {
   isFeedbackKind,
@@ -23,6 +23,9 @@ export interface FeedbackReviewResult {
   error?: string;
   // Someone else got there first (or it was withdrawn): the queue is stale.
   stale?: boolean;
+  // Duplicate only: its original as it is now, with the moved upvotes; null
+  // when it couldn't be read.
+  original?: Feedback | null;
 }
 
 function validId(id: number): boolean {
@@ -140,7 +143,13 @@ export async function duplicateFeedbackAction(
   if (!validId(originalId) || originalId === id) {
     return { ok: false, error: "Pick the Feedback it duplicates." };
   }
-  return review(id, "duplicate", { original_id: originalId });
+  const res = await review(id, "duplicate", { original_id: originalId });
+  // The API answers with the Duplicate only; read the original (the API may
+  // have resolved the pick to its own original) for its new upvote count.
+  if (res.ok && res.data?.duplicate_of_id) {
+    res.original = await fetchFeedbackItem(res.data.duplicate_of_id);
+  }
+  return res;
 }
 
 // File the Pending Feedback under another kind. No bot notice.

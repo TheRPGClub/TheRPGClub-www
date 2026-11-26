@@ -29,11 +29,17 @@ export interface BoardData {
   originals: Map<number, DuplicateOriginal>;
 }
 
+// The Duplicates' originals in one read: an original is Pending or Approved
+// (Done included) when marked, so every kind's Open Feedback holds them. One
+// closed since is left out, and its slip links "another Feedback".
 async function readOriginals(rows: Feedback[]): Promise<Map<number, DuplicateOriginal>> {
-  const ids = [...new Set(rows.flatMap((f) => (f.duplicate_of_id ? [f.duplicate_of_id] : [])))];
-  const found = await Promise.all(ids.map((id) => fetchFeedbackItem(id)));
+  const ids = new Set(rows.flatMap((f) => (f.duplicate_of_id ? [f.duplicate_of_id] : [])));
+  if (ids.size === 0) return new Map();
+  const open = await fetchFeedbackList({ statuses: ["open"] });
   return new Map(
-    found.flatMap((f) => (f ? [[f.feedback_id, { feedback_id: f.feedback_id, title: f.title }] as const] : [])),
+    (open?.rows ?? [])
+      .filter((f) => ids.has(f.feedback_id))
+      .map((f) => [f.feedback_id, { feedback_id: f.feedback_id, title: f.title }] as const),
   );
 }
 

@@ -7,6 +7,7 @@ import {
   isValidOriginal,
   laneRows,
   rejectPicksFor,
+  rowsAfterDuplicate,
   type DuplicateCandidate,
 } from "@/lib/feedback-desk";
 
@@ -107,5 +108,26 @@ describe("duplicateButtonLabel", () => {
     expect(duplicateButtonLabel(0)).toBe("Mark duplicate");
     expect(duplicateButtonLabel(1)).toBe("Mark duplicate · 1 upvote moves there");
     expect(duplicateButtonLabel(23)).toBe("Mark duplicate · 23 upvotes move there");
+  });
+});
+
+describe("rowsAfterDuplicate", () => {
+  const a = { ...base, feedback_id: 1, upvote_count: 2 };
+  const b = { ...base, feedback_id: 2, upvote_count: 3 };
+  const c = { ...base, feedback_id: 3, upvote_count: 1 };
+
+  it("drops the Duplicate and takes the API's fresh original", () => {
+    const fresh = { ...a, upvote_count: 5 };
+    expect(rowsAfterDuplicate([a, b, c], 2, 1, fresh)).toEqual([fresh, c]);
+  });
+
+  it("without a fresh copy, adds the Duplicate's upvotes to the original, so its lane re-sorts", () => {
+    const after = rowsAfterDuplicate([a, b, c], 2, 1, null);
+    expect(after.map((r) => [r.feedback_id, r.upvote_count])).toEqual([[1, 5], [3, 1]]);
+    expect(laneRows([...after, { ...c, feedback_id: 4, upvote_count: 4 }], "suggestion").map((r) => r.feedback_id)).toEqual([1, 4, 3]);
+  });
+
+  it("leaves the rows alone when the original isn't in a lane (it was Approved)", () => {
+    expect(rowsAfterDuplicate([a, b], 2, 99, null)).toEqual([a]);
   });
 });

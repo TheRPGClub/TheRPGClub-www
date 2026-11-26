@@ -35,8 +35,8 @@ export function FeedbackBoard({
         {badge && <div className="pb-2">{badge}</div>}
         {canVote && (
           <ButtonLink
-            href={giveFeedbackHref(kind)}
-            render={<Link href={giveFeedbackHref(kind)} scroll={false} />}
+            href={giveFeedbackHref(kind, status)}
+            render={<Link href={giveFeedbackHref(kind, status)} scroll={false} />}
             variant="highlight"
             className="mb-1"
           >

@@ -11,8 +11,11 @@ export interface DeskDecision {
   outcome: "approved" | "rejected" | "duplicate";
   // The feedback_outcome bot job announcing it to the author.
   jobId: number | null;
-  // A Duplicate's original, as picked.
+  // A Duplicate's original: its title, and its id and fresh copy (null when
+  // it couldn't be read) so its lane can count the moved upvotes.
   originalTitle?: string;
+  originalId?: number;
+  original?: Feedback | null;
 }
 
 function sentence(d: DeskDecision): string {

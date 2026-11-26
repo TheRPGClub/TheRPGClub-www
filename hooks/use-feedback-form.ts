@@ -101,7 +101,10 @@ export function useFeedbackForm({ kind: initialKind, feedback }: { kind: Feedbac
     kind,
     setKind: id ? undefined : setKind,
     editing: id > 0,
-    savedId: id,
+    // The Feedback this dialog created (its screenshot failed, so the form
+    // stayed open): Cancel lands on it pinned. 0 for an edit, which Cancel
+    // just closes.
+    createdId: feedback ? 0 : id,
     fields,
     set,
     shot,

@@ -42,7 +42,15 @@ export function DeskDuplicate({
     if (!picked) return action.setError("Pick the Feedback it duplicates.");
     action.run(
       () => duplicateFeedbackAction(feedback.feedback_id, picked.feedback_id),
-      (saved, jobId) => onDecided({ feedback: saved, outcome: "duplicate", jobId, originalTitle: picked.title }),
+      (saved, jobId, res) =>
+        onDecided({
+          feedback: saved,
+          outcome: "duplicate",
+          jobId,
+          originalTitle: res.original?.title ?? picked.title,
+          originalId: saved.duplicate_of_id ?? picked.feedback_id,
+          original: res.original ?? null,
+        }),
     );
   }
 

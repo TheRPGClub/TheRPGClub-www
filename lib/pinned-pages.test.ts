@@ -11,6 +11,7 @@ import {
   reorderPins,
   pinsCustomised,
   pinsFull,
+  renamedPinKeys,
   togglePin,
 } from "@/lib/pinned-pages";
 
@@ -44,6 +45,21 @@ describe("memberPins", () => {
 
   it("falls back to the club default when the API sends none", () => {
     expect(memberPins(undefined, { ...open, clubDefault: ["news", "codex"] })).toEqual(["news", "codex"]);
+  });
+});
+
+describe("renamed pin keys", () => {
+  it("reads a session's Suggestion Board pins as the Feedback Board's", () => {
+    expect(memberPins(["news", "suggestions", "suggestion_review"], open)).toEqual(["news", "feedback", "feedback_review"]);
+    expect(isPinKeyList(memberPins(["suggestions"], open))).toBe(true);
+  });
+
+  it("keeps a page pinned under both its old and new key once", () => {
+    expect(renamedPinKeys(["suggestions", "games", "feedback"])).toEqual(["feedback", "games"]);
+  });
+
+  it("renames the session's club default too", () => {
+    expect(pinRules({ pinned_pages_default: ["suggestions", "news"] }).clubDefault).toEqual(["feedback", "news"]);
   });
 });
 

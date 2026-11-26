@@ -45,7 +45,10 @@ export function FeedbackCard({
   className,
 }: FeedbackCardProps) {
   const phase = feedbackPhase(f);
-  const body = f.kind === "bug_report" ? (f.what_happened ?? f.details) : f.details;
+  // A re-kinded Feedback keeps what it was filed with: a Bug Report's body
+  // is what happened, anything else's its details, each falling back to the
+  // other when empty.
+  const body = f.kind === "bug_report" ? f.what_happened || f.details : f.details || f.what_happened;
   const showBody = body && phase !== "rejected" && phase !== "duplicate";
 
   return (
@@ -64,7 +67,7 @@ export function FeedbackCard({
 
       <div className="px-3.5 pt-3 pb-3.5">
         <Heading className="text-[1.05rem] leading-snug font-semibold break-words text-foreground">{f.title}</Heading>
-        {f.kind === "bug_report" && f.where && (
+        {f.where && (
           <p className="font-label mt-1 text-[0.74rem] font-bold text-faint-foreground">{WHERE[f.where] ?? f.where}</p>
         )}
         {showBody && (
@@ -72,7 +75,7 @@ export function FeedbackCard({
             {body}
           </p>
         )}
-        {f.kind === "bug_report" && f.screenshot_url && <ScreenshotThumb url={f.screenshot_url} title={f.title} />}
+        {f.screenshot_url && <ScreenshotThumb url={f.screenshot_url} title={f.title} />}
         {mine && phase === "pending" && (
           <span className="font-label mt-2 block text-[0.74rem] font-extrabold text-highlight">Yours</span>
         )}

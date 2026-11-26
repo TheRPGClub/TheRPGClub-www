@@ -84,3 +84,23 @@ export function duplicateButtonLabel(upvotes: number): string {
   if (upvotes <= 0) return "Mark duplicate";
   return `Mark duplicate · ${upvotes} ${upvotes === 1 ? "upvote moves" : "upvotes move"} there`;
 }
+
+// The desk's rows once `duplicateId` is marked a Duplicate of `originalId`:
+// the Duplicate leaves, and the original, when it is in a lane, takes the
+// API's fresh copy (`original`), or without one gains the Duplicate's
+// upvotes as its row had them (at most: the API drops a member's upvote the
+// original already has). laneRows re-sorts its lane.
+export function rowsAfterDuplicate(
+  rows: readonly Feedback[],
+  duplicateId: number,
+  originalId: number,
+  original: Feedback | null,
+): Feedback[] {
+  const moved = rows.find((r) => r.feedback_id === duplicateId)?.upvote_count ?? 0;
+  return rows
+    .filter((r) => r.feedback_id !== duplicateId)
+    .map((r) => {
+      if (r.feedback_id !== originalId) return r;
+      return original ?? { ...r, upvote_count: r.upvote_count + moved };
+    });
+}

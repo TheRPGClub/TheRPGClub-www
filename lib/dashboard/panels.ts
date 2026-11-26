@@ -106,6 +106,15 @@ export function isPanelKey(key: unknown): key is PanelKey {
   return typeof key === "string" && (PANEL_KEYS as readonly string[]).includes(key);
 }
 
+// Panel keys the API has since renamed (the Suggestion Board became the
+// Feedback Board). The API migrates stored lists; this covers a read from
+// before that, so a save never sends a key the API no longer takes.
+const RENAMED_PANEL_KEYS: Readonly<Record<string, string>> = { suggestions: "feedback" };
+
+export function renamedPanelKey(key: string): string {
+  return RENAMED_PANEL_KEYS[key] ?? key;
+}
+
 // The panels to draw, in the member's order: keys this website knows (a
 // panel the API added first waits for the website), each once, and only
 // those whose Feature the member can see. The API already leaves out what

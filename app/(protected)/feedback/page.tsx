@@ -21,10 +21,10 @@ export default async function FeedbackBoardPage({ searchParams }: { searchParams
   const editId = Number(params.edit) || 0;
   const viewerId = session.principal.discord_id;
   const canGive = canGiveFeedback(session.membership);
-  const [board, editItem] = await Promise.all([
-    loadBoard({ kind: params.kind, status: params.status, pinned, viewerId }),
-    editId > 0 ? fetchFeedbackItem(editId) : null,
-  ]);
+  // An edit link from Discord names no kind: the board shows the edited
+  // one's, so it sits behind the dialog.
+  const editItem = editId > 0 ? await fetchFeedbackItem(editId) : null;
+  const board = await loadBoard({ kind: params.kind ?? editItem?.kind, status: params.status, pinned, viewerId });
   const dialog = feedbackDialogState({
     isNew: params.new === "1",
     editId,
@@ -46,7 +46,7 @@ export default async function FeedbackBoardPage({ searchParams }: { searchParams
         pinned={pinned}
         badge={features.preview("feedback") && <PreviewBadge />}
       />
-      <FeedbackDialog state={dialog} closeHref={dialogClosedHref(query)} />
+      <FeedbackDialog state={dialog} closeHref={dialogClosedHref(query, board)} />
     </>
   );
 }

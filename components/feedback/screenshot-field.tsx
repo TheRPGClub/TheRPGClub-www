@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { Bug } from "lucide-react";
 import type { FeedbackForm } from "@/hooks/use-feedback-form";
 import { SCREENSHOT_ACCEPT } from "@/lib/feedback";
@@ -16,11 +16,18 @@ export function ScreenshotField({ form }: { form: FeedbackForm }) {
   const { shot, pickFile, removeShot, pending } = form;
   const picker = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
-  const fileUrl = useMemo(() => (shot.file ? URL.createObjectURL(shot.file) : null), [shot.file]);
-  useEffect(() => () => {
-    if (fileUrl) URL.revokeObjectURL(fileUrl);
-  }, [fileUrl]);
-  const preview = fileUrl ?? (shot.removed ? null : shot.existing);
+  const image = useRef<HTMLImageElement>(null);
+  // A picked file previews from an object URL made and revoked by the same
+  // effect (so a StrictMode re-run makes a fresh one, never reusing a
+  // revoked one) and put on the image directly; otherwise the stored one.
+  useEffect(() => {
+    if (!shot.file || !image.current) return;
+    const url = URL.createObjectURL(shot.file);
+    image.current.src = url;
+    return () => URL.revokeObjectURL(url);
+  }, [shot.file]);
+  const existing = shot.removed ? null : shot.existing;
+  const hasPreview = !!shot.file || !!existing;
 
   const input = (
     <Input
@@ -47,10 +54,10 @@ export function ScreenshotField({ form }: { form: FeedbackForm }) {
 
   return (
     <FormRow id="feedback-screenshot" label="Screenshot" optional>
-      {preview ? (
+      {hasPreview ? (
         <div className="flex flex-wrap items-start gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element -- a local preview or a member's upload on the club's B2 bucket, which next/image isn't configured for */}
-          <img src={preview} alt="The screenshot" className="max-h-44 max-w-full rounded-sm border border-border object-contain sm:max-w-[60%]" />
+          <img ref={image} src={shot.file ? undefined : (existing ?? undefined)} alt="The screenshot" className="max-h-44 max-w-full rounded-sm border border-border object-contain sm:max-w-[60%]" />
           <div className="flex gap-2 sm:flex-col">
             {input}
             <Button type="button" variant="outline" size="sm" disabled={pending} onClick={() => picker.current?.click()}>
