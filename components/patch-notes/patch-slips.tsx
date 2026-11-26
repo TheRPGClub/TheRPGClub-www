@@ -1,0 +1,47 @@
+import Link from "next/link";
+
+import { patchDate, patchTitle } from "@/lib/patch-notes/format";
+import { patchPath } from "@/lib/patch-notes/paths";
+import type { Patch } from "@/lib/patch-notes/types";
+import { cn } from "@/lib/utils";
+
+// The older Patches under the top card (www#236, The Stack): full-width,
+// left-aligned slips tucked 12px under the one above and stepping straight
+// down, the first a shade lighter. Each slip is a link to its Patch and
+// lifts 2px on hover or focus.
+export function PatchSlips({ patches }: { patches: readonly Patch[] }) {
+  if (patches.length === 0) return null;
+  return (
+    <nav aria-label="Older Patches">
+      <ol>
+        {patches.map((patch, i) => (
+          <li key={patch.number} className="relative -mt-3" style={{ zIndex: 9 - Math.min(i, 8) }}>
+            <Link
+              href={patchPath(patch.number)}
+              className={cn(
+                "group flex min-h-[3.375rem] items-center gap-3.5 rounded-b-md border border-t-0 border-border-strong px-4 pt-5 pb-2 outline-none sm:px-[18px]",
+                i === 0 ? "bg-muted" : "bg-card",
+                "motion-safe:transition-[translate,box-shadow] motion-safe:duration-200 motion-safe:ease-out",
+                "hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgb(0_0_0/0.45)] focus-visible:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-highlight",
+              )}
+            >
+              <span aria-hidden className="font-headline w-7 shrink-0 text-center text-2xl leading-none text-dim-foreground group-hover:text-foreground">
+                {patch.number}
+              </span>
+              <span className="min-w-0 flex-1 truncate font-semibold text-foreground group-hover:text-highlight">
+                {patch.title?.trim() && <span className="sr-only">Patch {patch.number}: </span>}
+                {patchTitle(patch)}
+              </span>
+              <time
+                dateTime={patch.published_at ?? undefined}
+                className="font-label shrink-0 text-xs font-bold tracking-[0.08em] text-faint-foreground"
+              >
+                {patchDate(patch)}
+              </time>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}

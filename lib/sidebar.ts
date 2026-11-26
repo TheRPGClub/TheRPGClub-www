@@ -4,6 +4,7 @@
 // goes, its group, label and one-line note. Client-safe: no server imports.
 import { featureView, type FeatureKey, type SessionFeature } from "@/lib/features";
 import { CODEX_PATH } from "@/lib/codex/paths";
+import { PATCH_NOTES_PATH } from "@/lib/patch-notes/paths";
 import { RELEASES_PATH } from "@/lib/release-calendar";
 import { staffSectionsFor, type StaffSectionKey } from "@/lib/staff";
 import type { SessionMembership } from "@/lib/auth-types";
@@ -29,6 +30,7 @@ export type PinnedPageKey =
   | "codex"
   | "giveaways"
   | "suggestions"
+  | "patch_notes"
   | "staff_desk"
   | "voting_console"
   | "synonyms"
@@ -83,6 +85,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "codex", href: CODEX_PATH, label: "Codex", note: "Club lore and history", group: "club", feature: "club_codex" },
   { key: "giveaways", href: "/giveaways", label: "Giveaways", note: "Free keys from members", group: "club", feature: "giveaways" },
   { key: "suggestions", href: "/suggestions", label: "Suggestion Board", note: "Ideas for the club", group: "club", feature: "suggestions" },
+  { key: "patch_notes", href: PATCH_NOTES_PATH, label: "Patch Notes", note: "What changed on the site and bot", group: "club", feature: "patch_notes" },
 ];
 
 // The staff sections lib/staff.ts marks `nav`, under their Pinned Page keys.

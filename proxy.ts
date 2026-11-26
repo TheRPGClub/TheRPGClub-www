@@ -16,8 +16,11 @@ const PUBLIC_PATHS = new Set([
   // itself decides who reads it (Visitors only while the Feature is Live).
   // Writing it stays for Members (/codex/history/new and edit).
   "/codex/history",
+  // Patch Notes (www#236): the index and each Patch's page. As with Club
+  // History, the page decides: Visitors read only while the Feature is Live.
+  "/patch-notes",
 ]);
-const PUBLIC_PREFIXES = ["/auth/"];
+const PUBLIC_PREFIXES = ["/auth/", "/patch-notes/"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.has(pathname) || PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
