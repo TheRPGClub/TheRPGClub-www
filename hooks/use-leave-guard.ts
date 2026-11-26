@@ -32,6 +32,10 @@ export function guardedHistoryState(): Record<string, unknown> | null {
 // Back then only pops the sentinel: the guard pushes it again and asks.
 // Pushing truncates the forward history, so Forward has nothing to guard.
 // Once clean, the sentinel is popped so Back works in one press again.
+//
+// `leaveTo(path)` leaves on purpose (the work is gone, as after a delete):
+// it pops the sentinel first and navigates once that pop lands, so the
+// guard's own pop can't come after the navigation and undo it.
 export function useLeaveGuard(dirty: boolean) {
   const router = useRouter();
   const [leaving, setLeaving] = useState<string | null>(null);
@@ -39,8 +43,11 @@ export function useLeaveGuard(dirty: boolean) {
   // The URL of a sentinel the guard is popping itself, to keep once popped
   // (the tab may have changed since the entry under it was made).
   const selfPop = useRef<string | null>(null);
+  // Where leaveTo goes once its pop of the sentinel lands.
+  const leavingTo = useRef<string | null>(null);
   useEffect(() => {
     dirtyRef.current = dirty;
+    if (leavingTo.current !== null) return;
     if (dirty && !onSentinel()) {
       window.history.pushState({ [SENTINEL]: true }, "", window.location.href);
     } else if (!dirty && onSentinel()) {
@@ -51,6 +58,12 @@ export function useLeaveGuard(dirty: boolean) {
 
   useEffect(() => {
     const back = () => {
+      const to = leavingTo.current;
+      if (to !== null) {
+        leavingTo.current = null;
+        router.push(to);
+        return;
+      }
       const href = selfPop.current;
       if (href !== null) {
         selfPop.current = null;
@@ -63,7 +76,7 @@ export function useLeaveGuard(dirty: boolean) {
     };
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const warn = (e: BeforeUnloadEvent) => {
@@ -101,5 +114,12 @@ export function useLeaveGuard(dirty: boolean) {
       else if (to) router.push(to);
     },
     stay: () => setLeaving(null),
+    leaveTo: (to: string) => {
+      dirtyRef.current = false;
+      setLeaving(null);
+      if (!onSentinel()) return router.push(to);
+      leavingTo.current = to;
+      window.history.back();
+    },
   };
 }

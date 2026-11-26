@@ -85,8 +85,10 @@ export function usePatchEditor(initial: Patch, initialValue: Value, siteUrl: str
       const result = await write();
       if (!result.ok) return result.error ?? UNREACHED;
       if (result.patch) setPatch(result.patch);
-      after?.();
-      router.refresh();
+      // A step that leaves the page (Delete) skips the refresh, which
+      // would read the gone Patch.
+      if (after) after();
+      else router.refresh();
       return null;
     } catch {
       return UNREACHED;
@@ -125,12 +127,14 @@ export function usePatchEditor(initial: Patch, initialValue: Value, siteUrl: str
       return run("publish", sent, () => publishPatchAction(patch.number, sent));
     },
     unpublish: () => confirmStep(() => unpublishPatchAction(patch.number)),
-    remove: () =>
+    // Deletes the draft, then leaves through `leave` (the leave guard's
+    // leaveTo), so the guard's history entry is out of the way first.
+    remove: (leave: (path: string) => void) =>
       confirmStep(
         () => deletePatchAction(patch.number),
         () => {
           setDirty(false);
-          router.push(PATCH_EDITOR_PATH);
+          leave(PATCH_EDITOR_PATH);
         },
       ),
   };

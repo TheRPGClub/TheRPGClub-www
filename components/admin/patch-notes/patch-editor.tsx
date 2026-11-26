@@ -37,11 +37,14 @@ export function PatchEditor({
   initialValue,
   siteUrl,
   pendingChanges,
+  preview = false,
 }: {
   patch: Patch;
   initialValue: Value;
   siteUrl: string | null;
   pendingChanges: PendingChange[] | null;
+  // Patch Notes is in Preview: the bot posts to the staff test channel.
+  preview?: boolean;
 }) {
   const editor = usePatchEditor(patch, initialValue, siteUrl);
   const guard = useLeaveGuard(editor.dirty);
@@ -109,7 +112,7 @@ export function PatchEditor({
                   <PatchScopeStrip scope={scope.scope} onChange={() => setStep("scope")} />
                   <PatchSheet key={drafted} editor={editor} />
                 </div>
-                <PatchPreview editor={editor} actions={<PatchActions editor={editor} />} />
+                <PatchPreview editor={editor} actions={<PatchActions editor={editor} leave={guard.leaveTo} preview={preview} />} />
               </div>
             ),
           },
