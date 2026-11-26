@@ -1,3 +1,3 @@
 import { featureLayout } from "@/lib/session";
 
-export default featureLayout("suggestions");
+export default featureLayout("feedback");

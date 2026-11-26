@@ -28,13 +28,13 @@ export type PinnedPageKey =
   | "news"
   | "codex"
   | "giveaways"
-  | "suggestions"
+  | "feedback"
   | "staff_desk"
   | "voting_console"
   | "synonyms"
   | "live_events"
   | "public_reminders"
-  | "suggestion_review";
+  | "feedback_review";
 
 // Every page the sidebar lists: each is a Pinned Page.
 export type SidebarPageKey = PinnedPageKey;
@@ -82,7 +82,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "news", href: "/news", label: "News", note: "Gaming news, by category", group: "club", feature: "news_hub" },
   { key: "codex", href: CODEX_PATH, label: "Codex", note: "Club lore and history", group: "club", feature: "club_codex" },
   { key: "giveaways", href: "/giveaways", label: "Giveaways", note: "Free keys from members", group: "club", feature: "giveaways" },
-  { key: "suggestions", href: "/suggestions", label: "Suggestion Board", note: "Ideas for the club", group: "club", feature: "suggestions" },
+  { key: "feedback", href: "/feedback", label: "Feedback Board", note: "Ideas and bugs for the club", group: "club", feature: "feedback" },
 ];
 
 // The staff sections lib/staff.ts marks `nav`, under their Pinned Page keys.
@@ -92,7 +92,7 @@ export const STAFF_PAGE: Partial<Record<StaffSectionKey, { key: PinnedPageKey; n
   synonyms: { key: "synonyms", note: "Search aliases" },
   "live-events": { key: "live_events", note: "Streams and watch parties" },
   reminders: { key: "public_reminders", note: "The bot's timed announcements" },
-  suggestions: { key: "suggestion_review", note: "Triage the board" },
+  feedback: { key: "feedback_review", note: "Triage the board" },
 };
 
 // The groups this viewer is shown, in order: pages for Features they aren't

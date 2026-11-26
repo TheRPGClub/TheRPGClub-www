@@ -2,44 +2,44 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { Suggestion } from "@/lib/api/types";
-import { validateRejectionReason, type SuggestionTargetRepo } from "@/lib/suggestions";
+import type { Feedback } from "@/lib/api/types";
+import { validateRejectionReason, type FeedbackTargetRepo } from "@/lib/feedback";
 import {
-  approveSuggestionAction,
-  rejectSuggestionAction,
-} from "@/app/actions/suggestion-review";
+  approveFeedbackAction,
+  rejectFeedbackAction,
+} from "@/app/actions/feedback-review";
 import { BotJobStatus } from "@/components/bot-job-status";
 import { Button } from "@/components/ui/button";
 import { ReviewCardActions } from "./review-card-actions";
 import { ReviewForm } from "./review-form";
-import { SuggestionCard } from "./suggestion-card";
+import { FeedbackCard } from "./feedback-card";
 
 type Mode = "idle" | "approve" | "reject";
 
-// A Pending Suggestion in the Superadmin's queue: the board's card with
+// A Pending Feedback in the Superadmin's queue: the board's card with
 // Approve and Reject in its footer. Approve asks which repo the GitHub issue
 // goes in; Reject asks for the reason the author will read. Once decided,
 // the card shows the outcome and the bot's announcement job, and stays put
 // until the page is refreshed.
 export function ReviewCard({
-  suggestion: initial,
+  feedback: initial,
   reviewerName,
 }: {
-  suggestion: Suggestion;
+  feedback: Feedback;
   // The signed-in Superadmin, for the rejection slip.
   reviewerName: string;
 }) {
   const router = useRouter();
-  const [suggestion, setSuggestion] = useState(initial);
+  const [feedback, setFeedback] = useState(initial);
   const [mode, setMode] = useState<Mode>("idle");
-  const [repo, setRepo] = useState<SuggestionTargetRepo | null>(null);
+  const [repo, setRepo] = useState<FeedbackTargetRepo | null>(null);
   const [reason, setReason] = useState("");
   const [jobId, setJobId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const reviewed = suggestion.status !== "pending";
+  const reviewed = feedback.status !== "pending";
 
   function open(next: Mode) {
     setError(null);
@@ -57,10 +57,10 @@ export function ReviewCard({
     startTransition(async () => {
       const res =
         mode === "approve" && repo
-          ? await approveSuggestionAction(suggestion.suggestion_id, repo)
-          : await rejectSuggestionAction(suggestion.suggestion_id, reason);
+          ? await approveFeedbackAction(feedback.feedback_id, repo)
+          : await rejectFeedbackAction(feedback.feedback_id, reason);
       if (res.ok && res.data) {
-        setSuggestion(res.data);
+        setFeedback(res.data);
         setJobId(res.outcomeJobId ?? null);
         setMode("idle");
       } else {
@@ -77,18 +77,17 @@ export function ReviewCard({
 
   return (
     <div className="space-y-3">
-      <SuggestionCard
-        suggestion={suggestion}
-        tilted={false}
+      <FeedbackCard
+        feedback={feedback}
         headingLevel="h2"
-        reviewerName={suggestion.status === "rejected" ? reviewerName : null}
+        reviewerName={feedback.status === "rejected" ? reviewerName : null}
         actions={actions}
         highlight={mode !== "idle"}
       />
 
       {!reviewed && mode !== "idle" && (
         <ReviewForm
-          suggestion={suggestion}
+          feedback={feedback}
           mode={mode}
           repo={repo}
           onRepo={setRepo}

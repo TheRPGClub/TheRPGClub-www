@@ -2,8 +2,8 @@
 
 import type { FormEvent } from "react";
 import { GitPullRequestArrow, X } from "lucide-react";
-import type { Suggestion } from "@/lib/api/types";
-import { REJECTION_REASON_MAX, type SuggestionTargetRepo } from "@/lib/suggestions";
+import type { Feedback } from "@/lib/api/types";
+import { REJECTION_REASON_MAX, type FeedbackTargetRepo } from "@/lib/feedback";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ const FIELD_LABEL = "font-label text-[0.82rem] tracking-[0.06em] text-faint-fore
 // The Superadmin's decision under a Pending card: the repo to approve it into,
 // or the reason to reject it with.
 export function ReviewForm({
-  suggestion,
+  feedback,
   mode,
   repo,
   onRepo,
@@ -25,23 +25,23 @@ export function ReviewForm({
   onCancel,
   onSubmit,
 }: {
-  suggestion: Suggestion;
+  feedback: Feedback;
   mode: "approve" | "reject";
-  repo: SuggestionTargetRepo | null;
-  onRepo: (repo: SuggestionTargetRepo) => void;
+  repo: FeedbackTargetRepo | null;
+  onRepo: (repo: FeedbackTargetRepo) => void;
   reason: string;
   onReason: (reason: string) => void;
   pending: boolean;
   onCancel: () => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }) {
-  const author = suggestion.created_by_name ?? "its author";
+  const author = feedback.created_by_name ?? "its author";
   const length = reason.trim().length;
   return (
     <form
       onSubmit={onSubmit}
       aria-label={
-        mode === "approve" ? `Approve "${suggestion.title}"` : `Reject "${suggestion.title}"`
+        mode === "approve" ? `Approve "${feedback.title}"` : `Reject "${feedback.title}"`
       }
       className="space-y-3 rounded-md border border-highlight bg-card p-3"
     >

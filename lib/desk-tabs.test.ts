@@ -76,7 +76,7 @@ describe("jobGroup", () => {
 
   it("files jobs no tool queues where they belong, or nowhere", () => {
     expect(jobGroup("voting_poll_wakeup")).toBe("voting");
-    expect(jobGroup("suggestion_submitted")).toBe("members");
+    expect(jobGroup("feedback_submitted")).toBe("members");
     expect(jobGroup("giveaway_hub_refresh")).toBeNull();
   });
 });
@@ -94,17 +94,17 @@ describe("showsJob", () => {
 });
 
 describe("groupTabNote", () => {
-  const none = { pendingSuggestions: null, jobs: [] };
+  const none = { pendingFeedback: null, jobs: [] };
   it("says the open round, live", () => {
     const note = groupTabNote(group("voting"), { voting: { text: "Round 143 open", tone: "live" } }, none, now);
     expect(note).toEqual({ note: "Round 143 open", tone: "live" });
   });
 
-  it("puts pending Suggestions, queued and failed jobs together, failures winning", () => {
+  it("puts pending Feedback, queued and failed jobs together, failures winning", () => {
     const note = groupTabNote(
       group("members"),
       { memberscan: { text: "Failed 1 h ago", tone: "bad" } },
-      { pendingSuggestions: 3, jobs: [job({ status: "queued", kind: "suggestion_outcome" })] },
+      { pendingFeedback: 3, jobs: [job({ status: "queued", kind: "feedback_outcome" })] },
       now,
     );
     expect(note).toEqual({ note: "3 pending · 1 queued · 1 failed", tone: "bad" });

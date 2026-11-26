@@ -78,7 +78,7 @@ describe("togglePin", () => {
 
 describe("isPinKeyList", () => {
   it("accepts known page keys, staff ones too", () => {
-    expect(isPinKeyList(["voting", "staff_desk", "suggestion_review"])).toBe(true);
+    expect(isPinKeyList(["voting", "staff_desk", "feedback_review"])).toBe(true);
     expect(isPinKeyList([])).toBe(true);
   });
 

@@ -8,7 +8,7 @@ import { agoText, botJobKindLabel } from "@/lib/bot-jobs";
 import { CLUB_TIME_ZONE } from "@/lib/public-reminders";
 
 export interface TrayCard {
-  key: "round" | "suggestions" | "failed" | "live";
+  key: "round" | "feedback" | "failed" | "live";
   numeral: string;
   title: string;
   // One line of detail; null when the API doesn't give what it needs.
@@ -24,7 +24,7 @@ export interface TrayCard {
 
 export interface TrayReadings {
   round: VotingRound | null;
-  // Pending Suggestions: how many, and the rows read (for the oldest).
+  // Pending Feedback: how many, and the rows read (for the oldest).
   pending: { total: number; createdAt: readonly string[] } | null;
   jobs: readonly BotJob[];
   // The newest live events read; null when the list couldn't be read.
@@ -74,12 +74,12 @@ export function trayCards(t: TrayReadings, now: Date): TrayCard[] {
     const all = t.pending.createdAt.length >= t.pending.total;
     const oldest = all ? [...t.pending.createdAt].sort()[0] : undefined;
     cards.push({
-      key: "suggestions",
+      key: "feedback",
       numeral: String(t.pending.total),
-      title: t.pending.total === 1 ? "Suggestion pending" : "Suggestions pending",
+      title: "Feedback pending",
       line: oldest ? `Oldest from ${day(oldest)}` : null,
-      action: "Review Suggestions",
-      href: "/admin/suggestions",
+      action: "Review Feedback",
+      href: "/admin/feedback",
       tone: "plain",
     });
   }
