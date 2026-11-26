@@ -48,6 +48,9 @@ const buttonVariants = cva(
         inverse: "focus-visible:ring-background/45",
         // The second action beside it, on the same light object.
         "inverse-outline": "focus-visible:ring-current/35",
+        // www#223: a round paper arrow over art that moves a sideways row
+        // (a News shelf). Pair with an icon size.
+        scroll: "",
         link: "underline decoration-2 underline-offset-4",
         // www#89: the app shell and the root components.
         // The sidebar's own collapse and expand controls.
