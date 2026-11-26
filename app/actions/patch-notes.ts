@@ -61,14 +61,17 @@ export async function savePatchAction(number: number, draft: PatchDraft): Promis
 }
 
 // Publishes the Patch, saving `draft` first when given (unsaved changes).
+// When the save went through but the publish didn't, the refusal carries
+// the saved Patch, so the editor knows its changes are saved.
 export async function publishPatchAction(number: number, draft: PatchDraft | null): Promise<PatchActionResult> {
+  let saved: PatchActionResult | null = null;
   if (draft) {
-    const saved = await savePatchAction(number, draft);
+    saved = await savePatchAction(number, draft);
     if (!saved.ok) return saved;
   }
   const result = await patchStep(number, "publish");
   if (result.ok) revalidate(number);
-  return result;
+  return result.ok || !saved?.patch ? result : { ...result, patch: saved.patch };
 }
 
 export async function unpublishPatchAction(number: number): Promise<PatchActionResult> {
