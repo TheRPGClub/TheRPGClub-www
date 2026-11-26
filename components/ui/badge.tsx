@@ -63,6 +63,9 @@ const badgeVariants = cva(
         // x2"): paper label caps on a translucent ink chip over the art,
         // a figure set in Anton.
         shelf: "",
+        // Patch Notes' unseen mark ("NEW", www#238): a 1px paper outline
+        // with paper type, on the sidebar, the tab bar and the Stack.
+        new: "",
       },
       size: {
         default: "",

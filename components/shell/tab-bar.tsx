@@ -7,7 +7,9 @@ import { ButtonLink } from "@/components/ui/button";
 import type { SessionMembership } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import type { SessionFeature } from "@/lib/features";
+import { NO_PATCH_SEEN, type PatchSeen } from "@/lib/patch-notes/patch-mark";
 import { currentPage, sidebarGroups } from "@/lib/sidebar";
+import { usePatchUnseen } from "@/hooks/use-patch-unseen";
 import { DASHBOARD_HREF, TAB_CLASS, isCurrent } from "@/components/shell/nav-items";
 import { TabGroupMenu } from "@/components/shell/tab-group-menu";
 
@@ -20,11 +22,14 @@ export function TabBar({
   membership,
   votingPhase,
   features,
+  patchSeen = NO_PATCH_SEEN,
   account,
 }: {
   membership: SessionMembership | null;
   votingPhase: VotingPhase | null;
   features: SessionFeature[] | undefined;
+  // The session's Patch Mark: NEW on the Club tab and Patch Notes.
+  patchSeen?: PatchSeen;
   // The account menu, as the last tab.
   account: React.ReactNode;
 }) {
@@ -35,9 +40,10 @@ export function TabBar({
   );
   const current = currentPage(groups, pathname);
   const home = isCurrent(pathname, DASHBOARD_HREF);
+  const patchUnseen = usePatchUnseen(patchSeen);
   const tabs = groups.map((group) => (
     <li key={group.key}>
-      <TabGroupMenu group={group} current={current} votingPhase={votingPhase} />
+      <TabGroupMenu group={group} current={current} votingPhase={votingPhase} patchUnseen={patchUnseen} />
     </li>
   ));
 

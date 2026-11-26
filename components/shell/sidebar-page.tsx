@@ -3,6 +3,7 @@ import type { FeatureView } from "@/lib/features";
 import type { SidebarGroup, SidebarPage } from "@/lib/sidebar";
 import type { PinRules } from "@/lib/pinned-pages";
 import { NavBadge } from "@/components/feature/preview-badge";
+import { NewMark } from "@/components/patch-notes/new-mark";
 import { PHASE_LABEL } from "@/components/shell/nav-items";
 
 // What the sidebar's parts share: the viewer's groups and Pinned Pages, the
@@ -16,6 +17,9 @@ export interface SidebarNavModel {
   votingPhase: VotingPhase | null;
   view: FeatureView;
   pins: SidebarPins;
+  // A published Patch the member hasn't seen (www#238): NEW on Patch Notes
+  // and on its group's row.
+  patchUnseen: boolean;
 }
 
 // The member's Pinned Pages as keys, and the way to change them (www pin
@@ -47,18 +51,29 @@ export function pageLabel(page: SidebarPage, phase: VotingPhase | null): string 
   return page.key === "voting" && phase ? PHASE_LABEL[phase] : page.label;
 }
 
-// The label with its Preview mark, for the rail's tooltip.
-export function pageTooltip(page: SidebarPage, nav: SidebarNavModel): string {
-  const label = pageLabel(page, nav.votingPhase);
-  return page.feature && nav.view.preview(page.feature) ? `${label} (Preview)` : label;
+// Patch Notes wears NEW while a Patch is unseen.
+export function pageNew(page: SidebarPage, nav: SidebarNavModel): boolean {
+  return page.key === "patch_notes" && nav.patchUnseen;
 }
 
-// The yellow marks beside a page's name: Preview (staff only) and the
-// voting page's Open while the round is.
-// The page carries a Preview or Open badge.
+// The group holds a page wearing NEW: its row wears it too.
+export function groupNew(group: SidebarGroup, nav: SidebarNavModel): boolean {
+  return group.pages.some((page) => pageNew(page, nav));
+}
+
+// The label with its Preview and NEW marks, for the rail's tooltip.
+export function pageTooltip(page: SidebarPage, nav: SidebarNavModel): string {
+  const label = pageLabel(page, nav.votingPhase);
+  const preview = page.feature && nav.view.preview(page.feature) ? " (Preview)" : "";
+  return `${label}${preview}${pageNew(page, nav) ? " (new)" : ""}`;
+}
+
+// The marks beside a page's name: Preview (staff only), the
+// voting page's Open while the round is, and Patch Notes' NEW.
+// The page carries a Preview, Open or NEW badge.
 export function hasBadges(page: SidebarPage, nav: SidebarNavModel): boolean {
   const preview = page.feature ? nav.view.preview(page.feature) : false;
-  return preview || (page.key === "voting" && votingOpen(nav.votingPhase));
+  return preview || (page.key === "voting" && votingOpen(nav.votingPhase)) || pageNew(page, nav);
 }
 
 export function PageBadges({
@@ -77,6 +92,7 @@ export function PageBadges({
     <span className={className ?? "ml-auto flex gap-1"}>
       {preview && <NavBadge>Preview</NavBadge>}
       {open && <NavBadge>Open</NavBadge>}
+      {pageNew(page, nav) && <NewMark size="nav" />}
     </span>
   );
 }
