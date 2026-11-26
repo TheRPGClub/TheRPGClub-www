@@ -35,6 +35,9 @@ describe("proxy", () => {
       "/auth/sign-in?return_to=%2Fgames",
       "/codex/history",
       "/codex/history?kind=staff&order=newest",
+      "/share-card",
+      "/share-card?round=42&v=abc123",
+      "/api/revalidate",
     ])("passes %s through", (path) => {
       expect(passesThrough(proxy(request(path)))).toBe(true);
     });
@@ -127,8 +130,8 @@ describe("proxy", () => {
 
   describe("the matcher", () => {
     // Every file in public/ and the app's metadata files (favicon, icons,
-    // manifest) are public and skip the proxy; nothing else does, whatever
-    // its extension.
+    // manifest, robots.txt from app/robots.ts) are public and skip the
+    // proxy; nothing else does, whatever its extension.
     const publicFiles = (dir: string): string[] =>
       readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
         entry.isDirectory()
@@ -139,12 +142,13 @@ describe("proxy", () => {
       (file) => `/${path.relative(path.join(__dirname, "public"), file).split(path.sep).join("/")}`,
     );
     const metadata = readdirSync(path.join(__dirname, "app"))
-      .filter((name) => /^(?:favicon\.ico|icon\d*\.\w+|apple-icon\d*\.\w+|manifest\.webmanifest)$/.test(name))
-      .map((name) => `/${name}`);
+      .filter((name) => /^(?:favicon\.ico|icon\d*\.\w+|apple-icon\d*\.\w+|manifest\.webmanifest|robots\.ts)$/.test(name))
+      .map((name) => `/${name.replace(/^robots\.ts$/, "robots.txt")}`);
 
     it("knows the public files", () => {
       expect(fromPublic).toContain("/logo.png");
       expect(metadata).toContain("/favicon.ico");
+      expect(metadata).toContain("/robots.txt");
     });
 
     it.each([

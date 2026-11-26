@@ -8,6 +8,13 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/games/*": SHARP_LIBVIPS,
     "/members/*/achievements{,/**}": SHARP_LIBVIPS,
+    // The Share Card image reads the default Theme's font files and the
+    // logo from disk, and converts covers with sharp.
+    "/share-card": [
+      ...SHARP_LIBVIPS,
+      "./themes/monthly-issue/share-card-fonts/*.ttf",
+      "./public/logo.png",
+    ],
   },
   experimental: {
     serverActions: {
