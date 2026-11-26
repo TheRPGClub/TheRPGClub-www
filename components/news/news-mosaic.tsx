@@ -6,7 +6,8 @@ import { NewsTile } from "./news-tile";
 // The new News Items as a mosaic in reading order: one column on a phone,
 // two from a medium column, six from a wide one (container widths, not the
 // viewport). Each tile's place is worked out ahead (packTiles), so the grid
-// has no holes and the keyboard runs in the order the eye does.
+// has no holes and the keyboard runs in the order the eye does. Rows are
+// 146px (184px in two columns) and grow when a tile's words need more.
 
 const area = (p: TilePlace) => `${p.row} / ${p.col} / span ${p.h} / span ${p.w}`;
 
@@ -29,7 +30,7 @@ export function NewsMosaic({
     <div className="@container">
       <ul
         aria-label={label}
-        className="grid gap-2.5 @md:auto-rows-[11.5rem] @md:grid-cols-2 @3xl:auto-rows-[9.125rem] @3xl:grid-cols-6"
+        className="grid gap-2.5 @md:auto-rows-[minmax(11.5rem,auto)] @md:grid-cols-2 @3xl:auto-rows-[minmax(9.125rem,auto)] @3xl:grid-cols-6"
       >
         {items.map((item, i) => (
           <li
