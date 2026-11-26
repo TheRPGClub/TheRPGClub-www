@@ -6,8 +6,9 @@ import { CoverSlot } from "@/components/share-card/cover-slot";
 
 // "The Cover" (option B, picked by the owner): the GOTM's key art full-bleed
 // under the hero's dark fade from the left, the pitch on the left, the GOTM
-// burst, "This month the club plays <title>" top-right and both covers small
-// at the bottom-right. The art arrives cut to its box (lib/share-card/crop).
+// burst, "This month the club plays <title>" top-right (an older round,
+// reached by an old ?round= link: "Round N · the club played <title>") and
+// both covers small at the bottom-right. The art arrives cut to its box (lib/share-card/crop).
 
 const FADE_LEFT =
   "linear-gradient(90deg, rgba(11,11,13,1) 0%, rgba(11,11,13,0.97) 34%, rgba(11,11,13,0.55) 52%, rgba(11,11,13,0.10) 72%, rgba(11,11,13,0.35) 100%)";
@@ -58,7 +59,7 @@ export function ShareCardCover({
             textShadow: "0 1px 8px #000",
           }}
         >
-          This month the club plays
+          {issue.latest ? "This month the club plays" : `Round ${issue.round} · the club played`}
         </span>
         <span
           style={{
