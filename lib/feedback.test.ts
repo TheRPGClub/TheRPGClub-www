@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import type { Feedback } from "@/lib/api/types";
-import { previewFeedback } from "@/lib/feedback-preview";
 import {
   boardHref,
   boardKind,
@@ -8,14 +7,38 @@ import {
   canEdit,
   canUpvote,
   canWithdraw,
+  editFeedbackHref,
   feedbackPhase,
+  giveFeedbackHref,
   issueRef,
   pinnedHref,
   upvoteLabel,
   validateFeedbackInput,
 } from "@/lib/feedback";
 
-const base: Feedback = previewFeedback({ kind: "suggestion", title: "T", details: "D", authorId: "7", authorName: "A" });
+const base: Feedback = {
+  feedback_id: 1,
+  kind: "suggestion",
+  title: "T",
+  details: "D",
+  created_by: "7",
+  created_by_name: "A",
+  created_at: "2026-11-01T00:00:00Z",
+  updated_at: "2026-11-01T00:00:00Z",
+  status: "pending",
+  reviewed_by: null,
+  reviewed_at: null,
+  rejection_reason: null,
+  duplicate_of_id: null,
+  target_repo: null,
+  github_issue_number: null,
+  github_issue_url: null,
+  github_issue_state: null,
+  done: false,
+  done_at: null,
+  upvote_count: 0,
+  viewer_upvoted: false,
+};
 const row = (over: Partial<Feedback>): Feedback => ({ ...base, feedback_id: 3, ...over });
 
 describe("feedbackPhase", () => {
@@ -57,6 +80,8 @@ describe("board URLs", () => {
     expect(boardHref("feature_request")).toBe("/feedback");
     expect(boardHref("bug_report", "closed")).toBe("/feedback?kind=bug_report&status=closed");
     expect(pinnedHref({ feedback_id: 9 })).toBe("/feedback?pinned=9");
+    expect(giveFeedbackHref("bug_report")).toBe("/feedback?new=1&kind=bug_report");
+    expect(editFeedbackHref({ feedback_id: 9 })).toBe("/feedback?edit=9");
   });
 
   it("reads only known kinds and statuses", () => {

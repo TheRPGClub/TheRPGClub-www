@@ -2,7 +2,7 @@
 
 import { Pencil, ThumbsUp, Undo2 } from "lucide-react";
 import type { Feedback } from "@/lib/api/types";
-import { upvoteLabel } from "@/lib/feedback";
+import { editFeedbackHref, upvoteLabel } from "@/lib/feedback";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { FOOT_ACTION, FOOT_ACTION_OUTLINED } from "./card-foot";
 
@@ -49,7 +49,7 @@ export function BoardCardActions({
   return (
     <>
       {editable && (
-        <ButtonLink href={`/feedback/${feedback.feedback_id}/edit`} variant="card-action" className={FOOT_ACTION}>
+        <ButtonLink href={editFeedbackHref(feedback)} variant="card-action" className={FOOT_ACTION}>
           <Pencil aria-hidden />
           Edit
         </ButtonLink>

@@ -168,6 +168,16 @@ export function boardHref(kind: FeedbackKind, status: BoardStatus = "open"): str
   return q ? `/feedback?${q}` : "/feedback";
 }
 
+// The deep links the Give feedback dialog (www#226) opens from: a new one
+// (of the shown kind) or the author's edit of a Pending one.
+export function giveFeedbackHref(kind?: FeedbackKind): string {
+  return kind ? `/feedback?new=1&kind=${kind}` : "/feedback?new=1";
+}
+
+export function editFeedbackHref(f: Pick<Feedback, "feedback_id">): string {
+  return `/feedback?edit=${f.feedback_id}`;
+}
+
 // Where a Feedback sits on the board: its kind's tab, Open or Closed, and
 // rung in yellow.
 export function pinnedHref(f: Pick<Feedback, "feedback_id">): string {

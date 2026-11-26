@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { MessageSquarePlus, Pin } from "lucide-react";
 import type { BoardData } from "@/lib/feedback-board";
-import { kindMeta } from "@/lib/feedback";
+import { giveFeedbackHref, kindMeta } from "@/lib/feedback";
 import { ButtonLink } from "@/components/ui/button";
 import { BoardKindTabs } from "./board-kind-tabs";
 import { BoardList } from "./board-list";
@@ -32,7 +32,7 @@ export function FeedbackBoard({
         <h1 className="font-headline flex-1 text-5xl text-balance sm:text-6xl">Feedback Board</h1>
         {badge && <div className="pb-2">{badge}</div>}
         {canVote && (
-          <ButtonLink href="/feedback/new" variant="highlight" className="mb-1">
+          <ButtonLink href={giveFeedbackHref(kind)} variant="highlight" className="mb-1">
             <MessageSquarePlus aria-hidden />
             Give feedback
           </ButtonLink>
