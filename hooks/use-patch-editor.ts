@@ -11,6 +11,7 @@ import {
   unpublishPatchAction,
 } from "@/app/actions/patch-notes";
 import { PATCH_EDITOR_PATH } from "@/lib/patch-notes/editor-paths";
+import { dropEmptyItems } from "@/lib/patch-notes/patch-draft";
 import { patchValue } from "@/lib/patch-notes/patch-schema";
 import { patchText } from "@/lib/patch-notes/patch-text";
 import type { Patch, PatchActionResult } from "@/lib/patch-notes/types";
@@ -30,7 +31,8 @@ export function usePatchEditor(initial: Patch, initialValue: Value, siteUrl: str
   const [busy, setBusy] = useState<"save" | "publish" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const clean = patchValue(value);
+  // As a save stores it: sanitized, without empty bullets.
+  const clean = patchValue(dropEmptyItems(patchValue(value)));
   const text = patchText(clean, siteUrl ? { siteUrl } : {});
   const published = patch.status === "published";
   const draft = () => ({ title, richBody: value });

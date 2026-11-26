@@ -34,8 +34,8 @@ function revalidate(number?: number) {
   if (number) revalidatePath(patchPath(number));
 }
 
-async function fields(draft: PatchDraft) {
-  return patchFields(typeof draft.title === "string" ? draft.title : "", draft.richBody, await siteUrl());
+async function fields(draft: PatchDraft, options?: { keepEmpty?: boolean }) {
+  return patchFields(typeof draft.title === "string" ? draft.title : "", draft.richBody, await siteUrl(), options);
 }
 
 function tooLong(draft: PatchDraft): PatchActionResult | null {
@@ -43,9 +43,10 @@ function tooLong(draft: PatchDraft): PatchActionResult | null {
   return title.length > PATCH_TITLE_MAX ? { ok: false, error: `A title fits in ${PATCH_TITLE_MAX} characters.` } : null;
 }
 
-// Starts a draft from the template; the editor opens on its number.
+// Starts a draft from the template, its empty bullets kept to write in;
+// the editor opens on its number.
 export async function createPatchAction(): Promise<PatchActionResult> {
-  const result = await createPatch(await fields({ title: "", richBody: patchTemplate() }));
+  const result = await createPatch(await fields({ title: "", richBody: patchTemplate() }, { keepEmpty: true }));
   if (result.ok) revalidate();
   if (result.ok && !result.patch?.number) return { ok: false, error: "The draft was made but came back without its number. Find it in the list." };
   return result;
