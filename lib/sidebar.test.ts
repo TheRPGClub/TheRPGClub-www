@@ -37,7 +37,7 @@ describe("sidebarGroups", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "goty", "challenges"],
       games: ["games", "franchises", "lists", "reviews", "releases", "achievements", "journals"],
-      club: ["members", "news", "codex", "giveaways", "suggestions"],
+      club: ["members", "news", "codex", "giveaways", "feedback"],
     });
   });
 
@@ -61,7 +61,7 @@ describe("sidebarGroups", () => {
       "voting_console",
       "public_reminders",
       "live_events",
-      "suggestion_review",
+      "feedback_review",
       "synonyms",
     ]);
   });

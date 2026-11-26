@@ -27,7 +27,7 @@ export const FEATURE_KEYS = [
   "achievement_hub",
   "giveaways",
   "journals",
-  "suggestions",
+  "feedback",
   "news_hub",
   "challenges",
   "release_calendar",

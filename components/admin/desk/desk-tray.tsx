@@ -6,7 +6,7 @@ import type { TrayCard } from "@/lib/desk-tray";
 import { useDesk } from "@/components/admin/desk/desk-context";
 import { cn } from "@/lib/utils";
 
-const ICON = { round: Vote, suggestions: Lightbulb, failed: TriangleAlert, live: CalendarClock };
+const ICON = { round: Vote, feedback: Lightbulb, failed: TriangleAlert, live: CalendarClock };
 
 // The in-tray: one card per thing waiting on staff, as a big numeral on a
 // card with a 4px bar (yellow for the club's open business, signal orange
@@ -18,7 +18,7 @@ export function DeskTray({ cards }: { cards: TrayCard[] }) {
     return (
       <p className="mt-7 flex items-center gap-3 rounded-md border border-dashed border-border-strong px-5 py-4 text-dim-foreground">
         <CircleCheck aria-hidden className="size-5 shrink-0 text-ok" />
-        Nothing waiting on the desk: no open round, no pending Suggestions, no failed bot jobs.
+        Nothing waiting on the desk: no open round, no pending Feedback, no failed bot jobs.
       </p>
     );
   }

@@ -68,6 +68,9 @@
     --color-rarity-ultra: var(--rarity-ultra);
     --color-rarity-foreground: var(--rarity-foreground);
     --color-ok: var(--ok);
+    --color-kind-feature-request: var(--kind-feature-request);
+    --color-kind-suggestion: var(--kind-suggestion);
+    --color-kind-bug-report: var(--kind-bug-report);
     --color-phase-approved: var(--phase-approved);
     --color-phase-done: var(--phase-done);
     --color-phase-rejected: var(--phase-rejected);
@@ -110,7 +113,7 @@
     --color-panel-reviews: var(--panel-reviews);
     --color-panel-journals: var(--panel-journals);
     --color-panel-giveaways: var(--panel-giveaways);
-    --color-panel-suggestions: var(--panel-suggestions);
+    --color-panel-feedback: var(--panel-feedback);
     --color-panel-codex: var(--panel-codex);
     --color-panel-birthdays: var(--panel-birthdays);
     --color-panel-new: var(--panel-new);

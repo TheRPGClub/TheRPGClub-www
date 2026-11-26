@@ -8,8 +8,8 @@ import {
   releaseDateBlock,
   releasePlatforms,
   dailyPickSeed,
-  suggestionActivity,
-  suggestionActivityAt,
+  feedbackActivity,
+  feedbackActivityAt,
 } from "@/lib/dashboard/panel-items";
 import type { ChallengeEvent } from "@/lib/dashboard/panel-sources";
 
@@ -93,7 +93,7 @@ describe("eventSentence", () => {
   });
 });
 
-describe("suggestionActivity", () => {
+describe("feedbackActivity", () => {
   const s = {
     created_at: "2026-11-01T00:00:00Z",
     updated_at: "2026-11-01T00:00:00Z",
@@ -102,23 +102,23 @@ describe("suggestionActivity", () => {
   };
 
   it("tells a submission, a review, an upvote and a withdrawal apart", () => {
-    expect(suggestionActivity({ ...s, last_activity_at: "2026-11-01T00:00:00Z" })).toBe("submitted");
-    expect(suggestionActivity({ ...s, last_activity_at: "2026-11-03T00:00:00Z" })).toBe("upvoted");
+    expect(feedbackActivity({ ...s, last_activity_at: "2026-11-01T00:00:00Z" })).toBe("submitted");
+    expect(feedbackActivity({ ...s, last_activity_at: "2026-11-03T00:00:00Z" })).toBe("upvoted");
     expect(
-      suggestionActivity({ ...s, status: "approved", reviewed_at: "2026-11-02T00:00:00Z", last_activity_at: "2026-11-02T00:00:00Z" }),
+      feedbackActivity({ ...s, status: "approved", reviewed_at: "2026-11-02T00:00:00Z", last_activity_at: "2026-11-02T00:00:00Z" }),
     ).toBe("approved");
-    expect(suggestionActivity({ ...s, status: "withdrawn", last_activity_at: "2026-11-05T00:00:00Z" })).toBe("withdrawn");
+    expect(feedbackActivity({ ...s, status: "withdrawn", last_activity_at: "2026-11-05T00:00:00Z" })).toBe("withdrawn");
   });
 
   it("reads an API without the activity time from the last update", () => {
-    expect(suggestionActivity(s)).toBe("submitted");
-    expect(suggestionActivity({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("upvoted");
-    expect(suggestionActivityAt({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("2026-11-04T00:00:00Z");
+    expect(feedbackActivity(s)).toBe("submitted");
+    expect(feedbackActivity({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("upvoted");
+    expect(feedbackActivityAt({ ...s, updated_at: "2026-11-04T00:00:00Z" })).toBe("2026-11-04T00:00:00Z");
   });
 
   it("counts a review stamped a few milliseconds off the update as the review", () => {
     expect(
-      suggestionActivity({
+      feedbackActivity({
         ...s,
         status: "approved",
         reviewed_at: "2026-11-02T00:00:00.120Z",
@@ -126,7 +126,7 @@ describe("suggestionActivity", () => {
       }),
     ).toBe("approved");
     expect(
-      suggestionActivity({ ...s, status: "approved", reviewed_at: "2026-11-02T00:00:00Z", last_activity_at: "2026-11-02T00:00:05Z" }),
+      feedbackActivity({ ...s, status: "approved", reviewed_at: "2026-11-02T00:00:00Z", last_activity_at: "2026-11-02T00:00:05Z" }),
     ).toBe("upvoted");
   });
 });

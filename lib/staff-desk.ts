@@ -18,7 +18,7 @@ export type DeskNotes = Partial<Record<StaffSectionKey, DeskNote>>;
 // tier doesn't reach it).
 export interface DeskReadings {
   round: Pick<VotingRound, "round_number" | "phase"> | null;
-  pendingSuggestions: number | null;
+  pendingFeedback: number | null;
   // The bot's current presence.
   nowPlaying: string | null;
   presenceCount: number | null;
@@ -47,7 +47,7 @@ export function deskNotes(sections: readonly StaffSection[], r: DeskReadings, no
   if (r.round) {
     notes.voting = { text: `Round ${r.round.round_number} ${PHASE_NOTE[r.round.phase]}`, tone: "live" };
   }
-  if (r.pendingSuggestions !== null) notes.suggestions = { text: `${r.pendingSuggestions} pending` };
+  if (r.pendingFeedback !== null) notes.feedback = { text: `${r.pendingFeedback} pending` };
   if (r.nowPlaying) {
     const p = r.nowPlaying;
     notes.presence = {

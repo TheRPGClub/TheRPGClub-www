@@ -69,6 +69,9 @@
         --rarity-ultra: #00ff66;
         --rarity-foreground: #ff00cc;
         --ok: #ff0000;
+        --kind-feature-request: #00ffff;
+        --kind-suggestion: #ffee00;
+        --kind-bug-report: #ff6a00;
         --phase-approved: #ff00ff;
         --phase-done: #0000ff;
         --phase-rejected: #00ffff;
@@ -111,7 +114,7 @@
         --panel-reviews: #ff00ff;
         --panel-journals: #00ffff;
         --panel-giveaways: #ffee00;
-        --panel-suggestions: #0000ff;
+        --panel-feedback: #0000ff;
         --panel-codex: #00ff66;
         --panel-birthdays: #ff6a00;
         --panel-new: #00ff00;
