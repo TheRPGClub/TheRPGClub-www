@@ -88,6 +88,13 @@ export function usePatchEditor(initial: Patch, initialValue: Value, siteUrl: str
     dirty,
     busy,
     error,
+    // Keeps a Patch read or written elsewhere (the post block, www#239);
+    // `saved` when it holds the unsaved changes.
+    adopt: (next: Patch, { saved = false }: { saved?: boolean } = {}) => {
+      setPatch(next);
+      if (saved) setDirty(false);
+    },
+    draft,
     save: () => run("save", () => savePatchAction(patch.number, draft())),
     publish: () => run("publish", () => publishPatchAction(patch.number, dirty ? draft() : null)),
     unpublish: () => confirmStep(() => unpublishPatchAction(patch.number)),

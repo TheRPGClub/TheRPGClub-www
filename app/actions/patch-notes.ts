@@ -6,10 +6,13 @@ import { siteUrl } from "@/lib/api/codex-write";
 import {
   createPatch,
   deletePatch,
+  fetchStaffPatch,
   patchStep,
+  queuePatchPost,
   savePatch,
   type PatchActionResult,
 } from "@/lib/api/patch-write";
+import type { Patch, PatchPostResult } from "@/lib/patch-notes/types";
 import { PATCH_TITLE_MAX, patchFields, patchTemplate } from "@/lib/patch-notes/patch-draft";
 import { PATCH_NOTES_PATH, patchPath } from "@/lib/patch-notes/paths";
 import { PATCH_EDITOR_PATH } from "@/lib/patch-notes/editor-paths";
@@ -77,4 +80,25 @@ export async function deletePatchAction(number: number): Promise<PatchActionResu
   const result = await deletePatch(number);
   if (result.ok) revalidate(number);
   return result;
+}
+
+// Post to #patch-notes ("post") or Update the post ("update"), saving
+// `draft` first when given (unsaved changes), as Publish does: the post
+// carries the Patch as saved (www#239).
+export async function postPatchAction(number: number, step: "post" | "update", draft: PatchDraft | null): Promise<PatchPostResult> {
+  let patch: Patch | undefined;
+  if (draft) {
+    const saved = await savePatchAction(number, draft);
+    if (!saved.ok) return saved;
+    patch = saved.patch;
+  }
+  const result = await queuePatchPost(number, step === "post" ? "post" : "update_post");
+  if (result.ok) revalidatePath(PATCH_EDITOR_PATH);
+  return { ...result, patch: result.patch ?? patch };
+}
+
+// The Patch re-read once its post job settles, for its post state.
+export async function readPatchAction(number: number): Promise<Patch | null> {
+  const patch = await fetchStaffPatch(number);
+  return patch === "not_found" ? null : patch;
 }

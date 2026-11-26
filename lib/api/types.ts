@@ -1046,7 +1046,10 @@ export type BotJobKind =
   | "say"
   | "memberscan"
   | "presence_set"
-  | "feature_flag_changed";
+  | "feature_flag_changed"
+  | "patch_post"
+  | "patch_edit"
+  | "patch_delete";
 
 export type BotJobStatus = "queued" | "claimed" | "done" | "failed";
 

@@ -5,6 +5,8 @@ import { Loader2, Trash2 } from "lucide-react";
 import type { PatchEditorState } from "@/hooks/use-patch-editor";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { removesPost } from "@/lib/patch-notes/post-state";
+import { PatchPost } from "./patch-post";
 
 // The editor's actions (www#237), under the preview: Save draft (Save
 // changes once published) and Publish in highlighter yellow; Unpublish
@@ -16,6 +18,7 @@ export function PatchActions({ editor }: { editor: PatchEditorState }) {
   const spin = (kind: "save" | "publish") => (busy === kind ? <Loader2 aria-hidden className="motion-safe:animate-spin" /> : null);
   return (
     <div className="flex flex-col gap-3 border-t border-border pt-3.5">
+      <PatchPost editor={editor} />
       {editor.error && (
         <p role="alert" className="text-[0.875rem] text-destructive">
           {editor.error}
@@ -30,7 +33,11 @@ export function PatchActions({ editor }: { editor: PatchEditorState }) {
               </Button>
             }
             title={`Unpublish Patch ${patch.number}?`}
-            description="It leaves /patch-notes and its page goes, until you publish it again. Its number stays its own."
+            description={
+              removesPost(patch)
+                ? "It leaves /patch-notes and its page goes, and the bot deletes its post from #patch-notes. Publish it again and the post starts over. Its number stays its own."
+                : "It leaves /patch-notes and its page goes, until you publish it again. Its number stays its own."
+            }
             confirmLabel="Unpublish"
             pendingLabel="Unpublishing…"
             onConfirm={editor.unpublish}
