@@ -1,7 +1,8 @@
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import type { PatchFields } from "@/lib/patch-notes/patch-draft";
-import type { Patch, PatchActionResult } from "@/lib/patch-notes/types";
+import type { BotJob } from "@/lib/api/types";
+import type { Patch, PatchActionResult, PatchPostResult } from "@/lib/patch-notes/types";
 
 // The Patch editor's reads and writes (www#237, api#511), for Admins and
 // Superadmins signed in on the website. The API refuses everyone else, and
@@ -18,6 +19,9 @@ const ERRORS: Record<string, string> = {
   not_published: "That Patch isn't published.",
   published: "Unpublish the Patch before deleting it.",
   gone: "That Patch is gone. Someone may have deleted it.",
+  already_posted: "That Patch is on #patch-notes already. Update the post instead.",
+  post_queued: "That Patch is already on its way to #patch-notes.",
+  not_posted: "That Patch isn't on #patch-notes, so there's no post to update.",
 };
 
 function validNumber(number: unknown): number is number {
@@ -85,4 +89,18 @@ export function patchStep(number: number, step: "publish" | "unpublish"): Promis
 export function deletePatch(number: number): Promise<PatchActionResult> {
   if (!validNumber(number)) return Promise.resolve({ ok: false, error: ERRORS.gone });
   return send(`/api/v1/patches/${number}`, { method: "DELETE" });
+}
+
+// Queues the bot's post of a published Patch, or the edit of its post
+// (www#239, api#513): 202 with the bot job.
+export async function queuePatchPost(number: number, step: "post" | "update_post"): Promise<PatchPostResult> {
+  if (!validNumber(number)) return { ok: false, error: ERRORS.gone };
+  try {
+    const res = await apiFetch(`/api/v1/patches/${number}/${step}`, { method: "POST", ...FETCH });
+    if (!res.ok) return failure(res);
+    const body = (await res.json().catch(() => ({}))) as { data?: BotJob };
+    return { ok: true, job: body.data };
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
 }

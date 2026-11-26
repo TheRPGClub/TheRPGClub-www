@@ -1,3 +1,5 @@
+import type { BotJob } from "@/lib/api/types";
+
 // A Patch as the API sends it (GET /api/v1/patches and /patches/:number,
 // spec api#510). Client-safe.
 
@@ -22,6 +24,16 @@ export interface Patch {
   body: string;
   cut_body: string;
   counts: PatchCounts;
+  // Its #patch-notes post (api#513): null while not posted. The three are
+  // set together; `edited_since_post` turns on when a posted Patch's text
+  // changes and off when the post is updated.
+  posted_at?: string | null;
+  post_channel_id?: string | null;
+  post_message_id?: string | null;
+  edited_since_post?: boolean;
+  // Writers only, on a single Patch: the latest patch_post, patch_edit or
+  // patch_delete bot job, null if none.
+  post_job?: BotJob | null;
   created_at: string;
   updated_at: string;
 }
@@ -36,6 +48,15 @@ export interface PatchWithNeighbours extends Patch {
 // refusal in words.
 export interface PatchActionResult {
   ok: boolean;
+  patch?: Patch;
+  error?: string;
+}
+
+// What Post to #patch-notes and Update the post answer (www#239): the
+// queued bot job, and the Patch when unsaved changes were saved first.
+export interface PatchPostResult {
+  ok: boolean;
+  job?: BotJob;
   patch?: Patch;
   error?: string;
 }
