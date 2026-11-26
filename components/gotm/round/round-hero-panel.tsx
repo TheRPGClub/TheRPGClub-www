@@ -7,10 +7,11 @@ import { OutboundLinks, TRACK_LABEL, UNKNOWN_GAME_TITLE } from "@/components/iss
 import { cn } from "@/lib/utils";
 import { Nominator } from "./round-nominator";
 
-// One winner's half of the Round Page's diptych: key art under a scrim, the
-// Category chip, the two-line Anton title and who put it forward. GOTM's
-// caption sits left, NR-GOTM's right (`mirrored`), so the pair faces the
-// hinge; a Category spanning the row sets every caption left.
+// One winner's panel in the Round Page hero: key art under a scrim, the
+// Category chip, the two-line Anton title and who put it forward. In a mixed
+// round NR-GOTM's caption and starburst sit right (`mirrored`, the caption
+// from md), so the pair faces the rule between them; a Category across the
+// page sets every caption left.
 export function RoundHeroPanel({
   kind,
   row,
@@ -41,7 +42,7 @@ export function RoundHeroPanel({
   return (
     <article
       className={cn(
-        "group/panel relative isolate flex min-h-56 flex-1 overflow-hidden rounded-sm bg-muted after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1",
+        "group/panel relative isolate flex min-h-56 flex-1 md:min-h-74 overflow-hidden rounded-sm bg-muted after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-1",
         nr ? "after:bg-nr" : "after:bg-gotm",
       )}
     >
@@ -64,7 +65,7 @@ export function RoundHeroPanel({
           className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none focus-visible:ring-inset"
         />
       )}
-      <div className={cn("mt-auto w-full px-3 pt-20 pb-4 md:px-5 md:pb-5", mirrored && "text-right")}>
+      <div className={cn("mt-auto w-full px-3 pt-18 pb-4 md:px-5 md:pt-20 md:pb-5", mirrored && "md:text-right")}>
         <span
           className={cn(
             "font-label mb-2 inline-block rounded-xs px-1.75 py-0.5 text-[0.75rem] font-extrabold tracking-[0.14em] uppercase",
@@ -77,14 +78,14 @@ export function RoundHeroPanel({
         <h2
           className={cn(
             "font-headline leading-[1.02] uppercase text-balance",
-            compact ? "text-[1.25rem] md:text-[1.75rem]" : "text-[1.25rem] md:text-[2.5rem]",
+            compact ? "text-[1.625rem] md:text-[1.75rem]" : "text-[1.625rem] md:text-[2.5rem]",
           )}
         >
           <span className="block">{lead}</span>
           {tail && <span className={cn("block", nr ? "text-nr-soft" : "text-highlight")}>{tail}</span>}
         </h2>
         <RoundHeroCredit row={row} meta={meta} mirrored={mirrored} />
-        <OutboundLinks links={links} className={cn("mt-2", mirrored && "-mr-1 ml-0 justify-end")} />
+        <OutboundLinks links={links} className={cn("mt-2", mirrored && "md:-mr-1 md:ml-0 md:justify-end")} />
       </div>
     </article>
   );
@@ -109,7 +110,7 @@ function RoundHeroCredit({ row, meta, mirrored }: { row: RoundRow; meta: string 
         <p
           className={cn(
             "mt-1.5 line-clamp-2 max-w-[26rem] text-[0.875rem] leading-snug text-dim-foreground max-md:hidden",
-            mirrored && "ml-auto",
+            mirrored && "md:ml-auto",
           )}
         >
           {reason}

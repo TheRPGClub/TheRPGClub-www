@@ -84,41 +84,65 @@ describe("GotmHistory", () => {
     expect(html).not.toContain("Avowed");
   });
 
-  it("a GOTM-only round spans the row with its one winner, no empty NR-GOTM leaf", () => {
-    const html = render([R137]);
-    expect(html).toContain("Avowed");
-    expect(html).not.toContain("No NR-GOTM winner");
-    expect(html).toContain("7 nominated");
-    // The hinge sits at the left edge, the leaf takes the rest.
-    expect(html).toContain("sm:grid-cols-[8.25rem_minmax(0,1fr)]");
-    expect(html).not.toContain("sm:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)]");
+  // The banner grid that follows the numeral and its tags.
+  const MIXED = "sm:grid-cols-2";
+  const ACROSS = "sm:grid-flow-col";
+
+  it("sets the round numeral on the banners' corner, the month and nominated tag beside it", () => {
+    const html = render([R144]);
+    expect(html).toMatch(/<span class="font-headline[^"]*sm:text-\[5\.75rem\][^"]*"><span class="sr-only">Round <\/span>144<\/span>/);
+    expect(html).toContain("Nov 2026");
+    expect(html.indexOf(">144<")).toBeLessThan(html.indexOf("8 nominated"));
+    expect(html.indexOf("8 nominated")).toBeLessThan(html.indexOf("<h3"));
   });
 
-  it("gives each winner of a GOTM-only round its own leaf, side by side", () => {
+  it("a GOTM-only round gives its one winner the full width, no empty NR-GOTM banner", () => {
+    const html = render([R137]);
+    expect(html).toContain("Avowed");
+    expect(html.match(/<h3/g)).toHaveLength(1);
+    expect(html).not.toContain("No NR-GOTM winner");
+    expect(html).toContain("7 nominated");
+    expect(html).toContain(ACROSS);
+    expect(html).not.toContain(MIXED);
+  });
+
+  it("gives each winner of a GOTM-only round its own banner, side by side", () => {
     const html = render([{ ...R137, gotm: block("April 2026", ["Avowed", "Split Fiction"], 4) }]);
     expect(html.match(/<h3/g)).toHaveLength(2);
     expect(html).toMatch(/<h3[^>]*><span class="block">Avowed<\/span><\/h3>/);
     expect(html).toMatch(/<h3[^>]*><span class="block">Split Fiction<\/span><\/h3>/);
     expect(html).not.toContain("+ Split Fiction");
-    expect(html).toContain("sm:grid-flow-col");
+    expect(html).toContain(ACROSS);
     expect(html).not.toContain("No NR-GOTM winner");
   });
 
-  it("an NR-GOTM-only round spans the row with its caption on the left", () => {
+  it("an NR-GOTM-only round takes the width with its caption on the left", () => {
     const html = render([{ ...R137, gotm: block("April 2026", [], 2), nr_gotm: block("April 2026", ["Astro Bot"], 3) }]);
     expect(html).toContain("Astro Bot");
     expect(html).toContain("bg-nr");
     expect(html).not.toContain("No GOTM winner");
     expect(html).not.toContain("text-right");
+    expect(html).toContain(ACROSS);
     expect(html).toContain("5 nominated");
   });
 
-  it("keeps a mixed round as a diptych, co-winners on the + line", () => {
+  it("splits a mixed round into halves, co-winners on the + line", () => {
     const html = render([{ ...R144, gotm: block("November 2026", ["Alpha", "Beta"], 4) }]);
-    expect(html).toContain("sm:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)]");
+    expect(html).toContain(MIXED);
+    expect(html).not.toContain(ACROSS);
     expect(html.match(/<h3/g)).toHaveLength(2);
     expect(html).toContain("+ Beta");
-    expect(html).toContain("text-right");
+    // NR-GOTM's caption sits right beside the rule, from sm up.
+    expect(html).toContain("sm:text-right");
+  });
+
+  it("narrowed to one Category, gives each of its winners a banner, no + line", () => {
+    const html = render([{ ...R144, gotm: block("November 2026", ["Alpha", "Beta"], 4) }], { kind: "gotm" });
+    expect(html.match(/<h3/g)).toHaveLength(2);
+    expect(html).not.toContain("+ Beta");
+    expect(html).not.toContain("Castlevania");
+    expect(html).toContain(ACROSS);
+    expect(html).toContain("4 nominated");
   });
 
   it("does not link a round still being decided and tags it Deciding", () => {
@@ -126,6 +150,8 @@ describe("GotmHistory", () => {
     expect(html).not.toContain('href="/gotm/144"');
     expect(html).toContain('href="/gotm/137"');
     expect(html.match(/Deciding/g)).toHaveLength(1);
+    // The tag runs beside the month, before the nominated tag.
+    expect(html.indexOf("Deciding")).toBeLessThan(html.indexOf("8 nominated"));
   });
 
   it("heads every year group, the first one on page 1 included", () => {

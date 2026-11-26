@@ -14,8 +14,8 @@ import { GotmDiptychRow } from "./gotm-diptych-row";
 import { GotmHistoryFilters } from "./gotm-history-filters";
 import { GotmYearRail } from "./gotm-year-rail";
 
-// The GOTM History: every closed round as a diptych of its winners' art,
-// newest first, each opening its Round Page. The Category switch sits by
+// The GOTM History: every closed round as its winners' art under the round
+// numeral, newest first, each opening its Round Page. The Category switch sits by
 // the title and the year rail beside the rows.
 export function GotmHistory({
   filters,
@@ -77,7 +77,7 @@ export function GotmHistory({
                   >
                     {group.year ?? "Undated"}
                   </h2>
-                  <ol className="space-y-4.5 sm:space-y-3.5">
+                  <ol className="space-y-6 sm:space-y-6.5">
                     {group.rounds.map((round, ri) => (
                       <GotmDiptychRow
                         key={round.round_number}

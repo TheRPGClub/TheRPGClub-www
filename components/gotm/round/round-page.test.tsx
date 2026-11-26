@@ -32,6 +32,10 @@ function render(round: GotmRoundDetail | null, filters = noFilters, discord?: Di
   return { html, text };
 }
 
+// The hero's layouts: a mixed round's halves, or one Category across.
+const MIXED = "md:grid-cols-2";
+const ACROSS = "md:grid-flow-col";
+
 const order = (text: string, ...titles: string[]) =>
   titles.map((t) => text.lastIndexOf(t)).every((at, i, all) => at >= 0 && (i === 0 || at > all[i - 1]));
 
@@ -142,7 +146,8 @@ describe("RoundPage", () => {
     expect(text).toContain("NR-GOTM · 2 nominees");
     expect(text).toContain("Split Fiction");
     expect(text).toContain("Death Stranding");
-    expect(html).toContain("md:grid-cols-[8.25rem_minmax(0,1fr)]");
+    expect(html).toContain(ACROSS);
+    expect(html).not.toContain(MIXED);
     expect(html.match(/<article/g)).toHaveLength(1);
   });
 
@@ -156,7 +161,7 @@ describe("RoundPage", () => {
     expect(text).toContain("Astro Bot");
     expect(text).toContain("GOTM · 1 nominee");
     expect(html.match(/<article/g)).toHaveLength(1);
-    expect(html).toContain("md:grid-cols-[8.25rem_minmax(0,1fr)]");
+    expect(html).toContain(ACROSS);
     expect(html).not.toMatch(/<article[\s\S]*text-right[\s\S]*<\/article>/);
   });
 
@@ -169,12 +174,13 @@ describe("RoundPage", () => {
     );
     expect(order(text, "Beta", "Alpha")).toBe(true);
     expect(html.match(/<article/g)).toHaveLength(2);
-    expect(html).toContain("md:grid-flow-col");
+    expect(html).toContain(ACROSS);
+    expect(html).not.toContain(MIXED);
     expect(html).toContain("md:text-[2.5rem]");
     expect(html).not.toContain("md:text-[1.75rem]");
   });
 
-  it("keeps a mixed round as a diptych, co-winners stacked in their half", () => {
+  it("splits a mixed round into halves, co-winners stacked in their half", () => {
     const { html, text } = render(
       roundDetail({
         gotm: category({ winners: [winner("Alpha", null, 1), winner("Beta", nomination("Beta", "xergg"), 0)] }),
@@ -182,10 +188,20 @@ describe("RoundPage", () => {
       }),
     );
     expect(order(text, "Beta", "Alpha")).toBe(true);
-    expect(html).toContain("md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)]");
+    expect(html).toContain(MIXED);
     expect(html.match(/<article/g)).toHaveLength(3);
-    expect(html).not.toContain("md:grid-flow-col");
+    expect(html).not.toContain(ACROSS);
     expect(html).toContain("md:text-[1.75rem]");
+    // NR-GOTM's caption faces the rule from md up; a phone keeps it left.
+    expect(html).toContain("md:text-right");
+  });
+
+  it("carries no numeral or month block in the hero: the heading says the round", () => {
+    const { html } = render(votedRound());
+    const hero = html.slice(html.indexOf("</header>"), html.indexOf('aria-labelledby="round-gotm"'));
+    expect(hero).not.toContain("144");
+    expect(hero).not.toContain("November");
+    expect(html).toMatch(/<h1[^>]*>Round 144<span[^>]*><span[^>]*> · <\/span>November 2026<\/span><\/h1>/);
   });
 
   it("steps to neighbouring rounds and back to the history with its filters", () => {
@@ -195,6 +211,8 @@ describe("RoundPage", () => {
     expect(html).toContain('href="/gotm/134?kind=gotm&amp;year=2026&amp;page=2"');
     expect(html).toContain('href="/gotm/136?kind=gotm&amp;year=2026&amp;page=2"');
     expect(text).toContain("Previous round");
+    // The quick steps sit beside the heading, and under it on a phone.
+    expect(html.match(/aria-label="Step through rounds"/g)).toHaveLength(2);
   });
 
   it("the newest round has no next link", () => {

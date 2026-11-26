@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-// The Round Page while the round loads: the title, the diptych and the two
-// Category columns.
+// The Round Page while the round loads: the title, the winners' halves and
+// the two Category columns.
 export function RoundPageSkeleton() {
   return (
     <div aria-busy className="space-y-6">
@@ -9,9 +9,8 @@ export function RoundPageSkeleton() {
         <Skeleton variant="text" className="h-4 w-28" />
         <Skeleton variant="text" className="h-12 w-72 max-w-full" />
       </div>
-      <div className="grid h-64 grid-cols-2 gap-1.5 md:h-74 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
+      <div className="grid auto-rows-[14rem] gap-1.5 md:h-74 md:auto-rows-auto md:grid-cols-2 md:gap-x-3.75">
         <Skeleton variant="plate" className="h-full" />
-        <div className="max-md:hidden" />
         <Skeleton variant="plate" className="h-full" />
       </div>
       <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
