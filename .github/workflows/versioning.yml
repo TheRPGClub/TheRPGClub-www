@@ -1,0 +1,18 @@
+# Versions this repo on every merge to main (spec TheRPGClub/TheRPGClub-api#510, ticket #243).
+# The workflow and its rules live in TheRPGClub-api; it does nothing until this repo has a v* tag.
+name: Versioning
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  version:
+    permissions:
+      contents: write
+      pull-requests: read
+    uses: TheRPGClub/TheRPGClub-api/.github/workflows/versioning-reusable.yml@main
+    with:
+      repo_key: www
+    secrets:
+      release_api_token: ${{ secrets.RPGCLUB_RELEASE_API_TOKEN }}
