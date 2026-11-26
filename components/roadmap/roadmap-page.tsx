@@ -2,10 +2,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeader, headingLinkClass } from "@/components/templates/page-header";
-import { roadmapEmpty } from "@/lib/roadmap/tree";
 import type { Roadmap } from "@/lib/roadmap/types";
-import { LearnedShelf } from "./learned-shelf";
-import { SkillTree, Tier } from "./skill-tree";
+import { RoadmapBody } from "./roadmap-body";
 
 // The members' Roadmap (spec api#505, www#231): the page header with the
 // way to the Feedback Board, then the Skill Tree of open Milestones with the
@@ -47,34 +45,5 @@ export function RoadmapPage({
       />
       {tree ?? <RoadmapBody roadmap={roadmap} />}
     </div>
-  );
-}
-
-function RoadmapBody({ roadmap }: { roadmap: Roadmap | null }) {
-  if (!roadmap) {
-    return <Note>Couldn&apos;t load the Roadmap. Try again in a moment.</Note>;
-  }
-  if (roadmapEmpty(roadmap)) {
-    return (
-      <Note>
-        No Milestones yet. Staff are still drawing up the tree; check back soon.
-      </Note>
-    );
-  }
-  return (
-    <SkillTree foot={<LearnedShelf reached={roadmap.reached} />}>
-      {roadmap.milestones.map((m, i) => (
-        <Tier key={m.id} milestone={m} first={i === 0} />
-      ))}
-    </SkillTree>
-  );
-}
-
-// The dashed empty-state box (DESIGN.md, Cards / Containers).
-function Note({ children }: { children: ReactNode }) {
-  return (
-    <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-center text-dim-foreground">
-      {children}
-    </p>
   );
 }
