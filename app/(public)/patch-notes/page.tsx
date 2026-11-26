@@ -1,0 +1,31 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { fetchPatches } from "@/lib/api/patches";
+import { featureView } from "@/lib/features";
+import { PATCH_NOTES_PATH } from "@/lib/patch-notes/paths";
+import { getSession } from "@/lib/session";
+import { PreviewBadge } from "@/components/feature/preview-badge";
+import { PatchNotesFrame } from "@/components/patch-notes/patch-notes-frame";
+import { PatchStack } from "@/components/patch-notes/patch-stack";
+
+// Patch Notes (www#236, spec api#510): what changed on the site and bot,
+// newest Patch on top. Public, as Club History: the API decides what a
+// Visitor reads (not found unless the Feature is Live); a Member's session
+// decides theirs, as on every Feature page.
+
+export const metadata: Metadata = { title: "Patch Notes · The RPG Club" };
+
+export default async function PatchNotesPage() {
+  const session = await getSession();
+  const features = featureView(session?.features);
+  if (session && !features.canOpen("patch_notes")) notFound();
+  const patches = await fetchPatches();
+  if (patches === "not_found") notFound();
+
+  return (
+    <PatchNotesFrame session={session} path={PATCH_NOTES_PATH}>
+      <PatchStack patches={patches} badge={features.preview("patch_notes") && <PreviewBadge />} />
+    </PatchNotesFrame>
+  );
+}
