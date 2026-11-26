@@ -115,6 +115,7 @@ export type StaffSectionKey =
   | "presence"
   | "presence-history"
   | "live-events"
+  | "patch-notes"
   | "birth-dates"
   | "reminders"
   | "say"
@@ -251,6 +252,15 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     line: "A forum thread and a Discord event for a stream or a play session.",
     nav: true,
     jobKinds: ["live_event_create"],
+  },
+  {
+    key: "patch-notes",
+    href: "/admin/patch-notes",
+    label: "Patch Notes",
+    tier: "admin",
+    group: "bot",
+    blurb: "Write a Patch beside its live card, then publish it on Patch Notes.",
+    line: "Write and publish the numbered Patches on Patch Notes.",
   },
   // Members
   {

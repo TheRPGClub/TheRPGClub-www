@@ -31,3 +31,11 @@ export interface PatchWithNeighbours extends Patch {
   previous_number: number | null;
   next_number: number | null;
 }
+
+// What an editor write answers (www#237): the Patch as saved, or the
+// refusal in words.
+export interface PatchActionResult {
+  ok: boolean;
+  patch?: Patch;
+  error?: string;
+}
