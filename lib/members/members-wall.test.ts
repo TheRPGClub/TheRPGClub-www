@@ -13,7 +13,7 @@ vi.mock("@/lib/api/shared", () => ({
 }));
 
 const { fetchWallTiers } = await import("@/lib/members/members-wall");
-const { memberDisplayName, searchTiers, wallTiers } = await import("@/lib/members/member-tiers");
+const { memberDisplayName, wallTiers } = await import("@/lib/members/member-tiers");
 
 const user = (id: string, extra: Partial<User> = {}): User =>
   ({ user_id: id, username: `u${id}`, global_name: null, is_bot: false, server_left_at: null, ...extra }) as User;
@@ -59,20 +59,6 @@ describe("wallTiers", () => {
 
   it("leaves out an empty tier", () => {
     expect(wallTiers([user("1", { role_member: true })]).map((t) => t.title)).toEqual(["Members"]);
-  });
-});
-
-describe("searchTiers", () => {
-  const tiers = wallTiers([
-    user("1", { role_admin: true, global_name: "Vex" }),
-    user("2", { role_regular: true, username: "halcyon_days" }),
-  ]);
-
-  it("keeps members whose name or username holds the query, dropping empty tiers", () => {
-    expect(searchTiers(tiers, " HALC ").map((t) => [t.title, t.members.map((m) => m.userId)])).toEqual([
-      ["Regulars", ["2"]],
-    ]);
-    expect(searchTiers(tiers, "")).toBe(tiers);
   });
 });
 

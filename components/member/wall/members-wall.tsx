@@ -4,7 +4,7 @@ import { MemberTiers } from "./member-tiers";
 import { WallNote } from "./wall-note";
 
 // The club's members page: every current member with a club role, in tiers
-// by their highest role (Admins down to Newcomers), with a search over them.
+// by their highest role (Admins down to Newcomers).
 
 export async function MembersWall() {
   const tiers = await fetchWallTiers();

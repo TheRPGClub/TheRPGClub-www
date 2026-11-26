@@ -168,7 +168,7 @@ describe("progressMemberAvatar", () => {
   });
 
   it("falls back to the API's endpoint without a hash", () => {
-    expect(progressMemberAvatar({ user_id: "42" })).toMatch(/\/api\/v1\/users\/42\/avatar$/);
+    expect(progressMemberAvatar({ user_id: "42" })).toBe("/api/members/42/avatar");
   });
 });
 

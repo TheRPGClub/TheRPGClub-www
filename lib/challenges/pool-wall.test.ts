@@ -57,7 +57,7 @@ describe("poolWall", () => {
   it("gives each mark the member's id and picture, for the link to their profile", () => {
     const [tile] = poolWall([game(1, { cleared_by: [{ ...crit, run_id: 1 }] })], "me", poolKey(null));
     expect(tile.cleared[0]).toMatchObject({ userId: "c", name: "Crit Fisher" });
-    expect(tile.cleared[0].avatarUrl).toMatch(/\/api\/v1\/users\/c\/avatar$/);
+    expect(tile.cleared[0].avatarUrl).toBe("/api/members/c/avatar");
   });
 
   it("filters to the games the club played or didn't", () => {
