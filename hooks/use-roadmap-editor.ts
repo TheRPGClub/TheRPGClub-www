@@ -19,6 +19,7 @@ import {
   type ItemZones,
   type MilestoneDraft,
 } from "@/lib/roadmap/edit";
+import { saveItemSteps, type ItemSave } from "@/lib/roadmap/save-item";
 import type { Roadmap, RoadmapItem, RoadmapMilestone } from "@/lib/roadmap/types";
 
 // The dialog staff editing has open, if any.
@@ -107,13 +108,14 @@ export function useRoadmapEditor(initial: Roadmap) {
       setError(null);
     },
 
-    saveItem: async (milestoneId: number, item: RoadmapItem | null, draft: ItemDraft) => {
-      const saved = await attempt(same, () => (item ? act.updateRoadmapItemAction(item.id, draft) : act.createRoadmapItemAction(milestoneId, draft)), upsertItem);
-      if (!saved.ok) return saved.error;
-      const id = saved.data.id;
-      if (draft.shipped === (saved.data.shipped_at !== null)) return null;
-      return save((r) => setShipped(r, id, draft.shipped ? new Date().toISOString() : null), () => act.shipRoadmapItemAction(id, draft.shipped), upsertItem);
-    },
+    // Answers the item as saved too: after a create, the dialog edits it.
+    saveItem: (milestoneId: number, item: RoadmapItem | null, draft: ItemDraft): Promise<ItemSave> =>
+      saveItemSteps(
+        item,
+        draft.shipped,
+        (it) => attempt(same, () => (it ? act.updateRoadmapItemAction(it.id, draft) : act.createRoadmapItemAction(milestoneId, draft)), upsertItem),
+        (id, ship) => attempt((r) => setShipped(r, id, ship ? new Date().toISOString() : null), () => act.shipRoadmapItemAction(id, ship), upsertItem),
+      ),
     deleteItem: (id: number) => save((r) => removeItem(r, id), () => act.deleteRoadmapItemAction(id), same),
     toggleShipped: (item: RoadmapItem) => {
       const ship = item.shipped_at === null;
