@@ -2,6 +2,7 @@ import type { ShareCardIssue, ShareCardWinner } from "@/lib/share-card/select";
 import { SHARE_CARD_ART } from "@/lib/share-card/crop";
 import { Burst } from "@/components/share-card/burst";
 import { Footer, Pitch, issueLine, type Look } from "@/components/share-card/card-parts";
+import { CoverSlot } from "@/components/share-card/cover-slot";
 
 // "The Cover" (option B, picked by the owner): the GOTM's key art full-bleed
 // under the hero's dark fade from the left, the pitch on the left, the GOTM
@@ -87,23 +88,10 @@ export function ShareCardCover({
       />
 
       <div style={{ position: "absolute", right: 56, bottom: 44, display: "flex", alignItems: "flex-end", gap: 14 }}>
-        {winners.map((w) =>
-          w.coverUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- ImageResponse draws plain img, not next/image
-            <img
-              key={w.kind}
-              src={w.coverUrl}
-              width={150}
-              height={200}
-              alt=""
-              style={{
-                objectFit: "cover",
-                borderBottom: `6px solid ${w.kind === "gotm" ? palette.gotm : palette.nr}`,
-                boxShadow: "0 10px 28px rgba(0,0,0,0.6)",
-              }}
-            />
-          ) : null,
-        )}
+        {winners.map((w) => (
+          <CoverSlot key={w.kind} winner={w} width={150} height={200} edge={6}
+            shadow="0 10px 28px rgba(0,0,0,0.6)" palette={palette} fonts={fonts} />
+        ))}
       </div>
 
       <div style={{ position: "absolute", left: 60, bottom: 44, display: "flex" }}>

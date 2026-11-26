@@ -1,6 +1,7 @@
 import type { ShareCardIssue, ShareCardWinner } from "@/lib/share-card/select";
 import { Burst } from "@/components/share-card/burst";
 import { Footer, Pitch, issueLine, type Look } from "@/components/share-card/card-parts";
+import { CoverSlot } from "@/components/share-card/cover-slot";
 
 // "The Winners' Stand" (option A): The Cover's stand-in when the GOTM has no
 // key art (or it failed to load). The pitch on the left, the round's covers
@@ -10,15 +11,9 @@ const PICK = { gotm: { label: "Game of the Month", drop: 0 }, nr_gotm: { label: 
 
 function Pick({ winner, palette, fonts }: Look & { winner: ShareCardWinner }) {
   const gotm = winner.kind === "gotm";
-  const track = gotm ? palette.gotm : palette.nr;
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", width: 250, marginTop: PICK[winner.kind].drop }}>
-      {winner.coverUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- ImageResponse draws plain img, not next/image
-        <img src={winner.coverUrl} width={250} height={333} alt="" style={{ objectFit: "cover", borderBottom: `8px solid ${track}` }} />
-      ) : (
-        <div style={{ display: "flex", width: 250, height: 333, background: palette.card, borderBottom: `8px solid ${track}` }} />
-      )}
+      <CoverSlot winner={winner} width={250} height={333} edge={8} palette={palette} fonts={fonts} />
       <span
         style={{
           marginTop: 14,
