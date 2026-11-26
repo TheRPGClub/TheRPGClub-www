@@ -72,7 +72,12 @@
         --rarity-foreground: #0b0b0d;
         /* Staff desk only: the Done stamp on a bot job. */
         --ok: #5fd08a;
-        /* Suggestion phases: the Approved, Done and Rejected bands, and
+        /* Feedback kinds: each kind's ink on Feedback surfaces only (the
+           board's tabs, the form's kind choice). */
+        --kind-feature-request: #8ec5ff;
+        --kind-suggestion: #d4c48a;
+        --kind-bug-report: #ff9b85;
+        /* Feedback phases: the Approved, Done and Rejected bands, and
            the rejected pink deepened for type on a light slip. */
         --phase-approved: #2ec4b6;
         --phase-done: #5fd08a;
@@ -136,7 +141,7 @@
         --panel-reviews: #c0c4d6;
         --panel-journals: #f0a9a0;
         --panel-giveaways: #7fd0e8;
-        --panel-suggestions: #d4c48a;
+        --panel-feedback: #d4c48a;
         --panel-codex: #ff8ad8;
         --panel-birthdays: #eadcb8;
         /* The mint "New" stamp on a panel added since the member last

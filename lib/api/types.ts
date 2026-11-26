@@ -920,15 +920,19 @@ export interface DashboardResponse {
   meta: { limit: number };
 }
 
-// Suggestions
+// Feedback
 
-export type SuggestionStatus = "pending" | "approved" | "rejected" | "withdrawn";
+export type FeedbackKind = "feature_request" | "suggestion" | "bug_report";
 
-// A member's proposal for the bot or the website (GET /api/v1/suggestions).
+export type FeedbackStatus = "pending" | "approved" | "rejected" | "withdrawn" | "duplicate";
+
+// A member's Feature Request, Suggestion or Bug Report (GET /api/v1/feedback).
 // Kept after review: Pending until a Superadmin approves it into a GitHub
-// issue or rejects it with a reason, or its author withdraws it.
-export interface Suggestion {
-  suggestion_id: number;
+// issue, rejects it with a reason or marks it a Duplicate, or its author
+// withdraws it. Done is an Approved one whose issue was closed as completed.
+export interface Feedback {
+  feedback_id: number;
+  kind: FeedbackKind;
   title: string;
   details: string | null;
   // The author's Discord id and display name (null for very old rows).
@@ -936,23 +940,34 @@ export interface Suggestion {
   created_by_name: string | null;
   created_at: string;
   updated_at: string;
-  // Comma-separated type labels ("New Feature, Bug"); they become the GitHub
-  // issue's labels on approval.
-  labels: string | null;
-  status: SuggestionStatus;
+  status: FeedbackStatus;
   // The reviewing Superadmin's Discord id.
   reviewed_by: string | null;
   reviewed_at: string | null;
   rejection_reason: string | null;
+  // A Duplicate's root original.
+  duplicate_of_id: number | null;
   // "TheRPGClub/TheRPGClub-www" etc. once approved.
   target_repo: string | null;
   github_issue_number: number | null;
   github_issue_url: string | null;
   // Approved only, cached about ten minutes; null when GitHub can't say.
   github_issue_state: "open" | "closed" | null;
+  done: boolean;
+  done_at: string | null;
+  // Bug Reports only.
+  where?: "bot" | "website" | null;
+  what_happened?: string | null;
+  expected?: string | null;
+  steps?: string | null;
+  screenshot_url?: string | null;
   upvote_count: number;
   viewer_upvoted: boolean;
+  last_activity_at?: string;
 }
+
+// Each kind's Open (Done included), Closed and Done counts, unfiltered.
+export type FeedbackTotals = Record<FeedbackKind, { open: number; closed: number; done: number }>;
 
 // Todos
 
@@ -1035,8 +1050,8 @@ export type BotJobKind =
   | "giveaway_hub_refresh"
   | "nomination_deleted"
   | "goty_nomination_deleted"
-  | "suggestion_submitted"
-  | "suggestion_outcome"
+  | "feedback_submitted"
+  | "feedback_outcome"
   | "voting_poll_wakeup"
   | "voting_results_publish"
   | "voting_panels_repost"
@@ -1054,7 +1069,7 @@ export interface BotJob {
   id: number;
   kind: BotJobKind;
   // What the job does in plain words, set when it was queued ("Announce the
-  // new Suggestion ..."). Up to 200 characters; holds no secrets.
+  // new Feedback ..."). Up to 200 characters; holds no secrets.
   summary: string;
   status: BotJobStatus;
   // The member whose action queued it; null for system jobs.

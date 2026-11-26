@@ -11,6 +11,7 @@ import {
   reorderPins,
   pinsCustomised,
   pinsFull,
+  renamedPinKeys,
   togglePin,
 } from "@/lib/pinned-pages";
 
@@ -47,6 +48,21 @@ describe("memberPins", () => {
   });
 });
 
+describe("renamed pin keys", () => {
+  it("reads a session's Suggestion Board pins as the Feedback Board's", () => {
+    expect(memberPins(["news", "suggestions", "suggestion_review"], open)).toEqual(["news", "feedback", "feedback_review"]);
+    expect(isPinKeyList(memberPins(["suggestions"], open))).toBe(true);
+  });
+
+  it("keeps a page pinned under both its old and new key once", () => {
+    expect(renamedPinKeys(["suggestions", "games", "feedback"])).toEqual(["feedback", "games"]);
+  });
+
+  it("renames the session's club default too", () => {
+    expect(pinRules({ pinned_pages_default: ["suggestions", "news"] }).clubDefault).toEqual(["feedback", "news"]);
+  });
+});
+
 describe("togglePin", () => {
   it("adds a new pin at the bottom", () => {
     expect(togglePin(["voting", "games"], "news", open)).toEqual(["voting", "games", "news"]);
@@ -78,7 +94,7 @@ describe("togglePin", () => {
 
 describe("isPinKeyList", () => {
   it("accepts known page keys, staff ones too", () => {
-    expect(isPinKeyList(["voting", "staff_desk", "suggestion_review"])).toBe(true);
+    expect(isPinKeyList(["voting", "staff_desk", "feedback_review"])).toBe(true);
     expect(isPinKeyList([])).toBe(true);
   });
 
