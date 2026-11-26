@@ -1,4 +1,4 @@
-import type { Tier } from "@/lib/members/members-wall";
+import type { Tier } from "@/lib/members/member-tiers";
 import { MemberDot } from "./member-dot";
 
 // One tier: its name and count on the left (above on phones), then its

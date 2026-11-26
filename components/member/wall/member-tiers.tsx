@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { searchTiers, type Tier } from "@/lib/members/members-wall";
+import { searchTiers, type Tier } from "@/lib/members/member-tiers";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { TierRow } from "./tier-row";

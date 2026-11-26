@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { WallMember } from "@/lib/members/members-wall";
+import type { WallMember } from "@/lib/members/member-tiers";
 import { memberAvatarSrc } from "@/lib/members/avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";

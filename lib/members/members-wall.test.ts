@@ -12,9 +12,8 @@ vi.mock("@/lib/api/shared", () => ({
   },
 }));
 
-const { fetchWallTiers, memberDisplayName, searchTiers, wallTiers } = await import(
-  "@/lib/members/members-wall"
-);
+const { fetchWallTiers } = await import("@/lib/members/members-wall");
+const { memberDisplayName, searchTiers, wallTiers } = await import("@/lib/members/member-tiers");
 
 const user = (id: string, extra: Partial<User> = {}): User =>
   ({ user_id: id, username: `u${id}`, global_name: null, is_bot: false, server_left_at: null, ...extra }) as User;
