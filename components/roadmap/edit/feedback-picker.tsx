@@ -10,7 +10,7 @@ import { useEditor } from "./editor-context";
 import { LinkedFeedback } from "./linked-feedback";
 
 // The item dialog's Linked Feedback (www#233): search Feedback by title (or
-// "#12") and pick one to link it; the linked list below unlinks. Feedback
+// "#12") and pick one to link it (Enter picks the first match); the linked list below unlinks. Feedback
 // already on another item says it will move here. Nothing saves until the
 // dialog does.
 export function FeedbackPicker({
@@ -37,6 +37,7 @@ export function FeedbackPicker({
       </p>
       <Combobox<RoadmapFeedback>
         inline
+        autoHighlight
         items={matches}
         filter={null}
         inputValue={query}
@@ -51,7 +52,14 @@ export function FeedbackPicker({
       >
         <div className="relative">
           <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint-foreground" />
-          <ComboboxField type="search" placeholder="Search Feedback by title…" aria-labelledby={labelId} className="pl-9" />
+          <ComboboxField
+            type="search"
+            placeholder="Search Feedback by title…"
+            aria-labelledby={labelId}
+            className="pl-9"
+            // Enter picks the highlighted match; with none it must not submit the item dialog.
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+          />
         </div>
         {query.trim() && (
           <div className="max-h-56 overflow-y-auto rounded-sm border border-border-strong bg-muted shadow-[0_12px_30px_rgb(0_0_0/0.45)]">
