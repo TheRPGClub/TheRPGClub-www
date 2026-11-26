@@ -41,8 +41,12 @@ export function NewsTile({
         <span aria-hidden className="font-headline mt-1.5 block h-6 text-[3.2rem] leading-[0.75] text-(--news-ink)">
           &ldquo;
         </span>
-        <p className="mt-1 mb-1.5 line-clamp-3 text-[0.95rem] leading-[1.3] text-foreground italic">{view.comment}</p>
-        <p className="mt-auto truncate text-[0.82rem] text-dim-foreground">
+        {/* Never squeezed by the column (the tile grows instead), and past
+            five lines it ends on an ellipsis, so no line is cut in half. */}
+        <p className="mt-1 mb-1.5 line-clamp-5 shrink-0 text-[0.95rem] leading-[1.3] text-foreground italic">
+          {view.comment}
+        </p>
+        <p className="mt-auto shrink-0 truncate text-[0.82rem] text-dim-foreground">
           {item.author.name} on{" "}
           <OutboundHeadline text={view.headline ?? view.site} href={view.href} className="font-bold text-foreground" />
         </p>

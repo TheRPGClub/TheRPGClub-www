@@ -44,6 +44,7 @@ export function NewsCategoryList({
           }}
         >
           {filters.q && <Input type="hidden" name="q" value={filters.q} />}
+          {filters.mark && <Input type="hidden" name="mark" value={filters.mark} />}
           <ul>
             {rows.map((row) => (
               <li key={row.key} className="border-b border-border">
@@ -58,6 +59,8 @@ export function NewsCategoryList({
           href={newsHref(filters, { categories: [] })}
           scroll={false}
           onClick={(event) => {
+            // A new tab or window (modifier or middle click) goes through.
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
             go(newsHref(filters, { categories: [] }));
           }}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { NewsItem } from "@/lib/news";
+import type { NewsFilters, NewsItem } from "@/lib/news";
 import { switchedOffNames, type NewsShelf } from "@/lib/news-shelves";
 import { NewsNote } from "../news-empty";
 import { NewsLeadRow } from "./news-lead-row";
@@ -15,12 +15,14 @@ const INLINE_LINK =
 
 export function NewsShelvesView({
   shelves,
+  filters,
   lead,
   hidden,
   nameOf,
   now,
 }: {
   shelves: NewsShelf[];
+  filters: NewsFilters;
   lead: NewsItem[];
   hidden: string[];
   nameOf: (key: string | null) => string;
@@ -50,7 +52,7 @@ export function NewsShelvesView({
     <div className="space-y-7">
       <NewsLeadRow items={lead} nameOf={nameOf} now={now} />
       {shelves.map((shelf) => (
-        <NewsShelfSection key={shelf.category_key} shelf={shelf} now={now} />
+        <NewsShelfSection key={shelf.category_key} shelf={shelf} filters={filters} now={now} />
       ))}
       {off && (
         <p className="border-t border-border pt-4 text-sm text-dim-foreground">

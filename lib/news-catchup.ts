@@ -29,8 +29,9 @@ export interface CatchupMarkMeta {
   // older than api#496: read as no mark, so the page degrades to the
   // first-visit state.
   news_mark?: string | null;
-  new_count?: number;
-  new_category_counts?: Partial<Record<NewsCategoryKey, number>>;
+  // Null past page one when the read passed no `mark` (the API skips them).
+  new_count?: number | null;
+  new_category_counts?: Partial<Record<NewsCategoryKey, number>> | null;
 }
 
 export interface Catchup {
@@ -231,6 +232,16 @@ export function sinceLabel(iso: string, now: Date): string {
 
 // A hero's or tile's age: "now", "12 min ago", "3 h ago", then "Tue 21:40"
 // within the week, then "12 Nov".
+// The most recently posted of the given News Items (any may be missing);
+// null with none. The masthead's "Updated" note reads it.
+export function newestPosted(items: readonly (NewsItem | null | undefined)[]): NewsItem | null {
+  let newest: NewsItem | null = null;
+  for (const item of items) {
+    if (item && (!newest || Date.parse(item.posted_at) > Date.parse(newest.posted_at))) newest = item;
+  }
+  return newest;
+}
+
 export function agoLabel(iso: string, now: Date): string {
   const at = new Date(iso);
   const ago = now.getTime() - at.getTime();

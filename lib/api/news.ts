@@ -43,14 +43,19 @@ export interface NewsPage {
 // page can tell both from an empty feed.
 type FeedRead = NewsPage | "not_found" | null;
 
-// What Catch-up reads (ticket www#221). `top`: page one of the whole view,
-// the hero and the mosaic, whose meta carries the member's News Mark and new
-// counts (api#496). `rows`: the page of Seen rows, the view up to the mark
-// (`until`), or the whole view without one. Show all (`filters.since`)
-// reads only the new list, a page at a time, into `rows`.
+// What Catch-up reads (ticket www#221, fix pass). With a mark (the visit's
+// from the address, else the stored News Mark): `top` is page one of the new
+// items (`since` the mark), the hero and the mosaic, and `rows` the page of
+// Seen rows (`until` the mark); both pass the mark as `mark`, so the API
+// counts against it and not the stored one. Without either (a first visit)
+// `top` is page one of the whole view and `rows` the whole view. Show all
+// (`filters.since`) reads only the new list, a page at a time, into `rows`.
+// `stored` is the member's stored News Mark when the address carried none:
+// a new visit puts it there (visitMarkHref).
 export interface CatchupRead {
   top: FeedRead;
   rows: FeedRead;
+  stored: string | null;
 }
 
 export async function fetchCatchup(
@@ -62,21 +67,38 @@ export async function fetchCatchup(
 ): Promise<CatchupRead> {
   const read = (page: number, per: number, bounds: Bounds = {}) =>
     readFeed(filters, userId, stamp, page, per, bounds);
+  const visit = filters.mark ?? undefined;
   if (filters.since) {
-    return { top: null, rows: await read(filters.page, NEWS_ROWS_PER, { since: filters.since }) };
+    const rows = await read(filters.page, NEWS_ROWS_PER, { since: filters.since, mark: visit });
+    const stored = visit || !rows || rows === "not_found" ? null : (rows.meta?.news_mark ?? null);
+    return { top: null, rows, stored };
   }
-  const top = await read(1, CATCHUP_NEW_SHOWN);
-  if (top === "not_found" || top === null) return { top, rows: top };
+  let mark = visit;
+  let stored: string | null = null;
+  if (!mark) {
+    // A new visit: page one of the whole view carries the stored mark, and
+    // is the hero and the Seen rows' source on a first visit.
+    const probe = await read(1, CATCHUP_NEW_SHOWN);
+    if (probe === "not_found" || probe === null) return { top: probe, rows: probe, stored };
+    stored = markOf(probe.meta);
+    if (!stored) return { top: probe, rows: await read(filters.page, NEWS_ROWS_PER), stored };
+    mark = stored;
+  }
   // The mark goes back exactly as the API gave it (microseconds), so the
-  // item it was set from counts as seen.
-  const mark = markOf(top.meta);
-  const rows = await read(filters.page, NEWS_ROWS_PER, mark ? { until: mark } : {});
-  return { top, rows };
+  // item it was set from counts as seen. The same reads as the visit's next
+  // render (with `?mark=`), so that one comes from the cache.
+  const [top, rows] = await Promise.all([
+    read(1, CATCHUP_NEW_SHOWN, { since: mark, mark }),
+    read(filters.page, NEWS_ROWS_PER, { until: mark, mark }),
+  ]);
+  return { top, rows, stored };
 }
 
 interface Bounds {
   since?: string;
   until?: string;
+  // Count the new items against this instant, not the stored News Mark.
+  mark?: string;
 }
 
 async function readFeed(
@@ -90,6 +112,7 @@ async function readFeed(
   const ps = new URLSearchParams({ page: String(page), per: String(per) });
   if (bounds.since) ps.set("since", bounds.since);
   if (bounds.until) ps.set("until", bounds.until);
+  if (bounds.mark) ps.set("mark", bounds.mark);
   // No category = the member's default view, which the API works out.
   if (filters.categories.length) ps.set("category", filters.categories.join(","));
   if (filters.q) ps.set("q", filters.q);

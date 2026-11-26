@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { categoryNames, newsHref, parseNewsFilters, workingFrame, type NewsCategory, type NewsFrame } from "@/lib/news";
+import {
+  categoryNames,
+  newsHref,
+  parseNewsFilters,
+  visitMarkHref,
+  workingFrame,
+  type NewsCategory,
+  type NewsFrame,
+} from "@/lib/news";
 
 describe("categoryNames", () => {
   const nameOf = categoryNames([
@@ -54,5 +62,55 @@ describe("since in the address", () => {
     expect(back).toMatchObject({ since: MARK, q: "zelda" });
     expect(newsHref(back, { page: 2 })).toContain("since=");
     expect(newsHref(back, { q: "mana" })).toBe("/news?q=mana");
+  });
+});
+
+describe("the visit marker (mark in the address)", () => {
+  const MARK = "2026-11-24T21:40:00.123456Z";
+  const STORED = "2026-11-25T08:00:00.000000Z";
+
+  it("keeps an ISO instant with an offset and drops anything else", () => {
+    expect(parseNewsFilters({ mark: MARK }).mark).toBe(MARK);
+    expect(parseNewsFilters({ mark: "2026-11-24T21:40:00" }).mark).toBeNull();
+    expect(parseNewsFilters({ mark: "soon" }).mark).toBeNull();
+    expect(parseNewsFilters({}).mark).toBeNull();
+  });
+
+  it("stays through categories, search, paging and Show all, and goes on request", () => {
+    const filters = parseNewsFilters({ mark: MARK });
+    for (const href of [
+      newsHref(filters, { categories: ["releases"] }),
+      newsHref(filters, { q: "zelda" }),
+      newsHref(filters, { page: 2 }),
+      newsHref(filters, { since: MARK, page: 1 }),
+    ]) {
+      expect(new URL(href, "https://x.test").searchParams.get("mark")).toBe(MARK);
+    }
+    expect(newsHref(filters, { mark: null })).toBe("/news");
+  });
+
+  it("puts the stored mark in the address on a new visit", () => {
+    const filters = parseNewsFilters({ q: "zelda" });
+    expect(visitMarkHref(filters, undefined, STORED)).toBe(`/news?q=zelda&mark=${encodeURIComponent(STORED)}`);
+  });
+
+  it("leaves an address that already carries a good mark alone, even when the stored mark moved", () => {
+    expect(visitMarkHref(parseNewsFilters({ mark: MARK }), MARK, STORED)).toBeNull();
+  });
+
+  it("leaves a first visit (no stored mark) alone", () => {
+    expect(visitMarkHref(parseNewsFilters({}), undefined, null)).toBeNull();
+  });
+
+  it("drops a bad mark, putting the stored one in its place when there is one", () => {
+    const bad = parseNewsFilters({ mark: "soon", page: "2" });
+    expect(visitMarkHref(bad, "soon", null)).toBe("/news?page=2");
+    expect(visitMarkHref(bad, "soon", STORED)).toBe(`/news?page=2&mark=${encodeURIComponent(STORED)}`);
+  });
+});
+
+describe("since reuses the News Mark's instant check", () => {
+  it("drops a time without an offset", () => {
+    expect(parseNewsFilters({ since: "2026-11-24T21:40:00" }).since).toBeNull();
   });
 });

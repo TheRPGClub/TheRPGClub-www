@@ -3,20 +3,23 @@ import { cn } from "@/lib/utils";
 
 // The News page's two tabs under its masthead, Catch-up (/news) and Shelves
 // (/news/shelves), as links: each name in Anton, the open one in paper over
-// the red you-are-here bar on the hairline, the rest in faint ink.
+// the red you-are-here bar on the hairline, the rest in faint ink. Both keep
+// the visit's mark (`?mark=`), so moving between them stays one visit.
 
 export type NewsTab = "catchup" | "shelves";
 
-const TABS: { tab: NewsTab; label: string; href: string }[] = [
-  { tab: "catchup", label: "Catch-up", href: "/news" },
-  { tab: "shelves", label: "Shelves", href: "/news/shelves" },
+const TABS: { tab: NewsTab; label: string; path: string }[] = [
+  { tab: "catchup", label: "Catch-up", path: "/news" },
+  { tab: "shelves", label: "Shelves", path: "/news/shelves" },
 ];
 
-export function NewsTabs({ active }: { active: NewsTab }) {
+export function NewsTabs({ active, mark }: { active: NewsTab; mark: string | null }) {
+  const query = mark ? `?${new URLSearchParams({ mark })}` : "";
   return (
     <nav aria-label="News views" className="flex gap-x-7 border-b border-border">
-      {TABS.map(({ tab, label, href }) => {
+      {TABS.map(({ tab, label, path }) => {
         const on = tab === active;
+        const href = `${path}${query}`;
         return (
           <Link
             key={tab}

@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  beaconEligible,
+  followVisit,
   isIsoInstant,
   isLater,
-  newestPostedAt,
+  newestListedAt,
   newestShown,
   readNewsMarkBeacon,
   shouldSendMark,
 } from "./news-mark";
 
-const at = (posted_at: string) => ({ posted_at });
+// An item listed (and posted) at `listed_at`; `posted_at` differs only when
+// a test says so.
+const at = (listed_at: string, posted_at = listed_at) => ({ listed_at, posted_at });
 const catchup = { page: 1, since: null };
 
 describe("isLater", () => {
@@ -23,15 +27,25 @@ describe("isLater", () => {
   });
 });
 
-describe("newestPostedAt", () => {
-  it("returns the newest string exactly as given", () => {
-    const items = [at("2026-11-25T09:00:00.000Z"), at("2026-11-26T09:00:00.123Z"), at("2026-11-24T09:00:00Z")];
-    expect(newestPostedAt(items)).toBe("2026-11-26T09:00:00.123Z");
+describe("newestListedAt", () => {
+  it("returns the newest listed_at exactly as given", () => {
+    const items = [at("2026-11-25T09:00:00.000Z"), at("2026-11-26T09:00:00.123456Z"), at("2026-11-24T09:00:00Z")];
+    expect(newestListedAt(items)).toBe("2026-11-26T09:00:00.123456Z");
   });
 
-  it("is null with nothing, and skips junk", () => {
-    expect(newestPostedAt([])).toBeNull();
-    expect(newestPostedAt([at("yesterday")])).toBeNull();
+  it("goes by listed_at, not posted_at: an item recorded late is the newest", () => {
+    const late = at("2026-11-26T12:00:00.000001Z", "2026-11-20T09:00:00.000Z");
+    expect(newestListedAt([at("2026-11-26T10:00:00.000000Z"), late])).toBe("2026-11-26T12:00:00.000001Z");
+  });
+
+  it("is null with nothing, and skips junk and items from an API without listed_at", () => {
+    expect(newestListedAt([])).toBeNull();
+    expect(newestListedAt([at("yesterday")])).toBeNull();
+    const olderApi: { posted_at: string; listed_at?: string | null }[] = [
+      { posted_at: "2026-11-26T09:00:00Z" },
+      { posted_at: "2026-11-26T09:00:00Z", listed_at: null },
+    ];
+    expect(newestListedAt(olderApi)).toBeNull();
   });
 });
 
@@ -63,6 +77,52 @@ describe("newestShown", () => {
 
   it("is null when nothing was shown", () => {
     expect(newestShown(meta, [], [], catchup)).toBeNull();
+  });
+});
+
+describe("beaconEligible", () => {
+  const view = { categories: [] as string[], q: "", page: 1, since: null as string | null };
+
+  it("is the unfiltered Catch-up page one and every unfiltered Show all page", () => {
+    expect(beaconEligible(view)).toBe(true);
+    expect(beaconEligible({ ...view, since: "2026-11-26T09:00:00Z" })).toBe(true);
+    expect(beaconEligible({ ...view, since: "2026-11-26T09:00:00Z", page: 3 })).toBe(true);
+  });
+
+  it("is never a filtered or searched view, nor a later page of Seen rows", () => {
+    expect(beaconEligible({ ...view, categories: ["releases"] })).toBe(false);
+    expect(beaconEligible({ ...view, q: "zelda" })).toBe(false);
+    expect(beaconEligible({ ...view, q: "zelda", since: "2026-11-26T09:00:00Z" })).toBe(false);
+    expect(beaconEligible({ ...view, page: 2 })).toBe(false);
+  });
+});
+
+describe("followVisit", () => {
+  const mark = "2026-11-26T09:00:00.000000Z";
+
+  it("starts a visit with what the first view showed", () => {
+    expect(followVisit(null, mark, "2026-11-26T10:00:00.000000Z")).toEqual({
+      mark,
+      newest: "2026-11-26T10:00:00.000000Z",
+      sent: null,
+    });
+  });
+
+  it("only moves forward within a visit", () => {
+    const visit = followVisit(null, mark, "2026-11-26T11:00:00.000000Z");
+    expect(followVisit(visit, mark, "2026-11-26T10:00:00.000000Z").newest).toBe("2026-11-26T11:00:00.000000Z");
+    expect(followVisit(visit, mark, null).newest).toBe("2026-11-26T11:00:00.000000Z");
+    expect(followVisit(visit, mark, "2026-11-26T12:00:00.000000Z").newest).toBe("2026-11-26T12:00:00.000000Z");
+  });
+
+  it("keeps what was sent within a visit, and starts over on a new visit (another mark)", () => {
+    const visit = { mark, newest: "2026-11-26T11:00:00.000000Z", sent: "2026-11-26T11:00:00.000000Z" };
+    expect(followVisit(visit, mark, null).sent).toBe("2026-11-26T11:00:00.000000Z");
+    expect(followVisit(visit, "2026-11-26T11:00:00.000000Z", null)).toEqual({
+      mark: "2026-11-26T11:00:00.000000Z",
+      newest: null,
+      sent: null,
+    });
   });
 });
 
