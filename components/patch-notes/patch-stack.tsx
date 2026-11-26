@@ -5,11 +5,13 @@ import { patchPath } from "@/lib/patch-notes/paths";
 import { patchValue } from "@/lib/patch-notes/patch-schema";
 import { NO_PATCH_SEEN, isUnseenPatch, type PatchSeen } from "@/lib/patch-notes/patch-mark";
 import type { Patch } from "@/lib/patch-notes/types";
+import type { Versions } from "@/lib/patch-notes/versions";
 import { PageHeader } from "@/components/templates/page-header";
 import { PatchCard } from "./patch-card";
 import { NewMark } from "./new-mark";
 import { PatchList } from "./patch-list";
 import { PatchSlips } from "./patch-slips";
+import { PatchVersionFoot, PatchVersions } from "./patch-versions";
 
 // Older Patches shown as slips under the top card; the Patches list beside
 // the stack holds every one.
@@ -19,15 +21,18 @@ const SLIP = "rounded-md border border-dashed border-border-strong px-5 py-10 te
 
 // /patch-notes, "The Stack" (www#236): the newest Patch on top in full as
 // the Patch card, the older ones as slips stepping down beneath it, and the
-// Patches list in the right column (the Versions block joins it with
-// www#241). For Visitors and Members alike; `seen` marks the member's
-// unseen Patches NEW (www#238).
+// Patches list in the right column under the Versions block, and the
+// version line at the foot (www#241). For Visitors and Members alike;
+// `seen` marks the member's unseen Patches NEW (www#238).
 export function PatchStack({
   patches,
+  versions = null,
   badge,
   seen = NO_PATCH_SEEN,
 }: {
   patches: Patch[] | null;
+  // The current versions; null hides them.
+  versions?: Versions | null;
   badge?: ReactNode;
   seen?: PatchSeen;
 }) {
@@ -56,10 +61,12 @@ export function PatchStack({
             <PatchSlips patches={older.slice(0, SLIPS_MAX)} seen={seen} />
           </section>
           <aside className="lg:pt-0.5">
+            <PatchVersions versions={versions} />
             <PatchList patches={patches} current={newest.number} seen={seen} />
           </aside>
         </div>
       )}
+      <PatchVersionFoot versions={versions} />
     </div>
   );
 }
