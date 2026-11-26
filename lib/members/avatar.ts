@@ -1,10 +1,17 @@
 import { discordAvatarUrl } from "@/lib/auth-types";
 
-// A member's stored avatar as the browser loads it: the API's path
-// (`/api/v1/users/<id>/avatar`) on the API's public address. Client-safe.
+// The API's avatar path for a member, as the API's payloads name it.
+const API_AVATAR_PATH = /^\/api\/v1\/users\/([^/]+)\/avatar$/;
+
+// A member's stored avatar as the browser loads it: this site's own
+// /api/members/<id>/avatar, which redirects to the API's endpoint. Same
+// origin, so it is right in server and client components alike: the
+// browser never sees API_URL, and NEXT_PUBLIC_API_URL isn't set in
+// production, which sent client-drawn avatars to http://localhost:3000.
 export function avatarSrc(path: string | null | undefined): string | null {
   if (!path) return null;
-  return `${process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http://localhost:3000"}${path}`;
+  const member = API_AVATAR_PATH.exec(path);
+  return member ? `/api/members/${member[1]}/avatar` : path;
 }
 
 export function memberAvatarPath(userId: string): string {

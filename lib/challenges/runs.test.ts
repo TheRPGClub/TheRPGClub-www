@@ -159,7 +159,7 @@ describe("helpers", () => {
   });
 
   it("falls back to the API's avatar endpoint without a hash", () => {
-    expect(memberAvatar({ user_id: "1", discord_avatar: null })).toMatch(/\/api\/v1\/users\/1\/avatar$/);
+    expect(memberAvatar({ user_id: "1", discord_avatar: null })).toBe("/api/members/1/avatar");
   });
 
   it("caps segments at twenty, each a share of a long target", () => {
