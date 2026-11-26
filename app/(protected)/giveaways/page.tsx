@@ -36,7 +36,7 @@ export default async function GiveawaysPage({ searchParams }: { searchParams: Pr
       preview={features.preview("giveaways")}
       counts={{ shelf: keys === null ? null : total, claimed: claimed?.length ?? null, donated: donated?.length ?? null }}
     >
-      <div className="mt-7 space-y-4">
+      <div className="mt-6 space-y-4">
         {!canClaim && (
           <p className="max-w-[65ch] text-sm text-dim-foreground">
             You can browse and donate, but claiming a key needs the Members role in Discord, as it does in the bot. If

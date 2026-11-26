@@ -6,7 +6,7 @@ import { DonationWall } from "@/components/giveaways/donated/donation-wall";
 // none (null when they couldn't be read).
 export function DonatedView({ keys, names }: { keys: GameKey[] | null; names: Record<string, string> }) {
   return (
-    <div className="mt-9">
+    <div className="mt-8">
       {keys === null ? (
         <p role="alert" className="text-destructive">
           {"Couldn't load your donations. Refresh to try again."}

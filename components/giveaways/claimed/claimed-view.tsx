@@ -18,7 +18,7 @@ export function ClaimedView({
 }) {
   const picked = keys?.find((k) => k.key_id === pickedId) ?? keys?.[0];
   return (
-    <div className="mt-9">
+    <div className="mt-8">
       {keys === null ? (
         <p role="alert" className="text-destructive">
           {"Couldn't load your claimed keys. Refresh to try again."}

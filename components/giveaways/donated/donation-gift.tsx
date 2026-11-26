@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 // One of the member's donations: wrapped and tied while it waits on the shelf
 // (Take back, after a confirm); greyed with its ribbon cut once claimed, with
-// who claimed it and when.
+// who claimed it and when, under a Claimed stamp.
 export function DonationGift({ gameKey: k, claimerName }: { gameKey: GameKey; claimerName: string }) {
   const title = k.game?.title ?? k.game_title;
   const claimed = Boolean(k.claimed_by_user_id);
@@ -35,6 +35,11 @@ export function DonationGift({ gameKey: k, claimerName }: { gameKey: GameKey; cl
               {k.region !== "Global" ? ` · ${k.region}` : ""}
             </PlatformChip>
           </span>
+          {claimed && (
+            <span className="font-headline absolute top-[30%] left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 -rotate-12 border-3 border-foreground bg-background/50 px-2.5 py-1 text-[1.35rem] leading-none text-foreground">
+              Claimed
+            </span>
+          )}
         </WrappedCover>
       </div>
       <div className={cn("mt-3.5 flex items-start gap-3 max-sm:flex-col max-sm:items-stretch max-sm:gap-2", claimed && "opacity-70")}>
