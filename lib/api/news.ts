@@ -2,6 +2,7 @@ import { apiFetch } from "@/lib/api";
 import type { NewsCategory, NewsCategoryKey, NewsFilters, NewsItem } from "@/lib/news";
 import { CATCHUP_NEW_SHOWN, markOf, NEWS_ROWS_PER, type CatchupMarkMeta } from "@/lib/news-catchup";
 import { newsFeedTag, type NewsCategoryPreferences } from "@/lib/news-category-preferences";
+import { SHELF_PER, type NewsShelf, type NewsShelves, type NewsShelvesMeta } from "@/lib/news-shelves";
 import type { CollectionMeta } from "./types";
 
 // The News Hub's reads (spec api#355): the feed (`GET /news_items`), the
@@ -101,6 +102,34 @@ async function readFeed(
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: NewsItem[]; meta?: NewsFeedMeta };
     return { items: body.data ?? [], meta: body.meta ?? null };
+  } catch {
+    return null;
+  }
+}
+
+// The Shelves tab's read (`GET /api/v1/news_items/shelves`, api#497): each
+// News Category in the member's default view with its newest SHELF_PER items
+// and today's count, in News Category order, in one request. Cached and
+// tagged like the feed (the default view is per member) and keyed on the
+// News Feed Stamp. "not_found" when the viewer can't use the News Hub, null
+// when the read failed.
+export async function fetchNewsShelves(
+  userId: string,
+  stamp: string | null,
+): Promise<NewsShelves | "not_found" | null> {
+  const ps = new URLSearchParams({ per: String(SHELF_PER) });
+  if (stamp) ps.set("v", stamp);
+  try {
+    const res = await apiFetch(`/api/v1/news_items/shelves?${ps}`, {
+      next: { revalidate: 60, tags: [newsFeedTag(userId)] },
+    });
+    if (res.status === 404) return "not_found";
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: NewsShelf[]; meta?: Partial<NewsShelvesMeta> };
+    return {
+      shelves: (body.data ?? []).map((shelf) => ({ ...shelf, items: shelf.items ?? [] })),
+      meta: { per: body.meta?.per ?? SHELF_PER, hidden_categories: body.meta?.hidden_categories ?? [] },
+    };
   } catch {
     return null;
   }
