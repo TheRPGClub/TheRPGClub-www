@@ -5,6 +5,7 @@
 import { featureView, type FeatureKey, type SessionFeature } from "@/lib/features";
 import { CODEX_PATH } from "@/lib/codex/paths";
 import { RELEASES_PATH } from "@/lib/release-calendar";
+import { ROADMAP_PATH } from "@/lib/roadmap/tree";
 import { staffSectionsFor, type StaffSectionKey } from "@/lib/staff";
 import type { SessionMembership } from "@/lib/auth-types";
 
@@ -29,6 +30,7 @@ export type PinnedPageKey =
   | "codex"
   | "giveaways"
   | "suggestions"
+  | "roadmap"
   | "staff_desk"
   | "voting_console"
   | "synonyms"
@@ -83,6 +85,7 @@ export const CLUB_PAGES: readonly SidebarPage[] = [
   { key: "codex", href: CODEX_PATH, label: "Codex", note: "Club lore and history", group: "club", feature: "club_codex" },
   { key: "giveaways", href: "/giveaways", label: "Giveaways", note: "Free keys from members", group: "club", feature: "giveaways" },
   { key: "suggestions", href: "/suggestions", label: "Suggestion Board", note: "Ideas for the club", group: "club", feature: "suggestions" },
+  { key: "roadmap", href: ROADMAP_PATH, label: "Roadmap", note: "What's coming to the bot and site", group: "club", feature: "roadmap" },
 ];
 
 // The staff sections lib/staff.ts marks `nav`, under their Pinned Page keys.
