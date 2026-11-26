@@ -21,7 +21,7 @@ describe("POST /api/revalidate", () => {
   it("revalidates the gotm tag with the right secret", async () => {
     const res = await post("Bearer s3cret-value");
     expect(res.status).toBe(200);
-    expect(revalidateTag).toHaveBeenCalledWith("gotm", { expire: 0 });
+    expect(revalidateTag).toHaveBeenCalledWith("gotm", "max");
   });
 
   it.each([
