@@ -38,7 +38,8 @@ export function PatchPreview({ editor, actions }: { editor: PatchEditorState; ac
         date={editor.published ? patchDate(patch) : ""}
         dateTime={patch.published_at}
         value={editor.clean}
-        href={patchPath(patch.number)}
+        siteUrl={editor.siteUrl}
+        href={editor.published ? patchPath(patch.number) : null}
         headingLevel={3}
       />
       <p className={cn("text-[0.8125rem] leading-[1.5] text-faint-foreground", text.cut && "text-destructive")}>

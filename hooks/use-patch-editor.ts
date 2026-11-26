@@ -80,6 +80,7 @@ export function usePatchEditor(initial: Patch, initialValue: Value, siteUrl: str
 
   return {
     patch,
+    siteUrl,
     title,
     setTitle,
     value,
