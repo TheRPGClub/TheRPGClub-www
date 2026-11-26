@@ -64,7 +64,7 @@ export function PublicRemindersEditor({
         </p>
       )}
       {channels !== null && channels.length === 0 && (
-        <p role="alert" className={ALERT}>
+        <p className="text-sm text-dim-foreground">
           {"No channels have been synced from Discord yet. The bot sends the list when it starts."}
         </p>
       )}

@@ -44,7 +44,7 @@ export function HistoryDesk({
       <DeskLayout
         desk={desk}
         back={id ? `${HISTORY_PATH}#${historyEventAnchor(id)}` : HISTORY_PATH}
-        backLabel="Back to the Club History"
+        backLabel="Club History"
         badge={badge}
         error={desk.error}
         remove={canDelete ? (className) => <HistoryDelete id={id} className={className} /> : null}

@@ -7,6 +7,7 @@ import { pageRange } from "@/lib/codex/wall";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/templates/page-header";
 import { ListPagination } from "@/components/list-pagination";
+import { LoreEmptyShelf } from "./lore-empty-shelf";
 import { LoreShelf } from "./lore-shelf";
 import { LoreSlideOut } from "./lore-slide-out";
 
@@ -53,11 +54,7 @@ export function LoreShelfPage({
         {failed && <p className={SLIP}>Club Lore couldn&apos;t be read just now. Try again in a moment.</p>}
         {!failed && initial === undefined && (
           <div className="grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_440px]">
-            <div className="rounded-md bg-card px-7 pt-10">
-              <div aria-hidden className="h-60" />
-              <div aria-hidden className="-mx-7 h-4 bg-border-strong shadow-[0_8px_16px_rgb(0_0_0/0.5)]" />
-              <div className="h-10" />
-            </div>
+            <LoreEmptyShelf />
             <div className={SLIP}>
               {page > 1 ? (
                 <>

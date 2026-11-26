@@ -44,9 +44,19 @@ export function DeskTopBar({
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <Button type="button" variant="ghost" size="sm" onClick={() => go(back)}>
+      {/* The site's back link (BackLink's look), kept a button so leaving
+          with unsaved changes can ask first. */}
+      <Button
+        type="button"
+        variant="back"
+        size="bare"
+        aria-label={`Back to ${backLabel}`}
+        title={`Back to ${backLabel}`}
+        onClick={() => go(back)}
+        className="items-center gap-1.5 [&_svg]:size-3.5 max-md:-ml-1.5 max-md:size-8 max-md:justify-center max-md:[&_svg]:size-5"
+      >
         <ArrowLeft aria-hidden />
-        {backLabel}
+        <span className="max-md:hidden">{backLabel}</span>
       </Button>
       <p className="font-label text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">Changes go live when you save</p>
       {badge}
