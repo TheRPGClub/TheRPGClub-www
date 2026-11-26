@@ -1762,5 +1762,36 @@
                 @apply font-display text-base leading-none font-normal tracking-normal;
             }
         }
+        /* Give feedback (www#226): the dialog is a board card inked by its
+           kind (--k, a Feedback kind token): a 1px ink keyline, the deep
+           shadow, no padding (the header fills with the ink). Its title is
+           Anton in the page's ink on that header; the header's kind switch
+           outlines in the page's ink and the chosen kind fills with it, its
+           type in the kind's ink. Fields are ink-3 grounds stroked in the
+           ink at 35% (60% on hover) with the yellow focus; the title field
+           takes Anton. A choice strokes like a field and fills with the ink
+           when chosen. The screenshot drop zone dashes in the ink at 50%,
+           yellow while a file is dragged over it. */
+        [data-slot="dialog-content"][data-variant="kind-card"] {
+            @apply rounded-md border-(--k) bg-card text-foreground shadow-[0_30px_80px_rgb(0_0_0/0.7)];
+        }
+        [data-slot="dialog-title"][data-variant="kind"] {
+            @apply font-headline leading-[0.95] font-normal text-background uppercase;
+        }
+        :is([data-slot="input"], [data-slot="textarea"]):is([data-variant="kind"], [data-variant="kind-title"]) {
+            @apply rounded-sm border-(--k)/35 bg-muted text-foreground placeholder:text-faint-foreground hover:border-(--k)/60 focus-visible:border-highlight focus-visible:ring-2 focus-visible:ring-highlight/40 aria-invalid:border-destructive;
+        }
+        [data-slot="input"][data-variant="kind-title"] {
+            @apply font-headline uppercase;
+        }
+        [data-slot="label"][data-variant="kind-switch"] {
+            @apply font-label cursor-pointer rounded-sm font-bold tracking-[0.06em] text-background uppercase inset-ring-[1.5px] inset-ring-background transition-colors hover:bg-background/12 has-data-checked:bg-background has-data-checked:text-(--k) has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-background motion-reduce:transition-none;
+        }
+        [data-slot="label"][data-variant="kind-choice"] {
+            @apply font-label cursor-pointer rounded-sm bg-muted font-bold tracking-[0.06em] text-dim-foreground uppercase inset-ring-1 inset-ring-(--k)/35 transition-colors hover:text-foreground hover:inset-ring-(--k)/60 has-data-checked:bg-(--k) has-data-checked:text-background has-data-checked:inset-ring-(--k) has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight motion-reduce:transition-none;
+        }
+        [data-slot="label"][data-variant="kind-drop"] {
+            @apply cursor-pointer rounded-sm border-[1.5px] border-dashed border-(--k)/50 bg-muted text-faint-foreground transition-colors hover:border-(--k) data-dragging:border-highlight data-dragging:bg-highlight/6 has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight motion-reduce:transition-none;
+        }
     }
 }
