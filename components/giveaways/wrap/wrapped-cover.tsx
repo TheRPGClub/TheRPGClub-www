@@ -41,12 +41,14 @@ export function WrappedCover({
   return (
     <div
       className={cn("@container relative h-fit shrink-0 self-start", className)}
-      style={{ "--p": ink, "--rb": coverUrl ? ink : "var(--color-background)" } as CSSProperties}
+      style={{ "--p": ink, "--rb": coverUrl || !title ? ink : "var(--color-background)" } as CSSProperties}
     >
       {coverUrl ? (
         <GameCover title={title} coverUrl={coverUrl} className="w-full" />
       ) : (
-        <div className="gift-paper aspect-[3/4] w-full rounded-sm">
+        // Too small for a name tag (a thumbnail), it stays an ink cover tied
+        // in its ink, so it never melts into paper of its own colour.
+        <div className={cn("aspect-[3/4] w-full rounded-sm", title ? "gift-paper" : "bg-muted outline -outline-offset-1 outline-foreground/12")}>
           {title && (
             <span className="font-headline absolute bottom-[7%] left-[6%] z-10 w-[48%] -rotate-2 rounded-xs bg-foreground p-[3.5cqw] text-[7.5cqw] leading-[0.95] text-background hyphens-auto shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
               {title}

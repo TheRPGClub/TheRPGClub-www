@@ -52,7 +52,7 @@ export function DonateKeyField({ value, onValue }: { value: string; onValue: (va
         onChange={(e) => onValue(e.target.value)}
         placeholder="XXXXX-XXXXX-XXXXX"
         variant="paper"
-        className="font-label h-12 text-xl tracking-[0.16em] normal-case"
+        className="font-label h-12 text-xl tracking-[0.16em] normal-case md:text-xl"
       />
     </div>
   );

@@ -40,23 +40,23 @@ export function EnvelopeStack({
                 aria-current={picked ? "true" : undefined}
                 style={{ "--p": ink } as CSSProperties}
                 className={cn(
-                  "gift-paper relative grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-4 rounded-sm py-3 pr-4 pl-3 text-background shadow-[0_8px_18px_rgb(0_0_0/0.45)] transition-transform focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
+                  "gift-paper relative grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-3 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:gap-4 rounded-sm py-3 pr-4 pl-3 text-background shadow-[0_8px_18px_rgb(0_0_0/0.45)] transition-transform focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
                   picked ? "ring-3 ring-foreground lg:translate-x-6" : "hover:lg:translate-x-2",
                 )}
               >
-                <i aria-hidden className="absolute inset-y-0 right-[5.25rem] w-2 bg-background/85" />
-                <WrappedCover title="" coverUrl={k.game?.cover_url} ink={ink} tied={false} className="w-[4.5rem]" />
+                <i aria-hidden className="absolute inset-y-0 right-[4.25rem] w-2 bg-background/85 sm:right-[5.25rem]" />
+                <WrappedCover title="" coverUrl={k.game?.cover_url} ink={ink} tied={false} className="w-14 sm:w-[4.5rem]" />
                 <span className="min-w-0 pr-3">
-                  <span className="font-headline block truncate text-[1.45rem] leading-none">{title}</span>
-                  <span className="font-label mt-1.5 block truncate text-[0.74rem] font-extrabold">
+                  <span className="font-headline line-clamp-2 block text-[1.2rem] leading-[0.95] sm:text-[1.45rem]">{title}</span>
+                  <span className="font-label mt-1.5 block text-[0.74rem] leading-tight font-extrabold">
                     {k.platform}
                     {k.region !== "Global" ? ` · ${k.region}` : ""} · From {names.get(k.donor_user_id) ?? "a member"}
                   </span>
                 </span>
                 {at && (
-                  <span className="relative grid size-[3.9rem] place-content-center rounded-full border-2 border-background text-center leading-none">
+                  <span className="relative grid size-12 place-content-center sm:size-[3.9rem] rounded-full border-2 border-background text-center leading-none">
                     <span className="font-label text-[0.62rem] font-extrabold">{MONTH.format(at)}</span>
-                    <span className="font-headline text-2xl">{DAY.format(at)}</span>
+                    <span className="font-headline text-xl sm:text-2xl">{DAY.format(at)}</span>
                   </span>
                 )}
               </Link>
