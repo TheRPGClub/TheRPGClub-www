@@ -22,7 +22,7 @@ export function ReviewCardByline({
   return (
     <div className="flex min-w-0 items-center gap-2.5">
       {showUser && review.user && (
-        <ReviewerAvatar userId={review.user_id} name={name} />
+        <ReviewerAvatar userId={review.user_id} discordAvatar={review.user?.discord_avatar} name={name} />
       )}
       <div className="min-w-0 leading-tight">
         {showUser && review.user ? (

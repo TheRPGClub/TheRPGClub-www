@@ -32,6 +32,7 @@ export function ReviewVerdictScore({
       <div className="mt-1 flex w-full items-center gap-2.5 border-t border-background/20 pt-3 md:mt-auto md:pt-4.5">
         <ReviewerAvatar
           userId={review.user_id}
+          discordAvatar={review.user?.discord_avatar}
           name={authorName}
           className="ring-2 ring-background"
         />

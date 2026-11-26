@@ -55,7 +55,7 @@ function DayRow({ card, now }: { card: AchievementFeedGroup; now: number }) {
   return (
     <PanelItem
       plain
-      media={<ReviewerAvatar userId={card.user.user_id} name={name} size="sm" />}
+      media={<ReviewerAvatar userId={card.user.user_id} discordAvatar={card.user.discord_avatar} name={name} size="sm" />}
       title={<><b>{name}</b> · {setTitle(card.achievement_set)}</>}
       href={memberSetHref(card.user.user_id, card.achievement_set.id)}
       meta={<MetaParts parts={[<ProviderMark key="p" provider={card.achievement_set.provider} />, unlocks]} />}

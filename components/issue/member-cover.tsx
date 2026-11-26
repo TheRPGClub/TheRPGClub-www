@@ -1,6 +1,6 @@
 import type { Game, Platform } from "@/lib/api/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { memberAvatarSrc } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { cn } from "@/lib/utils";
 
 // The member department's shared pieces: a 3:4 cover with its title fallback
@@ -74,18 +74,21 @@ export function MemberCover({
 
 export function MemberAvatar({
   userId,
+  discordAvatar = null,
   name,
   className,
   fallbackClassName,
 }: {
   userId: string;
+  // Their Discord avatar hash, when the payload carries it (memberPictureSrc).
+  discordAvatar?: string | null;
   name: string;
   className?: string;
   fallbackClassName?: string;
 }) {
   return (
     <Avatar variant="inverse" className={cn("size-10 after:hidden", className)}>
-      <AvatarImage src={memberAvatarSrc(userId)} alt="" />
+      <AvatarImage src={memberPictureSrc({ user_id: userId, discord_avatar: discordAvatar })} alt="" />
       <AvatarFallback
         className={cn(
           "font-headline",
