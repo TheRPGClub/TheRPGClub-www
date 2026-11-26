@@ -261,6 +261,7 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     group: "bot",
     blurb: "Write a Patch beside its live card, then publish it on Patch Notes.",
     line: "Write and publish the numbered Patches on Patch Notes.",
+    jobKinds: ["patch_post", "patch_edit", "patch_delete"],
   },
   // Members
   {

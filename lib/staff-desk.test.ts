@@ -86,6 +86,18 @@ describe("deskNotes", () => {
     expect(notes.memberscan).toEqual({ text: "Failed 2 h ago", tone: "bad" });
   });
 
+  it("marks Patch Notes when its latest post job failed", () => {
+    const notes = deskNotes(
+      superadmin,
+      {
+        ...NONE,
+        jobs: [job({ kind: "patch_edit", status: "failed", finished_at: "2026-11-14T11:00:00Z" })],
+      },
+      now,
+    );
+    expect(notes["patch-notes"]).toEqual({ text: "Failed 1 h ago", tone: "bad" });
+  });
+
   it("leaves a tool alone when its latest job went through", () => {
     const notes = deskNotes(
       superadmin,
