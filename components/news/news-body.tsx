@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import { fetchCatchup, fetchNewsCategories, fetchNewsStamp } from "@/lib/api/news";
-import { categoryNames, newsCategoryRows, type NewsFilters } from "@/lib/news";
-import { agoLabel } from "@/lib/news-catchup";
+import { categoryNames, newsCategoryRows, newsHref, type NewsFilters } from "@/lib/news";
+import { agoLabel, markOf } from "@/lib/news-catchup";
+import { newestShown } from "@/lib/news-mark";
 import { NewsCatchup } from "./news-catchup";
 import { NewsNote } from "./news-empty";
 import { NewsLiveRefresh } from "./news-live-refresh";
+import { NewsMarkAllSeen } from "./news-mark-all-seen";
+import { NewsMarkBeacon } from "./news-mark-beacon";
 import { NewsMasthead } from "./news-masthead";
 import { NewsShowAll } from "./news-show-all";
 
@@ -47,17 +50,20 @@ export async function NewsBody({
     ok ? (meta?.hidden_categories ?? []) : null,
   );
 
+  // Leaving moves the News Mark to the newest item shown (www#222).
+  const shown = ok ? newestShown(top?.meta, top?.items ?? null, rows.items, filters) : null;
+
   return (
     <div className="space-y-6">
       <NewsLiveRefresh stamp={stamp} page={filters.page} />
+      {ok && <NewsMarkBeacon newest={shown} mark={markOf(meta)} />}
       <NewsMasthead
         badge={badge}
         updated={newest ? `Updated ${agoLabel(newest.posted_at, now)}` : null}
         rows={categoryRows}
         filters={filters}
         tab="catchup"
-        // Mark all seen (ticket www#222) fills this slot.
-        markAllSeen={null}
+        markAllSeen={ok && <NewsMarkAllSeen back={newsHref(filters, { since: null, page: 1 })} />}
       />
       {!ok ? (
         <NewsNote>Couldn&apos;t load the news. Try again in a moment.</NewsNote>
