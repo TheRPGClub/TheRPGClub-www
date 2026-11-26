@@ -35,7 +35,8 @@ export function guardedHistoryState(): Record<string, unknown> | null {
 //
 // `leaveTo(path)` leaves on purpose (the work is gone, as after a delete):
 // it pops the sentinel first and navigates once that pop lands, so the
-// guard's own pop can't come after the navigation and undo it.
+// guard's own pop can't come after the navigation and undo it. It replaces
+// the page's entry, so Back never returns to what is gone.
 export function useLeaveGuard(dirty: boolean) {
   const router = useRouter();
   const [leaving, setLeaving] = useState<string | null>(null);
@@ -61,7 +62,7 @@ export function useLeaveGuard(dirty: boolean) {
       const to = leavingTo.current;
       if (to !== null) {
         leavingTo.current = null;
-        router.push(to);
+        router.replace(to);
         return;
       }
       const href = selfPop.current;
@@ -117,7 +118,7 @@ export function useLeaveGuard(dirty: boolean) {
     leaveTo: (to: string) => {
       dirtyRef.current = false;
       setLeaving(null);
-      if (!onSentinel()) return router.push(to);
+      if (!onSentinel()) return router.replace(to);
       leavingTo.current = to;
       window.history.back();
     },
