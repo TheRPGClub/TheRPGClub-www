@@ -2,14 +2,13 @@ import { fetchFeedbackList } from "@/lib/api/feedback";
 import { requireAuth } from "@/lib/session";
 import { canUseTier, staffSection } from "@/lib/staff";
 import { StaffOnly } from "@/components/staff-only";
-import { FeedbackReviewQueue } from "@/components/feedback/review-queue";
+import { FeedbackDesk } from "@/components/feedback/desk";
 
 const SECTION = staffSection("feedback");
 
-// The Superadmin review queue: every Pending Feedback, most upvoted first.
-// Approving opens a GitHub issue in the chosen repo; rejecting needs a
-// reason. The bot announces either to the author. (The review desk proper is
-// www#227.)
+// The Superadmin review desk (www#227): every Pending Feedback in three kind
+// lanes, reviewed in a side Sheet (change its kind, approve it into a repo,
+// reject it with a reason or mark it a Duplicate).
 export default async function FeedbackReviewPage() {
   const session = await requireAuth();
   if (!canUseTier(session.membership, SECTION.tier)) {
@@ -17,7 +16,5 @@ export default async function FeedbackReviewPage() {
   }
 
   const queue = await fetchFeedbackList({ statuses: ["pending"] });
-  const reviewerName =
-    session.principal.global_name ?? session.principal.username;
-  return <FeedbackReviewQueue section={SECTION} queue={queue} reviewerName={reviewerName} />;
+  return <FeedbackDesk rows={queue?.rows ?? null} />;
 }

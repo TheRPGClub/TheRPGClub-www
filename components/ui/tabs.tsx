@@ -50,6 +50,9 @@ const tabsListVariants = cva(
         masthead: "w-full items-end justify-start gap-x-8 p-0 group-data-horizontal/tabs:h-auto",
         // envelope: /goty's three Award envelopes, a card each topped by its
         // Award's ink; each tab sets --tab-ink.
+        // desk (www#227): the review Sheet's Approve / Reject / Duplicate,
+        // label caps on a hairline, the open one in paper with a paper bar.
+        desk: "w-full items-end justify-start gap-0 p-0 group-data-horizontal/tabs:h-auto",
         envelope: "grid w-full grid-cols-3 items-stretch gap-1.5 p-0 group-data-horizontal/tabs:h-auto sm:gap-2.5",
       },
     },

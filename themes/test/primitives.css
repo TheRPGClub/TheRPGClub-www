@@ -1964,7 +1964,6 @@
             box-shadow: 3px 3px 0 var(--highlight);
         }
 
-
         /* www#100: journals, giveaways and the Feature switches. */
         [data-slot="switch"][data-variant="labelled"] {
             background-color: var(--gotm);
@@ -2150,6 +2149,16 @@
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
+        }
+        /* Review desk (www#227). */
+        [data-slot="button"][data-variant="lane-card"],
+        [data-slot="tabs-list"][data-variant="desk"] [data-slot="tabs-trigger"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        [data-slot="tabs-list"][data-variant="desk"] {
+            border-color: var(--gotm);
         }
     }
 }

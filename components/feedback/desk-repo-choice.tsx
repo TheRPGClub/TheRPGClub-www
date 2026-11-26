@@ -4,8 +4,9 @@ import { FEEDBACK_TARGET_REPOS, type FeedbackTargetRepo } from "@/lib/feedback";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
-// Approving: the repo the Feedback's GitHub issue opens in, one card each.
-export function ReviewRepoChoice({
+// Approve on the review desk: the repo the Feedback's GitHub issue opens
+// in, one tile each (Bot, Website, API).
+export function DeskRepoChoice({
   repo,
   onChange,
   author,
