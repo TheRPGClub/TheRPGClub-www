@@ -70,6 +70,8 @@ export interface User {
   role_regular: boolean;
   role_member: boolean;
   role_newcomer: boolean;
+  // The dev role, sent by the API since the members tiers change.
+  role_dev?: boolean;
   server_left_at: string | null;
   message_count: number;
   profile_image_at: string | null;
@@ -1249,6 +1251,10 @@ export interface UserSummary {
   role_admin: boolean;
   role_moderator: boolean;
   role_regular: boolean;
+  // The three lower role flags the members page sorts into its tiers.
+  role_dev?: boolean;
+  role_member?: boolean;
+  role_newcomer?: boolean;
   server_left_at?: string | null;
 }
 
