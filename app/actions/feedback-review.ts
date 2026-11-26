@@ -2,13 +2,17 @@
 
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
-import type { Feedback } from "@/lib/api/types";
+import { fetchFeedbackList } from "@/lib/api/feedback";
+import type { Feedback, FeedbackKind } from "@/lib/api/types";
 import {
+  isFeedbackKind,
   isFeedbackTargetRepo,
   validateRejectionReason,
 } from "@/lib/feedback";
+import type { DuplicateCandidate } from "@/lib/feedback-desk";
 
-// Superadmin review of a Pending Feedback. The API decides who may review;
+// Superadmin review of a Pending Feedback: change its kind, approve it,
+// reject it or mark it a Duplicate. The API decides who may review;
 // these only shape the request and put refusals in the reviewer's words.
 
 export interface FeedbackReviewResult {
@@ -25,9 +29,11 @@ function validId(id: number): boolean {
   return Number.isInteger(id) && id > 0;
 }
 
+type ReviewAction = "approve" | "reject" | "duplicate" | "kind";
+
 async function failure(
   res: Response,
-  action: "approve" | "reject",
+  action: ReviewAction,
 ): Promise<FeedbackReviewResult> {
   const err = await readApiError(res);
   switch (res.status) {
@@ -50,6 +56,14 @@ async function failure(
         error: "It is no longer Pending: someone reviewed it or its author withdrew it.",
         stale: true,
       };
+    case 422:
+      if (action === "duplicate") {
+        return {
+          ok: false,
+          error: `That can't be its original: pick a Pending, Approved or Done Feedback other than itself. ${apiErrorMessage(err)}`,
+        };
+      }
+      return { ok: false, error: apiErrorMessage(err) };
     case 502:
       return {
         ok: false,
@@ -70,8 +84,8 @@ async function failure(
 
 async function review(
   id: number,
-  action: "approve" | "reject",
-  data: Record<string, string>,
+  action: ReviewAction,
+  data: Record<string, string | number>,
 ): Promise<FeedbackReviewResult> {
   if (!validId(id)) {
     return { ok: false, error: "That Feedback no longer exists.", stale: true };
@@ -116,4 +130,41 @@ export async function rejectFeedbackAction(
   const checked = validateRejectionReason(rawReason);
   if (!checked.ok) return { ok: false, error: checked.error };
   return review(id, "reject", { rejection_reason: checked.reason });
+}
+
+// Mark the Feedback a Duplicate of `originalId`; its upvotes move there.
+export async function duplicateFeedbackAction(
+  id: number,
+  originalId: number,
+): Promise<FeedbackReviewResult> {
+  if (!validId(originalId) || originalId === id) {
+    return { ok: false, error: "Pick the Feedback it duplicates." };
+  }
+  return review(id, "duplicate", { original_id: originalId });
+}
+
+// File the Pending Feedback under another kind. No bot notice.
+export async function changeFeedbackKindAction(
+  id: number,
+  kind: FeedbackKind,
+): Promise<FeedbackReviewResult> {
+  if (!isFeedbackKind(kind)) return { ok: false, error: "Pick a kind." };
+  return review(id, "kind", { kind });
+}
+
+// The possible originals for the Duplicate picker: every Open Feedback
+// (Pending and Approved, Done included), slimmed to what the picker shows.
+// The API has no title search, so the desk filters these itself. Null when
+// they can't be read.
+export async function listDuplicateOriginalsAction(): Promise<DuplicateCandidate[] | null> {
+  const list = await fetchFeedbackList({ statuses: ["open"] });
+  if (!list) return null;
+  return list.rows.map(({ feedback_id, kind, title, status, done, upvote_count }) => ({
+    feedback_id,
+    kind,
+    title,
+    status,
+    done,
+    upvote_count,
+  }));
 }
