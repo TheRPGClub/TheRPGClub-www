@@ -67,17 +67,3 @@ export function wallTiers(users: User[]): Tier[] {
     (t) => t.members.length > 0,
   );
 }
-
-// The tiers narrowed to members whose name or username holds the query.
-export function searchTiers(tiers: Tier[], query: string): Tier[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return tiers;
-  return tiers
-    .map((t) => ({
-      ...t,
-      members: t.members.filter(
-        (m) => m.name.toLowerCase().includes(q) || (m.username ?? "").toLowerCase().includes(q),
-      ),
-    }))
-    .filter((t) => t.members.length > 0);
-}
