@@ -19,7 +19,14 @@ export function memberAvatarSrc(userId: string): string {
 // A member's picture as the sidebar draws it: Discord's own image for the
 // avatar hash from their last website login, which loads where the API's
 // stored copy may not exist. Without a hash, the API's avatar endpoint.
-export function memberPictureSrc(member: { user_id: string; discord_avatar?: string | null }, size = 64): string {
+// `size` is the pixels asked of Discord, which never upscales past the
+// upload: 256 keeps every mark sharp on a 2x screen (most avatars are 256px
+// at source, the same as the stored copy); the profile banner asks for 512.
+export const MEMBER_PICTURE_SIZE = 256;
+export function memberPictureSrc(
+  member: { user_id: string; discord_avatar?: string | null },
+  size = MEMBER_PICTURE_SIZE,
+): string {
   return member.discord_avatar
     ? discordAvatarUrl(member.user_id, member.discord_avatar, size)
     : memberAvatarSrc(member.user_id);
