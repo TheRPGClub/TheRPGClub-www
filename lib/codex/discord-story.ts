@@ -7,7 +7,7 @@ import type { RichTextSchema } from "@/lib/rich-text/schema";
 
 // A Club Codex `body` (Discord markdown) read back into a story, for an
 // entry saved without `rich_body`: one the bot or an import wrote. It is the
-// reverse of lib/codex/discord-markdown.ts, so the desk opens such an entry
+// reverse of lib/rich-text/discord-markdown.ts, so the desk opens such an entry
 // with its formatting and mentions in place, and saving it unchanged writes
 // the same `body` back:
 // - `#`, `##`, `###` lines become headings, `> ` lines a quote, `- ` and

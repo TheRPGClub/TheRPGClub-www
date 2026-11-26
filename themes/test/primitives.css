@@ -402,6 +402,12 @@
                 color: var(--accent-foreground);
                 border-color: var(--accent-foreground);
             }
+            &[data-tone="new"],
+            &[data-tone="new-rail"] {
+                background-color: var(--background);
+                color: var(--foreground);
+                outline: 2px solid var(--foreground);
+            }
             &[data-tone="precision"] {
                 background-color: var(--background);
                 color: var(--chart-5);

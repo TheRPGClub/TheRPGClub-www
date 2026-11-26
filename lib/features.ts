@@ -36,6 +36,7 @@ export const FEATURE_KEYS = [
   "franchise_progress",
   "goty_vote",
   "roadmap",
+  "patch_notes",
 ] as const;
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];

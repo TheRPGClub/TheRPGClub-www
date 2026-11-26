@@ -1,6 +1,7 @@
 import type { SessionMembership, SessionPrincipal } from "@/lib/auth-types";
 import type { VotingPhase } from "@/lib/api/voting-round";
 import type { SessionFeature } from "@/lib/features";
+import type { PatchSeen } from "@/lib/patch-notes/patch-mark";
 import type { PinRules } from "@/lib/pinned-pages";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ export function AppShell({
   sidebarOpen,
   pinnedPages,
   pinRules,
+  patchSeen,
   children,
 }: {
   principal: SessionPrincipal;
@@ -33,6 +35,8 @@ export function AppShell({
   pinnedPages?: string[];
   // The session's Pinned Pages limit, room and club default.
   pinRules: PinRules;
+  // The session's Patch Mark, for the NEW mark on Patch Notes.
+  patchSeen?: PatchSeen;
   children: React.ReactNode;
 }) {
   return (
@@ -45,6 +49,7 @@ export function AppShell({
           features={features}
           pinnedPages={pinnedPages}
           pinRules={pinRules}
+          patchSeen={patchSeen}
         />
         {/* min-w-0: a wide scroll row (a shelf) must scroll inside the page,
             not widen the column past the window. @container: the bleed
@@ -62,6 +67,7 @@ export function AppShell({
           membership={membership}
           votingPhase={votingPhase}
           features={features}
+          patchSeen={patchSeen}
           account={<AccountMenu principal={principal} membership={membership} features={features} />}
         />
       </SidebarProvider>

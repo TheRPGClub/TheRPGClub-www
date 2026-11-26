@@ -41,6 +41,12 @@ export interface AppSession {
   // 0012). All three optional: an older API gets lib/pinned-pages' fallback.
   pinned_pages_default?: string[];
   pinned_pages_limit?: number;
+  // The member's Patch Mark (api#512): whether a published Patch is past
+  // it, and the newest Patch number seen (null before the first visit).
+  // False / null unless Patch Notes is shown to the member. Optional: an
+  // older API reads as nothing unseen (lib/patch-notes/patch-mark).
+  patch_notes_unseen?: boolean;
+  patch_mark?: number | null;
 }
 
 export function discordAvatarUrl(

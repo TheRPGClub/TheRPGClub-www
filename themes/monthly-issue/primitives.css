@@ -376,6 +376,17 @@
                     @apply text-faint-foreground inset-ring-faint-foreground/55;
                 }
             }
+            /* Patch Notes' unseen mark: a 1px paper outline, paper caps
+               tracked wide. */
+            &[data-tone="new"],
+            &[data-tone="new-rail"] {
+                @apply bg-transparent font-extrabold tracking-[0.12em] text-foreground inset-ring-1 inset-ring-foreground;
+            }
+            /* On the collapsed icon rail it sits over the Club icon, so it
+               takes the sidebar's fill. */
+            &[data-tone="new-rail"] {
+                @apply group-data-[collapsible=icon]:bg-sidebar;
+            }
             &[data-tone="precision"] {
                 @apply bg-transparent text-dim-foreground outline-[1.5px] outline-offset-[-1.5px] outline-faint-foreground outline-dashed;
             }

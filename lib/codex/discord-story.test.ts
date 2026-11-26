@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { storyToDiscord } from "./discord-markdown";
+import { richTextToDiscord } from "@/lib/rich-text/discord-markdown";
 import { discordToStory } from "./discord-story";
 import { DESCRIPTION_SCHEMA, sanitizeStory } from "./story-schema";
 
@@ -53,7 +53,7 @@ describe("discordToStory", () => {
       "1. first\n2. second\n   more of it",
       "Line one\nline two",
     ];
-    for (const body of bodies) expect(storyToDiscord(discordToStory(body) ?? [])).toBe(body);
+    for (const body of bodies) expect(richTextToDiscord(discordToStory(body) ?? [])).toBe(body);
   });
 
   it("reads into a History Event description too, and finds nothing in a blank body", () => {
@@ -65,7 +65,7 @@ describe("discordToStory", () => {
 describe("sanitizeStory", () => {
   it("keeps a story of mentions alone", () => {
     expect(sanitizeStory([p(mention("7"))], DESCRIPTION_SCHEMA)).toEqual([p(mention("7"))]);
-    expect(storyToDiscord(sanitizeStory([p(mention("7"))]) ?? [])).toBe("<@7>");
+    expect(richTextToDiscord(sanitizeStory([p(mention("7"))]) ?? [])).toBe("<@7>");
   });
 
   it("still finds nothing in an empty one", () => {

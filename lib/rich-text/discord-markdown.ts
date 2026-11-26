@@ -1,14 +1,15 @@
 import { KEYS } from "platejs";
 
-import { LINK_TYPE } from "@/lib/rich-text/schema";
-import { SPOILER_KEY } from "@/lib/rich-text/spoiler-plugin";
-import { IMAGE_TYPE, MENTION_TYPE } from "./story-schema";
+import { IMAGE_TYPE, LINK_TYPE, MENTION_TYPE } from "./schema";
+import { SPOILER_KEY } from "./spoiler-plugin";
 
-// A Club Codex story as Discord markdown (spec api#397, www#125): what the
-// API stores as `body`, which the bot posts and pulls mentions from.
+// A rich-text value as Discord markdown: what the API stores as `body` for a
+// Club Codex story (spec api#397, www#125) or a Patch (spec api#510,
+// lib/patch-notes/patch-text.ts), which the bot posts.
 //
-// It walks a value that has been through `sanitizeStory`, so only the node
-// types the Codex schema allows reach it:
+// It walks a value that has been through its schema's sanitizer, so only the
+// node types the shared schema (plus the Codex's mention and image) allow
+// reach it:
 // - headings become `#`, `##`, `###` lines (the bot pages a Lore Entry at
 //   them), a quote `> ` lines, lists `- ` and `1. ` lines, indented two
 //   spaces a level;
@@ -134,8 +135,8 @@ function block(node: Node, options: DiscordOptions): string | null {
   return text.trim() ? text : null;
 }
 
-// The story as Discord markdown, blocks a blank line apart.
-export function storyToDiscord(value: readonly unknown[], options: DiscordOptions = {}): string {
+// The value as Discord markdown, blocks a blank line apart.
+export function richTextToDiscord(value: readonly unknown[], options: DiscordOptions = {}): string {
   return value
     .filter((node): node is Node => node != null && typeof node === "object")
     .map((node) => block(node, options))

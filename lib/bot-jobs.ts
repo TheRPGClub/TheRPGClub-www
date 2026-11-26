@@ -116,6 +116,9 @@ const KIND_LABEL: Partial<Record<BotJobKind, string>> = {
   memberscan: "Recount members",
   presence_set: "Bot status",
   feature_flag_changed: "Feature Flag change",
+  patch_post: "Patch post",
+  patch_edit: "Patch post update",
+  patch_delete: "Patch post removal",
 };
 
 export function humanizeKind(kind: string): string {
