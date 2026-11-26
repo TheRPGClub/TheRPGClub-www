@@ -58,7 +58,7 @@ export function GiftTag({
             Gone
           </Button>
         ) : mine ? (
-          <ButtonLink href="/giveaways/donate" variant="outline" size="sm">
+          <ButtonLink href="/giveaways/donated" variant="outline" size="sm">
             Manage
           </ButtonLink>
         ) : canClaim ? (
