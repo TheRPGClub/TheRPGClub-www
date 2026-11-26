@@ -75,6 +75,7 @@ export function MemberCover({
 export function MemberAvatar({
   userId,
   discordAvatar = null,
+  pictureSize,
   name,
   className,
   fallbackClassName,
@@ -82,13 +83,15 @@ export function MemberAvatar({
   userId: string;
   // Their Discord avatar hash, when the payload carries it (memberPictureSrc).
   discordAvatar?: string | null;
+  // Pixels to ask Discord for (memberPictureSrc's default otherwise).
+  pictureSize?: number;
   name: string;
   className?: string;
   fallbackClassName?: string;
 }) {
   return (
     <Avatar variant="inverse" className={cn("size-10 after:hidden", className)}>
-      <AvatarImage src={memberPictureSrc({ user_id: userId, discord_avatar: discordAvatar })} alt="" />
+      <AvatarImage src={memberPictureSrc({ user_id: userId, discord_avatar: discordAvatar }, pictureSize)} alt="" />
       <AvatarFallback
         className={cn(
           "font-headline",

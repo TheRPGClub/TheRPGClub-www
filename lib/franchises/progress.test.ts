@@ -163,7 +163,7 @@ describe("memberGroups", () => {
 describe("progressMemberAvatar", () => {
   it("draws the member from Discord's image server, as the sidebar does", () => {
     expect(progressMemberAvatar({ user_id: "42", discord_avatar: "abc" })).toBe(
-      "https://cdn.discordapp.com/avatars/42/abc.png?size=64",
+      "https://cdn.discordapp.com/avatars/42/abc.png?size=256",
     );
   });
 

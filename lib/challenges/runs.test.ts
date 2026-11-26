@@ -140,7 +140,7 @@ describe("runCardView with the API's clients pass", () => {
       new Map(),
       "2026-11-17",
     );
-    expect(view.avatarUrl).toBe("https://cdn.discordapp.com/avatars/42/abc.png?size=64");
+    expect(view.avatarUrl).toBe("https://cdn.discordapp.com/avatars/42/abc.png?size=256");
   });
 
   it("lets the viewer delete their own Run once it has ended", () => {
@@ -154,7 +154,7 @@ describe("runCardView with the API's clients pass", () => {
 describe("helpers", () => {
   it("draws the Discord avatar from the member's hash, as the sidebar does", () => {
     expect(memberAvatar({ user_id: "1", discord_avatar: "abc" })).toBe(
-      "https://cdn.discordapp.com/avatars/1/abc.png?size=64",
+      "https://cdn.discordapp.com/avatars/1/abc.png?size=256",
     );
   });
 
