@@ -15,3 +15,13 @@ These keep the site readable and themeable (spec www#80). Lint checks them: `esl
 - **`lib/` never imports `components/`** (`no-restricted-imports`, block `structure/lib-below-components`): a type or helper both need lives in `lib/`.
 - **Themes are CSS only** (api ADR-0008). A Theme sets tokens and styles primitives by `data-slot` and `data-variant`; it never swaps a React component. Use role-based and club-colour tokens, never the Monthly Issue palette names `ink`, `paper`, `rule` and their steps (`structure/no-palette-colors`); `themes/monthly-issue/README.md` maps each name to its token. Themes live in `themes/` (see `DESIGN.md`); `DEV_THEME=test npm run dev` shows any surface still on the palette.
 - **Checks before a pull request:** `npm run lint`, `npm run typecheck`, `npm test` (Vitest). CI runs the same on every pull request.
+
+## Pull requests and versions
+
+Each merge to main versions this repo (spec TheRPGClub/TheRPGClub-api#510, api ADR 0016; `.github/workflows/versioning.yml`), so a pull request title must be typed. The required PR title check (`.github/workflows/pr-title.yml`) refuses anything else.
+
+- **Title:** `type(scope)!: description`, e.g. `feat(www): show the Patch Notes page`. `type` is one of `feat`, `fix`, `perf`, `refactor`, `chore`, `docs`, `test`, `ci`. `(scope)` is optional; `description` follows a colon and a space.
+- **Bump:** `feat` bumps the minor version; `fix` and `perf` the patch version; `refactor`, `chore`, `docs`, `test` and `ci` make no version.
+- **`!` means breaking:** `feat!:` or `fix(www)!:` (any type) bumps the major version, as does a body line starting `BREAKING CHANGE:`. Use it only when the owner asks for a major; majors are deliberate.
+- **Patch note:** the PR template's optional `Patch note:` line is one sentence in members' words. Each version becomes a Pending Change, and staff start that change's Patch line from it (else from the title). Leave it empty when members won't notice.
+- Versioning does nothing until the repo has a `v*` tag. The shared workflows and their rules live in TheRPGClub-api (`versioning-reusable.yml`, `pr-title-reusable.yml`, `script/versioning/`); this repo only calls them.
