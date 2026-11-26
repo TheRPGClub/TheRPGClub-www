@@ -9,17 +9,17 @@ import {
 
 // Catch-up, the News page's first view (spec api#494, ticket www#221): which
 // News Items are new since the member's News Mark, the hero, the mosaic and
-// how each tile is sized, and the Seen rows. Client-safe and pure: `now` is
+// how each tile is sized, and the Seen items. Client-safe and pure: `now` is
 // passed in, days and clocks are UTC (the page is rendered on the server).
 
 // The hero plus up to nine mosaic tiles read from the top of the view.
 export const CATCHUP_NEW_SHOWN = 10;
-// One page of Seen rows, or of the full new list (Show all).
+// One page of Seen items, or of the full new list (Show all).
 export const NEWS_ROWS_PER = 30;
 
 // ---------------------------------------------------------------------------
 // The split. `top` is page one of the whole view (newest first, at most
-// CATCHUP_NEW_SHOWN); `rows` is the page of Seen rows: everything up to the
+// CATCHUP_NEW_SHOWN); `rows` is the page of Seen items: everything up to the
 // mark, or the whole view without one.
 
 export type CatchupState = "new" | "caught_up" | "first_visit";
@@ -77,7 +77,7 @@ export function splitCatchup(
       seen: rows,
     };
   }
-  // Nothing new: the newest item stays the hero, and the Seen rows follow
+  // Nothing new: the newest item stays the hero, and the Seen items follow
   // it (page one leaves it out, so it isn't listed twice).
   return {
     state, mark, newCount, newByCategory,
@@ -252,12 +252,3 @@ export function agoLabel(iso: string, now: Date): string {
   return at.getUTCFullYear() === now.getUTCFullYear() ? DAY_MONTH.format(at) : DAY_MONTH_YEAR.format(at);
 }
 
-// A Seen row's day and time: "21:40" today, "Tue 21:40" within the week,
-// else "12 Nov" (with the year once it isn't this one).
-export function rowWhen(iso: string, now: Date): string {
-  const at = new Date(iso);
-  const days = (dayStart(now.getTime()) - dayStart(at.getTime())) / DAY_MS;
-  if (days <= 0) return CLOCK.format(at);
-  if (days < 7) return `${SHORT_DAY.format(at)} ${CLOCK.format(at)}`;
-  return at.getUTCFullYear() === now.getUTCFullYear() ? DAY_MONTH.format(at) : DAY_MONTH_YEAR.format(at);
-}

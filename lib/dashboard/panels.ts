@@ -21,7 +21,7 @@ export const PANEL_KEYS = [
   "reviews",
   "journals",
   "giveaways",
-  "suggestions",
+  "feedback",
   "codex",
   "birthdays",
 ] as const;
@@ -58,7 +58,7 @@ export type PanelInk =
   | "reviews"
   | "journals"
   | "giveaways"
-  | "suggestions"
+  | "feedback"
   | "codex"
   | "birthdays";
 
@@ -97,13 +97,22 @@ export const PANELS: Readonly<Record<PanelKey, PanelSpec>> = {
   reviews: { key: "reviews", blurb: "The club's newest reviews", title: "Latest Reviews", scope: "club", chip: false, place: "wide", ink: "reviews", feature: "reviews", seeAll: page("/games") },
   journals: { key: "journals", blurb: "New Game Journal entries", title: "Game Journals", scope: "club", chip: false, place: "wide", ink: "journals", feature: "journals", seeAll: page("/journals") },
   giveaways: { key: "giveaways", blurb: "Keys up for grabs, newest first", title: "Open Giveaways", scope: "club", chip: false, place: "wide", ink: "giveaways", feature: "giveaways", seeAll: page("/giveaways") },
-  suggestions: { key: "suggestions", blurb: "Latest Suggestion Board activity", title: "Suggestion Board", scope: "club", chip: false, place: "wide", ink: "suggestions", feature: "suggestions", seeAll: page("/suggestions") },
+  feedback: { key: "feedback", blurb: "Latest Feedback Board activity", title: "Feedback Board", scope: "club", chip: false, place: "wide", ink: "feedback", feature: "feedback", seeAll: page("/feedback") },
   codex: { key: "codex", blurb: "Today's Fun Fact", title: "Codex fact", scope: "club", chip: false, place: "rail", ink: "codex", feature: "club_codex", seeAll: page("/codex/fun-facts") },
   birthdays: { key: "birthdays", blurb: "Shared Birthdays in the next 30 days", title: "Upcoming Birthdays", scope: "club", chip: false, place: "rail", ink: "birthdays", feature: null, seeAll: null },
 };
 
 export function isPanelKey(key: unknown): key is PanelKey {
   return typeof key === "string" && (PANEL_KEYS as readonly string[]).includes(key);
+}
+
+// Panel keys the API has since renamed (the Suggestion Board became the
+// Feedback Board). The API migrates stored lists; this covers a read from
+// before that, so a save never sends a key the API no longer takes.
+const RENAMED_PANEL_KEYS: Readonly<Record<string, string>> = { suggestions: "feedback" };
+
+export function renamedPanelKey(key: string): string {
+  return RENAMED_PANEL_KEYS[key] ?? key;
 }
 
 // The panels to draw, in the member's order: keys this website knows (a

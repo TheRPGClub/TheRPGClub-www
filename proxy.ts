@@ -19,6 +19,10 @@ const PUBLIC_PATHS = new Set([
   // Patch Notes (www#236): the index and each Patch's page. As with Club
   // History, the page decides: Visitors read only while the Feature is Live.
   "/patch-notes",
+  // The Share Card (spec api#518): the link-preview image, and the API's
+  // revalidate call, which checks its own shared secret.
+  "/share-card",
+  "/api/revalidate",
 ]);
 const PUBLIC_PREFIXES = ["/auth/", "/patch-notes/"];
 
@@ -52,12 +56,12 @@ export function proxy(request: NextRequest) {
 }
 
 // Skips Next's internals, the app's metadata files (favicon, icons, the
-// manifest) and each file in public/, by name: any other path runs the proxy,
-// whatever its extension. A new public file is added here (proxy.test.ts
-// reads public/ and app/ and fails until it is). Must stay a literal: Next
-// reads it at build time.
+// manifest, robots.txt) and each file in public/, by name: any other path
+// runs the proxy, whatever its extension. A new public file is added here
+// (proxy.test.ts reads public/ and app/ and fails until it is). Must stay a
+// literal: Next reads it at build time.
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|(?:favicon\\.ico|icon\\.svg|icon1\\.png|apple-icon\\.png|manifest\\.webmanifest|logo\\.png|(?:file|globe|next|vercel|window)\\.svg|web-app-manifest-(?:maskable-)?(?:192x192|512x512)\\.png|templates/collection-import-template\\.csv)$).*)",
+    "/((?!_next/static|_next/image|(?:favicon\\.ico|icon\\.svg|icon1\\.png|apple-icon\\.png|manifest\\.webmanifest|robots\\.txt|logo\\.png|(?:file|globe|next|vercel|window)\\.svg|web-app-manifest-(?:maskable-)?(?:192x192|512x512)\\.png|templates/collection-import-template\\.csv)$).*)",
   ],
 };

@@ -121,7 +121,7 @@ export type StaffSectionKey =
   | "say"
   | "memberscan"
   | "images"
-  | "suggestions"
+  | "feedback"
   | "completions"
   | "features";
 
@@ -295,15 +295,15 @@ export const STAFF_SECTIONS: readonly StaffSection[] = [
     jobKinds: ["memberscan"],
   },
   {
-    key: "suggestions",
-    href: "/admin/suggestions",
-    label: "Review Suggestions",
+    key: "feedback",
+    href: "/admin/feedback",
+    label: "Review Feedback",
     tier: "superadmin",
     group: "members",
-    blurb: "Approve Suggestions into GitHub issues, or reject them with a reason.",
-    line: "Approve Suggestions into GitHub issues, or reject them with a reason.",
+    blurb: "Approve Feedback into GitHub issues, or reject it with a reason.",
+    line: "Approve Feedback into GitHub issues, or reject it with a reason.",
     nav: true,
-    jobKinds: ["suggestion_outcome"],
+    jobKinds: ["feedback_outcome"],
   },
   // GameDB
   {

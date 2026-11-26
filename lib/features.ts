@@ -27,7 +27,7 @@ export const FEATURE_KEYS = [
   "achievement_hub",
   "giveaways",
   "journals",
-  "suggestions",
+  "feedback",
   "news_hub",
   "challenges",
   "release_calendar",
@@ -35,6 +35,7 @@ export const FEATURE_KEYS = [
   "game_lists",
   "franchise_progress",
   "goty_vote",
+  "roadmap",
   "patch_notes",
 ] as const;
 

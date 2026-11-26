@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { FeatureKey } from "@/lib/features";
-import { CLUB_DEFAULT, PANEL_KEYS, PANELS, isPanelKey, memberPanels, placePanels, shownPanels } from "@/lib/dashboard/panels";
+import { CLUB_DEFAULT, PANEL_KEYS, PANELS, isPanelKey, memberPanels, placePanels, renamedPanelKey, shownPanels } from "@/lib/dashboard/panels";
 
 const all = { shown: () => true };
 const without = (...hidden: FeatureKey[]) => ({ shown: (key: FeatureKey) => !hidden.includes(key) });
@@ -40,6 +40,13 @@ describe("isPanelKey", () => {
     expect(isPanelKey("news")).toBe(true);
     expect(isPanelKey("collection")).toBe(false);
     expect(isPanelKey(3)).toBe(false);
+  });
+});
+
+describe("renamedPanelKey", () => {
+  it("reads the Suggestion Board's old key as the Feedback Board's", () => {
+    expect(renamedPanelKey("suggestions")).toBe("feedback");
+    expect(renamedPanelKey("news")).toBe("news");
   });
 });
 

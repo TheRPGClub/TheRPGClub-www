@@ -6,11 +6,12 @@ import { ListPagination } from "@/components/list-pagination";
 import { NewsEmpty } from "./news-empty";
 import { NewsHeroBand } from "./news-hero-band";
 import { NewsMosaic } from "./news-mosaic";
-import { NewsSeenRows, NewsSeenRule } from "./news-seen";
+import { NewsSeenRule } from "./news-seen";
 
 // Catch-up: the hero band (the new count and the newest item as art), the
-// mosaic of up to nine further new items, then the Seen rule over the rows
-// of earlier items, paginated. Later pages hold the Seen rows alone.
+// mosaic of up to nine further new items, then the Seen rule over the
+// earlier items as the same mosaic without new dots, paginated. Later pages
+// hold the Seen mosaic alone.
 
 export function NewsCatchup({
   top,
@@ -59,9 +60,9 @@ export function NewsCatchup({
       )}
       <NewsMosaic items={catchup.mosaic} nameOf={nameOf} now={now} label="More new items" />
       {(catchup.seen.length > 0 || more) && (
-        <section className="space-y-1 pt-3">
+        <section className="space-y-3 pt-3">
           <NewsSeenRule more={more} />
-          <NewsSeenRows items={catchup.seen} now={now} />
+          <NewsMosaic items={catchup.seen} nameOf={nameOf} now={now} label="Seen items" fresh={false} />
         </section>
       )}
       <div className="pt-3">

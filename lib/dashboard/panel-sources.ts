@@ -4,7 +4,7 @@ import type {
   AchievementSetProgress,
   BacklogPickResponse,
   GameSummary,
-  Suggestion,
+  Feedback,
   UpcomingRelease,
   UserSummary,
 } from "@/lib/api/types";
@@ -98,7 +98,7 @@ export interface PanelGameKey {
   game: GameSummary | null;
 }
 
-export type PanelSuggestion = Suggestion & { last_activity_at?: string };
+export type PanelFeedback = Feedback;
 
 export type ChallengeEventKind = "run_started" | "game_cleared" | "run_finished" | "signups_opened" | "edition_revealed";
 
@@ -143,8 +143,7 @@ export const readMyCompletions = (id: string) => readData<PanelCompletion>(`${us
 export const readReviews = () => readData<PanelReview>(`/api/v1/reviews?${per}`);
 export const readJournals = () => readData<PanelJournalEntry>(`/api/v1/journal_entries?${per}`);
 export const readGiveaways = () => readData<PanelGameKey>(`/api/v1/game_keys?sort=recent&${per}`, FRESH);
-export const readSuggestions = () =>
-  readData<PanelSuggestion>(`/api/v1/suggestions?sort=recent&status=pending,approved&${per}`, FRESH);
+export const readFeedback = () => readData<PanelFeedback>(`/api/v1/feedback?sort=recent&status=open&${per}`, FRESH);
 
 // The member's Backlog Pick: the pick and how many games it was drawn from
 // (`data` is null when the backlog is empty). Null when the read failed.

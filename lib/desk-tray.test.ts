@@ -35,9 +35,9 @@ describe("trayCards", () => {
     expect(trayCards({ ...NONE, round: round({ phase: "decided" }) }, now)).toEqual([]);
   });
 
-  it("counts pending Suggestions, with the oldest only when every one was read", () => {
+  it("counts pending Feedback, with the oldest only when every one was read", () => {
     const all = trayCards({ ...NONE, pending: { total: 2, createdAt: ["2026-11-20T09:00:00Z", "2026-11-22T09:00:00Z"] } }, now);
-    expect(all[0]).toMatchObject({ numeral: "2", title: "Suggestions pending", line: "Oldest from Fri 20 Nov" });
+    expect(all[0]).toMatchObject({ numeral: "2", title: "Feedback pending", line: "Oldest from Fri 20 Nov" });
     const some = trayCards({ ...NONE, pending: { total: 9, createdAt: ["2026-11-22T09:00:00Z"] } }, now);
     expect(some[0].line).toBeNull();
     expect(trayCards({ ...NONE, pending: { total: 0, createdAt: [] } }, now)).toEqual([]);

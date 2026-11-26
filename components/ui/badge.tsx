@@ -51,6 +51,9 @@ const badgeVariants = cva(
         // What a vague Release date still leaves unknown ("Day TBA", "Month
         // TBA", "No date yet").
         precision: "",
+        // A Roadmap Item's area: Bot and Web are separate tags.
+        "area-bot": "",
+        "area-web": "",
         // A Release's region code beside its date: the three region inks,
         // Worldwide, and any other region. A past Release's is data-past.
         "region-na": "",

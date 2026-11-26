@@ -58,7 +58,7 @@ describe("newestShown", () => {
     expect(newestShown(meta, top, seen, catchup)).toBe("2026-11-26T12:00:00.000Z");
   });
 
-  it("is the newest Seen row's hero when caught up", () => {
+  it("is the newest Seen item hero when caught up", () => {
     const caughtUp = { news_mark: "2026-11-26T12:00:00.000000Z", new_count: 0 };
     expect(newestShown(caughtUp, top, top, catchup)).toBe("2026-11-26T12:00:00.000Z");
   });
@@ -89,7 +89,7 @@ describe("beaconEligible", () => {
     expect(beaconEligible({ ...view, since: "2026-11-26T09:00:00Z", page: 3 })).toBe(true);
   });
 
-  it("is never a filtered or searched view, nor a later page of Seen rows", () => {
+  it("is never a filtered or searched view, nor a later page of Seen items", () => {
     expect(beaconEligible({ ...view, categories: ["releases"] })).toBe(false);
     expect(beaconEligible({ ...view, q: "zelda" })).toBe(false);
     expect(beaconEligible({ ...view, q: "zelda", since: "2026-11-26T09:00:00Z" })).toBe(false);

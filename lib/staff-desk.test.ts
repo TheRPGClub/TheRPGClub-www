@@ -8,7 +8,7 @@ const superadmin = staffDeskFor({ dev: true } as never).flatMap((g) => g.section
 
 const NONE: DeskReadings = {
   round: null,
-  pendingSuggestions: null,
+  pendingFeedback: null,
   nowPlaying: null,
   presenceCount: null,
   upcomingLiveEvents: null,
@@ -45,7 +45,7 @@ describe("deskNotes", () => {
       {
         ...NONE,
         round: { round_number: 143, phase: "voting" },
-        pendingSuggestions: 4,
+        pendingFeedback: 4,
         nowPlaying: "Chrono Trigger",
         presenceCount: 12,
         upcomingLiveEvents: "20+",
@@ -53,7 +53,7 @@ describe("deskNotes", () => {
       now,
     );
     expect(notes.voting).toEqual({ text: "Round 143 open", tone: "live" });
-    expect(notes.suggestions).toEqual({ text: "4 pending" });
+    expect(notes.feedback).toEqual({ text: "4 pending" });
     expect(notes.presence).toEqual({ text: "Chrono Trigger" });
     expect(notes["presence-history"]).toEqual({ text: "12 set" });
     expect(notes["live-events"]).toEqual({ text: "20+ upcoming" });

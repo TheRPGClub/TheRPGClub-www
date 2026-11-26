@@ -16,6 +16,7 @@ import {
   NotebookPen,
   Radio,
   Replace,
+  Route,
   ScrollText,
   ShieldCheck,
   Sparkles,
@@ -51,14 +52,15 @@ export const PAGE_ICON: Record<SidebarPageKey, NavIcon> = {
   news: Newspaper,
   codex: ScrollText,
   giveaways: Gift,
-  suggestions: Lightbulb,
+  feedback: Lightbulb,
+  roadmap: Route,
   patch_notes: Sparkles,
   staff_desk: ShieldCheck,
   voting_console: Vote,
   synonyms: Replace,
   live_events: Radio,
   public_reminders: BellRing,
-  suggestion_review: ClipboardCheck,
+  feedback_review: ClipboardCheck,
 };
 
 export const GROUP_ICON: Record<SidebarGroupKey, NavIcon> = {

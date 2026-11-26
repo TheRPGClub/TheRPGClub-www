@@ -413,6 +413,16 @@
                 color: var(--chart-5);
                 outline: 2px dashed var(--chart-5);
             }
+            &[data-tone="area-bot"] {
+                background-color: var(--background);
+                color: var(--chart-2);
+                outline: 2px solid var(--chart-2);
+            }
+            &[data-tone="area-web"] {
+                background-color: var(--background);
+                color: var(--chart-3);
+                outline: 2px solid var(--chart-3);
+            }
             &[data-size="nav"] {
                 font-family: var(--typeface-display);
                 text-decoration: underline;
@@ -1976,7 +1986,6 @@
             box-shadow: 3px 3px 0 var(--highlight);
         }
 
-
         /* www#100: journals, giveaways and the Feature switches. */
         [data-slot="switch"][data-variant="labelled"] {
             background-color: var(--gotm);
@@ -2150,6 +2159,28 @@
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
+        }
+        /* Give feedback (www#226). */
+        [data-slot="dialog-content"][data-variant="kind-card"],
+        [data-slot="dialog-title"][data-variant="kind"],
+        :is([data-slot="input"], [data-slot="textarea"])[data-variant="kind"],
+        [data-slot="input"][data-variant="kind-title"],
+        [data-slot="label"][data-variant="kind-switch"],
+        [data-slot="label"][data-variant="kind-choice"],
+        [data-slot="label"][data-variant="kind-drop"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        /* Review desk (www#227). */
+        [data-slot="button"][data-variant="lane-card"],
+        [data-slot="tabs-list"][data-variant="desk"] [data-slot="tabs-trigger"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+        }
+        [data-slot="tabs-list"][data-variant="desk"] {
+            border-color: var(--gotm);
         }
     }
 }
