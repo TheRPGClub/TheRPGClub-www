@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { PublicWinner } from "@/lib/api/types";
 import { SITE_DESCRIPTION, shareCardMetadata } from "./metadata";
+import { shareCardImagePath } from "./select";
 
 const WINNER: PublicWinner = {
   round_number: 42,
@@ -13,7 +14,7 @@ const WINNER: PublicWinner = {
 };
 
 describe("shareCardMetadata", () => {
-  it("sets the large card keyed by the latest round, absolute to the site", () => {
+  it("sets the large card keyed by the latest round and what it draws, absolute to the site", () => {
     const meta = shareCardMetadata([WINNER], { SITE_URL: "https://therpgclub.com" });
     expect(meta.metadataBase?.toString()).toBe("https://therpgclub.com/");
     expect(meta.description).toBe(SITE_DESCRIPTION);
@@ -21,8 +22,9 @@ describe("shareCardMetadata", () => {
     expect(meta.openGraph).toMatchObject({
       type: "website",
       siteName: "The RPG Club",
-      images: [{ url: "/share-card?round=42", width: 1200, height: 630 }],
+      images: [{ url: expect.stringMatching(/^\/share-card\?round=42&v=[0-9a-z]+$/), width: 1200, height: 630 }],
     });
+    expect(meta.twitter).toMatchObject({ images: [{ url: shareCardImagePath([WINNER]) }] });
   });
 
   it("names the bare brand card without winners", () => {

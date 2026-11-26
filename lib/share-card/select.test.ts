@@ -6,6 +6,7 @@ import {
   planShareCard,
   roundWinners,
   shareCardImagePath,
+  shareCardVersion,
 } from "./select";
 
 function winner(round: number, kind: PublicWinner["kind"], title: string): PublicWinner {
@@ -40,8 +41,22 @@ describe("latestDecidedRound", () => {
 });
 
 describe("shareCardImagePath", () => {
-  it("carries the latest round", () => {
-    expect(shareCardImagePath(WINDOW)).toBe("/share-card?round=42");
+  it("carries the latest round and the version of its card", () => {
+    const plan = planShareCard(WINDOW, "42");
+    expect(plan.kind).toBe("round");
+    if (plan.kind !== "round") return;
+    expect(shareCardImagePath(WINDOW)).toBe(`/share-card?round=42&v=${plan.version}`);
+  });
+
+  it("changes when a round decided in steps gains its second winner", () => {
+    const partial = WINDOW.filter((w) => w.kind === "gotm");
+    expect(shareCardImagePath(partial)).toMatch(/^\/share-card\?round=42&v=\w+$/);
+    expect(shareCardImagePath(partial)).not.toBe(shareCardImagePath(WINDOW));
+  });
+
+  it("changes when a winner gains a cover", () => {
+    const coverless = WINDOW.map((w) => (w.title === "Hades" ? { ...w, cover_url: null } : w));
+    expect(shareCardImagePath(coverless)).not.toBe(shareCardImagePath(WINDOW));
   });
 
   it("is bare without winners", () => {
@@ -85,11 +100,29 @@ describe("roundWinners", () => {
   });
 });
 
+describe("shareCardVersion", () => {
+  const issue = { round: 42, monthYear: "2026-11", latest: true };
+  const picks = roundWinners(WINDOW, 42);
+
+  it("is a short, stable token", () => {
+    expect(shareCardVersion(issue, picks)).toMatch(/^[0-9a-z]{1,7}$/);
+    expect(shareCardVersion(issue, picks)).toBe(shareCardVersion({ ...issue }, [...picks]));
+  });
+
+  it("follows the round no longer being the latest", () => {
+    expect(shareCardVersion({ ...issue, latest: false }, picks)).not.toBe(shareCardVersion(issue, picks));
+  });
+});
+
 describe("planShareCard", () => {
   it("draws the asked-for round", () => {
     const plan = planShareCard(WINDOW, "41");
-    expect(plan).toMatchObject({ kind: "round", issue: { round: 41, monthYear: "2026-11" } });
+    expect(plan).toMatchObject({ kind: "round", issue: { round: 41, monthYear: "2026-11", latest: false } });
     expect(plan.kind === "round" && plan.winners.map((w) => w.title)).toEqual(["Xenogears", "Celeste"]);
+  });
+
+  it("marks the latest decided round", () => {
+    expect(planShareCard(WINDOW, "42")).toMatchObject({ kind: "round", issue: { latest: true } });
   });
 
   it("falls back to the brand card without a round", () => {
