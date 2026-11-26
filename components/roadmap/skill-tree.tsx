@@ -22,10 +22,10 @@ export function SkillTree({ children, foot }: { children: ReactNode; foot?: Reac
 }
 
 // A tier's nodes: one column right of the trunk on phones, two columns
-// straddling it from md.
-export function Branches({ children, className }: { children: ReactNode; className?: string }) {
+// straddling it from md. Staff editing spreads a Make Room zone onto it.
+export function Branches({ children, className, ...rest }: React.ComponentProps<"ul">) {
   return (
-    <ul className={cn("grid gap-y-2.5 pl-10 md:grid-cols-2 md:gap-x-[120px] md:pl-0", className)}>
+    <ul className={cn("grid gap-y-2.5 pl-10 md:grid-cols-2 md:gap-x-[120px] md:pl-0", className)} {...rest}>
       {children}
     </ul>
   );
