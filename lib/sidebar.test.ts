@@ -37,8 +37,15 @@ describe("sidebarGroups", () => {
     expect(keys(sidebarGroups(undefined, flags()))).toEqual({
       play: ["voting", "gotm_history", "goty", "challenges"],
       games: ["games", "franchises", "lists", "reviews", "releases", "achievements", "journals"],
-      club: ["members", "news", "codex", "giveaways", "suggestions"],
+      club: ["members", "news", "codex", "giveaways", "suggestions", "roadmap"],
     });
+  });
+
+  it("lists the Roadmap next to the board only while its Feature is shown", () => {
+    const shown = [feature("suggestions"), feature("roadmap")];
+    expect(keys(sidebarGroups(shown, flags())).club).toEqual(["members", "suggestions", "roadmap"]);
+    const hidden = [feature("suggestions"), feature("roadmap", false)];
+    expect(keys(sidebarGroups(hidden, flags())).club).toEqual(["members", "suggestions"]);
   });
 
   it("leaves out pages for Features the viewer isn't shown, and empty groups", () => {
