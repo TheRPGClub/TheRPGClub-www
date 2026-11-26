@@ -15,6 +15,8 @@ const game = (game_id: number, over: Partial<PoolProgressGame> = {}): PoolProgre
   ...over,
 });
 
+const names = (members: { name: string }[]) => members.map((m) => m.name);
+
 describe("poolWall", () => {
   const tiles = poolWall(
     [
@@ -34,8 +36,10 @@ describe("poolWall", () => {
   );
 
   it("tags each cover with who Cleared it and who is playing it, from the Pool's progress", () => {
-    expect(tiles[0]).toMatchObject({ cleared: ["Crit Fisher"], inProgress: ["Night Owl"], yours: true, core: true, tag: null });
-    expect(tiles[1]).toMatchObject({ cleared: [], inProgress: ["Crit Fisher"], yours: false, tag: "new", source: "franchise" });
+    expect(tiles[0]).toMatchObject({ yours: true, core: true, tag: null });
+    expect([names(tiles[0].cleared), names(tiles[0].inProgress)]).toEqual([["Crit Fisher"], ["Night Owl"]]);
+    expect(tiles[1]).toMatchObject({ cleared: [], yours: false, tag: "new", source: "franchise" });
+    expect(names(tiles[1].inProgress)).toEqual(["Crit Fisher"]);
     expect(tiles[2]).toMatchObject({ cleared: [], inProgress: [], core: false, tag: "added", source: "hand" });
     expect(tiles[0].game).toMatchObject({ game_id: 1, title: "Game 1" });
   });
@@ -46,7 +50,14 @@ describe("poolWall", () => {
       "me",
       poolKey(null),
     );
-    expect(again[0]).toMatchObject({ cleared: ["Crit Fisher"], inProgress: [] });
+    expect(names(again[0].cleared)).toEqual(["Crit Fisher"]);
+    expect(again[0].inProgress).toEqual([]);
+  });
+
+  it("gives each mark the member's id and picture, for the link to their profile", () => {
+    const [tile] = poolWall([game(1, { cleared_by: [{ ...crit, run_id: 1 }] })], "me", poolKey(null));
+    expect(tile.cleared[0]).toMatchObject({ userId: "c", name: "Crit Fisher" });
+    expect(tile.cleared[0].avatarUrl).toMatch(/\/api\/v1\/users\/c\/avatar$/);
   });
 
   it("filters to the games the club played or didn't", () => {

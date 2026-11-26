@@ -9,7 +9,8 @@ import type { ListHit } from "@/components/game-lists/search-hit";
 // A member's list on the index (pick 1C): a 2 by 2 mosaic of its first
 // covers with the count stamped in its corner, then the name and byline.
 // Searching by a game leads the mosaic with it, ringed in yellow, and tags
-// its place on a ranked list. Empty slots stay as muted wells.
+// its place on a ranked list. Empty slots stay as muted wells. The name's
+// link stretches over the card; the owner opens their profile.
 export function ListMosaic({
   list,
   covers,
@@ -24,7 +25,7 @@ export function ListMosaic({
 }) {
   const games = leadWith(covers ?? list.preview_games, leadGameId).slice(0, 4);
   return (
-    <Link href={`/lists/${list.id}`} className="group block min-w-0 rounded-md outline-highlight outline-offset-4 focus-visible:outline-2">
+    <article className="group relative min-w-0">
       <div className="relative grid grid-cols-2 gap-[3px] overflow-hidden rounded-md">
         {Array.from({ length: 4 }, (_, i) => {
           const game = games[i];
@@ -53,9 +54,14 @@ export function ListMosaic({
         </span>
       </div>
       <h3 className="font-headline mt-2.5 line-clamp-2 text-xl leading-[0.95] transition-colors group-hover:text-highlight">
-        {list.name}
+        <Link
+          href={`/lists/${list.id}`}
+          className="outline-none after:absolute after:inset-0 after:rounded-md after:content-[''] focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-highlight"
+        >
+          {list.name}
+        </Link>
       </h3>
       <ListMeta list={list} extra={list.visibility === "private" ? "Private" : undefined} className="mt-1.5 text-[0.74rem]" />
-    </Link>
+    </article>
   );
 }

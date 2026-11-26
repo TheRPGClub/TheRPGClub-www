@@ -4,13 +4,15 @@ import { SORT_LABEL, memberName } from "@/lib/game-lists/types";
 import { memberAvatar } from "@/lib/challenges/runs";
 import { cn } from "@/lib/utils";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { MemberLink } from "@/components/member/member-link";
 
-// Who keeps a list: the owner's mark and name, or the club's logo and "The
-// club". Label caps in the faint ink, as on every card's meta line.
+// Who keeps a list: the owner's mark and name, opening their profile, or the
+// club's logo and "The club". Label caps in the faint ink, as on every
+// card's meta line.
 export function ListOwner({ list, size = 20, className }: { list: GameList; size?: number; className?: string }) {
   const name = memberName(list.owner);
   return (
-    <span className={cn("inline-flex min-w-0 items-center gap-1.5", className)}>
+    <MemberLink userId={list.owner?.user_id} className={cn("inline-flex min-w-0 items-center gap-1.5", className)}>
       <MemberMark
         name={name}
         club={list.club}
@@ -18,7 +20,7 @@ export function ListOwner({ list, size = 20, className }: { list: GameList; size
         size={size}
       />
       <span className="truncate">{name}</span>
-    </span>
+    </MemberLink>
   );
 }
 

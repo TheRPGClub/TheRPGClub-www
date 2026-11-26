@@ -60,16 +60,20 @@ describe("shelf sorts", () => {
     ).toEqual({ favorites: "most_played", completed: "most_played", backlog: "default", collection: "default" });
   });
 
+  it("never sorts the Backlog by Most played", () => {
+    expect(parseShelfSorts({ backlog_sort: "most_played" }).backlog).toBe("default");
+  });
+
   it("sends sort=most_played only for Most played", () => {
     expect(shelfSortQuery("most_played")).toBe("&sort=most_played");
     expect(shelfSortQuery("default")).toBe("");
   });
 
   it("links one shelf's sort and keeps the others", () => {
-    const sorts = parseShelfSorts({ backlog_sort: "most_played" });
+    const sorts = parseShelfSorts({ collection_sort: "most_played" });
     expect(shelfSortHref("42", sorts, "completed", "most_played")).toBe(
-      "/members/42?completed_sort=most_played&backlog_sort=most_played",
+      "/members/42?completed_sort=most_played&collection_sort=most_played",
     );
-    expect(shelfSortHref("42", sorts, "backlog", "default")).toBe("/members/42");
+    expect(shelfSortHref("42", sorts, "collection", "default")).toBe("/members/42");
   });
 });

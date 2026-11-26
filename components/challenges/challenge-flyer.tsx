@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import type { FlyerExtras } from "@/lib/challenges/board";
 import { onBoard, type RunAction } from "@/lib/challenges/run-action";
 import { closedNote, whenLabel } from "@/lib/challenges/dates";
-import { hostAvatar, hostName } from "@/lib/challenges/facts";
+import { hostAvatar, hostName, hostUserId } from "@/lib/challenges/facts";
 import { challengeTint, flyerTilt, tintStyle } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 import { cn } from "@/lib/utils";
@@ -56,7 +56,7 @@ export function ChallengeFlyer({
         </p>
       )}
       <footer className="flex items-center gap-2 border-t border-(--challenge-type)/30 pt-3 text-sm">
-        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
+        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} userId={hostUserId(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-auto" />
       </footer>
       {(run || onBoard(action)) && (

@@ -1,7 +1,7 @@
 import type { FlyerExtras, Clock } from "@/lib/challenges/board";
 import { whenLabel } from "@/lib/challenges/dates";
 import { onBoard, type RunAction } from "@/lib/challenges/run-action";
-import { hostAvatar, hostName } from "@/lib/challenges/facts";
+import { hostAvatar, hostName, hostUserId } from "@/lib/challenges/facts";
 import { challengeTint, tintStyle } from "@/lib/challenges/tint";
 import type { Challenge, ChallengeRun } from "@/lib/challenges/types";
 import { FormatLabel } from "@/components/challenges/format-mark";
@@ -58,7 +58,7 @@ export function ChallengeBillboard({
         <FormatPicture challenge={challenge} extras={extras} run={run} today={today} size="lg" />
       </div>
       <footer className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-3 border-t border-(--challenge-type)/35 pt-3.5 text-[0.9rem] sm:col-span-2">
-        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} />
+        <HostLine name={hostName(challenge)} club={challenge.hosted_by_club} avatar={hostAvatar(challenge)} userId={hostUserId(challenge)} />
         <Count value={extras?.runCount ?? null} label={extras?.runCount === 1 ? "Run" : "Runs"} className="ml-3" />
         <Count value={extras?.finished ?? null} label="Finished" className="ml-3" />
         {(run || onBoard(action)) && (

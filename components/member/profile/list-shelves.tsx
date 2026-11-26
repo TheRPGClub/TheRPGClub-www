@@ -45,12 +45,11 @@ function spines(entries: Entry[], kind: "backlog" | "collection", mostPlayed: bo
 export function BacklogShelf({ profile }: { profile: MemberProfile }) {
   const { user, counts, isSelf, playtime, sorts } = profile;
   const entries = profile.lists.backlog.data;
-  const mostPlayed = sorts.backlog === "most_played";
   return (
     <MemberShelf
       label="Backlog"
       count={counts.backlog}
-      blurb={mostPlayed ? MOST_PLAYED_BLURB : "Queued up."}
+      blurb="Queued up."
       aside={
         <ShelfPlaytimeHead
           userId={user.user_id}
@@ -58,7 +57,6 @@ export function BacklogShelf({ profile }: { profile: MemberProfile }) {
           label="Backlog"
           minutes={playtime?.shelves.backlog}
           sorts={sorts}
-          ownOrder="Queued"
         />
       }
       Row={SpineLiftRow}
@@ -77,7 +75,7 @@ export function BacklogShelf({ profile }: { profile: MemberProfile }) {
       more={shelfMore(user.user_id, "backlog", counts.backlog, entries.length)}
       empty="Nothing queued up."
     >
-      {spines(entries, "backlog", mostPlayed, "Backlog", "Backlogged")}
+      {spines(entries, "backlog", false, "Backlog", "Backlogged")}
     </MemberShelf>
   );
 }

@@ -63,6 +63,10 @@ export type ShelfSorts = Record<ShelfKey, ShelfSort>;
 
 const param = (key: ShelfKey) => `${key}_sort`;
 
+// The shelves that offer Most played. The Backlog is games not yet played,
+// so its own queue is its only order.
+export const SORTABLE_SHELVES: readonly ShelfKey[] = ["favorites", "completed", "collection"];
+
 export function parseShelfSorts(
   search: Record<string, string | string[] | undefined>,
 ): ShelfSorts {
@@ -70,7 +74,7 @@ export function parseShelfSorts(
   for (const key of SHELF_KEYS) {
     const raw = search[param(key)];
     const value = Array.isArray(raw) ? raw[0] : raw;
-    sorts[key] = value === "most_played" ? "most_played" : "default";
+    sorts[key] = value === "most_played" && SORTABLE_SHELVES.includes(key) ? "most_played" : "default";
   }
   return sorts;
 }
