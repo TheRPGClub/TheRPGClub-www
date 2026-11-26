@@ -16,7 +16,7 @@ function winner(round: number, kind: PublicWinner["kind"], title: string): Publi
     game_id: round * 10 + (kind === "gotm" ? 1 : 2),
     title,
     cover_url: `https://img.test/${title}.jpg`,
-    art_url: null,
+    art_url: kind === "gotm" ? `https://img.test/${title}-art.jpg` : null,
   };
 }
 
@@ -68,14 +68,19 @@ describe("parseRound", () => {
 describe("roundWinners", () => {
   it("takes each category's lead pick, GOTM first", () => {
     expect(roundWinners(WINDOW, 42)).toEqual([
-      { kind: "gotm", title: "Chrono Trigger", coverUrl: "https://img.test/Chrono Trigger.jpg" },
-      { kind: "nr_gotm", title: "Hades", coverUrl: "https://img.test/Hades.jpg" },
+      {
+        kind: "gotm",
+        title: "Chrono Trigger",
+        coverUrl: "https://img.test/Chrono Trigger.jpg",
+        artUrl: "https://img.test/Chrono Trigger-art.jpg",
+      },
+      { kind: "nr_gotm", title: "Hades", coverUrl: "https://img.test/Hades.jpg", artUrl: null },
     ]);
   });
 
   it("leaves out a category with no winner", () => {
     expect(roundWinners([winner(7, "nr_gotm", "Hades")], 7)).toEqual([
-      { kind: "nr_gotm", title: "Hades", coverUrl: "https://img.test/Hades.jpg" },
+      { kind: "nr_gotm", title: "Hades", coverUrl: "https://img.test/Hades.jpg", artUrl: null },
     ]);
   });
 });
@@ -83,7 +88,7 @@ describe("roundWinners", () => {
 describe("planShareCard", () => {
   it("draws the asked-for round", () => {
     const plan = planShareCard(WINDOW, "41");
-    expect(plan).toMatchObject({ kind: "round", round: 41 });
+    expect(plan).toMatchObject({ kind: "round", issue: { round: 41, monthYear: "2026-11" } });
     expect(plan.kind === "round" && plan.winners.map((w) => w.title)).toEqual(["Xenogears", "Celeste"]);
   });
 

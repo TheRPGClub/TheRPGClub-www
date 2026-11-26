@@ -12,12 +12,22 @@ export interface ShareCardWinner {
   kind: VotingCategory;
   title: string;
   coverUrl: string | null;
+  // The game's key art: the GOTM's fills the card ("The Cover"); without
+  // it the card stands the covers side by side instead.
+  artUrl: string | null;
+}
+
+// The round the card shows, for its footer ("Round 144 · November 2026").
+export interface ShareCardIssue {
+  round: number;
+  // The archive's free-text month ("November 2026").
+  monthYear: string;
 }
 
 // The card the image route draws: a round's covers (cached for good) or the
 // brand-only fallback (cached briefly, so a real one replaces it soon).
 export type ShareCardPlan =
-  | { kind: "round"; round: number; winners: ShareCardWinner[] }
+  | { kind: "round"; issue: ShareCardIssue; winners: ShareCardWinner[] }
   | { kind: "brand" };
 
 // The highest round_number in the window; null without winners.
@@ -47,7 +57,9 @@ export function roundWinners(winners: PublicWinner[], round: number): ShareCardW
   const kinds: VotingCategory[] = ["gotm", "nr_gotm"];
   return kinds.flatMap((kind) => {
     const lead = winners.find((w) => w.round_number === round && w.kind === kind);
-    return lead ? [{ kind, title: lead.title, coverUrl: lead.cover_url }] : [];
+    return lead
+      ? [{ kind, title: lead.title, coverUrl: lead.cover_url, artUrl: lead.art_url }]
+      : [];
   });
 }
 
@@ -59,5 +71,8 @@ export function planShareCard(winners: PublicWinner[], roundParam: string | null
   const round = parseRound(roundParam);
   if (round === null) return { kind: "brand" };
   const picks = roundWinners(winners, round);
-  return picks.length > 0 ? { kind: "round", round, winners: picks } : { kind: "brand" };
+  const monthYear = winners.find((w) => w.round_number === round)?.month_year ?? "";
+  return picks.length > 0
+    ? { kind: "round", issue: { round, monthYear }, winners: picks }
+    : { kind: "brand" };
 }
