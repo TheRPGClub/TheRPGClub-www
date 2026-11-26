@@ -9,7 +9,7 @@ import { NewsSkeleton } from "@/components/news/news-skeleton";
 // The News Hub (spec api#355): the game news members post in the News
 // Category threads on Discord. This is Catch-up (spec api#494, ticket
 // www#221): what is new since the member's News Mark as a hero and a mosaic,
-// then the Seen rows. The URL holds the chosen News Categories, the search,
+// then the Seen items. The URL holds the chosen News Categories, the search,
 // the page, `since` for Show all, and the visit's `mark`; the API applies
 // them.
 

@@ -46,7 +46,7 @@ type FeedRead = NewsPage | "not_found" | null;
 // What Catch-up reads (ticket www#221, fix pass). With a mark (the visit's
 // from the address, else the stored News Mark): `top` is page one of the new
 // items (`since` the mark), the hero and the mosaic, and `rows` the page of
-// Seen rows (`until` the mark); both pass the mark as `mark`, so the API
+// Seen items (`until` the mark); both pass the mark as `mark`, so the API
 // counts against it and not the stored one. Without either (a first visit)
 // `top` is page one of the whole view and `rows` the whole view. Show all
 // (`filters.since`) reads only the new list, a page at a time, into `rows`.
@@ -77,7 +77,7 @@ export async function fetchCatchup(
   let stored: string | null = null;
   if (!mark) {
     // A new visit: page one of the whole view carries the stored mark, and
-    // is the hero and the Seen rows' source on a first visit.
+    // is the hero and the Seen items' source on a first visit.
     const probe = await read(1, CATCHUP_NEW_SHOWN);
     if (probe === "not_found" || probe === null) return { top: probe, rows: probe, stored };
     stored = markOf(probe.meta);

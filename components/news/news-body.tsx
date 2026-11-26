@@ -15,7 +15,7 @@ import { NewsVisitMark } from "./news-visit-mark";
 // The News page's body once the member is let in: Catch-up (spec api#494,
 // ticket www#221). The feed is read twice, page one of the whole view (the
 // hero, the mosaic, and the member's News Mark with its new counts) and the
-// page of Seen rows; Show all reads only the new list. The visit's mark
+// page of Seen items; Show all reads only the new list. The visit's mark
 // rides in the address (`?mark=`, fix pass): a new visit reads the stored
 // one and puts it there.
 

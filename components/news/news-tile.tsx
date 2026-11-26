@@ -9,8 +9,8 @@ import { OutboundHeadline } from "./news-outbound";
 // One new News Item in the mosaic, sized by what it carries (tileSize):
 // art + description a large tile, art + headline a normal one, a comment
 // alone a small quote tile under an ink edge, and no art an ink panel with
-// the site's initial. Every tile wears the yellow new dot. Art that fails
-// falls back to the ink panel.
+// the site's initial. A new item's tile wears the yellow new dot; a seen
+// one does not. Art that fails falls back to the ink panel.
 
 const SCRIM =
   "absolute inset-0 bg-[linear-gradient(180deg,transparent_22%,color-mix(in_oklab,var(--background)_94%,transparent)_85%)]";
@@ -20,11 +20,14 @@ export function NewsTile({
   size,
   categoryName,
   now,
+  fresh = true,
 }: {
   item: NewsItem;
   size: TileSize;
   categoryName: string;
   now: Date;
+  // A new item (new since the News Mark) wears the new dot.
+  fresh?: boolean;
 }) {
   const view = newsCardView(item);
   const ink = newsInk(item.category_key);
@@ -37,7 +40,7 @@ export function NewsTile({
         style={{ "--news-ink": ink.color } as CSSProperties}
         className={cn(shell, "border-t-[3px] border-t-(--news-ink) px-3.5 pt-3 pb-3", ink.dashed && "[border-top-style:dashed]")}
       >
-        <NewDot />
+        {fresh && <NewDot />}
         <span aria-hidden className="font-headline mt-1.5 block h-6 text-[3.2rem] leading-[0.75] text-(--news-ink)">
           &ldquo;
         </span>
@@ -65,7 +68,7 @@ export function NewsTile({
       ) : (
         <InkPanel ink={ink.color} initial={siteInitial(view.site)} />
       )}
-      <NewDot />
+      {fresh && <NewDot />}
       <div className="relative px-3.5 pt-10 pb-3">
         <NewsTag item={item} name={categoryName} />
         {view.headline && (
