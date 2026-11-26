@@ -4,15 +4,18 @@ import { notFound } from "next/navigation";
 import { fetchPatch, fetchPatches } from "@/lib/api/patches";
 import { featureView } from "@/lib/features";
 import { patchTitle } from "@/lib/patch-notes/format";
+import { patchSeen, shouldMovePatchMark } from "@/lib/patch-notes/patch-mark";
 import { patchNumberParam, patchPath } from "@/lib/patch-notes/paths";
 import { getSession } from "@/lib/session";
 import { PreviewBadge } from "@/components/feature/preview-badge";
+import { PatchMarkMover } from "@/components/patch-notes/patch-mark-mover";
 import { PatchNotesFrame } from "@/components/patch-notes/patch-notes-frame";
 import { PatchPage } from "@/components/patch-notes/patch-page";
 
 // One Patch in full (www#236): the cover band, the counts beside the text,
 // and the previous and next Patches at the foot. Public, as /patch-notes.
 // A draft, an unknown number and a hidden Feature are all not found.
+// Opening it moves the member's Patch Mark to this Patch (www#238).
 
 export async function generateMetadata({ params }: PageProps<"/patch-notes/[number]">): Promise<Metadata> {
   const number = patchNumberParam((await params).number);
@@ -35,6 +38,7 @@ export default async function PatchNotesPatchPage({ params }: PageProps<"/patch-
   return (
     <PatchNotesFrame session={session} path={patchPath(number)}>
       <PatchPage patch={patch} titles={titles} badge={features.preview("patch_notes") && <PreviewBadge />} />
+      {shouldMovePatchMark(patch.number, patchSeen(session)) && <PatchMarkMover shown={patch.number} />}
     </PatchNotesFrame>
   );
 }

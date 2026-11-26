@@ -8,6 +8,8 @@ import type { VotingPhase } from "@/lib/api/voting-round";
 import { featureView, type SessionFeature } from "@/lib/features";
 import { currentPage, pinnedPages, sidebarGroups } from "@/lib/sidebar";
 import { memberPins, type PinRules } from "@/lib/pinned-pages";
+import { NO_PATCH_SEEN, type PatchSeen } from "@/lib/patch-notes/patch-mark";
+import { usePatchUnseen } from "@/hooks/use-patch-unseen";
 import { usePinnedPages } from "@/hooks/use-pinned-pages";
 import { SidebarAccount } from "@/components/shell/sidebar-account";
 import { SidebarBrand } from "@/components/shell/sidebar-brand";
@@ -28,15 +30,18 @@ interface AppSidebarProps {
   pinnedPages?: string[];
   // The session's Pinned Pages limit, room and club default.
   pinRules: PinRules;
+  // The session's Patch Mark: NEW on Patch Notes and the Club row.
+  patchSeen?: PatchSeen;
 }
 
 // The signed-in site's sidebar: the club's mark, Dashboard, the member's
 // Pinned Pages and the Browse groups (Play, Games, Club, and Staff for the
 // tools this member's role can use), and the member's own corner.
-export function AppSidebar({ principal, membership, votingPhase, features, pinnedPages: sessionPins, pinRules }: AppSidebarProps) {
+export function AppSidebar({ principal, membership, votingPhase, features, pinnedPages: sessionPins, pinRules, patchSeen = NO_PATCH_SEEN }: AppSidebarProps) {
   const pathname = usePathname();
   const groups = useMemo(() => sidebarGroups(features, membership), [features, membership]);
   const pins = usePinnedPages(memberPins(sessionPins, pinRules), pinRules);
+  const patchUnseen = usePatchUnseen(patchSeen);
   const nav: SidebarNavModel = {
     groups,
     pinned: pinnedPages(groups, pins.keys),
@@ -44,6 +49,7 @@ export function AppSidebar({ principal, membership, votingPhase, features, pinne
     current: currentPage(groups, pathname),
     votingPhase: votingPhase ?? null,
     view: featureView(features),
+    patchUnseen,
   };
 
   return (

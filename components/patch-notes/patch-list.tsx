@@ -2,13 +2,24 @@ import Link from "next/link";
 
 import { patchDay, patchTitle } from "@/lib/patch-notes/format";
 import { patchPath } from "@/lib/patch-notes/paths";
+import { NO_PATCH_SEEN, isUnseenPatch, type PatchSeen } from "@/lib/patch-notes/patch-mark";
 import type { Patch } from "@/lib/patch-notes/types";
 import { cn } from "@/lib/utils";
+import { NewMark } from "./new-mark";
 
 // Every Patch by number (www#236), the Stack's right column: Anton numerals
 // with the title and the day beside them, newest first. The Patch on top of
-// the stack wears the yellow selection ring.
-export function PatchList({ patches, current }: { patches: readonly Patch[]; current?: number }) {
+// the stack wears the yellow selection ring; an unseen Patch carries NEW
+// beside its day (www#238).
+export function PatchList({
+  patches,
+  current,
+  seen = NO_PATCH_SEEN,
+}: {
+  patches: readonly Patch[];
+  current?: number;
+  seen?: PatchSeen;
+}) {
   return (
     <nav aria-labelledby="patch-list-heading">
       <h2
@@ -45,12 +56,15 @@ export function PatchList({ patches, current }: { patches: readonly Patch[]; cur
                     {patch.title?.trim() && <span className="sr-only">Patch {patch.number}: </span>}
                     {patchTitle(patch)}
                   </span>
-                  <time
-                    dateTime={patch.published_at ?? undefined}
-                    className="font-label text-xs leading-none font-bold tracking-[0.08em] text-faint-foreground"
-                  >
-                    {patchDay(patch)}
-                  </time>
+                  <span className="flex items-center gap-2">
+                    <time
+                      dateTime={patch.published_at ?? undefined}
+                      className="font-label text-xs leading-none font-bold tracking-[0.08em] text-faint-foreground"
+                    >
+                      {patchDay(patch)}
+                    </time>
+                    {isUnseenPatch(patch.number, seen) && <NewMark />}
+                  </span>
                 </span>
               </Link>
             </li>

@@ -54,6 +54,20 @@ describe("PatchStack", () => {
     expect(text(html)).not.toContain("Item 59");
   });
 
+  it("marks the Patches past the member's mark NEW on the card, the slips and the list", () => {
+    const patches = [patch(3, "GOTY season"), patch(2, null), patch(1, "Launch")];
+    const html = renderToStaticMarkup(<PatchStack patches={patches} seen={{ unseen: true, mark: 1 }} />);
+    expect(html.match(/>NEW</g)).toHaveLength(4); // card 3, slip 2, list 3 and 2
+    const slips = html.split('aria-label="Older Patches"')[1].split("</nav>")[0];
+    expect(slips.split("<li").find((li) => li.includes("/patch-notes/1"))).not.toContain(">NEW<");
+  });
+
+  it("marks nothing for a Visitor or once seen", () => {
+    const patches = [patch(2, null), patch(1, "Launch")];
+    expect(renderToStaticMarkup(<PatchStack patches={patches} />)).not.toContain(">NEW<");
+    expect(renderToStaticMarkup(<PatchStack patches={patches} seen={{ unseen: false, mark: 2 }} />)).not.toContain(">NEW<");
+  });
+
   it("says so when there are no Patches, or they couldn't be read", () => {
     expect(text(renderToStaticMarkup(<PatchStack patches={[]} />))).toContain("No Patches yet");
     expect(text(renderToStaticMarkup(<PatchStack patches={null} />))).toContain("Couldn't load Patch Notes");
