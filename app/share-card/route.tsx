@@ -16,10 +16,13 @@ import { ShareCard } from "@/components/share-card/card";
 // or asleep, no winners, a bad query, a cover that won't load) it is the
 // brand-only card on a short cache: a CDN copy of a good card is never
 // replaced, and the real one lands once the read works again. A round whose
-// GOTM key art failed to load stands its covers instead, also briefly.
+// GOTM key art failed to load stands its covers instead, also briefly. If
+// even the brand card can't be drawn (its fonts or logo unreadable), the
+// answer is a 503 on a one-minute cache, never a long-cached error.
 
 const FOREVER = "public, max-age=31536000, s-maxage=31536000, immutable";
 const BRIEFLY = "public, max-age=300, s-maxage=300";
+const RETRY_SOON = "public, max-age=60, s-maxage=60";
 
 // Rendered to bytes before the response goes out, so a failed render can
 // still fall back instead of streaming a broken image under a long cache.
@@ -56,5 +59,13 @@ export async function GET(request: NextRequest) {
       console.error("share card: round card failed, sending the brand card", error);
     }
   }
-  return png(await render(null, []), BRIEFLY);
+  try {
+    return png(await render(null, []), BRIEFLY);
+  } catch (error) {
+    console.error("share card: brand card failed", error);
+    return new Response("Share card unavailable", {
+      status: 503,
+      headers: { "Content-Type": "text/plain", "Cache-Control": RETRY_SOON, "Retry-After": "60" },
+    });
+  }
 }
