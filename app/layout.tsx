@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
-import { fetchShareCardWinners } from "@/lib/api/public-winners";
+import { fetchShareCardWinners, SHARE_CARD_METADATA_TIMEOUT_MS } from "@/lib/api/public-winners";
 import { shareCardMetadata } from "@/lib/share-card/metadata";
 import { DEFAULT_THEME, rootTheme } from "@/themes";
 import "./globals.css";
@@ -13,9 +13,11 @@ if (process.env.NODE_ENV === "development") {
 
 // The site-wide Share Card (spec api#518): one link preview for every page,
 // its image keyed by the latest decided round. Pages that set their own
-// title (/join, /codex/history) keep it.
+// title (/join, /codex/history) keep it. The read is kept short and falls
+// back to the last good winners (lib/api/public-winners), so a sleeping API
+// costs a page at most a moment.
 export async function generateMetadata(): Promise<Metadata> {
-  return shareCardMetadata(await fetchShareCardWinners(), process.env);
+  return shareCardMetadata(await fetchShareCardWinners(SHARE_CARD_METADATA_TIMEOUT_MS), process.env);
 }
 
 // Matches the manifest's theme_color: the default Theme's background.
