@@ -21,7 +21,7 @@ export function ItemDialog({ milestoneId, item }: { milestoneId: number; item: R
       title={item ? "Edit Roadmap Item" : "Add Roadmap Item"}
       description={
         item
-          ? "Members see the title, blurb and area; the GitHub issue stays with staff."
+          ? "Members see the title, blurb, area and linked Feedback; the GitHub issue stays with staff."
           : `It joins the end of ${milestone?.name ?? "its Milestone"}.`
       }
       submitLabel={item ? "Save" : "Add item"}
@@ -48,7 +48,7 @@ export function ItemDialog({ milestoneId, item }: { milestoneId: number; item: R
         )
       }
     >
-      <ItemFields draft={draft} onChange={setDraft} />
+      <ItemFields draft={draft} itemId={item?.id ?? null} onChange={setDraft} />
     </EditDialog>
   );
 }

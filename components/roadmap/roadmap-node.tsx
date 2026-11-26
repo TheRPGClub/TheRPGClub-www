@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { isShipped } from "@/lib/roadmap/tree";
 import type { RoadmapItem } from "@/lib/roadmap/types";
 import { AreaTags } from "./area-tags";
+import { NodeFeedback } from "./node-feedback";
 
 // One Roadmap Item on the Skill Tree: a square-iconed node branching off the
 // trunk. A Shipped one wears the green ring and a filled tick; a planned one
@@ -11,7 +12,8 @@ import { AreaTags } from "./area-tags";
 // itself (left of it on phones; toward the centre from md, by its column).
 // Staff editing wraps the same node, so it takes extra props through `rest`
 // (a drag handle's listeners, a data attribute) and an optional `after`
-// (its Edit chip). `later` recedes a node in a tier after "Next up": its
+// (its Edit chip). Its linked Feedback opens under the blurb. `later`
+// recedes a node in a tier after "Next up": its
 // title drops to dim paper, keeping AA contrast (no opacity).
 export function RoadmapNode({
   item,
@@ -51,13 +53,14 @@ export function RoadmapNode({
       >
         {shipped ? <Check /> : <Plus />}
       </span>
-      <span className="min-w-0">
+      <div className="min-w-0">
         <span className="sr-only">{shipped ? "Ready: " : "Planned: "}</span>
         <span className={cn("block leading-snug font-semibold", later ? "text-dim-foreground" : "text-foreground")}>
           {item.title}
         </span>
         <span className="block text-sm leading-snug text-faint-foreground">{item.blurb}</span>
-      </span>
+        <NodeFeedback feedback={item.feedback ?? []} />
+      </div>
       <AreaTags area={item.area} />
       {after}
     </li>

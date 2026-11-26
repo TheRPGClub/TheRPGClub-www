@@ -6,12 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MemberField } from "@/components/issue/member-field";
+import { FeedbackPicker } from "./feedback-picker";
 import { GITHUB_URL_MAX, ITEM_BLURB_MAX, ITEM_TITLE_MAX, type ItemDraft } from "@/lib/roadmap/edit";
 
 // The Roadmap Item form (design pick 2's dialog): title, blurb, the Bot and
-// Web toggle chips (both on is "Both"), the GitHub issue and Shipped.
-// Linked Feedback joins it with www#233.
-export function ItemFields({ draft, onChange }: { draft: ItemDraft; onChange: (next: ItemDraft) => void }) {
+// Web toggle chips (both on is "Both"), the GitHub issue, linked Feedback
+// (www#233) and Shipped. `itemId` is null for a new item.
+export function ItemFields({
+  draft,
+  itemId,
+  onChange,
+}: {
+  draft: ItemDraft;
+  itemId: number | null;
+  onChange: (next: ItemDraft) => void;
+}) {
   const set = <K extends keyof ItemDraft>(key: K, value: ItemDraft[K]) => onChange({ ...draft, [key]: value });
   return (
     <>
@@ -54,6 +63,7 @@ export function ItemFields({ draft, onChange }: { draft: ItemDraft; onChange: (n
           onChange={(e) => set("github_issue_url", e.target.value)}
         />
       </MemberField>
+      <FeedbackPicker itemId={itemId} value={draft.feedback} onChange={(next) => set("feedback", next)} />
       <Label>
         <Checkbox checked={draft.shipped} onCheckedChange={(on) => set("shipped", on)} />
         Shipped

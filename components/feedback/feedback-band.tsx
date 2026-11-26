@@ -23,7 +23,9 @@ const PHASE_ICON: Record<FeedbackPhase, LucideIcon> = {
 
 // A Feedback card's header band, filled with the status ink (the card sets
 // --band): the phase, its GitHub issue (linked) and the upvote count.
-export function FeedbackBand({ feedback: f, phase }: { feedback: Feedback; phase: FeedbackPhase }) {
+// `pinned` makes room for the Roadmap badge on the card's corner, so the
+// count sits clear of it.
+export function FeedbackBand({ feedback: f, phase, pinned = false }: { feedback: Feedback; phase: FeedbackPhase; pinned?: boolean }) {
   const Icon = PHASE_ICON[phase];
   const ref = issueRef(f);
   const closed = isClosedPhase(phase);
@@ -32,11 +34,19 @@ export function FeedbackBand({ feedback: f, phase }: { feedback: Feedback; phase
       className={cn(
         "flex items-center justify-between gap-3 rounded-t-md px-3.5 py-2 text-background",
         phase === "withdrawn" ? "text-faint-foreground shadow-[inset_0_0_0_1px_var(--band)]" : "bg-(--band)",
+        pinned && "pr-[10.25rem]",
       )}
     >
-      <p className="font-label flex min-w-0 items-center gap-1.5 text-[0.85rem] font-extrabold">
+      <p
+        className={cn(
+          "font-label flex min-w-0 items-center gap-1.5 text-[0.85rem] font-extrabold",
+          // Beside the Roadmap badge the issue wraps under the phase rather
+          // than cutting it short.
+          pinned && "flex-wrap gap-y-0.5",
+        )}
+      >
         <Icon aria-hidden className="size-3.5 shrink-0" />
-        <span className="truncate">
+        <span className={pinned ? "whitespace-nowrap" : "truncate"}>
           {PHASE_LABEL[phase]}
           {closed && f.reviewed_at && <> · {shortDate(f.reviewed_at)}</>}
         </span>

@@ -4,8 +4,11 @@ import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { itemPayload, milestonePayload, type ItemDraft, type MilestoneDraft } from "@/lib/roadmap/edit";
+import { FEEDBACK_BOARD } from "@/lib/roadmap/board";
 import { ROADMAP_PATH } from "@/lib/roadmap/tree";
-import type { Roadmap, RoadmapItem, RoadmapMilestone } from "@/lib/roadmap/types";
+import type { Feedback } from "@/lib/api/types";
+import { toRoadmapFeedback } from "@/lib/roadmap/feedback";
+import type { Roadmap, RoadmapFeedback, RoadmapItem, RoadmapMilestone } from "@/lib/roadmap/types";
 
 // Staff editing of the Roadmap (spec api#505, www#232). The API lets only
 // Admins and Superadmins in; its refusals (422 `{ error, message }`) carry a
@@ -17,6 +20,7 @@ export type RoadmapResult<T = undefined> = { ok: true; data: T } | { ok: false; 
 const UNREACHABLE = "Couldn't reach the club's server. Try again.";
 const MESSAGES: Record<string, string> = {
   forbidden: "Only Admins and Superadmins can edit the Roadmap.",
+  feedback_not_found: "Some of that Feedback is gone. Remove it from the list and save again.",
 };
 
 const validId = (id: number) => Number.isInteger(id) && id > 0;
@@ -39,6 +43,8 @@ async function send<T>(path: string, method: string, data?: unknown): Promise<Ro
     return { ok: false, error: apiErrorMessage(err, MESSAGES) };
   }
   revalidatePath(ROADMAP_PATH);
+  // Linked Feedback wears the item's Milestone or Shipped on the board.
+  revalidatePath(FEEDBACK_BOARD.href);
   try {
     const body = (await res.json()) as { data: T };
     return { ok: true, data: body.data };
@@ -125,4 +131,23 @@ export async function reachMilestoneAction(id: number, destinationId: number | n
 export async function unreachMilestoneAction(id: number): Promise<RoadmapResult<Roadmap>> {
   if (!validId(id)) return badId;
   return send(`/milestones/${id}/reach`, "DELETE");
+}
+
+// The item dialog's Feedback picker (www#233): every Feedback, of any kind
+// and status, latest activity first, as an item links it. The API has no
+// title search, so the picker narrows these in the browser.
+export async function listLinkableFeedbackAction(): Promise<RoadmapResult<RoadmapFeedback[]>> {
+  let res: Response;
+  try {
+    res = await apiFetch("/api/v1/feedback?sort=recent&per=500", { cache: "no-store" });
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
+  if (!res.ok) return { ok: false, error: "Couldn't load the Feedback to link. Close the dialog and try again." };
+  try {
+    const body = (await res.json()) as { data: Feedback[] };
+    return { ok: true, data: body.data.map(toRoadmapFeedback) };
+  } catch {
+    return { ok: false, error: UNREACHABLE };
+  }
 }
