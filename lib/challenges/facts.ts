@@ -11,6 +11,11 @@ export function hostName(challenge: Pick<Challenge, "hosted_by_club" | "host">):
   return memberName(challenge.host);
 }
 
+// The Host's id, for the link to their profile; null for the club.
+export function hostUserId(challenge: Pick<Challenge, "hosted_by_club" | "host">): string | null {
+  return challenge.hosted_by_club || !challenge.host ? null : challenge.host.user_id;
+}
+
 // The Host's Discord avatar, when the API sends it; null for the club and
 // for the initials mark.
 export function hostAvatar(challenge: Pick<Challenge, "hosted_by_club" | "host">): string | null {

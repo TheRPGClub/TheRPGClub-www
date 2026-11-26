@@ -2,6 +2,7 @@ import Image from "next/image";
 import { initials } from "@/lib/challenges/runs";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MemberLink } from "@/components/member/member-link";
 
 // A member's round mark: their avatar when the API names one (their initials
 // on dim paper until it loads, or if it can't), else the initials alone, or
@@ -57,22 +58,25 @@ export function MemberMark({
   );
 }
 
-// The Host with their mark, as a flyer's footer and the rules row print it.
+// The Host with their mark, as a flyer's footer and the rules row print it,
+// opening their profile (`userId`; none for the club).
 export function HostLine({
   name,
   club,
   avatar = null,
+  userId = null,
   className,
 }: {
   name: string;
   club: boolean;
   avatar?: string | null;
+  userId?: string | null;
   className?: string;
 }) {
   return (
-    <span className={cn("inline-flex min-w-0 items-center gap-2", className)}>
+    <MemberLink userId={club ? null : userId} className={cn("inline-flex min-w-0 items-center gap-2", className)}>
       <MemberMark name={name} club={club} src={avatar} />
       <span className="truncate">{name}</span>
-    </span>
+    </MemberLink>
   );
 }

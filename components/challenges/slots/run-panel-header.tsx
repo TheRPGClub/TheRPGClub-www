@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { MemberLink } from "@/components/member/member-link";
 
 // The top of a Run panel (surface brief challenges-slots): whose Run and
 // from which year, the score in Anton (the target muted), the summary line
@@ -18,7 +19,7 @@ export function RunPanelHeader({
   title: string;
   // "from 1994 · started 3 Mar 2025" under another member's name.
   note?: string;
-  member?: { name: string; avatarUrl: string | null };
+  member?: { name: string; avatarUrl: string | null; userId: string };
   score?: { cleared: number; target: number };
   line?: string;
   stamp?: string | null;
@@ -34,7 +35,11 @@ export function RunPanelHeader({
   );
   return (
     <div className="mb-4 flex flex-wrap items-end gap-x-4 gap-y-3">
-      {member && <MemberMark name={member.name} src={member.avatarUrl} size={56} className="self-center" />}
+      {member && (
+        <MemberLink userId={member.userId} className="self-center">
+          <MemberMark name={member.name} src={member.avatarUrl} size={56} />
+        </MemberLink>
+      )}
       <div className="min-w-0">
         {member ? (
           <>

@@ -88,7 +88,7 @@ function RunBody({
       <RunPanelHeader
         title={member ? `${name}'s Run` : `Your Run · from ${run.slots?.first_year ?? "…"}`}
         note={member ? runDates(run, page.today) : undefined}
-        member={member ? { name, avatarUrl: memberAvatar(run.user) } : undefined}
+        member={member ? { name, avatarUrl: memberAvatar(run.user), userId: run.user.user_id } : undefined}
         score={{ cleared: matrix.cleared, target: matrix.target }}
         line={own ? matrix.line : undefined}
         stamp={runStamp(run)}

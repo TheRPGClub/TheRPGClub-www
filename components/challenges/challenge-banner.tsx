@@ -1,7 +1,7 @@
 import { FORMAT_NAME } from "@/lib/challenges/board";
 import type { ChallengePage } from "@/lib/challenges/challenge-page";
 import type { BannerNumeral } from "@/lib/challenges/edition";
-import { hostAvatar, hostName, slotsChips } from "@/lib/challenges/facts";
+import { hostAvatar, hostName, hostUserId, slotsChips } from "@/lib/challenges/facts";
 import { tintStyle } from "@/lib/challenges/tint";
 import { cn } from "@/lib/utils";
 import { splitGameTitle } from "@/components/issue/game-cover";
@@ -9,6 +9,7 @@ import { FormatSquare } from "@/components/challenges/format-mark";
 import { SlotRow } from "@/components/challenges/format-picture";
 import { DoorsPicture } from "@/components/challenges/assignment/doors-picture";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { MemberLink } from "@/components/member/member-link";
 import { Numeral } from "@/components/challenges/banner-numeral";
 import { BackLink } from "@/components/shell/back-link";
 import { MadeFrom } from "@/components/challenges/made-from";
@@ -75,13 +76,10 @@ export function ChallengeBanner({
             )}
             {hostChip && (
               <Chip className="bg-foreground/8 text-dim-foreground">
-                <MemberMark
-                  name={hostName(challenge)}
-                  src={hostAvatar(challenge)}
-                  club={challenge.hosted_by_club}
-                  size={14}
-                />
-                {challenge.hosted_by_club ? "Hosted by the club" : `Hosted by ${hostName(challenge)}`}
+                <MemberLink userId={hostUserId(challenge)} className="inline-flex items-center gap-[5px]">
+                  <MemberMark name={hostName(challenge)} src={hostAvatar(challenge)} club={challenge.hosted_by_club} size={14} />
+                  {challenge.hosted_by_club ? "Hosted by the club" : `Hosted by ${hostName(challenge)}`}
+                </MemberLink>
               </Chip>
             )}
             {slotsChips(challenge).map((extra) => (

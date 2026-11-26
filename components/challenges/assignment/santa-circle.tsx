@@ -3,6 +3,7 @@ import { RING, santaCircle, yourSanta } from "@/lib/challenges/santa-circle";
 import type { EditionAssignment } from "@/lib/challenges/types";
 import { cn } from "@/lib/utils";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { MemberLink } from "@/components/member/member-link";
 
 const STROKE = {
   finished: "stroke-holly",
@@ -69,7 +70,9 @@ export function SantaCircle({ assignments, viewerId }: { assignments: EditionAss
             )}
             style={{ left: seat.x, top: seat.y }}
           >
-            <MemberMark name={memberName(seat.member)} src={memberAvatar(seat.member)} size={seatSize} />
+            <MemberLink userId={seat.member.user_id} className="block">
+              <MemberMark name={memberName(seat.member)} src={memberAvatar(seat.member)} size={seatSize} />
+            </MemberLink>
           </span>
         ))}
         <p className="absolute top-1/2 left-1/2 m-0 -translate-1/2 text-center">

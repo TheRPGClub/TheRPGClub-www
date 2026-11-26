@@ -1,5 +1,5 @@
-import { memberName } from "@/lib/challenges/runs";
-import type { ChallengePool, OptionalSource, PoolGame, PoolProgressGame } from "@/lib/challenges/types";
+import { memberAvatar, memberName } from "@/lib/challenges/runs";
+import type { ChallengeMember, ChallengePool, OptionalSource, PoolGame, PoolProgressGame } from "@/lib/challenges/types";
 
 // The Pool view of a Challenge page (surface brief challenges-pool, 2B; pick
 // 9A, www#170): the Pool's games as two cover walls, Core then Optional,
@@ -9,10 +9,17 @@ import type { ChallengePool, OptionalSource, PoolGame, PoolProgressGame } from "
 
 export type PlayedFilter = "all" | "played" | "unplayed";
 
+// A member's mark under a cover: their picture and a link to their profile.
+export interface WallMember {
+  userId: string;
+  name: string;
+  avatarUrl: string;
+}
+
 export interface WallTile {
   game: PoolGame;
-  cleared: string[];
-  inProgress: string[];
+  cleared: WallMember[];
+  inProgress: WallMember[];
   // In the viewer's own Run.
   yours: boolean;
   core: boolean;
@@ -51,12 +58,16 @@ export function poolWall(
     const playing = in_progress.filter((m) => !clearedIds.has(m.user_id));
     return {
       game,
-      cleared: cleared_by.map(memberName),
-      inProgress: playing.map(memberName),
+      cleared: cleared_by.map(wallMember),
+      inProgress: playing.map(wallMember),
       yours: [...cleared_by, ...playing].some((m) => m.user_id === viewerId),
       ...placeOf(game.game_id, key),
     };
   });
+}
+
+function wallMember(member: ChallengeMember): WallMember {
+  return { userId: member.user_id, name: memberName(member), avatarUrl: memberAvatar(member) };
 }
 
 function placeOf(gameId: number, key: PoolKey): Pick<WallTile, "core" | "tag" | "source"> {

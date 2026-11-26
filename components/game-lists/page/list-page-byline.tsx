@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { GameList } from "@/lib/game-lists/types";
 import { memberName } from "@/lib/game-lists/types";
 import { updatedText } from "@/lib/game-lists/text";
@@ -11,13 +10,7 @@ export function ListPageByline({ list, now }: { list: GameList; now: Date }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.95rem] text-dim-foreground">
-        {list.owner ? (
-          <Link href={`/members/${list.owner.user_id}`} className="font-semibold text-foreground transition-colors hover:text-highlight">
-            <ListOwner list={list} size={22} />
-          </Link>
-        ) : (
-          <ListOwner list={list} size={22} className="font-semibold text-foreground" />
-        )}
+        <ListOwner list={list} size={22} className="font-semibold text-foreground" />
         <Dot />
         <VisibilityMark list={list} />
         <Dot />

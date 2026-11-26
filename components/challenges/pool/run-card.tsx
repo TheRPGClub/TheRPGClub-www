@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberMark } from "@/components/challenges/host-badge";
+import { MemberLink } from "@/components/member/member-link";
 import { DeleteRunButton } from "@/components/challenges/delete-run-button";
 import { RunGoal } from "@/components/challenges/pool/run-goal";
 
@@ -24,7 +25,9 @@ export function RunCard({ run }: { run: RunCardView }) {
       )}
     >
       <header className="flex items-center gap-2.5 pr-24">
-        <MemberMark name={run.name} src={run.avatarUrl} size={34} />
+        <MemberLink userId={run.userId} className="shrink-0">
+          <MemberMark name={run.name} src={run.avatarUrl} size={34} />
+        </MemberLink>
         <h3 className="font-headline min-w-0 text-[1.375rem] leading-[0.95] break-words">
           <Link
             href={`/members/${run.userId}`}
