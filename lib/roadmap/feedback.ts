@@ -3,7 +3,7 @@
 // picker. A Feedback sits on one Roadmap Item at most, so linking it to
 // another moves it. Client-safe.
 import type { Feedback, FeedbackRoadmap } from "@/lib/api/types";
-import { PHASE_LABEL, feedbackPhase, kindMeta } from "@/lib/feedback";
+import { PHASE_LABEL, feedbackPhase, kindMeta, pinnedHref } from "@/lib/feedback";
 import type { Roadmap, RoadmapFeedback, RoadmapItem } from "./types";
 
 // The badge's second line: the item's Milestone, or "Shipped" once it is.
@@ -38,6 +38,13 @@ export function matchFeedback(all: readonly RoadmapFeedback[], query: string, li
   return all
     .filter((f) => !linked.includes(f.id) && (id ? f.id === Number(id) : f.title.toLowerCase().includes(q)))
     .slice(0, limit);
+}
+
+// Where a linked Feedback's title points: pinned on the Feedback Board, or
+// nowhere (a plain title) when the viewer can't open the board
+// (`boardHref` null).
+export function linkedFeedbackHref(boardHref: string | null, feedbackId: number): string | null {
+  return boardHref ? pinnedHref({ feedback_id: feedbackId }) : null;
 }
 
 // "Feature Request · Approved", "Bug Report · Done".

@@ -9,10 +9,13 @@ import { EditDialog } from "./edit-dialog";
 import { ItemFields } from "./item-fields";
 
 // Adds a Roadmap Item to a Milestone, or edits one (the same dialog, per the
-// owner's steer on pick 2). Editing also offers Delete, asked twice.
-export function ItemDialog({ milestoneId, item }: { milestoneId: number; item: RoadmapItem | null }) {
+// owner's steer on pick 2). Editing also offers Delete, asked twice. Once
+// an add has created the item (its Shipped mark may still have failed), the
+// dialog edits that item, so trying again never adds it twice.
+export function ItemDialog({ milestoneId, item: opened }: { milestoneId: number; item: RoadmapItem | null }) {
   const editor = useEditor();
-  const [draft, setDraft] = useState(() => itemDraft(item));
+  const [item, setItem] = useState(opened);
+  const [draft, setDraft] = useState(() => itemDraft(opened));
   const [confirming, setConfirming] = useState(false);
   const milestone = editor.roadmap.milestones.find((m) => m.id === milestoneId);
 
@@ -28,7 +31,10 @@ export function ItemDialog({ milestoneId, item }: { milestoneId: number; item: R
       pendingLabel="Saving..."
       onSubmit={async () => {
         const checked = itemPayload(draft);
-        return "error" in checked ? checked.error : editor.saveItem(milestoneId, item, draft);
+        if ("error" in checked) return checked.error;
+        const saved = await editor.saveItem(milestoneId, item, draft);
+        setItem(saved.item);
+        return saved.error;
       }}
       extra={(fail) =>
         item && (

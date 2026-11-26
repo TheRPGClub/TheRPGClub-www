@@ -8,6 +8,7 @@ import {
   itemPayload,
   itemZones,
   milestonePayload,
+  reachDescription,
   reachLocally,
   removeItem,
   removeMilestone,
@@ -15,6 +16,7 @@ import {
   unreachLocally,
   upsertItem,
   upsertMilestone,
+  withPrecision,
 } from "./edit";
 import type { Roadmap, RoadmapItem, RoadmapMilestone } from "./types";
 
@@ -140,5 +142,28 @@ describe("forms", () => {
       data: { name: "Launch", blurb: null, target_date: "2026-12-01", date_precision: "month" },
     });
     expect(milestonePayload({ ...d, date_precision: "tba", target_date: "2026-12-01" })).toMatchObject({ data: { target_date: null } });
+  });
+});
+
+describe("withPrecision", () => {
+  const draft = { name: "Launch", blurb: "", target_date: "2026-11-15", date_precision: "day" as const };
+
+  it("snaps the target date to its period's first day", () => {
+    expect(withPrecision(draft, "month")).toMatchObject({ date_precision: "month", target_date: "2026-11-01" });
+    expect(withPrecision(draft, "quarter").target_date).toBe("2026-10-01");
+    expect(withPrecision(draft, "year").target_date).toBe("2026-01-01");
+    expect(withPrecision(draft, "tba").target_date).toBeNull();
+  });
+});
+
+describe("reachDescription", () => {
+  it("says an empty Milestone goes to the Shipped shelf empty", () => {
+    expect(reachDescription("Launch", 0, 0, false)).toBe("Launch has no Roadmap Items, so it goes to the Shipped shelf empty.");
+  });
+
+  it("counts what stays and what moves on", () => {
+    expect(reachDescription("Launch", 2, 0, false)).toBe("Every item is Shipped, so 2 items go to the Shipped shelf with Launch.");
+    expect(reachDescription("Launch", 1, 2, false)).toBe("1 item is Shipped and stays with Launch. These 2 aren't Shipped yet and move on:");
+    expect(reachDescription("Launch", 0, 1, true)).toMatch(/^This item isn't Shipped yet .* Add one first\.$/);
   });
 });

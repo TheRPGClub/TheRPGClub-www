@@ -6,7 +6,8 @@ import { apiErrorMessage, readApiError } from "@/lib/api/errors";
 import { itemPayload, milestonePayload, type ItemDraft, type MilestoneDraft } from "@/lib/roadmap/edit";
 import { FEEDBACK_BOARD } from "@/lib/roadmap/board";
 import { ROADMAP_PATH } from "@/lib/roadmap/tree";
-import type { Feedback } from "@/lib/api/types";
+import type { CollectionMeta, Feedback } from "@/lib/api/types";
+import { readEveryPage } from "@/lib/api/pagination";
 import { toRoadmapFeedback } from "@/lib/roadmap/feedback";
 import type { Roadmap, RoadmapFeedback, RoadmapItem, RoadmapMilestone } from "@/lib/roadmap/types";
 
@@ -137,17 +138,16 @@ export async function unreachMilestoneAction(id: number): Promise<RoadmapResult<
 // and status, latest activity first, as an item links it. The API has no
 // title search, so the picker narrows these in the browser.
 export async function listLinkableFeedbackAction(): Promise<RoadmapResult<RoadmapFeedback[]>> {
-  let res: Response;
+  const all = await readEveryPage(readLinkablePage);
+  if (!all) return { ok: false, error: "Couldn't load the Feedback to link. Close the dialog and try again." };
+  return { ok: true, data: all.map(toRoadmapFeedback) };
+}
+
+async function readLinkablePage(page: number): Promise<{ data: Feedback[]; meta?: CollectionMeta } | null> {
   try {
-    res = await apiFetch("/api/v1/feedback?sort=recent&per=500", { cache: "no-store" });
+    const res = await apiFetch(`/api/v1/feedback?sort=recent&per=500&page=${page}`, { cache: "no-store" });
+    return res.ok ? ((await res.json()) as { data: Feedback[]; meta?: CollectionMeta }) : null;
   } catch {
-    return { ok: false, error: UNREACHABLE };
-  }
-  if (!res.ok) return { ok: false, error: "Couldn't load the Feedback to link. Close the dialog and try again." };
-  try {
-    const body = (await res.json()) as { data: Feedback[] };
-    return { ok: true, data: body.data.map(toRoadmapFeedback) };
-  } catch {
-    return { ok: false, error: UNREACHABLE };
+    return null;
   }
 }

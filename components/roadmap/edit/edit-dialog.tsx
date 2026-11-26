@@ -8,7 +8,8 @@ import { useEditor } from "./editor-context";
 // The frame of staff editing's dialogs: open while it is the editor's
 // dialog, a form whose submit answers an error to show (the dialog stays
 // open, the Roadmap as it was) or null once saved (it closes). `extra` sits
-// at the start of the footer (an item's Delete).
+// at the start of the footer (an item's Delete). While any save runs, its
+// own or the editor's (that Delete), it can't be closed or saved again.
 export function EditDialog({
   title,
   description,
@@ -31,9 +32,10 @@ export function EditDialog({
   const editor = useEditor();
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const busy = saving || editor.pending;
 
   const submit = async () => {
-    if (saving || !canSubmit) return;
+    if (busy || !canSubmit) return;
     setSaving(true);
     setError(null);
     const failed = await onSubmit();
@@ -43,7 +45,7 @@ export function EditDialog({
   };
 
   return (
-    <Dialog open onOpenChange={(open) => !open && !saving && editor.closeDialog()}>
+    <Dialog open onOpenChange={(open) => !open && !busy && editor.closeDialog()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -65,10 +67,10 @@ export function EditDialog({
           <div className="flex flex-wrap items-center gap-2 pt-1">
             {extra?.(setError)}
             <span className="ml-auto flex gap-2">
-              <Button type="button" variant="outline" disabled={saving} onClick={editor.closeDialog}>
+              <Button type="button" variant="outline" disabled={busy} onClick={editor.closeDialog}>
                 Cancel
               </Button>
-              <Button type="submit" variant="highlight" disabled={saving || !canSubmit}>
+              <Button type="submit" variant="highlight" disabled={busy || !canSubmit}>
                 {saving ? pendingLabel : submitLabel}
               </Button>
             </span>

@@ -12,8 +12,8 @@ import { ScreenshotThumb } from "./screenshot-thumb";
 // header band filled with the status ink and carrying the upvote count. A
 // Bug Report says where it happened and shows its screenshot; a Rejected
 // or Duplicate card carries a taped-on slip. No kind badge: the tab says it.
-// Feedback linked to a Roadmap Item wears the Roadmap badge pinned to its
-// top-right corner.
+// Feedback linked to a Roadmap Item wears the Roadmap badge pinned above
+// its top-right corner, clear of the header band (the board leaves room).
 //
 // Hook-free, so the board, the form's live preview and the review desk all
 // render the same card. Interactive controls come in through `actions`.
@@ -66,7 +66,7 @@ export function FeedbackCard({
         className,
       )}
     >
-      <FeedbackBand feedback={f} phase={phase} pinned={!!f.roadmap} />
+      <FeedbackBand feedback={f} phase={phase} />
       {f.roadmap && <RoadmapPin roadmap={f.roadmap} />}
 
       <div className="px-3.5 pt-3 pb-3.5">

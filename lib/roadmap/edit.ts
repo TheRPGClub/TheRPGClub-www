@@ -4,6 +4,7 @@
 // dialog's default destination, and the item and Milestone forms. Every
 // function returns a new Roadmap and leaves its argument alone. Client-safe.
 import type { DatePrecision } from "@/lib/api/types";
+import { periodStart } from "@/lib/games/game-edit/releases";
 import { claimFeedback } from "./feedback";
 import { isShipped } from "./tree";
 import type { Roadmap, RoadmapArea, RoadmapFeedback, RoadmapItem, RoadmapMilestone } from "./types";
@@ -210,6 +211,12 @@ export function milestoneDraft(m?: RoadmapMilestone | null): MilestoneDraft {
   };
 }
 
+// The draft at a new Date Precision, its target date snapped to the first
+// day of its period there (none for TBA), as a Release's date is.
+export function withPrecision(d: MilestoneDraft, date_precision: DatePrecision): MilestoneDraft {
+  return { ...d, date_precision, target_date: periodStart(d.target_date, date_precision) };
+}
+
 export function milestonePayload(d: MilestoneDraft): { data: MilestonePayload } | { error: string } {
   const name = d.name.trim();
   const blurb = d.blurb.trim();
@@ -221,4 +228,19 @@ export function milestonePayload(d: MilestoneDraft): { data: MilestonePayload } 
   return {
     data: { name, blurb: blurb || null, target_date: tba ? null : d.target_date, date_precision: d.date_precision },
   };
+}
+
+const itemCount = (n: number) => `${n} ${n === 1 ? "item" : "items"}`;
+
+// What the Reach dialog says of `name`: `staying` Shipped items stay with
+// it, `moving` ones not Shipped yet move on, unless there's nowhere to move
+// them (`stuck`).
+export function reachDescription(name: string, staying: number, moving: number, stuck: boolean): string {
+  if (staying + moving === 0) return `${name} has no Roadmap Items, so it goes to the Shipped shelf empty.`;
+  if (moving === 0) {
+    return `Every item is Shipped, so ${itemCount(staying)} ${staying === 1 ? "goes" : "go"} to the Shipped shelf with ${name}.`;
+  }
+  const these = moving === 1 ? "This item isn't" : `These ${moving} aren't`;
+  if (stuck) return `${these} Shipped yet and there is no other open Milestone to move ${moving === 1 ? "it" : "them"} to. Add one first.`;
+  return `${itemCount(staying)} ${staying === 1 ? "is Shipped and stays" : "are Shipped and stay"} with ${name}. ${moving === 1 ? "This one isn't" : `These ${moving} aren't`} Shipped yet and move on:`;
 }
