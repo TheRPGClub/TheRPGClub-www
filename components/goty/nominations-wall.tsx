@@ -1,6 +1,6 @@
 import type { NominatedGame } from "@/lib/goty/awards";
 import { memberName } from "@/lib/goty/awards";
-import { memberAvatarSrc } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { AwardCover } from "./award-cover";
@@ -31,7 +31,7 @@ export function NominationsWall({ games }: { games: NominatedGame[] }) {
             <span className="flex">
               {by.slice(0, 5).map((user, i) => (
                 <Avatar key={user.user_id} variant="credit" className={i ? "-ml-1.75 size-5" : "size-5"}>
-                  <AvatarImage src={memberAvatarSrc(user.user_id)} alt={memberName(user)} />
+                  <AvatarImage src={memberPictureSrc(user)} alt={memberName(user)} />
                   <AvatarFallback className="font-label text-[0.6rem]">{memberName(user)[0]?.toUpperCase()}</AvatarFallback>
                 </Avatar>
               ))}

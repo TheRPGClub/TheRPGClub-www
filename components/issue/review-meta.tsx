@@ -1,6 +1,6 @@
 import { MAX_RATING } from "@/lib/api/rating";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { memberAvatarSrc } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { cn } from "@/lib/utils";
 
 // The small parts every review surface shares: the reviewer's disc, the
@@ -23,15 +23,18 @@ const AVATAR_SIZE = {
   lg: "size-[34px] text-sm",
 } as const;
 
-// A member's Discord avatar through the API, falling back to their initial on
-// an ink disc while it loads or when they have none.
+// A member's Discord avatar from Discord's image server when the payload
+// carries their hash (memberPictureSrc), else through the API, falling back
+// to their initial on an ink disc while it loads or when they have none.
 export function ReviewerAvatar({
   userId,
+  discordAvatar = null,
   name,
   size = "md",
   className,
 }: {
   userId: string;
+  discordAvatar?: string | null;
   name: string;
   size?: keyof typeof AVATAR_SIZE;
   className?: string;
@@ -46,7 +49,7 @@ export function ReviewerAvatar({
       )}
     >
       <AvatarImage
-        src={memberAvatarSrc(userId)}
+        src={memberPictureSrc({ user_id: userId, discord_avatar: discordAvatar })}
         alt=""
       />
       <AvatarFallback className="font-label font-extrabold text-[length:inherit]">

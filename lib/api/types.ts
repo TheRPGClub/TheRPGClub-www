@@ -1247,6 +1247,9 @@ export interface UserSummary {
   user_id: string;
   username: string | null;
   global_name: string | null;
+  // Their Discord avatar hash from their last website login (null if
+  // unknown); memberPictureSrc draws it from Discord's image server.
+  discord_avatar?: string | null;
   is_bot: boolean;
   role_admin: boolean;
   role_moderator: boolean;

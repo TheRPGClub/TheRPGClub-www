@@ -1,4 +1,4 @@
-import { memberAvatarPath } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { clubDayOf, formatDay, seasonAround, type IsoDay } from "@/lib/challenges/dates";
 import type { Challenge, ChallengeMember, ChallengeRun, PoolGame } from "@/lib/challenges/types";
 
@@ -161,14 +161,9 @@ export function runCardView(
   };
 }
 
-// A member's picture: the API's avatar endpoint, which always serves their
-// current one (a login's Discord hash goes stale when they change it). It
-// 404s without one and the mark keeps the initials.
-export function memberAvatar(
-  member: Pick<ChallengeMember, "user_id" | "avatar_url">,
-  apiBase: string = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http://localhost:3000",
-): string {
-  return `${apiBase}${member.avatar_url ?? memberAvatarPath(member.user_id)}`;
+// A member's picture, as the sidebar draws it (memberPictureSrc).
+export function memberAvatar(member: Pick<ChallengeMember, "user_id" | "discord_avatar">): string {
+  return memberPictureSrc(member);
 }
 
 // Pool games by id, for the covers on Run cards.

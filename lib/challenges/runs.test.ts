@@ -133,14 +133,14 @@ describe("runCardView with the API's clients pass", () => {
     expect(view.clearedGames[0].cover_url).toBe("https://img/own.jpg");
   });
 
-  it("carries the member's avatar endpoint, even with a stale Discord hash", () => {
+  it("carries the member's picture from Discord's image server", () => {
     const view = runCardView(
       run(3, { user: { user_id: "42", username: "owl", discord_avatar: "abc" } }),
       "x",
       new Map(),
       "2026-11-17",
     );
-    expect(view.avatarUrl).toMatch(/\/api\/v1\/users\/42\/avatar$/);
+    expect(view.avatarUrl).toBe("https://cdn.discordapp.com/avatars/42/abc.png?size=64");
   });
 
   it("lets the viewer delete their own Run once it has ended", () => {
@@ -152,14 +152,14 @@ describe("runCardView with the API's clients pass", () => {
 });
 
 describe("helpers", () => {
-  it("builds the avatar endpoint from the id when the API sends no path", () => {
-    expect(memberAvatar({ user_id: "1" }, "https://api.test")).toBe("https://api.test/api/v1/users/1/avatar");
+  it("draws the Discord avatar from the member's hash, as the sidebar does", () => {
+    expect(memberAvatar({ user_id: "1", discord_avatar: "abc" })).toBe(
+      "https://cdn.discordapp.com/avatars/1/abc.png?size=64",
+    );
   });
 
-  it("uses the API's avatar endpoint", () => {
-    expect(memberAvatar({ user_id: "1", avatar_url: "/api/v1/users/1/avatar" }, "https://api.test")).toBe(
-      "https://api.test/api/v1/users/1/avatar",
-    );
+  it("falls back to the API's avatar endpoint without a hash", () => {
+    expect(memberAvatar({ user_id: "1", discord_avatar: null })).toMatch(/\/api\/v1\/users\/1\/avatar$/);
   });
 
   it("caps segments at twenty, each a share of a long target", () => {

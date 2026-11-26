@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 export function MemberBanner({
   userId,
+  discordAvatar = null,
   displayName,
   username,
   joinedAt,
@@ -29,6 +30,8 @@ export function MemberBanner({
   stats,
 }: {
   userId: string;
+  // Their Discord avatar hash, for the picture from Discord's image server.
+  discordAvatar?: string | null;
   displayName: string;
   username: string | null;
   joinedAt: string | null;
@@ -95,6 +98,7 @@ export function MemberBanner({
       >
         <MemberAvatar
           userId={userId}
+          discordAvatar={discordAvatar}
           name={displayName}
           className="size-24 shadow-[0_0_0_4px_var(--color-background),0_10px_30px_rgb(0_0_0/0.5)] sm:size-42"
           fallbackClassName="text-[3.5rem] sm:text-[6rem]"

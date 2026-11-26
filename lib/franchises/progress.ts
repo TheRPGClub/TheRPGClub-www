@@ -1,4 +1,4 @@
-import { memberAvatarPath } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import type { FranchiseProgressGame, FranchiseProgressMember, FranchiseProgressMeters } from "./types";
 
 // The Progress tab's maths (design pick 1E with 1E1, spec api#457).
@@ -126,14 +126,10 @@ export function progressMemberName(user: { user_id: string; global_name: string 
   return user.global_name || user.username || user.user_id;
 }
 
-// A member's picture in the table and the dials: the API's avatar endpoint
-// on its public address, which always serves their current one. It 404s
-// without one and the mark keeps the initials.
-export function progressMemberAvatar(
-  user: { user_id: string; avatar_url?: string | null },
-  apiBase: string = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http://localhost:3000",
-): string {
-  return `${apiBase}${user.avatar_url ?? memberAvatarPath(user.user_id)}`;
+// A member's picture in the table and the dials, as the sidebar draws it
+// (memberPictureSrc): Discord's image server, else the API's endpoint.
+export function progressMemberAvatar(user: { user_id: string; discord_avatar?: string | null }): string {
+  return memberPictureSrc(user);
 }
 
 // What still stands between a member and the Conquest, for the line under

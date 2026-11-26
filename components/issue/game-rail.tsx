@@ -69,7 +69,7 @@ export function PanelMembers({
                         />
                       }
                     >
-                      <ReviewerAvatar userId={user.user_id} name={name} size="sm" className="size-7.5" />
+                      <ReviewerAvatar userId={user.user_id} discordAvatar={user.discord_avatar} name={name} size="sm" className="size-7.5" />
                     </TooltipTrigger>
                     <TooltipContent>{name}</TooltipContent>
                   </Tooltip>

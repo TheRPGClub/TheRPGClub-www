@@ -47,7 +47,7 @@ export function ReviewIndex({
                   {review.title ?? `${name}'s review`}
                 </b>
                 <small className="mt-1.5 flex items-center gap-1.5 text-[0.8rem] text-faint-foreground">
-                  <ReviewerAvatar userId={review.user_id} name={name} size="xs" />
+                  <ReviewerAvatar userId={review.user_id} discordAvatar={review.user?.discord_avatar} name={name} size="xs" />
                   <span className="truncate">
                     {name} · {formatReviewDate(reviewDate(review))}
                   </span>

@@ -9,7 +9,7 @@ import { MemberAvatar } from "@/components/issue/member-cover";
 export function MemberPicked({ member, disabled, onChange }: { member: User; disabled?: boolean; onChange: () => void }) {
   return (
     <div className="flex items-end gap-3 border-b-2 border-highlight pt-1.5 pb-2.5">
-      <MemberAvatar userId={member.user_id} name={memberName(member)} className="mb-1 size-9 shrink-0" />
+      <MemberAvatar userId={member.user_id} discordAvatar={member.discord_avatar} name={memberName(member)} className="mb-1 size-9 shrink-0" />
       <div className="min-w-0 flex-1">
         <p className="font-headline truncate text-[1.8rem] leading-none md:text-[2.4rem]">{memberName(member)}</p>
         <p className="mt-1 truncate text-[0.85rem] text-faint-foreground">

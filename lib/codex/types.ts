@@ -11,7 +11,9 @@ export type HistoryKind = "founding" | "staff" | "platform" | "rules" | "milesto
 export interface CodexMember {
   user_id: string;
   name: string;
-  // The API's path to their stored avatar (may 404).
+  // Their Discord avatar hash (null if unknown; an older API leaves it out)
+  // and the API's avatar path, the fallback.
+  discord_avatar?: string | null;
   avatar_url: string;
 }
 

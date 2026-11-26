@@ -20,6 +20,7 @@ export function ProfileBanner({ profile }: { profile: MemberProfile }) {
   return (
     <MemberBanner
       userId={user.user_id}
+      discordAvatar={user.discord_avatar}
       displayName={memberName(user)}
       username={user.username}
       joinedAt={user.server_joined_at}
