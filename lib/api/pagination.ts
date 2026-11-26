@@ -37,3 +37,18 @@ export interface ListPage<T> {
 }
 
 export const NO_ROWS: ListPage<never> = { data: [], total: 0 };
+
+// Every row of a paged list: page 1, then the rest its meta names (at most
+// `maxPages` in all), read together. `read` answers one page, or null when
+// it failed; any failed page fails the whole read (null).
+export async function readEveryPage<T>(
+  read: (page: number) => Promise<{ data: T[]; meta?: Partial<CollectionMeta> } | null>,
+  maxPages = 20,
+): Promise<T[] | null> {
+  const first = await read(1);
+  if (!first) return null;
+  const pages = Math.min(paginationOf(first.meta, first.data.length).totalPages, maxPages);
+  const rest = await Promise.all(Array.from({ length: pages - 1 }, (_, i) => read(i + 2)));
+  if (rest.some((page) => page === null)) return null;
+  return [first, ...rest].flatMap((page) => page!.data);
+}

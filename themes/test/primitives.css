@@ -407,6 +407,16 @@
                 color: var(--chart-5);
                 outline: 2px dashed var(--chart-5);
             }
+            &[data-tone="area-bot"] {
+                background-color: var(--background);
+                color: var(--chart-2);
+                outline: 2px solid var(--chart-2);
+            }
+            &[data-tone="area-web"] {
+                background-color: var(--background);
+                color: var(--chart-3);
+                outline: 2px solid var(--chart-3);
+            }
             &[data-size="nav"] {
                 font-family: var(--typeface-display);
                 text-decoration: underline;

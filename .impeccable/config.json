@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "condensed",
+        "createdAt": "2026-11-26T14:53:26.741Z",
+        "reason": "agent: false positive, the detector splits 'Barlow Condensed' (DESIGN.md label font) in font shorthand"
+      }
+    ]
+  }
+}

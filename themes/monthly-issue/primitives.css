@@ -379,6 +379,14 @@
             &[data-tone="precision"] {
                 @apply bg-transparent text-dim-foreground outline-[1.5px] outline-offset-[-1.5px] outline-faint-foreground outline-dashed;
             }
+            /* A Roadmap Item's area (www#231): Bot in soft violet, Web in
+               yellow, each on a dark wash of its ink. */
+            &[data-tone="area-bot"] {
+                @apply bg-nr/25 text-nr-soft;
+            }
+            &[data-tone="area-web"] {
+                @apply bg-highlight/12 text-highlight;
+            }
             &[data-size="nav"] {
                 @apply font-extrabold;
             }
