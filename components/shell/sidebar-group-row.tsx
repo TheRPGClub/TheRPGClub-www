@@ -49,7 +49,8 @@ export function SidebarGroupRow({
           <NewMark
             size="nav"
             label="(new Patch Notes)"
-            className="group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:bottom-0 group-data-[collapsible=icon]:left-1/2 group-data-[collapsible=icon]:-translate-x-1/2 group-data-[collapsible=icon]:bg-sidebar group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:text-[0.6875rem]"
+            rail
+            className="group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:bottom-0 group-data-[collapsible=icon]:left-1/2 group-data-[collapsible=icon]:-translate-x-1/2 group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:text-[0.6875rem]"
           />
         )}
         <ChevronRight className="text-faint-foreground transition-transform duration-200 group-hover/menu-button:translate-x-0.5 group-data-[collapsible=icon]:hidden motion-reduce:transition-none" />

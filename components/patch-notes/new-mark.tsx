@@ -5,18 +5,21 @@ import { cn } from "@/lib/utils";
 // chip. On a Patch it says the member hasn't seen that Patch; on the
 // sidebar and the tab bar, that a Patch is waiting. `label` is what a
 // screen reader hears in place of "NEW" where the chip alone wouldn't say
-// what is new (a group's row, a tab).
+// what is new (a group's row, a tab). `rail` on a nav row whose chip sits
+// over the icon on the collapsed rail (the Theme gives it the sidebar fill).
 export function NewMark({
   size = "sm",
   label,
+  rail = false,
   className,
 }: {
   size?: "sm" | "nav";
   label?: string;
+  rail?: boolean;
   className?: string;
 }) {
   return (
-    <Badge tone="new" size={size} className={cn("leading-none", className)}>
+    <Badge tone={rail ? "new-rail" : "new"} size={size} className={cn("leading-none", className)}>
       {label ? (
         <>
           <span aria-hidden>NEW</span>

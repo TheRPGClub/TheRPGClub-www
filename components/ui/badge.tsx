@@ -66,6 +66,9 @@ const badgeVariants = cva(
         // Patch Notes' unseen mark ("NEW", www#238): a 1px paper outline
         // with paper type, on the sidebar, the tab bar and the Stack.
         new: "",
+        // The same on a nav row (the Club group's): on the collapsed icon
+        // rail it sits over the icon on the sidebar's own fill.
+        "new-rail": "",
       },
       size: {
         default: "",
