@@ -2,7 +2,8 @@
 
 import { Check, X } from "lucide-react";
 import type { Game } from "@/lib/api/types";
-import { DONATE_PLATFORMS, MAX_PLATFORM } from "@/lib/giveaways";
+import type { CSSProperties } from "react";
+import { DONATE_PLATFORMS, MAX_PLATFORM, platformFamily } from "@/lib/giveaways";
 import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ export const DONATE_LABEL_TYPE = "font-label mb-1.5 block text-sm";
 export const DONATE_LABEL = `${DONATE_LABEL_TYPE} text-background`;
 export const OTHER_PLATFORM = "Other";
 // The IGDB fallback is drawn for the dark page, so it sits on a dark panel
-// here (bg-background, so its bg-muted "You stay here" note still stands out).
+// on the paper label (bg-background, so its bg-muted note still stands out).
 const IGDB_PANEL = "rounded-sm border border-background bg-background p-2.5 text-foreground";
 
 // The donated key's game: the GameDB picker, or the picked game on an ink
@@ -31,12 +32,12 @@ export function DonateGameField({
   onChange: () => void;
 }) {
   return (
-    <div className="mb-4">
+    <div className="mb-5">
       <span className={DONATE_LABEL} id="donate-game">
         Game
       </span>
       {game ? (
-        <div className="flex h-9 items-center gap-2 rounded-sm border border-background bg-background pr-1 pl-3 text-sm text-foreground">
+        <div className="flex h-11 items-center gap-2 rounded-sm border border-background bg-background pr-1 pl-3 text-[0.95rem] text-foreground">
           <Check aria-hidden className="size-4 text-highlight" />
           <span className="min-w-0 flex-1 truncate font-semibold">{game.title}</span>
           <Button variant="field-tool" size="icon-sm" aria-label="Change game" onClick={onChange}>
@@ -70,7 +71,7 @@ export function DonatePlatformField({
   onOtherPlatform: (name: string) => void;
 }) {
   return (
-    <fieldset className="mb-4">
+    <fieldset className="mb-5">
       <legend className={DONATE_LABEL}>Platform</legend>
       <ToggleGroup
         variant="inverse"
@@ -84,7 +85,12 @@ export function DonatePlatformField({
         className="flex-wrap"
       >
         {[...DONATE_PLATFORMS, OTHER_PLATFORM].map((p) => (
-          <ToggleGroupItem key={p} value={p} className="text-[0.82rem]">
+          <ToggleGroupItem key={p} value={p} className="gap-1.5 text-[0.82rem]">
+            <i
+              aria-hidden
+              className="gift-paper size-2.5 rounded-xs"
+              style={{ "--p": platformFamily(p).ink } as CSSProperties}
+            />
             {p}
           </ToggleGroupItem>
         ))}

@@ -55,6 +55,15 @@
                     @apply bg-muted text-faint-foreground opacity-100 ring-1 ring-border-strong ring-inset;
                 }
             }
+            /* Claim on the giveaways shelf: the highlight button torn
+               along its leading edge, like gift paper ripped open. */
+            &[data-variant="claim"] {
+                @apply font-label rounded-none border-transparent bg-clip-padding pl-4 font-extrabold focus-visible:border-ring bg-highlight text-highlight-foreground hover:bg-highlight/85;
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 87.5%, 0 75%, 6px 62.5%, 0 50%, 6px 37.5%, 0 25%, 6px 12.5%);
+                &:disabled {
+                    @apply bg-muted text-faint-foreground opacity-100;
+                }
+            }
             &[data-variant="nr"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
             }

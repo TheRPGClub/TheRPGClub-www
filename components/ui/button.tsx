@@ -20,6 +20,9 @@ const buttonVariants = cva(
         highlight: "",
         // The NR-GOTM track's own action.
         nr: "",
+        // Claiming a wrapped gift on the giveaways shelf: the call to action
+        // with its paper torn along the leading edge.
+        claim: "",
         // A second action beside the main one.
         outline: "",
         // An outline button sitting on art (a banner, a cover reel).

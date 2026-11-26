@@ -44,6 +44,11 @@
                 color: var(--highlight-foreground);
                 border-color: var(--highlight-foreground);
             }
+            &[data-variant="claim"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--highlight-foreground);
+            }
             &[data-variant="nr"] {
                 background-color: var(--nr);
                 color: var(--nr-foreground);

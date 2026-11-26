@@ -1,13 +1,14 @@
+import type { CSSProperties } from "react";
 import type { GameKey } from "@/lib/api/types";
-import { tagTilt, type KeyBox } from "@/lib/giveaways";
-import { GameCover } from "@/components/issue/game-cover";
+import { platformFamily, type KeyBox } from "@/lib/giveaways";
+import { PlatformChip } from "@/components/giveaways/platform-chip";
 import { GiftTag } from "@/components/giveaways/gift-tag";
+import { WrappedCover } from "@/components/giveaways/wrap/wrapped-cover";
 import { cn } from "@/lib/utils";
 
-// One box on the prize shelf: the cover gift-wrapped in its platform's ribbon
-// (the shelf sets --p), a ×N sticker when it holds several keys, and its paper
-// tag hanging below at the box's own tilt. A box whose keys are all gone greys
-// out.
+// One present on the shelf: the game's whole cover tied in its platform's
+// ribbon, a stack of gift paper behind it when it holds several keys, and
+// its name, donor and Claim under it. A box whose keys are all gone greys out.
 export function GiftBox({
   box,
   open,
@@ -31,49 +32,49 @@ export function GiftBox({
   onClaim: (key: GameKey) => void;
 }) {
   const next = open[0];
-  const gone = !next;
-  const mine = next?.donor_user_id === viewerId;
-  const tilt = tagTilt(box.keys[0].key_id);
+  const ink = platformFamily(box.platform).ink;
+  const region = box.region !== "Global" ? ` · ${box.region}` : "";
 
   return (
-    <li className="w-32 shrink-0 snap-start">
-      <div className="relative">
-        <div className={cn("relative", gone && "brightness-50 grayscale")}>
-          <GameCover title={box.title} coverUrl={box.coverUrl} className="w-32" fallbackClassName="text-base" />
-          <i aria-hidden className="absolute inset-y-0 left-[72%] w-3.5 bg-(--p)" />
-          <i aria-hidden className="absolute inset-x-0 top-[62%] h-3.5 bg-(--p)" />
-          <i
-            aria-hidden
-            className="absolute top-[calc(62%+7px)] left-[calc(72%+7px)] -mt-[15px] -ml-[15px] size-[30px] rotate-45 rounded-[3px] bg-(--p) shadow-[0_3px_6px_rgb(0_0_0/0.45)] after:absolute after:inset-[9px] after:rounded-[2px] after:bg-background/25"
-          />
-        </div>
+    <li className="min-w-0">
+      <div className="relative" style={{ "--p": ink } as CSSProperties}>
+        {open.length > 2 && (
+          <i aria-hidden className="gift-paper absolute inset-0 translate-x-3 -translate-y-3 rounded-sm brightness-75" />
+        )}
         {open.length > 1 && (
-          <span className="font-headline absolute -top-2 -right-1.5 rotate-6 rounded-xs bg-foreground px-1.5 py-px text-[0.95rem] text-background shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
-            ×{open.length}
+          <i aria-hidden className="gift-paper absolute inset-0 translate-x-1.5 -translate-y-1.5 rounded-sm brightness-90" />
+        )}
+        <WrappedCover
+          title={box.title}
+          coverUrl={box.coverUrl}
+          ink={ink}
+          className={cn("w-full shadow-[0_12px_30px_rgb(0_0_0/0.5)]", !next && "brightness-50 grayscale")}
+          fallbackClassName="text-xl"
+        >
+          <span className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
+            <PlatformChip ink={ink}>
+              {box.platform}
+              {region}
+            </PlatformChip>
           </span>
-        )}
+          {open.length > 1 && (
+            <span className="font-headline absolute bottom-2 left-2 rounded-xs bg-background px-1.5 py-px text-lg text-foreground">
+              ×{open.length}
+            </span>
+          )}
+        </WrappedCover>
       </div>
-      <div
-        className={cn(
-          "relative mt-2.5 mb-[22px] rounded-sm px-[9px] pt-2 pb-[9px] shadow-[0_3px_8px_rgb(0_0_0/0.45)] before:absolute before:-top-1.5 before:left-1/2 before:-ml-1 before:size-2 before:rounded-full before:bg-background before:shadow-[0_0_0_2px_var(--color-foreground)]",
-          gone
-            ? "bg-muted text-foreground shadow-[inset_0_0_0_1px_var(--color-destructive)]"
-            : "bg-foreground text-background",
-        )}
-        style={{ transform: `rotate(${tilt}deg)` }}
-      >
-        <GiftTag
-          box={box}
-          next={next}
-          mine={mine}
-          canClaim={canClaim}
-          canRevokeAny={canRevokeAny}
-          donorName={donorName}
-          busy={busy}
-          disabled={disabled}
-          onClaim={onClaim}
-        />
-      </div>
+      <GiftTag
+        box={box}
+        next={next}
+        mine={next?.donor_user_id === viewerId}
+        canClaim={canClaim}
+        canRevokeAny={canRevokeAny}
+        donorName={donorName}
+        busy={busy}
+        disabled={disabled}
+        onClaim={onClaim}
+      />
     </li>
   );
 }

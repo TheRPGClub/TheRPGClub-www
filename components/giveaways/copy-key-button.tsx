@@ -13,7 +13,7 @@ export function CopyKeyButton({
 }: {
   value: string;
   size?: "default" | "sm";
-  variant?: "highlight" | "outline";
+  variant?: "highlight" | "outline" | "inverse-outline";
   label?: string;
 }) {
   const [copied, setCopied] = useState(false);

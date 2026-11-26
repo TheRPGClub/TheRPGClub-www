@@ -3,9 +3,9 @@ import type { CSSProperties } from "react";
 import { PLATFORM_FAMILIES, type PlatformFamily } from "@/lib/giveaways";
 import { cn } from "@/lib/utils";
 
-// The shelf's platform filter: All, then each platform family in its ribbon
-// ink with its key count (Other only when it holds keys). The picked one is
-// filled.
+// The shelf's platform filter: All, then each platform family with a swatch
+// of its gift paper and its key count (Other only when it holds keys). The
+// picked one stands on a paper underline.
 export function PlatformTabs({
   picked,
   total,
@@ -16,7 +16,7 @@ export function PlatformTabs({
   counts: Map<string, number>;
 }) {
   return (
-    <nav aria-label="Platforms" className="flex flex-wrap gap-2">
+    <nav aria-label="Platforms" className="flex flex-wrap gap-x-4 gap-y-1">
       <PlatformTab href="/giveaways" active={!picked} label="All" count={total} />
       {PLATFORM_FAMILIES.filter((f) => f.key !== "other" || counts.has("other")).map((f) => (
         <PlatformTab
@@ -49,16 +49,16 @@ function PlatformTab({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      style={ink ? ({ "--p": ink } as CSSProperties) : undefined}
+      style={{ "--p": ink ?? "var(--color-foreground)" } as CSSProperties}
       className={cn(
-        "font-label inline-flex h-8 items-center gap-2 rounded-sm px-3 text-[0.88rem] font-extrabold transition-colors",
-        !ink && (active ? "bg-card text-foreground shadow-[inset_0_0_0_2px_var(--color-highlight)]" : "bg-card text-dim-foreground hover:text-foreground"),
-        ink && (active ? "bg-(--p) text-background" : "text-dim-foreground shadow-[inset_0_0_0_1.5px_var(--p)] hover:text-foreground"),
-        count === 0 && !active && "opacity-60",
+        "font-label inline-flex h-9 items-center gap-2 border-b-[3px] px-1.5 text-[0.88rem] font-extrabold transition-colors",
+        active ? "border-foreground text-foreground" : "border-transparent text-dim-foreground hover:text-foreground",
+        count === 0 && !active && "opacity-55",
       )}
     >
+      <i aria-hidden className={cn("size-3.5 rounded-xs", ink ? "gift-paper" : "bg-foreground")} />
       {label}
-      <b className="font-extrabold opacity-65">{count}</b>
+      <b className="font-extrabold text-faint-foreground">{count}</b>
     </Link>
   );
 }

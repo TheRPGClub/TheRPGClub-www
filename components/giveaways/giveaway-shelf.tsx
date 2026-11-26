@@ -3,13 +3,14 @@
 import { useState, useTransition, type ReactNode } from "react";
 import { claimKeyAction } from "@/app/actions/giveaways";
 import type { GameKey } from "@/lib/api/types";
-import type { KeyBox, PlatformShelf } from "@/lib/giveaways";
+import type { KeyBox } from "@/lib/giveaways";
 import { UnwrappedKey } from "@/components/giveaways/unwrapped-key";
-import { ShelfNotice, ShelfRow } from "@/components/giveaways/shelf-row";
+import { ShelfNotice } from "@/components/giveaways/shelf-notice";
 import { GiftBox } from "@/components/giveaways/gift-box";
 
 export interface GiveawayShelfProps {
-  shelves: PlatformShelf[];
+  // Every box on show, in platform order.
+  boxes: KeyBox[];
   viewerId: string;
   // The Members role: the API lets only its holders claim.
   canClaim: boolean;
@@ -19,9 +20,9 @@ export interface GiveawayShelfProps {
   names: Record<string, string>;
   // The page header and platform tabs, replaced by the key panel on a claim.
   header: ReactNode;
-  // The right-hand rail (donate panel, claimed keys, donations).
-  rail: ReactNode;
-  // Shown when the filter leaves no shelves.
+  // The counter along the foot (your keys, your donations, Donate).
+  counter: ReactNode;
+  // Shown when the filter leaves no boxes.
   emptyCopy: string;
 }
 
@@ -31,17 +32,17 @@ interface Claimed {
   donorName: string;
 }
 
-// The prize shelf: each box is a gift-wrapped cover tied in its platform's
-// ribbon, with a paper tag carrying its title, donor and Claim. A claim
-// unwraps the box into the key panel in place, at once.
+// The shelf: a wall of presents, each game's whole cover tied in its
+// platform's ribbon, over the counter. A claim unwraps the box into the
+// letter with the key, in place, at once.
 export function GiveawayShelf({
-  shelves,
+  boxes,
   viewerId,
   canClaim,
   canRevokeAny,
   names,
   header,
-  rail,
+  counter,
   emptyCopy,
 }: GiveawayShelfProps) {
   const [claimed, setClaimed] = useState<Claimed | null>(null);
@@ -84,49 +85,40 @@ export function GiveawayShelf({
         gameKey={claimed.key}
         jobId={claimed.jobId}
         donorName={claimed.donorName}
-        justClaimed
+        viewerName={nameOf(viewerId)}
         onBack={() => setClaimed(null)}
       />
     );
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {header}
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem]">
-        <div className="min-w-0 space-y-9">
-          {shelves.length === 0 && (
-            <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">
-              {emptyCopy}
-            </p>
-          )}
-          {shelves.map((shelf) => (
-            <ShelfRow key={shelf.family.key} shelf={shelf}>
-              {shelf.boxes.map((box) => {
-                const open = box.keys.filter((k) => !lost.has(k.key_id));
-                return (
-                  <GiftBox
-                    key={box.id}
-                    box={box}
-                    open={open}
-                    viewerId={viewerId}
-                    canClaim={canClaim}
-                    canRevokeAny={canRevokeAny}
-                    donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
-                    busy={isPending && pendingBox === box.id}
-                    disabled={isPending}
-                    onClaim={(key) => claim(box, key)}
-                  />
-                );
-              })}
-            </ShelfRow>
-          ))}
-        </div>
-        <aside className="space-y-6">
-          {notice && <ShelfNotice title={notice.title} text={notice.text} />}
-          {rail}
-        </aside>
-      </div>
+      {notice && <ShelfNotice title={notice.title} text={notice.text} />}
+      {boxes.length === 0 ? (
+        <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">{emptyCopy}</p>
+      ) : (
+        <ul className="grid grid-cols-2 gap-x-5 gap-y-9 pt-3 sm:grid-cols-[repeat(auto-fill,minmax(11.5rem,1fr))]">
+          {boxes.map((box) => {
+            const open = box.keys.filter((k) => !lost.has(k.key_id));
+            return (
+              <GiftBox
+                key={box.id}
+                box={box}
+                open={open}
+                viewerId={viewerId}
+                canClaim={canClaim}
+                canRevokeAny={canRevokeAny}
+                donorName={open[0] ? nameOf(open[0].donor_user_id) : ""}
+                busy={isPending && pendingBox === box.id}
+                disabled={isPending}
+                onClaim={(key) => claim(box, key)}
+              />
+            );
+          })}
+        </ul>
+      )}
+      {counter}
     </div>
   );
 }
