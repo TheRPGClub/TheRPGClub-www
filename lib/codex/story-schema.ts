@@ -1,6 +1,8 @@
 import type { Value } from "platejs";
 
 import {
+  IMAGE_TYPE,
+  MENTION_TYPE,
   RICH_TEXT_BLOCKS,
   RICH_TEXT_INLINES,
   RICH_TEXT_MARKS,
@@ -17,8 +19,7 @@ import { nodeText } from "@/lib/rich-text/text";
 // Discord conversion; they keep their images as a gallery, so their schema
 // leaves the image out.
 
-export const MENTION_TYPE = "mention";
-export const IMAGE_TYPE = "img";
+export { IMAGE_TYPE, MENTION_TYPE } from "@/lib/rich-text/schema";
 // A story keeps to this much plain text (mentions counted as "@Name").
 export const STORY_MAX = 4000;
 // The API's cap on a History Event's or Lore Entry's images.
