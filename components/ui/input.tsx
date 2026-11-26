@@ -14,6 +14,9 @@ type InputVariant =
   | "destructive"
   // A field on a light object (the yellow panel).
   | "inverse"
+  // A field written on paper (the giveaways' donate label): an ink keyline
+  // on the paper itself, no ground of its own.
+  | "paper"
   // A field in a bar of filters, beside the member pages' selects (the
   // compare page's search): their strong rule.
   | "filter"

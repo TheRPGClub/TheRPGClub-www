@@ -45,7 +45,7 @@ export function GiftLetter({
         The RPG Club bot · to {viewerName}
       </p>
       <div className="mx-6 mt-6 grid gap-7 sm:mx-9 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)]">
-        <WrappedCover title={title} coverUrl={gameKey.game?.cover_url} ink={ink} tied={false} className="w-44 md:w-full" fallbackClassName="text-xl" />
+        <WrappedCover title={title} coverUrl={gameKey.game?.cover_url} ink={ink} tied={false} className="w-44 md:w-full" />
         <div className="min-w-0 md:pr-24">
           <GameHeadline title={title} as="h2" className="text-5xl leading-[0.88] sm:text-6xl" />
           <p className="mt-3 max-w-[48ch] text-[0.98rem] text-slip-muted-foreground">

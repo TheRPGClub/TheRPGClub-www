@@ -22,7 +22,7 @@ export function DonationList({ keys, names }: { keys: GameKey[]; names: Record<s
         const ink = platformFamily(k.platform).ink;
         return (
           <li key={k.key_id} className="relative flex gap-4 rounded-md border border-border bg-card p-4 pb-14">
-            <WrappedCover title={title} coverUrl={k.game?.cover_url} ink={ink} tied={!claimed} className="w-[4.75rem]" fallbackClassName="text-xs p-1" />
+            <WrappedCover title="" coverUrl={k.game?.cover_url} ink={ink} tied={!claimed} className="w-[4.75rem]" />
             <div className="min-w-0 flex-1">
               <p className="font-headline text-[1.3rem] leading-[0.95] text-balance">
                 {k.game ? (

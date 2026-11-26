@@ -27,7 +27,7 @@ export function ClaimedView({
         back={{ href: "/giveaways", label: "Giveaways" }}
         title="Claimed keys"
         badge={preview && <PreviewBadge />}
-        count={keys ? String(keys.length) : undefined}
+        count={keys ? `${keys.length} ${keys.length === 1 ? "key" : "keys"}` : undefined}
         description="Each key you claim stays here. The bot also DMed each one to you in Discord."
       />
       {keys === null ? (

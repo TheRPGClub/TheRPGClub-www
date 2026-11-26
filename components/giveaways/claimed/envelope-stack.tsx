@@ -10,7 +10,8 @@ const DAY = new Intl.DateTimeFormat("en-US", { day: "numeric", timeZone: "UTC" }
 
 // The member's claimed keys as a stack of envelopes made of each platform's
 // gift paper, newest on top: the cover tucked in, its title and donor, and a
-// postmark with the claim date. The open one is pulled out of the stack.
+// postmark with the claim date, each lying over the one below. The open one
+// is pulled out of the stack.
 export function EnvelopeStack({
   keys,
   pickedId,
@@ -22,25 +23,29 @@ export function EnvelopeStack({
 }) {
   return (
     <nav aria-label="Your claimed keys">
-      <ul className="space-y-1.5">
-        {keys.map((k) => {
+      <ul>
+        {keys.map((k, i) => {
           const picked = k.key_id === pickedId;
           const ink = platformFamily(k.platform).ink;
           const title = k.game?.title ?? k.game_title;
           const at = k.claimed_at ? new Date(k.claimed_at) : null;
           return (
-            <li key={k.key_id}>
+            <li
+              key={k.key_id}
+              className={cn("relative", i > 0 && "-mt-4", picked ? "z-30" : i % 2 ? "rotate-[0.7deg]" : "-rotate-[0.6deg]")}
+              style={picked ? undefined : { zIndex: keys.length - i }}
+            >
               <Link
                 href={`/giveaways/claimed?key=${k.key_id}`}
                 aria-current={picked ? "true" : undefined}
                 style={{ "--p": ink } as CSSProperties}
                 className={cn(
                   "gift-paper relative grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-4 rounded-sm py-3 pr-4 pl-3 text-background shadow-[0_8px_18px_rgb(0_0_0/0.45)] transition-transform focus-visible:ring-3 focus-visible:ring-highlight/50 focus-visible:outline-none",
-                  picked ? "z-10 ring-3 ring-foreground lg:translate-x-3" : "hover:lg:translate-x-1.5",
+                  picked ? "ring-3 ring-foreground lg:translate-x-6" : "hover:lg:translate-x-2",
                 )}
               >
                 <i aria-hidden className="absolute inset-y-0 right-[5.25rem] w-2 bg-background/85" />
-                <WrappedCover title={title} coverUrl={k.game?.cover_url} ink={ink} tied={false} className="w-[4.5rem]" fallbackClassName="text-xs p-1" />
+                <WrappedCover title="" coverUrl={k.game?.cover_url} ink={ink} tied={false} className="w-[4.5rem]" />
                 <span className="min-w-0 pr-3">
                   <span className="font-headline block truncate text-[1.45rem] leading-none">{title}</span>
                   <span className="font-label mt-1.5 block truncate text-[0.74rem] font-extrabold">

@@ -12,7 +12,7 @@ export function DonateRegionField({ region, onRegion }: { region: string; onRegi
     <fieldset className="mb-5">
       <legend className={DONATE_LABEL}>Region</legend>
       <ToggleGroup
-        variant="inverse"
+        variant="paper"
         size="sm"
         spacing={1.5}
         value={[region]}
@@ -51,8 +51,8 @@ export function DonateKeyField({ value, onValue }: { value: string; onValue: (va
         maxLength={MAX_KEY}
         onChange={(e) => onValue(e.target.value)}
         placeholder="XXXXX-XXXXX-XXXXX"
-        variant="inverse"
-        className="h-11 tracking-[0.16em]"
+        variant="paper"
+        className="font-label h-12 text-xl tracking-[0.16em] normal-case"
       />
     </div>
   );

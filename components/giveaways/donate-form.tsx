@@ -57,7 +57,7 @@ export function DonateForm({ donorName }: { donorName: string }) {
 
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-12">
-      <div className="mx-auto w-full max-w-[22rem] lg:mt-4">
+      <div className="mx-auto w-full max-w-[11rem] sm:max-w-[15rem] lg:mt-4 lg:max-w-[22rem]">
         <ParcelPreview game={game} platform={platformName} region={region} />
       </div>
       <form

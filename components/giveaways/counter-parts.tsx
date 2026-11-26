@@ -50,7 +50,7 @@ export function MiniGift({
   return (
     <li className="w-[3.25rem]">
       <Link href={href} aria-label={caption ? `${title}: ${caption}` : title} className="block hover:brightness-110">
-        <WrappedCover title={title} coverUrl={gameKey.game?.cover_url} ink={platformFamily(gameKey.platform).ink} tied={tied} fallbackClassName="text-[0.6rem] p-1" />
+        <WrappedCover title="" coverUrl={gameKey.game?.cover_url} ink={platformFamily(gameKey.platform).ink} tied={tied} />
       </Link>
       {caption && <p className="font-label mt-1.5 text-[0.66rem] leading-tight text-faint-foreground">{caption}</p>}
     </li>

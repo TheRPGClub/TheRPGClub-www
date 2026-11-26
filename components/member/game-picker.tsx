@@ -24,7 +24,7 @@ export interface GamePickerProps {
   className?: string;
   // What the field sits on: `inverse` for a light object (the yellow donate
   // panel), drawn by the Theme as the Input's inverse field.
-  variant?: "default" | "inverse";
+  variant?: "default" | "inverse" | "paper";
   // Offer "add it from IGDB" when the GameDB has no match. The added game is
   // picked like any other. `blockedReason` explains why the viewer can't add
   // one, or is null when they can. A list picker names its list; the donate

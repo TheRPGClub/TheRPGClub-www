@@ -49,7 +49,6 @@ export function GiftBox({
           coverUrl={box.coverUrl}
           ink={ink}
           className={cn("w-full shadow-[0_12px_30px_rgb(0_0_0/0.5)]", !next && "brightness-50 grayscale")}
-          fallbackClassName="text-xl"
         >
           <span className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
             <PlatformChip ink={ink}>

@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 
 // Ribbon and bow, in the platform's ink (--p), sized off the cover's own width
 // (cqw) so one drawing serves the shelf, the stack and the minis.
-const RIBBON = "absolute bg-(--p) transition-colors duration-300 shadow-[0_0_0_2px_rgb(11_11_13/0.45),0_4px_10px_rgb(0_0_0/0.35)]";
+const RIBBON = "absolute bg-(--rb) transition-colors duration-300 shadow-[0_0_0_2px_rgb(11_11_13/0.45),0_4px_10px_rgb(0_0_0/0.35)]";
 const LOOP =
-  "absolute top-[calc(36%-6cqw)] size-[17cqw] rounded-[50%_50%_0_50%] border-[3.4cqw] border-(--p) drop-shadow-[0_0_1px_rgb(11_11_13/0.9)]";
+  "absolute top-[calc(36%-6cqw)] size-[17cqw] rounded-[50%_50%_0_50%] border-[3.4cqw] border-(--rb) drop-shadow-[0_0_1px_rgb(11_11_13/0.9)]";
 
 // Written out whole so Tailwind finds them.
 const TIE_DOWN = "motion-safe:animate-[gift-tie-down_380ms_cubic-bezier(0.16,1,0.3,1)]";
@@ -15,7 +15,9 @@ const BOW = "motion-safe:animate-[gift-bow_620ms_cubic-bezier(0.16,1,0.3,1)_both
 
 // A game's whole cover, gift-wrapped: a ribbon tied across it in the
 // platform's ink with a bow where the bands cross. Untied (a claimed key) the
-// cross is gone and a cut end hangs from the foot.
+// cross is gone and a cut end hangs from the foot. A game without a cover is
+// wrapped in its platform's gift paper instead, tied in ink, its name on a
+// paper tag clear of the ribbon.
 export function WrappedCover({
   title,
   coverUrl,
@@ -23,7 +25,6 @@ export function WrappedCover({
   tied = true,
   tieIn = false,
   className,
-  fallbackClassName,
   children,
 }: {
   title: string;
@@ -34,13 +35,25 @@ export function WrappedCover({
   tieIn?: boolean;
   // Width (the cover keeps 3:4) and placement.
   className?: string;
-  fallbackClassName?: string;
   // Laid over the wrapping (a platform tag, a count).
   children?: ReactNode;
 }) {
   return (
-    <div className={cn("@container relative h-fit shrink-0 self-start", className)} style={{ "--p": ink } as CSSProperties}>
-      <GameCover title={title} coverUrl={coverUrl} className="w-full" fallbackClassName={cn("content-end pb-[14%]", fallbackClassName)} />
+    <div
+      className={cn("@container relative h-fit shrink-0 self-start", className)}
+      style={{ "--p": ink, "--rb": coverUrl ? ink : "var(--color-background)" } as CSSProperties}
+    >
+      {coverUrl ? (
+        <GameCover title={title} coverUrl={coverUrl} className="w-full" />
+      ) : (
+        <div className="gift-paper aspect-[3/4] w-full rounded-sm">
+          {title && (
+            <span className="font-headline absolute bottom-[7%] left-[6%] z-10 w-[48%] -rotate-2 rounded-xs bg-foreground p-[3.5cqw] text-[7.5cqw] leading-[0.95] text-background hyphens-auto shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
+              {title}
+            </span>
+          )}
+        </div>
+      )}
       {tied ? (
         <span aria-hidden>
           <i className={cn(RIBBON, "inset-y-0 left-[58%] w-[9%] origin-top", tieIn && TIE_DOWN)} />
