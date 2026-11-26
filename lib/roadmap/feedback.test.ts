@@ -4,6 +4,7 @@ import {
   claimFeedback,
   feedbackHolder,
   feedbackLine,
+  linkedFeedbackHref,
   matchFeedback,
   roadmapPinLine,
   toRoadmapFeedback,
@@ -85,5 +86,12 @@ describe("Feedback links", () => {
   it("reads a Feedback row as the item's link", () => {
     const row = { feedback_id: 4, title: "T", kind: "suggestion", status: "pending", done: false } as Feedback;
     expect(toRoadmapFeedback(row)).toEqual({ id: 4, title: "T", kind: "suggestion", status: "pending", done: false });
+  });
+});
+
+describe("linkedFeedbackHref", () => {
+  it("pins the Feedback on the board, or is null when the viewer can't open it", () => {
+    expect(linkedFeedbackHref("/feedback", 12)).toBe("/feedback?pinned=12");
+    expect(linkedFeedbackHref(null, 12)).toBeNull();
   });
 });
