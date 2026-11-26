@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
-// "Search news titles" in the rail's filter: a plain GET form on /news that
+// "Search news titles" in the masthead's tools: a plain GET form on /news that
 // submits on Enter; once hydrated it pushes the canonical address (`go`). The
 // text follows the address (back/forward, "Clear filters") by re-syncing
 // during render.
@@ -39,6 +39,7 @@ export function NewsSearchField({
       {filters.categories.length > 0 && (
         <Input type="hidden" name="category" value={filters.categories.join(",")} />
       )}
+      {filters.mark && <Input type="hidden" name="mark" value={filters.mark} />}
       {/* The group pads its field beside an addon; here the gap spaces them. */}
       <InputGroup
         variant="search"
