@@ -6,7 +6,7 @@ import { fetchMemberNames } from "@/lib/api/members";
 import { buildShelves, platformFamilyByKey } from "@/lib/giveaways";
 import { PageHeader } from "@/components/templates/page-header";
 import { GiveawayShelf } from "@/components/giveaways/giveaway-shelf";
-import { ClaimedMini, DonatePanel, DonationsMini } from "@/components/giveaways/giveaway-rail";
+import { CounterStrip } from "@/components/giveaways/counter-strip";
 import { PlatformTabs } from "@/components/giveaways/platform-tabs";
 
 export const metadata = { title: "Giveaways" };
@@ -33,6 +33,7 @@ export default async function GiveawaysPage({
   const allShelves = buildShelves(keys ?? []);
   const picked = platformFamilyByKey(platform);
   const shelves = picked ? allShelves.filter((s) => s.family.key === picked.key) : allShelves;
+  const nameMap = Object.fromEntries(names);
   const total = allShelves.reduce((n, s) => n + s.count, 0);
   const counts = new Map(allShelves.map((s) => [s.family.key, s.count]));
 
@@ -41,7 +42,7 @@ export default async function GiveawaysPage({
       <PageHeader
         title="Giveaways"
         badge={badge}
-        count={keys === null ? undefined : `${total} ${total === 1 ? "key" : "keys"} on the shelf`}
+        count={keys === null ? undefined : `${total} ${total === 1 ? "key" : "keys"} wrapped and waiting`}
       />
       {!canClaim && (
         <p className="max-w-[65ch] text-sm text-dim-foreground">
@@ -66,22 +67,16 @@ export default async function GiveawaysPage({
 
   return (
     <GiveawayShelf
-      shelves={shelves}
+      boxes={shelves.flatMap((s) => s.boxes)}
       viewerId={viewerId}
       canClaim={canClaim}
       canRevokeAny={isAdminOrAbove(session.membership)}
-      names={Object.fromEntries(names)}
+      names={nameMap}
       emptyCopy={
         picked ? `No ${picked.label} keys on the shelf right now.` : "The shelf is empty right now. Got a spare key? Put it up."
       }
       header={header}
-      rail={
-        <>
-          <DonatePanel canClaimCopy="Put it on the shelf. Any member with the Members role can claim it." />
-          <ClaimedMini keys={claimed} />
-          <DonationsMini keys={donated} />
-        </>
-      }
+      counter={<CounterStrip claimed={claimed} donated={donated} names={nameMap} />}
     />
   );
 }

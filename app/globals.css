@@ -174,6 +174,23 @@
     margin-inline: calc(50% - 50cqi);
 }
 
+/* Gift paper: a platform's ink (--p) printed with soft ink stripes, the
+   giveaways' wrapping paper (envelopes, stacked boxes, tabs). */
+@utility gift-paper {
+    background: repeating-linear-gradient(135deg, transparent 0 14px, rgb(11 11 13 / 0.09) 14px 28px), var(--p, var(--muted));
+}
+
+/* The ribbon tying itself round a freshly picked game on the donate page. */
+@keyframes gift-tie-down {
+    from { transform: scaleY(0); }
+}
+@keyframes gift-tie-across {
+    from { transform: scaleX(0); }
+}
+@keyframes gift-bow {
+    0%, 55% { opacity: 0; scale: 0.4; }
+}
+
 @utility foil {
     background: var(--foil-sheen), var(--foil-conic);
     color: var(--foil-foreground);

@@ -13,5 +13,13 @@ export default async function DonatePage() {
     fetchDonatedKeys(session.principal.discord_id),
     fetchMemberNames(),
   ]);
-  return <DonateView preview={features.preview("giveaways")} keys={keys} names={names} />;
+  const viewerId = session.principal.discord_id;
+  return (
+    <DonateView
+      preview={features.preview("giveaways")}
+      keys={keys}
+      names={names}
+      donorName={names.get(viewerId) ?? session.principal.global_name ?? session.principal.username}
+    />
+  );
 }

@@ -55,6 +55,15 @@
                     @apply bg-muted text-faint-foreground opacity-100 ring-1 ring-border-strong ring-inset;
                 }
             }
+            /* Claim on the giveaways shelf: the highlight button torn
+               along its leading edge, like gift paper ripped open. */
+            &[data-variant="claim"] {
+                @apply font-label rounded-none border-transparent bg-clip-padding pl-4 font-extrabold focus-visible:border-ring bg-highlight text-highlight-foreground hover:bg-highlight/85;
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 87.5%, 0 75%, 6px 62.5%, 0 50%, 6px 37.5%, 0 25%, 6px 12.5%);
+                &:disabled {
+                    @apply bg-muted text-faint-foreground opacity-100;
+                }
+            }
             &[data-variant="nr"] {
                 @apply font-label rounded-sm border-transparent bg-clip-padding font-extrabold focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 bg-nr text-nr-foreground hover:bg-nr/85;
             }
@@ -386,6 +395,9 @@
             }
             &[data-variant="inverse"] {
                 @apply border-background bg-[#fff8cc] text-background caret-background placeholder:text-background/55 focus-visible:border-background focus-visible:ring-background/20;
+            }
+            &[data-variant="paper"] {
+                @apply border-[1.5px] border-background bg-transparent text-background caret-background placeholder:text-slip-muted-foreground focus-visible:border-background focus-visible:ring-background/20;
             }
             &[data-variant="destructive"] {
                 @apply border-destructive bg-background text-foreground ring-3 ring-destructive/15 focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-ring/40 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
@@ -1387,6 +1399,12 @@
         }
         [data-slot="toggle-group-item"][data-variant="inverse"] {
             @apply rounded-xs text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] transition-colors hover:bg-background/10 hover:text-background aria-pressed:bg-background aria-pressed:text-highlight aria-pressed:shadow-none data-pressed:bg-background data-pressed:text-highlight data-pressed:shadow-none;
+        }
+        /* Choices written on paper (the giveaways' donate label): ink
+           outlines; the picked one fills with its own ink (--chip, a
+           platform's ribbon ink with ink type) or with ink and paper type. */
+        [data-slot="toggle-group-item"][data-variant="paper"] {
+            @apply rounded-xs text-background shadow-[inset_0_0_0_1.5px_var(--color-background)] transition-colors hover:bg-background/10 hover:text-background data-pressed:bg-[var(--chip,var(--color-background))] data-pressed:text-[var(--chip-type,var(--color-foreground))] data-pressed:shadow-[inset_0_0_0_1.5px_var(--color-background)];
         }
         [data-slot="select-trigger"][data-variant="inverse"] {
             @apply border-background bg-[#fff8cc] text-background hover:border-background focus-visible:border-background focus-visible:ring-2 focus-visible:ring-background/20 data-placeholder:text-background/55;

@@ -1,8 +1,10 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { X } from "lucide-react";
+import { GameCover } from "@/components/issue/game-cover";
 import type { Game } from "@/lib/api/types";
-import { DONATE_PLATFORMS, MAX_PLATFORM } from "@/lib/giveaways";
+import type { CSSProperties } from "react";
+import { DONATE_PLATFORMS, MAX_PLATFORM, platformFamily } from "@/lib/giveaways";
 import { GamePicker } from "@/components/member/game-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +15,7 @@ export const DONATE_LABEL_TYPE = "font-label mb-1.5 block text-sm";
 export const DONATE_LABEL = `${DONATE_LABEL_TYPE} text-background`;
 export const OTHER_PLATFORM = "Other";
 // The IGDB fallback is drawn for the dark page, so it sits on a dark panel
-// here (bg-background, so its bg-muted "You stay here" note still stands out).
+// on the paper label (bg-background, so its bg-muted note still stands out).
 const IGDB_PANEL = "rounded-sm border border-background bg-background p-2.5 text-foreground";
 
 // The donated key's game: the GameDB picker, or the picked game on an ink
@@ -31,15 +33,15 @@ export function DonateGameField({
   onChange: () => void;
 }) {
   return (
-    <div className="mb-4">
+    <div className="mb-5">
       <span className={DONATE_LABEL} id="donate-game">
         Game
       </span>
       {game ? (
-        <div className="flex h-9 items-center gap-2 rounded-sm border border-background bg-background pr-1 pl-3 text-sm text-foreground">
-          <Check aria-hidden className="size-4 text-highlight" />
-          <span className="min-w-0 flex-1 truncate font-semibold">{game.title}</span>
-          <Button variant="field-tool" size="icon-sm" aria-label="Change game" onClick={onChange}>
+        <div className="flex h-12 items-center gap-3 rounded-sm border-[1.5px] border-background pr-1 pl-1.5 text-background">
+          <GameCover title="" coverUrl={game.cover_url} className="w-7" />
+          <span className="min-w-0 flex-1 truncate text-[1.02rem] font-semibold">{game.title}</span>
+          <Button variant="inverse-ghost" size="icon-sm" aria-label="Change game" onClick={onChange}>
             <X className="size-4" />
           </Button>
         </div>
@@ -47,7 +49,7 @@ export function DonateGameField({
         <GamePicker
           key={pickerKey}
           compact
-          variant="inverse"
+          variant="paper"
           onPick={onPick}
           placeholder="Search the GameDB…"
           igdbFallback={{ purpose: "donation", blockedReason: null, className: IGDB_PANEL, offerWithMatches: true }}
@@ -70,10 +72,10 @@ export function DonatePlatformField({
   onOtherPlatform: (name: string) => void;
 }) {
   return (
-    <fieldset className="mb-4">
+    <fieldset className="mb-5">
       <legend className={DONATE_LABEL}>Platform</legend>
       <ToggleGroup
-        variant="inverse"
+        variant="paper"
         size="sm"
         spacing={1.5}
         value={platform ? [platform] : []}
@@ -84,7 +86,13 @@ export function DonatePlatformField({
         className="flex-wrap"
       >
         {[...DONATE_PLATFORMS, OTHER_PLATFORM].map((p) => (
-          <ToggleGroupItem key={p} value={p} className="text-[0.82rem]">
+          <ToggleGroupItem
+            key={p}
+            value={p}
+            className="gap-1.5 text-[0.82rem]"
+            style={{ "--p": platformFamily(p).ink, "--chip": platformFamily(p).ink, "--chip-type": "var(--color-background)" } as CSSProperties}
+          >
+            <i aria-hidden className="gift-paper size-2.5 rounded-xs shadow-[0_0_0_1px_rgb(11_11_13/0.35)]" />
             {p}
           </ToggleGroupItem>
         ))}
@@ -96,7 +104,7 @@ export function DonatePlatformField({
           maxLength={MAX_PLATFORM}
           onChange={(e) => onOtherPlatform(e.target.value)}
           placeholder="e.g. itch.io, Humble"
-          variant="inverse"
+          variant="paper"
           className="mt-2"
         />
       )}

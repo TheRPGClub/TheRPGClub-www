@@ -1,87 +1,59 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
 import { GAME_KEY_REGIONS, MAX_KEY } from "@/lib/giveaways";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DONATE_LABEL, DONATE_LABEL_TYPE } from "@/components/giveaways/donate-pick-fields";
 import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { DONATE_LABEL, DONATE_LABEL_TYPE } from "@/components/giveaways/donate-pick-fields";
 
-const REGION_ITEMS = GAME_KEY_REGIONS.map((r) => ({
-  value: r,
-  label: r === "Global" ? "Global (redeems anywhere)" : r,
-}));
-
-// Where the key redeems.
+// Where the key redeems, one tap each (Global unless the key says otherwise).
 export function DonateRegionField({ region, onRegion }: { region: string; onRegion: (region: string) => void }) {
   return (
-    <div className="mb-4">
-      <span id="donate-region-label" className={DONATE_LABEL}>
-        Region
-      </span>
-      <Select items={REGION_ITEMS} value={region} onValueChange={(next) => next && onRegion(next)}>
-        <SelectTrigger
-          id="donate-region"
-          aria-labelledby="donate-region-label"
-          variant="inverse"
-          className="w-full px-3 data-[size=default]:h-9"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {REGION_ITEMS.map((r) => (
-            <SelectItem key={r.value} value={r.value}>
-              {r.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <fieldset className="mb-5">
+      <legend className={DONATE_LABEL}>Region</legend>
+      <ToggleGroup
+        variant="paper"
+        size="sm"
+        spacing={1.5}
+        value={[region]}
+        onValueChange={(next) => {
+          if (next[0]) onRegion(next[0]);
+        }}
+        className="flex-wrap"
+      >
+        {GAME_KEY_REGIONS.map((r) => (
+          <ToggleGroupItem key={r} value={r} className="text-[0.82rem]">
+            {r}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+    </fieldset>
   );
 }
 
-// The key itself, hidden as typed until the member asks to see it.
-export function DonateKeyField({
-  value,
-  onValue,
-  shown,
-  onShown,
-}: {
-  value: string;
-  onValue: (value: string) => void;
-  shown: boolean;
-  onShown: (shown: boolean) => void;
-}) {
+// The key itself, in plain sight for the member donating it: it's theirs.
+export function DonateKeyField({ value, onValue }: { value: string; onValue: (value: string) => void }) {
   return (
     <div className="mb-1">
-      <Label htmlFor="donate-key" variant="inverse" className={DONATE_LABEL_TYPE}>
-        Key
-      </Label>
-      <div className="relative">
-        <Input
-          id="donate-key"
-          type={shown ? "text" : "password"}
-          autoComplete="off"
-          spellCheck={false}
-          value={value}
-          maxLength={MAX_KEY}
-          onChange={(e) => onValue(e.target.value)}
-          placeholder="XXXXX-XXXXX-XXXXX"
-          variant="inverse"
-          className="pr-10 tracking-[0.2em]"
-        />
-        <Button
-          variant="inverse-ghost"
-          size="icon-sm"
-          onClick={() => onShown(!shown)}
-          aria-label={shown ? "Hide the key" : "Show the key"}
-          className="absolute top-1/2 right-1 -translate-y-1/2"
-        >
-          {shown ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-        </Button>
+      <div className="flex items-baseline justify-between gap-3">
+        <Label htmlFor="donate-key" variant="inverse" className={DONATE_LABEL_TYPE}>
+          Key
+        </Label>
+        <span className="font-label text-[0.7rem] font-bold text-slip-muted-foreground">
+          Only you, whoever claims it and Admins see it
+        </span>
       </div>
-      <p className="mt-1.5 text-xs text-highlight-muted-foreground">Only you, the member who claims it, and Admins ever see the key.</p>
+      <Input
+        id="donate-key"
+        autoComplete="off"
+        spellCheck={false}
+        value={value}
+        maxLength={MAX_KEY}
+        onChange={(e) => onValue(e.target.value)}
+        placeholder="XXXXX-XXXXX-XXXXX"
+        variant="paper"
+        className="font-label h-12 text-xl tracking-[0.16em] normal-case md:text-xl"
+      />
     </div>
   );
 }

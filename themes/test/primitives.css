@@ -44,6 +44,11 @@
                 color: var(--highlight-foreground);
                 border-color: var(--highlight-foreground);
             }
+            &[data-variant="claim"] {
+                background-color: var(--highlight);
+                color: var(--highlight-foreground);
+                border-color: var(--highlight-foreground);
+            }
             &[data-variant="nr"] {
                 background-color: var(--nr);
                 color: var(--nr-foreground);
@@ -425,6 +430,11 @@
                 background-color: var(--foreground);
                 color: var(--background);
                 border-color: var(--background);
+            }
+            &[data-variant="paper"] {
+                background-color: var(--foreground);
+                color: var(--background);
+                border-color: var(--gotm);
             }
             &[data-variant="destructive"] {
                 background-color: var(--destructive);
@@ -1973,6 +1983,11 @@
             background-color: var(--nr);
             color: var(--nr-foreground);
             outline: 3px dashed var(--highlight);
+        }
+        [data-slot="toggle-group-item"][data-variant="paper"] {
+            background-color: var(--nr);
+            color: var(--nr-foreground);
+            border-radius: 9999px;
         }
         [data-slot="toggle-group-item"][data-variant="inverse"] {
             background-color: var(--gotm);
