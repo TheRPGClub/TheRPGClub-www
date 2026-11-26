@@ -1,17 +1,15 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { GotmRoundDetail } from "@/lib/api/types";
-import { gotmHistoryHref, gotmRoundHref, type GotmHistoryFilters } from "@/lib/api/gotm-rounds";
+import { gotmHistoryHref, type GotmHistoryFilters } from "@/lib/api/gotm-rounds";
 import { roundHasNominations } from "@/lib/gotm-round";
 import { NO_DISCORD_LINKS, type DiscordLinkConfig } from "@/lib/gotm-links";
 import { PageHeader } from "@/components/templates/page-header";
 import { RoundColumn } from "./round-column";
 import { RoundHero } from "./round-hero";
-import { RoundNav } from "./round-nav";
+import { RoundNav, RoundSteps } from "./round-nav";
 
 // A closed GOTM round in full (spec api#483, design The Diptych): the winners
-// as a hinged pair of art, then each Category's every nominee with who put it
+// across the page under the round's heading, then each Category's every nominee with who put it
 // forward, why, and how the vote went.
 export function RoundPage({
   roundNumber,
@@ -58,16 +56,18 @@ export function RoundPage({
             )}
           </>
         }
-        actions={<StepLinks round={round} filters={filters} />}
+        actions={<RoundSteps previous={round.previous} next={round.next} filters={filters} className="max-md:hidden" />}
       />
+      {/* A phone sets the steps full width under the heading. */}
+      <RoundSteps previous={round.previous} next={round.next} filters={filters} className="mt-3 md:hidden" />
       <div className="mt-4">
         <RoundHero round={round} discord={discord} />
       </div>
       {roundHasNominations(round) ? (
         <div className="mt-6 grid gap-7 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
-          <RoundColumn kind="gotm" category={round.gotm} />
+          <RoundColumn kind="gotm" category={round.gotm} discord={discord} />
           <div aria-hidden className="relative before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-border max-md:hidden" />
-          <RoundColumn kind="nr_gotm" category={round.nr_gotm} />
+          <RoundColumn kind="nr_gotm" category={round.nr_gotm} discord={discord} />
         </div>
       ) : (
         <p className="mt-6 flex items-stretch gap-5 rounded-sm border border-border bg-card px-5 py-5 text-[1.0625rem] md:px-7 md:py-6">
@@ -77,26 +77,5 @@ export function RoundPage({
       )}
       <RoundNav previous={round.previous} next={round.next} filters={filters} />
     </div>
-  );
-}
-
-// The quick step beside the title; the foot repeats it with more room.
-function StepLinks({ round, filters }: { round: GotmRoundDetail; filters: GotmHistoryFilters }) {
-  const step = "font-label inline-flex items-center gap-1.5 text-[0.85rem] font-bold tracking-[0.1em] uppercase";
-  return (
-    <nav aria-label="Step through rounds" className="flex gap-4 max-md:hidden">
-      {round.previous != null ? (
-        <Link href={gotmRoundHref(round.previous, filters)} className={`${step} hover:text-highlight`}>
-          <ArrowLeft aria-hidden className="size-3.5" />
-          Round {round.previous}
-        </Link>
-      ) : null}
-      {round.next != null ? (
-        <Link href={gotmRoundHref(round.next, filters)} className={`${step} hover:text-highlight`}>
-          Round {round.next}
-          <ArrowRight aria-hidden className="size-3.5" />
-        </Link>
-      ) : null}
-    </nav>
   );
 }

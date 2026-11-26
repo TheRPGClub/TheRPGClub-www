@@ -66,3 +66,51 @@ function RoundCard({
     </Link>
   );
 }
+
+// The quick step beside the heading (under it on a phone, full width); the
+// foot repeats it with more room. A missing neighbour stays as a dim box so
+// the pair keeps its place.
+export function RoundSteps({
+  previous,
+  next,
+  filters,
+  className,
+}: {
+  previous: number | null;
+  next: number | null;
+  filters: GotmHistoryFilters;
+  className?: string;
+}) {
+  const step =
+    "font-label inline-flex flex-1 items-center justify-center gap-1.5 rounded-xs border px-3 py-2 text-[0.75rem] font-bold tracking-[0.14em] uppercase md:flex-none";
+  const steps = [
+    { round: previous, label: previous != null ? `Round ${previous}` : "Oldest round", Arrow: ArrowLeft, before: true },
+    { round: next, label: next != null ? `Round ${next}` : "Newest round", Arrow: ArrowRight, before: false },
+  ];
+  return (
+    <nav aria-label="Step through rounds" className={cn("flex gap-2", className)}>
+      {steps.map(({ round, label, Arrow, before }) => {
+        const body = (
+          <>
+            {before && <Arrow aria-hidden className="size-3.5" />}
+            {label}
+            {!before && <Arrow aria-hidden className="size-3.5" />}
+          </>
+        );
+        return round != null ? (
+          <Link
+            key={label}
+            href={gotmRoundHref(round, filters)}
+            className={cn(step, "border-border-strong text-dim-foreground transition-colors hover:border-highlight hover:text-highlight")}
+          >
+            {body}
+          </Link>
+        ) : (
+          <span key={label} aria-disabled className={cn(step, "border-border text-faint-foreground opacity-60")}>
+            {body}
+          </span>
+        );
+      })}
+    </nav>
+  );
+}

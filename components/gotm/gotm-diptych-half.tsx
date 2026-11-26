@@ -4,25 +4,23 @@ import { TRACK_LABEL, UNKNOWN_GAME_TITLE } from "@/components/issue/gotm-shared"
 import { cn } from "@/lib/utils";
 import { INK, headline } from "./gotm-diptych-ink";
 
-// One leaf of a round's diptych: a Category's winner over its key art under
-// a black scrim, the Anton headline on two lines (the subtitle in the
+// One banner of a GOTM History row: a Category's winner over its key art
+// under a black scrim, the Anton headline on two lines (the subtitle in the
 // Category's accent) and the Category's foot bar. With no winner it is a
-// hatched, empty leaf that says so.
+// hatched, empty banner that says so.
 
 export function GotmDiptychHalf({
   kind,
   winners,
-  nominationsCount,
   lead = false,
   mirrored = false,
 }: {
   kind: VotingCategory;
   // In game_index order; empty when the Category had no winner.
   winners: GotmRoundGame[];
-  nominationsCount: number;
   // The newest round: taller, with the winner's starburst.
   lead?: boolean;
-  // The right-hand leaf sets its caption flush right.
+  // NR-GOTM's half of a mixed round sets its caption flush right (from sm).
   mirrored?: boolean;
 }) {
   const ink = INK[kind];
@@ -56,20 +54,15 @@ export function GotmDiptychHalf({
           className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-background)_15%,transparent)_30%,color-mix(in_oklab,var(--color-background)_90%,transparent))]"
         />
       )}
+      {/* Top right, clear of the round numeral's tab on the corner. */}
       {first && lead && (
-        <WinnerMark
-          track={kind}
-          className={cn(
-            "absolute top-2.5 size-11 sm:top-4 sm:size-16",
-            mirrored ? "right-2.5 sm:right-4" : "left-2.5 sm:left-4",
-          )}
-        />
+        <WinnerMark track={kind} className="absolute top-2.5 right-2.5 size-11 sm:top-4 sm:right-4 sm:size-16" />
       )}
 
       <div
         className={cn(
           "absolute inset-x-3 bottom-3.5 sm:inset-x-5.5 sm:bottom-5",
-          mirrored && "text-right",
+          mirrored && "sm:text-right",
         )}
       >
         <span
@@ -84,7 +77,7 @@ export function GotmDiptychHalf({
           <h3
             className={cn(
               "font-headline text-balance uppercase",
-              lead ? "text-[1.25rem] sm:text-[2.25rem]" : "text-[1.125rem] sm:text-[1.875rem]",
+              lead ? "text-[1.5rem] sm:text-[2.25rem]" : "text-[1.375rem] sm:text-[1.875rem]",
               // After the size: a size class resets the leading.
               "leading-[1.02]",
             )}
@@ -93,16 +86,10 @@ export function GotmDiptychHalf({
             {line2 && <span className={cn("block", ink.second)}>{line2}</span>}
           </h3>
         ) : (
-          <>
-            <h3 className="font-headline text-[1.125rem] leading-[1.02] text-dim-foreground uppercase sm:text-[1.875rem]">
-              No {label} winner this round
-            </h3>
-            {nominationsCount > 0 && (
-              <p className="font-label mt-1.5 text-[0.6875rem] font-semibold tracking-[0.1em] text-faint-foreground uppercase sm:text-[0.8125rem]">
-                {nominationsCount} nominated
-              </p>
-            )}
-          </>
+          // The row's tag above the art already counts its Nominations.
+          <h3 className="font-headline text-[1.375rem] leading-[1.02] text-dim-foreground uppercase sm:text-[1.875rem]">
+            No {label} winner this round
+          </h3>
         )}
         {coWinners.length > 0 && (
           <p className="font-label mt-1.5 text-[0.6875rem] font-semibold tracking-[0.1em] text-dim-foreground uppercase sm:text-[0.8125rem]">

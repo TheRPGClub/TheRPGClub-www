@@ -1,59 +1,53 @@
 import type { GotmRoundCategory, GotmRoundDetail, VotingCategory } from "@/lib/api/types";
-import { gotmLinks, type DiscordLinkConfig } from "@/lib/gotm-links";
-import { categoryRows, nomineeCount, rowVotes, runoffSummary, votesLabel, winnerLinks } from "@/lib/gotm-round";
-import { OutboundLinks, TRACK_LABEL, splitMonthYear } from "@/components/issue/gotm-shared";
+import type { DiscordLinkConfig } from "@/lib/gotm-links";
+import { categoryRows, rowVotes, runoffSummary, votesLabel, winnerLinks } from "@/lib/gotm-round";
 import { cn } from "@/lib/utils";
 import { RoundHeroPanel } from "./round-hero-panel";
 
-// The round's winners as a hinged diptych: GOTM's art left, NR-GOTM's right,
-// the round numeral between them. On phones the hinge drops (the page title
-// carries the number) and the halves sit side by side. Each half carries its
-// Category's Reddit, Discord thread and voting-results links.
+// The round's winners across the page under its "Round N · Month Year"
+// heading. A round both Categories won splits into GOTM's half and
+// NR-GOTM's, a thin rule between them, co-winners stacked in their half; a
+// round one Category won gives each winner its own panel across the width.
+// On a phone every panel stacks. Each winner carries its Reddit and Discord
+// thread links, the first its Category's voting results too.
 export function RoundHero({ round, discord }: { round: GotmRoundDetail; discord: DiscordLinkConfig }) {
-  const { month, year } = splitMonthYear(round.month_year);
+  const won = (["gotm", "nr_gotm"] as const).filter((k) => categoryRows(round[k]).some((r) => r.won));
+  if (won.length === 0) return null;
+
+  if (won.length === 1) {
+    const [kind] = won;
+    return <RoundWinners kind={kind} category={round[kind]} discord={discord} across />;
+  }
   return (
-    <div className="grid min-h-64 grid-cols-2 gap-1.5 md:min-h-74 md:grid-cols-[minmax(0,1fr)_8.25rem_minmax(0,1fr)] md:gap-0">
-      <RoundHalf kind="gotm" category={round.gotm} discord={discord} />
-      <div
-        aria-hidden
-        className="relative flex flex-col items-center justify-center border-y border-border before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-border max-md:hidden"
-      >
-        <span className="font-headline relative bg-background py-1 text-[5.75rem] leading-none">
-          {round.round_number}
-        </span>
-        {month && (
-          <span className="font-label relative bg-background px-1.5 py-0.5 text-[0.75rem] font-bold tracking-[0.18em] text-dim-foreground uppercase">
-            {month} {year}
-          </span>
-        )}
-      </div>
-      <RoundHalf kind="nr_gotm" category={round.nr_gotm} discord={discord} />
+    <div className="relative grid gap-1.5 md:grid-cols-2 md:gap-x-3.75 md:before:absolute md:before:inset-y-0 md:before:left-1/2 md:before:w-px md:before:bg-border-strong">
+      <RoundWinners kind="gotm" category={round.gotm} discord={discord} />
+      <RoundWinners kind="nr_gotm" category={round.nr_gotm} discord={discord} />
     </div>
   );
 }
 
-function RoundHalf({
+// A Category's winners: stacked in their half of a mixed round, or, across
+// the page (`across`), side by side with full-size titles, stacked on a phone.
+function RoundWinners({
   kind,
   category,
   discord,
+  across = false,
 }: {
   kind: VotingCategory;
   category: GotmRoundCategory;
   discord: DiscordLinkConfig;
+  across?: boolean;
 }) {
   const winners = categoryRows(category).filter((r) => r.won);
-  if (winners.length === 0) {
-    return (
-      <NoWinnerPanel
-        kind={kind}
-        nominated={nomineeCount(category)}
-        links={gotmLinks({ votingResultsMessageId: category.voting_results_message_id }, discord)}
-      />
-    );
-  }
   const runoff = runoffSummary(category);
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div
+      className={cn(
+        "min-w-0 gap-1.5",
+        across ? "grid md:auto-cols-fr md:grid-flow-col" : "flex flex-col",
+      )}
+    >
       {winners.map((row, i) => {
         const votes = rowVotes(category, row);
         const meta = [
@@ -67,49 +61,11 @@ function RoundHalf({
             row={row}
             meta={meta.length ? meta.join(" · ") : null}
             links={winnerLinks(category, row, i === 0, discord)}
-            compact={winners.length > 1}
+            compact={across ? winners.length > 2 : winners.length > 1}
+            mirrored={!across && kind === "nr_gotm"}
           />
         );
       })}
-    </div>
-  );
-}
-
-// A Category nobody won (NR-GOTM in rounds 125, 127 and 137): a hatched
-// blank with a dashed foot bar instead of art.
-function NoWinnerPanel({
-  kind,
-  nominated,
-  links,
-}: {
-  kind: VotingCategory;
-  nominated: number;
-  links: ReturnType<typeof gotmLinks>;
-}) {
-  const nr = kind === "nr_gotm";
-  return (
-    <div
-      className={cn(
-        "relative flex min-h-56 flex-col justify-end overflow-hidden rounded-sm border border-border bg-[repeating-linear-gradient(135deg,var(--color-card)_0_12px,var(--color-muted)_12px_24px)] px-3 pb-4 md:px-5 md:pb-5",
-        nr && "text-right",
-      )}
-    >
-      <span
-        aria-hidden
-        className={cn(
-          "absolute inset-x-0 bottom-0 h-0.75 bg-[repeating-linear-gradient(90deg,var(--stripe)_0_14px,transparent_14px_24px)]",
-          nr ? "[--stripe:var(--color-nr)]" : "[--stripe:var(--color-gotm)]",
-        )}
-      />
-      <p className="font-headline text-[1.25rem] leading-[1.02] text-dim-foreground uppercase text-balance md:text-[2rem]">
-        {`No ${TRACK_LABEL[kind]} winner this round`}
-      </p>
-      {nominated > 0 && (
-        <p className="font-label mt-1.5 text-[0.8rem] font-semibold tracking-[0.1em] text-faint-foreground uppercase">
-          {nominated} nominated
-        </p>
-      )}
-      <OutboundLinks links={links} className={cn("mt-2", nr && "-mr-1 ml-0 justify-end")} />
     </div>
   );
 }
