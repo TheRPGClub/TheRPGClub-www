@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { fetchPatches } from "@/lib/api/patches";
+import { fetchVersions } from "@/lib/api/versions";
 import { featureView } from "@/lib/features";
 import { PATCH_NOTES_PATH } from "@/lib/patch-notes/paths";
 import { getSession } from "@/lib/session";
@@ -20,12 +21,12 @@ export default async function PatchNotesPage() {
   const session = await getSession();
   const features = featureView(session?.features);
   if (session && !features.canOpen("patch_notes")) notFound();
-  const patches = await fetchPatches();
+  const [patches, versions] = await Promise.all([fetchPatches(), fetchVersions()]);
   if (patches === "not_found") notFound();
 
   return (
     <PatchNotesFrame session={session} path={PATCH_NOTES_PATH}>
-      <PatchStack patches={patches} badge={features.preview("patch_notes") && <PreviewBadge />} />
+      <PatchStack patches={patches} versions={versions} badge={features.preview("patch_notes") && <PreviewBadge />} />
     </PatchNotesFrame>
   );
 }

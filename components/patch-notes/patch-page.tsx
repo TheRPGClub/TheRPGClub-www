@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { patchDate, patchLongDate, patchTitle } from "@/lib/patch-notes/format";
 import { patchValue } from "@/lib/patch-notes/patch-schema";
 import type { PatchWithNeighbours } from "@/lib/patch-notes/types";
+import { versionLine, type Versions } from "@/lib/patch-notes/versions";
 import { PatchBody } from "./patch-body";
 import { PatchCover } from "./patch-cover";
 import { PatchFoot, type PatchNeighbour } from "./patch-foot";
@@ -14,12 +15,15 @@ import { PatchLedger } from "./patch-ledger";
 export function PatchPage({
   patch,
   titles,
+  versions = null,
   badge,
 }: {
   patch: PatchWithNeighbours;
   // Published Patches' titles by number, for the foot; empty when the list
   // couldn't be read.
   titles: ReadonlyMap<number, string>;
+  // The current versions, centred in the foot; null hides them.
+  versions?: Versions | null;
   badge?: ReactNode;
 }) {
   const value = patchValue(patch.rich_body);
@@ -47,7 +51,11 @@ export function PatchPage({
         </div>
       </div>
       <div className="mt-auto">
-        <PatchFoot previous={neighbour(patch.previous_number)} next={neighbour(patch.next_number)} />
+        <PatchFoot
+          previous={neighbour(patch.previous_number)}
+          next={neighbour(patch.next_number)}
+          middle={versionLine(versions)}
+        />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { fetchPatch, fetchPatches } from "@/lib/api/patches";
+import { fetchVersions } from "@/lib/api/versions";
 import { featureView } from "@/lib/features";
 import { patchTitle } from "@/lib/patch-notes/format";
 import { patchNumberParam, patchPath } from "@/lib/patch-notes/paths";
@@ -25,8 +26,9 @@ export default async function PatchNotesPatchPage({ params }: PageProps<"/patch-
   const session = await getSession();
   const features = featureView(session?.features);
   if (session && !features.canOpen("patch_notes")) notFound();
-  // The list names the previous and next Patches at the foot.
-  const [patch, patches] = await Promise.all([fetchPatch(number), fetchPatches()]);
+  // The list names the previous and next Patches at the foot; the versions
+  // sit between them.
+  const [patch, patches, versions] = await Promise.all([fetchPatch(number), fetchPatches(), fetchVersions()]);
   if (patch === "not_found") notFound();
   // A failed read is the error page's (its Try again), not a missing Patch.
   if (patch === null) throw new Error("Couldn't read this Patch");
@@ -34,7 +36,7 @@ export default async function PatchNotesPatchPage({ params }: PageProps<"/patch-
 
   return (
     <PatchNotesFrame session={session} path={patchPath(number)}>
-      <PatchPage patch={patch} titles={titles} badge={features.preview("patch_notes") && <PreviewBadge />} />
+      <PatchPage patch={patch} titles={titles} versions={versions} badge={features.preview("patch_notes") && <PreviewBadge />} />
     </PatchNotesFrame>
   );
 }
