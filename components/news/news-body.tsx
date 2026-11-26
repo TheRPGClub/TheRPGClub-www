@@ -1,25 +1,17 @@
 import { notFound } from "next/navigation";
-import { fetchNews, fetchNewsCategories, fetchNewsNeighbours, fetchNewsStamp } from "@/lib/api/news";
-import { paginationOf } from "@/lib/api/pagination";
-import {
-  categoryNames,
-  countNote,
-  dayRunsOver,
-  groupNewsByDay,
-  newsCategoryRows,
-  newsHref,
-  type NewsFilters,
-} from "@/lib/news";
-import { PageHeader } from "@/components/templates/page-header";
-import { ListPagination } from "@/components/list-pagination";
-import { NewsCategoryRail } from "./news-category-rail";
-import { NewsDayBand } from "./news-day-band";
-import { NewsEmpty, NewsNote } from "./news-empty";
+import { fetchCatchup, fetchNewsCategories, fetchNewsStamp } from "@/lib/api/news";
+import { categoryNames, newsCategoryRows, type NewsFilters } from "@/lib/news";
+import { agoLabel } from "@/lib/news-catchup";
+import { NewsCatchup } from "./news-catchup";
+import { NewsNote } from "./news-empty";
 import { NewsLiveRefresh } from "./news-live-refresh";
+import { NewsMasthead } from "./news-masthead";
+import { NewsShowAll } from "./news-show-all";
 
-// The News page's body once the member is let in: the feed, the category
-// list and the items either side of this page, read together, set as day
-// bands beside the category rail.
+// The News page's body once the member is let in: Catch-up (spec api#494,
+// ticket www#221). The feed is read twice, page one of the whole view (the
+// hero, the mosaic, and the member's News Mark with its new counts) and the
+// page of Seen rows; Show all reads only the new list.
 
 export async function NewsBody({
   filters,
@@ -33,88 +25,52 @@ export async function NewsBody({
   // The stamp first: an item recorded between it and the feed only makes the
   // page's next poll re-read it, never leaves it behind.
   const stamp = await fetchNewsStamp();
-  const [result, categories, neighbours] = await Promise.all([
-    fetchNews(filters, userId, stamp),
+  const [read, categories] = await Promise.all([
+    fetchCatchup(filters, userId, stamp),
     fetchNewsCategories(),
-    fetchNewsNeighbours(filters, userId, stamp),
   ]);
   // The flag changed after the page's gate ran.
-  if (result === "not_found") notFound();
+  if (read.top === "not_found" || read.rows === "not_found") notFound();
 
-  const items = result?.items ?? [];
-  const { total, totalPages } = paginationOf(result?.meta ?? undefined, items.length);
-  // An old or hand-edited address past the last page.
-  const pastEnd = result !== null && filters.page > totalPages;
-  const note = result ? countNote(total, filters.page, totalPages) : null;
+  const { top, rows } = read;
+  const ok = rows !== null && (filters.since !== null || top !== null);
+  const meta = top?.meta ?? rows?.meta ?? null;
   const nameOf = categoryNames(categories);
   const now = new Date();
-  const meta = result?.meta;
+  const newest = (top ?? rows)?.items[0];
   // Without the feed the member's switched-off categories are unknown, so
-  // the rail shows no counts and claims nothing about them.
-  const rows = newsCategoryRows(
+  // the Categories control shows no counts and claims nothing about them.
+  const categoryRows = newsCategoryRows(
     categories,
     filters,
     meta?.category_counts ?? null,
-    result ? (meta?.hidden_categories ?? []) : null,
+    ok ? (meta?.hidden_categories ?? []) : null,
   );
 
   return (
     <div className="space-y-6">
       <NewsLiveRefresh stamp={stamp} page={filters.page} />
-      <PageHeader
-        title="News"
+      <NewsMasthead
         badge={badge}
-        actions={
-          note && (
-            <p className="font-label text-sm tracking-[0.08em] text-faint-foreground">{note}</p>
-          )
-        }
+        updated={newest ? `Updated ${agoLabel(newest.posted_at, now)}` : null}
+        rows={categoryRows}
+        filters={filters}
+        tab="catchup"
+        // Mark all seen (ticket www#222) fills this slot.
+        markAllSeen={null}
       />
-      <div className="gap-x-7 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-        <NewsCategoryRail rows={rows} filters={filters} />
-        <div className="@container min-w-0 space-y-8 max-lg:mt-5">
-          {!result ? (
-            <NewsNote>Couldn&apos;t load the news. Try again in a moment.</NewsNote>
-          ) : items.length === 0 ? (
-            <NewsEmpty
-              filters={filters}
-              lastPage={pastEnd ? totalPages : null}
-              nameOf={nameOf}
-              // Items the member's default view leaves out (their
-              // switched-off categories), for the empty default view.
-              elsewhere={Object.values(meta?.category_counts ?? {}).some((n) => n > 0)}
-            />
-          ) : (
-            groupNewsByDay(items).map((day, i, days) => (
-              <NewsDayBand
-                key={day.day}
-                day={day}
-                // A day running over a page break shows no tally: this page
-                // holds only part of it.
-                partial={
-                  (i === 0 && dayRunsOver(day.day, neighbours.before)) ||
-                  (i === days.length - 1 && dayRunsOver(day.day, neighbours.after))
-                }
-                now={now}
-                nameOf={nameOf}
-              />
-            ))
-          )}
-          {/* Past the end, the empty state leads back instead. */}
-          {!pastEnd && (
-            <ListPagination
-              currentPage={filters.page}
-              totalPages={totalPages}
-              buildHref={(page) => newsHref(filters, { page })}
-            />
-          )}
-          {items.length > 0 && (
-            <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
-              Days and times in UTC
-            </p>
-          )}
-        </div>
-      </div>
+      {!ok ? (
+        <NewsNote>Couldn&apos;t load the news. Try again in a moment.</NewsNote>
+      ) : filters.since ? (
+        <NewsShowAll page={rows} filters={filters} nameOf={nameOf} now={now} />
+      ) : (
+        <NewsCatchup top={top!} rows={rows} filters={filters} nameOf={nameOf} now={now} />
+      )}
+      {newest && (
+        <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+          Days and times in UTC
+        </p>
+      )}
     </div>
   );
 }

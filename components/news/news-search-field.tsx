@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
-// "Search news titles" in the rail's filter: a plain GET form on /news that
+// "Search news titles" in the masthead's tools: a plain GET form on /news that
 // submits on Enter; once hydrated it pushes the canonical address (`go`). The
 // text follows the address (back/forward, "Clear filters") by re-syncing
 // during render.

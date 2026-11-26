@@ -2,8 +2,8 @@ import { firstParam, type RawSearchParams } from "@/lib/search-params";
 
 // The News Hub (spec api#355) as the News page reads it: the News Item and
 // News Category shapes from `GET /api/v1/news_items` and
-// `GET /api/v1/news_categories`, the page's URL state, day bands, and what a
-// card shows. Client-safe and pure: no server imports, `now` passed in.
+// `GET /api/v1/news_categories`, the page's URL state, and what a News Item
+// shows (Catch-up's split and tiles are in lib/news-catchup.ts). Client-safe and pure: no server imports, `now` passed in.
 
 export type NewsCategoryKey =
   | "announcements"
@@ -86,6 +86,10 @@ export interface NewsFilters {
   categories: NewsCategoryKey[];
   // Search text, trimmed; "" = no search.
   q: string;
+  // Show all new (`?since=`): the full list of News Items posted after this
+  // instant (the News Mark the page was read with), so the list holds still
+  // while the mark moves. Null on Catch-up itself.
+  since: string | null;
 }
 
 // Keeps known keys in category order, once each. Takes the comma list this
@@ -104,7 +108,16 @@ export function parseNewsFilters(raw: RawSearchParams): NewsFilters {
     page: Number.isFinite(page) && page > 1 ? page : 1,
     categories: parseCategories(raw.category),
     q: (firstParam(raw.q) ?? "").trim(),
+    since: parseSince(firstParam(raw.since)),
   };
+}
+
+// An ISO 8601 instant the API will take; anything else is dropped, so a
+// hand-edited address never reaches the API as a 400.
+function parseSince(raw: string | undefined): string | null {
+  const value = raw?.trim();
+  if (!value || !/^\d{4}-\d{2}-\d{2}T/.test(value) || Number.isNaN(Date.parse(value))) return null;
+  return value;
 }
 
 export function hasNewsFilters(filters: NewsFilters): boolean {
@@ -112,15 +125,16 @@ export function hasNewsFilters(filters: NewsFilters): boolean {
 }
 
 // Defaults stay off the query string, so the canonical URL is the bare path.
-// A change to the categories or the search goes back to page one unless the
-// change names a page.
+// A change to the categories or the search goes back to page one (and from
+// Show all back to Catch-up) unless the change names a page.
 export function newsHref(filters: NewsFilters, change: Partial<NewsFilters> = {}): string {
   const refilters = "categories" in change || "q" in change;
-  const next = { ...filters, ...(refilters ? { page: 1 } : {}), ...change };
+  const next = { ...filters, ...(refilters ? { page: 1, since: null } : {}), ...change };
   const ps = new URLSearchParams();
   if (next.categories.length) ps.set("category", next.categories.join(","));
   const q = next.q.trim();
   if (q) ps.set("q", q);
+  if (next.since) ps.set("since", next.since);
   if (next.page > 1) ps.set("page", String(next.page));
   // Keys never hold a comma of their own, and a literal comma is valid in a
   // query, so the list reads "releases,industry" rather than "%2C".
@@ -209,40 +223,10 @@ export function newsEmptyNote(
   return q ? `Nothing in ${where} matches ${quoted}.` : `Nothing in ${where} yet.`;
 }
 
-// "212 items · page 1 of 18" beside the page title; null with nothing to count.
-// A page past the last one (an old or hand-edited address) names no page.
-export function countNote(total: number, page: number, pages: number): string | null {
-  if (total <= 0) return null;
-  const items = `${total} ${total === 1 ? "item" : "items"}`;
-  return pages > 1 && page <= pages ? `${items} · page ${page} of ${pages}` : items;
-}
-
 // ---------------------------------------------------------------------------
-// Day bands. Days and clocks are UTC, as in the Achievement Hub: the page is
-// rendered on the server, which doesn't know the viewer's zone.
-
-export interface NewsDay {
-  // YYYY-MM-DD, UTC.
-  day: string;
-  items: NewsItem[];
-}
-
-function utcDay(iso: string): string {
-  return new Date(iso).toISOString().slice(0, 10);
-}
-
-// Splits the feed, newest first as the API serves it, into runs of one UTC
-// day. Runs are consecutive, so the API's order holds.
-export function groupNewsByDay(items: NewsItem[]): NewsDay[] {
-  const days: NewsDay[] = [];
-  for (const item of items) {
-    const day = utcDay(item.posted_at);
-    const last = days.at(-1);
-    if (last && last.day === day) last.items.push(item);
-    else days.push({ day, items: [item] });
-  }
-  return days;
-}
+// Day headings, for the Achievement Hub's day bands (which first took them
+// from the News page's). Days and clocks are UTC: the page is rendered on the
+// server, which doesn't know the viewer's zone.
 
 const DAY_DATE = new Intl.DateTimeFormat("en-GB", {
   weekday: "short",
@@ -258,16 +242,6 @@ const DAY_DATE_YEAR = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   timeZone: "UTC",
 });
-
-// Whether a day band at a page edge runs over the break: the neighbouring
-// item just past that edge (the last one of the page before, or the first
-// one of the page after) falls on the same UTC day. `neighbour` is null when
-// there is none and undefined when it couldn't be read, which counts as
-// running over, so a tally is never short.
-export function dayRunsOver(day: string, neighbour: NewsItem | null | undefined): boolean {
-  if (neighbour === null) return false;
-  return neighbour === undefined || utcDay(neighbour.posted_at) === day;
-}
 
 // A day band's Anton title and the label beside it. Today and yesterday are
 // named and dated in the label; older days are dated in the title (with the
@@ -435,21 +409,15 @@ export function newsCardView(item: NewsItem): NewsCardView {
   };
 }
 
-// The frames an art box lays out, given those that failed to load: with a
-// cover (the outside page's image) working, it alone; otherwise the working
-// frames, four at most, and how many more there are. `i` is each frame's
-// index in `frames`.
-const MAX_ART_FRAMES = 4;
-
-export function artFrames(
+// The art a tile or hero shows: the first frame that has an address, isn't
+// being renewed and hasn't failed to load (the outside page's image first,
+// then the attachments); null leaves the ink panel. `failed` holds indexes.
+export function workingFrame(
   frames: NewsFrame[],
-  cover: boolean,
   failed: ReadonlySet<number>,
-): { visible: { frame: NewsFrame; i: number }[]; shown: number; extra: number } {
-  const working = frames.map((frame, i) => ({ frame, i })).filter(({ i }) => !failed.has(i));
-  const shown = cover && working[0]?.i === 0 ? working.slice(0, 1) : working;
-  const visible = shown.slice(0, MAX_ART_FRAMES);
-  return { visible, shown: shown.length, extra: shown.length - visible.length };
+): { url: string; i: number } | null {
+  const i = frames.findIndex((f, n) => f.url && !f.unavailable && !failed.has(n));
+  return i < 0 ? null : { url: frames[i].url as string, i };
 }
 
 // Splits a headline before its last word, so an icon set after it can stay

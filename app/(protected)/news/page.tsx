@@ -6,10 +6,10 @@ import { NewsBody } from "@/components/news/news-body";
 import { NewsSkeleton } from "@/components/news/news-skeleton";
 
 // The News Hub (spec api#355): the game news members post in the News
-// Category threads on Discord, as a contact sheet. Newest first in UTC day
-// bands, each a grid of cards marked in their News Category's ink, beside the
-// category rail (a "Filter" disclosure below lg). The URL holds the chosen
-// News Categories, the search and the page; the API applies them.
+// Category threads on Discord. This is Catch-up (spec api#494, ticket
+// www#221): what is new since the member's News Mark as a hero and a mosaic,
+// then the Seen rows. The URL holds the chosen News Categories, the search,
+// the page, and `since` for Show all; the API applies them.
 
 export default async function NewsPage({
   searchParams,
