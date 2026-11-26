@@ -4,6 +4,7 @@ import type { Feedback } from "@/lib/api/types";
 import { PHASE_INK, feedbackPhase, pinnedHref, shortDate, type DuplicateOriginal } from "@/lib/feedback";
 import { cn } from "@/lib/utils";
 import { FeedbackBand } from "./feedback-band";
+import { RoadmapPin } from "./roadmap-pin";
 import { ClosedSlip, slipTilt } from "./rejection-slip";
 import { ScreenshotThumb } from "./screenshot-thumb";
 
@@ -11,6 +12,8 @@ import { ScreenshotThumb } from "./screenshot-thumb";
 // header band filled with the status ink and carrying the upvote count. A
 // Bug Report says where it happened and shows its screenshot; a Rejected
 // or Duplicate card carries a taped-on slip. No kind badge: the tab says it.
+// Feedback linked to a Roadmap Item wears the Roadmap badge pinned to its
+// top-right corner.
 //
 // Hook-free, so the board, the form's live preview and the review desk all
 // render the same card. Interactive controls come in through `actions`.
@@ -63,7 +66,8 @@ export function FeedbackCard({
         className,
       )}
     >
-      <FeedbackBand feedback={f} phase={phase} />
+      <FeedbackBand feedback={f} phase={phase} pinned={!!f.roadmap} />
+      {f.roadmap && <RoadmapPin roadmap={f.roadmap} />}
 
       <div className="px-3.5 pt-3 pb-3.5">
         <Heading className="text-[1.05rem] leading-snug font-semibold break-words text-foreground">{f.title}</Heading>

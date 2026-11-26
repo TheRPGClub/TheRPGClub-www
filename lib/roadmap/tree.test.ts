@@ -11,6 +11,7 @@ const item = (id: number, shipped: boolean): RoadmapItem => ({
   github_issue_url: null,
   position: id,
   shipped_at: shipped ? "2026-11-20T10:00:00Z" : null,
+  feedback: [],
 });
 
 const milestone = (over: Partial<RoadmapMilestone> = {}): RoadmapMilestone => ({

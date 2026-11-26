@@ -1,6 +1,6 @@
 // The Roadmap as the API sends it (spec api#505, `GET /api/v1/roadmap`).
 // Client-safe: types only.
-import type { DatePrecision } from "@/lib/api/types";
+import type { DatePrecision, FeedbackKind, FeedbackStatus } from "@/lib/api/types";
 
 // Whether a Roadmap Item touches the bot, the website or both; null when
 // staff didn't say.
@@ -16,6 +16,19 @@ export interface RoadmapItem {
   position: number;
   // When staff marked it Shipped (ISO time); null until then.
   shipped_at: string | null;
+  // Its linked Feedback, oldest first (www#233). A Feedback sits on one
+  // item at most.
+  feedback: RoadmapFeedback[];
+}
+
+// A Feedback linked to a Roadmap Item, as the item carries it.
+export interface RoadmapFeedback {
+  id: number;
+  title: string;
+  kind: FeedbackKind;
+  status: FeedbackStatus;
+  // Approved with its GitHub issue closed.
+  done: boolean;
 }
 
 export interface RoadmapMilestone {

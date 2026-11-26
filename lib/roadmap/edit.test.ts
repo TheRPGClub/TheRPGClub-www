@@ -27,6 +27,7 @@ const item = (id: number, milestone_id: number, shipped = false): RoadmapItem =>
   github_issue_url: null,
   position: id,
   shipped_at: shipped ? "2026-11-20T10:00:00Z" : null,
+  feedback: [],
 });
 
 const ms = (id: number, position: number, items: RoadmapItem[], reached_at: string | null = null): RoadmapMilestone => ({
@@ -51,6 +52,13 @@ describe("item changes", () => {
     expect(r.milestones[0].items.map((i) => i.title)).toEqual(["Item 1", "Renamed"]);
     const added = upsertItem(roadmap(), item(7, 3));
     expect(added.milestones[2].items.map((i) => i.id)).toEqual([7]);
+  });
+
+  it("moves linked Feedback to the saved item", () => {
+    const link = { id: 5, title: "Ask", kind: "feature_request" as const, status: "approved" as const, done: false };
+    const before = upsertItem(roadmap(), { ...item(1, 1), feedback: [link] });
+    const after = upsertItem(before, { ...item(2, 1), feedback: [link] });
+    expect(after.milestones[0].items.map((i) => i.feedback.map((f) => f.id))).toEqual([[], [5]]);
   });
 
   it("removes and ships items", () => {
@@ -114,8 +122,12 @@ describe("forms", () => {
   });
 
   it("checks an item before it is sent", () => {
-    const ok = { title: " Roadmap ", blurb: "This page.", bot: false, web: true, github_issue_url: "", shipped: false };
-    expect(itemPayload(ok)).toEqual({ data: { title: "Roadmap", blurb: "This page.", area: "website", github_issue_url: null } });
+    const ok = { title: " Roadmap ", blurb: "This page.", bot: false, web: true, github_issue_url: "", shipped: false, feedback: [] };
+    expect(itemPayload(ok)).toEqual({
+      data: { title: "Roadmap", blurb: "This page.", area: "website", github_issue_url: null, feedback_ids: [] },
+    });
+    const linked = { ...ok, feedback: [{ id: 7, title: "T", kind: "suggestion" as const, status: "pending" as const, done: false }] };
+    expect(itemPayload(linked)).toMatchObject({ data: { feedback_ids: [7] } });
     expect(itemPayload({ ...ok, blurb: " " })).toHaveProperty("error");
     expect(itemPayload({ ...ok, github_issue_url: "https://github.com/a/b/pull/3" })).toHaveProperty("error");
     expect(itemPayload({ ...ok, github_issue_url: "https://github.com/a/b/issues/3" })).toHaveProperty("data");

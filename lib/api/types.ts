@@ -964,6 +964,15 @@ export interface Feedback {
   upvote_count: number;
   viewer_upvoted: boolean;
   last_activity_at?: string;
+  // The Roadmap Item it is linked to (spec api#505): null when it isn't, or
+  // when the viewer isn't shown the Roadmap.
+  roadmap?: FeedbackRoadmap | null;
+}
+
+export interface FeedbackRoadmap {
+  item_id: number;
+  milestone_name: string;
+  shipped: boolean;
 }
 
 // Each kind's Open (Done included), Closed and Done counts, unfiltered.

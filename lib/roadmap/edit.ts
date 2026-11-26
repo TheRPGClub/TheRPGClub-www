@@ -4,8 +4,9 @@
 // dialog's default destination, and the item and Milestone forms. Every
 // function returns a new Roadmap and leaves its argument alone. Client-safe.
 import type { DatePrecision } from "@/lib/api/types";
+import { claimFeedback } from "./feedback";
 import { isShipped } from "./tree";
-import type { Roadmap, RoadmapArea, RoadmapItem, RoadmapMilestone } from "./types";
+import type { Roadmap, RoadmapArea, RoadmapFeedback, RoadmapItem, RoadmapMilestone } from "./types";
 
 type Milestones = RoadmapMilestone[];
 
@@ -30,10 +31,10 @@ export function findItem(r: Roadmap, id: number): RoadmapItem | null {
 }
 
 // An item as the API sent it back: replaced where it is, or added at the end
-// of its Milestone when it is new.
+// of its Milestone when it is new. Feedback it linked leaves other items.
 export function upsertItem(r: Roadmap, item: RoadmapItem): Roadmap {
   const known = findItem(r, item.id) !== null;
-  return mapAll(r, (m) => {
+  return mapAll(claimFeedback(r, item), (m) => {
     if (known) return { ...m, items: m.items.map((i) => (i.id === item.id ? item : i)) };
     return m.id === item.milestone_id ? { ...m, items: [...m.items, item] } : m;
   });
@@ -140,6 +141,8 @@ export interface ItemDraft {
   web: boolean;
   github_issue_url: string;
   shipped: boolean;
+  // The linked Feedback, in the order staff added it.
+  feedback: RoadmapFeedback[];
 }
 
 export interface ItemPayload {
@@ -147,6 +150,8 @@ export interface ItemPayload {
   blurb: string;
   area: RoadmapArea | null;
   github_issue_url: string | null;
+  // Replaces the item's links exactly ([] clears them).
+  feedback_ids: number[];
 }
 
 export function itemDraft(item?: RoadmapItem | null): ItemDraft {
@@ -157,6 +162,7 @@ export function itemDraft(item?: RoadmapItem | null): ItemDraft {
     web: item?.area === "website" || item?.area === "both",
     github_issue_url: item?.github_issue_url ?? "",
     shipped: item ? isShipped(item) : false,
+    feedback: item?.feedback ?? [],
   };
 }
 
@@ -179,7 +185,7 @@ export function itemPayload(d: ItemDraft): { data: ItemPayload } | { error: stri
   if (url && (url.length > GITHUB_URL_MAX || !GITHUB_ISSUE.test(url))) {
     return { error: "The GitHub link must be an issue, like https://github.com/owner/repo/issues/12." };
   }
-  return { data: { title, blurb, area: areaOf(d.bot, d.web), github_issue_url: url || null } };
+  return { data: { title, blurb, area: areaOf(d.bot, d.web), github_issue_url: url || null, feedback_ids: d.feedback.map((f) => f.id) } };
 }
 
 // The Milestone form.
