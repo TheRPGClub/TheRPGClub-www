@@ -7,7 +7,6 @@ import {
   markOf,
   newestPosted,
   packTiles,
-  rowWhen,
   sinceLabel,
   siteInitial,
   splitCatchup,
@@ -70,7 +69,7 @@ describe("splitCatchup", () => {
     expect(old.newCount).toBe(0);
   });
 
-  it("holds only Seen rows on a later page", () => {
+  it("holds only Seen items on a later page", () => {
     const c = splitCatchup({ news_mark: MARK, new_count: 4 }, items(10), items(3), 2);
     expect(c.hero).toBeNull();
     expect(c.mosaic).toEqual([]);
@@ -170,11 +169,6 @@ describe("time labels", () => {
     expect(agoLabel("2026-11-02T08:00:00Z", now)).toBe("2 Nov");
   });
 
-  it("dates a Seen row", () => {
-    expect(rowWhen("2026-11-26T08:15:00Z", now)).toBe("08:15");
-    expect(rowWhen("2026-11-24T20:12:00Z", now)).toBe("Tue 20:12");
-    expect(rowWhen("2026-10-01T20:12:00Z", now)).toBe("1 Oct");
-  });
 });
 
 describe("newestPosted", () => {

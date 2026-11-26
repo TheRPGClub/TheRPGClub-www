@@ -61,7 +61,7 @@ export function newestListedAt(items: readonly { listed_at?: string | null }[]):
 }
 
 // The newest News Item the page showed. Catch-up shows the hero, the mosaic
-// and the page of Seen rows (a later page shows the rows alone); Show all
+// and the page of Seen items (a later page shows the rows alone); Show all
 // (`since`) shows its page of new items.
 type Shown = { posted_at: string; listed_at?: string | null };
 
@@ -84,7 +84,7 @@ export function newestShown(
 // Whether this view may move the mark: the unfiltered Catch-up page one, or
 // any unfiltered Show all page. The mark is one instant for every News
 // Category, so a filtered or searched view never moves it, nor do the later
-// pages of Seen rows (nothing new there).
+// pages of Seen items (nothing new there).
 export function beaconEligible(view: {
   categories: readonly string[];
   q: string;

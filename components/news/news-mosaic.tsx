@@ -3,7 +3,8 @@ import type { NewsItem } from "@/lib/news";
 import { packTiles, tileSize, type TilePlace } from "@/lib/news-catchup";
 import { NewsTile } from "./news-tile";
 
-// The new News Items as a mosaic in reading order: one column on a phone,
+// News Items as a mosaic in reading order (the new ones, or the Seen ones
+// without the new dot): one column on a phone,
 // two from a medium column, six from a wide one (container widths, not the
 // viewport). Each tile's place is worked out ahead (packTiles), so the grid
 // has no holes and the keyboard runs in the order the eye does. Rows are
@@ -16,11 +17,13 @@ export function NewsMosaic({
   nameOf,
   now,
   label,
+  fresh = true,
 }: {
   items: NewsItem[];
   nameOf: (key: string | null) => string;
   now: Date;
   label: string;
+  fresh?: boolean;
 }) {
   if (items.length === 0) return null;
   const sizes = items.map(tileSize);
@@ -38,7 +41,7 @@ export function NewsMosaic({
             style={{ "--a2": area(two[i]), "--a6": area(six[i]) } as CSSProperties}
             className="min-w-0 @md:[grid-area:var(--a2)] @3xl:[grid-area:var(--a6)] @md:[&>article]:min-h-0"
           >
-            <NewsTile item={item} size={sizes[i]} categoryName={nameOf(item.category_key)} now={now} />
+            <NewsTile item={item} size={sizes[i]} categoryName={nameOf(item.category_key)} now={now} fresh={fresh} />
           </li>
         ))}
       </ul>
