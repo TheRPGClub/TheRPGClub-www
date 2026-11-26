@@ -5,6 +5,7 @@ import {
   agoLabel,
   inkSegments,
   markOf,
+  newestPosted,
   packTiles,
   rowWhen,
   sinceLabel,
@@ -173,5 +174,16 @@ describe("time labels", () => {
     expect(rowWhen("2026-11-26T08:15:00Z", now)).toBe("08:15");
     expect(rowWhen("2026-11-24T20:12:00Z", now)).toBe("Tue 20:12");
     expect(rowWhen("2026-10-01T20:12:00Z", now)).toBe("1 Oct");
+  });
+});
+
+describe("newestPosted", () => {
+  const item = (id: string, posted_at: string) => ({ message_id: id, posted_at }) as NewsItem;
+
+  it("is the most recently posted, skipping missing reads", () => {
+    const a = item("a", "2026-11-26T09:00:00.000Z");
+    const b = item("b", "2026-11-26T10:00:00.000Z");
+    expect(newestPosted([a, undefined, b, null])).toBe(b);
+    expect(newestPosted([undefined, null])).toBeNull();
   });
 });

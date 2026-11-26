@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { newsHref, newsInk, parseNewsFilters } from "@/lib/news";
+import { newsHref, newsInk, type NewsFilters } from "@/lib/news";
 import type { NewsShelf } from "@/lib/news-shelves";
 import { InkSquare } from "../ink-square";
 import { NewsShelfCard } from "./news-shelf-card";
@@ -13,10 +13,19 @@ import { NewsShelfScroller } from "./news-shelf-scroller";
 
 const LABEL = "font-label font-bold tracking-[0.08em] uppercase";
 
-export function NewsShelfSection({ shelf, now }: { shelf: NewsShelf; now: Date }) {
+export function NewsShelfSection({
+  shelf,
+  filters,
+  now,
+}: {
+  shelf: NewsShelf;
+  // Shelves' default view with the visit's mark.
+  filters: NewsFilters;
+  now: Date;
+}) {
   const { category_key: key, name, today_count: today, items } = shelf;
   const headingId = `news-shelf-${key}`;
-  const seeAll = newsHref(parseNewsFilters({}), { categories: [key] });
+  const seeAll = newsHref(filters, { categories: [key] });
 
   return (
     <section aria-labelledby={headingId}>

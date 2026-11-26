@@ -35,7 +35,7 @@ export function NewsMasthead({
         }
         actions={<NewsTools rows={rows} filters={filters} markAllSeen={markAllSeen} />}
       />
-      <NewsTabs active={tab} />
+      <NewsTabs active={tab} mark={filters.mark} />
     </div>
   );
 }

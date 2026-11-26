@@ -1,16 +1,16 @@
 import { splitCatchup, type CatchupMarkMeta } from "@/lib/news-catchup";
 
-// The News Mark (spec api#494, ticket www#222): the moment up to which a
-// member has seen the News Hub. The News page moves it forward to the newest
-// News Item it showed when the member leaves or hides the tab (a beacon to
-// NEWS_MARK_PATH), and Mark all seen moves it to now. The API only ever
-// moves it forward. Client-safe and pure.
+// The News Mark (spec api#494, ticket www#222, fix pass): the moment up to
+// which a member has seen the News Hub. The unfiltered Catch-up moves it
+// forward to the newest `listed_at` it showed over the visit when the member
+// leaves or hides the tab (a beacon to NEWS_MARK_PATH), and Mark all seen
+// moves it to now. The API only ever moves it forward. Client-safe and pure.
 
 // The website's route handler the beacon posts to; it carries the session
 // to the API's `PUT /users/:id/news_mark`.
 export const NEWS_MARK_PATH = "/api/news/mark";
 
-// The beacon's body: the newest shown News Item's `posted_at`, exactly as
+// The beacon's body: the newest shown News Item's `listed_at`, exactly as
 // the API gave it (microseconds matter: that item must count as seen).
 export interface NewsMarkBeacon {
   news_mark: string;
@@ -43,12 +43,19 @@ function fraction(instant: string): string {
   return (instant.match(/\.(\d+)/)?.[1] ?? "").padEnd(9, "0");
 }
 
-// The newest `posted_at` among the items, as given; null with none.
-export function newestPostedAt(items: readonly { posted_at: string }[]): string | null {
+// The later of two instants (either may be missing), as given.
+function later(a: string | null, b: string | null): string | null {
+  if (!a) return b;
+  if (!b) return a;
+  return isLater(b, a) ? b : a;
+}
+
+// The newest `listed_at` among the items, as given; null with none. New
+// means newly listed, so this, not `posted_at`, is what the mark moves to.
+export function newestListedAt(items: readonly { listed_at?: string | null }[]): string | null {
   let newest: string | null = null;
-  for (const { posted_at } of items) {
-    if (!isIsoInstant(posted_at)) continue;
-    if (newest === null || isLater(posted_at, newest)) newest = posted_at;
+  for (const { listed_at } of items) {
+    if (isIsoInstant(listed_at)) newest = later(newest, listed_at);
   }
   return newest;
 }
@@ -56,20 +63,52 @@ export function newestPostedAt(items: readonly { posted_at: string }[]): string 
 // The newest News Item the page showed. Catch-up shows the hero, the mosaic
 // and the page of Seen rows (a later page shows the rows alone); Show all
 // (`since`) shows its page of new items.
+type Shown = { posted_at: string; listed_at?: string | null };
+
 export function newestShown(
   meta: CatchupMarkMeta | null | undefined,
-  top: readonly { posted_at: string }[] | null,
-  rows: readonly { posted_at: string }[],
+  top: readonly Shown[] | null,
+  rows: readonly Shown[],
   filters: { page: number; since: string | null },
 ): string | null {
-  if (filters.since || !top) return newestPostedAt(rows);
+  if (filters.since || !top) return newestListedAt(rows);
   type Item = Parameters<typeof splitCatchup>[1][number];
   const catchup = splitCatchup(meta, top as Item[], rows as Item[], filters.page);
-  return newestPostedAt([
+  return newestListedAt([
     ...(catchup.hero ? [catchup.hero] : []),
     ...catchup.mosaic,
     ...catchup.seen,
   ]);
+}
+
+// Whether this view may move the mark: the unfiltered Catch-up page one, or
+// any unfiltered Show all page. The mark is one instant for every News
+// Category, so a filtered or searched view never moves it, nor do the later
+// pages of Seen rows (nothing new there).
+export function beaconEligible(view: {
+  categories: readonly string[];
+  q: string;
+  page: number;
+  since: string | null;
+}): boolean {
+  if (view.categories.length > 0 || view.q !== "") return false;
+  return view.since !== null || view.page === 1;
+}
+
+// What the beacon knows over one visit: the visit's mark (from the address),
+// the newest `listed_at` the eligible views showed, forward only, and what
+// it sent already.
+export interface VisitBeacon {
+  mark: string | null;
+  newest: string | null;
+  sent: string | null;
+}
+
+// The visit after a view showed `shown` (null for nothing, or for a view
+// that may not move the mark). Another mark is another visit: start over.
+export function followVisit(visit: VisitBeacon | null, mark: string | null, shown: string | null): VisitBeacon {
+  if (!visit || visit.mark !== mark) return { mark, newest: shown, sent: null };
+  return { ...visit, newest: later(visit.newest, shown) };
 }
 
 // Whether leaving should move the mark to `newest`: there is something

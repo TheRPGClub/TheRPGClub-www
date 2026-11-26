@@ -39,6 +39,7 @@ export function NewsSearchField({
       {filters.categories.length > 0 && (
         <Input type="hidden" name="category" value={filters.categories.join(",")} />
       )}
+      {filters.mark && <Input type="hidden" name="mark" value={filters.mark} />}
       {/* The group pads its field beside an addon; here the gap spaces them. */}
       <InputGroup
         variant="search"

@@ -1,3 +1,4 @@
+import { isIsoInstant } from "@/lib/news-mark";
 import { firstParam, type RawSearchParams } from "@/lib/search-params";
 
 // The News Hub (spec api#355) as the News page reads it: the News Item and
@@ -44,6 +45,10 @@ export interface NewsItem {
   origin: "live" | "import";
   comment: string | null;
   posted_at: string;
+  // When the API listed it (first had a News Category): what the News Mark
+  // is compared with, so an item recorded late is still new. Microseconds,
+  // sent back exactly. Absent from an API older than the fix pass.
+  listed_at?: string | null;
   edited_at: string | null;
   link: NewsItemLink | null;
   images: NewsItemImage[];
@@ -69,8 +74,9 @@ function isNewsCategoryKey(value: string): value is NewsCategoryKey {
 
 // ---------------------------------------------------------------------------
 // URL state: the chosen News Categories (`?category=releases,industry`, in
-// category order), the search (`?q=`) and the page. Both filters are applied
-// by the API. Changing either returns to page one; paging keeps both.
+// category order), the search (`?q=`), the page, and the visit's mark
+// (`?mark=`). Both filters are applied by the API. Changing either returns to
+// page one; paging keeps both. The mark stays through all of it.
 
 export const NEWS_PATH = "/news";
 
@@ -90,6 +96,11 @@ export interface NewsFilters {
   // instant (the News Mark the page was read with), so the list holds still
   // while the mark moves. Null on Catch-up itself.
   since: string | null;
+  // The visit marker (`?mark=`): the News Mark this visit was read with, so
+  // the new/seen split holds for the whole visit (reloads and live refreshes
+  // too). Arriving without it is a new visit, which reads the stored News
+  // Mark and puts it here (visitMarkHref). Null without one.
+  mark: string | null;
 }
 
 // Keeps known keys in category order, once each. Takes the comma list this
@@ -108,16 +119,31 @@ export function parseNewsFilters(raw: RawSearchParams): NewsFilters {
     page: Number.isFinite(page) && page > 1 ? page : 1,
     categories: parseCategories(raw.category),
     q: (firstParam(raw.q) ?? "").trim(),
-    since: parseSince(firstParam(raw.since)),
+    since: parseInstant(firstParam(raw.since)),
+    mark: parseInstant(firstParam(raw.mark)),
   };
 }
 
-// An ISO 8601 instant the API will take; anything else is dropped, so a
-// hand-edited address never reaches the API as a 400.
-function parseSince(raw: string | undefined): string | null {
+// An ISO 8601 instant the API will take (with an offset); anything else is
+// dropped, so a hand-edited address never reaches the API as a 400.
+function parseInstant(raw: string | undefined): string | null {
   const value = raw?.trim();
-  if (!value || !/^\d{4}-\d{2}-\d{2}T/.test(value) || Number.isNaN(Date.parse(value))) return null;
-  return value;
+  return isIsoInstant(value) ? value : null;
+}
+
+// Where a new visit goes: the same address with the stored News Mark as its
+// visit marker, replacing the history entry. Null when the address is right
+// already: it carries a good mark (kept even if the stored one moved since),
+// or it is a first visit (no stored mark) with no mark to drop. A bad mark
+// in the address is dropped (parseNewsFilters left it out of `filters`).
+export function visitMarkHref(
+  filters: NewsFilters,
+  inAddress: string | undefined,
+  stored: string | null,
+): string | null {
+  if (filters.mark) return null;
+  if (!stored && inAddress === undefined) return null;
+  return newsHref(filters, { mark: stored });
 }
 
 export function hasNewsFilters(filters: NewsFilters): boolean {
@@ -136,6 +162,7 @@ export function newsHref(filters: NewsFilters, change: Partial<NewsFilters> = {}
   if (q) ps.set("q", q);
   if (next.since) ps.set("since", next.since);
   if (next.page > 1) ps.set("page", String(next.page));
+  if (next.mark) ps.set("mark", next.mark);
   // Keys never hold a comma of their own, and a literal comma is valid in a
   // query, so the list reads "releases,industry" rather than "%2C".
   const query = ps.toString().replaceAll("%2C", ",");
