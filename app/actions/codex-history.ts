@@ -14,7 +14,7 @@ import {
   type EntryWords,
 } from "@/lib/api/codex-write";
 import { dateParts, isDatePrecision } from "@/lib/codex/codex-date";
-import { storyToDiscord } from "@/lib/codex/discord-markdown";
+import { richTextToDiscord } from "@/lib/rich-text/discord-markdown";
 import { isHistoryKind } from "@/lib/codex/history";
 import { CODEX_PATH, HISTORY_PATH } from "@/lib/codex/paths";
 import { DESCRIPTION_SCHEMA, STORY_MAX, TITLE_MAX, sanitizeStory, storyPlainText } from "@/lib/codex/story-schema";
@@ -66,7 +66,7 @@ export async function saveHistoryEventAction(id: number | null, draft: HistoryDr
   if (description && storyPlainText(description).length > STORY_MAX) {
     return { ok: false, error: `A description fits in ${STORY_MAX} characters. Trim it a little.` };
   }
-  const body = description ? storyToDiscord(description, { siteUrl: await siteUrl() }) : "";
+  const body = description ? richTextToDiscord(description, { siteUrl: await siteUrl() }) : "";
   const data = {
     title,
     kind: draft.kind,

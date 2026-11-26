@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { storyToDiscord } from "./discord-markdown";
-import { sanitizeStory, storyPlainText } from "./story-schema";
+import { sanitizeStory } from "@/lib/codex/story-schema";
+import { richTextToDiscord } from "./discord-markdown";
 
 const t = (text: string, marks: Record<string, boolean> = {}) => ({ text, ...marks });
 const p = (...children: unknown[]) => ({ type: "p", children });
@@ -16,9 +16,9 @@ const img = (id: number, caption?: string) => ({
 });
 
 // What the save action does: sanitize, then convert.
-const convert = (value: unknown[], siteUrl?: string) => storyToDiscord(sanitizeStory(value) ?? [], { siteUrl });
+const convert = (value: unknown[], siteUrl?: string) => richTextToDiscord(sanitizeStory(value) ?? [], { siteUrl });
 
-describe("storyToDiscord", () => {
+describe("richTextToDiscord", () => {
   it("writes headings, a spoiler, a link and a mention as Discord markdown", () => {
     const body = convert([
       p(t("Three days after GameDB went live, "), mention("123456789012345678", "Loot Hoarder"), t(" typed it.")),
@@ -78,30 +78,5 @@ describe("storyToDiscord", () => {
 
   it("writes a link whose text is its address as the bare address", () => {
     expect(convert([p(link("https://example.com/", "https://example.com/"))])).toBe("<https://example.com/>");
-  });
-});
-
-describe("sanitizeStory", () => {
-  it("keeps mentions and uploaded images, and drops pending or unsafe ones", () => {
-    const value = sanitizeStory([
-      p(t("Hi "), mention("42", "Mog"), { type: "mention", userId: "<script>", value: "x", children: [{ text: "" }] }),
-      img(3, "  a   caption "),
-      { type: "img", pendingKey: "k1", url: "blob:http://x/1", children: [{ text: "" }] },
-      { type: "img", id: 4, url: "javascript:alert(1)", children: [{ text: "" }] },
-    ]);
-    expect(value).toEqual([
-      p(t("Hi "), { type: "mention", userId: "42", value: "Mog", children: [{ text: "" }] }, t("")),
-      { type: "img", id: 3, url: "https://cdn.example/codex/3.png", caption: "a caption", children: [{ text: "" }] },
-    ]);
-  });
-
-  it("strips NUL characters", () => {
-    expect(sanitizeStory([p(t("a\u0000b"))])).toEqual([p(t("ab"))]);
-  });
-});
-
-describe("storyPlainText", () => {
-  it("counts mentions as @Name and leaves images out", () => {
-    expect(storyPlainText([p(t("Hi "), mention("1", "Mog")), img(1) as never, p(t("Bye"))] as never)).toBe("Hi @Mog\nBye");
   });
 });

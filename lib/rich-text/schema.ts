@@ -45,6 +45,11 @@ export interface RichTextSchema {
 
 export const PARAGRAPH_TYPE = "p";
 export const LINK_TYPE = "a";
+// The Club Codex's inline elements (lib/codex/story-schema.ts). They live
+// here so the shared Discord converter (./discord-markdown.ts) knows them
+// without reaching into a feature module.
+export const MENTION_TYPE = "mention";
+export const IMAGE_TYPE = "img";
 
 // The marks the shared editor and renderer understand.
 export const RICH_TEXT_MARKS = [

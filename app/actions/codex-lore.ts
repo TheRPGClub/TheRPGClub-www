@@ -15,7 +15,7 @@ import {
   type CodexImageResult,
   type EntryWords,
 } from "@/lib/api/codex-write";
-import { storyToDiscord } from "@/lib/codex/discord-markdown";
+import { richTextToDiscord } from "@/lib/rich-text/discord-markdown";
 import { storyImageIds } from "@/lib/codex/lore-story";
 import { CODEX_PATH, LORE_PATH } from "@/lib/codex/paths";
 import { LORE_SCHEMA, STORY_MAX, TITLE_MAX, sanitizeStory, storyPlainText } from "@/lib/codex/story-schema";
@@ -71,7 +71,7 @@ export async function saveLoreEntryAction(id: number | null, draft: LoreDraft): 
   if (storyPlainText(story).length > STORY_MAX) {
     return { ok: false, error: `A story fits in ${STORY_MAX} characters. Trim it a little.` };
   }
-  const body = storyToDiscord(story, { siteUrl: await siteUrl() });
+  const body = richTextToDiscord(story, { siteUrl: await siteUrl() });
   if (!body) return { ok: false, error: "Write the story first." };
   const dated = draft.occurred_on && draft.date_precision;
   const data = {
