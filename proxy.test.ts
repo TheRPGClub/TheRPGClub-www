@@ -35,6 +35,10 @@ describe("proxy", () => {
       "/auth/sign-in?return_to=%2Fgames",
       "/codex/history",
       "/codex/history?kind=staff&order=newest",
+      "/share-card",
+      "/share-card?round=42",
+      "/robots.txt",
+      "/api/revalidate",
     ])("passes %s through", (path) => {
       expect(passesThrough(proxy(request(path)))).toBe(true);
     });

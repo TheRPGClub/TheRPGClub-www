@@ -16,6 +16,12 @@ const PUBLIC_PATHS = new Set([
   // itself decides who reads it (Visitors only while the Feature is Live).
   // Writing it stays for Members (/codex/history/new and edit).
   "/codex/history",
+  // The Share Card (spec api#518): the link-preview image, robots.txt for
+  // the crawlers that fetch it, and the API's revalidate call, which checks
+  // its own shared secret.
+  "/share-card",
+  "/robots.txt",
+  "/api/revalidate",
 ]);
 const PUBLIC_PREFIXES = ["/auth/"];
 
