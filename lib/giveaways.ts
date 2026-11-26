@@ -219,3 +219,30 @@ export function shortDate(iso: string | null | undefined): string {
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 }
+
+// The giveaways tabs: Shelf, Claimed (by the viewer) and Donated (by the viewer).
+export type GiveawayTab = "shelf" | "claimed" | "donated";
+
+// Each tab's gift paper: the club's highlight for the Shelf, then two of the
+// platform inks.
+export const TAB_INKS: Record<GiveawayTab, string> = {
+  shelf: "var(--color-highlight)",
+  claimed: "#66c0f4",
+  donated: "#ff4fa3",
+};
+
+// The shelf a member sees: every unclaimed key but the ones they donated
+// (those live under their Donated tab).
+export function othersKeys(keys: readonly GameKey[], viewerId: string): GameKey[] {
+  return keys.filter((k) => k.donor_user_id !== viewerId);
+}
+
+// A member's donations for the Donated tab: the ones still on the shelf
+// first, then the claimed ones, each newest first.
+export function donationsInOrder(keys: readonly GameKey[]): GameKey[] {
+  const newest = (a: GameKey, b: GameKey) => b.created_at.localeCompare(a.created_at);
+  return [
+    ...keys.filter((k) => !k.claimed_by_user_id).sort(newest),
+    ...keys.filter((k) => k.claimed_by_user_id).sort(newest),
+  ];
+}

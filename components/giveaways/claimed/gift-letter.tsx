@@ -65,7 +65,7 @@ export function GiftLetter({
         <LetterKey value={gameKey.key_value} platform={gameKey.platform} title={title} revealed={justClaimed} />
         {jobId != null && <BotJobStatus jobId={jobId} what="The DM with your key" className="mt-3" />}
         <p className="mt-4 max-w-[60ch] text-sm text-slip-muted-foreground">
-          P.S. The bot also sent this key to your Discord DMs, and it stays here under Your claimed keys.
+          P.S. The bot also sent this key to your Discord DMs, and it stays here under the Claimed tab.
         </p>
       </div>
       {claimedOn && (

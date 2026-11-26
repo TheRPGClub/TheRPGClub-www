@@ -20,8 +20,6 @@ export interface GiveawayShelfProps {
   names: Record<string, string>;
   // The page header and platform tabs, replaced by the key panel on a claim.
   header: ReactNode;
-  // The counter along the foot (your keys, your donations, Donate).
-  counter: ReactNode;
   // Shown when the filter leaves no boxes.
   emptyCopy: string;
 }
@@ -33,7 +31,7 @@ interface Claimed {
 }
 
 // The shelf: a wall of presents, each game's whole cover tied in its
-// platform's ribbon, over the counter. A claim unwraps the box into the
+// platform's ribbon. A claim unwraps the box into the
 // letter with the key, in place, at once.
 export function GiveawayShelf({
   boxes,
@@ -42,7 +40,6 @@ export function GiveawayShelf({
   canRevokeAny,
   names,
   header,
-  counter,
   emptyCopy,
 }: GiveawayShelfProps) {
   const [claimed, setClaimed] = useState<Claimed | null>(null);
@@ -118,7 +115,6 @@ export function GiveawayShelf({
           })}
         </ul>
       )}
-      {counter}
     </div>
   );
 }
