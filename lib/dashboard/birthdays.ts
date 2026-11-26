@@ -9,6 +9,8 @@ import { daysBetween, type IsoDay } from "@/lib/challenges/dates";
 export interface BirthdayLineEntry {
   userId: string;
   name: string;
+  // Their Discord avatar hash, for the picture (memberPictureSrc).
+  discordAvatar: string | null;
   // "Today", "Tomorrow" or the day it falls on ("Sat 21 Nov").
   when: string;
   today: boolean;
@@ -35,7 +37,7 @@ export function birthdayLine(
     const days = daysBetween(today, b.on);
     if (days < 0) return [];
     const when = days === 0 ? "Today" : days === 1 ? "Tomorrow" : dayLabel(b.on);
-    return [{ userId: b.user_id, name: b.display_name, when, today: days === 0 }];
+    return [{ userId: b.user_id, name: b.display_name, discordAvatar: b.discord_avatar ?? null, when, today: days === 0 }];
   });
   return entries.length > 0 ? entries : null;
 }

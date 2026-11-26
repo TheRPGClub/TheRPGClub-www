@@ -47,7 +47,7 @@ export function MentionList({
               i === lit && "bg-card shadow-[inset_0_0_0_1.5px_var(--color-highlight)]",
             )}
           >
-            <MemberAvatar userId={user.user_id} name={memberName(user)} className="size-6.5 shrink-0" fallbackClassName="text-xs" />
+            <MemberAvatar userId={user.user_id} discordAvatar={user.discord_avatar} name={memberName(user)} className="size-6.5 shrink-0" fallbackClassName="text-xs" />
             <span className="min-w-0 flex-1 truncate">{memberName(user)}</span>
             {user.username && <span className="truncate text-xs text-faint-foreground">@{user.username}</span>}
           </div>

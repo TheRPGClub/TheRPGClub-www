@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { UserSummary } from "@/lib/api/types";
-import { avatarSrc, memberAvatarPath } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { memberName } from "@/lib/achievements";
 import { GameCover } from "@/components/issue/game-cover";
 import { MemberMark } from "@/components/challenges/host-badge";
@@ -32,10 +32,10 @@ export function listBody<T>({
 export const gameHref = (gameId: number) => `/games/${gameId}`;
 export const memberHref = (userId: string) => `/members/${userId}`;
 
-// A member as the panels draw them: their name and stored avatar (the API's
-// per-member avatar; the initials stand in when it is missing).
-export function memberOf(user: Pick<UserSummary, "user_id" | "global_name" | "username">) {
-  return { name: memberName(user), avatar: avatarSrc(memberAvatarPath(user.user_id)) };
+// A member as the panels draw them: their name and picture (memberPictureSrc;
+// the initials stand in when it is missing).
+export function memberOf(user: Pick<UserSummary, "user_id" | "global_name" | "username" | "discord_avatar">) {
+  return { name: memberName(user), avatar: memberPictureSrc(user) };
 }
 
 // A 40px cover, with the member who logged it as a small avatar on its

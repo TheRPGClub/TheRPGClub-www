@@ -36,9 +36,9 @@ describe("birthdayLine", () => {
       "2026-11-18",
     );
     expect(line).toEqual([
-      { userId: "id-Mara", name: "Mara", when: "Today", today: true },
-      { userId: "id-Theo", name: "Theo", when: "Sat 21 Nov", today: false },
-      { userId: "id-juno.exe", name: "juno.exe", when: "Wed 2 Dec", today: false },
+      { userId: "id-Mara", name: "Mara", discordAvatar: null, when: "Today", today: true },
+      { userId: "id-Theo", name: "Theo", discordAvatar: null, when: "Sat 21 Nov", today: false },
+      { userId: "id-juno.exe", name: "juno.exe", discordAvatar: null, when: "Wed 2 Dec", today: false },
     ]);
   });
 
@@ -54,6 +54,6 @@ describe("birthdayLine", () => {
 
   it("drops a Birthday a stale read still holds from yesterday", () => {
     const line = birthdayLine([upcoming("Mara", "2026-11-17"), upcoming("Theo", "2026-11-18")], "2026-11-18");
-    expect(line).toEqual([{ userId: "id-Theo", name: "Theo", when: "Today", today: true }]);
+    expect(line).toEqual([{ userId: "id-Theo", name: "Theo", discordAvatar: null, when: "Today", today: true }]);
   });
 });

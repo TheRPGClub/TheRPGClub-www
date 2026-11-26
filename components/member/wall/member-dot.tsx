@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { WallMember } from "@/lib/members/member-tiers";
-import { memberAvatarSrc } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -22,7 +22,7 @@ export function MemberDot({ member }: { member: WallMember }) {
         }
       >
         <Avatar variant="byline" className="size-12 text-lg after:hidden sm:size-14 sm:text-xl">
-          <AvatarImage src={memberAvatarSrc(member.userId)} alt="" />
+          <AvatarImage src={memberPictureSrc({ user_id: member.userId, discord_avatar: member.discordAvatar })} alt="" />
           <AvatarFallback className="font-label font-extrabold text-[length:inherit]">
             {member.name.slice(0, 1).toUpperCase()}
           </AvatarFallback>

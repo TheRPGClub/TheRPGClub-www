@@ -64,7 +64,7 @@ export function ReviewReader({
           className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_85%,transparent),color-mix(in_oklab,var(--color-background)_10%,transparent))]"
         />
         <div className="absolute bottom-4 left-4 flex items-center gap-2.5 md:bottom-4.5 md:left-5">
-          <ReviewerAvatar userId={review.user_id} name={authorName} size="lg" />
+          <ReviewerAvatar userId={review.user_id} discordAvatar={review.user?.discord_avatar} name={authorName} size="lg" />
           <div className="leading-tight">
             <Link
               href={`/members/${review.user_id}`}

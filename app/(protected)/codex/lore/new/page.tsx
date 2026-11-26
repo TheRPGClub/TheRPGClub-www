@@ -18,6 +18,7 @@ export default async function NewLoreEntryPage() {
   const me = {
     user_id: principal.discord_id,
     name: principal.global_name ?? principal.username,
+    discord_avatar: principal.avatar,
     avatar_url: memberAvatarPath(principal.discord_id),
   };
   return (

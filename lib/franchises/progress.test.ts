@@ -161,14 +161,14 @@ describe("memberGroups", () => {
 });
 
 describe("progressMemberAvatar", () => {
-  it("is the API's avatar endpoint, never a stale Discord hash", () => {
-    expect(progressMemberAvatar({ user_id: "42", avatar_url: "/api/v1/users/42/avatar" }, "https://api.test")).toBe(
-      "https://api.test/api/v1/users/42/avatar",
+  it("draws the member from Discord's image server, as the sidebar does", () => {
+    expect(progressMemberAvatar({ user_id: "42", discord_avatar: "abc" })).toBe(
+      "https://cdn.discordapp.com/avatars/42/abc.png?size=64",
     );
   });
 
-  it("builds the endpoint from the id when the API sends no path", () => {
-    expect(progressMemberAvatar({ user_id: "42" }, "https://api.test")).toBe("https://api.test/api/v1/users/42/avatar");
+  it("falls back to the API's endpoint without a hash", () => {
+    expect(progressMemberAvatar({ user_id: "42" })).toMatch(/\/api\/v1\/users\/42\/avatar$/);
   });
 });
 

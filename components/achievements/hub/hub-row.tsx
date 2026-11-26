@@ -16,7 +16,7 @@ export function HubRow({ card }: { card: AchievementFeedGroup }) {
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-5 gap-y-3 border-t border-border py-3.5 first:border-t-0 md:grid-cols-[15rem_minmax(0,1fr)_auto]">
       <div className="flex min-w-0 items-center gap-3">
-        <ReviewerAvatar userId={card.user.user_id} name={name} size="sm" className="shrink-0" />
+        <ReviewerAvatar userId={card.user.user_id} discordAvatar={card.user.discord_avatar} name={name} size="sm" className="shrink-0" />
         <div className="flex min-w-0 flex-col">
           <Link href={memberAchievementsHref(card.user.user_id)} className={`font-label truncate text-[1.05rem] font-extrabold text-foreground ${LINK}`}>
             {name}

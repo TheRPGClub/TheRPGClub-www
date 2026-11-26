@@ -12,7 +12,7 @@ export function MemberPickerResult({ user }: { user: User }) {
       variant="result"
       className="group/result grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-3 px-2.5 py-2 text-left"
     >
-      <MemberAvatar userId={user.user_id} name={memberName(user)} className="size-8" fallbackClassName="text-sm" />
+      <MemberAvatar userId={user.user_id} discordAvatar={user.discord_avatar} name={memberName(user)} className="size-8" fallbackClassName="text-sm" />
       <span className="min-w-0">
         <span className="block truncate font-semibold">{memberName(user)}</span>
         <span className="block truncate text-xs text-faint-foreground">

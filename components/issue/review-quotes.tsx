@@ -54,7 +54,7 @@ export function ReviewQuotes({
                 </Link>
               </blockquote>
               <figcaption className="mt-3 flex items-center gap-2 text-[0.85rem] text-faint-foreground">
-                <ReviewerAvatar userId={review.user_id} name={name} size="sm" />
+                <ReviewerAvatar userId={review.user_id} discordAvatar={review.user?.discord_avatar} name={name} size="sm" />
                 <span>
                   <b className="font-semibold text-foreground">{name}</b> ·{" "}
                   {review.rating}/{MAX_RATING}

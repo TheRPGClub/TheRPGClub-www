@@ -1,7 +1,7 @@
 import { Cake } from "lucide-react";
 import { fetchUpcomingBirthdays } from "@/lib/api/birthdays";
 import { clubToday } from "@/lib/challenges/dates";
-import { avatarSrc, memberAvatarPath } from "@/lib/members/avatar";
+import { memberPictureSrc } from "@/lib/members/avatar";
 import { birthdayLine } from "@/lib/dashboard/birthdays";
 import { PANELS } from "@/lib/dashboard/panels";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,7 @@ export async function BirthdaysBody({ wide }: BodyProps) {
     row: (entry) => (
       <PanelItem
         key={entry.userId}
-        media={<RowAvatar name={entry.name} avatar={avatarSrc(memberAvatarPath(entry.userId))} size={30} />}
+        media={<RowAvatar name={entry.name} avatar={memberPictureSrc({ user_id: entry.userId, discord_avatar: entry.discordAvatar })} size={30} />}
         title={
           <span className={cn(entry.today && "font-headline text-[1.375rem] leading-none font-normal")}>{entry.name}</span>
         }

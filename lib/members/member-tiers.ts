@@ -28,6 +28,9 @@ const HOLDS: Record<RoleKey, (user: User) => boolean | undefined> = {
 
 export interface WallMember {
   userId: string;
+  // Their Discord avatar hash, for the picture from Discord's image server
+  // (memberPictureSrc); null if unknown.
+  discordAvatar: string | null;
   name: string;
   username: string | null;
   // Every role they hold, highest first; the first is their tier.
@@ -54,6 +57,7 @@ export function wallTiers(users: User[]): Tier[] {
     if (held.length === 0) continue;
     tiers.get(held[0].key)!.push({
       userId: user.user_id,
+      discordAvatar: user.discord_avatar ?? null,
       name: memberDisplayName(user),
       username: user.username,
       roles: held.map((r) => r.label),
