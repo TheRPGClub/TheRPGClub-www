@@ -5,6 +5,7 @@ import {
   fetchGotyVotes,
   readGoty,
 } from "@/lib/api/goty";
+import { memberTally } from "./member-tally";
 import type { GotyNomination, GotyVote, GotyVoteSummary } from "./types";
 
 // Everything /goty reads, in parallel where it can be: the Current GOTY
@@ -36,7 +37,7 @@ const HISTORY_LIMIT = 12;
 export async function loadGotyPage(): Promise<GotyPageData> {
   const [read, list] = await Promise.all([readGoty<GotyVote | null>(GOTY_CURRENT_PATH, null), fetchGotyVotes()]);
   const now = Date.now();
-  const current = read.ok ? read.data : null;
+  const current = read.ok && read.data ? memberTally(read.data) : null;
   const decided = [...list]
     .sort((a, b) => b.year - a.year)
     .filter((v: GotyVoteSummary) => v.phase === "decided" && v.year !== current?.year)

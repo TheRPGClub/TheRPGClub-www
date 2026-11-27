@@ -1,4 +1,5 @@
-import type { Nomination, NominationVote, VoteTallyRow } from "@/lib/api/types";
+import type { Nomination, NominationVote, VoteTallyRow, VotingRound } from "@/lib/api/types";
+import type { RoundTally } from "@/lib/api/voting-round";
 
 // The viewer's own votes on a ballot, plus the per-nomination counts they
 // affect: the state the board's optimistic layer builds on.
@@ -54,4 +55,13 @@ export function castOnTally(
     votes = rest;
   }
   return { counts, votes };
+}
+
+// The tally as a member-facing ballot may show it: no counts until the vote
+// has ended, whoever is looking. The API still hands Admins the live counts
+// (the admin console's private tally reads them), so the ballot drops them
+// here, before they reach the page, rather than only hiding them on screen.
+export function ballotTally(tally: RoundTally, round: Pick<VotingRound, "voting_ended">): RoundTally {
+  if (round.voting_ended || !tally.ok) return tally;
+  return { ...tally, rows: [], countsHidden: true };
 }

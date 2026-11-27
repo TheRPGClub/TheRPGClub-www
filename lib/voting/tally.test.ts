@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { Nomination, NominationVote, VoteTallyRow } from "@/lib/api/types";
-import { castOnTally, tallyState } from "@/lib/voting/tally";
+import type { RoundTally } from "@/lib/api/voting-round";
+import { ballotTally, castOnTally, tallyState } from "@/lib/voting/tally";
 
 const nom = (id: number, gameId: number | null) =>
   ({ nomination_id: id, gamedb_game_id: gameId }) as Nomination;
@@ -49,5 +50,22 @@ describe("castOnTally", () => {
     const empty = tallyState([], [vote(1, 10, "2026-03-08T00:00:00Z")]);
     expect(castOnTally(empty, nom(1, 10), 2, NOW).counts.get(1)).toBe(0);
     expect(castOnTally(start, nom(4, null), 2, NOW)).toBe(start);
+  });
+});
+
+describe("ballotTally", () => {
+  const tally: RoundTally = { rows: [row(1, 3)], cap: 2, countsHidden: false, ok: true };
+
+  it("drops the counts while the vote is open, even when the API sent them", () => {
+    expect(ballotTally(tally, { voting_ended: false })).toEqual({ rows: [], cap: 2, countsHidden: true, ok: true });
+  });
+
+  it("keeps the counts once the vote has ended", () => {
+    expect(ballotTally(tally, { voting_ended: true })).toBe(tally);
+  });
+
+  it("leaves a failed read as a failure", () => {
+    const failed = { ...tally, rows: [], ok: false };
+    expect(ballotTally(failed, { voting_ended: false })).toBe(failed);
   });
 });
