@@ -130,6 +130,42 @@ describe("proxy", () => {
     });
   });
 
+  // The root layout reads the Member's Theme from the session only on
+  // routes marked here; public pages always wear the default (spec api#523).
+  describe("marks signed-in routes for the Member's Theme", () => {
+    const marked = (response: Response) =>
+      response.headers.get("x-middleware-request-x-rpgclub-member-theme") === "1";
+    // A request header the proxy lets through, by Next's override list
+    // (missing when the proxy leaves the request headers alone).
+    const kept = (response: Response, name: string) =>
+      (response.headers.get("x-middleware-override-headers") ?? name).split(",").includes(name);
+
+    it.each(["/dashboard", "/games/12?tab=reviews", "/brand-new-page"])("marks %s", (path) => {
+      expect(marked(proxy(request(path, { rpgclub_token: "a-token" })))).toBe(true);
+    });
+
+    it.each(["/", "/join", "/codex/history", "/patch-notes/4"])(
+      "leaves %s unmarked, signed in or not",
+      (path) => {
+        const signedOut: Record<string, string> = {};
+        for (const cookies of [signedOut, { rpgclub_token: "a-token" }]) {
+          const response = proxy(request(path, cookies));
+          expect(passesThrough(response)).toBe(true);
+          expect(marked(response)).toBe(false);
+        }
+      },
+    );
+
+    it("drops a mark the browser sent to a public page", () => {
+      const req = request("/", { rpgclub_token: "a-token" });
+      req.headers.set("x-rpgclub-member-theme", "1");
+      const response = proxy(req);
+      expect(marked(response)).toBe(false);
+      expect(kept(response, "x-rpgclub-member-theme")).toBe(false);
+      expect(kept(response, "cookie")).toBe(true);
+    });
+  });
+
   describe("the matcher", () => {
     // Every file in public/ and the app's metadata files (favicon, icons,
     // manifest, robots.txt from app/robots.ts) are public and skip the
