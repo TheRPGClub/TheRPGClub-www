@@ -10,6 +10,7 @@ import { featureView } from "@/lib/features";
 import { requireAuth } from "@/lib/session";
 import { isModeratorOrAbove, staffSectionsFor } from "@/lib/staff";
 import { parseSettingsTab } from "@/lib/settings-tabs";
+import { themeCards } from "@/lib/theme-picker";
 import { clubDefaultNames, pinRules, pinsCustomised } from "@/lib/pinned-pages";
 import { SettingsView } from "@/components/settings/settings-view";
 
@@ -54,6 +55,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       pinsCustomised={pinsCustomised(session)}
       pinsDefault={clubDefaultNames(pinRules(session).clubDefault)}
       panelsCustomised={panels?.customised === true}
+      themes={themeCards(session.themes)}
       newsCategories={newsCategories}
       hiddenPlatforms={hiddenRead === "not_found" ? null : { hidden: hiddenRead, choices: platformChoices }}
       birthDate={birthDate}

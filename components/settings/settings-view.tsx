@@ -3,6 +3,7 @@ import type { ChallengeDmsData } from "@/lib/challenge-settings";
 import type { FeaturePreferences } from "@/lib/feature-preferences";
 import type { NewsCategoryPreferences } from "@/lib/news-category-preferences";
 import type { StaffSection } from "@/lib/staff";
+import type { ThemeCard } from "@/lib/theme-picker";
 import {
   featuresTabNote,
   layoutTabNote,
@@ -31,6 +32,9 @@ export interface SettingsViewProps {
   // The club default Pinned Pages by name ("Voting, Games, Members and News").
   pinsDefault: string;
   panelsCustomised: boolean;
+  // The Theme picker's cards, for Your layout's top row (ticket www#250;
+  // its look is still being picked). Null leaves the row out.
+  themes: ThemeCard[] | null;
   // Null for a member who can't open the News Hub, or when the read failed.
   newsCategories: NewsCategoryPreferences | null;
   // Null for a member who can't use the Release Calendar.
