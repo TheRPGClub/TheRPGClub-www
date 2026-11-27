@@ -7,6 +7,7 @@ import {
   VOTING_CATEGORIES,
   type RoundTally,
 } from "@/lib/api/voting-round";
+import { ballotTally } from "@/lib/voting/tally";
 
 // One track of the round as the voting page shows it.
 export interface TrackData {
@@ -30,7 +31,9 @@ export async function loadRound(
     VOTING_CATEGORIES.map(async (category) => {
       const [nominations, tally, userVotes] = await Promise.all([
         fetchNominations(category, round.round_number),
-        ballot ? fetchTally(category, round.round_number) : Promise.resolve(NO_TALLY),
+        ballot
+          ? fetchTally(category, round.round_number).then((tally) => ballotTally(tally, round))
+          : Promise.resolve(NO_TALLY),
         // Own votes are only readable (and only castable) while the window
         // is open; a finished round is just its tally.
         round.voting_open && viewerId

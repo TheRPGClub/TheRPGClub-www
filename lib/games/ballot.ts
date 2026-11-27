@@ -10,6 +10,7 @@ import {
   VOTING_CATEGORIES,
   VOTING_CATEGORY_TITLE,
 } from "@/lib/api/voting-round";
+import { ballotTally } from "@/lib/voting/tally";
 
 // One of the game page's ballot strips (GameBallotPanel).
 export interface GameBallot {
@@ -73,7 +74,7 @@ async function ballotPanel(
   if (!forGame.length) return null;
 
   const [tally, userVotes] = await Promise.all([
-    fetchTally(category, round),
+    fetchTally(category, round).then((tally) => ballotTally(tally, voting)),
     voting.voting_open && userId
       ? fetchUserVotes(category, round, userId)
       : Promise.resolve([]),
