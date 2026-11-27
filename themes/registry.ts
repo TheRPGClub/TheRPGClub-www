@@ -35,11 +35,27 @@ export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, TEST_THEME];
 
 export const DEFAULT_THEME = MONTHLY_ISSUE;
 
+// Set by proxy.ts on a signed-in route's request, and stripped from every
+// other: the root layout reads the Member's Theme from the session only when
+// it is there, so public pages always get the default (spec api#523).
+export const MEMBER_THEME_HEADER = "x-rpgclub-member-theme";
+
 type ThemeEnv = { NODE_ENV?: string; DEV_THEME?: string };
 
-// The Theme for this request. Always the default for now (the Member's choice
-// is a follow-up spec); in development DEV_THEME=<name> picks another.
-export function resolveTheme(env: ThemeEnv): Theme {
-  if (env.NODE_ENV !== "development" || !env.DEV_THEME) return DEFAULT_THEME;
-  return THEMES.find((theme) => theme.name === env.DEV_THEME) ?? DEFAULT_THEME;
+// A shipped Theme by its key (the API's Theme keys, which it resolves for
+// the Member). A development-only Theme never comes from the session.
+function shippedTheme(key: string | null | undefined): Theme | undefined {
+  return THEMES.find((theme) => theme.name === key && !theme.devOnly);
+}
+
+// The Theme for this request: the Member's Theme from the session (null on
+// public pages, or when the session read failed), falling back to the
+// default for a key this website has no stylesheet for. In development
+// DEV_THEME=<name> overrides it.
+export function resolveTheme(env: ThemeEnv, memberTheme?: string | null): Theme {
+  if (env.NODE_ENV === "development" && env.DEV_THEME) {
+    const devTheme = THEMES.find((theme) => theme.name === env.DEV_THEME);
+    if (devTheme) return devTheme;
+  }
+  return shippedTheme(memberTheme) ?? DEFAULT_THEME;
 }
