@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_THEME, THEMES, resolveTheme } from "./registry";
+import { DEFAULT_THEME, THEMES, resolveTheme, shipsTheme } from "./registry";
 
 describe("resolveTheme", () => {
   it("is the Monthly Issue Theme, in dark mode, by default", () => {
@@ -75,5 +75,13 @@ describe("the registry and the API's Theme keys", () => {
 
   it("makes the default Theme the API's default", () => {
     expect(DEFAULT_THEME.name).toBe("monthly-issue");
+  });
+});
+
+describe("shipsTheme", () => {
+  it("is true for a shipped Theme and false for a development-only or unknown one", () => {
+    expect(shipsTheme("monthly-issue")).toBe(true);
+    expect(shipsTheme("test")).toBe(false);
+    expect(shipsTheme("nope")).toBe(false);
   });
 });

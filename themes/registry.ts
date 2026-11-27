@@ -48,6 +48,12 @@ function shippedTheme(key: string | null | undefined): Theme | undefined {
   return THEMES.find((theme) => theme.name === key && !theme.devOnly);
 }
 
+// Whether this website can draw the Theme with this key: the Settings
+// picker offers only those, since any other renders as the default.
+export function shipsTheme(key: string): boolean {
+  return shippedTheme(key) !== undefined;
+}
+
 // The Theme for this request: the Member's Theme from the session (null on
 // public pages, or when the session read failed), falling back to the
 // default for a key this website has no stylesheet for. In development
