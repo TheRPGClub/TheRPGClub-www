@@ -47,6 +47,27 @@ export interface AppSession {
   // older API reads as nothing unseen (lib/patch-notes/patch-mark).
   patch_notes_unseen?: boolean;
   patch_mark?: number | null;
+  // The key of the Theme this Member sees right now, already resolved by the
+  // API (spec api#523): their stored choice when it is available to them,
+  // else the club default. Optional: an older API reads as the default.
+  theme?: string;
+  // For the Settings picker: the Themes this Member may choose (and their
+  // stored one, even when it is unavailable to them right now), plus that
+  // stored choice (null follows the club default).
+  themes?: SessionThemes;
+}
+
+export interface SessionTheme {
+  key: string;
+  name: string;
+  released: boolean;
+  // Whether this Member may choose it now (unreleased Themes are staff-only).
+  available: boolean;
+}
+
+export interface SessionThemes {
+  chosen: string | null;
+  list: SessionTheme[];
 }
 
 export function discordAvatarUrl(
