@@ -78,7 +78,7 @@ export function MastheadTabs<K extends string>({
   );
 
   return (
-    <Tabs value={value} onValueChange={(v) => onValueChange(v as K)} className="block">
+    <Tabs data-slot="masthead-tabs" value={value} onValueChange={(v) => onValueChange(v as K)} className="block">
       {frame ? frame(row) : row}
       {tabs.map((t) => (
         <TabsContent key={t.key} value={t.key} keepMounted className="pt-8 text-base">
