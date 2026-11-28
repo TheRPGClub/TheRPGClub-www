@@ -45,11 +45,6 @@ export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, AERO, TEST_THEME];
 
 export const DEFAULT_THEME = MONTHLY_ISSUE;
 
-// Set by proxy.ts on a signed-in route's request, and stripped from every
-// other: the root layout reads the Member's Theme from the session only when
-// it is there, so public pages always get the default (spec api#523).
-export const MEMBER_THEME_HEADER = "x-rpgclub-member-theme";
-
 type ThemeEnv = { NODE_ENV?: string; DEV_THEME?: string };
 
 // A shipped Theme by its key (the API's Theme keys, which it resolves for
@@ -64,9 +59,9 @@ export function shipsTheme(key: string): boolean {
   return shippedTheme(key) !== undefined;
 }
 
-// The Theme for this request: the Member's Theme from the session (null on
-// public pages, or when the session read failed), falling back to the
-// default for a key this website has no stylesheet for. In development
+// The Theme for this request: the Member's Theme from the session (null for
+// a Visitor, who has no session, or when the session read failed), falling
+// back to the default for a key this website has no stylesheet for. In development
 // DEV_THEME=<name> overrides it.
 export function resolveTheme(env: ThemeEnv, memberTheme?: string | null): Theme {
   if (env.NODE_ENV === "development" && env.DEV_THEME) {

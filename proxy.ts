@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { RETURN_TO_HEADER, SESSION_COOKIE, discordSignInUrl } from "@/lib/sign-in";
-import { MEMBER_THEME_HEADER } from "@/themes/registry";
 
 // Deny by default: every path is for Members unless it is listed here. This
 // is an optimistic check on the session cookie only and never calls the API;
@@ -36,27 +35,16 @@ function returnTo(request: NextRequest) {
   return `${pathname}${search}`;
 }
 
-// Lets a public page's request through. It always wears the default Theme,
-// so the Member Theme marker is dropped even if the browser sent one.
-function publicPage(request: NextRequest) {
-  if (!request.headers.has(MEMBER_THEME_HEADER)) return NextResponse.next();
-  const headers = new Headers(request.headers);
-  headers.delete(MEMBER_THEME_HEADER);
-  return NextResponse.next({ request: { headers } });
-}
-
 // Lets a Member's request through, telling the protected layout which page
-// it was (the layout sends an expired session back through sign-in to it),
-// and the root layout to dress it in the Member's Theme (themes/index.ts).
+// it was (the layout sends an expired session back through sign-in to it).
 function signedIn(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set(RETURN_TO_HEADER, returnTo(request));
-  headers.set(MEMBER_THEME_HEADER, "1");
   return NextResponse.next({ request: { headers } });
 }
 
 export function proxy(request: NextRequest) {
-  if (isPublic(request.nextUrl.pathname)) return publicPage(request);
+  if (isPublic(request.nextUrl.pathname)) return NextResponse.next();
   if (request.cookies.get(SESSION_COOKIE)?.value) return signedIn(request);
 
   // The website's own route handlers (the pickers' searches) are fetched by

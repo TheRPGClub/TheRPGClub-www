@@ -36,8 +36,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // The Theme and its declared light or dark mode, set on the server
-  // (api ADR-0008): the Member's own on signed-in routes, the default on
-  // public ones (themes/index.ts). Dialogs and sheets portal into <body>,
+  // (api ADR-0008): a signed-in Member's own on every page, the default for
+  // Visitors (themes/index.ts). Dialogs and sheets portal into <body>,
   // so they take it too.
   const { theme, fontClassName } = await rootTheme();
   return (

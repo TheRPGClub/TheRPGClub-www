@@ -1,11 +1,12 @@
 import { cache } from "react";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 
 import { getSession } from "@/lib/session";
+import { SESSION_COOKIE } from "@/lib/sign-in";
 
 import { aeroFonts } from "./aero/fonts";
 import { monthlyIssueFonts } from "./monthly-issue/fonts";
-import { MEMBER_THEME_HEADER, resolveTheme, type Theme } from "./registry";
+import { resolveTheme, type Theme } from "./registry";
 
 export { DEFAULT_THEME } from "./registry";
 
@@ -16,11 +17,13 @@ const FONT_CLASSES: Record<string, string> = {
   "aero": aeroFonts,
 };
 
-// The Member's Theme key on a signed-in route (proxy.ts marks those), from
-// the request's one session read; null on public pages, which never read the
-// session for a Theme, and when the read fails.
+// The signed-in Member's Theme key, from the request's one session read, on
+// every page they open, public ones included: data-theme and theme-color both
+// follow the session, so they change only at sign-in or sign-out, a full
+// load (spec api#523). A Visitor has no session cookie and wears the default
+// with no API call; a failed read falls back to it too.
 async function memberTheme(): Promise<string | null> {
-  if (!(await headers()).has(MEMBER_THEME_HEADER)) return null;
+  if (!(await cookies()).get(SESSION_COOKIE)?.value) return null;
   return (await getSession())?.theme ?? null;
 }
 
