@@ -69,8 +69,8 @@ export function DashboardIssueView({
     );
 
   return (
-    <div className="space-y-10">
-      <div className={cn("grid gap-5", rail && "lg:grid-cols-[1fr_23rem]")}>
+    <div data-slot="dashboard-issue" className="space-y-10">
+      <div data-slot="issue-spread" className={cn("grid gap-5", rail && "lg:grid-cols-[1fr_23rem]")}>
         {cover}
         {rail}
       </div>

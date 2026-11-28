@@ -148,23 +148,13 @@
             z-index: 1;
             background: transparent;
         }
-        /* The readability floor: until an area puts its sections in their
-           own glass windows (www#255-259), the page lies on one glass
-           window, so every word on it clears 4.5:1 over any part of the
-           scene. An area that windows its sections lifts this veil for its
-           pages (README.md). */
-        [data-slot="content-frame"] {
-            position: relative;
-            isolation: isolate;
-            &::before {
-                content: "";
-                position: absolute;
-                z-index: -1;
-                inset: 0.75rem 0.75rem 0.75rem;
-                border-radius: var(--radius-xl);
-                background: var(--aero-glass);
-                box-shadow: var(--aero-edge), var(--aero-day);
-                pointer-events: none;
+        /* No veil over the page: every section sits in its own glass
+           window (the areas' CSS), so the scene shows between them. On
+           the dashboard the band under the issue is left open for the
+           waterline, the splash and the dolphin (rendition O). */
+        @media (min-width: 1024px) {
+            [data-slot="dashboard-issue"] > [data-slot="previous-rounds"] {
+                margin-top: 10rem;
             }
         }
 
@@ -353,12 +343,13 @@
                     url("./assets/frame-tr.webp") right -60px top -50px / 190px 190px no-repeat,
                     url("./assets/frame-bl.webp") left -50px bottom -40px / 200px 200px no-repeat;
             }
-            /* Room for the sky and the globe above the first window. */
+            /* Room for the sky and the globe above the first window, and
+               for the horizon and the dolphin in the gap under the cover. */
             [data-slot="content-frame"] {
                 padding-top: calc(8rem + env(safe-area-inset-top));
-                &::before {
-                    inset: calc(7rem + env(safe-area-inset-top)) 0.5rem 5.5rem;
-                }
+            }
+            [data-slot="issue-spread"] {
+                row-gap: 8rem;
             }
         }
     }
