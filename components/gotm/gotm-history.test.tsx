@@ -168,7 +168,7 @@ describe("GotmHistory", () => {
   });
 
   it("breaks headlines at the subtitle colon", () => {
-    expect(render([R120])).toMatch(/Metaphor:<\/span><span class="[^"]*text-highlight[^"]*">ReFantazio/);
+    expect(render([R120])).toMatch(/Metaphor:<\/span><span [^>]*class="[^"]*text-highlight[^"]*">ReFantazio/);
   });
 
   it("marks only the newest round's winners with the starburst, on the roll's first page", () => {

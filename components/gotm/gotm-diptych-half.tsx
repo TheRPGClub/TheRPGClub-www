@@ -75,6 +75,8 @@ export function GotmDiptychHalf({
         </span>
         {first ? (
           <h3
+            data-slot="gotm-leaf-title"
+            data-tone={kind === "gotm" ? "gotm" : "nr"}
             className={cn(
               "font-headline text-balance uppercase",
               lead ? "text-[1.5rem] sm:text-[2.25rem]" : "text-[1.375rem] sm:text-[1.875rem]",
@@ -83,7 +85,7 @@ export function GotmDiptychHalf({
             )}
           >
             <span className="block">{line1}</span>
-            {line2 && <span className={cn("block", ink.second)}>{line2}</span>}
+            {line2 && <span data-slot="gotm-leaf-title-second" className={cn("block", ink.second)}>{line2}</span>}
           </h3>
         ) : (
           // The row's tag above the art already counts its Nominations.
