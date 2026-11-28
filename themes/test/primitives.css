@@ -2192,10 +2192,44 @@
         [data-slot="tabs-list"][data-variant="desk"] {
             border-color: var(--gotm);
         }
-        /* The root components (www#252). */
-        [data-slot="corner-ribbon"][data-size="default"],
-        [data-slot="corner-ribbon"][data-size="sm"] {
+        /* The root components (www#252). The corner ribbon keeps Monthly's
+           geometry, rotation, size and type, since it has none of its own
+           (the slot carries no classes for them), in loud colours. */
+        [data-slot="corner-ribbon"] {
+            rotate: 45deg;
             outline: 2px dashed var(--gotm);
+        }
+        [data-slot="corner-ribbon"][data-size="default"] {
+            right: -3.5rem;
+            top: 1.75rem;
+            height: 1.75rem;
+            width: 13rem;
+        }
+        [data-slot="corner-ribbon"][data-size="sm"] {
+            right: -2.5rem;
+            top: 0.75rem;
+            height: 1.25rem;
+            width: 8rem;
+        }
+        [data-slot="corner-ribbon-band"] {
+            font-family: var(--typeface-label);
+            font-weight: 800;
+        }
+        [data-slot="corner-ribbon"][data-size="default"] [data-slot="corner-ribbon-band"] {
+            &[data-fit="roomy"] {
+                font-size: 10px;
+            }
+            &[data-fit="tight"] {
+                font-size: 9px;
+            }
+        }
+        [data-slot="corner-ribbon"][data-size="sm"] [data-slot="corner-ribbon-band"] {
+            &[data-fit="roomy"] {
+                font-size: 9px;
+            }
+            &[data-fit="tight"] {
+                font-size: 8px;
+            }
         }
         [data-slot="corner-ribbon"][data-tone="gotm"] [data-slot="corner-ribbon-band"],
         [data-slot="corner-ribbon"][data-tone="nr"] [data-slot="corner-ribbon-band"],
