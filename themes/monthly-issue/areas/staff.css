@@ -131,6 +131,10 @@
     /* The Theme picker's Monthly Issue swatch, wherever it is drawn (on an
        Aero page too): scoped to the swatch's own data-theme. */
     [data-theme="monthly-issue"][data-slot="theme-swatch"] {
+        /* Its own Theme's faces (the swatch carries their font classes). */
+        --font-sans: var(--typeface-body);
+        --font-display: var(--typeface-display);
+        --font-cond: var(--typeface-label);
         @apply rounded-xs inset-ring-1 inset-ring-border;
         [data-slot="theme-swatch-card"],
         [data-slot="theme-swatch-chip"] {

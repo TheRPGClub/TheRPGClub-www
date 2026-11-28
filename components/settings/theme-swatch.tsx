@@ -1,3 +1,6 @@
+import { aeroFonts } from "@/themes/aero/fonts";
+import { monthlyIssueFonts } from "@/themes/monthly-issue/fonts";
+
 // A Theme picker card's cover (ticket www#250, sketch A "Cover pair"): a
 // tiny page drawn under that Theme's own data-theme, so every colour, radius
 // and typeface comes from the Theme's tokens rather than from this markup:
@@ -7,13 +10,18 @@
 // own data-theme, never the page's). A Theme whose stylesheet this
 // website doesn't load yet sets no tokens there, so its swatch falls back to
 // the page's own Theme and still draws whole. It is a picture only.
+
+// Each Theme's faces, so a swatch draws in its own Theme's type on any page
+// (the root layout loads only the page's Theme's fonts).
+const FONTS: Record<string, string> = { "monthly-issue": monthlyIssueFonts, aero: aeroFonts };
+
 export function ThemeSwatch({ theme }: { theme: string }) {
   return (
     <span
       data-theme={theme}
       data-slot="theme-swatch"
       aria-hidden
-      className="@container relative block aspect-[16/10] overflow-hidden bg-background text-foreground"
+      className={`@container relative block aspect-[16/10] overflow-hidden bg-background text-foreground ${FONTS[theme] ?? ""}`}
     >
       <span data-slot="theme-swatch-wordmark" className="font-headline absolute top-[7%] left-[7%] text-[6.4cqw] leading-none">
         The <span className="text-gotm">RPG</span> Club

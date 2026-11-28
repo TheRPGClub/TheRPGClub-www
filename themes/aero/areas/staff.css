@@ -1,1 +1,621 @@
-/* aero: staff signature components (spec api#523, area ticket). Styled by data-slot; filled in by its area ticket. */
+/* aero: staff signature components (spec api#523, www#259), from the
+   approved sketchbook (signatures-2: settings, production desk, Feedback
+   Board, Roadmap, Patch Notes). Upright only, no paper props: the desk's
+   rubber stamps become straight gel seals, the Feedback slips an inset
+   glass well, the Roadmap badge an upright glass chip seated in the band,
+   the Skill Tree a water-filled glass tube with glass nodes. Styled by
+   data-slot; ../../monthly-issue/areas/staff.css holds the other costume. */
+
+@layer themes {
+    [data-theme="aero"] {
+        --staff-lift: 0 1px 2px rgb(16 64 96 / 0.12), 0 16px 34px -14px rgb(16 64 96 / 0.42);
+        --staff-mist: linear-gradient(180deg, rgb(255 255 255 / 0.97), rgb(242 249 253 / 0.94));
+        --staff-gloss: linear-gradient(180deg, rgb(255 255 255 / 0.45) 0%, rgb(255 255 255 / 0.08) 48%, rgb(255 255 255 / 0) 49%);
+        --staff-teal-gel: radial-gradient(circle at 35% 25%, rgb(255 255 255 / 0.8) 0 15%, rgb(255 255 255 / 0) 40%), linear-gradient(180deg, #5fd5ea, var(--ok));
+
+        /* ---- Desk heads: a soft 3px glass rule, never the paper rule. ---- */
+        [data-slot="desk-header"] {
+            border-bottom: 3px solid var(--border);
+        }
+        [data-slot="desk-rule-head"] {
+            border-bottom: 2px solid var(--border);
+        }
+        [data-slot="desk-rule-head"] .font-label,
+        [data-slot="desk-header"] .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+
+        /* ---- The in-tray: glass cards, a gel bead along the top whose tint
+           fades into the glass. ---- */
+        [data-slot="desk-tray-card"] {
+            --bar: var(--border-strong);
+            --bar-hi: #ffffff;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, color-mix(in srgb, var(--bar) 16%, #ffffff), #ffffff 3.5rem);
+            box-shadow: inset 0 0 0 1px var(--border), var(--aero-day);
+            transition: translate 160ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 160ms;
+        }
+        [data-slot="desk-tray-card"]::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 5px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            background: linear-gradient(180deg, var(--bar-hi) -40%, var(--bar) 70%);
+        }
+        [data-slot="desk-tray-card"][data-tone="open"] {
+            --bar: var(--highlight);
+            --bar-hi: #fff4c2;
+        }
+        [data-slot="desk-tray-card"][data-tone="bad"] {
+            --bar: var(--destructive);
+            --bar-hi: #ffb3a8;
+        }
+        [data-slot="desk-tray-card"]:hover {
+            translate: 0 -2px;
+            box-shadow: inset 0 0 0 1px var(--border-strong), var(--staff-lift);
+        }
+        [data-slot="desk-tray-card"]:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+            box-shadow: var(--aero-halo), var(--aero-day);
+        }
+        [data-slot="desk-tray-card"][data-tone="open"] [data-slot="desk-tray-count"] {
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="desk-tray-card"] > .font-label,
+        [data-slot="desk-tray-foot"] {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="desk-tray-foot"] {
+            color: var(--gotm);
+        }
+        [data-slot="desk-tray-empty"] {
+            border-radius: var(--radius-md);
+            border-width: 1.5px;
+            background: rgb(255 255 255 / 0.6);
+        }
+        [data-slot="desk-empty"] {
+            border-radius: var(--radius-md);
+            border-width: 1.5px;
+            background: rgb(255 255 255 / 0.6);
+        }
+
+        /* ---- A desk tab's tools: one glass window of rows. ---- */
+        [data-slot="desk-tools"] {
+            border: 0;
+            border-radius: var(--radius-lg);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), var(--aero-day);
+            padding: 0.25rem 1.1rem;
+        }
+        [data-slot="desk-tool"]:last-child {
+            border-bottom: 0;
+        }
+        [data-slot="desk-tool"] > a {
+            border-radius: var(--radius-sm);
+        }
+        [data-slot="desk-tool"] > a > .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="desk-tool"] > a:hover > .font-label {
+            color: var(--gotm);
+        }
+        [data-slot="desk-tool-tier"] {
+            border-radius: 9999px;
+            background: var(--muted);
+            box-shadow: inset 0 0 0 1px var(--border-strong);
+            padding: 0.1rem 0.5rem 0;
+            letter-spacing: 0;
+            color: var(--dim-foreground);
+        }
+
+        /* ---- Wire slips: frosted glass slips, a little apart. ---- */
+        [data-slot="wire-slip"] {
+            margin-top: 0.6rem;
+            border: 0;
+            border-radius: var(--radius-md);
+            background: var(--staff-mist);
+            box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.9), 0 0 0 1px var(--border), 0 4px 10px -6px rgb(16 64 96 / 0.35);
+            padding-inline: 0.9rem;
+        }
+        [data-slot="wire-slip-clock"] {
+            color: var(--faint-foreground);
+        }
+        [data-slot="wire-slip"][data-tone="queued"] [data-slot="wire-slip-clock"] {
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="wire-slip-clock"] small {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="wire-slip-quote"] cite {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="wire-slip-quote"][data-tone="bad"] {
+            border-color: color-mix(in srgb, var(--destructive) 60%, transparent);
+            color: #9c2416;
+        }
+        [data-slot="recent-jobs-empty"] {
+            border: 0;
+        }
+
+        /* ---- The bot job's state is a real seal: a straight gel badge
+           ringed in its ink, never a tilted rubber stamp. ---- */
+        [data-slot="desk-stamp"] {
+            --stamp: var(--aero-amber-ink);
+            --stamp-fill: #fff3cc;
+            rotate: none;
+            border-radius: 9999px;
+            background: var(--staff-gloss), var(--stamp-fill);
+            box-shadow: inset 0 0 0 2px var(--stamp), 0 2px 5px -1px rgb(16 64 96 / 0.3);
+            font-family: var(--typeface-display);
+            font-weight: 900;
+            color: var(--stamp);
+        }
+        [data-slot="desk-stamp"][data-tone="done"] {
+            --stamp: var(--aero-ok-ink);
+            --stamp-fill: #dcf6fa;
+        }
+        [data-slot="desk-stamp"][data-tone="failed"] {
+            --stamp: var(--destructive);
+            --stamp-fill: #fde3df;
+        }
+        [data-slot="desk-stamp"][data-size="sm"] {
+            padding: 0.2rem 0.75rem 0.15rem;
+            font-size: 0.95rem;
+            line-height: 1.1;
+        }
+        [data-slot="desk-stamp"][data-size="lg"] {
+            padding: 0.35rem 1.1rem 0.3rem;
+            font-size: 1.5rem;
+            line-height: 1.1;
+            box-shadow: inset 0 0 0 3px var(--stamp), 0 3px 8px -2px rgb(16 64 96 / 0.35);
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            [data-slot="desk-stamp"][data-size="lg"] {
+                animation: staff-seal-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+            }
+        }
+        [data-slot="proof-card-frame"]:not([data-variant="bare"]) {
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            box-shadow: inset 0 0 0 1px var(--border), var(--staff-lift);
+        }
+
+        /* ---- Feature Flag desk: each department in a glass window. ---- */
+        [data-slot="flag-desk"] > section {
+            border-radius: var(--radius-xl);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), var(--aero-day);
+            padding: 1rem 1.25rem 0.5rem;
+        }
+        /* A last change to Off: the destructive red (Monthly reads it in
+           its masthead red, which is GOTM there). */
+        [data-slot="flag-desk"] b.text-gotm {
+            color: var(--destructive);
+        }
+        [data-slot="flag-preview-chip"] {
+            border-radius: 9999px;
+            background: #fff8e0;
+            box-shadow: inset 0 0 0 1.5px var(--aero-amber-edge);
+            padding-inline: 0.55rem;
+            letter-spacing: 0;
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="flag-coverage-chip"] {
+            border-radius: 9999px;
+            background: var(--aero-gloss), #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border-strong);
+            padding-inline: 0.55rem;
+            letter-spacing: 0;
+        }
+
+        /* ---- Patch editor and Patch Notes: glass sheets and slides. ---- */
+        [data-slot="patch-sheet"] {
+            border-radius: var(--radius-xl);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border), var(--aero-day);
+        }
+        [data-slot="patch-sheet-toolbar"] {
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            background: var(--aero-gloss), linear-gradient(180deg, #f6fbfe, var(--muted));
+            box-shadow: inset 0 -1px 0 var(--border);
+        }
+        [data-slot="patch-number-chip"] {
+            border-radius: 9999px;
+            background: var(--muted);
+            box-shadow: inset 0 0 0 1px var(--border-strong);
+            padding: 0.1rem 0.55rem 0;
+        }
+        [data-slot="patch-scope-strip"] {
+            border-radius: 9999px;
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), 0 4px 10px -6px rgb(16 64 96 / 0.35);
+            padding-inline: 1rem;
+        }
+        [data-slot="patch-desk-list"] {
+            border: 0;
+            border-radius: var(--radius-lg);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), var(--aero-day);
+            padding: 0.25rem 1.1rem;
+        }
+        [data-slot="patch-desk-row"]:last-child {
+            border-bottom: 0;
+        }
+        [data-slot="patch-desk-row"] > a {
+            border-radius: var(--radius-sm);
+        }
+        :is([data-slot="patch-preview"], [data-slot="patch-scope"]) > :first-child {
+            border-bottom: 2px solid var(--border);
+        }
+        [data-slot="patch-card"] {
+            border: 0;
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border), var(--staff-lift);
+            padding-inline: 1.5rem;
+        }
+        [data-slot="patch-card-head"] {
+            border-bottom: 3px solid var(--border);
+        }
+        [data-slot="patch-card-head"] .font-headline:not(h2, h3) {
+            color: var(--gotm);
+        }
+        [data-slot="patch-card-head"] .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="patch-slip"] {
+            border: 0;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            background: var(--staff-mist);
+            box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.9), 0 0 0 1px var(--border), 0 6px 14px -8px rgb(16 64 96 / 0.4);
+        }
+        [data-slot="patch-slip"][data-variant="first"] {
+            background: linear-gradient(180deg, #eaf4fa, #f6fbfe);
+        }
+        [data-slot="patch-slip"]:hover {
+            box-shadow: inset 0 0 0 1px #ffffff, 0 0 0 1px var(--border-strong), var(--staff-lift);
+        }
+        [data-slot="patch-slip"]:hover span {
+            color: var(--gotm);
+        }
+        [data-slot="patch-slip"]:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* ---- Feedback Board: an aligned grid of glass cards, each headed by
+           a status gel band. ---- */
+        [data-slot="feedback-kind-tabs"] {
+            border-bottom-color: var(--border-strong);
+        }
+        [data-slot="feedback-kind-tab"] {
+            opacity: 1;
+        }
+        /* Off tabs recede by colour (still 4.5:1), never by opacity. */
+        [data-slot="feedback-kind-tab"]:not([aria-current]) :is(svg, [data-slot="feedback-kind-tab-name"]) {
+            color: var(--faint-foreground);
+        }
+        [data-slot="feedback-kind-tab"]:not([aria-current]) > span {
+            color: var(--dim-foreground);
+        }
+        [data-slot="feedback-kind-tab"]:not([aria-current]):hover :is(svg, [data-slot="feedback-kind-tab-name"]) {
+            color: var(--k);
+        }
+        [data-slot="feedback-kind-tab"][aria-current]::after {
+            height: 4px;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, color-mix(in srgb, var(--k) 45%, #ffffff), var(--k));
+        }
+        [data-slot="feedback-status-switch"] {
+            overflow: hidden;
+            border: 0;
+            border-radius: 9999px;
+            background: var(--aero-gloss), #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border-strong), 0 1px 3px rgb(16 64 96 / 0.15);
+        }
+        [data-slot="feedback-status-switch"] > a {
+            border: 0;
+            border-radius: 9999px;
+        }
+        [data-slot="feedback-status-switch"] > a[aria-current] {
+            background: var(--aero-gloss), var(--muted);
+            box-shadow: inset 0 -2px 0 var(--k), inset 0 0 0 1px rgb(24 84 150 / 0.25);
+        }
+        [data-slot="feedback-pinned-note"] {
+            border-radius: 9999px;
+            background: var(--aero-amber-gel);
+            box-shadow: inset 0 0 0 1px var(--aero-amber-edge), 0 4px 12px -4px rgb(150 90 0 / 0.45);
+        }
+        [data-slot="feedback-wall-empty"] {
+            border-radius: var(--radius-lg);
+            border-width: 1.5px;
+            background: rgb(255 255 255 / 0.6);
+        }
+        /* The Roadmap badge sits inside the band, so no room above a row. */
+        [data-slot="feedback-wall"] {
+            row-gap: 1.5rem;
+            padding-top: 1.25rem;
+        }
+        [data-slot="feedback-card"] {
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border), var(--staff-lift);
+        }
+        [data-slot="feedback-card"][data-pinned] {
+            box-shadow: 0 0 0 2px var(--highlight), 0 0 0 4px #ffffff, var(--staff-lift);
+        }
+        [data-slot="feedback-band"] {
+            min-height: 3.1rem;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            background: var(--staff-gloss), var(--band);
+            color: #ffffff;
+            text-shadow: 0 -1px 0 rgb(0 20 40 / 0.35);
+        }
+        [data-slot="feedback-band"][data-tone="pending"] {
+            background: var(--aero-amber-gel);
+            color: var(--highlight-foreground);
+            text-shadow: 0 1px 0 rgb(255 240 200 / 0.6);
+        }
+        [data-slot="feedback-band"]:is([data-tone="duplicate"], [data-tone="withdrawn"]) {
+            background: var(--staff-gloss), #c9d8e2;
+            color: var(--foreground);
+            text-shadow: none;
+            box-shadow: none;
+        }
+        [data-slot="feedback-card"]:has([data-slot="roadmap-pin"]) [data-slot="feedback-band"] {
+            padding-right: 9.25rem;
+        }
+        /* Beside the badge the status line wraps rather than truncating. */
+        [data-slot="feedback-card"]:has([data-slot="roadmap-pin"]) [data-slot="feedback-band"] > p:first-child {
+            flex-wrap: wrap;
+            row-gap: 0;
+        }
+        [data-slot="feedback-card"]:has([data-slot="roadmap-pin"]) [data-slot="feedback-band"] .truncate {
+            overflow: visible;
+            white-space: normal;
+        }
+        /* Amber as type on white is the amber ink (the gel is for fills). */
+        :is([data-slot="feedback-card"], [data-slot="patch-desk-row"], [data-slot="desk-tools"], [data-slot="flag-desk"]) .text-highlight {
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="feedback-card-foot"] {
+            border-color: var(--border);
+        }
+        /* A closed card's reason: an inset glass well, upright, no tape. */
+        [data-slot="closed-slip"] {
+            rotate: none;
+            margin-inline: 1rem;
+            border-radius: var(--radius-md);
+            background: var(--muted);
+            box-shadow: var(--aero-well);
+            color: var(--foreground);
+        }
+        [data-slot="closed-slip-head"] {
+            color: var(--phase-rejected-deep);
+        }
+        [data-slot="closed-slip-signed"] {
+            color: var(--dim-foreground);
+        }
+        [data-slot="roadmap-pin"] {
+            top: 0.45rem;
+            right: 0.45rem;
+            width: 8.25rem;
+            rotate: none;
+            border-radius: 0.75rem;
+            background: rgb(255 255 255 / 0.96);
+            box-shadow: inset 0 0 0 1.5px var(--aero-amber-edge), 0 2px 6px rgb(16 64 96 / 0.3);
+            transition: translate 160ms;
+        }
+        [data-slot="roadmap-pin"][data-tone="shipped"] {
+            box-shadow: inset 0 0 0 1.5px var(--ok), 0 2px 6px rgb(16 64 96 / 0.3);
+        }
+        [data-slot="roadmap-pin"]:hover {
+            translate: 0 -1px;
+        }
+        [data-slot="roadmap-pin"]:focus-visible {
+            outline-color: var(--ring);
+        }
+        [data-slot="roadmap-pin-tile"] {
+            border-radius: 0.375rem;
+            box-shadow: inset 0 0 0 1.5px var(--aero-amber-edge);
+        }
+        [data-slot="roadmap-pin"][data-tone="shipped"] [data-slot="roadmap-pin-tile"] {
+            background: var(--staff-teal-gel);
+            box-shadow: inset 0 0 0 1px #076b7d;
+            color: #ffffff;
+        }
+
+        /* ---- Roadmap: a water-filled glass tube with glass nodes. ---- */
+        [data-slot="skill-tree-trunk"] {
+            width: 8px;
+            border-radius: 9999px;
+            background:
+                linear-gradient(90deg, rgb(255 255 255 / 0.9) 0 25%, rgb(255 255 255 / 0) 26%),
+                linear-gradient(180deg, #b7e6fb, #59bde8 60%, #2f9fd6);
+            box-shadow: inset 0 0 0 1px rgb(23 105 189 / 0.3);
+        }
+        @media (min-width: 48rem) {
+            [data-slot="skill-tree-trunk"] {
+                margin-left: -4px;
+            }
+        }
+        [data-slot="tier-band"] {
+            border-radius: var(--radius-xl);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border), var(--aero-day);
+            padding: 0.9rem 1.25rem;
+        }
+        [data-slot="tier-band"] .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="roadmap-node"] {
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1.5px var(--border-strong), 0 4px 10px -6px rgb(16 64 96 / 0.35);
+        }
+        [data-slot="roadmap-node"][data-tone="shipped"] {
+            box-shadow: inset 0 0 0 1.5px var(--ok), 0 4px 10px -6px rgb(16 64 96 / 0.35);
+        }
+        [data-slot="roadmap-node"][data-sort-state="gap"] {
+            box-shadow: inset 0 0 0 2px var(--aero-amber-edge), 0 4px 10px -6px rgb(16 64 96 / 0.35);
+        }
+        [data-slot="roadmap-node"]::after {
+            height: 3px;
+            margin-top: -1.5px;
+            border-radius: 9999px;
+        }
+        [data-slot="roadmap-node-tile"] {
+            border-radius: 0.625rem;
+            box-shadow: inset 0 0 0 1.5px var(--border-strong);
+            color: var(--dim-foreground);
+        }
+        [data-slot="roadmap-node"][data-tone="shipped"] [data-slot="roadmap-node-tile"] {
+            background: var(--staff-teal-gel);
+            box-shadow: inset 0 0 0 1px #076b7d;
+            color: #ffffff;
+        }
+        [data-slot="learned-shelf"] {
+            border: 0;
+            border-radius: var(--radius-xl);
+            background: #ffffff;
+            box-shadow: inset 0 3px 0 var(--ok), inset 0 0 0 1px var(--border), var(--aero-day);
+            padding: 1.1rem 1.4rem;
+        }
+        [data-slot="learned-shelf"] .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+
+        /* ---- Settings: each list of switches in a glass window. ---- */
+        [data-slot="preference-list"] {
+            border: 0;
+            border-radius: var(--radius-xl);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), var(--aero-day);
+            padding-inline: 1.1rem;
+        }
+        [data-slot="preference-list"] > [data-slot="preference-row"]:last-child {
+            border-bottom: 0;
+        }
+        @media (min-width: 64rem) {
+            [data-slot="preference-list"].lg\:grid-cols-2 > [data-slot="preference-row"]:nth-last-child(2):nth-child(odd) {
+                border-bottom: 0;
+            }
+        }
+
+        /* The Theme picker (A · cover pair): white glass cards, the chosen
+           one ringed in sun-gold with a gel check bubble. */
+        [data-slot="toggle-group-item"][data-variant="theme-card"] {
+            overflow: hidden;
+            border-radius: var(--radius-xl);
+            background: #ffffff;
+            box-shadow: inset 0 0 0 1px var(--border), var(--aero-day);
+            transition: translate 200ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms;
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"]:hover {
+            translate: 0 -2px;
+            box-shadow: inset 0 0 0 1px var(--border-strong), var(--staff-lift);
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"][aria-pressed="true"] {
+            box-shadow: 0 0 0 3px var(--highlight), 0 0 0 5px #ffffff, 0 10px 24px -10px rgb(150 90 0 / 0.5);
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"]:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 6px;
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"] .text-highlight {
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"] .font-label {
+            letter-spacing: var(--label-tracking);
+        }
+        [data-slot="theme-card-tick"] {
+            background: var(--aero-amber-gel);
+            box-shadow: inset 0 0 0 1px var(--aero-amber-edge), 0 2px 6px rgb(150 90 0 / 0.4);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            :is([data-slot="desk-tray-card"], [data-slot="roadmap-pin"], [data-slot="toggle-group-item"][data-variant="theme-card"]) {
+                transition: none;
+            }
+            :is([data-slot="desk-tray-card"], [data-slot="roadmap-pin"], [data-slot="toggle-group-item"][data-variant="theme-card"]):hover {
+                translate: none;
+            }
+        }
+    }
+
+    /* The Theme picker's Aero swatch, wherever it is drawn (on a Monthly
+       Issue page too): scoped to the swatch's own data-theme. A sunlit
+       lagoon behind a glass pane, gel GOTM and NR pills, an amber gel
+       Vote, bubbles rising and a meadow bank. */
+    [data-theme="aero"][data-slot="theme-swatch"] {
+        /* Its own Theme's faces (the swatch carries their font classes). */
+        --font-sans: var(--typeface-body);
+        --font-display: var(--typeface-display);
+        --font-cond: var(--typeface-label);
+        border-radius: var(--radius-md);
+        background:
+            radial-gradient(60% 40% at 80% 8%, rgb(255 250 214 / 0.9), rgb(255 255 255 / 0) 70%),
+            linear-gradient(180deg, #0b55c9, #3a9cf0 52%, #bfeaff 70%, #22aee8 72%, #0f88d6);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
+        /* Bubbles. */
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 9% 76%, rgb(255 255 255 / 0.95) 0 1.1cqw, rgb(255 255 255 / 0.25) 1.6cqw, rgb(255 255 255 / 0.08) 4.4cqw, rgb(255 255 255 / 0) 4.6cqw),
+                radial-gradient(circle at 60% 88%, rgb(255 255 255 / 0.9) 0 0.6cqw, rgb(255 255 255 / 0.2) 1cqw, rgb(255 255 255 / 0.06) 2.6cqw, rgb(255 255 255 / 0) 2.8cqw),
+                radial-gradient(circle at 92% 74%, rgb(255 255 255 / 0.9) 0 0.8cqw, rgb(255 255 255 / 0.2) 1.3cqw, rgb(255 255 255 / 0.06) 3.4cqw, rgb(255 255 255 / 0) 3.6cqw);
+        }
+        /* The meadow bank. */
+        &::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0;
+            z-index: 0;
+            height: 10%;
+            border-radius: 60% 60% 0 0 / 100% 100% 0 0;
+            background: linear-gradient(180deg, #7dd957, #3a9a2a);
+        }
+        > * {
+            z-index: 1;
+        }
+        [data-slot="theme-swatch-wordmark"] {
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgb(0 40 100 / 0.5);
+        }
+        [data-slot="theme-swatch-wordmark"] .text-gotm {
+            color: #bfe6ff;
+        }
+        [data-slot="theme-swatch-card"] {
+            border-radius: 2.6cqw;
+            background: rgb(255 255 255 / 0.92);
+            box-shadow: inset 0 1px 0 #ffffff, 0 1.4cqw 3cqw -1.4cqw rgb(16 64 96 / 0.55);
+        }
+        [data-slot="theme-swatch-chip"] {
+            border-radius: 9999px;
+            background: linear-gradient(180deg, rgb(255 255 255 / 0.5) 0 45%, rgb(255 255 255 / 0) 46%), var(--gotm);
+            text-shadow: 0 -1px 0 rgb(0 20 60 / 0.4);
+        }
+        [data-slot="theme-swatch-chip"][data-tone="nr"] {
+            background: linear-gradient(180deg, rgb(255 255 255 / 0.5) 0 45%, rgb(255 255 255 / 0) 46%), var(--nr);
+        }
+        [data-slot="theme-swatch-side"] > span:not([data-slot]) {
+            background: #ffffff;
+        }
+        [data-slot="theme-swatch-action"] {
+            border-radius: 9999px;
+            background: var(--aero-amber-gel);
+            box-shadow: inset 0 0 0 1px var(--aero-amber-edge);
+        }
+    }
+}
+
+@keyframes staff-seal-in {
+    from {
+        opacity: 0;
+        scale: 1.15;
+    }
+}
