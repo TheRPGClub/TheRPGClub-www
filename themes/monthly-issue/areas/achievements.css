@@ -84,6 +84,15 @@
         [data-slot="binder-ring"] {
             @apply rounded-[9px] border-[3px] border-muted-foreground bg-card shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)];
         }
+        /* The set page's spread: each page shaded into the gutter. */
+        [data-slot="set-spread-page"] {
+            &[data-side="left"] {
+                @apply xl:shadow-[inset_-22px_0_26px_-20px_rgb(0_0_0/0.7)];
+            }
+            &[data-side="right"] {
+                @apply xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)];
+            }
+        }
         [data-slot="binder-tab"] {
             @apply rounded-r-[4px] shadow-[4px_4px_10px_rgb(0_0_0/0.45)];
         }

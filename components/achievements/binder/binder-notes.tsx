@@ -15,7 +15,7 @@ export function BinderNote({ children }: { children: React.ReactNode }) {
 
 export function LinkAccountCta({ userId }: { userId: string }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-md border border-dashed border-border-strong px-5 py-8 sm:px-7">
+    <div data-slot="binder-cta" className="flex flex-col items-start gap-4 rounded-md border border-dashed border-border-strong px-5 py-8 sm:px-7">
       <p className="font-headline text-3xl text-foreground sm:text-4xl">
         No Linked Accounts yet
       </p>

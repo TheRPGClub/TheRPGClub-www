@@ -42,7 +42,7 @@ export function BinderFilterTabs({
   ];
 
   return (
-    <div className="flex flex-wrap items-end gap-x-5 gap-y-1 pr-4 xl:pl-[calc(25rem+2.5rem)]">
+    <div data-slot="binder-filter-tabs" className="flex flex-wrap items-end gap-x-5 gap-y-1 pr-4 xl:pl-[calc(25rem+2.5rem)]">
       <nav aria-label="Status">
         <ul className="flex items-end gap-1">
           {statuses.map((s) => {
@@ -54,6 +54,8 @@ export function BinderFilterTabs({
                   href={href({ filter: { status: s.value } })}
                   aria-current={on ? "true" : undefined}
                   scroll={false}
+                  data-slot="binder-filter-tab"
+                  data-state={on ? "on" : "off"}
                   className={cn(
                     tabBase,
                     on
@@ -82,6 +84,9 @@ export function BinderFilterTabs({
                     aria-current={on ? "true" : undefined}
                     aria-label={`${PROVIDER_LABEL[p]}${on ? " (clear filter)" : ""}`}
                     scroll={false}
+                    data-slot="binder-filter-tab"
+                    data-provider={p}
+                    data-state={on ? "on" : dim ? "dim" : "off"}
                     className={cn(
                       tabBase,
                       PROVIDER_FILL[p],
