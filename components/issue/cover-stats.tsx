@@ -22,6 +22,7 @@ export function CoverStats({
   if (stats.length === 0) return null;
   return (
     <dl
+      data-slot="cover-stats"
       className={cn(
         // Tighter on co-winner panels so all three counts hold one line and
         // the action rows stay level across the split.
@@ -36,6 +37,8 @@ export function CoverStats({
             {statLabel(stat, "cover")}
           </dt>
           <dd
+            data-slot="cover-stat-value"
+            data-accent={stat.key === "playing" || undefined}
             className={cn(
               "font-headline leading-none",
               small ? "text-[1.4rem]" : narrow ? "text-[1.55rem]" : "text-[1.75rem]",

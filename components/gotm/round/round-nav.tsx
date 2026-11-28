@@ -22,6 +22,7 @@ export function RoundNav({
       <RoundCard round={previous} filters={filters} side="previous" />
       <Link
         href={gotmHistoryHref(filters)}
+        data-slot="round-nav-history"
         className="font-label flex items-center justify-center pt-1.5 text-[0.85rem] font-bold tracking-[0.12em] text-highlight uppercase hover:underline max-md:col-span-2 max-md:row-start-2 md:pt-0"
       >
         GOTM history
@@ -44,7 +45,7 @@ function RoundCard({
   const Arrow = next ? ArrowRight : ArrowLeft;
   const body = (
     <>
-      {round != null && <Arrow aria-hidden className="size-4.5 shrink-0 text-highlight" />}
+      {round != null && <Arrow aria-hidden data-slot="round-nav-arrow" className="size-4.5 shrink-0 text-highlight" />}
       <span className="min-w-0">
         <span className="font-headline block text-[1.0625rem] leading-none uppercase md:text-[1.375rem]">
           {round != null ? `Round ${round}` : next ? "Newest round" : "Oldest round"}

@@ -61,7 +61,7 @@ export function NominationCard({
   );
 
   return (
-    <li className="group/tile flex min-w-0 flex-col gap-2">
+    <li data-slot="nomination-card" data-tone={category === "gotm" ? "gotm" : "nr"} className="group/tile flex min-w-0 flex-col gap-2">
       {gameHref ? (
         <Link href={gameHref} tabIndex={-1} aria-hidden>
           {cover}

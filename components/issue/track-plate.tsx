@@ -1,7 +1,7 @@
 import type { VotingCategory } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
-// A track described as a flat plate of its own ink: what stands in for the
+// A track described as a plate of its own ink (data-tone): what stands in for the
 // winners when the public read fails or comes back empty (the front page's
 // flat hero, the first two /join slides).
 
@@ -27,6 +27,8 @@ export function TrackPlate({
   const { name, blurb } = TRACK_PLATES[kind];
   return (
     <section
+      data-slot="track-plate"
+      data-tone={kind === "gotm" ? "gotm" : "nr"}
       className={cn(
         "rounded-md px-5 pt-4.5 pb-5",
         kind === "gotm" ? "bg-gotm text-gotm-foreground" : "bg-nr text-nr-foreground",

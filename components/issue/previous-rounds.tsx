@@ -17,7 +17,7 @@ export function PreviousRounds({ rounds }: { rounds: GotmRound[] }) {
   if (rounds.length === 0) return null;
 
   return (
-    <section aria-labelledby="previous-rounds" className="space-y-4">
+    <section aria-labelledby="previous-rounds" data-slot="previous-rounds" className="space-y-4">
       <SectionHeading
         title={<span id="previous-rounds">Previous rounds</span>}
         action={
@@ -43,9 +43,10 @@ export function PreviousRounds({ rounds }: { rounds: GotmRound[] }) {
           return (
             <li
               key={round.round_number}
+              data-slot="previous-round"
               className="grid grid-cols-[4.25rem_1fr] gap-4 xl:border-r xl:border-border xl:pr-5 xl:last:border-r-0"
             >
-              <p className="font-headline text-[3.6rem] leading-[0.85]">
+              <p data-slot="previous-round-number" className="font-headline text-[3.6rem] leading-[0.85]">
                 {round.round_number}
                 {month && (
                   <span className="font-label mt-2 block text-[0.8rem] leading-tight font-extrabold text-faint-foreground">
@@ -81,10 +82,9 @@ function RoundPick({
   const body = (
     <>
       <span
-        className={cn(
-          "relative block h-28 overflow-hidden rounded-[3px] bg-muted after:absolute after:inset-x-0 after:bottom-0 after:h-1",
-          kind === "gotm" ? "after:bg-gotm" : "after:bg-nr",
-        )}
+        data-slot="round-pick-art"
+        data-tone={kind === "gotm" ? "gotm" : "nr"}
+        className="relative block h-28 overflow-hidden bg-muted after:absolute after:inset-x-0 after:bottom-0"
       >
         {art ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
@@ -100,6 +100,7 @@ function RoundPick({
         )}
       </span>
       <span
+        data-slot="round-pick-track"
         className={cn(
           "font-label mt-2 block text-xs tracking-[0.08em]",
           kind === "gotm" ? "text-gotm-soft" : "text-nr-soft",
@@ -107,7 +108,7 @@ function RoundPick({
       >
         {TRACK_LABEL[kind]}
       </span>
-      <span className="font-label block text-[0.95rem] leading-tight tracking-[0.02em] text-foreground">
+      <span data-slot="round-pick-title" className="font-label block text-[0.95rem] leading-tight tracking-[0.02em] text-foreground">
         {title}
       </span>
     </>

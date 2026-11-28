@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 const UNKNOWN_GAME_TITLE = "Unknown game";
 
 // One winner's panel of the cover story: its key art under a legibility
-// scrim, the masthead band, then the story at the foot.
+// scrim (each Theme draws it, data-layout "single" or "split"), the
+// masthead band, then the story at the foot.
 export function CoverPanel({
   kind,
   entry,
@@ -50,6 +51,8 @@ export function CoverPanel({
 
   return (
     <article
+      data-slot="cover-panel"
+      data-size={size}
       className={cn(
         "group/panel relative isolate flex min-h-80 overflow-hidden bg-black",
         count === 3 && lead && "sm:row-span-2",
@@ -60,6 +63,7 @@ export function CoverPanel({
         <img
           src={imageUrl}
           alt=""
+          data-slot="cover-panel-art"
           className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] motion-safe:transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/panel:scale-[1.03]"
         />
       )}
@@ -67,12 +71,9 @@ export function CoverPanel({
           single winner's cover also darkens its left half for the column. */}
       <div
         aria-hidden
-        className={cn(
-          "absolute inset-0 -z-10",
-          single
-            ? "bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_82%,transparent)_34%,color-mix(in_oklab,var(--color-background)_15%,transparent)_66%,color-mix(in_oklab,var(--color-background)_35%,transparent)_100%),linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_70%,transparent)_0%,transparent_40%)]"
-            : "bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_86%,transparent)_30%,color-mix(in_oklab,var(--color-background)_20%,transparent)_62%,color-mix(in_oklab,var(--color-background)_55%,transparent)_100%)]",
-        )}
+        data-slot="cover-panel-scrim"
+        data-layout={single ? "single" : "split"}
+        className="absolute inset-0 -z-10"
       />
 
       <div className={cn("flex w-full flex-col", small ? "p-5" : "p-6 sm:p-7")}>

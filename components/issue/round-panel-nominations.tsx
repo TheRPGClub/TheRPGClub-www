@@ -1,5 +1,4 @@
 import type { TrackedNomination } from "@/lib/dashboard/issue";
-import { cn } from "@/lib/utils";
 
 // The tall round panel's latest nominations: cover, game, nominator and the
 // track's tag.
@@ -9,7 +8,7 @@ export function RoundPanelNominations({
   nominations: TrackedNomination[];
 }) {
   return (
-    <div className="mt-3 flex-1 border-t-2 border-background">
+    <div data-slot="round-panel-nominations" className="mt-3 flex-1">
       <h3 className="font-label pt-2 pb-1 text-[0.8rem] font-extrabold tracking-[0.1em]">
         Latest nominations
       </h3>
@@ -20,9 +19,10 @@ export function RoundPanelNominations({
           return (
             <li
               key={`${nomination.category}-${nomination.nomination_id}`}
-              className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 border-t border-background/20 py-1.5 first:border-t-0"
+              data-slot="round-panel-nomination"
+              className="grid grid-cols-[1.9rem_1fr_auto] items-center gap-2.5 py-1.5"
             >
-              <span className="block h-10 w-[1.9rem] overflow-hidden rounded-[2px] bg-background/15">
+              <span data-slot="round-panel-cover" className="block h-10 w-[1.9rem] overflow-hidden">
                 {cover && (
                   // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
                   <img
@@ -44,10 +44,9 @@ export function RoundPanelNominations({
                 </small>
               </span>
               <span
-                className={cn(
-                  "font-label rounded-[2px] px-1.5 py-px text-[0.68rem] font-extrabold tracking-[0.08em] text-white",
-                  nomination.category === "gotm" ? "bg-gotm" : "bg-nr",
-                )}
+                data-slot="round-panel-tag"
+                data-tone={nomination.category === "gotm" ? "gotm" : "nr"}
+                className="font-label px-1.5 py-px text-[0.68rem] font-extrabold tracking-[0.08em]"
               >
                 {nomination.category === "gotm" ? "GOTM" : "NR"}
               </span>
