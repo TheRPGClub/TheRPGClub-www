@@ -36,6 +36,7 @@ export function CoverMasthead({
         <>
           <div className="flex items-end gap-3.5">
             <p
+              data-slot="cover-masthead-number"
               className={cn(
                 "font-headline text-[5.75rem] leading-[0.8] tracking-[-0.01em]",
                 TRACK[kind].number,
@@ -43,20 +44,20 @@ export function CoverMasthead({
             >
               {roundNumber}
             </p>
-            <p className="font-label pb-0.5 text-[0.95rem] leading-tight font-extrabold tracking-[0.08em] [text-shadow:0_1px_8px_rgb(0_0_0/0.85)]">
+            <p data-slot="cover-masthead-round" className="font-label pb-0.5 text-[0.95rem] leading-tight font-extrabold tracking-[0.08em]">
               Round {roundNumber}
-              <span className="block font-bold text-faint-foreground">
+              <span data-slot="cover-masthead-month" className="block font-bold text-faint-foreground">
                 {monthYear}
               </span>
             </p>
           </div>
           {count > 1 && (
-            <p className="font-label inline-flex rounded-xs bg-foreground px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.08em] text-background">
+            <p data-slot="cover-winner-count" className="font-label inline-flex rounded-xs bg-foreground px-1.5 py-px text-[0.8rem] font-extrabold tracking-[0.08em] text-background">
               {count} winners
             </p>
           )}
           {absentNote && (
-            <p className="font-label flex items-center gap-2 text-[0.82rem] tracking-[0.08em] text-faint-foreground [text-shadow:0_1px_8px_rgb(0_0_0/0.85)]">
+            <p data-slot="cover-absent-note" className="font-label flex items-center gap-2 text-[0.82rem] tracking-[0.08em] text-faint-foreground">
               <span
                 aria-hidden
                 className="size-2.5 rounded-full ring-2 ring-gotm ring-inset"

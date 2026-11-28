@@ -6,7 +6,7 @@ import type { JumpLine } from "@/lib/misprint";
 // reader can pick up from.
 export function JumpLines({ lines }: { lines: readonly JumpLine[] }) {
   return (
-    <nav aria-labelledby="continued-on">
+    <nav aria-labelledby="continued-on" data-slot="jump-lines">
       <h2
         id="continued-on"
         className="font-label border-b-2 border-foreground pb-2 text-[0.82rem] font-extrabold tracking-[0.08em] text-faint-foreground uppercase"
@@ -18,6 +18,7 @@ export function JumpLines({ lines }: { lines: readonly JumpLine[] }) {
           <li key={line.href} className="border-b border-border">
             <Link
               href={line.href}
+              data-slot="jump-line"
               className="group/jump grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 py-3.5 sm:grid-cols-[11.5rem_minmax(0,1fr)_auto]"
             >
               <span className="font-label text-[1.05rem] font-extrabold tracking-[0.07em] uppercase transition-colors group-hover/jump:text-highlight">

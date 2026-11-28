@@ -36,6 +36,8 @@ export function CoverStoryText({
         {count > 1 && (
           <p
             aria-label={`Winner ${"ABC"[index]}`}
+            data-slot="cover-winner-letter"
+            data-track={kind}
             className={cn(
               "font-headline mt-1 grid shrink-0 place-items-center rounded-xs leading-none",
               small ? "size-9 text-[1.6rem]" : "size-11 text-[2rem]",
@@ -46,14 +48,16 @@ export function CoverStoryText({
           </p>
         )}
         <h2
+          data-slot="cover-headline"
+          data-track={kind}
           className={cn(
             "font-headline min-w-0 text-balance",
             TITLE_SIZE[size],
             single && "max-w-[11ch]",
           )}
         >
-          {first && <span className="block">{first}</span>}
-          <span className={cn("block", track.accent)}>{second}</span>
+          {first && <span data-slot="cover-headline-first" className="block">{first}</span>}
+          <span data-slot="cover-headline-second" className={cn("block", track.accent)}>{second}</span>
         </h2>
       </div>
 
@@ -64,6 +68,7 @@ export function CoverStoryText({
 
       {!small && game.description && (
         <p
+          data-slot="cover-blurb"
           className={cn(
             "mt-3 line-clamp-3 text-dim-foreground",
             single ? "max-w-[52ch] text-[0.97rem]" : "max-w-[46ch] text-sm",

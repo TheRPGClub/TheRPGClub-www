@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 // hangs ribbon tails off a starburst, the track's own burst for its track's
 // Award and a paper burst for Game of the Year. Rosettes overlap at the
 // hero's top right; each one links to /goty. Laid out at desktop size and
-// scaled down on smaller screens, as one piece.
+// scaled down on smaller screens, as one piece. Each Theme draws it by its
+// slots: a Theme with no ribbons hides the tails (goty-rosette-tails), and
+// the band's lean is the Theme's.
 
 const INK: Record<RosetteBurst, { fill: string; band: string; letters: string }> = {
   gotm: { fill: "fill-gotm", band: "bg-gotm text-gotm-foreground", letters: "text-[1.45rem]" },
@@ -21,7 +23,7 @@ const INK: Record<RosetteBurst, { fill: string; band: string; letters: string }>
 function Tails({ burst, tail, year }: { burst: RosetteBurst; tail: string; year: number }) {
   const ink = INK[burst];
   return (
-    <span aria-hidden className="absolute top-[118px] left-7 block size-30">
+    <span aria-hidden data-slot="goty-rosette-tails" className="absolute top-[118px] left-7 block size-30">
       <svg
         viewBox="0 0 120 92"
         className="absolute top-[22px] left-0 h-[92px] w-30 drop-shadow-[0_6px_10px_rgba(0,0,0,0.4)]"
@@ -30,8 +32,9 @@ function Tails({ burst, tail, year }: { burst: RosetteBurst; tail: string; year:
         <polygon points="64,0 98,0 94,92 82,78 70,92" className={ink.fill} transform="rotate(-14 80 0)" />
       </svg>
       <span
+        data-slot="goty-rosette-band"
         className={cn(
-          "font-label absolute top-0 left-1/2 z-[2] flex h-[34px] -translate-x-1/2 -rotate-4 items-center gap-1.5 whitespace-nowrap px-2.5 text-[0.72rem] font-extrabold tracking-[0.05em] uppercase shadow-[0_6px_12px_rgb(0_0_0/0.35)]",
+          "font-label absolute top-0 left-1/2 z-[2] flex h-[34px] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap px-2.5 text-[0.72rem] font-extrabold tracking-[0.05em] uppercase shadow-[0_6px_12px_rgb(0_0_0/0.35)]",
           ink.band,
           !tail && "px-5",
         )}
@@ -46,6 +49,7 @@ function Tails({ burst, tail, year }: { burst: RosetteBurst; tail: string; year:
 export function GotyRosettes({ rosettes, className }: { rosettes: readonly Rosette[]; className?: string }) {
   return (
     <div
+      data-slot="goty-rosettes"
       className={cn(
         "absolute top-12 right-3 z-10 flex origin-top-right scale-[0.62] items-start md:top-16 md:right-10 md:scale-[0.8] lg:scale-100",
         className,
@@ -64,7 +68,7 @@ export function GotyRosettes({ rosettes, className }: { rosettes: readonly Roset
         const place = cn("relative block h-60 w-44 flex-none", i > 0 && "mt-[22px] -ml-9");
         if (!rosette.award) {
           return (
-            <span key={rosette.burst} className={place}>
+            <span key={rosette.burst} data-slot="goty-rosette" data-burst={rosette.burst} className={place}>
               {burst}
             </span>
           );
@@ -73,6 +77,8 @@ export function GotyRosettes({ rosettes, className }: { rosettes: readonly Roset
           <Link
             key={`${rosette.burst}-${rosette.award.year}`}
             href="/goty"
+            data-slot="goty-rosette"
+            data-burst={rosette.burst}
             aria-label={`${rosette.award.name} ${rosette.award.year}, see the GOTY Vote`}
             className={cn(
               place,

@@ -3,10 +3,12 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-// The notice slip: the one way the site says "that didn't work". A paper slip
-// pinned at a tilt over whatever it is about (the front page's cover art, the
-// join panel's top edge), with an Anton line, one plain sentence, and an
-// optional action and dismiss. The caller places it; the slip owns its look.
+// The notice slip: the one way the site says "that didn't work". It sits
+// over whatever it is about (the front page's cover art, the join panel's
+// top edge) with a headline, one plain sentence, and an optional action and
+// dismiss. The caller places it; each Theme draws it by its slot (the
+// Monthly Issue pins a paper slip at a tilt), and its role tells an alert
+// from a softer note.
 
 export function NoticeSlip({
   title,
@@ -34,17 +36,15 @@ export function NoticeSlip({
     <div
       role={role}
       data-slot="notice-slip"
-      className={cn(
-        "relative -rotate-2 rounded-xs bg-foreground px-5.5 pt-5 pb-5 text-background shadow-[0_12px_30px_rgb(0_0_0/0.5)]",
-        className,
-      )}
+      className={cn("relative px-5.5 pt-5 pb-5", className)}
     >
       {dismissHref && (
         <Link
           href={dismissHref}
           scroll={false}
           aria-label="Dismiss"
-          className="absolute top-2 right-2 grid size-8 place-items-center rounded-sm text-background/70 transition-colors hover:bg-background/10 hover:text-background focus-visible:outline-2 focus-visible:outline-background"
+          data-slot="notice-slip-dismiss"
+          className="absolute top-2 right-2 grid size-8 place-items-center transition-colors focus-visible:outline-2"
         >
           <X className="size-4.5" aria-hidden />
         </Link>
@@ -61,10 +61,10 @@ export function NoticeSlip({
           <X className="size-4.5" aria-hidden />
         </Button>
       )}
-      <p className={cn("font-headline text-[2rem] leading-[0.9] sm:text-[2.2rem]", (dismissHref || onDismiss) && "pr-8")}>
+      <p data-slot="notice-slip-title" className={cn("font-headline", (dismissHref || onDismiss) && "pr-8")}>
         {title}
       </p>
-      <div className="mt-2.5 text-[0.95rem] leading-[1.45] text-background/75 [&_strong]:font-semibold [&_strong]:text-background">
+      <div data-slot="notice-slip-body" className="mt-2.5 text-[0.95rem] leading-[1.45] [&_strong]:font-semibold">
         {children}
       </div>
       {action && <div className="mt-3.5">{action}</div>}

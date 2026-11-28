@@ -2,14 +2,15 @@ import type { FranchiseTile } from "@/lib/franchises/browse";
 import { cn } from "@/lib/utils";
 import { GameCover } from "@/components/issue/game-cover";
 
-// Where each of the three covers sits in the fan: the newest Mainline game
-// stands in the middle, the next two lean out behind it, hinged at the
+// Where each of the three covers sits in the fan (data-place): the newest
+// Mainline game stands in the middle, the next two behind it. Each Theme
+// sets how they stand; the Monthly Issue leans the two out, hinged at the
 // foot nearest the middle one.
 const PLACE = [
-  "z-2 w-[51%] -translate-x-1/2 group-hover/tile:outline-2 group-hover/tile:outline-offset-2 group-hover/tile:outline-highlight group-focus-visible/tile:outline-2 group-focus-visible/tile:outline-offset-2 group-focus-visible/tile:outline-highlight motion-safe:transition-[bottom] group-hover/tile:bottom-2.5 group-focus-visible/tile:bottom-2.5",
-  "z-1 w-[39%] origin-bottom-right -translate-x-[106%] -rotate-6",
-  "z-1 w-[39%] origin-bottom-left translate-x-[6%] rotate-6",
-];
+  { place: "middle", className: "z-2 w-[51%] -translate-x-1/2 group-hover/tile:outline-2 group-hover/tile:outline-offset-2 group-hover/tile:outline-highlight group-focus-visible/tile:outline-2 group-focus-visible/tile:outline-offset-2 group-focus-visible/tile:outline-highlight motion-safe:transition-[bottom] group-hover/tile:bottom-2.5 group-focus-visible/tile:bottom-2.5" },
+  { place: "left", className: "z-1 w-[39%] -translate-x-[106%]" },
+  { place: "right", className: "z-1 w-[39%] translate-x-[6%]" },
+] as const;
 
 // A Franchise's box set (design pick: Wall of box sets): up to three of its
 // covers fanned on the shelf. With none, its name on an ink block stands
@@ -29,9 +30,11 @@ export function BoxSetFan({ tile }: { tile: FranchiseTile }) {
       {covers.map((cover, i) => (
         <div
           key={cover.key}
+          data-slot="box-set-cover"
+          data-place={PLACE[i].place}
           className={cn(
             "absolute bottom-1.5 left-1/2 rounded-sm shadow-[0_8px_16px_rgb(0_0_0/0.55)]",
-            PLACE[i],
+            PLACE[i].className,
           )}
         >
           <GameCover
