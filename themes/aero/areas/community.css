@@ -872,6 +872,10 @@
                 linear-gradient(180deg, color-mix(in srgb, var(--panel-ink) 11%, #ffffff) 0, rgb(255 255 255 / 0.92) 3rem),
                 var(--aero-glass);
         }
+        /* The Hidden tray is a window; its dashed edge goes. */
+        [data-slot="hidden-tray"] {
+            border: 0;
+        }
         [data-slot="panel-new-stamp"] {
             top: -0.6rem;
             right: 0.75rem;
@@ -962,6 +966,7 @@
                 [data-slot="runs-timeline"],
                 [data-slot="pool-wall"],
                 [data-slot="proposals-panel"],
+                [data-slot="hidden-tray"],
                 [data-slot="pick-header"],
                 [data-slot="pick-reel"],
                 [data-slot="lately-list"],
