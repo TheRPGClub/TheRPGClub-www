@@ -26,6 +26,8 @@ export function AwardStory({ vote, award, compact = false }: { vote: GotyVote; a
   const rows = resultRows(award);
   return (
     <article
+      data-slot="goty-award-story"
+      data-award={award.award}
       style={{ "--award-ink": AWARD_INK[award.award] } as CSSProperties}
       className={cn(
         "relative isolate grid overflow-hidden rounded-[3.2px] bg-card after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-(--award-ink) md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]",

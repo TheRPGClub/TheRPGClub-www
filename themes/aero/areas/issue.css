@@ -100,6 +100,29 @@
             background: rgb(255 201 58 / 0.14);
             color: var(--aero-amber-ink);
         }
+        /* Amber is a fill here, never type on glass: the area's amber
+           words (a changed date, "Removing", the ruler's pin, a hover)
+           take the amber ink inside these windows. */
+        :is(
+                [data-slot="voting-board"],
+                [data-slot="round-column"],
+                [data-slot="goty-stage"],
+                [data-slot="goty-award-panel"],
+                [data-slot="issue-desk"]
+            )
+            :is(.text-highlight, .text-highlight b, .hover\:text-highlight:hover) {
+            color: var(--aero-amber-ink);
+        }
+        /* A decided Award's cover story is a round window. */
+        [data-slot="goty-award-story"] {
+            border-radius: var(--radius-xl);
+            box-shadow: var(--aero-edge), var(--aero-day);
+        }
+        /* A decided GOTM of the Year's second line in GOTM blue, as the
+           Cover Story sets it. */
+        [data-slot="goty-award-story"][data-award="gotm"] h2 .text-highlight {
+            color: var(--gotm);
+        }
         [data-slot="issue-note"] {
             border-color: var(--border);
             border-radius: var(--radius-xl);
