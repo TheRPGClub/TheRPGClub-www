@@ -1009,6 +1009,11 @@
             border: 0;
             color: var(--dim-foreground);
         }
+        /* A note inside a window is an etched well, not glass on glass. */
+        :is([data-slot="journal-catalogue-body"], [data-slot="pool-wall"], [data-slot="proposals-panel"], [data-slot="release-agenda"]) [data-slot="community-note"] {
+            background: rgb(255 255 255 / 0.5);
+            box-shadow: var(--community-well);
+        }
         [data-slot="community-pager"] {
             padding-top: 0;
             & [data-slot="pagination-content"] {
