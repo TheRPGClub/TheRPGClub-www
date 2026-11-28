@@ -7,6 +7,7 @@
    development-only one (the test Theme) is loaded by app/layout.tsx in
    development alone, so production never ships it (themes/registry.ts). */
 @import "../themes/monthly-issue/theme.css";
+@import "../themes/aero/theme.css";
 
 /* shadcn's dark styles follow the Theme's declared mode (<html data-mode>). */
 @custom-variant dark (&:is([data-mode="dark"] *));

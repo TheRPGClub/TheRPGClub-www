@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_THEME, THEMES, resolveTheme, shipsTheme } from "./registry";
+import { AERO, DEFAULT_THEME, THEMES, resolveTheme, shipsTheme } from "./registry";
 
 describe("resolveTheme", () => {
   it("is the Monthly Issue Theme, in dark mode, by default", () => {
@@ -37,8 +37,12 @@ describe("resolveTheme with the Member's Theme from the session", () => {
     expect(resolveTheme(production, undefined)).toBe(DEFAULT_THEME);
   });
 
+  it("is Frutiger Aero, in light mode, for a Member wearing it", () => {
+    expect(resolveTheme(production, "aero")).toBe(AERO);
+    expect(AERO.mode).toBe("light");
+  });
+
   it("is the default for a key this website has no stylesheet for", () => {
-    expect(resolveTheme(production, "aero")).toBe(DEFAULT_THEME);
     expect(resolveTheme(production, "nope")).toBe(DEFAULT_THEME);
   });
 
@@ -58,7 +62,7 @@ describe("resolveTheme with the Member's Theme from the session", () => {
 const API_THEME_KEYS = ["monthly-issue", "aero"];
 // API Themes whose stylesheet this website has not shipped yet: a Member
 // whose session names one gets the default until it is registered here.
-const NOT_YET_ON_THE_WEBSITE = ["aero"];
+const NOT_YET_ON_THE_WEBSITE: string[] = [];
 
 describe("the registry and the API's Theme keys", () => {
   const websiteKeys = THEMES.filter((theme) => !theme.devOnly).map((theme) => theme.name);
@@ -81,6 +85,7 @@ describe("the registry and the API's Theme keys", () => {
 describe("shipsTheme", () => {
   it("is true for a shipped Theme and false for a development-only or unknown one", () => {
     expect(shipsTheme("monthly-issue")).toBe(true);
+    expect(shipsTheme("aero")).toBe(true);
     expect(shipsTheme("test")).toBe(false);
     expect(shipsTheme("nope")).toBe(false);
   });

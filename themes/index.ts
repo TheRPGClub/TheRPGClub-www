@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 
 import { getSession } from "@/lib/session";
 
+import { aeroFonts } from "./aero/fonts";
 import { monthlyIssueFonts } from "./monthly-issue/fonts";
 import { MEMBER_THEME_HEADER, resolveTheme, type Theme } from "./registry";
 
@@ -12,6 +13,7 @@ export { DEFAULT_THEME } from "./registry";
 // fonts (the test Theme) uses system faces.
 const FONT_CLASSES: Record<string, string> = {
   "monthly-issue": monthlyIssueFonts,
+  "aero": aeroFonts,
 };
 
 // The Member's Theme key on a signed-in route (proxy.ts marks those), from

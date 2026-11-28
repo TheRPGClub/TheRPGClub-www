@@ -10,7 +10,8 @@ export type ThemeMode = "light" | "dark";
 export type Theme = {
   name: string;
   mode: ThemeMode;
-  // The browser chrome colour (viewport theme-color), the Theme's background.
+  // The browser chrome colour (viewport theme-color): the Theme's background,
+  // or what shows behind the top of the page (Aero's sky).
   themeColor: string;
   // Development only: its stylesheet is left out of production builds.
   devOnly?: boolean;
@@ -22,6 +23,15 @@ export const MONTHLY_ISSUE: Theme = {
   themeColor: "#0b0b0d",
 };
 
+// Frutiger Aero (spec api#523): light, round glass and Vista gel over a
+// sunlit lagoon. Its theme colour is the scene's sky, behind the browser
+// chrome.
+export const AERO: Theme = {
+  name: "aero",
+  mode: "light",
+  themeColor: "#0b55c9",
+};
+
 // A throwaway Theme that swaps every token for a loud colour, so a surface
 // still naming the Monthly Issue palette stands out. Development only.
 export const TEST_THEME: Theme = {
@@ -31,7 +41,7 @@ export const TEST_THEME: Theme = {
   devOnly: true,
 };
 
-export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, TEST_THEME];
+export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, AERO, TEST_THEME];
 
 export const DEFAULT_THEME = MONTHLY_ISSUE;
 
