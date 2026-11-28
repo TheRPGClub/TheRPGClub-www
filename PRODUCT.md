@@ -27,8 +27,7 @@ The RPG Club is a Discord community built around playing and discussing games to
 ## Brand commitments
 
 - The club logo (`public/logo.png`) is ransom-note cut-out letters spelling "The RPG Club", black and white on a red starburst. Its red is pure `#ff0000`; the existing `brand-*` scale is sampled from it.
-- GOTM and NR-GOTM are two distinct tracks and must stay visually distinguishable everywhere they appear. Today GOTM is brand red and NR-GOTM is purple.
-- Destructive UI must stay distinguishable from the brand red.
+- GOTM and NR-GOTM are two distinct tracks and must stay visually distinguishable everywhere they appear. Each Theme keeps GOTM, NR-GOTM and destructive distinct; Monthly Issue uses red and purple (and a signal orange for destructive), Frutiger Aero blue and green (and red for destructive).
 
 ## Constraints
 
