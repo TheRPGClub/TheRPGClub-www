@@ -5,6 +5,11 @@
    (./primitives.css). */
 
 @import "./primitives.css";
+@import "./areas/issue.css";
+@import "./areas/games.css";
+@import "./areas/achievements.css";
+@import "./areas/community.css";
+@import "./areas/staff.css";
 
 @layer themes {
     [data-theme="monthly-issue"] {
