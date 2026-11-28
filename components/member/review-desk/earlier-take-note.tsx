@@ -32,7 +32,8 @@ export function EarlierTakeNote({ take, track }: { take: EarlierTake; track: str
     <DeskNote
       heading="Your take"
       aside={take.publishedAt ? editRuleDate(take.publishedAt) : null}
-      className="opacity-92 lg:rotate-[0.8deg]"
+      variant="take"
+      className="opacity-92"
     >
       <p className="m-0 flex items-baseline gap-2">
         <span className="font-headline text-[2.6rem] leading-[0.8] text-dim-foreground">

@@ -72,7 +72,8 @@ export function ReviewDesk({
             id={OVERALL_ID}
             heading="Overall"
             aside={earlierTake?.rating != null ? `was ${earlierTake.rating}` : TRACK_NOTE[accent]}
-            className="scroll-mt-24 lg:-rotate-[1deg]"
+            variant="overall"
+            className="scroll-mt-24"
           >
             <RatingInput
               value={form.rating}
@@ -88,7 +89,7 @@ export function ReviewDesk({
               </p>
             )}
           </DeskNote>
-          <DeskNote className="lg:rotate-[0.5deg]">{scorecard}</DeskNote>
+          <DeskNote variant="scorecard">{scorecard}</DeskNote>
         </aside>
       </div>
       <div className="space-y-3 empty:hidden">{footer}</div>

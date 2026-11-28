@@ -34,6 +34,8 @@ export function ListSpine({ list, index, now }: { list: GameList; index: number;
   return (
     <Link
       href={`/lists/${list.id}`}
+      data-slot="list-spine"
+      data-variant={priv ? "private" : undefined}
       aria-label={`${list.name}, ${games}${priv ? ", Private" : ""}`}
       data-spine=""
       data-lift-hours={games}
@@ -47,19 +49,19 @@ export function ListSpine({ list, index, now }: { list: GameList; index: number;
     >
       {priv && (
         <>
-          <span aria-hidden className="pointer-events-none absolute inset-1 rounded-t-xs border border-b-0 border-dashed border-border-strong" />
-          <span className="font-label absolute -top-2.5 left-1/2 z-[1] inline-flex -translate-x-1/2 -rotate-4 items-center gap-0.5 rounded-xs bg-foreground px-1.5 pt-1 pb-0.5 text-[0.66rem] font-extrabold tracking-[0.07em] whitespace-nowrap text-background">
+          <span aria-hidden data-slot="list-spine-dash" className="pointer-events-none absolute inset-1 rounded-t-xs border border-b-0 border-dashed border-border-strong" />
+          <span data-slot="list-spine-private" className="font-label absolute -top-2.5 left-1/2 z-[1] inline-flex -translate-x-1/2 items-center gap-0.5 rounded-xs bg-foreground px-1.5 pt-1 pb-0.5 text-[0.66rem] font-extrabold tracking-[0.07em] whitespace-nowrap text-background">
             <Lock aria-hidden className="size-2.5" />
             Private
           </span>
         </>
       )}
       {first && <GameCover title={first.title} coverUrl={first.cover_url} className="w-9 rounded-[1.6px]" fallbackClassName="hidden" />}
-      <span className="font-headline min-h-0 flex-1 rotate-180 overflow-hidden text-[1.2rem] leading-none text-ellipsis whitespace-nowrap [writing-mode:vertical-rl]">
+      <span data-slot="spine-title" className="font-headline min-h-0 flex-1 overflow-hidden text-[1.2rem] leading-none text-ellipsis whitespace-nowrap">
         {list.name}
       </span>
-      <span aria-hidden className="h-px w-[70%] bg-current opacity-60" />
-      <span className="font-headline text-[1.35rem] leading-[0.9]">
+      <span aria-hidden data-slot="list-spine-rule" className="h-px w-[70%] bg-current opacity-60" />
+      <span data-slot="list-spine-count" className="font-headline text-[1.35rem] leading-[0.9]">
         {list.entry_count}
         <small className="font-label mt-0.5 block text-center text-[0.6rem] font-extrabold tracking-[0.08em] opacity-80">
           {SHORT_SORT[list.sort]}

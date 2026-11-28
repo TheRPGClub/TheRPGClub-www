@@ -75,7 +75,7 @@ function CompletionDialogBody({
   const finished = log.values.finished;
 
   return (
-    <div className="grid md:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <div data-slot="completion-dialog" className="grid md:grid-cols-[15.5rem_minmax(0,1fr)]">
       <div className="hidden md:flex">
         <CompletionHistory
           title={game.title}
@@ -111,7 +111,7 @@ function CompletionDialogBody({
           today={today}
           onCancel={() => onOpenChange(false)}
           onRemove={onRemove}
-          className="min-h-dvh max-md:rounded-none md:min-h-0 md:-rotate-[0.6deg] md:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
+          className="min-h-dvh max-md:rounded-none md:min-h-0 md:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
         />
       </div>
     </div>

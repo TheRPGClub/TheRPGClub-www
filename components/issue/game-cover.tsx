@@ -58,6 +58,7 @@ export function GameCover({
 }) {
   return (
     <div
+      data-slot="game-cover"
       className={cn(
         "relative aspect-[3/4] shrink-0 overflow-hidden rounded-sm bg-muted outline -outline-offset-1 outline-foreground/12",
         className,
@@ -72,6 +73,7 @@ export function GameCover({
         />
       ) : (
         <span
+          data-slot="game-cover-fallback"
           className={cn(
             "font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-faint-foreground",
             fallbackClassName,

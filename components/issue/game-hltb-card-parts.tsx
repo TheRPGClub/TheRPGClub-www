@@ -27,8 +27,10 @@ export function Bar({
         {label}
       </span>
       {/* A meter (hours on the card's shared scale), not progress: no Progress. */}
-      <span aria-hidden className="relative h-2.5 rounded-[1px] bg-muted">
+      <span aria-hidden data-slot="hltb-bar" className="relative h-2.5 rounded-[1px] bg-muted">
         <i
+          data-slot="hltb-bar-fill"
+          data-variant={placeholder ? "placeholder" : undefined}
           className={cn(
             "absolute inset-y-0 left-0 rounded-[1px]",
             placeholder ? "bg-border-strong" : "bg-foreground",

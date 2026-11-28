@@ -44,12 +44,13 @@ export function GameHero({
   const art = game.art_url;
 
   return (
-    <section aria-label={game.title} className="relative isolate bleed -mt-6 overflow-hidden bg-black">
+    <section aria-label={game.title} data-slot="game-hero" className="relative isolate bleed -mt-6 overflow-hidden bg-black">
       {art && (
         // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
         <img
           src={art}
           alt=""
+          data-slot="game-hero-art"
           className="absolute inset-x-0 top-0 -z-20 h-[300px] w-full object-cover object-[62%_30%] md:inset-0 md:h-full md:object-[62%_28%]"
         />
       )}
@@ -57,6 +58,7 @@ export function GameHero({
           foot; on a phone, ink rising over the shorter art band. */}
       <div
         aria-hidden
+        data-slot="game-hero-scrim"
         className={cn(
           "absolute inset-0 -z-10",
           art

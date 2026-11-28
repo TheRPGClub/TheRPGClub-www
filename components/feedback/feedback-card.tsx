@@ -59,6 +59,8 @@ export function FeedbackCard({
       id={`feedback-${f.feedback_id}`}
       aria-label={f.title}
       style={{ "--band": PHASE_INK[phase] } as CSSProperties}
+      data-slot="feedback-card"
+      data-tone={phase}
       className={cn(
         "relative scroll-mt-24 rounded-md bg-card shadow-[0_10px_24px_rgb(0_0_0/0.45)]",
         highlight && "ring-2 ring-highlight",

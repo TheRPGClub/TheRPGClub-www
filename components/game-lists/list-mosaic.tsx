@@ -25,8 +25,8 @@ export function ListMosaic({
 }) {
   const games = leadWith(covers ?? list.preview_games, leadGameId).slice(0, 4);
   return (
-    <article className="group relative min-w-0">
-      <div className="relative grid grid-cols-2 gap-[3px] overflow-hidden rounded-md">
+    <article data-slot="list-mosaic" className="group relative min-w-0">
+      <div data-slot="list-mosaic-covers" className="relative grid grid-cols-2 gap-[3px] overflow-hidden rounded-md">
         {Array.from({ length: 4 }, (_, i) => {
           const game = games[i];
           return game ? (

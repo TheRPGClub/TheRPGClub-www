@@ -31,6 +31,7 @@ export function ReelSpotlight({
       ref={ref}
       aria-label={editor ? "Editing completion" : "Selected completion"}
       aria-live={editor ? "off" : "polite"}
+      data-slot="reel-spotlight"
       className={cn(
         "relative isolate grid scroll-mt-20 items-end gap-4 overflow-hidden rounded-md bg-black p-4.5 sm:min-h-[23.75rem] sm:grid-cols-[11rem_1fr] sm:gap-7.5 sm:p-7.5 xl:grid-cols-[14.375rem_1fr_auto]",
         editor && "items-start shadow-[0_0_0_2px_var(--color-highlight)]",

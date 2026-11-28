@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 // The year dial on a phone: a wrapping row of years above the spotlight.
 export function YearRow({ years, current, all }: YearDialStops) {
   return (
-    <nav aria-label="Choose a year">
+    <nav aria-label="Choose a year" data-slot="year-dial" data-variant="row">
       <ul className="flex flex-wrap gap-1">
         {all && (
           <li>

@@ -64,12 +64,13 @@ function BylineBirthday({ birthday }: { birthday: ProfileBirthday }) {
 export function BirthdayTape({ label, owner }: { label: string; owner: boolean }) {
   return (
     <p
+      data-slot="birthday-tape"
       className={cn(
-        "absolute -left-1.5 z-10 -rotate-[1.2deg] drop-shadow-[0_6px_14px_rgb(0_0_0/0.45)] sm:top-5.5",
+        "absolute -left-1.5 z-10 drop-shadow-[0_6px_14px_rgb(0_0_0/0.45)] sm:top-5.5",
         owner ? "top-14" : "top-3.5",
       )}
     >
-      <span className="font-label flex items-center gap-2 bg-foreground/95 py-2 pr-4 pl-4.5 text-[0.82rem] leading-none font-extrabold tracking-[0.08em] text-background [clip-path:polygon(0_0,100%_4%,99.2%_20%,100%_38%,99%_56%,100%_73%,99.3%_88%,100%_100%,0_96%)] sm:py-2.5 sm:pr-5 sm:pl-5.5 sm:text-[0.95rem]">
+      <span data-slot="birthday-tape-strip" className="font-label flex items-center gap-2 bg-foreground/95 py-2 pr-4 pl-4.5 text-[0.82rem] leading-none font-extrabold tracking-[0.08em] text-background sm:py-2.5 sm:pr-5 sm:pl-5.5 sm:text-[0.95rem]">
         <Cake aria-hidden className="size-3.5 shrink-0" />
         Birthday today · {label}
       </span>

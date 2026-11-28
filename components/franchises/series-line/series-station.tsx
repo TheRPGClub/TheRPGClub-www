@@ -37,20 +37,20 @@ export function SeriesStation({ entry, index, total, next }: { entry: FranchiseE
       {/* The phone's rail: down the left column, the stop beside the cover. */}
       <span aria-hidden className="absolute inset-y-0 left-0 w-7 @xl/line:hidden">
         {!(first && last) && (
-          <span className={cn("absolute left-1/2 w-1.5 -translate-x-1/2 bg-foreground", first ? "top-9.5" : "top-0", last ? "h-9.5" : "bottom-0")} />
+          <span data-slot="series-rail" className={cn("absolute left-1/2 w-1.5 -translate-x-1/2 bg-foreground", first ? "top-9.5" : "top-0", last ? "h-9.5" : "bottom-0")} />
         )}
         <Stop className="top-9.5 left-1/2" />
       </span>
       {/* From the first width step: the rail across the row. */}
       <span aria-hidden className="relative hidden h-6 w-full @xl/line:block">
-        <span className={cn("absolute top-[9px] h-1.5 bg-foreground", first ? "left-0" : "-left-px", last ? "right-[22%]" : "-right-px")} />
-        {first && <span className="absolute top-[3px] left-0 h-[18px] w-1.5 bg-foreground" />}
-        {last && <span className="absolute top-[3px] right-[22%] h-[18px] w-1.5 bg-foreground" />}
-        <span className={cn("absolute top-[9px] left-full hidden h-10 w-7 rounded-tr-[18px] border-t-6 border-r-6 border-foreground", ...show("end"))} />
+        <span data-slot="series-rail" className={cn("absolute top-[9px] h-1.5 bg-foreground", first ? "left-0" : "-left-px", last ? "right-[22%]" : "-right-px")} />
+        {first && <span data-slot="series-rail-end" className="absolute top-[3px] left-0 h-[18px] w-1.5 bg-foreground" />}
+        {last && <span data-slot="series-rail-end" className="absolute top-[3px] right-[22%] h-[18px] w-1.5 bg-foreground" />}
+        <span data-slot="series-rail-turn" className={cn("absolute top-[9px] left-full hidden h-10 w-7 rounded-tr-[18px] border-t-6 border-r-6 border-foreground", ...show("end"))} />
         <span className={cn("font-label absolute top-[54px] left-full -ml-5 hidden w-12 text-right text-[0.7rem] leading-[1.1] text-faint-foreground", ...show("end"))}>
           On to <span className="block text-foreground">{next}</span>
         </span>
-        <span className={cn("absolute right-full bottom-[9px] hidden h-14 w-3.5 rounded-bl-[14px] border-b-6 border-l-6 border-foreground", ...show("start"))} />
+        <span data-slot="series-rail-turn" className={cn("absolute right-full bottom-[9px] hidden h-14 w-3.5 rounded-bl-[14px] border-b-6 border-l-6 border-foreground", ...show("start"))} />
         <Stop className="top-1/2 left-1/2" />
       </span>
       {entry.addOns.length > 0 && (
@@ -64,5 +64,5 @@ export function SeriesStation({ entry, index, total, next }: { entry: FranchiseE
 }
 
 function Stop({ className }: { className?: string }) {
-  return <span className={cn("absolute z-[1] size-[18px] -translate-1/2 rounded-full border-4 border-foreground bg-background", className)} />;
+  return <span data-slot="series-stop" className={cn("absolute z-[1] size-[18px] -translate-1/2 rounded-full border-4 border-foreground bg-background", className)} />;
 }

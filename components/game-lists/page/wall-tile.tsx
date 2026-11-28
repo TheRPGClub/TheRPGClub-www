@@ -32,9 +32,9 @@ export function WallTile({
   const { game } = entry;
   const ranked = sort === "ranked";
   return (
-    <div className="relative">
+    <div data-slot="wall-tile" className="relative">
       {ranked && (
-        <span className="font-headline absolute -top-2 -left-1.5 z-[2] -rotate-3 rounded-xs bg-foreground px-2 pt-1.5 pb-1 text-[2rem] leading-[0.85] text-background shadow-[0_6px_14px_rgb(0_0_0/0.45)]">
+        <span data-slot="wall-tile-rank" className="font-headline absolute -top-2 -left-1.5 z-[2] rounded-xs bg-foreground px-2 pt-1.5 pb-1 text-[2rem] leading-[0.85] text-background shadow-[0_6px_14px_rgb(0_0_0/0.45)]">
           {place}
         </span>
       )}

@@ -40,6 +40,8 @@ export function WrappedCover({
 }) {
   return (
     <div
+      data-slot="gift-wrap"
+      data-variant={tied ? "tied" : "untied"}
       className={cn("@container relative h-fit shrink-0 self-start", className)}
       style={{ "--p": ink, "--rb": coverUrl || !title ? ink : "var(--color-background)" } as CSSProperties}
     >
@@ -48,23 +50,23 @@ export function WrappedCover({
       ) : (
         // Too small for a name tag (a thumbnail), it stays an ink cover tied
         // in its ink, so it never melts into paper of its own colour.
-        <div className={cn("aspect-[3/4] w-full rounded-sm", title ? "gift-paper" : "bg-muted outline -outline-offset-1 outline-foreground/12")}>
+        <div data-slot="gift-paper" className={cn("aspect-[3/4] w-full rounded-sm", title ? "gift-paper" : "bg-muted outline -outline-offset-1 outline-foreground/12")}>
           {title && (
-            <span className="font-headline absolute bottom-[7%] left-[6%] z-10 w-[48%] -rotate-2 rounded-xs bg-foreground p-[3.5cqw] text-[7.5cqw] leading-[0.95] text-background hyphens-auto shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
+            <span data-slot="gift-name-tag" className="font-headline absolute bottom-[7%] left-[6%] z-10 w-[48%] rounded-xs bg-foreground p-[3.5cqw] text-[7.5cqw] leading-[0.95] text-background hyphens-auto shadow-[0_3px_6px_rgb(0_0_0/0.45)]">
               {title}
             </span>
           )}
         </div>
       )}
       {tied ? (
-        <span aria-hidden>
-          <i className={cn(RIBBON, "inset-y-0 left-[58%] w-[9%] origin-top", tieIn && TIE_DOWN)} />
-          <i className={cn(RIBBON, "inset-x-0 top-[36%] h-[6.75%] origin-left", tieIn && TIE_ACROSS)} />
-          <i className={cn(LOOP, "left-[calc(58%-14cqw)] rotate-135", tieIn && BOW)} />
-          <i className={cn(LOOP, "left-[calc(67%-2.5cqw)] -rotate-45", tieIn && BOW)} />
+        <span aria-hidden data-slot="gift-ribbon">
+          <i data-slot="gift-ribbon-band" className={cn(RIBBON, "inset-y-0 left-[58%] w-[9%] origin-top", tieIn && TIE_DOWN)} />
+          <i data-slot="gift-ribbon-band" className={cn(RIBBON, "inset-x-0 top-[36%] h-[6.75%] origin-left", tieIn && TIE_ACROSS)} />
+          <i data-slot="gift-bow" data-variant="left" className={cn(LOOP, "left-[calc(58%-14cqw)] rotate-135", tieIn && BOW)} />
+          <i data-slot="gift-bow" data-variant="right" className={cn(LOOP, "left-[calc(67%-2.5cqw)] -rotate-45", tieIn && BOW)} />
         </span>
       ) : (
-        <i aria-hidden className={cn(RIBBON, "-bottom-[3%] left-[58%] h-[30%] w-[9%] rotate-[18deg]")} />
+        <i aria-hidden data-slot="gift-ribbon-end" className={cn(RIBBON, "-bottom-[3%] left-[58%] h-[30%] w-[9%]")} />
       )}
       {children}
     </div>

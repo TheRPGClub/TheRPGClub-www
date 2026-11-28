@@ -37,6 +37,7 @@ export function SpotlightCompletionEditor({
   const title = entry.game?.title ?? "Unknown game";
   return (
     <div
+      data-slot="completion-editor"
       className="min-w-0 max-w-[34rem]"
       onKeyDown={(event) => event.key === "Escape" && onCancel()}
     >
@@ -51,7 +52,7 @@ export function SpotlightCompletionEditor({
         today={today}
         onCancel={onCancel}
         onRemove={onRemove}
-        className="sm:-rotate-[0.6deg] sm:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
+        className="sm:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
       />
     </div>
   );

@@ -24,6 +24,7 @@ export function ReelStrip({
     <div
       role="list"
       aria-label="Completions by month"
+      data-slot="completed-reel"
       className="space-y-6 md:flex md:gap-5.5 md:space-y-0 md:overflow-x-auto md:px-0.5 md:pt-3 md:pb-3.5 md:[scrollbar-color:var(--color-border-strong)_transparent]"
     >
       {groups.map((group) => (

@@ -33,7 +33,7 @@ export function GiftTag({
   onClaim: (key: GameKey) => void;
 }) {
   return (
-    <div className="mt-3.5">
+    <div data-slot="gift-tag" className="mt-3.5">
       <div className="flex items-start gap-3 max-sm:flex-col max-sm:items-stretch max-sm:gap-2">
         <div className="min-w-0 flex-1">
           <p className="font-headline text-[1.15rem] leading-[0.95] text-balance">

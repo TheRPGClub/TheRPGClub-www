@@ -44,6 +44,7 @@ export function MemberShelf({
   return (
     <section
       aria-labelledby={id}
+      data-slot="member-shelf"
       className="grid gap-3 border-b-[6px] border-muted pt-5 shadow-[0_1px_0_var(--color-border)] sm:grid-cols-[10.5rem_1fr] sm:gap-6"
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 sm:flex-col sm:flex-nowrap sm:items-start sm:gap-1.5 sm:pb-4">
@@ -70,7 +71,7 @@ export function MemberShelf({
       </div>
 
       {count > 0 && children ? (
-        <Row className="flex min-h-0 items-end gap-1 overflow-hidden pt-4 sm:min-h-[15.5rem] sm:pt-0">
+        <ShelfRow Row={Row}>
           {children}
           {more && more.count > 0 && (
             <div className="flex shrink-0 self-stretch items-end pb-3.5 pl-3 max-sm:hidden">
@@ -80,12 +81,24 @@ export function MemberShelf({
               </Link>
             </div>
           )}
-        </Row>
+        </ShelfRow>
       ) : (
         <p className="self-center pb-5 text-sm text-faint-foreground sm:pb-4">
           {empty}
         </p>
       )}
     </section>
+  );
+}
+
+// The row the spines stand in, by slot whichever row draws it.
+const ROW = "flex min-h-0 items-end gap-1 overflow-hidden pt-4 sm:min-h-[15.5rem] sm:pt-0";
+function ShelfRow({ Row, children }: { Row: "div" | ComponentType<{ className: string; children: ReactNode }>; children: ReactNode }) {
+  return Row === "div" ? (
+    <div data-slot="member-shelf-row" className={ROW}>
+      {children}
+    </div>
+  ) : (
+    <Row className={ROW}>{children}</Row>
   );
 }

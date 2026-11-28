@@ -20,10 +20,11 @@ export function BoxSetTile({ tile }: { tile: FranchiseTile }) {
   return (
     <Link
       href={`/franchises/${tile.franchise_id}`}
+      data-slot="franchise-tile"
       className="group/tile relative block min-w-0 rounded-xs outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-highlight motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-1.5 motion-safe:focus-visible:-translate-y-1.5"
     >
       <BoxSetFan tile={tile} />
-      <h3 className="font-headline truncate border-b-2 border-foreground pt-3 pb-1.5 text-[1.2rem] leading-none transition-colors group-hover/tile:text-highlight group-focus-visible/tile:text-highlight sm:text-[1.45rem]">
+      <h3 data-slot="franchise-tile-name" className="font-headline truncate border-b-2 border-foreground pt-3 pb-1.5 text-[1.2rem] leading-none transition-colors group-hover/tile:text-highlight group-focus-visible/tile:text-highlight sm:text-[1.45rem]">
         {tile.name}
       </h3>
       <p className="font-label mt-2 text-[0.74rem] leading-[1.2] font-bold tracking-[0.08em] text-dim-foreground">

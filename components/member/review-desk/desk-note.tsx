@@ -8,10 +8,14 @@ export function DeskNote({
   id,
   heading,
   aside,
+  variant,
   className,
   children,
 }: {
   id?: string;
+  // Which note it is ("overall", "scorecard", "take"): a Theme may set
+  // each its own way (Monthly Issue hand-places each at its own tilt).
+  variant?: "overall" | "scorecard" | "take";
   heading?: string;
   aside?: string | null;
   className?: string;
@@ -21,6 +25,8 @@ export function DeskNote({
     <section
       id={id}
       aria-label={heading}
+      data-slot="desk-note"
+      data-variant={variant}
       className={cn(
         "relative rounded-sm bg-muted px-4.5 pt-4.5 pb-4 shadow-[0_10px_24px_rgb(0_0_0/0.45)]",
         className,
@@ -28,7 +34,8 @@ export function DeskNote({
     >
       <span
         aria-hidden
-        className="absolute -top-2 left-1/2 h-4.5 w-18 -translate-x-1/2 -rotate-2 bg-foreground/15"
+        data-slot="desk-note-tape"
+        className="absolute -top-2 left-1/2 h-4.5 w-18 -translate-x-1/2 bg-foreground/15"
       />
       {heading && (
         <header className="mb-3 flex items-baseline justify-between gap-3">

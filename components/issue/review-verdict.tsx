@@ -34,6 +34,7 @@ export function ReviewVerdict({
   return (
     <section
       aria-labelledby="verdict"
+      data-slot="verdict"
       className="grid overflow-hidden rounded-sm border-2 border-foreground md:grid-cols-[18.75rem_1fr]"
     >
       <ReviewVerdictScore review={review} authorName={authorName} />
