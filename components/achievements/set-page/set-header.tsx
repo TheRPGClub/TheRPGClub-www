@@ -44,6 +44,7 @@ export function SetHeader({
             )}
           >
             <h1
+              data-slot="tint-band"
               className="font-headline w-fit max-w-full rounded-md px-4 pt-3 pb-2 text-[2.5rem] leading-[0.92] break-words sm:text-[3.5rem] xl:text-[4rem]"
               style={{ background: tint.tint, color: tint.contrast }}
             >

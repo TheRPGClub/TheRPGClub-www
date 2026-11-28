@@ -17,25 +17,28 @@ export function SealedTile({
 }) {
   return (
     <span
+      data-slot="achievement-icon-face"
       className={cn(
-        "absolute grid place-items-center overflow-hidden rounded-[6px] border border-border-strong bg-muted rotate-(--tilt)",
+        "absolute grid place-items-center overflow-hidden border border-border-strong bg-muted",
         s.inset,
       )}
       style={{ "--tilt": `${stableTilt(id)}deg` } as React.CSSProperties}
     >
       <span
         aria-hidden
+        data-slot="achievement-icon-seal"
         className="absolute h-[22%] w-[200%] -rotate-45 bg-border-strong"
         style={tint ? { background: tint } : undefined}
       />
       <span
         aria-hidden
+        data-slot="achievement-icon-mark"
         className={cn("font-headline relative leading-none text-foreground", s.mark)}
       >
         ?
       </span>
       {s.label && (
-        <span className="font-label absolute bottom-1.5 text-[0.7rem] tracking-[0.14em] text-dim-foreground">
+        <span data-slot="achievement-icon-label" className="font-label absolute bottom-1.5 text-[0.7rem] tracking-[0.14em] text-dim-foreground">
           Hidden
         </span>
       )}
@@ -54,14 +57,16 @@ export function LockedSlot({
 }) {
   return (
     <span
+      data-slot="achievement-icon-face"
       className={cn(
-        "absolute grid place-items-center rounded-[6px] border-[1.5px] border-dashed border-border-strong",
+        "absolute grid place-items-center border-[1.5px] border-dashed border-border-strong",
         s.inset,
       )}
     >
       {slot != null ? (
         <span
           aria-hidden
+          data-slot="achievement-icon-mark"
           className={cn(
             "font-headline leading-none text-faint-foreground opacity-60",
             s.mark,
@@ -71,7 +76,7 @@ export function LockedSlot({
           {String(slot).padStart(2, "0")}
         </span>
       ) : (
-        <Lock aria-hidden className={cn("text-faint-foreground", s.glyph)} />
+        <Lock aria-hidden data-slot="achievement-icon-glyph" className={cn("text-faint-foreground", s.glyph)} />
       )}
     </span>
   );

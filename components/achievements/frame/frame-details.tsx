@@ -23,7 +23,7 @@ export function FrameDetails({
   const spoiler = isSpoiler(view);
   const rarity = frameRarity(view);
   return (
-    <div>
+    <div data-slot="frame-details">
       <div className="flex items-start gap-3 p-3.5">
         <FrameIcon view={view} size="xl" />
         <div className="flex min-w-0 flex-col gap-1">

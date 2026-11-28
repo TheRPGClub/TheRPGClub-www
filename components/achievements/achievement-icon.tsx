@@ -1,4 +1,4 @@
-import { isSpoiler } from "@/lib/achievements";
+import { isSpoiler, rarityTier } from "@/lib/achievements";
 import { cn } from "@/lib/utils";
 import {
   SIZE,
@@ -11,7 +11,8 @@ import { UnlockedTile } from "./achievement-icon-unlocked";
 
 // An Achievement's icon as a die-cut tile resting in its slot. Three states:
 // - Unlocked (by the shown member): the art inside a 3px edge in its Rarity
-//   ink, 6px corners and a stable tilt from the id. PSN trophies carry a
+//   ink (the Theme gives it its corners and, in the Monthly Issue, a stable
+//   tilt from the id). PSN trophies carry a
 //   corner dot in their tier's metal (Platinum is foil); RetroAchievements
 //   hardcore Unlocks carry an "HC" tag. With no art, the tile fills with
 //   the game tint and shows the slot number (or a trophy) in its contrast.
@@ -47,15 +48,20 @@ export function AchievementIcon({
 }) {
   const s = SIZE[size];
   const sealed = !view.unlocked && isSpoiler(view);
+  const rarity = view.unlocked ? rarityTier(view.rarity) : null;
 
+  // Theme hooks: the shape, the tilt and the rim live in each Theme's
+  // achievements stylesheet, keyed by these attributes. `data-size` is the
+  // caller's size; a Theme may hold every icon at one size.
   return (
     <span
-      className={cn(
-        "relative block shrink-0 rounded-[6px]",
-        view.unlocked && "shadow-[inset_0_0_0_1px_var(--color-border)]",
-        s.box,
-        className,
-      )}
+      data-slot="achievement-icon"
+      data-size={size}
+      data-state={view.unlocked ? "unlocked" : sealed ? "hidden" : "locked"}
+      data-rarity={rarity ?? undefined}
+      data-foil={view.unlocked && foil ? "" : undefined}
+      className={cn("relative block shrink-0", s.box, className)}
+      style={tint ? ({ "--tint": tint } as React.CSSProperties) : undefined}
     >
       {view.unlocked ? (
         <UnlockedTile view={view} s={s} foil={foil} slot={slot} tint={tint} />

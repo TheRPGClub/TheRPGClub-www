@@ -24,6 +24,7 @@ export function RarityLabel({
   if (rarity == null) return null;
   return (
     <span
+      data-slot="rarity-label"
       className={cn(
         "font-label inline-flex items-center gap-1.5 text-[0.78rem] whitespace-nowrap text-faint-foreground",
         className,

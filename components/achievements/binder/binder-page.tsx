@@ -59,8 +59,9 @@ export function BinderPage({
       )}
 
       <div
+        data-slot="binder"
         className={cn(
-          "relative mr-4 flex flex-col gap-2 rounded-lg bg-border p-2 shadow-[0_24px_60px_rgb(0_0_0/0.6)]",
+          "relative mr-4 flex flex-col gap-2 p-2",
           "xl:mr-12 xl:grid xl:grid-cols-[25rem_30px_minmax(0,1fr)] xl:gap-0 xl:p-2.5",
           !sets && "mt-6 xl:mt-8",
         )}
@@ -76,7 +77,9 @@ export function BinderPage({
 
         <section
           aria-labelledby="binder-view"
-          className="rounded-md bg-card px-4 pt-4 pb-5 sm:px-6 xl:pr-6 xl:pl-6 xl:shadow-[inset_18px_0_22px_-14px_rgb(0_0_0/0.7)]"
+          data-slot="binder-page"
+          data-side="index"
+          className="px-4 pt-4 pb-5 sm:px-6 xl:pr-6 xl:pl-6"
         >
           <BinderIndexHeader
             query={query}

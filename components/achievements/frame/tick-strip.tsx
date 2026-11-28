@@ -14,10 +14,12 @@ export function TickStrip({
   className?: string;
 }) {
   return (
-    <span role="img" aria-label={label} className={cn("flex h-2 w-full gap-[2px]", className)}>
+    <span role="img" aria-label={label} data-slot="tick-strip" className={cn("flex h-2 w-full gap-[2px]", className)}>
       {cells.map((on, i) => (
         <span
           key={i}
+          data-slot="tick"
+          data-on={on ? "" : undefined}
           className={cn(
             "h-full min-w-[2px] flex-1 rounded-[1px]",
             on ? "bg-dim-foreground" : "shadow-[inset_0_0_0_1px_var(--color-border-strong)]",

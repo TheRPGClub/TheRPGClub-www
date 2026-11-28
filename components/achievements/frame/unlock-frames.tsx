@@ -49,6 +49,8 @@ export function UnlockFrames({
           <Link
             href={href}
             aria-label={`${more} more Unlocks`}
+            data-slot="achievement-frame-more"
+            data-size={size}
             className={cn(
               "font-label flex items-center justify-center rounded-xs text-[0.8rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)] transition-colors hover:text-highlight",
               size === "sm" ? "size-[34px]" : "size-[52px]",
