@@ -22,7 +22,7 @@ export function MemberAchievementsSection({
   const linked = summary.linked_accounts.map((a) => a.provider);
 
   return (
-    <section aria-labelledby="achievements" className="space-y-5">
+    <section aria-labelledby="achievements" data-slot="member-achievements" className="space-y-5">
       <SectionHeading
         title={<span id="achievements">Achievements</span>}
         count={summary.totals.unlocks}

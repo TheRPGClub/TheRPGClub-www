@@ -73,7 +73,7 @@ export function Showcase({
   }
 
   return (
-    <section aria-labelledby="game-achievements" className="mt-10 space-y-5">
+    <section aria-labelledby="game-achievements" data-slot="showcase" className="mt-10 space-y-5">
       <SectionHeading
         title={<span id="game-achievements">Achievements</span>}
         count={tabs.length > 1 ? undefined : current.set.achievements.length}

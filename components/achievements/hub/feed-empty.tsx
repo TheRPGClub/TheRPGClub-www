@@ -28,7 +28,7 @@ export function FeedEmpty({ filters, editHref }: { filters: Filters; editHref: s
   // Nobody has linked anything: point the viewer at their own Linked
   // Accounts.
   return (
-    <div className="flex flex-col items-center gap-4 rounded-md border border-dashed border-border-strong px-4 py-12 text-center">
+    <div data-slot="hub-empty" className="flex flex-col items-center gap-4 rounded-md border border-dashed border-border-strong px-4 py-12 text-center">
       <p className="text-dim-foreground">
         No one has linked a RetroAchievements, Steam or PlayStation account yet.
       </p>
@@ -48,7 +48,7 @@ const INLINE_LINK =
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+    <p data-slot="hub-empty" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

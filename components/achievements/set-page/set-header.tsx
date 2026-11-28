@@ -33,7 +33,7 @@ export function SetHeader({
   const badges = set.progress ? setBadges(set.progress) : [];
 
   return (
-    <header className="border-b-2 border-foreground pb-6">
+    <header data-slot="set-header" className="border-b-2 border-foreground pb-6">
       <BackLink href={memberAchievementsHref(userId)} label="Achievements" className="mb-5" />
       <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="flex min-w-0 flex-col gap-4">

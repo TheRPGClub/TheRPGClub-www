@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 export function HubProviderFilter({ filters }: { filters: Filters }) {
   const all = filters.provider == null;
   return (
-    <nav aria-label="Provider">
+    <nav aria-label="Provider" data-slot="hub-filter">
       <ul className="flex flex-wrap gap-1.5">
         <li>
           <Badge
