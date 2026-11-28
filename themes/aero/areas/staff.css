@@ -11,17 +11,19 @@
         --staff-lift: 0 1px 2px rgb(16 64 96 / 0.12), 0 16px 34px -14px rgb(16 64 96 / 0.42);
         --staff-mist: linear-gradient(180deg, rgb(255 255 255 / 0.97), rgb(242 249 253 / 0.94));
         --staff-gloss: linear-gradient(180deg, rgb(255 255 255 / 0.45) 0%, rgb(255 255 255 / 0.08) 48%, rgb(255 255 255 / 0) 49%);
+        /* A window's glass: dense enough that the faintest ink clears
+           4.5:1 over the darkest water. */
+        --staff-window: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.965));
+        /* A band's gloss stays faint under white type. */
+        --staff-band-gloss: linear-gradient(180deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.02) 48%, rgb(255 255 255 / 0) 49%);
         --staff-teal-gel: radial-gradient(circle at 35% 25%, rgb(255 255 255 / 0.8) 0 15%, rgb(255 255 255 / 0) 40%), linear-gradient(180deg, #5fd5ea, var(--ok));
 
-        /* ---- Desk heads: a soft 3px glass rule, never the paper rule. ---- */
-        [data-slot="desk-header"] {
-            border-bottom: 3px solid var(--border);
-        }
+        /* ---- Desk heads: a soft 2px glass rule, never the paper rule (the
+           desk's page head is a template: ./templates.css). ---- */
         [data-slot="desk-rule-head"] {
             border-bottom: 2px solid var(--border);
         }
-        [data-slot="desk-rule-head"] .font-label,
-        [data-slot="desk-header"] .font-label {
+        [data-slot="desk-rule-head"] .font-label {
             letter-spacing: var(--label-tracking);
         }
 
@@ -73,12 +75,12 @@
         [data-slot="desk-tray-empty"] {
             border-radius: var(--radius-md);
             border-width: 1.5px;
-            background: rgb(255 255 255 / 0.6);
+            background: var(--staff-window);
         }
         [data-slot="desk-empty"] {
             border-radius: var(--radius-md);
             border-width: 1.5px;
-            background: rgb(255 255 255 / 0.6);
+            background: var(--staff-window);
         }
 
         /* ---- A desk tab's tools: one glass window of rows. ---- */
@@ -193,6 +195,10 @@
            its masthead red, which is GOTM there). */
         [data-slot="flag-desk"] b.text-gotm {
             color: var(--destructive);
+        }
+        /* Teal and amber as type on white are their inks. */
+        [data-slot="flag-desk"] b.text-ok {
+            color: var(--aero-ok-ink);
         }
         [data-slot="flag-preview-chip"] {
             border-radius: 9999px;
@@ -331,7 +337,7 @@
         [data-slot="feedback-wall-empty"] {
             border-radius: var(--radius-lg);
             border-width: 1.5px;
-            background: rgb(255 255 255 / 0.6);
+            background: var(--staff-window);
         }
         /* The Roadmap badge sits inside the band, so no room above a row. */
         [data-slot="feedback-wall"] {
@@ -349,7 +355,7 @@
         [data-slot="feedback-band"] {
             min-height: 3.1rem;
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            background: var(--staff-gloss), var(--band);
+            background: var(--staff-band-gloss), var(--band);
             color: #ffffff;
             text-shadow: 0 -1px 0 rgb(0 20 40 / 0.35);
         }
@@ -383,6 +389,12 @@
         [data-slot="feedback-card-foot"] {
             border-color: var(--border);
         }
+        /* The Give feedback dialog and the review sheet open on the kind's
+           ink band: the pane's top gloss stays faint over it, so the white
+           eyebrow keeps 4.5:1. */
+        :is([data-slot="dialog-content"], [data-slot="sheet-content"]):has([data-slot="feedback-kind-head"])::before {
+            background: none;
+        }
         /* A closed card's reason: an inset glass well, upright, no tape. */
         [data-slot="closed-slip"] {
             rotate: none;
@@ -414,8 +426,26 @@
         [data-slot="roadmap-pin"]:hover {
             translate: 0 -1px;
         }
+        /* Focus: the blue outline on a white halo, wherever the area's
+           own styling would hide the default (a clipped switch, a link on
+           glass, a badge with its own shadow). */
+        :is(
+            [data-slot="recent-jobs"] a,
+            [data-slot="patch-rail"] a,
+            [data-slot="patch-foot"] a
+        ):focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+            border-radius: 0.375rem;
+            box-shadow: var(--aero-halo);
+        }
         [data-slot="roadmap-pin"]:focus-visible {
-            outline-color: var(--ring);
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+        [data-slot="feedback-status-switch"] > a:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: -4px;
         }
         [data-slot="roadmap-pin-tile"] {
             border-radius: 0.375rem;
@@ -476,6 +506,17 @@
             box-shadow: inset 0 0 0 1px #076b7d;
             color: #ffffff;
         }
+        /* A Roadmap Item's area tags: pale gel chips with deep type. */
+        [data-slot="roadmap-node"] [data-slot="badge"][data-tone="area-web"] {
+            background: #fff3cc;
+            box-shadow: inset 0 0 0 1px var(--aero-amber-edge);
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="roadmap-node"] [data-slot="badge"][data-tone="area-bot"] {
+            background: #e2f3dc;
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nr) 55%, #ffffff);
+            color: #1f5e19;
+        }
         [data-slot="learned-shelf"] {
             border: 0;
             border-radius: var(--radius-xl);
@@ -534,6 +575,107 @@
             background: var(--aero-amber-gel);
             box-shadow: inset 0 0 0 1px var(--aero-amber-edge), 0 2px 6px rgb(150 90 0 / 0.4);
         }
+        /* ---- Windows (www#253): every word in the area sits on its own
+           glass, so the content frame's veil can lift. A window carries
+           its section whole (heading, intro line, rows), as in H. ---- */
+        :is(
+            [data-slot="settings-section"],
+            [data-slot="desk-body"],
+            [data-slot="recent-jobs"],
+            [data-slot="bot-jobs-filter"],
+            [data-slot="bot-jobs-column"],
+            [data-slot="patch-preview"],
+            [data-slot="feedback-lane"],
+            [data-slot="feedback-board-head"],
+            [data-slot="patch-rail"],
+            [data-slot="patch-page-body"]
+        ) {
+            border-radius: var(--radius-xl);
+            background: var(--staff-window);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), var(--aero-day);
+            padding: 1rem 1rem 1.15rem;
+        }
+        @media (min-width: 40rem) {
+            :is(
+                [data-slot="settings-section"],
+                [data-slot="desk-body"],
+                [data-slot="bot-jobs-column"],
+                [data-slot="feedback-board-head"],
+                [data-slot="patch-page-body"]
+            ) {
+                padding: 1.25rem 1.5rem 1.5rem;
+            }
+        }
+        /* The first line sits at the window's padding, not a margin more. */
+        [data-slot="desk-body"] {
+            margin-top: 1rem;
+            > :first-child {
+                margin-top: 0;
+            }
+        }
+        /* A lane's kind ink is a tint in the top of its window. */
+        [data-slot="feedback-lane"] {
+            background:
+                linear-gradient(180deg, color-mix(in srgb, var(--k) 12%, rgb(255 255 255 / 0)), rgb(255 255 255 / 0) 3.25rem),
+                var(--staff-window);
+        }
+        /* Small notes under a proof sit in the proof's shadow: the dim ink. */
+        :is([data-slot="proof-card"] figcaption, [data-slot="patch-preview"] > p:not(:first-child, .text-destructive)) {
+            color: var(--dim-foreground);
+        }
+        /* Windows inside a window lie flat: one sheet of glass, ruled. */
+        :is([data-slot="settings-section"], [data-slot="desk-body"]) :is([data-slot="preference-list"], [data-slot="flag-desk"] > section) {
+            border-top: 1px solid var(--border);
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            padding-inline: 0;
+        }
+        /* A section heading inside a window drops its plaque for the bead
+           rule (templates.css sets the plaque on the scene). */
+        :is(
+            [data-slot="settings-section"],
+            [data-slot="desk-body"],
+            [data-slot="bot-jobs-column"],
+            [data-slot="feedback-board-head"],
+            [data-slot="flag-desk"] > section
+        ) > [data-slot="section-heading"] {
+            align-items: baseline;
+            border-radius: 0;
+            background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+            box-shadow: none;
+            backdrop-filter: none;
+            padding: 0 0 0.7rem;
+        }
+        /* Loose single lines get a glass strip of their own. */
+        :is(
+            [data-slot="patch-version-foot"],
+            [data-slot="patch-foot"] > div,
+            [data-slot="patch-stack-note"],
+            [data-slot="roadmap-note"],
+            [data-slot="staff-alert"]
+        ) {
+            border: 0;
+            border-radius: var(--radius-lg);
+            background: var(--staff-window);
+            box-shadow: var(--aero-edge), 0 0 0 1px var(--border), 0 4px 12px -6px rgb(16 64 96 / 0.35);
+            padding-inline: 1rem;
+        }
+        [data-slot="patch-foot"] {
+            border-top: 0;
+        }
+        /* A read that failed: a red line on its own strip. */
+        [data-slot="staff-alert"] {
+            width: fit-content;
+            max-width: 100%;
+            padding-block: 0.6rem;
+        }
+        /* The version line sits on a strip only as wide as itself. */
+        [data-slot="patch-version-foot"] {
+            width: fit-content;
+            border-radius: 9999px;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             :is([data-slot="desk-tray-card"], [data-slot="roadmap-pin"], [data-slot="toggle-group-item"][data-variant="theme-card"]) {
                 transition: none;
