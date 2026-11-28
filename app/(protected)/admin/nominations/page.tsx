@@ -31,7 +31,7 @@ export default async function NominationsAdminPage() {
     return (
       <div>
         <DeskHeader back={STAFF_DESK_BACK} title={SECTION.label} side="No round right now" />
-        <p className="mt-6 text-dim-foreground">There is no voting round, so there are no nominations to delete.</p>
+        <p data-slot="issue-note" data-variant="line" className="mt-6 text-dim-foreground">There is no voting round, so there are no nominations to delete.</p>
       </div>
     );
   }

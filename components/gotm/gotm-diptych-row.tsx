@@ -41,7 +41,7 @@ export function GotmDiptychRow({
   const body = (
     <>
       <div className="mb-1.5 flex h-6.5 items-center gap-2.5 sm:mb-2 sm:h-7.5 sm:gap-3.5">
-        <span className="font-headline relative z-20 self-start rounded-br-sm bg-background pr-3 pb-1 text-[3.75rem] leading-none sm:pr-4 sm:pb-1.5 sm:text-[5.75rem]">
+        <span data-slot="gotm-round-number" className="font-headline relative z-20 self-start rounded-br-sm bg-background pr-3 pb-1 text-[3.75rem] leading-none sm:pr-4 sm:pb-1.5 sm:text-[5.75rem]">
           <span className="sr-only">Round </span>
           {round.round_number}
         </span>
@@ -58,7 +58,7 @@ export function GotmDiptychRow({
           </span>
         )}
         {nominated > 0 && (
-          <span className={cn(tag, "border-highlight text-highlight")}>
+          <span data-slot="gotm-round-tag" data-tone="highlight" className={cn(tag, "border-highlight text-highlight")}>
             <span className="sr-only">, </span>
             {nominated} nominated
           </span>

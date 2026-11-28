@@ -18,7 +18,7 @@ export function UpcomingStage({ vote }: { vote: GotyVote }) {
         ))}
       </TabsList>
       {vote.awards.map((a) => (
-        <TabsContent key={a.award} value={a.award} keepMounted className="text-base">
+        <TabsContent data-slot="goty-award-panel" key={a.award} value={a.award} keepMounted className="text-base">
           <YearSoFarPanel vote={vote} award={a} />
         </TabsContent>
       ))}

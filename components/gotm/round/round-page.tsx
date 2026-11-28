@@ -33,7 +33,7 @@ export function RoundPage({
     return (
       <div className="space-y-6">
         <PageHeader title={`Round ${roundNumber}`} back={back} badge={badge} />
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+        <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           Couldn&apos;t load this round. Try again in a moment.
         </p>
       </div>

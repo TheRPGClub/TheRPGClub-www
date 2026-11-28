@@ -11,7 +11,7 @@ import { AwardCover } from "./award-cover";
 export function NominationsWall({ games }: { games: NominatedGame[] }) {
   if (!games.length) {
     return (
-      <p className="rounded-md border border-dashed border-border-strong px-4 py-10 text-center text-dim-foreground">
+      <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-10 text-center text-dim-foreground">
         No nominations yet. Be the first!
       </p>
     );

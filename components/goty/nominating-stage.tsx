@@ -31,7 +31,7 @@ export function NominatingStage({
   const mine = nominations.filter((n) => n.user_id === viewerId);
   const ballots = vote.awards.filter((a) => a.award !== "game_of_the_year");
   return (
-    <section className="flex flex-col gap-5">
+    <section data-slot="goty-stage" data-variant="nominating" className="flex flex-col gap-5">
       <SectionHeading
         title="Your three for Game of the Year"
         count={`${mine.length} of ${CAP} · change them until ${etDay(vote.voting_opens_at)}`}

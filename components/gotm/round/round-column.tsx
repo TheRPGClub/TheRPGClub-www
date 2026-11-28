@@ -26,7 +26,7 @@ export function RoundColumn({
   const nr = kind === "nr_gotm";
 
   return (
-    <section aria-labelledby={`round-${kind}`} className="min-w-0">
+    <section data-slot="round-column" data-tone={nr ? "nr" : "gotm"} aria-labelledby={`round-${kind}`} className="min-w-0">
       <header className="mb-1 flex items-baseline justify-between gap-3 border-b-2 border-foreground pb-2">
         <h2
           id={`round-${kind}`}

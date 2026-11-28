@@ -34,6 +34,7 @@ export function GotyPage({
       <div className="space-y-8">
         <PageHeader title="GOTY Vote" badge={badge} />
         <p
+          data-slot="issue-note"
           role={data.unreachable ? "alert" : undefined}
           className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground"
         >

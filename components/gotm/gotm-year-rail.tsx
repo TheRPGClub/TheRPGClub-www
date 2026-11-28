@@ -24,7 +24,7 @@ export function GotmYearRail({
     gotmHistoryHref({ ...filters, year, page: 1 });
 
   return (
-    <nav aria-label="Year" className="min-w-0 lg:sticky lg:top-21 lg:self-start">
+    <nav data-slot="gotm-year-rail" aria-label="Year" className="min-w-0 lg:sticky lg:top-21 lg:self-start">
       <ul className="flex gap-4 overflow-x-auto border-b border-border pb-1 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-r lg:border-b-0 lg:pb-0">
         <li>
           <YearLink href={href(null)} active={filters.year === null}>

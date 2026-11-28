@@ -46,7 +46,7 @@ export function GotmHistory({
       />
       {/* A phone sets the switch full width under the title, out of the
           header's right-aligned actions slot. */}
-      <div className="sm:hidden">
+      <div data-slot="gotm-filters-row" className="sm:hidden">
         <GotmHistoryFilters filters={filters} />
       </div>
 
@@ -65,6 +65,7 @@ export function GotmHistory({
             <div className="space-y-4.5 sm:space-y-3.5">
               {groupByYear(rounds).map((group, gi) => (
                 <section
+                  data-slot="gotm-year"
                   key={`${group.year ?? "undated"}-${gi}`}
                   aria-label={group.year ? String(group.year) : "Undated rounds"}
                   className="space-y-4.5 sm:space-y-3.5"
@@ -105,7 +106,7 @@ export function GotmHistory({
 
 function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+    <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

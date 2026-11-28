@@ -79,7 +79,7 @@ export default async function VotingConsolePage() {
     return (
       <div className="space-y-6">
         <DeskHeader back={STAFF_DESK_BACK} title={SECTION.label} side={<>No round scheduled</>} />
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+        <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           No voting round is scheduled. Deciding a round schedules the next one.
         </p>
       </div>

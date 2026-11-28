@@ -24,7 +24,7 @@ const COUNT_TONE: Record<VotingCategory, string> = {
 
 export function VotingTabs({ tabs }: { tabs: VotingTab[] }) {
   return (
-    <Tabs defaultValue={tabs[0]?.category} className="block space-y-5">
+    <Tabs data-slot="voting-board" defaultValue={tabs[0]?.category} className="block space-y-5">
       <TabsList
         variant="line"
         aria-label="Ballot tracks"

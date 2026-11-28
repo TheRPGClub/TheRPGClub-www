@@ -32,7 +32,7 @@ export function RoundForm({ defaults, prefill }: RoundFormProps) {
   const shown = sent ?? { category: f.category, roundNumber, monthYear: f.monthYear, games: f.games };
 
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_25rem] lg:gap-10">
+    <div data-slot="issue-desk" data-variant="round-form" className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_25rem] lg:gap-10">
       <form onSubmit={f.submit} className="min-w-0 space-y-5" aria-labelledby={`${id}-title`}>
         <h2 id={`${id}-title`} className="font-headline text-[2rem] leading-none">
           Add a round

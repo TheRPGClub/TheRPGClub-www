@@ -16,6 +16,7 @@ export function RoundNav({
 }) {
   return (
     <nav
+      data-slot="round-nav"
       aria-label="Rounds"
       className="mt-9 grid grid-cols-2 gap-2 border-t-2 border-foreground pt-4 md:grid-cols-[1fr_auto_1fr] md:gap-4.5"
     >
@@ -89,7 +90,7 @@ export function RoundSteps({
     { round: next, label: next != null ? `Round ${next}` : "Newest round", Arrow: ArrowRight, before: false },
   ];
   return (
-    <nav aria-label="Step through rounds" className={cn("flex gap-2", className)}>
+    <nav data-slot="round-steps" aria-label="Step through rounds" className={cn("flex gap-2", className)}>
       {steps.map(({ round, label, Arrow, before }) => {
         const body = (
           <>

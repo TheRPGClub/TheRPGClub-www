@@ -54,7 +54,7 @@ export function VotingConsole({
   const pinMax = Math.max(saved, rulerTime(96, scale));
 
   return (
-    <div className="flex flex-col">
+    <div data-slot="issue-desk" data-variant="voting-console" className="flex flex-col">
       <BackLink {...STAFF_DESK_BACK} />
       <header className="grid items-end gap-x-7 gap-y-1.5 border-b-2 border-foreground pb-3.5 md:grid-cols-[auto_minmax(0,1fr)]">
         <p aria-hidden className="font-headline text-[5.5rem] leading-[0.8] md:text-[8rem]">
