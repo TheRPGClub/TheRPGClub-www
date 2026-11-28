@@ -32,8 +32,8 @@ export interface SettingsViewProps {
   // The club default Pinned Pages by name ("Voting, Games, Members and News").
   pinsDefault: string;
   panelsCustomised: boolean;
-  // The Theme picker's cards, for Your layout's top row (ticket www#250;
-  // its look is still being picked). Null leaves the row out.
+  // The Theme picker's cards, for Your look & layout's top row (ticket
+  // www#250). Null leaves the row out.
   themes: ThemeCard[] | null;
   // Null for a member who can't open the News Hub, or when the read failed.
   newsCategories: NewsCategoryPreferences | null;
@@ -72,7 +72,12 @@ export function SettingsView(p: SettingsViewProps) {
     layout: {
       note: layoutTabNote(p.pinsCustomised, p.panelsCustomised),
       panel: (
-        <LayoutTab pinsCustomised={p.pinsCustomised} pinsDefault={p.pinsDefault} panelsCustomised={p.panelsCustomised} />
+        <LayoutTab
+          pinsCustomised={p.pinsCustomised}
+          pinsDefault={p.pinsDefault}
+          panelsCustomised={p.panelsCustomised}
+          themes={p.themes}
+        />
       ),
     },
     staff: {
