@@ -23,7 +23,7 @@ export function FranchiseAddOns({ board, editor }: { board: FranchiseBoard; edit
           <AddOnDrawer key={group.key} as="div" parent={group.parent} games={group.games} editor={editor} {...sort} />
         ))}
         {editor.editing && strays.length + incoming.length === 0 && (
-          <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+          <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
             Drop a game here to make it an Add-on.
           </p>
         )}

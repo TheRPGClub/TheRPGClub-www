@@ -93,7 +93,7 @@ export function GiveawayShelf({
       {header}
       {notice && <ShelfNotice title={notice.title} text={notice.text} />}
       {boxes.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">{emptyCopy}</p>
+        <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-5 py-8 text-faint-foreground">{emptyCopy}</p>
       ) : (
         <ul className="grid grid-cols-2 gap-x-5 gap-y-9 pt-3 sm:grid-cols-[repeat(auto-fill,minmax(11.5rem,1fr))]">
           {boxes.map((box) => {

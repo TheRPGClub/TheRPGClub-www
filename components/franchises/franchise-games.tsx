@@ -41,7 +41,7 @@ export function FranchiseGames({
         </p>
       )}
       {empty && !editor.editing && (
-        <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+        <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
           No games are linked to this Franchise yet.
         </p>
       )}
@@ -58,7 +58,7 @@ export function FranchiseGames({
             {mainline.length > 0 ? (
               <FranchiseWall entries={mainline} kind="run" editor={editor} {...sort} label="Mainline games, in release order" />
             ) : (
-              <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+              <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
                 No Mainline games yet. Drag a Spin-off here to make it Mainline.
               </p>
             )}

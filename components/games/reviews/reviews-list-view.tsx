@@ -61,7 +61,7 @@ export function ReviewsListView({
             </header>
 
             {listFailed ? (
-              <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
+              <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
                 Reviews couldn&apos;t be loaded right now.
               </p>
             ) : (

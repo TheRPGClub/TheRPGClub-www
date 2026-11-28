@@ -22,6 +22,7 @@ export async function GameFactsRow({
 
   return (
     <div
+      data-slot="game-facts-row"
       className={cn(
         "mt-6.5 grid items-start gap-6 md:grid-cols-2 lg:gap-8",
         alternates.length > 0

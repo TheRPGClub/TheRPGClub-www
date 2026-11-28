@@ -51,7 +51,7 @@ export function ReviewArticle({
   authorName: string;
 }) {
   return (
-    <article aria-label="Review" className="max-w-[68ch] md:px-1">
+    <article data-slot="review-read" aria-label="Review" className="max-w-[68ch] md:px-1">
       {reviewBodyText(body) !== null ? (
         <ReviewBodyContent body={body} variant="article" />
       ) : (

@@ -32,6 +32,7 @@ export function ReviewsGameAside({
 
   return (
     <aside
+      data-slot="reviews-game-aside"
       aria-label={game.title}
       className="grid grid-cols-[5.75rem_1fr] items-center gap-x-3.5 gap-y-4 lg:sticky lg:top-20 lg:block lg:self-start"
     >

@@ -13,7 +13,7 @@ export function PickEmpty({
   total: number;
 }) {
   return (
-    <div className="space-y-3 rounded-sm border border-dashed border-border-strong px-4 py-10 text-center">
+    <div data-slot="shelf-empty" className="space-y-3 rounded-sm border border-dashed border-border-strong px-4 py-10 text-center">
       <p className="text-sm text-faint-foreground">{pickEmptyMessage(filters, total)}</p>
       {(filters.platformId !== null || filters.maxHours !== null) && (
         <ButtonLink

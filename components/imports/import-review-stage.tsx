@@ -53,7 +53,7 @@ export function ImportReviewStage({
       )}
 
       {job.status === "active" && !item && busy && (
-        <div className="grid min-h-60 place-items-center rounded-md border border-dashed border-border-strong px-6 text-center">
+        <div data-slot="shelf-empty" className="grid min-h-60 place-items-center rounded-md border border-dashed border-border-strong px-6 text-center">
           <p className="font-label inline-flex items-center gap-2 text-[0.95rem] font-extrabold tracking-[0.06em] text-dim-foreground">
             <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" />
             {busy}
@@ -62,7 +62,7 @@ export function ImportReviewStage({
       )}
 
       {job.status === "paused" && (
-        <div className="rounded-md border border-dashed border-border-strong px-6 py-12 text-center">
+        <div data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-6 py-12 text-center">
           <h2 className="font-headline text-4xl">Paused</h2>
           <p className="mx-auto mt-2 max-w-[48ch] text-sm text-dim-foreground">
             Resume it whenever you like; it picks up at the next{" "}
