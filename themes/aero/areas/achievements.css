@@ -396,6 +396,21 @@
             box-shadow: var(--aero-edge), var(--aero-day);
             padding: 6px;
         }
+        /* The binder's way back, alone above the binder. */
+        [data-slot="binder-back"] {
+            width: fit-content;
+            margin-bottom: 0.75rem;
+            border-radius: 9999px;
+            background: var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            padding: 4px 12px;
+            & > a {
+                margin-bottom: 0;
+            }
+            @media (max-width: 47.99rem) {
+                padding: 2px;
+            }
+        }
         [data-slot="hub-note"] {
             padding: 4px 14px;
             letter-spacing: 0;
