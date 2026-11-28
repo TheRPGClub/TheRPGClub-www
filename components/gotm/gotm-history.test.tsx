@@ -90,7 +90,7 @@ describe("GotmHistory", () => {
 
   it("sets the round numeral on the banners' corner, the month and nominated tag beside it", () => {
     const html = render([R144]);
-    expect(html).toMatch(/<span class="font-headline[^"]*sm:text-\[5\.75rem\][^"]*"><span class="sr-only">Round <\/span>144<\/span>/);
+    expect(html).toMatch(/<span data-slot="gotm-round-number" class="font-headline[^"]*sm:text-\[5\.75rem\][^"]*"><span class="sr-only">Round <\/span>144<\/span>/);
     expect(html).toContain("Nov 2026");
     expect(html.indexOf(">144<")).toBeLessThan(html.indexOf("8 nominated"));
     expect(html.indexOf("8 nominated")).toBeLessThan(html.indexOf("<h3"));
