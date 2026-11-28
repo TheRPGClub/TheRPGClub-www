@@ -2081,7 +2081,7 @@
             color: var(--gotm);
             text-decoration: underline wavy var(--highlight);
         }
-        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"]) {
+        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"], [data-variant="theme-card"]) {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
