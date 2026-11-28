@@ -26,14 +26,14 @@ const PATCH_STORY = cn(
 export function PatchSheet({ editor }: { editor: PatchEditorState }) {
   const n = editor.patch.number;
   return (
-    <section aria-label="The Patch" className="relative flex flex-col rounded-[4px] bg-card pb-8 shadow-[inset_0_0_0_1px_var(--color-border)]">
+    <section data-slot="patch-sheet" aria-label="The Patch" className="relative flex flex-col bg-card pb-8">
       <RichTextProvider schema={PATCH_SCHEMA} initialValue={editor.value} onChange={editor.setValue} disabled={editor.busy !== null}>
-        <div className="sticky top-[env(safe-area-inset-top)] z-20 rounded-t-[4px] bg-muted px-3 py-1.5 sm:px-6">
+        <div data-slot="patch-sheet-toolbar" className="sticky top-[env(safe-area-inset-top)] z-20 bg-muted px-3 py-1.5 sm:px-6">
           <RichTextToolbar schema={PATCH_SCHEMA} className="flex-nowrap overflow-x-auto" />
         </div>
         <div className="px-4 pt-6 sm:px-10 sm:pt-8">
           <p className="font-label flex flex-wrap items-center gap-2.5 text-[0.6875rem] font-bold tracking-[0.1em] text-faint-foreground">
-            <span className="rounded-xs px-1.5 pt-0.5 text-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)]">Patch {n}</span>
+            <span data-slot="patch-number-chip" className="px-1.5 pt-0.5 text-foreground">Patch {n}</span>
             Title optional
           </p>
           <TitleField editor={editor} />
@@ -71,7 +71,7 @@ function TitleField({ editor }: { editor: PatchEditorState }) {
         e.preventDefault();
         plate.tf.focus({ edge: "start" });
       }}
-      className="font-headline mt-1.5 min-h-0 resize-none border-0 px-0 pt-1.5 pb-1 text-[2.5rem] leading-[1] uppercase sm:text-[3.5rem] md:text-[3.5rem]"
+      className="font-headline mt-1.5 min-h-0 resize-none border-0 px-0 pt-1.5 pb-1 text-[2.5rem] leading-[1] sm:text-[3.5rem] md:text-[3.5rem]"
     />
   );
 }

@@ -66,10 +66,10 @@ export function SynonymEditor({
       aria-label={isNew ? "New entry" : `Edit ${initialTerms[0] ?? "entry"}`}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <Label htmlFor={`${fieldId}-headword`} variant="field" className="font-label text-[0.72rem] font-bold tracking-[0.08em] uppercase">
+        <Label htmlFor={`${fieldId}-headword`} variant="field" className="font-label text-[0.72rem] font-bold tracking-[0.08em]">
           Headword
         </Label>
-        <span className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-highlight uppercase">
+        <span className="font-label text-[0.72rem] font-bold tracking-[0.08em] text-highlight">
           {isNew ? "New entry" : "Editing"}
         </span>
       </div>
@@ -85,7 +85,7 @@ export function SynonymEditor({
         className="mt-1 h-10 text-[1.05rem] font-bold md:text-[1.05rem]"
       />
 
-      <Label htmlFor={`${fieldId}-also`} variant="field" className="font-label mt-3 mb-1 block text-[0.72rem] font-bold tracking-[0.08em] uppercase">
+      <Label htmlFor={`${fieldId}-also`} variant="field" className="font-label mt-3 mb-1 block text-[0.72rem] font-bold tracking-[0.08em]">
         Also searched as
       </Label>
       <TermInput

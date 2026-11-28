@@ -19,7 +19,7 @@ export function NodeFeedback({ feedback }: { feedback: RoadmapFeedback[] }) {
     <Collapsible data-no-drag="" className="mt-1">
       <CollapsibleTrigger
         render={<Button type="button" variant="quiet-link" size="bare" />}
-        className="group/tog items-center gap-1 text-[0.74rem] uppercase"
+        className="group/tog items-center gap-1 text-[0.74rem]"
       >
         {feedback.length} Feedback
         <ChevronDown aria-hidden className="size-3.5 group-data-panel-open/tog:rotate-180" />

@@ -20,11 +20,13 @@ export function PatchSlips({ patches, seen = NO_PATCH_SEEN }: { patches: readonl
           <li key={patch.number} className="relative -mt-3" style={{ zIndex: 9 - Math.min(i, 8) }}>
             <Link
               href={patchPath(patch.number)}
+              data-slot="patch-slip"
+              data-variant={i === 0 ? "first" : undefined}
               className={cn(
                 "group flex min-h-[3.375rem] items-center gap-3.5 rounded-b-md border border-t-0 border-border-strong px-4 pt-5 pb-2 outline-none sm:px-[18px]",
                 i === 0 ? "bg-muted" : "bg-card",
                 "motion-safe:transition-[translate,box-shadow] motion-safe:duration-200 motion-safe:ease-out",
-                "hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgb(0_0_0/0.45)] focus-visible:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-highlight",
+                "hover:-translate-y-0.5 focus-visible:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-highlight",
               )}
             >
               <span aria-hidden className="font-headline w-7 shrink-0 text-center text-2xl leading-none text-dim-foreground group-hover:text-foreground">

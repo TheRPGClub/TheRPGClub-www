@@ -6,8 +6,8 @@ import { ROADMAP_PATH } from "@/lib/roadmap/tree";
 import { cn } from "@/lib/utils";
 
 // The Roadmap badge (design pick 3, "Pinned node"): a Skill Tree node
-// pinned to a linked Feedback card's top-right corner at a 3deg tilt with
-// the stamp shadow. "On the Roadmap" over the item's Milestone, its ring in
+// hung on a linked Feedback card's top-right corner (Monthly Issue pins it
+// at a 3deg tilt with the stamp shadow). "On the Roadmap" over the item's Milestone, its ring in
 // yellow while planned; green with a filled tick once Shipped. It opens
 // /roadmap. The card hides it when the API sends no `roadmap`. It hangs
 // above the card's top-right corner, just over its edge, so the header band
@@ -23,19 +23,14 @@ export function RoadmapPin({ roadmap }: { roadmap: FeedbackRoadmap }) {
     <Link
       href={ROADMAP_PATH}
       title={`On the Roadmap: ${line}`}
-      className={cn(
-        "absolute -top-10 -right-2.5 z-10 flex w-[9.5rem] rotate-3 items-center gap-2 rounded-[3px] bg-card px-2.5 py-1.5 transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight motion-reduce:transition-none",
-        shipped
-          ? "shadow-[inset_0_0_0_1.5px_var(--color-ok),0_6px_14px_rgb(0_0_0/0.45)]"
-          : "shadow-[inset_0_0_0_1.5px_var(--color-highlight),0_6px_14px_rgb(0_0_0/0.45)]",
-      )}
+      data-slot="roadmap-pin"
+      data-tone={shipped ? "shipped" : "planned"}
+      className="absolute -top-10 -right-2.5 z-10 flex w-[9.5rem] items-center gap-2 bg-card px-2.5 py-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
     >
       <span
         aria-hidden
-        className={cn(
-          "grid size-5 shrink-0 place-items-center rounded-[2px]",
-          shipped ? "bg-ok text-background" : "shadow-[inset_0_0_0_1.5px_var(--color-highlight)]",
-        )}
+        data-slot="roadmap-pin-tile"
+        className={cn("grid size-5 shrink-0 place-items-center", shipped && "bg-ok text-background")}
       >
         {shipped && <Check className="size-3.5 stroke-[3]" />}
       </span>

@@ -57,7 +57,7 @@ function DmsRow({ initial, preview }: { initial: ChallengeSettings; preview: boo
   });
 
   return (
-    <ul className="mt-4 border-t border-border">
+    <ul data-slot="preference-list" className="mt-4 border-t border-border">
       <PreferenceRow
         id={ROW}
         name="Challenge DMs"

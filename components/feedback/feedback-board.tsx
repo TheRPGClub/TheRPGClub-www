@@ -63,7 +63,8 @@ export function FeedbackBoard({
       {board.pinnedIsViewersPending && (
         <p
           role="status"
-          className="mt-4 inline-flex items-center gap-2.5 rounded-md bg-highlight px-3.5 py-2.5 text-[0.92rem] font-semibold text-highlight-foreground shadow-[0_12px_30px_rgb(0_0_0/0.5)]"
+          data-slot="feedback-pinned-note"
+          className="mt-4 inline-flex items-center gap-2.5 bg-highlight px-3.5 py-2.5 text-[0.92rem] font-semibold text-highlight-foreground"
         >
           <Pin aria-hidden className="size-[18px]" />
           Pinned. Your {kindMeta(kind).label} is Pending.

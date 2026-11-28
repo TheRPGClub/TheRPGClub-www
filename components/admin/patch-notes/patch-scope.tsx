@@ -46,10 +46,10 @@ export function PatchScope({
   );
 
   return (
-    <section aria-labelledby="patch-scope" className="flex max-w-[52rem] flex-col gap-8">
+    <section data-slot="patch-scope" aria-labelledby="patch-scope" className="flex max-w-[52rem] flex-col gap-8">
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-2 border-foreground pb-3">
         <div className="flex max-w-[38rem] flex-col gap-1.5">
-          <h2 id="patch-scope" className="font-headline text-[1.75rem] leading-none uppercase">
+          <h2 id="patch-scope" className="font-headline text-[1.75rem] leading-none">
             What Patch {number} covers
           </h2>
           <p className="text-[0.9375rem] text-dim-foreground">
@@ -70,11 +70,11 @@ export function PatchScope({
         </p>
       )}
       {!scope ? (
-        <p className="rounded-[3px] border border-dashed border-border-strong px-5 py-4 text-[0.9375rem] text-dim-foreground">
+        <p data-slot="desk-empty" className="rounded-[3px] border border-dashed border-border-strong px-5 py-4 text-[0.9375rem] text-dim-foreground">
           Couldn&apos;t load the Pending Changes. Reload to try again; writing the Patch works without them.
         </p>
       ) : scope.offered === 0 ? (
-        <p className="rounded-[3px] border border-dashed border-border-strong px-5 py-4 text-[0.9375rem] text-dim-foreground">
+        <p data-slot="desk-empty" className="rounded-[3px] border border-dashed border-border-strong px-5 py-4 text-[0.9375rem] text-dim-foreground">
           Nothing open: every Pending Change is dismissed. Undo one below to put it back, or write the Patch yourself.
         </p>
       ) : (
@@ -82,7 +82,7 @@ export function PatchScope({
           <section key={section.key} aria-labelledby={`patch-scope-${section.key}`} className="flex flex-col">
             <h3
               id={`patch-scope-${section.key}`}
-              className="font-headline flex items-baseline justify-between border-b-2 border-foreground pb-[7px] text-[1.375rem] leading-none uppercase"
+              className="font-headline flex items-baseline justify-between border-b-2 border-foreground pb-[7px] text-[1.375rem] leading-none"
             >
               {section.label}
               <span className="font-label text-xs font-bold tracking-[0.08em] text-faint-foreground">

@@ -8,6 +8,9 @@ import { ThemePicker } from "./theme-picker";
 vi.mock("@/app/actions/member-theme", () => ({ chooseThemeAction: vi.fn() }));
 vi.mock("@/app/actions/dashboard-panels", () => ({ resetDashboardPanelsAction: vi.fn() }));
 vi.mock("@/app/actions/pinned-pages", () => ({ resetPinnedPagesAction: vi.fn() }));
+// Each swatch carries its Theme's font classes; next/font only runs in Next.
+vi.mock("@/themes/aero/fonts", () => ({ aeroFonts: "aero-fonts" }));
+vi.mock("@/themes/monthly-issue/fonts", () => ({ monthlyIssueFonts: "monthly-issue-fonts" }));
 
 // Aero's stylesheet isn't shipped yet (www#252), so themeCards drops it: the
 // cards are built by hand here, as the API would send them for staff.

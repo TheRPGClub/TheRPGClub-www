@@ -51,9 +51,10 @@ export function PatchCard({
   return (
     <article
       aria-labelledby={`patch-card-${number}`}
+      data-slot="patch-card"
       className="relative z-10 rounded-md border border-border bg-card px-4 pt-4 pb-3.5 sm:px-5"
     >
-      <header className="mb-3 flex items-end gap-3.5 border-b-2 border-foreground pb-2.5">
+      <header data-slot="patch-card-head" className="mb-3 flex items-end gap-3.5 border-b-2 border-foreground pb-2.5">
         <p className="flex shrink-0 flex-col items-center gap-1">
           <span className="font-label text-[0.6875rem] leading-none font-bold tracking-[0.12em] text-faint-foreground">
             Patch
@@ -77,7 +78,7 @@ export function PatchCard({
       ) : (
         <p className="text-[0.9375rem] text-faint-foreground">Nothing written yet.</p>
       )}
-      <div className="mt-3 flex justify-end border-t border-border pt-3">
+      <div data-slot="patch-card-foot" className="mt-3 flex justify-end border-t border-border pt-3">
         {href ? (
           <ButtonLink href={href}>
             Read the full Patch<span className="sr-only"> {number}</span>

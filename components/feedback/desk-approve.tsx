@@ -12,7 +12,7 @@ import { DeskFormFoot } from "./desk-form-foot";
 import { DeskRepoChoice } from "./desk-repo-choice";
 import type { DeskSheetActions } from "./desk-sheet";
 
-const LEGEND = "font-label text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground uppercase";
+const LEGEND = "font-label text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground";
 
 // Approve in the review Sheet: the repo its GitHub issue opens in (a Bug
 // Report's Where picks Bot or Website for you), then "Approve and open issue".

@@ -8,7 +8,7 @@ import { RoadmapPin } from "./roadmap-pin";
 import { ClosedSlip, slipTilt } from "./rejection-slip";
 import { ScreenshotThumb } from "./screenshot-thumb";
 
-// A Feedback on the board: a straight card (6px corners, soft shadow), its
+// A Feedback on the board: a straight card (its shape the Theme's), its
 // header band filled with the status ink and carrying the upvote count. A
 // Bug Report says where it happened and shows its screenshot; a Rejected
 // or Duplicate card carries a taped-on slip. No kind badge: the tab says it.
@@ -57,10 +57,13 @@ export function FeedbackCard({
   return (
     <article
       id={`feedback-${f.feedback_id}`}
+      data-slot="feedback-card"
+      data-tone={phase}
+      data-pinned={highlight || undefined}
       aria-label={f.title}
       style={{ "--band": PHASE_INK[phase] } as CSSProperties}
       className={cn(
-        "relative scroll-mt-24 rounded-md bg-card shadow-[0_10px_24px_rgb(0_0_0/0.45)]",
+        "relative scroll-mt-24 bg-card",
         highlight && "ring-2 ring-highlight",
         (phase === "rejected" || phase === "duplicate") && "pb-4",
         className,
@@ -83,7 +86,7 @@ export function FeedbackCard({
         {mine && phase === "pending" && (
           <span className="font-label mt-2 block text-[0.74rem] font-extrabold text-highlight">Yours</span>
         )}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5">
+        <div data-slot="feedback-card-foot" className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5">
           <span className="text-[0.82rem] text-faint-foreground">
             by <b className="font-semibold text-dim-foreground">{f.created_by_name ?? "Unknown"}</b>
             {" · "}

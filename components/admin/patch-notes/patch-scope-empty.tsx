@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export function PatchScopeEmpty({ onWrite }: { onWrite: () => void }) {
   return (
     <section aria-labelledby="patch-scope-empty" className="max-w-[46rem] border-t-2 border-foreground pt-5">
-      <div className="flex items-start gap-4 rounded-[3px] border border-dashed border-border-strong px-5 py-5">
+      <div data-slot="desk-empty" className="flex items-start gap-4 rounded-[3px] border border-dashed border-border-strong px-5 py-5">
         <Inbox aria-hidden className="mt-0.5 size-5 shrink-0 text-faint-foreground" strokeWidth={1.75} />
         <div className="flex flex-col gap-2">
           <h2 id="patch-scope-empty" className="font-label text-[0.9375rem] font-bold tracking-[0.08em]">

@@ -1,1 +1,147 @@
-/* monthly-issue: staff signature components (spec api#523, area ticket). Styled by data-slot; filled in by its area ticket. */
+/* monthly-issue: staff signature components (spec api#523, www#259): the
+   Staff desk, the Feature Flag desk, the Patch editor, Settings (the Theme
+   picker's cards), the Feedback Board and the Roadmap. Styled by data-slot;
+   each rule is the Monthly Issue costume the component used to carry in its
+   classes (shapes, tilts, tape, stamp shadows, forced caps), moved here
+   unchanged so another Theme can leave it off. */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Staff desk. The in-tray card's 4px top bar in its tone; it lifts
+           2px on hover. */
+        [data-slot="desk-tray-card"] {
+            @apply rounded-md shadow-[inset_0_0_0_1px_var(--color-border)] transition-[box-shadow,translate] before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-border-strong hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1px_var(--color-border-strong)] motion-reduce:transition-none motion-reduce:hover:translate-y-0;
+        }
+        [data-slot="desk-tray-card"][data-tone="open"] {
+            @apply before:bg-highlight;
+        }
+        [data-slot="desk-tray-card"][data-tone="bad"] {
+            @apply before:bg-destructive;
+        }
+        [data-slot="desk-tool"] > a {
+            @apply rounded-xs;
+        }
+        [data-slot="desk-tool-tier"] {
+            @apply rounded-xs shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+        }
+
+        /* The bot job's rubber stamp, pressed on at -4deg; the proof card's
+           big one stamps in (keyframes burst-stamp in app/globals.css). */
+        [data-slot="desk-stamp"] {
+            @apply font-headline rounded-xs [--burst-rot:-4deg];
+        }
+        [data-slot="desk-stamp"][data-size="sm"] {
+            @apply -rotate-4 px-2.5 pt-[5px] pb-[3px] text-[1.05rem] shadow-[inset_0_0_0_2px_currentColor];
+        }
+        [data-slot="desk-stamp"][data-size="lg"] {
+            @apply bg-background/75 px-3.5 pt-[9px] pb-[6px] text-[1.9rem] shadow-[inset_0_0_0_3px_currentColor,0_6px_14px_rgb(0_0_0/0.45)] motion-safe:animate-[burst-stamp_480ms_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:-rotate-4;
+        }
+        [data-slot="proof-card-frame"]:not([data-variant="bare"]) {
+            @apply overflow-hidden rounded-md shadow-[0_24px_60px_rgb(0_0_0/0.55)];
+        }
+
+        /* Feedback Board. Straight cards with 6px corners and a dark drop;
+           a closed card's slip is taped on at its own small tilt (--slip,
+           set per card); the Roadmap badge is pinned at 3deg. */
+        [data-slot="feedback-card"] {
+            @apply rounded-md shadow-[0_10px_24px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="feedback-card"][data-pinned] {
+            @apply ring-2 ring-highlight;
+        }
+        [data-slot="feedback-band"] {
+            @apply rounded-t-md;
+        }
+        [data-slot="closed-slip"] {
+            @apply rotate-(--slip) rounded-xs shadow-[0_6px_14px_rgb(0_0_0/0.45)] before:absolute before:-top-[7px] before:left-1/2 before:-ml-[27px] before:h-3.5 before:w-[54px] before:-rotate-3 before:bg-foreground/35;
+        }
+        [data-slot="roadmap-pin"] {
+            @apply rotate-3 rounded-[3px] transition-transform duration-150 ease-out hover:-translate-y-0.5 motion-reduce:transition-none;
+        }
+        [data-slot="roadmap-pin"][data-tone="shipped"] {
+            @apply shadow-[inset_0_0_0_1.5px_var(--color-ok),0_6px_14px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="roadmap-pin"][data-tone="planned"] {
+            @apply shadow-[inset_0_0_0_1.5px_var(--color-highlight),0_6px_14px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="roadmap-pin-tile"] {
+            @apply rounded-[2px];
+        }
+        [data-slot="roadmap-pin"][data-tone="planned"] [data-slot="roadmap-pin-tile"] {
+            @apply shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+        }
+        [data-slot="feedback-status-switch"] {
+            @apply rounded-sm;
+        }
+        [data-slot="feedback-pinned-note"] {
+            @apply rounded-md shadow-[0_12px_30px_rgb(0_0_0/0.5)];
+        }
+
+        /* Roadmap. Square-cornered nodes ringed in border-strong, green
+           once Shipped. */
+        [data-slot="roadmap-node"] {
+            @apply rounded-[3px] shadow-[inset_0_0_0_1.5px_var(--color-border-strong)];
+        }
+        [data-slot="roadmap-node"][data-tone="shipped"] {
+            @apply shadow-[inset_0_0_0_1.5px_var(--color-ok)];
+        }
+        /* Staff editing's Make Room gap (roadmap/edit/editable-tier.tsx). */
+        [data-slot="roadmap-node"][data-sort-state="gap"] {
+            @apply shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+        }
+        [data-slot="roadmap-node-tile"] {
+            @apply rounded-xs;
+        }
+        [data-slot="roadmap-node"][data-tone="planned"] [data-slot="roadmap-node-tile"] {
+            @apply shadow-[inset_0_0_0_2px_var(--color-border-strong)];
+        }
+        /* Feature Flag desk. */
+        [data-slot="flag-preview-chip"] {
+            @apply rounded-xs shadow-[inset_0_0_0_1.5px_var(--color-highlight)];
+        }
+        [data-slot="flag-coverage-chip"] {
+            @apply rounded-xs;
+        }
+
+        /* Patch editor: the sheet as a ruled page. */
+        [data-slot="patch-sheet"] {
+            @apply rounded-[4px] shadow-[inset_0_0_0_1px_var(--color-border)];
+        }
+        [data-slot="patch-sheet-toolbar"] {
+            @apply rounded-t-[4px];
+        }
+        [data-slot="patch-number-chip"] {
+            @apply rounded-xs shadow-[inset_0_0_0_1px_var(--color-border-strong)];
+        }
+        [data-slot="patch-scope-strip"] {
+            @apply rounded-[3px] shadow-[inset_0_0_0_1px_var(--color-border)];
+        }
+
+        /* Patch Notes: an older Patch's slip lifts with a dark drop. */
+        [data-slot="patch-slip"] {
+            @apply hover:shadow-[0_8px_18px_rgb(0_0_0/0.45)];
+        }
+
+        /* Settings. The Staff tab's raised panel. */
+        [data-slot="preference-list"][data-variant="panel"] {
+            @apply rounded-md;
+        }
+    }
+
+    /* The Theme picker's Monthly Issue swatch, wherever it is drawn (on an
+       Aero page too): scoped to the swatch's own data-theme. */
+    [data-theme="monthly-issue"][data-slot="theme-swatch"] {
+        /* Its own Theme's faces (the swatch carries their font classes). */
+        --font-sans: var(--typeface-body);
+        --font-display: var(--typeface-display);
+        --font-cond: var(--typeface-label);
+        @apply rounded-xs inset-ring-1 inset-ring-border;
+        [data-slot="theme-swatch-card"],
+        [data-slot="theme-swatch-chip"] {
+            @apply rounded-xs;
+        }
+        [data-slot="theme-swatch-action"] {
+            @apply rounded-sm;
+        }
+    }
+}

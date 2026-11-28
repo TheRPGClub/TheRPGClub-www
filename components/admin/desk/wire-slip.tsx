@@ -35,12 +35,16 @@ export function WireSlip({ job, showRequester, wide = false }: { job: BotJob; sh
 
   return (
     <article
+      data-slot="wire-slip"
+      data-tone={phase}
+      data-size={wide ? "wide" : undefined}
       className={cn(
         "grid grid-cols-[4.2rem_minmax(0,1fr)] gap-3.5 border-b border-border py-3",
         wide && "sm:grid-cols-[5rem_minmax(0,1fr)_10rem] sm:gap-4.5 sm:py-3.5",
       )}
     >
       <time
+        data-slot="wire-slip-clock"
         dateTime={job.created_at}
         className={cn(
           "font-headline text-[1.6rem] text-dim-foreground",
@@ -80,6 +84,8 @@ export function WireSlip({ job, showRequester, wide = false }: { job: BotJob; sh
 function BotSaid({ tone, children }: { tone: "bad" | "plain"; children: string }) {
   return (
     <blockquote
+      data-slot="wire-slip-quote"
+      data-tone={tone}
       className={cn(
         "mt-2 border-t border-dashed pt-2 text-[0.92rem] leading-[1.4] break-words italic",
         tone === "bad" ? "border-destructive/50 text-destructive" : "border-border-strong text-dim-foreground",

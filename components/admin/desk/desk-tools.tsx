@@ -10,19 +10,19 @@ import { cn } from "@/lib/utils";
 // signal orange) before the arrow.
 export function DeskTools({ sections, notes }: { sections: StaffSection[]; notes: DeskNotes }) {
   return (
-    <ul className="border-t-2 border-foreground">
+    <ul data-slot="desk-tools" className="border-t-2 border-foreground">
       {sections.map((s) => {
         const note = notes[s.key];
         return (
-          <li key={s.key} className="border-b border-border">
+          <li key={s.key} data-slot="desk-tool" className="border-b border-border">
             <Link
               href={s.href}
-              className="group/tool grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-1 rounded-xs py-3.5 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+              className="group/tool grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-1 py-3.5 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
             >
               <span className="font-label flex flex-wrap items-center gap-2 text-[1.05rem] font-bold tracking-[0.06em] transition-colors group-hover/tool:text-highlight">
                 {s.label}
                 {s.tier !== "moderator" && (
-                  <span className="rounded-xs px-1 pt-0.5 text-[0.64rem] tracking-[0.08em] text-faint-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)]">
+                  <span data-slot="desk-tool-tier" className="px-1 pt-0.5 text-[0.64rem] tracking-[0.08em] text-faint-foreground">
                     {TIER_SHORT[s.tier]}
                   </span>
                 )}

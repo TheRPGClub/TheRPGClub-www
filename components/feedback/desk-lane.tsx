@@ -22,6 +22,7 @@ export function DeskLane({
   return (
     <section
       aria-labelledby={`lane-${kind.value}`}
+      data-slot="feedback-lane"
       style={{ "--k": kind.ink } as CSSProperties}
       className="min-w-0"
     >
