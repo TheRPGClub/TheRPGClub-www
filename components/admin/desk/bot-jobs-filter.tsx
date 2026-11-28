@@ -45,8 +45,8 @@ export function BotJobsFilter({
     </li>
   );
   return (
-    <div>
-      <h2 className="font-headline border-b-2 border-foreground pb-2 text-[1.45rem]">Show</h2>
+    <div data-slot="bot-jobs-filter">
+      <h2 data-slot="desk-rule-head" className="font-headline border-b-2 border-foreground pb-2 text-[1.45rem]">Show</h2>
       <ul className="mt-1.5">{SHOW.map((s) => row(s.key, s.label, jobs.filter(s.count).length, show === s.key, () => onShow(s.key)))}</ul>
       <h3 className="font-label mt-5 border-b border-border-strong pb-1.5 text-[0.74rem] font-extrabold tracking-[0.08em] text-faint-foreground">
         From

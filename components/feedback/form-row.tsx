@@ -17,7 +17,7 @@ export function FormRow({
   group?: boolean;
   children: ReactNode;
 }) {
-  const caption = "font-label text-[0.8rem] leading-none font-bold tracking-[0.06em] text-(--k) uppercase";
+  const caption = "font-label text-[0.8rem] leading-none font-bold tracking-[0.06em] text-(--k)";
   return (
     <div className="border-b border-border px-5 py-3 sm:px-6">
       <div className="mb-2 flex items-baseline justify-between gap-3">

@@ -11,13 +11,13 @@ import { WireSlip } from "@/components/admin/desk/wire-slip";
 export function RecentJobs({ jobs, group, showRequester }: { jobs: BotJob[]; group: string; showRequester: boolean }) {
   const { openJobs } = useDesk();
   return (
-    <aside aria-label={`Recent bot jobs: ${group}`} className="min-w-0">
-      <div className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
+    <aside data-slot="recent-jobs" aria-label={`Recent bot jobs: ${group}`} className="min-w-0">
+      <div data-slot="desk-rule-head" className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
         <h2 className="font-headline text-[1.45rem]">Recent bot jobs</h2>
         <span className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">{group}</span>
       </div>
       {jobs.length === 0 ? (
-        <p className="border-b border-border py-3.5 text-sm text-faint-foreground">No bot jobs from these tools lately.</p>
+        <p data-slot="recent-jobs-empty" className="border-b border-border py-3.5 text-sm text-faint-foreground">No bot jobs from these tools lately.</p>
       ) : (
         <ol>
           {jobs.map((job) => (

@@ -16,7 +16,7 @@ export function BoardKindTabs({
   totals: FeedbackTotals | null;
 }) {
   return (
-    <nav aria-label="Feedback kinds" className="mt-1.5 border-b border-border">
+    <nav data-slot="feedback-kind-tabs" aria-label="Feedback kinds" className="mt-1.5 border-b border-border">
       <ul className="flex flex-wrap gap-x-[22px]">
         {FEEDBACK_KINDS.map((k) => {
           const Icon = KIND_ICON[k.value];
@@ -27,6 +27,7 @@ export function BoardKindTabs({
               <Link
                 href={boardHref(k.value)}
                 aria-current={on ? "page" : undefined}
+                data-slot="feedback-kind-tab"
                 style={{ "--k": k.ink } as CSSProperties}
                 className={cn(
                   "relative flex items-baseline gap-3 px-1 pt-2.5 pb-3 transition-opacity hover:opacity-80",
@@ -36,7 +37,7 @@ export function BoardKindTabs({
                 )}
               >
                 <Icon aria-hidden className="size-[22px] shrink-0 self-center text-(--k)" />
-                <b className="font-headline truncate text-2xl leading-none font-normal text-(--k) sm:text-[2.1rem]">
+                <b data-slot="feedback-kind-tab-name" className="font-headline truncate text-2xl leading-none font-normal text-(--k) sm:text-[2.1rem]">
                   {k.plural}
                 </b>
                 {count != null && (

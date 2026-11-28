@@ -22,9 +22,10 @@ export function BoardStatusSwitch({
   ] as const;
   return (
     <nav
+      data-slot="feedback-status-switch"
       aria-label="Open or closed"
       style={{ "--k": kindMeta(kind).ink } as CSSProperties}
-      className="flex shrink-0 rounded-sm border border-border-strong"
+      className="flex shrink-0 border border-border-strong"
     >
       {items.map((item, i) => {
         const on = item.key === status;

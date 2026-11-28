@@ -21,6 +21,7 @@ export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; cho
       {chosen && !saving ? (
         <span
           aria-hidden
+          data-slot="theme-card-tick"
           className="absolute top-3.5 right-3.5 z-10 grid size-6 place-items-center rounded-full bg-highlight text-highlight-foreground shadow-md sm:size-[26px]"
         >
           <Check className="size-4" strokeWidth={2.5} />
@@ -48,7 +49,7 @@ export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; cho
           ) : null}
           {state ? (
             <span
-              className={`font-label inline-flex items-center gap-1.5 text-[0.8rem] leading-none tracking-[0.07em] uppercase ${saving ? "text-foreground" : "text-highlight"}`}
+              className={`font-label inline-flex items-center gap-1.5 text-[0.8rem] leading-none tracking-[0.07em] ${saving ? "text-foreground" : "text-highlight"}`}
             >
               {saving ? <Loader2 aria-hidden className="size-3.5 animate-spin motion-reduce:animate-none" /> : null}
               {state}

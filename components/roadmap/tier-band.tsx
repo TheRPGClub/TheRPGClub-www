@@ -24,7 +24,7 @@ export function TierBand({
   const { ready, total } = readyCount(milestone);
   const [lead, ...rest] = tierLabel(milestone, first);
   return (
-    <div className="relative z-10 mb-3 bg-background py-1.5 pr-2 md:mx-auto md:w-fit md:max-w-[30rem] md:px-6 md:text-center">
+    <div data-slot="tier-band" className="relative z-10 mb-3 bg-background py-1.5 pr-2 md:mx-auto md:w-fit md:max-w-[30rem] md:px-6 md:text-center">
       <h2 id={headingId} className="font-headline text-3xl leading-none text-balance md:text-4xl">
         {milestone.name}
       </h2>

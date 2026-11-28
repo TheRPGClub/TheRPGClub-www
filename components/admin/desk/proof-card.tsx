@@ -82,12 +82,8 @@ function ProofFrame({
   status?: ReactNode;
 }) {
   return (
-    <figure className={cn("relative", className)}>
-      <div
-        className={cn(
-          !bare && "overflow-hidden rounded-md shadow-[0_24px_60px_rgb(0_0_0/0.55)]",
-        )}
-      >
+    <figure data-slot="proof-card" className={cn("relative", className)}>
+      <div data-slot="proof-card-frame" data-variant={bare ? "bare" : undefined}>
         {children}
       </div>
       {stamp && (

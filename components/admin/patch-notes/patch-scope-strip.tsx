@@ -12,7 +12,7 @@ export function PatchScopeStrip({ scope, onChange }: { scope: PatchScope | null;
   if (!scope || scope.offered + scope.dismissed.length === 0) return null;
   const covered = scope.covered.length;
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 rounded-[3px] bg-card px-3.5 py-2 text-[0.875rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border)]">
+    <div data-slot="patch-scope-strip" className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 bg-card px-3.5 py-2 text-[0.875rem] text-dim-foreground">
       <Check aria-hidden className={cn("size-3.5 shrink-0", covered > 0 ? "text-ok" : "text-faint-foreground")} strokeWidth={2.5} />
       <span>
         Covers <b className="font-semibold text-foreground">{covered > 0 ? pendingCount(covered) : "no Pending Changes"}</b>

@@ -19,7 +19,7 @@ export function PatchPreview({ editor, actions }: { editor: PatchEditorState; ac
   const count = patchCount(text.length);
   const shown = text.cut ? text.cutMarkdown.length : text.length;
   return (
-    <aside aria-label="Preview" className="flex flex-col gap-3 lg:sticky lg:top-6">
+    <aside data-slot="patch-preview" aria-label="Preview" className="flex flex-col gap-3 lg:sticky lg:top-6">
       <div className="flex items-end justify-between gap-4 border-b-2 border-foreground pb-2">
         <p className="font-label text-[0.6875rem] leading-[1.5] font-bold tracking-[0.1em] text-faint-foreground">
           Preview · as on /patch-notes

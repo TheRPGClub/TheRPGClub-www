@@ -29,7 +29,7 @@ export function LayoutTab({
           Your sidebar&apos;s Pinned Pages and your dashboard&apos;s panels. Change them where they live; reset them
           here.
         </p>
-        <ul className="mt-4 border-t border-border">
+        <ul data-slot="preference-list" className="mt-4 border-t border-border">
           <PinnedPagesReset names={pinsDefault} customised={pinsCustomised} />
           <DashboardReset customised={panelsCustomised} />
         </ul>

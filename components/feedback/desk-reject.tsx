@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { DeskFormFoot } from "./desk-form-foot";
 import type { DeskSheetActions } from "./desk-sheet";
 
-const CAPTION = "font-label block text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground uppercase";
+const CAPTION = "font-label block text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground";
 
 // Reject in the review Sheet: the reason its author will read. A Bug Report
 // offers "Can't reproduce" and "Working as intended" as quick picks; a pick

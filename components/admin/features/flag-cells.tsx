@@ -32,8 +32,9 @@ export function CoverageChips({ items }: { items: string[] }) {
       {items.map((item) => (
         <li
           key={item}
+          data-slot="flag-coverage-chip"
           className={cn(
-            "font-label inline-flex min-h-[22px] max-w-full min-w-0 items-center rounded-xs bg-foreground/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-dim-foreground",
+            "font-label inline-flex min-h-[22px] max-w-full min-w-0 items-center bg-foreground/8 px-[7px] py-[3px] text-[0.78rem] leading-[1.15] tracking-[0.04em] text-dim-foreground",
             isCommand(item) ? "tracking-[0.02em] whitespace-nowrap normal-case" : "[overflow-wrap:anywhere]",
           )}
         >

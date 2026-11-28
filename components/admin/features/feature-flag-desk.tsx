@@ -29,7 +29,7 @@ export function FeatureFlagDesk({ entries, now }: { entries: FeatureFlagEntry[];
   }
 
   return (
-    <div className="mt-6.5 space-y-10">
+    <div data-slot="flag-desk" className="mt-6.5 space-y-10">
       <FlagDepartment
         title="Core features"
         entries={core}
