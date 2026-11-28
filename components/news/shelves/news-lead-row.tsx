@@ -57,7 +57,7 @@ function LeadCard({
       <div className="absolute top-3 left-3">
         <NewsTag item={item} name={categoryName} />
       </div>
-      <div className="relative mt-auto w-full px-4 pt-14 pb-4">
+      <div data-slot="news-foot" className="relative mt-auto w-full px-4 pt-14 pb-4">
         {view.headline && (
           <h3
             className={cn(

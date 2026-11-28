@@ -51,7 +51,7 @@ export function EditionView({
         hostChip
       />
       {notice}
-      <section aria-label="Rules" className="flex flex-col gap-4 pt-[22px] lg:flex-row lg:items-start lg:gap-9">
+      <section data-slot="challenge-rules" data-variant="assignment" aria-label="Rules" className="flex flex-col gap-4 pt-[22px] lg:flex-row lg:items-start lg:gap-9">
         <div className="max-w-[95ch] min-w-0 flex-1 space-y-3 leading-[1.55] text-dim-foreground">
           <p>{editionRules(calendar)}</p>
           {challenge.description && <p className="whitespace-pre-line">{challenge.description}</p>}

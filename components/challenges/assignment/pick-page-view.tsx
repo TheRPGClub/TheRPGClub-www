@@ -32,7 +32,7 @@ export function PickPageView({ page, badge }: { page: PickPage; badge?: React.Re
     const cards = pickCards(view.backlog ?? []);
     const pick = view.pick?.game;
     return (
-      <div style={tintStyle(page.tint)} className="flex flex-col pb-12">
+      <div data-slot="pick-page" style={tintStyle(page.tint)} className="flex flex-col pb-12">
         <BackLink href={back} label={challenge.name} />
         {header}
         <PickDeal
@@ -47,7 +47,7 @@ export function PickPageView({ page, badge }: { page: PickPage; badge?: React.Re
   }
   const slip = state.kind === "open" ? null : state;
   return (
-    <div style={tintStyle(page.tint)} className="flex flex-col pb-12">
+    <div data-slot="pick-page" style={tintStyle(page.tint)} className="flex flex-col pb-12">
       <BackLink href={back} label={challenge.name} />
       {header}
       {slip && (

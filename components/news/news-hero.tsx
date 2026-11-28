@@ -39,7 +39,7 @@ export function NewsHero({
           NEW
         </span>
       )}
-      <div className="relative mt-auto w-full px-5 pt-24 pb-5 sm:px-7 sm:pb-6">
+      <div data-slot="news-foot" className="relative mt-auto w-full px-5 pt-24 pb-5 sm:px-7 sm:pb-6">
         <NewsTag item={item} name={categoryName} />
         {view.headline && (
           <h2 className="mt-3 mb-2.5 max-w-[40rem] text-[1.6rem] leading-[1.1] font-semibold text-balance text-foreground [overflow-wrap:anywhere] sm:text-[2.2rem]">

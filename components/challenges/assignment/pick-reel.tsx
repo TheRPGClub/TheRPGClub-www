@@ -40,8 +40,8 @@ export function PickReel({
   }, [index]);
 
   return (
-    <div className="mt-5">
-      <div aria-hidden className="h-0.5 bg-tinsel/60" />
+    <div data-slot="pick-reel" className="mt-5">
+      <div aria-hidden data-slot="pick-reel-rule" className="h-0.5 bg-tinsel/60" />
       <div
         ref={scroller}
         role="listbox"

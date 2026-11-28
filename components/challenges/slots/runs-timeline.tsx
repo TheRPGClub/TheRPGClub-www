@@ -28,7 +28,7 @@ export function RunsTimeline({
   const href = (userId: string) =>
     `/challenges/${challengeId}?run=${encodeURIComponent(userId)}${showAll ? "&all=1" : ""}#run`;
   return (
-    <section aria-label="Other Runs">
+    <section data-slot="runs-timeline" aria-label="Other Runs">
       <div className="mt-10 mb-3 flex items-baseline gap-3 border-b-2 border-foreground pb-2">
         <h2 className="font-headline text-[1.875rem] leading-[0.9] uppercase">Other Runs</h2>
         <span className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">

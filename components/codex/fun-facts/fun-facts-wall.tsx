@@ -49,9 +49,9 @@ export function FunFactsWall({
           <FunFactAdd />
         </div>
       )}
-      {failed && <p className={SLIP}>The Fun Facts couldn&apos;t be read just now. Try again in a moment.</p>}
+      {failed && <p data-slot="community-note" className={SLIP}>The Fun Facts couldn&apos;t be read just now. Try again in a moment.</p>}
       {!failed && facts.length === 0 && (
-        <p className={SLIP}>
+        <p data-slot="community-note" className={SLIP}>
           {page > 1 ? (
             <>
               There&apos;s no page {page}.{" "}
@@ -66,7 +66,7 @@ export function FunFactsWall({
       )}
       {cards.length > 0 && <FunFactGrid cards={cards} label={partCount("fun_fact", total)} />}
       {cards.length > 0 && (
-        <div className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        <div data-slot="community-pager" data-variant="ranged" className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           <p className="font-label text-[0.8125rem] font-bold tracking-[0.08em] text-faint-foreground">
             {pageRange(total, page, per, facts.length)}
           </p>

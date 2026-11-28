@@ -21,7 +21,7 @@ export function HistoryTools({
     ...HISTORY_KINDS.map((kind) => ({ kind, label: KIND_NAME[kind], count: counts[kind], ink: kindInk(kind) })),
   ];
   return (
-    <div className="mt-5.5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+    <div data-slot="history-tools" className="mt-5.5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
       <nav aria-label="History Event Kind" className="-mx-4 flex items-center gap-1.5 overflow-x-auto px-4 py-1 sm:mx-0 sm:flex-wrap sm:px-0">
         <ListFilter aria-hidden className="mr-0.5 size-3.5 shrink-0 text-faint-foreground" />
         {chips.map((chip) => (

@@ -22,7 +22,7 @@ export function RunCards({ runs, emptyAction }: { runs: RunCardView[] | null; em
 
 function Empty({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">
+    <div data-slot="community-note" className="flex flex-wrap items-center gap-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">
       <p>{children}</p>
       {action}
     </div>

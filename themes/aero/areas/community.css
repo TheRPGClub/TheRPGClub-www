@@ -275,8 +275,24 @@
                     text-shadow: none;
                 }
             }
+            /* Still waiting: pale holly glass, its words in deep holly
+               (no fade: a faded door lets the scene through its type). */
             &:is([data-variant="waiting"], [data-variant="empty"]) {
-                opacity: 0.62;
+                background:
+                    linear-gradient(180deg, rgb(255 255 255 / 0.6) 0%, rgb(255 255 255 / 0.2) 45%, rgb(255 255 255 / 0) 46%),
+                    linear-gradient(180deg, color-mix(in srgb, var(--holly) 8%, #ffffff), color-mix(in srgb, var(--holly) 16%, #ffffff));
+                box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--holly) 30%, #ffffff), 0 2px 4px rgb(16 64 96 / 0.12);
+                & > span,
+                & > span small {
+                    color: var(--foreground);
+                    text-shadow: none;
+                }
+                & > span:first-child {
+                    color: var(--holly);
+                }
+                & > span small {
+                    color: var(--dim-foreground);
+                }
             }
             &[data-variant="open"] {
                 box-shadow: 0 0 0 2px #ffffff, 0 10px 22px -10px rgb(16 64 96 / 0.45);
@@ -400,7 +416,19 @@
             box-shadow: inset 0 3px 0 var(--news-ink), var(--aero-edge), var(--community-lift);
         }
         [data-slot="news-scrim"] {
-            background: linear-gradient(180deg, rgb(255 255 255 / 0) 28%, rgb(255 255 255 / 0.82) 58%, rgb(255 255 255 / 0.96) 82%);
+            background: linear-gradient(180deg, rgb(255 255 255 / 0) 35%, rgb(255 255 255 / 0.5));
+        }
+        /* The words' own white glass foot, solid from the tag down
+           however tall the art or the text runs. */
+        [data-slot="news-foot"] {
+            --foot-fade: 2.5rem;
+            background: linear-gradient(180deg, rgb(255 255 255 / 0) 0, rgb(255 255 255 / 0.9) calc(var(--foot-fade) - 0.5rem), rgb(255 255 255 / 0.95));
+            [data-slot="news-hero"] > & {
+                --foot-fade: 6rem;
+            }
+            [data-size="lead"] > & {
+                --foot-fade: 3.5rem;
+            }
         }
         [data-slot="news-ink-panel"] {
             background:
@@ -914,6 +942,235 @@
             &[data-side="left"],
             &[data-side="right"] {
                 box-shadow: var(--aero-edge);
+            }
+        }
+        /* ---------------------------------------------------------------
+           Windows for the veil (www#253): every word of the area sits on
+           its own glass, so the content frame's veil can lift. Sections
+           are H's windows; one-line rows (filters, rules, notes, pagers)
+           are glass strips. The shared page headings are the templates'.
+           --------------------------------------------------------------- */
+
+        :is(
+                [data-slot="news-new-count"],
+                [data-slot="news-caught-up"],
+                [data-slot="news-shelf"],
+                [data-slot="challenge-rules"],
+                [data-slot="runs-timeline"],
+                [data-slot="pool-wall"],
+                [data-slot="pick-header"],
+                [data-slot="pick-reel"],
+                [data-slot="lately-list"],
+                [data-slot="lore-masthead"],
+                [data-slot="lore-spread"],
+                [data-slot="release-agenda"],
+                [data-slot="journal-catalogue-body"],
+                [data-slot="community-note"]
+            ) {
+            border-radius: var(--radius);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            padding: 1rem;
+            @media (width >= 40rem) {
+                padding: 1.25rem 1.5rem;
+            }
+        }
+        :is(
+                [data-slot="news-seen-rule"],
+                [data-slot="news-utc-note"],
+                [data-slot="board-filters"],
+                [data-slot="challenge-view-switch"],
+                [data-slot="december-strip"],
+                [data-slot="pick-reel-note"],
+                [data-slot="history-intro"],
+                [data-slot="history-tools"],
+                [data-slot="year-gap"],
+                [data-slot="release-toolbar"],
+                [data-slot="hidden-platforms-note"]
+            ) {
+            border: 0;
+            border-radius: var(--radius);
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            padding: 0.5rem 0.875rem;
+        }
+        /* A note or a strip that says one short thing is as wide as it. */
+        :is([data-slot="news-utc-note"], [data-slot="pick-reel-note"], [data-slot="history-intro"]) {
+            width: fit-content;
+            max-width: 100%;
+        }
+        [data-slot="community-note"] {
+            border: 0;
+            color: var(--dim-foreground);
+        }
+        [data-slot="community-pager"] {
+            padding-top: 0;
+            & [data-slot="pagination-content"] {
+                background: var(--aero-glass);
+                box-shadow: var(--aero-edge), var(--aero-day);
+                gap: 0.25rem;
+                padding: 0.3rem;
+                border-radius: 9999px;
+            }
+            &[data-variant="ranged"] {
+                border: 0;
+                border-radius: var(--radius);
+                background: var(--aero-glass);
+                box-shadow: var(--aero-edge), var(--aero-day);
+                padding: 0.5rem 0.875rem;
+            }
+            &[data-variant="ranged"] [data-slot="pagination-content"] {
+                background: none;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+
+        /* News: the count's window fills its column; the rules' hairlines
+           end inside the strip. */
+        [data-slot="news-new-count"] {
+            padding-top: 1rem;
+        }
+        [data-slot="news-shelf"] {
+            padding-block: 0.875rem 1rem;
+        }
+
+        /* The way back above this area's own headers: a clear glass pill. */
+        :is([data-slot="pick-page"], [data-slot="lore-entry-top"]) > [data-slot="button"][data-variant="back"] {
+            border-radius: 9999px;
+            background: var(--aero-glass);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            padding: 0.3rem 0.75rem;
+            margin-inline-start: 0;
+            color: var(--foreground);
+            @media (width < 48rem) {
+                padding: 0;
+            }
+        }
+
+        /* Challenges: the views' underline rides the strip's foot; the
+           Other Runs window keeps its heading in mixed case. */
+        [data-slot="challenge-rules"] {
+            margin-top: 1.25rem;
+        }
+        [data-slot="challenge-view-switch"] {
+            padding: 0.75rem 1rem;
+            border-bottom: 0;
+            & nav a::after {
+                bottom: -0.75rem;
+                border-radius: 9999px 9999px 0 0;
+            }
+        }
+        [data-slot="runs-timeline"] {
+            margin-top: 2.5rem;
+            & > div:first-child {
+                margin-top: 0;
+            }
+            & h2 {
+                text-transform: none;
+            }
+        }
+        [data-slot="december-strip"] {
+            padding-block: 0.5rem 1.6rem;
+        }
+        [data-slot="pick-reel-rule"] {
+            display: none;
+        }
+        [data-slot="pick-reel"] {
+            padding-block: 0.25rem 0.75rem;
+        }
+
+        /* Club Codex. */
+        [data-slot="lately-list"] {
+            margin-top: 1rem;
+            padding-block: 0.5rem;
+        }
+        [data-slot="history-tools"] {
+            padding: 0.5rem 0.75rem;
+        }
+        [data-slot="year-gap"] {
+            margin-bottom: 1rem;
+            padding-inline: 1.25rem;
+            & > span:first-child {
+                color: var(--faint-foreground);
+            }
+            & > span:last-child {
+                text-transform: none;
+                letter-spacing: 0;
+            }
+        }
+        [data-slot="lore-masthead"] > div:first-child {
+            border-bottom-width: 1px;
+            border-color: var(--border-strong);
+        }
+        [data-slot="lore-spread"] {
+            @media (width >= 64rem) {
+                padding: 2rem 1.5rem calc(var(--tail) + 2rem);
+            }
+        }
+        /* See also: a glass window with a jade top, deep type, mixed case. */
+        [data-slot="see-also-band"] {
+            margin-inline: 0;
+            border-radius: var(--radius);
+            background:
+                linear-gradient(180deg, color-mix(in srgb, var(--codex-lore) 16%, #ffffff) 0, rgb(255 255 255 / 0.92) 5rem),
+                var(--aero-glass);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            color: var(--foreground);
+            & h2 {
+                text-transform: none;
+                color: var(--codex-lore-print);
+            }
+            & a {
+                border-color: color-mix(in srgb, var(--codex-lore) 45%, #ffffff);
+                border-top-width: 1px;
+                outline-color: var(--ring);
+            }
+            & a > span:first-child {
+                text-transform: none;
+                letter-spacing: 0;
+                color: var(--dim-foreground);
+            }
+            & a > span:first-child > i {
+                border-radius: 9999px;
+                background: var(--codex-lore);
+                color: #ffffff;
+                padding: 2px 8px;
+            }
+            & b {
+                text-transform: none;
+                font-weight: 900;
+                color: var(--foreground);
+            }
+            & small {
+                color: var(--codex-lore-print);
+            }
+        }
+
+        /* Release Calendar: the empty-month note is a glass pane over the
+           grid. */
+        [data-slot="release-agenda"] {
+            margin-top: 0.75rem;
+            padding-block: 0.25rem;
+            & [data-slot="release-agenda-group"]:last-child {
+                border-bottom: 0;
+            }
+        }
+        [data-slot="release-toolbar"] {
+            padding: 0.5rem;
+        }
+        [data-slot="calendar-note"] {
+            border: 0;
+            border-radius: var(--radius);
+            background: var(--aero-pane);
+            box-shadow: var(--aero-pane-shadow);
+        }
+
+        /* Journals. */
+        [data-slot="journal-catalogue-body"] {
+            margin-top: 0.875rem;
+            & > :first-child {
+                margin-top: 0;
             }
         }
     }

@@ -58,20 +58,20 @@ export function HistoryTimeline({
   return (
     <div className="pb-10">
       <PageHeader back={back} title="Club History" badge={badge} count={events ? eventCount(all.length) : null} actions={add} />
-      <p className="mt-3 max-w-[70ch] text-dim-foreground">
+      <p data-slot="history-intro" className="mt-3 max-w-[70ch] text-dim-foreground">
         How the club got here, from a subreddit in 2016 to the server today. The staff keep this record, and every date
         is as exact as the club remembers it.
       </p>
-      {events === null && <p className={SLIP}>The Club History couldn&apos;t be read just now. Try again in a moment.</p>}
+      {events === null && <p data-slot="community-note" className={SLIP}>The Club History couldn&apos;t be read just now. Try again in a moment.</p>}
       {events && all.length === 0 && (
-        <div className={`${SLIP} flex flex-wrap items-center justify-between gap-3`}>
+        <div data-slot="community-note" className={`${SLIP} flex flex-wrap items-center justify-between gap-3`}>
           <p>The Club History is still to be written.</p>
           {add}
         </div>
       )}
       {all.length > 0 && <HistoryTools query={query} total={all.length} counts={kindCounts(all)} />}
       {all.length > 0 && shown.length === 0 && (
-        <p className={SLIP}>
+        <p data-slot="community-note" className={SLIP}>
           No {query.kind ? `${KIND_NAME[query.kind]} ` : ""}History Events.{" "}
           <Link href={historyHref(HISTORY_PATH, { order: query.order })} className="text-foreground underline underline-offset-4">
             Clear filter
@@ -79,7 +79,7 @@ export function HistoryTimeline({
         </p>
       )}
       {shown.length > 0 && book.length === 0 && (
-        <p className={SLIP}>
+        <p data-slot="community-note" className={SLIP}>
           There&apos;s no page {query.page}.{" "}
           <Link href={historyHref(HISTORY_PATH, { ...query, page: 1 })} className="text-foreground underline underline-offset-4">
             Back to the first page
@@ -98,7 +98,7 @@ export function HistoryTimeline({
         </div>
       )}
       {pages > 1 && (
-        <div className="mt-6 border-t border-border pt-4">
+        <div data-slot="community-pager" className="mt-6 border-t border-border pt-4">
           <ListPagination currentPage={query.page} totalPages={pages} buildHref={(page) => historyHref(HISTORY_PATH, { ...query, page })} />
         </div>
       )}

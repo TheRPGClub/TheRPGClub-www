@@ -19,12 +19,12 @@ export function LatelyList({ items }: { items: LatelyItem[] | null }) {
   return (
     <section aria-labelledby="codex-lately" className="mt-10">
       <SectionHeading title={<span id="codex-lately">Lately in the Codex</span>} />
-      {items === null && <p className="mt-4 text-dim-foreground">The newest entries couldn&apos;t be read. Try again in a moment.</p>}
+      {items === null && <p data-slot="community-note" className="mt-4 text-dim-foreground">The newest entries couldn&apos;t be read. Try again in a moment.</p>}
       {items?.length === 0 && (
-        <p className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">Nothing in the Codex yet.</p>
+        <p data-slot="community-note" className="mt-4 rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">Nothing in the Codex yet.</p>
       )}
       {items && items.length > 0 && (
-        <ol className="mt-2.5 gap-x-10 md:columns-2">
+        <ol data-slot="lately-list" className="mt-2.5 gap-x-10 md:columns-2">
           {items.map(({ link, author, createdAt }) => (
             <li key={link.id} className="break-inside-avoid">
               <Link href={entryHref(link)} className="group flex items-baseline gap-2.5 py-2.5">

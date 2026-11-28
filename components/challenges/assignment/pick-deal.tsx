@@ -75,7 +75,7 @@ export function PickDeal({
         label={`${recipient}'s backlog`}
         onJump={deal.go}
       />
-      <p className="mt-3 max-w-[95ch] text-[0.84rem] leading-normal text-faint-foreground" aria-live="polite">
+      <p data-slot="pick-reel-note" className="mt-3 max-w-[95ch] text-[0.84rem] leading-normal text-faint-foreground" aria-live="polite">
         {picked ? note.picked : note.open}
       </p>
     </section>

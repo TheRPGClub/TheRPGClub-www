@@ -51,11 +51,13 @@ export function NewsShowAll({
         <NewsMosaic items={page.items} nameOf={nameOf} now={now} label="New items" />
       )}
       {filters.page <= totalPages && (
-        <ListPagination
-          currentPage={filters.page}
-          totalPages={totalPages}
-          buildHref={(n) => newsHref(filters, { page: n })}
-        />
+        <div data-slot="community-pager">
+          <ListPagination
+            currentPage={filters.page}
+            totalPages={totalPages}
+            buildHref={(n) => newsHref(filters, { page: n })}
+          />
+        </div>
       )}
     </div>
   );

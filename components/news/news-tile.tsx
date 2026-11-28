@@ -71,7 +71,7 @@ export function NewsTile({
         <InkPanel ink={ink.color} initial={siteInitial(view.site)} />
       )}
       {fresh && <NewDot />}
-      <div className="relative px-3.5 pt-10 pb-3">
+      <div data-slot="news-foot" className="relative px-3.5 pt-10 pb-3">
         <NewsTag item={item} name={categoryName} />
         {view.headline && (
           <h3

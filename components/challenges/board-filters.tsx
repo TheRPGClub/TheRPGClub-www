@@ -16,7 +16,7 @@ const OPEN: { value: OpenFilter; label: string }[] = [
 
 export function BoardFiltersBar({ filters }: { filters: BoardFilters }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-3">
+    <div data-slot="board-filters" className="flex flex-wrap items-center gap-x-2.5 gap-y-3">
       <nav aria-label="Open or Closed" className="w-full sm:w-auto">
         <ul className="inline-flex rounded-sm shadow-[inset_0_0_0_1px_var(--color-border-strong)]">
           {OPEN.map(({ value, label }) => {
