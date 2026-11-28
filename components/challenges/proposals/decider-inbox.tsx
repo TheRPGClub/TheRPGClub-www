@@ -44,7 +44,7 @@ export function DeciderInbox({
   const runs = challenge.activeRuns;
   const dm = runs > 0 ? ` sends a DM to the ${runs === 1 ? "member" : `${runs} members`} with an active Run` : " makes every Run Clear it";
   return (
-    <div>
+    <div data-slot="proposals-panel" data-variant="inbox">
       <p className="mb-1.5 max-w-[75ch] text-[0.95rem] text-dim-foreground">
         Members propose games they think belong in the Pool. Accepting a game as Core{dm}; as Optional it arrives quietly.
       </p>

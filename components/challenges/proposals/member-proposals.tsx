@@ -14,7 +14,7 @@ export function MemberProposals({
   proposals: ProposalView[] | null;
 }) {
   return (
-    <div className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)]">
+    <div data-slot="proposals-panel" className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)]">
       <ProposeForm challengeId={challengeId} decider={decider} />
       <section aria-labelledby="your-proposals-heading">
         <div className="flex flex-wrap items-center gap-x-3 border-b border-border-strong pb-2">

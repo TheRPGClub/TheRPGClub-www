@@ -16,7 +16,7 @@ export function CalendarMini({
   today: string;
 }) {
   return (
-    <div className="mt-4 grid grid-cols-7 gap-[3px]">
+    <div data-slot="release-calendar-mini" className="mt-4 grid grid-cols-7 gap-[3px]">
       {GRID_WEEKDAYS.map((name, i) => (
         <div
           key={i}
