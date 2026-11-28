@@ -48,9 +48,7 @@ export function BinderPage({
 
   return (
     <div className="pt-2 pb-6">
-      <div data-slot="binder-back">
-        <BackLink href={`/members/${userId}`} label={displayName} />
-      </div>
+      <div data-slot="binder-back"><BackLink href={`/members/${userId}`} label={displayName} /></div>
       {sets && (
         <BinderFilterTabs
           query={query}
