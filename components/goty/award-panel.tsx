@@ -37,7 +37,7 @@ export function AwardPanel({
       return <UncontestedAward vote={vote} award={award} />;
     case "empty":
       return (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+        <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           {award.name} is not given this year: {vote.phase === "decided" ? "nobody voted" : "it has no candidates"}.
         </p>
       );

@@ -8,6 +8,119 @@
 @layer themes {
     [data-theme="aero"] {
         /* ---------------------------------------------------------- */
+        /* Windows for the veil (www#253): every loose piece of text   */
+        /* in this area sits in glass of its own, so nothing reads off */
+        /* the bare scene. A section (its heading and its content) is  */
+        /* one round window, as templates.css draws a detail section;  */
+        /* a row of links or tabs alone is a glass strip; an empty or  */
+        /* error note is a small window with its dashes kept faint.    */
+        /* White at 92% or more: the faintest ink clears 4.5:1 over    */
+        /* any part of the scene.                                      */
+        /* ---------------------------------------------------------- */
+        :is(
+                [data-slot="voting-board"],
+                [data-slot="gotm-year"],
+                [data-slot="round-column"],
+                [data-slot="goty-stage"],
+                [data-slot="goty-award-panel"],
+                [data-slot="issue-desk"]
+            ) {
+            border-radius: var(--radius-xl);
+            background: var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+            padding: 1.1rem 1rem 1.25rem;
+            @media (min-width: 640px) {
+                padding: 1.5rem 1.75rem 1.75rem;
+            }
+        }
+        /* A department heading inside the window melts into it: the bead
+           rule under the title, no plaque of its own. */
+        :is(
+                [data-slot="voting-board"],
+                [data-slot="gotm-year"],
+                [data-slot="round-column"],
+                [data-slot="goty-stage"],
+                [data-slot="goty-award-panel"],
+                [data-slot="issue-desk"],
+                [data-slot="previous-rounds"]
+            ) {
+            & > [data-slot="section-heading"] {
+                align-items: baseline;
+                border-radius: 0;
+                background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+                box-shadow: none;
+                backdrop-filter: none;
+                padding: 0 0 0.7rem;
+            }
+        }
+        :is([data-slot="gotm-year-rail"], [data-slot="gotm-filters-row"], [data-slot="round-steps"], [data-slot="round-nav"]) {
+            border-radius: var(--radius-lg);
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            backdrop-filter: blur(14px) saturate(1.3);
+        }
+        /* In a page header's window the step row and the filters need
+           no strip of their own. */
+        [data-slot="page-header"] :is([data-slot="round-steps"], [data-slot="gotm-filters-row"]) {
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+        [data-slot="gotm-year-rail"] {
+            padding: 0.25rem 1rem;
+            @media (min-width: 1024px) {
+                padding: 0.75rem 0.25rem 0.75rem 0.875rem;
+            }
+            /* The strip is the frame: no hairline across it. */
+            ul {
+                border: 0;
+            }
+        }
+        [data-slot="gotm-filters-row"] {
+            padding: 0.375rem;
+        }
+        [data-slot="round-steps"] {
+            padding: 0.375rem;
+        }
+        [data-slot="round-nav"] {
+            border-top: 0;
+            padding: 0.75rem;
+        }
+        /* The round numeral sat on the page ground; in its year's window
+           its notch is the window's white. */
+        [data-slot="gotm-year"] [data-slot="gotm-round-number"] {
+            background: #ffffff;
+        }
+        /* "18 nominated": the member-facing amber, set as type. */
+        [data-slot="gotm-round-tag"][data-tone="highlight"] {
+            border-color: var(--aero-amber-edge);
+            border-radius: 9999px;
+            background: rgb(255 201 58 / 0.14);
+            color: var(--aero-amber-ink);
+        }
+        [data-slot="issue-note"] {
+            border-color: var(--border);
+            border-radius: var(--radius-xl);
+            background: var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+        }
+        /* A note already in a window keeps to the window's glass. */
+        :is([data-slot="voting-board"], [data-slot="goty-stage"], [data-slot="goty-award-panel"], [data-slot="issue-desk"]) [data-slot="issue-note"] {
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+        /* A one-line note set without a box gets the window's room. */
+        [data-slot="issue-note"][data-variant="line"] {
+            width: fit-content;
+            max-width: 100%;
+            padding: 0.75rem 1.25rem;
+        }
+
+        /* ---------------------------------------------------------- */
         /* The winner mark: a glossy bubble, set square. GOTM sunlit   */
         /* amber with deep-lake type, NR-GOTM leaf green and Game of   */
         /* the Year deep lake, both with white type. An upper cap of   */
@@ -533,13 +646,13 @@
         [data-slot="goty-banner-scrim"] {
             background:
                 linear-gradient(90deg, rgb(255 255 255 / 0.97) 0%, rgb(255 255 255 / 0.9) 60%, rgb(255 255 255 / 0.6) 100%),
-                linear-gradient(0deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0) 45%);
+                linear-gradient(0deg, rgb(255 255 255 / 0.97) 0%, rgb(255 255 255 / 0.92) 24%, rgb(255 255 255 / 0) 46%);
         }
         @media (min-width: 768px) {
             [data-slot="goty-banner-scrim"] {
                 background:
                     linear-gradient(90deg, rgb(255 255 255 / 0.97) 0%, rgb(255 255 255 / 0.92) 38%, rgb(255 255 255 / 0.45) 66%, rgb(255 255 255 / 0.15) 100%),
-                    linear-gradient(0deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0) 45%);
+                    linear-gradient(0deg, rgb(255 255 255 / 0.97) 0%, rgb(255 255 255 / 0.92) 24%, rgb(255 255 255 / 0) 46%);
             }
         }
         [data-slot="goty-banner-title"] {

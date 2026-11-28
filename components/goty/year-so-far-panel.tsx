@@ -16,7 +16,7 @@ export function YearSoFarPanel({ vote, award }: { vote: GotyVote; award: GotyAwa
     <section className="flex flex-col gap-5">
       <p className="mt-1 max-w-[72ch] text-[0.95rem] text-dim-foreground">{yearSoFarLine(vote, award)}</p>
       {items.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+        <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
           {yearSoFarEmpty(vote, award.award)}
         </p>
       ) : (

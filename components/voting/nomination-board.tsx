@@ -60,7 +60,7 @@ export function NominationBoard({
 
   if (!nominations.length) {
     return (
-      <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+      <p data-slot="issue-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
         {emptyMessage}
       </p>
     );
