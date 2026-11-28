@@ -65,7 +65,7 @@ export async function MemberListTemplate({
   if (pageFeature && !features.canOpen(pageFeature)) notFound();
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3">
+      <div data-slot="member-list-head" className="flex flex-col gap-3">
         <BackLink {...(back ?? { href: `/members/${userId}`, label: displayName })} className="mb-0" />
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link
@@ -81,7 +81,7 @@ export async function MemberListTemplate({
             <span className="font-headline text-2xl">{displayName}</span>
           </Link>
           {counts && (
-            <ul aria-label="Lists" className="flex flex-wrap gap-0.5">
+            <ul data-slot="member-list-switcher" aria-label="Lists" className="flex flex-wrap gap-0.5">
               {lists.map((list) => {
                 const on = list.key === current;
                 const n = counts[list.key];

@@ -65,7 +65,7 @@ export function DetailSection({
   children,
 }: DetailSectionProps) {
   return (
-    <section aria-labelledby={id} className={className}>
+    <section data-slot="detail-section" aria-labelledby={id} className={className}>
       <SectionHeading
         title={<span id={id}>{title}</span>}
         count={count}
