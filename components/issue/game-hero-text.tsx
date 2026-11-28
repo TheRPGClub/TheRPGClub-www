@@ -42,6 +42,7 @@ export function GameHeroText({
       <GameHeadline
         title={game.title}
         accentClassName={trackAccentText(track)}
+        track={track}
         className="col-start-2 row-start-1 self-center text-[2.3rem] leading-[0.88] md:text-[5rem]"
       />
       {hasChips && (

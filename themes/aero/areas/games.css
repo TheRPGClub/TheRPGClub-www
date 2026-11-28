@@ -53,6 +53,17 @@
             color: var(--foreground);
         }
 
+        /* A game's headline: the winner's second line in its track's ink,
+           as on the Cover Story (GOTM blue, NR-GOTM green). */
+        [data-slot="game-headline"] {
+            letter-spacing: -0.025em;
+        }
+        [data-slot="game-headline"][data-track="gotm"] [data-slot="game-headline-second"] {
+            color: var(--gotm);
+        }
+        [data-slot="game-headline"][data-track="nr_gotm"] [data-slot="game-headline-second"] {
+            color: var(--nr);
+        }
         /* Game hero: the club's panel is a white glass plate over the art. */
         [data-slot="club-plate"] {
             border-radius: var(--radius);

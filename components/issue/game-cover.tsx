@@ -21,18 +21,22 @@ export function GameHeadline({
   title,
   accentClassName,
   className,
+  track,
   as: Tag = "h1",
 }: {
   title: string;
   accentClassName?: string;
+  // The winner track ("gotm", "nr_gotm") its accent stands for, for a Theme
+  // that sets the second line by track.
+  track?: string | null;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p";
 }) {
   const [first, second] = splitGameTitle(title);
   return (
-    <Tag className={cn("font-headline text-balance break-words", className)}>
+    <Tag data-slot="game-headline" data-track={track ?? undefined} className={cn("font-headline text-balance break-words", className)}>
       {first && <span className="block">{first}</span>}
-      <span className={cn("block", accentClassName)}>{second}</span>
+      <span data-slot="game-headline-second" className={cn("block", accentClassName)}>{second}</span>
     </Tag>
   );
 }
