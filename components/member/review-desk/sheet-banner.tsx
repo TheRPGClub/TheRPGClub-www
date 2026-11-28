@@ -33,6 +33,7 @@ export function SheetBanner({
 
   return (
     <div
+      data-slot="sheet-banner"
       className={cn(
         "relative isolate flex flex-col justify-between gap-10 overflow-hidden px-4 pt-4 sm:px-10",
         art ? "min-h-56 sm:min-h-[17rem]" : "bg-muted",

@@ -574,6 +574,54 @@
         [data-slot="desk-note-tape"] {
             display: none;
         }
+        /* The review desk: the board is a glass window (no dot grid), the
+           sheet a rounded white pane on it; no crop marks, no turned-down
+           corner, no pencil ring (upright glass, no paper props). The
+           title is set in mixed case like every Aero headline. */
+        [data-slot="review-desk"] {
+            border: 0;
+            border-radius: var(--radius-xl);
+            background: var(--games-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+        }
+        [data-slot="review-sheet"] {
+            border-radius: var(--radius-xl);
+            overflow: clip;
+            box-shadow: 0 0 0 1px rgb(16 64 96 / 0.08), var(--aero-day);
+        }
+        [data-slot="crop-mark"],
+        [data-slot="dog-ear"],
+        [data-slot="pencil-ring"] {
+            display: none;
+        }
+        [data-slot="sheet-banner"] > div {
+            text-shadow: none;
+        }
+        [data-slot="sheet-banner"] [data-slot="textarea"] {
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+        /* The score readout: the number in the display face inside a glass
+           bubble (the desk's), its colour the score's ink. */
+        [data-slot="rating-readout"] [data-slot="input"] {
+            font-family: var(--typeface-display);
+            font-weight: 900;
+            line-height: 0.8;
+            color: var(--foreground);
+            letter-spacing: -0.03em;
+        }
+        [data-slot="rating-readout"][data-size="desk"] {
+            border-radius: 9999px;
+            background: radial-gradient(circle at 35% 25%, #ffffff 0 30%, #e6f4fc 70%, #cfe8f7);
+            box-shadow: 0 0 0 2px #ffffff, inset 0 -6px 12px rgb(16 64 96 / 0.08), 0 6px 16px -6px rgb(16 64 96 / 0.4);
+            & [data-slot="input"] {
+                font-size: 4.25rem;
+            }
+        }
+        [data-slot="rating-readout"][data-size="quick"] [data-slot="input"] {
+            font-size: 3rem;
+        }
 
         /* ---------------------------------------------------------------
            Giveaways: each gift is a glossy bubble with the game's cover
@@ -742,10 +790,11 @@
                 [data-slot="member-shelf"],
                 [data-slot="member-grid"],
                 [data-slot="favorites-ranking"],
-                [data-slot="managed-shelf"],
-                [data-slot="managed-reel"],
+                [data-slot="managed-shelf"]:not([data-slot="detail-section"] *),
+                [data-slot="managed-reel"]:not([data-slot="completed-main"] *),
                 [data-slot="completed-main"],
                 [data-slot="review-read"],
+                [data-slot="reviews-list-column"] > *,
                 [data-slot="reviews-game-aside"],
                 [data-slot="import-kind-list"],
                 [data-slot="edit-section"],
@@ -797,6 +846,32 @@
         [data-slot="member-shelf"] {
             margin-bottom: 1rem;
         }
+        /* In its window the spotlight's headline steps down a size so a
+           long word never breaks. */
+        /* Aero's display face runs wider than Anton: on a phone the
+           spotlight's facts step down to fit. */
+        @media (max-width: 39.99rem) {
+            [data-slot="reel-spotlight"] dd.font-headline {
+                font-size: 1.45rem;
+            }
+        }
+        /* On a phone the completed list's window is a thin frame, so the
+           spotlight keeps the width it was set for. */
+        @media (max-width: 39.99rem) {
+            [data-slot="completed-main"] {
+                margin-inline: -0.5rem;
+                padding: 0.75rem 0.5rem;
+            }
+        }
+        [data-slot="completed-main"] [data-slot="reel-spotlight"] h2 {
+            overflow-wrap: normal;
+            @media (max-width: 39.99rem) {
+                font-size: 2.15rem;
+            }
+            @media (min-width: 80rem) {
+                font-size: 4.25rem;
+            }
+        }
         /* The lists' wall, the games' Releases and Details: the shelf's
            strip of covers keeps its sideways scroll inside the window. */
         [data-slot="games-newest"] > ul {
@@ -834,7 +909,7 @@
                 border-radius: var(--radius-lg);
                 background: var(--games-window);
                 box-shadow: var(--aero-edge), var(--aero-day);
-                padding: 0.6rem 0.35rem;
+                padding: 0.6rem 0;
             }
         }
         /* Empty notes: a dashed glass well. */

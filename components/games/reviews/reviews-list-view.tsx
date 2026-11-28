@@ -48,7 +48,7 @@ export function ReviewsListView({
       <div className="mt-6 grid gap-8 lg:grid-cols-[18.75rem_minmax(0,1fr)]">
         <ReviewsGameAside gameId={gameId} game={game} composePanel={composePanel} />
 
-        <div className="min-w-0 space-y-10">
+        <div data-slot="reviews-list-column" className="min-w-0 space-y-10">
           <div>
             <header className="mb-4.5 flex flex-wrap items-end gap-x-4 gap-y-1 border-b-2 border-foreground pb-3">
               <h1 className="font-headline text-[2.9rem] leading-[0.85] md:text-[4rem]">
