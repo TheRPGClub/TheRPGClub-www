@@ -26,7 +26,7 @@ export function NotificationsTab({
   challengesHidden: boolean;
 }) {
   return (
-    <section aria-labelledby="settings-dms" className="flex max-w-2xl flex-col">
+    <section data-slot="settings-section" aria-labelledby="settings-dms" className="flex max-w-2xl flex-col">
       <SectionHeading title={<span id="settings-dms">Bot DMs</span>} />
       <p className="mt-3 max-w-[60ch] text-dim-foreground">
         What the bot sends you directly. Posts in the server&apos;s channels aren&apos;t affected.

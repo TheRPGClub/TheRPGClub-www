@@ -23,7 +23,7 @@ export function LayoutTab({
   return (
     <div className="flex flex-col gap-10">
       {themes ? <ThemePicker cards={themes} /> : null}
-      <section aria-labelledby="settings-layout" className="flex max-w-2xl flex-col">
+      <section data-slot="settings-section" aria-labelledby="settings-layout" className="flex max-w-2xl flex-col">
         <SectionHeading title={<span id="settings-layout">Your layout</span>} />
         <p className="mt-3 max-w-[60ch] text-dim-foreground">
           Your sidebar&apos;s Pinned Pages and your dashboard&apos;s panels. Change them where they live; reset them

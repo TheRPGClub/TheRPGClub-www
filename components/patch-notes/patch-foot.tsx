@@ -39,7 +39,7 @@ export function PatchFoot({
   middle?: ReactNode;
 }) {
   return (
-    <nav aria-label="More Patches" className="bleed mt-14 border-t border-border-strong">
+    <nav data-slot="patch-foot" aria-label="More Patches" className="bleed mt-14 border-t border-border-strong">
       <div className="mx-auto grid max-w-page grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-2 sm:px-7 md:px-14">
         <div>{previous && <Step to={previous} rel="prev" />}</div>
         <div className="font-label text-xs font-bold tracking-[0.08em] text-faint-foreground">{middle}</div>

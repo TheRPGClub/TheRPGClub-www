@@ -13,7 +13,7 @@ export function WhoSeesIt(props: {
   onChange: (next: boolean) => void;
 }) {
   return (
-    <section aria-labelledby="settings-who-sees">
+    <section data-slot="settings-section" aria-labelledby="settings-who-sees">
       <SectionHeading title={<span id="settings-who-sees">Who sees it</span>} />
       <p className="mt-3 max-w-[60ch] text-dim-foreground">Sharing decides what other members see.</p>
       <div className="mt-4">

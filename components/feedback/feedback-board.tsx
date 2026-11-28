@@ -30,35 +30,37 @@ export function FeedbackBoard({
 
   return (
     <div>
-      <header className="flex flex-wrap items-end gap-x-5 gap-y-3 pb-3">
-        <h1 className="font-headline flex-1 text-5xl text-balance sm:text-6xl">Feedback Board</h1>
-        {badge && <div className="pb-2">{badge}</div>}
-        {canVote && (
-          <ButtonLink
-            href={giveFeedbackHref(kind, status)}
-            render={<Link href={giveFeedbackHref(kind, status)} scroll={false} />}
-            variant="highlight"
-            className="mb-1"
-          >
-            <MessageSquarePlus aria-hidden />
-            Give feedback
-          </ButtonLink>
+      <div data-slot="feedback-board-head">
+        <header className="flex flex-wrap items-end gap-x-5 gap-y-3 pb-3">
+          <h1 className="font-headline flex-1 text-5xl text-balance sm:text-6xl">Feedback Board</h1>
+          {badge && <div className="pb-2">{badge}</div>}
+          {canVote && (
+            <ButtonLink
+              href={giveFeedbackHref(kind, status)}
+              render={<Link href={giveFeedbackHref(kind, status)} scroll={false} />}
+              variant="highlight"
+              className="mb-1"
+            >
+              <MessageSquarePlus aria-hidden />
+              Give feedback
+            </ButtonLink>
+          )}
+        </header>
+
+        <BoardKindTabs kind={kind} totals={totals} />
+
+        <div className="mt-4 mb-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <p className="text-dim-foreground">{kindMeta(kind).blurb}</p>
+          <BoardStatusSwitch kind={kind} status={status} totals={totals} />
+        </div>
+
+        {!canVote && status === "open" && (
+          <p className="mt-3 text-sm text-faint-foreground">
+            Only Members role holders and staff can give feedback and upvote. If you think your role
+            is out of date, sign out and back in to refresh it from Discord.
+          </p>
         )}
-      </header>
-
-      <BoardKindTabs kind={kind} totals={totals} />
-
-      <div className="mt-4 mb-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <p className="text-dim-foreground">{kindMeta(kind).blurb}</p>
-        <BoardStatusSwitch kind={kind} status={status} totals={totals} />
       </div>
-
-      {!canVote && status === "open" && (
-        <p className="mt-3 text-sm text-faint-foreground">
-          Only Members role holders and staff can give feedback and upvote. If you think your role
-          is out of date, sign out and back in to refresh it from Discord.
-        </p>
-      )}
 
       {board.pinnedIsViewersPending && (
         <p

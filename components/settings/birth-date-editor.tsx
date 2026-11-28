@@ -37,7 +37,7 @@ export function BirthDateEditor({
 
   return (
     <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-x-14">
-      <section aria-labelledby="settings-birth-date">
+      <section data-slot="settings-section" aria-labelledby="settings-birth-date">
       {lead}
       <form
         aria-label="Your Birth Date"

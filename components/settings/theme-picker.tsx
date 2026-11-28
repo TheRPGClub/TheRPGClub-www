@@ -37,7 +37,7 @@ export function ThemePicker({ cards }: { cards: ThemeCard[] }) {
   };
 
   return (
-    <section aria-labelledby="settings-theme" className="flex max-w-2xl flex-col">
+    <section data-slot="settings-section" aria-labelledby="settings-theme" className="flex max-w-2xl flex-col">
       <SectionHeading title={<span id="settings-theme">Your Theme</span>} count={`${cards.length} Themes`} />
       <p className="mt-3 max-w-[60ch] text-dim-foreground">How the whole site looks to you. Only you see it.</p>
       <ToggleGroup

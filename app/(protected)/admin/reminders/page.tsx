@@ -41,13 +41,15 @@ export default async function PublicRemindersPage() {
   return (
     <div className="space-y-6">
       <PageHeader back={STAFF_DESK_BACK} title={SECTION.label} description={SECTION.blurb} />
-      {reminders === null ? (
-        <p role="alert" className="text-destructive">
-          {"Couldn't load the reminders. Refresh to try again."}
-        </p>
-      ) : (
-        <PublicRemindersEditor reminders={reminders} channels={channels} />
-      )}
+      <div data-slot="desk-body">
+        {reminders === null ? (
+          <p role="alert" className="text-destructive">
+            {"Couldn't load the reminders. Refresh to try again."}
+          </p>
+        ) : (
+          <PublicRemindersEditor reminders={reminders} channels={channels} />
+        )}
+      </div>
     </div>
   );
 }

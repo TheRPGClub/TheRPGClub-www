@@ -42,12 +42,14 @@ export default async function PresencePage() {
           )
         }
       />
-      <PresenceForm current={current} />
-      <PresenceHistory
-        initial={rows}
-        initialMeta={history.meta ?? null}
-        initialError={history.ok ? null : (history.error ?? null)}
-      />
+      <div data-slot="desk-body">
+        <PresenceForm current={current} />
+        <PresenceHistory
+          initial={rows}
+          initialMeta={history.meta ?? null}
+          initialError={history.ok ? null : (history.error ?? null)}
+        />
+      </div>
     </div>
   );
 }

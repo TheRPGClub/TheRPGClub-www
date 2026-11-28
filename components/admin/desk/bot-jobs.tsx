@@ -54,7 +54,7 @@ export function BotJobs({
         <CollapsibleContent className="mt-3 max-w-md">{filter}</CollapsibleContent>
       </Collapsible>
 
-      <section aria-labelledby="bot-jobs-heading" className="min-w-0">
+      <section data-slot="bot-jobs-column" aria-labelledby="bot-jobs-heading" className="min-w-0">
         <div data-slot="desk-rule-head" className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
           <h2 id="bot-jobs-heading" className="font-headline text-[1.9rem]">
             {scope === "all" ? "Everyone's jobs" : "Your jobs"}

@@ -44,9 +44,9 @@ export function PatchStack({
     <div className="pb-10">
       <PageHeader title="Patch Notes" badge={badge} count={patches && patches.length > 0 ? stackNote(patches) : null} />
       {!patches ? (
-        <p className={`mt-6 ${SLIP}`}>Couldn&apos;t load Patch Notes. Try again in a moment.</p>
+        <p data-slot="patch-stack-note" className={`mt-6 ${SLIP}`}>Couldn&apos;t load Patch Notes. Try again in a moment.</p>
       ) : !newest ? (
-        <p className={`mt-6 ${SLIP}`}>
+        <p data-slot="patch-stack-note" className={`mt-6 ${SLIP}`}>
           No Patches yet. When the site or the bot changes, it&apos;s written up here.
         </p>
       ) : (
@@ -64,7 +64,7 @@ export function PatchStack({
             />
             <PatchSlips patches={older.slice(0, SLIPS_MAX)} seen={seen} />
           </section>
-          <aside className="lg:pt-0.5">
+          <aside data-slot="patch-rail" className="lg:pt-0.5">
             <PatchVersions versions={versions} />
             <PatchList patches={patches} current={newest.number} seen={seen} />
           </aside>
