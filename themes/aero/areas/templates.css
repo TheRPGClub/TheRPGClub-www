@@ -119,6 +119,26 @@
         }
 
         /* ---------------------------------------------------------------
+           A way back (BackLink) loose on the scene, outside a header's
+           window: a small glass pill, as H's back link on the hero. */
+        [data-slot="button"][data-variant="back"]:not(:is([data-slot="page-header"], [data-slot="member-list-head"], [data-slot="desk-header"], [data-slot="detail-section"]) *) {
+            border-radius: 9999px;
+            background: var(--aero-gloss), var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            backdrop-filter: blur(8px);
+            color: var(--foreground);
+            @media (min-width: 768px) {
+                padding: 0.25rem 0.8rem 0.25rem 0.6rem;
+            }
+            & svg {
+                color: var(--gotm);
+            }
+            &:hover {
+                color: var(--gotm);
+            }
+        }
+
+        /* ---------------------------------------------------------------
            Imports: "Importing <name>" is a small glass pill; a step is
            already a white card. */
         [data-slot="importing-line"] {

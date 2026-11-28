@@ -18,7 +18,7 @@ export function ReviewFeedBand({
   const heading = feedDayHeading(day.day, partial ? null : day.entries.length, now, written);
   return (
     <section aria-label={heading.title}>
-      <h2 className="mb-2.5 flex items-baseline gap-3 sm:mb-3.5">
+      <h2 data-slot="review-feed-day" className="mb-2.5 flex items-baseline gap-3 sm:mb-3.5">
         <time dateTime={day.day} className="font-headline shrink-0 text-2xl whitespace-nowrap sm:text-3xl">
           {heading.title}
         </time>

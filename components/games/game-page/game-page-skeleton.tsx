@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // over a few lines.
 export function FactsRowSkeleton() {
   return (
-    <div className="mt-6.5 grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-8">
+    <div data-slot="game-facts-row" className="mt-6.5 grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-8">
       {[4, 6].map((lines) => (
         <div key={lines} className="space-y-3">
           <Skeleton variant="control" className="h-7 w-28" />

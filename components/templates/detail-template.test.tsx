@@ -26,7 +26,7 @@ describe("DetailSection", () => {
         <p>body</p>
       </DetailSection>,
     );
-    expect(html).toMatch(/^<section aria-labelledby="game-reviews">/);
+    expect(html).toMatch(/^<section [^>]*aria-labelledby="game-reviews"[^>]*>/);
     expect(html).toMatch(/<h2[^>]*><span id="game-reviews">Reviews<\/span><\/h2>/);
     expect(html).toContain("3 reviews");
     expect(html).toMatch(/<p>body<\/p><\/section>$/);

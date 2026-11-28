@@ -86,7 +86,7 @@ export async function ReviewFeed({
 // The world's empty state: a dashed strong-rule frame and one muted line.
 function FeedNote({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-[2.4px] border-2 border-dashed border-border-strong px-7 py-11">
+    <div data-slot="shelf-empty" className="flex flex-col items-start gap-4 rounded-[2.4px] border-2 border-dashed border-border-strong px-7 py-11">
       <p className="max-w-[60ch] text-[1.02rem] text-dim-foreground">{children}</p>
       {action}
     </div>

@@ -15,6 +15,7 @@ export function CropMarks({ pencil = false }: { pencil?: boolean }) {
     <span
       key={corner}
       aria-hidden
+      data-slot="crop-mark"
       className={cn(
         "pointer-events-none absolute size-5.5",
         pencil ? "border-dashed border-highlight/85" : "border-faint-foreground/70",

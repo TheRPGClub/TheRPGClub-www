@@ -63,7 +63,7 @@ export function ManagedShelf<T extends SimpleShelfEntry>({
   });
 
   return (
-    <div className="space-y-4">
+    <div data-slot="managed-shelf" className="space-y-4">
       <UndoLines manage={manage} listName={listName} />
       {order.error && (
         <p role="alert" className="text-[0.84rem] text-destructive">

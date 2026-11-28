@@ -22,7 +22,7 @@ export function CollectionGrid({
     );
   }
   return (
-    <ul className={memberGridClass}>
+    <ul data-slot="member-grid" className={memberGridClass}>
       {entries.map((entry, i) => (
         <li key={entry.entry_id ?? entry.collection_id ?? i}>
           <MemberGameCard

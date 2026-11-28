@@ -25,12 +25,28 @@
             ) {
             --foreground: #ffffff;
             --background: #0f3047;
-            /* Aero's own buttons already read deep-lake on light glass:
-               they keep the real tokens. */
-            & :is([data-slot="button"], [data-slot="alert-dialog-trigger"], [data-slot="dialog-trigger"]) {
+            /* Aero's own buttons and form controls already read
+               deep-lake on light glass: they keep the real tokens. */
+            & :is(
+                    [data-slot="button"],
+                    [data-slot="alert-dialog-trigger"],
+                    [data-slot="dialog-trigger"],
+                    [data-slot="input"],
+                    [data-slot="textarea"],
+                    [data-slot="select-trigger"],
+                    [data-slot="popover-trigger"],
+                    [data-slot="radio-group-item"],
+                    [data-slot="checkbox"],
+                    [data-slot="label"]
+                ) {
                 --foreground: #0f3047;
                 --background: #eef7fb;
             }
+        }
+        /* Every Aero label is mixed case: the slips' tracked caps relax. */
+        :is([data-slot="shelf-slip"], [data-slot="completion-dialog"]) .uppercase {
+            text-transform: none;
+            letter-spacing: 0.01em;
         }
         :is([data-slot="shelf-slip"], [data-slot="donate-slip"], [data-slot="gift-letter"]) {
             border-radius: calc(var(--radius) * 1.15);
@@ -574,6 +590,54 @@
         [data-slot="desk-note-tape"] {
             display: none;
         }
+        /* The review desk: the board is a glass window (no dot grid), the
+           sheet a rounded white pane on it; no crop marks, no turned-down
+           corner, no pencil ring (upright glass, no paper props). The
+           title is set in mixed case like every Aero headline. */
+        [data-slot="review-desk"] {
+            border: 0;
+            border-radius: var(--radius-xl);
+            background: var(--games-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+        }
+        [data-slot="review-sheet"] {
+            border-radius: var(--radius-xl);
+            overflow: clip;
+            box-shadow: 0 0 0 1px rgb(16 64 96 / 0.08), var(--aero-day);
+        }
+        [data-slot="crop-mark"],
+        [data-slot="dog-ear"],
+        [data-slot="pencil-ring"] {
+            display: none;
+        }
+        [data-slot="sheet-banner"] > div {
+            text-shadow: none;
+        }
+        [data-slot="sheet-banner"] [data-slot="textarea"] {
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+        /* The score readout: the number in the display face inside a glass
+           bubble (the desk's), its colour the score's ink. */
+        [data-slot="rating-readout"] [data-slot="input"] {
+            font-family: var(--typeface-display);
+            font-weight: 900;
+            line-height: 0.8;
+            color: var(--foreground);
+            letter-spacing: -0.03em;
+        }
+        [data-slot="rating-readout"][data-size="desk"] {
+            border-radius: 9999px;
+            background: radial-gradient(circle at 35% 25%, #ffffff 0 30%, #e6f4fc 70%, #cfe8f7);
+            box-shadow: 0 0 0 2px #ffffff, inset 0 -6px 12px rgb(16 64 96 / 0.08), 0 6px 16px -6px rgb(16 64 96 / 0.4);
+            & [data-slot="input"] {
+                font-size: 4.25rem;
+            }
+        }
+        [data-slot="rating-readout"][data-size="quick"] [data-slot="input"] {
+            font-size: 3rem;
+        }
 
         /* ---------------------------------------------------------------
            Giveaways: each gift is a glossy bubble with the game's cover
@@ -718,6 +782,174 @@
             background:
                 linear-gradient(180deg, rgb(255 255 255 / 0.45) 0 40%, rgb(255 255 255 / 0) 50%),
                 var(--p);
+        }
+
+        /* ---------------------------------------------------------------
+           Windows for the veil: every section of these pages that holds
+           text sits in its own round glass window (H: "every section that
+           sits on the scene"), filter rows and day labels in glass strips,
+           empty notes in a dashed glass well. White glass at 92% or more:
+           the faintest ink clears 4.5:1 even over the darkest scene. */
+        --games-window: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.92));
+        :is(
+                [data-slot="games-newest"],
+                [data-slot="games-grid"],
+                [data-slot="game-facts-row"] > *,
+                [data-slot="franchise-body"],
+                [data-slot="series-line"],
+                [data-slot="franchise-history"],
+                [data-slot="franchise-progress"],
+                [data-slot="lists-section"],
+                [data-slot="list-wall"],
+                [data-slot="new-list-form"],
+                [data-slot="member-tiers"],
+                [data-slot="member-shelf"],
+                [data-slot="member-grid"],
+                [data-slot="favorites-ranking"],
+                [data-slot="managed-shelf"]:not([data-slot="detail-section"] *),
+                [data-slot="managed-reel"]:not([data-slot="completed-main"] *),
+                [data-slot="completed-main"],
+                [data-slot="review-read"],
+                [data-slot="reviews-list-column"] > *,
+                [data-slot="reviews-game-aside"],
+                [data-slot="import-kind-list"],
+                [data-slot="edit-section"],
+                [data-slot="now-playing"]:not([data-slot="detail-section"] *)
+            ) {
+            border-radius: var(--radius-xl);
+            background: var(--games-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+            padding: 1rem;
+            @media (min-width: 640px) {
+                padding: 1.25rem 1.5rem 1.5rem;
+            }
+        }
+        /* A window's own heading drops its plaque for the bead rule. */
+        :is([data-slot="games-newest"], [data-slot="games-grid"], [data-slot="lists-section"]) > [data-slot="section-heading"] {
+            align-items: baseline;
+            border-radius: 0;
+            background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+            box-shadow: none;
+            backdrop-filter: none;
+            padding: 0 0 0.7rem;
+        }
+        [data-slot="edit-section-head"],
+        [data-slot="member-tiers"] {
+            border: 0;
+        }
+        [data-slot="edit-section-head"] {
+            background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+        }
+        [data-slot="member-tiers"] > * {
+            border-color: var(--border);
+        }
+        [data-slot="member-tiers"] > :last-child {
+            border-bottom: 0;
+        }
+        [data-slot="import-kind-list"] {
+            border-top: 0;
+            padding-block: 0.25rem;
+            & > li:last-child {
+                border-bottom: 0;
+            }
+        }
+        /* The review reads as a page of glass, the profile's shelves one
+           window each (the stack's rule gone). */
+        [data-slot="review-read"] {
+            max-width: 72ch;
+        }
+        [data-slot="member-shelf"] {
+            margin-bottom: 1rem;
+        }
+        [data-slot="profile-bookcase"] {
+            border-top: 0;
+        }
+        /* In its window the spotlight's headline steps down a size so a
+           long word never breaks. */
+        /* Aero's display face runs wider than Anton: on a phone the
+           spotlight's facts step down to fit. */
+        @media (max-width: 39.99rem) {
+            [data-slot="reel-spotlight"] dd.font-headline {
+                font-size: 1.45rem;
+            }
+        }
+        /* On a phone the completed list's window is a thin frame, so the
+           spotlight keeps the width it was set for. */
+        @media (max-width: 39.99rem) {
+            [data-slot="completed-main"] {
+                margin-inline: -0.5rem;
+                padding: 0.75rem 0.5rem;
+            }
+        }
+        [data-slot="completed-main"] [data-slot="reel-spotlight"] h2 {
+            overflow-wrap: normal;
+            @media (max-width: 39.99rem) {
+                font-size: 2.15rem;
+            }
+            @media (min-width: 80rem) {
+                font-size: 4.25rem;
+            }
+        }
+        /* The lists' wall, the games' Releases and Details: the shelf's
+           strip of covers keeps its sideways scroll inside the window. */
+        [data-slot="games-newest"] > ul {
+            margin-inline: 0;
+        }
+        /* Strips: filter rows, view switches, day labels, the list's byline,
+           the giveaways' platforms. */
+        :is(
+                [data-slot="franchise-toolbar"],
+                [data-slot="franchise-switch"],
+                [data-slot="review-feed-day"],
+                [data-slot="list-page-byline"],
+                [data-slot="platform-tabs"]
+            ) {
+            border-radius: var(--radius-lg);
+            background: var(--games-window);
+            box-shadow: var(--aero-edge), 0 1px 2px rgb(16 64 96 / 0.08), 0 8px 22px -12px rgb(16 64 96 / 0.4);
+            backdrop-filter: blur(14px) saturate(1.3);
+            padding: 0.55rem 1rem;
+        }
+        [data-slot="franchise-switch"] {
+            border-bottom: 0;
+            padding-bottom: 0.9rem;
+            /* All three views keep their row on a phone. */
+            @media (max-width: 39.99rem) {
+                padding-inline: 0.6rem;
+                & nav {
+                    column-gap: 0.7rem;
+                }
+            }
+        }
+        [data-slot="review-feed-day"] {
+            padding-block: 0.45rem;
+        }
+        [data-slot="platform-tabs"] {
+            width: fit-content;
+            max-width: 100%;
+        }
+        /* The completed list's year dial, on wide screens a glass column. */
+        @media (min-width: 64rem) {
+            [data-slot="completed-main"] + div [data-slot="year-dial"] {
+                border-radius: var(--radius-lg);
+                background: var(--games-window);
+                box-shadow: var(--aero-edge), var(--aero-day);
+                padding: 0.6rem 0;
+            }
+        }
+        /* Empty notes: a dashed glass well. */
+        [data-slot="shelf-empty"] {
+            border-color: rgb(16 64 96 / 0.28);
+            border-radius: var(--radius-lg);
+            background: var(--games-window);
+            box-shadow: var(--aero-day);
+            backdrop-filter: blur(14px) saturate(1.3);
+        }
+        /* Inside a window already, the well is just its dashed rim. */
+        :is([data-slot="detail-section"], [data-slot="games-grid"], [data-slot="lists-section"], [data-slot="edit-section"], [data-slot="series-line"], [data-slot="list-wall"]) [data-slot="shelf-empty"] {
+            box-shadow: none;
+            backdrop-filter: none;
         }
 
         /* ---------------------------------------------------------------

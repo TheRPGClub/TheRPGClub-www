@@ -55,6 +55,7 @@ export function ReviewDesk({
   // its foot.
   return (
     <div
+      data-slot="review-desk"
       className={cn(
         "space-y-10 rounded-md border border-border bg-[radial-gradient(color-mix(in_oklab,var(--color-foreground)_5%,transparent)_1px,transparent_1px)] bg-size-[18px_18px] p-4 pt-7 sm:p-8",
         // Room above the sheet for the Draft's pencilled line.

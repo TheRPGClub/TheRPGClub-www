@@ -91,7 +91,7 @@ export function ListBoard({
           onDone={() => setEditing(false)}
         />
       )}
-      <div className="pt-3">
+      <div data-slot="list-wall" className="pt-3">
         <ListWall board={board} editing={editing} now={today} onNote={setNoteFor} />
       </div>
       <NoteDialog
