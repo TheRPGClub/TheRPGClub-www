@@ -2192,5 +2192,19 @@
         [data-slot="tabs-list"][data-variant="desk"] {
             border-color: var(--gotm);
         }
+        /* The root components (www#252). */
+        [data-slot="corner-ribbon"][data-size="default"],
+        [data-slot="corner-ribbon"][data-size="sm"] {
+            outline: 2px dashed var(--gotm);
+        }
+        [data-slot="corner-ribbon"][data-tone="gotm"] [data-slot="corner-ribbon-band"],
+        [data-slot="corner-ribbon"][data-tone="nr"] [data-slot="corner-ribbon-band"],
+        [data-slot="corner-ribbon"][data-size="default"] [data-slot="corner-ribbon-band"],
+        [data-slot="corner-ribbon"][data-size="sm"] [data-slot="corner-ribbon-band"],
+        [data-slot="platform-pill"],
+        [data-slot="bot-job-status"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
     }
 }

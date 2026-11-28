@@ -12,14 +12,18 @@ import { THEMES } from "./registry";
 const root = path.resolve(__dirname, "..");
 const read = (file: string) => readFileSync(path.join(root, file), "utf8");
 const primitiveFiles = readdirSync(path.join(root, "components/ui")).filter((f) => f.endsWith(".tsx"));
+// The root components a Theme styles beside the primitives (www#252).
+const rootComponentFiles = ["corner-ribbon.tsx", "platform-pills.tsx", "social-icon.tsx", "bot-job-status.tsx"];
 
-// Every data-slot a primitive renders: data-slot="x", slot: "x" in a
-// useRender state, or a trigger's triggerSlot("x", render).
+// Every data-slot a primitive or root component renders: data-slot="x",
+// "data-slot": "x" in props, slot: "x" in a useRender state, or a trigger's
+// triggerSlot("x", render).
 function primitiveSlots(): Set<string> {
   const slots = new Set<string>();
-  for (const file of primitiveFiles) {
-    const text = read(`components/ui/${file}`);
-    for (const m of text.matchAll(/data-slot="([\w-]+)"|\bslot: "([\w-]+)"|triggerSlot\("([\w-]+)"/g)) slots.add(m[1] ?? m[2] ?? m[3]);
+  const files = [...primitiveFiles.map((f) => `components/ui/${f}`), ...rootComponentFiles.map((f) => `components/${f}`)];
+  for (const file of files) {
+    const text = read(file);
+    for (const m of text.matchAll(/data-slot"?[=:] ?"([\w-]+)"|\bslot: "([\w-]+)"|triggerSlot\("([\w-]+)"/g)) slots.add(m[1] ?? m[2] ?? m[3]);
   }
   return slots;
 }
@@ -88,10 +92,13 @@ describe("Themes style the primitives", () => {
     expect([...styled(name)].map((key) => key.split("/")[0]).filter((slot) => !slots.has(slot))).toEqual([]);
   });
 
-  it("the test Theme restyles every slot, variant, size and tone the Monthly Issue Theme styles", () => {
-    const testTheme = styled("test");
-    expect([...styled("monthly-issue")].filter((key) => !testTheme.has(key))).toEqual([]);
-  });
+  it.each(THEMES.filter((theme) => theme.name !== "monthly-issue").map((theme) => theme.name))(
+    "the %s Theme restyles every slot, variant, size and tone the Monthly Issue Theme styles",
+    (name) => {
+      const keys = styled(name);
+      expect([...styled("monthly-issue")].filter((key) => !keys.has(key))).toEqual([]);
+    },
+  );
 
   it.each(THEMES.map((theme) => theme.name))("the %s Theme styles the semantic variants", (name) => {
     const keys = styled(name);

@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-
 // The diagonal banner across a card's top-right corner. It started life on the
 // game page marking GOTM / NR-GOTM winners (the starburst does that job
 // there now); the voting board reuses it to mark
@@ -7,12 +5,14 @@ import { cn } from "@/lib/utils";
 //
 // It only works inside a positioned, `overflow-hidden` container — the banner
 // is wider than the corner it crosses and relies on the card clipping it.
-const ribbonAccents = {
-  brand: "bg-gotm text-gotm-foreground",
-  purple: "bg-nr text-nr-foreground",
+// Each Theme draws it (themes/<name>/primitives.css): the slot carries its
+// track as data-tone and its scale as data-size, the band its label's fit.
+const ribbonTones = {
+  brand: "gotm",
+  purple: "nr",
 } as const;
 
-export type RibbonAccent = keyof typeof ribbonAccents;
+export type RibbonAccent = keyof typeof ribbonTones;
 
 // Two scales, because the band has to cross the corner at a distance
 // proportional to the card. `default` suits a hero; `sm` a cover in a grid,
@@ -20,26 +20,16 @@ export type RibbonAccent = keyof typeof ribbonAccents;
 // artwork.
 //
 // The visible span is the diagonal chord, not the band's full width, so a
-// longer label steps down in size and tracking rather than clipping.
-// `fitsUpTo` is where that step falls at each scale.
-const ribbonSizes = {
-  default: {
-    box: "top-7 -right-14 h-7 w-52",
-    // "GOTM Winner" still fits roomy; "NR GOTM Winner" does not.
-    fitsUpTo: 12,
-    roomy: "text-[10px] tracking-[0.25em]",
-    tight: "text-[9px] tracking-[0.15em]",
-  },
-  sm: {
-    box: "top-3 -right-10 h-5 w-32",
-    // "GOTM" fits roomy; "NR GOTM" does not.
-    fitsUpTo: 5,
-    roomy: "text-[9px] tracking-[0.15em]",
-    tight: "text-[8px] tracking-[0.05em]",
-  },
+// longer label steps down in size and tracking rather than clipping
+// (data-fit "tight"). This is where that step falls at each scale:
+// "GOTM Winner" still fits roomy at default and "NR GOTM Winner" does not;
+// "GOTM" fits roomy at sm and "NR GOTM" does not.
+const fitsUpTo = {
+  default: 12,
+  sm: 5,
 } as const;
 
-export type RibbonSize = keyof typeof ribbonSizes;
+export type RibbonSize = keyof typeof fitsUpTo;
 
 export interface CornerRibbonProps {
   accent: RibbonAccent;
@@ -55,22 +45,18 @@ export function CornerRibbon({
   srLabel,
   size = "default",
 }: CornerRibbonProps) {
-  const scale = ribbonSizes[size];
-
   return (
     <div
       aria-label={srLabel ?? label}
-      className={cn(
-        "pointer-events-none absolute z-30 flex rotate-45 items-center justify-center",
-        scale.box,
-      )}
+      data-slot="corner-ribbon"
+      data-tone={ribbonTones[accent]}
+      data-size={size}
+      className="pointer-events-none absolute z-30 flex items-center justify-center"
     >
       <div
-        className={cn(
-          "font-label flex h-full w-full items-center justify-center font-extrabold whitespace-nowrap shadow-md",
-          ribbonAccents[accent],
-          label.length <= scale.fitsUpTo ? scale.roomy : scale.tight,
-        )}
+        data-slot="corner-ribbon-band"
+        data-fit={label.length <= fitsUpTo[size] ? "roomy" : "tight"}
+        className="flex h-full w-full items-center justify-center whitespace-nowrap"
       >
         {label}
       </div>
