@@ -50,7 +50,7 @@ export default async function RoundEditPage({
           </>
         }
       />
-      <div className="mt-4">
+      <div data-slot="desk-body" className="mt-4">
         {entries === null ? (
           <p role="alert" className="text-destructive">
             {"Couldn't load the round. Refresh to try again."}

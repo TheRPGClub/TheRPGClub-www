@@ -36,7 +36,7 @@ export function DeskLayout({
         badge={badge}
       />
       {error && (
-        <p role="alert" className="mt-3 rounded-sm border border-destructive/60 px-3.5 py-2.5 text-sm text-destructive">
+        <p role="alert" data-slot="writing-desk-note" className="mt-3 rounded-sm border border-destructive/60 px-3.5 py-2.5 text-sm text-destructive">
           {error}
         </p>
       )}
@@ -44,7 +44,7 @@ export function DeskLayout({
         {sheet}
         <div className="grid grid-cols-[minmax(0,1fr)] gap-5.5 pt-1.5">{children}</div>
       </div>
-      {remove && <div className="mt-10 border-t border-border pt-4 sm:hidden">{remove()}</div>}
+      {remove && <div data-slot="writing-desk-foot" className="mt-10 border-t border-border pt-4 sm:hidden">{remove()}</div>}
     </div>
   );
 }

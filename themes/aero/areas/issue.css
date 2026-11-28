@@ -374,6 +374,14 @@
                 color: var(--gotm);
             }
         }
+        /* Their scrims hold more white under the type, so a headline,
+           a byline and a note clear their ratio over bright key art. */
+        [data-slot="gotm-leaf-scrim"] {
+            background: linear-gradient(180deg, rgb(238 247 251 / 0.2) 15%, rgb(238 247 251 / 0.86) 55%, rgb(238 247 251 / 0.97));
+        }
+        [data-slot="round-hero-scrim"] {
+            background: linear-gradient(0deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.9) 50%, rgb(238 247 251 / 0.1) 88%);
+        }
         :is([data-slot="round-nav-history"], [data-slot="round-nav-arrow"]) {
             color: var(--gotm);
         }

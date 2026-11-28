@@ -57,7 +57,7 @@ export function GameHeroText({
         </div>
       )}
       {(game.description || igdb) && (
-        <div className="col-span-full flex max-w-[46rem] items-end gap-3.5 md:mt-3.5">
+        <div data-slot="game-hero-blurb" className="col-span-full flex max-w-[46rem] items-end gap-3.5 md:mt-3.5">
           {game.description && (
             <p className="line-clamp-3 min-w-0 flex-1 text-[0.9rem] leading-[1.55] text-dim-foreground">
               {game.description}

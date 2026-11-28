@@ -48,6 +48,7 @@ export function ReelSpotlight({
       )}
       <div
         aria-hidden
+        data-slot="reel-spotlight-scrim"
         className={cn(
           "absolute inset-0 -z-10",
           art

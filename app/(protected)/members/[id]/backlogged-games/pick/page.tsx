@@ -52,6 +52,7 @@ export default async function BacklogPickPage({
       {deal.kind === "error" && (
         <p
           role="alert"
+          data-slot="pick-note"
           className="rounded-sm border border-dashed border-border-strong px-4 py-10 text-center text-sm text-destructive"
         >
           {deal.message}

@@ -54,6 +54,7 @@ export function ReviewsGameAside({
           as="h2"
           title={game.title}
           accentClassName={trackAccentText(track)}
+          track={track}
           className="text-[1.75rem] leading-[0.9] lg:mt-4 lg:text-[2.4rem]"
         />
         {meta.length > 0 && (

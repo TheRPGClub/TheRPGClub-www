@@ -67,7 +67,7 @@ export function ChallengeForm({
         }
       />
       {form.error && (
-        <p role="alert" className="rounded-md border border-dashed border-destructive px-4 py-3 text-destructive">
+        <p role="alert" data-slot="challenge-desk-note" className="rounded-md border border-dashed border-destructive px-4 py-3 text-destructive">
           {form.error}
         </p>
       )}
@@ -78,7 +78,7 @@ export function ChallengeForm({
         locked={form.locked}
       />
       {form.draft.format === "pool" || form.draft.format === "slots" ? (
-        <div>
+        <div data-slot="challenge-desk-body">
           {form.draft.format === "slots" ? <SlotsSentence form={form} /> : <RuleSentence form={form} />}
           <WordEditor form={form} />
           {edit?.locked && <LockNote pool={form.draft.format === "pool"} runCount={runCount} />}
@@ -87,7 +87,7 @@ export function ChallengeForm({
       ) : form.draft.format === "assignment" ? (
         <AssignmentRules form={form} runCount={runCount} />
       ) : (
-        <p className="flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
+        <p data-slot="challenge-desk-note" className="flex items-center gap-2.5 rounded-sm border border-dashed border-border-strong px-3.5 py-3 text-[0.92rem] text-dim-foreground">
           <Lock aria-hidden className="size-4 shrink-0" />
           This Format&apos;s rules are set from Discord for now. The name and description can change here.
         </p>

@@ -110,6 +110,27 @@
             background: rgb(16 64 96 / 0.12);
         }
 
+        /* Game hero (desktop): the white scrim holds further across the
+           art and the blurb stays inside it, so its type clears 4.5:1
+           over any key art. */
+        @media (min-width: 768px) {
+            [data-slot="game-hero-scrim"] {
+                background:
+                    linear-gradient(90deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.93) 64%, rgb(238 247 251 / 0.55) 84%, rgb(238 247 251 / 0.2) 100%),
+                    linear-gradient(0deg, var(--background) 0%, rgb(238 247 251 / 0) 46%);
+            }
+            [data-slot="game-hero-blurb"] {
+                max-width: 34rem;
+            }
+        }
+        /* Game Edit and the reviews strip: the tab row at the band's foot
+           sits on a band of white, whatever the art. */
+        [data-slot="game-edit-band-scrim"] {
+            background:
+                linear-gradient(90deg, rgb(238 247 251 / 0.96) 0%, rgb(238 247 251 / 0.84) 40%, rgb(238 247 251 / 0.25) 80%),
+                linear-gradient(0deg, rgb(238 247 251 / 0.97) 0, rgb(238 247 251 / 0.97) 3.75rem, rgb(238 247 251 / 0) 75%);
+        }
+
         /* Game Edit: the band is a glass window on the key art, the save
            bar a frosted dock with an amber gel top edge (red once a save
            failed). */
@@ -533,6 +554,11 @@
             border-radius: calc(var(--radius) * 1.25);
             box-shadow: var(--aero-edge), var(--aero-day);
         }
+        [data-slot="reel-spotlight-scrim"]:not(.bg-card) {
+            background:
+                linear-gradient(90deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.92) 60%, rgb(238 247 251 / 0.82) 100%),
+                linear-gradient(0deg, rgb(238 247 251 / 0.92), rgb(238 247 251 / 0) 55%);
+        }
         [data-slot="year-dial"] a {
             border-radius: 9999px;
             &[aria-current="page"] {
@@ -731,16 +757,26 @@
             border-radius: 9999px;
             padding: 0.1rem 0.5rem;
             background:
-                linear-gradient(180deg, rgb(255 255 255 / 0.3) 0 45%, rgb(255 255 255 / 0) 50%),
-                linear-gradient(180deg, #2b6a99, #0f3047);
+                linear-gradient(180deg, rgb(255 255 255 / 0.14) 0 45%, rgb(255 255 255 / 0) 50%),
+                linear-gradient(180deg, #1f5683, #0f3047);
             color: #ffffff;
             font-size: 0.95rem;
             box-shadow: 0 0 0 2px #ffffff, 0 3px 8px rgb(16 64 96 / 0.35);
         }
-        [data-slot="gift-box"][data-variant="gone"] [data-slot="gift-wrap"],
-        [data-slot="gift-box"][data-variant="claimed"] [data-slot="gift-wrap"] {
-            filter: grayscale(1);
-            opacity: 0.6;
+        /* A gone or claimed gift fades its art only: its chip, its stamp
+           and its tag keep full type over the scene. */
+        [data-slot="gift-box"]:is([data-variant="gone"], [data-variant="claimed"]) {
+            & [data-slot="gift-wrap"] {
+                filter: none;
+                opacity: 1;
+            }
+            & [data-slot="gift-wrap"] [data-slot="game-cover"] {
+                filter: grayscale(1);
+                opacity: 0.6;
+            }
+            & [data-slot="gift-tag"] {
+                opacity: 1;
+            }
         }
         [data-slot="gift-claimed-stamp"] {
             border: 0;

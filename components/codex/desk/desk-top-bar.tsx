@@ -58,11 +58,11 @@ export function DeskTopBar({
         <ArrowLeft aria-hidden />
         <span className="max-md:hidden">{backLabel}</span>
       </Button>
-      <p className="font-label text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">Changes go live when you save</p>
+      <p data-slot="writing-desk-note" className="font-label text-[0.8rem] font-bold tracking-[0.08em] text-faint-foreground">Changes go live when you save</p>
       {badge}
       <div className="fixed inset-x-0 bottom-[calc(3.875rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-sm sm:static sm:z-auto sm:ml-auto sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
         {desk.missing && (
-          <p role="status" className="mr-auto text-[0.85rem] text-destructive sm:mr-1">
+          <p role="status" data-slot="writing-desk-status" className="mr-auto text-[0.85rem] text-destructive sm:mr-1">
             {desk.missing}
           </p>
         )}

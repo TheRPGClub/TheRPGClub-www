@@ -154,5 +154,51 @@
             border-radius: var(--radius-xl);
             box-shadow: var(--aero-edge), var(--aero-day);
         }
+
+        /* ---------------------------------------------------------------
+           Final pass (www#253): the last loose sections. Windows hold a
+           page body, strips a row of controls or a note. A heading inside
+           a window melts onto the bead rule, never a plaque on glass. */
+        :is([data-slot="pick-sentence"], [data-slot="edit-body"]) {
+            border-radius: var(--radius-xl);
+            background: var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            padding: 1.1rem 1rem 1.25rem;
+            @media (min-width: 640px) {
+                padding: 1.5rem 1.75rem 1.75rem;
+            }
+        }
+        [data-slot="pick-sentence"] {
+            border-bottom: 0;
+        }
+        [data-slot="edit-body"] [data-slot="section-heading"] {
+            align-items: baseline;
+            border-radius: 0;
+            background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+            box-shadow: none;
+            backdrop-filter: none;
+            padding: 0 0 0.7rem;
+        }
+        :is([data-slot="compare-form"], [data-slot="pick-note"]) {
+            width: fit-content;
+            max-width: 100%;
+            border-radius: var(--radius-lg);
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            padding: 0.6rem 1rem;
+        }
+        [data-slot="pick-note"][role="alert"] {
+            width: auto;
+            border-style: solid;
+        }
+        [data-slot="edit-rail"] > ul {
+            border-radius: var(--radius-lg);
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            padding: 0.4rem;
+            @media (max-width: 767.98px) {
+                margin-inline: 0;
+            }
+        }
     }
 }

@@ -52,6 +52,7 @@ export function RoundHeroPanel({
       )}
       <span
         aria-hidden
+        data-slot="round-hero-scrim"
         className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_94%,transparent)_0%,color-mix(in_oklab,var(--color-background)_62%,transparent)_45%,color-mix(in_oklab,var(--color-background)_8%,transparent)_85%)]"
       />
       <WinnerMark

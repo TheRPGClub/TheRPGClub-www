@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 export function MetaFields({ form, canHostForClub }: { form: ChallengeFormState; canHostForClub: boolean }) {
   const { draft, update, errors } = form;
   return (
-    <div className="mt-[30px] grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.4fr_auto]">
+    <div data-slot="challenge-desk-meta" className="mt-[30px] grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.4fr_auto]">
       <div className="space-y-1.5">
         <Label variant="field" htmlFor="challenge-name" className="font-label text-[0.82rem] tracking-[0.08em]">
           Name

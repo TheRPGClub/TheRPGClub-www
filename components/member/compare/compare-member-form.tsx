@@ -18,7 +18,7 @@ export function CompareMemberForm({
   members: CompareMemberOption[];
 }) {
   return (
-    <Form action={action} className="flex flex-wrap items-end gap-2.5">
+    <Form action={action} data-slot="compare-form" className="flex flex-wrap items-end gap-2.5">
       <MemberSelect
         label={`Compare ${ownerName} with`}
         className="w-full max-w-72"

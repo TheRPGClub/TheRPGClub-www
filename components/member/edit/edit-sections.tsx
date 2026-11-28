@@ -59,6 +59,7 @@ export function EditSections({
     <div className="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-9 lg:grid-cols-[15rem_minmax(0,1fr)]">
       <nav
         aria-label="Edit sections"
+        data-slot="edit-rail"
         className="md:sticky md:top-5 md:self-start"
       >
         <ul className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:gap-0.5 md:overflow-visible md:px-0 md:pb-0">
@@ -106,7 +107,7 @@ export function EditSections({
         </ul>
       </nav>
 
-      <div key={current.id} className="min-w-0">
+      <div key={current.id} data-slot="edit-body" className="min-w-0">
         {moved ? null : current.content}
       </div>
     </div>

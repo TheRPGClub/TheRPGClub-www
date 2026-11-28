@@ -51,6 +51,7 @@ export function GotmDiptychHalf({
       {first && (
         <span
           aria-hidden
+          data-slot="gotm-leaf-scrim"
           className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-background)_15%,transparent)_30%,color-mix(in_oklab,var(--color-background)_90%,transparent))]"
         />
       )}

@@ -47,6 +47,15 @@
             scrollbar-color: rgb(23 105 189 / 0.45) transparent;
         }
 
+        /* Highlight as type is the amber ink (README: sunlight amber
+           #ffc93a is a fill; on white glass it measures 1.5:1). Areas
+           that set their own ink over it win by weight. */
+        .text-highlight,
+        :is([class~="hover:text-highlight"], [class~="focus-visible:text-highlight"]):is(:hover, :focus-visible),
+        :is(.group, [class*="group/"]):is(:hover, :focus-visible) [class*="group-hover"][class*=":text-highlight"] {
+            color: var(--aero-amber-ink);
+        }
+
         /* The sky under everything, on the signed-in app only. */
         body:has([data-ornament="backdrop"]) {
             background: #0b55c9;

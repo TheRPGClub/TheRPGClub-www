@@ -2712,10 +2712,14 @@
             outline: 2px solid var(--aero-amber-edge);
             outline-offset: 2px;
         }
+        /* A platform chip: a white gel pill ringed in the platform's ink
+           (the inks are pastels, too pale under white type and too mid
+           under dark), deep-lake type. */
         [data-slot="badge"][data-tone="platform"] {
             border: 0;
-            background: var(--aero-gloss), var(--platform-ink, var(--gotm));
-            color: #ffffff;
+            background: linear-gradient(180deg, #ffffff 0%, #f6fbfe 49%, #e9f3f9 50%, #ffffff 100%);
+            box-shadow: inset 0 0 0 2px var(--platform-ink, var(--gotm)), 0 1px 3px rgb(16 64 96 / 0.25);
+            color: var(--foreground);
             font-weight: 800;
         }
         [data-slot="badge"][data-tone="option"] {
@@ -3286,16 +3290,17 @@
         }
         [data-slot="label"][data-variant="kind-tile"] {
             border-radius: var(--radius-md);
-            background: rgb(255 255 255 / 0.85);
+            background: rgb(255 255 255 / 0.96);
             box-shadow: inset 0 0 0 1.5px var(--ink);
             color: var(--ink-text, var(--ink));
-            font: 900 0.72rem var(--typeface-label);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
+            font: 900 0.68rem var(--typeface-label);
+            letter-spacing: 0;
+            text-transform: none;
+            overflow-wrap: anywhere;
             cursor: pointer;
         }
         [data-slot="label"][data-variant="kind-tile"]:has(:checked) {
-            background: var(--aero-gloss), var(--ink);
+            background: linear-gradient(180deg, rgb(255 255 255 / 0.22) 0%, rgb(255 255 255 / 0) 40%), var(--ink);
             color: #ffffff;
             translate: 0 -4px;
             box-shadow: 0 6px 14px -4px color-mix(in oklab, var(--ink) 60%, transparent);

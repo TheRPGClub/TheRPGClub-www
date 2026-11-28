@@ -29,14 +29,14 @@ export function PickHand({
         })}
       />
       {dealt < HAND && (
-        <p className="text-sm text-faint-foreground">
+        <p data-slot="pick-note" className="text-sm text-faint-foreground">
           Only {dealt} game{dealt === 1 ? "" : "s"}{" "}
           fit{dealt === 1 ? "s" : ""} these filters, so the hand
           is short.
         </p>
       )}
       {deal.wrapped && (
-        <p className="text-sm text-faint-foreground">
+        <p data-slot="pick-note" className="text-sm text-faint-foreground">
           Back to the start of your list, so picks may repeat.
         </p>
       )}
