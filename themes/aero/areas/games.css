@@ -25,12 +25,28 @@
             ) {
             --foreground: #ffffff;
             --background: #0f3047;
-            /* Aero's own buttons already read deep-lake on light glass:
-               they keep the real tokens. */
-            & :is([data-slot="button"], [data-slot="alert-dialog-trigger"], [data-slot="dialog-trigger"]) {
+            /* Aero's own buttons and form controls already read
+               deep-lake on light glass: they keep the real tokens. */
+            & :is(
+                    [data-slot="button"],
+                    [data-slot="alert-dialog-trigger"],
+                    [data-slot="dialog-trigger"],
+                    [data-slot="input"],
+                    [data-slot="textarea"],
+                    [data-slot="select-trigger"],
+                    [data-slot="popover-trigger"],
+                    [data-slot="radio-group-item"],
+                    [data-slot="checkbox"],
+                    [data-slot="label"]
+                ) {
                 --foreground: #0f3047;
                 --background: #eef7fb;
             }
+        }
+        /* Every Aero label is mixed case: the slips' tracked caps relax. */
+        :is([data-slot="shelf-slip"], [data-slot="completion-dialog"]) .uppercase {
+            text-transform: none;
+            letter-spacing: 0.01em;
         }
         :is([data-slot="shelf-slip"], [data-slot="donate-slip"], [data-slot="gift-letter"]) {
             border-radius: calc(var(--radius) * 1.15);
@@ -846,6 +862,9 @@
         [data-slot="member-shelf"] {
             margin-bottom: 1rem;
         }
+        [data-slot="profile-bookcase"] {
+            border-top: 0;
+        }
         /* In its window the spotlight's headline steps down a size so a
            long word never breaks. */
         /* Aero's display face runs wider than Anton: on a phone the
@@ -895,6 +914,13 @@
         [data-slot="franchise-switch"] {
             border-bottom: 0;
             padding-bottom: 0.9rem;
+            /* All three views keep their row on a phone. */
+            @media (max-width: 39.99rem) {
+                padding-inline: 0.6rem;
+                & nav {
+                    column-gap: 0.7rem;
+                }
+            }
         }
         [data-slot="review-feed-day"] {
             padding-block: 0.45rem;
