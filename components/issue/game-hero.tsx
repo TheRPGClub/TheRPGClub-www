@@ -7,6 +7,7 @@ import { GotyRosettes } from "@/components/issue/goty-rosettes";
 import { Starburst } from "@/components/issue/starburst";
 import { BackLink } from "@/components/shell/back-link";
 import { gotyRosettes } from "@/lib/games/goty-rosettes";
+import { Ornament } from "@/components/ornament";
 import { cn } from "@/lib/utils";
 
 // A game's cover story (design www#156, round 3): full-bleed key art, the way
@@ -63,6 +64,9 @@ export function GameHero({
             : "bg-[linear-gradient(0deg,var(--color-background)_0%,var(--color-card)_100%)]",
         )}
       />
+
+      {/* A Theme's gloss over the key art (none under Monthly Issue). */}
+      <Ornament role="glare" />
 
       {awards > 0 ? (
         <GotyRosettes rosettes={rosettes} />

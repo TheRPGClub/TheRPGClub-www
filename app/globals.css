@@ -236,6 +236,19 @@
     }
 }
 
+/* Ornaments (components/ornament.tsx, spec api#523): decorative slots a
+   Theme may draw into. Off unless a Theme turns one on: no box, no pointer;
+   a logo-halo is only its logo. */
+@layer base {
+    [data-slot="ornament"] {
+        display: none;
+        pointer-events: none;
+    }
+    [data-ornament="logo-halo"] {
+        display: contents;
+    }
+}
+
 /* The Theme floor's reduced motion (DESIGN.md): the popups' enter and exit
    (tw-animate's zoom and slide) keep their fade and drop the movement.
    Unlayered, so it wins over the utilities that set them. */

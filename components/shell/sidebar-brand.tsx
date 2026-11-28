@@ -10,6 +10,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Ornament } from "@/components/ornament";
 
 // The sidebar's head: the club's mark, and the control that collapses the
 // panel to its icon rail or expands it again.
@@ -32,13 +33,15 @@ export function SidebarBrand() {
             className="group/logo relative hidden size-10 group-data-[collapsible=icon]:flex"
           >
             {/* The same 40px logo in the same place as the expanded one. */}
-            <Image
-              src="/logo.png"
-              alt=""
-              width={40}
-              height={40}
-              className="size-10 transition-opacity group-hover/logo:opacity-0"
-            />
+            <Ornament role="logo-halo">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={40}
+                height={40}
+                className="size-10 transition-opacity group-hover/logo:opacity-0"
+              />
+            </Ornament>
             <PanelLeftOpen className="absolute size-4 opacity-0 transition-opacity group-hover/logo:opacity-100" />
           </Button>
 
@@ -48,14 +51,16 @@ export function SidebarBrand() {
             href="/dashboard"
             className="flex min-w-0 flex-1 items-center gap-2 group-data-[collapsible=icon]:hidden"
           >
-            <Image
-              src="/logo.png"
-              alt=""
-              width={40}
-              height={40}
-              priority
-              className="size-10 shrink-0"
-            />
+            <Ornament role="logo-halo">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={40}
+                height={40}
+                priority
+                className="size-10 shrink-0"
+              />
+            </Ornament>
             <span className="font-headline truncate pt-0.5 text-[1.35rem] leading-none tracking-[0.01em]">
               The <span className="text-gotm">RPG</span> Club
             </span>

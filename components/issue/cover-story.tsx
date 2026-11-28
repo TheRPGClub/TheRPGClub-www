@@ -3,6 +3,7 @@ import { Starburst } from "@/components/issue/starburst";
 import { CoverPanel } from "@/components/issue/cover-panel";
 import { SIZES, TRACK } from "@/components/issue/cover-track";
 import type { GameCounts } from "@/lib/api/game-counts";
+import { Ornament } from "@/components/ornament";
 import { cn } from "@/lib/utils";
 
 // The issue's cover story: a round's winners for one track, full-bleed key art
@@ -46,6 +47,8 @@ export function CoverStory({
         count === 3 && "sm:grid-cols-[1.3fr_1fr] sm:grid-rows-2",
       )}
     >
+      {/* A Theme's gloss over the key art (none under Monthly Issue). */}
+      <Ornament role="glare" motion="sweep" />
       <Starburst
         track={kind}
         className={cn(
