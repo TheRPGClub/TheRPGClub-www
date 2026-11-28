@@ -8,6 +8,7 @@ export function RunMatrix({ rows, label }: { rows: DecadeRow[]; label: string })
   return (
     <div
       role="group"
+      data-slot="run-matrix"
       aria-label={label}
       className="grid grid-cols-[26px_repeat(10,minmax(0,1fr))] gap-[3px] min-[480px]:gap-1.5 sm:grid-cols-[70px_repeat(10,minmax(0,1fr))] sm:gap-2"
     >

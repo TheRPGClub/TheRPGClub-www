@@ -25,15 +25,17 @@ export function NewsHero({
   return (
     <article
       aria-label={isNew ? "Newest new item" : "Newest item"}
+      data-slot="news-hero"
       className="group/tile relative isolate flex min-h-[20rem] overflow-hidden rounded-md bg-card sm:min-h-[23rem]"
     >
       <NewsArtFill frames={view.frames} ink={ink.color} initial={siteInitial(view.site)} big />
       <div
         aria-hidden
+        data-slot="news-scrim"
         className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,color-mix(in_oklab,var(--background)_55%,transparent)_55%,color-mix(in_oklab,var(--background)_94%,transparent)_85%,var(--background))]"
       />
       {isNew && (
-        <span className="font-label absolute top-4 right-4 rounded-xs bg-highlight px-2 pt-[5px] pb-1 text-xs leading-none font-extrabold tracking-[0.1em] text-highlight-foreground">
+        <span data-slot="news-new-flag" className="font-label absolute top-4 right-4 rounded-xs bg-highlight px-2 pt-[5px] pb-1 text-xs leading-none font-extrabold tracking-[0.1em] text-highlight-foreground">
           NEW
         </span>
       )}

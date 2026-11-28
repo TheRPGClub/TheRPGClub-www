@@ -40,9 +40,11 @@ export function ChallengeFlyer({
   } as CSSProperties;
   return (
     <article
+      data-slot="challenge-flyer"
+      data-variant={closed ? "closed" : "open"}
       style={style}
       className={cn(
-        "relative rotate-(--tilt-sm) rounded-md px-5 pt-5 pb-4 text-(--challenge-type) shadow-[0_12px_30px_rgb(0_0_0/0.5)] motion-safe:transition-transform motion-safe:duration-200 sm:rotate-(--tilt) motion-safe:hover:rotate-0 motion-safe:focus-within:rotate-0 sm:motion-safe:hover:rotate-0 sm:motion-safe:focus-within:rotate-0",
+        "relative rounded-md px-5 pt-5 pb-4 text-(--challenge-type)",
         closed ? "bg-[color-mix(in_srgb,var(--challenge-tint)_35%,var(--color-muted))]" : "bg-(--challenge-tint)",
       )}
     >

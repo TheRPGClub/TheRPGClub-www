@@ -26,7 +26,8 @@ export function SignUpButton({ editionId }: { editionId: number }) {
       {slip && (
         <p
           role="alert"
-          className="max-w-[34ch] -rotate-1 rounded-xs bg-foreground px-3 py-2 text-[0.85rem] leading-[1.4] text-background shadow-[0_8px_18px_rgb(0_0_0/0.45)]"
+          data-slot="run-slip"
+          className="max-w-[34ch] rounded-xs bg-foreground px-3 py-2 text-[0.85rem] leading-[1.4] text-background"
         >
           {slip}
         </p>

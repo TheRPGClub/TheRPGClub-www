@@ -18,12 +18,14 @@ export function NewsShelfCard({ item, now }: { item: NewsItem; now: Date }) {
     <li className="w-[14.75rem] shrink-0 snap-start">
       <article className="group/tile">
         <div
+          data-slot="news-shelf-card"
           style={{ "--news-ink": ink.color } as CSSProperties}
           className="relative isolate aspect-video overflow-hidden rounded-md bg-card shadow-[inset_0_0_0_1px_var(--border)]"
         >
           <NewsArtFill frames={view.frames} ink={ink.color} initial={siteInitial(view.site)} />
           <span
             aria-hidden
+            data-slot="news-ink-foot"
             className={cn(
               "absolute inset-x-0 bottom-0 h-[3px]",
               ink.dashed

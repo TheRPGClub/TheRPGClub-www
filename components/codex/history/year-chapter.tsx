@@ -27,6 +27,7 @@ export function YearChapter({
   return (
     <section
       aria-labelledby={`year-${year}`}
+      data-slot="year-chapter"
       className={cn(
         "grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-5 border-t-2 border-foreground pt-4.5 pb-6.5",
         photos.length > 0 ? "lg:grid-cols-[250px_minmax(0,1fr)_250px]" : "lg:grid-cols-[250px_minmax(0,1fr)]",
@@ -46,7 +47,7 @@ export function YearChapter({
         ))}
       </div>
       {photos.length > 0 && (
-        <div className="-mx-4 flex gap-4.5 overflow-x-auto px-4 pt-3 pb-4 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pt-1.5 lg:pb-0">
+        <div data-slot="year-chapter-photos" className="-mx-4 flex gap-4.5 overflow-x-auto px-4 pt-3 pb-4 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pt-1.5 lg:pb-0">
           {photos.map((photo, i) => (
             <PinnedMount key={photo.id} url={photo.url} alt={`${photo.title}, photo ${i + 1}`} tilt={photo.tilt} />
           ))}

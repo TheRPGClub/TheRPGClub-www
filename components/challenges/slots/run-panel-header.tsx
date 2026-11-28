@@ -56,8 +56,9 @@ export function RunPanelHeader({
       {member && scoreLine}
       {stamp && (
         <span
+          data-slot="run-panel-stamp"
           className={cn(
-            "font-headline inline-block -rotate-6 self-center rounded-xs px-2.5 pt-1.5 pb-1 text-[1.375rem] leading-none whitespace-nowrap uppercase shadow-[inset_0_0_0_2px_currentColor]",
+            "font-headline inline-block self-center rounded-xs px-2.5 pt-1.5 pb-1 text-[1.375rem] leading-none whitespace-nowrap uppercase shadow-[inset_0_0_0_2px_currentColor]",
             hiStamp ? "text-(--challenge-tint-hi)" : "text-faint-foreground",
           )}
         >

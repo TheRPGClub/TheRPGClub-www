@@ -19,8 +19,8 @@ export function CoverFan({
   if (games.length === 0) return null;
   const lg = size === "lg";
   return (
-    <div className={cn("flex", lg ? "pr-[22px]" : "my-1.5")} aria-hidden>
-      {games.slice(0, 3).map((game, i) => (
+    <div data-slot="cover-fan" data-size={size} className={cn("flex", lg ? "pr-[22px]" : "my-1.5")} aria-hidden>
+      {games.slice(0, 3).map((game) => (
         <GameCover
           key={game.game_id}
           title={game.title}
@@ -29,8 +29,6 @@ export function CoverFan({
             lg
               ? "-mr-[22px] w-[84px] shadow-[0_10px_22px_rgb(0_0_0/0.5)]"
               : "-mr-[18px] w-[62px] shadow-[0_6px_14px_rgb(0_0_0/0.45)]",
-            lg && i === 0 && "-rotate-5",
-            lg && i === 2 && "rotate-5",
             muted && "brightness-75 saturate-[0.3]",
           )}
           fallbackClassName={lg ? "text-[0.8rem] p-1.5" : "text-[0.62rem] p-1"}
@@ -43,7 +41,7 @@ export function CoverFan({
 export function SlotRow({ squares, size = "sm" }: { squares: SlotSquares; size?: "sm" | "lg" }) {
   const box = size === "lg" ? "h-[30px] w-[22px]" : "size-[18px]";
   return (
-    <div className="my-1 flex flex-wrap items-center gap-1" aria-hidden>
+    <div data-slot="slot-row" data-size={size} className="my-1 flex flex-wrap items-center gap-1" aria-hidden>
       {squares.filled.map((on, i) => (
         <i
           key={i}
@@ -67,14 +65,15 @@ export function NameTag({ size = "sm" }: { size?: "sm" | "lg" }) {
   return (
     <div
       aria-hidden
+      data-slot="flyer-name-tag"
+      data-size={size}
       className={cn(
         "relative my-1.5 flex flex-col justify-center bg-(--challenge-type) text-(--challenge-tint)",
-        lg
-          ? "h-[112px] w-[190px] -rotate-4 pl-[46px] shadow-[0_10px_22px_rgb(0_0_0/0.5)] [clip-path:polygon(34px_0,100%_0,100%_100%,34px_100%,0_50%)]"
-          : "h-[62px] w-[120px] pl-7 [clip-path:polygon(18px_0,100%_0,100%_100%,18px_100%,0_50%)]",
+        lg ? "h-[112px] w-[190px] pl-[46px]" : "h-[62px] w-[120px] pl-7",
       )}
     >
       <i
+        data-slot="flyer-name-tag-hole"
         className={cn(
           "absolute top-1/2 -translate-y-1/2 rounded-full bg-(--challenge-tint)",
           lg ? "left-[18px] size-3" : "left-[9px] size-2",

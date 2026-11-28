@@ -44,9 +44,11 @@ export function PinnedPhoto({
           e.dataTransfer.setData(PHOTO_DRAG_TYPE, photo.key);
           e.dataTransfer.effectAllowed = "move";
         }}
+        data-slot="pinned-photo"
+        data-state={photo.state}
         style={{ "--tilt": `${tilt}deg` } as React.CSSProperties}
         className={cn(
-          "relative aspect-[4/3] overflow-hidden rounded-[2px] bg-background shadow-[0_6px_14px_rgb(0_0_0/0.45)] lg:rotate-(--tilt)",
+          "relative aspect-[4/3] overflow-hidden rounded-[2px] bg-background",
           onPlace && "cursor-grab active:cursor-grabbing",
           failed && "outline-2 outline-offset-2 outline-destructive",
         )}

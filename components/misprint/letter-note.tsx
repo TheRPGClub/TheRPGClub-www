@@ -23,9 +23,10 @@ export function LetterNote({
   return (
     <aside
       aria-label="Letters"
-      className="relative -rotate-1 rounded-xs bg-foreground px-6 pt-6 pb-6 text-background shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:-rotate-2 sm:px-7"
+      data-slot="letter-note"
+      className="relative rounded-xs bg-foreground px-6 pt-6 pb-6 text-background sm:px-7"
     >
-      <span aria-hidden className="absolute -top-3 left-1/2 h-6.5 w-28 -translate-x-1/2 rotate-3 bg-foreground/40" />
+      <span aria-hidden data-slot="letter-note-tape" className="absolute -top-3 left-1/2 h-6.5 w-28 -translate-x-1/2 bg-foreground/40" />
       <p className="font-label text-[0.78rem] font-extrabold tracking-[0.08em] text-background/60 uppercase">Letters</p>
       <blockquote className="mt-2.5 text-[1.1rem] leading-normal font-medium italic sm:text-[1.2rem]">
         &ldquo;{letter}&rdquo;

@@ -27,7 +27,7 @@ export function DeskLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="pb-24 sm:pb-0">
+    <div data-slot="writing-desk" className="pb-24 sm:pb-0">
       <DeskTopBar
         desk={desk}
         back={back}

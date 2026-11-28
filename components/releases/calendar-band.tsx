@@ -21,6 +21,7 @@ export function CalendarBand({ upcomingReleases, today }: { upcomingReleases: Up
       <section
         key={group.key}
         aria-label={`${precisionNote(group.precision)}, ${period}`}
+        data-slot="release-band"
         className="mt-4 flex flex-col items-stretch gap-3 rounded-md bg-card px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-[22px]"
       >
         <div className="flex items-center gap-2.5 border-b border-border-strong pb-2.5 sm:flex-col sm:items-start sm:gap-1.5 sm:border-r sm:border-b-0 sm:pr-[18px] sm:pb-0">

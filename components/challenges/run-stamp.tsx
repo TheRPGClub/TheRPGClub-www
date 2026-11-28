@@ -32,9 +32,11 @@ export function StampFrame({
   const style = { ...tintStyle(stamp.tint), "--tilt": `${stamp.tilt}deg`, "--tilt-sm": `${stamp.tilt / 2}deg` };
   return (
     <div
+      data-slot="run-stamp"
+      data-variant={edge}
       style={style as CSSProperties}
       className={cn(
-        "relative rotate-(--tilt-sm) p-2.5 shadow-[0_10px_20px_rgb(0_0_0/0.5)] sm:rotate-(--tilt)",
+        "relative p-2.5",
         PERFORATION[edge],
         className,
       )}
@@ -65,7 +67,7 @@ export function StampTitle({ stamp, className }: { stamp: StampView; className?:
 export function CurrentStamp({ stamp }: { stamp: StampView }) {
   return (
     <StampFrame stamp={stamp} edge="rule" className="h-full">
-      <div className="grid h-full min-h-[220px] grid-cols-[minmax(0,1fr)_auto] gap-x-4 bg-card px-[18px] pt-4 pb-3.5 shadow-[inset_0_0_0_2px_var(--challenge-tint-hi)]">
+      <div data-slot="current-stamp" className="grid h-full min-h-[220px] grid-cols-[minmax(0,1fr)_auto] gap-x-4 bg-card px-[18px] pt-4 pb-3.5 shadow-[inset_0_0_0_2px_var(--challenge-tint-hi)]">
         <div className="flex min-w-0 flex-col">
           <p className="font-label inline-flex items-center gap-[7px] text-[0.75rem] leading-none font-extrabold tracking-[0.1em]">
             <FormatSquare format={stamp.format} />
@@ -83,7 +85,7 @@ export function CurrentStamp({ stamp }: { stamp: StampView }) {
               </p>
             )}
             {stamp.caughtUp && (
-              <span className="font-headline mb-1 -rotate-6 rounded-xs px-1.5 pt-1 pb-0.5 text-[0.95rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]">
+              <span data-slot="caught-up-stamp" className="font-headline mb-1 rounded-xs px-1.5 pt-1 pb-0.5 text-[0.95rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]">
                 Caught Up
               </span>
             )}

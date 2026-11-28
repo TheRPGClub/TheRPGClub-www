@@ -30,14 +30,14 @@ const WORD: Record<Outcome, string> = { finished: "Finished", expired: "Expired"
 export function PastStamp({ stamp, canDelete = false }: { stamp: StampView; canDelete?: boolean }) {
   const outcome = stamp.status as Outcome;
   return (
-    <div className="group/stamp relative">
+    <div data-slot="past-stamp" data-variant={outcome} className="group/stamp relative">
       {canDelete && (
         <span className="absolute -top-2 right-1 z-20 bg-background transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover/stamp:opacity-100 pointer-fine:group-focus-within/stamp:opacity-100">
           <DeleteRunButton runId={stamp.id} challengeName={stamp.name} />
         </span>
       )}
       <StampFrame stamp={stamp} edge="paper" className="aspect-[4/5]">
-        <div className={cn("flex h-full flex-col px-3 pt-3 pb-2.5", PANEL[outcome])}>
+        <div data-slot="past-stamp-panel" className={cn("flex h-full flex-col px-3 pt-3 pb-2.5", PANEL[outcome])}>
           <p className="font-label text-[0.7rem] leading-none font-extrabold tracking-[0.1em]">{stamp.formatLine}</p>
           <StampTitle stamp={stamp} className="mt-2 mb-auto line-clamp-2 pb-2 text-[1.5rem] leading-[0.9]" />
           <p className="font-headline text-[2.5rem] leading-[0.8]">
@@ -52,8 +52,9 @@ export function PastStamp({ stamp, canDelete = false }: { stamp: StampView; canD
       </StampFrame>
       <span
         aria-hidden
+        data-slot="past-stamp-postmark"
         className={cn(
-          "font-headline pointer-events-none absolute -right-1.5 bottom-[44px] z-10 -rotate-12 rounded-[3px] px-2 pt-[5px] pb-[3px] text-[1rem] leading-none shadow-[inset_0_0_0_3px_currentColor] sm:text-[1.3rem]",
+          "font-headline pointer-events-none absolute -right-1.5 bottom-[44px] z-10 rounded-[3px] px-2 pt-[5px] pb-[3px] text-[1rem] leading-none shadow-[inset_0_0_0_3px_currentColor] sm:text-[1.3rem]",
           POSTMARK[outcome],
         )}
       >

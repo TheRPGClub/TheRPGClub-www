@@ -79,13 +79,16 @@ function TrayCard({
   const nameId = `tray-${panelKey}`;
   return (
     <li
+      data-slot="hidden-panel"
+      data-variant={panelKey}
       style={{ "--panel-ink": `var(--panel-${spec.ink})` } as CSSProperties}
       className="relative min-w-0 rounded-sm bg-card px-3.5 pt-3.5 pb-2 shadow-[inset_0_3px_0_color-mix(in_oklab,var(--panel-ink)_72%,var(--color-muted))]"
     >
       {fresh && (
         <span
           id={`${nameId}-new`}
-          className="font-headline absolute -top-3.5 -right-1.5 z-10 -rotate-8 rounded-xs bg-panel-new px-2.25 pt-1.25 pb-1 text-[1.05rem] leading-none text-background shadow-[inset_0_0_0_2px_var(--color-background),0_6px_14px_rgb(0_0_0/0.45)]">
+          data-slot="panel-new-stamp"
+          className="font-headline absolute -top-3.5 -right-1.5 z-10 rounded-xs bg-panel-new px-2.25 pt-1.25 pb-1 text-[1.05rem] leading-none text-background">
           New
         </span>
       )}

@@ -15,8 +15,9 @@ export function JournalVolume({
 }) {
   return (
     <div
+      data-slot="journal-volume"
       className={cn(
-        "rounded-[4px] bg-border p-1.5 shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:p-2.5",
+        "rounded-[4px] bg-border p-1.5 sm:p-2.5",
         className,
       )}
     >
@@ -44,6 +45,8 @@ export function JournalPage({
   return (
     <Tag
       {...rest}
+      data-slot="journal-page"
+      data-side={side}
       className={cn(
         "relative flex min-w-0 flex-col rounded-md bg-card",
         side === "left" && "lg:shadow-[inset_-22px_0_26px_-18px_rgb(0_0_0/0.7)]",

@@ -20,8 +20,8 @@ export function StoryImageBlock(props: PlateElementProps) {
         contentEditable={false}
         className="flex items-end gap-4 rounded-[2px] border border-dashed border-border-strong/70 bg-background/40 p-2.5 select-none"
       >
-        <figure className="relative w-32 shrink-0 -rotate-2 rounded-[2px] bg-foreground p-1.5 pb-2 shadow-[0_6px_14px_rgb(0_0_0/0.45)]">
-          <span aria-hidden className="absolute -top-2 left-1/2 h-3.5 w-14 -translate-x-1/2 rotate-3 bg-codex-history/70" />
+        <figure data-slot="story-image-frame" className="relative w-32 shrink-0 rounded-[2px] bg-foreground p-1.5 pb-2">
+          <span aria-hidden data-slot="story-image-tape" className="absolute -top-2 left-1/2 h-3.5 w-14 -translate-x-1/2 bg-codex-history/70" />
           {/* eslint-disable-next-line @next/next/no-img-element -- an uploaded photo or a local preview (blob:), which next/image can't load */}
           <img src={node.url} alt="" className="aspect-[4/3] w-full object-cover" />
         </figure>

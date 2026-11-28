@@ -47,7 +47,7 @@ export function NewsCatchup({
     );
   }
   return (
-    <div className="space-y-3">
+    <div data-slot="news-catchup" className="space-y-3">
       {catchup.hero && (
         <NewsHeroBand
           catchup={catchup}

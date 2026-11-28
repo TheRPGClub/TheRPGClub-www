@@ -42,6 +42,7 @@ export function ChallengeBanner({
   const [first, second] = splitGameTitle(challenge.name);
   return (
     <header
+      data-slot="challenge-banner"
       style={tintStyle(tint)}
       className="bleed relative -mt-6 flex min-h-[260px] items-end overflow-hidden bg-(--challenge-tint) sm:min-h-[330px]"
     >
@@ -56,6 +57,7 @@ export function ChallengeBanner({
       )}
       <div
         aria-hidden
+        data-slot="challenge-banner-scrim"
         className="absolute inset-0 bg-linear-to-r from-background/96 via-background/82 via-45% to-background/15"
       />
       {/* The way back to the Challenges, on the banner's top edge. */}
@@ -94,7 +96,7 @@ export function ChallengeBanner({
             <span className="block text-(--challenge-tint-hi)">{second}</span>
           </h1>
         </div>
-        <dl className="flex w-fit gap-7 rounded-md bg-background/80 px-5 pt-4 pb-3.5 lg:ml-auto">
+        <dl data-slot="challenge-banner-numerals" className="flex w-fit gap-7 rounded-md bg-background/80 px-5 pt-4 pb-3.5 lg:ml-auto">
           {numerals ? (
             numerals.map((n) => <Numeral key={n.label} value={n.value} label={n.label} hi={n.hi} />)
           ) : (
@@ -118,6 +120,7 @@ export function ChallengeBanner({
 export function Chip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <span
+      data-slot="challenge-chip"
       className={cn(
         "font-label inline-flex h-[22px] items-center gap-[5px] rounded-xs px-[7px] text-[0.78rem] tracking-[0.06em] whitespace-nowrap",
         className,
