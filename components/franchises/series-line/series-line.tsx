@@ -61,13 +61,13 @@ function Key({ mainline, spinoffs, addOns }: { mainline: boolean; spinoffs: bool
   return (
     <p aria-hidden className="font-label mb-5 flex flex-wrap justify-end gap-x-5 gap-y-1 text-[0.72rem] text-dim-foreground">
       {mainline && (
-        <span className="flex items-center gap-2"><i className="h-1.5 w-5 bg-foreground" />Mainline</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="mainline" className="h-1.5 w-5 bg-foreground" />Mainline</span>
       )}
       {spinoffs && (
-        <span className="flex items-center gap-2"><i className="h-[3px] w-5 bg-dim-foreground" />Spin-off</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="spin-off" className="h-[3px] w-5 bg-dim-foreground" />Spin-off</span>
       )}
       {addOns && (
-        <span className="flex items-center gap-2"><i className="size-2.5 bg-highlight" />Add-on</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="add-on" className="size-2.5 bg-highlight" />Add-on</span>
       )}
     </p>
   );

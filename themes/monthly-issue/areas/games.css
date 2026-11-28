@@ -1,8 +1,9 @@
 /* monthly-issue: games signature components (spec api#523, www#256): games,
-   franchises, Game Lists, member profiles, reviews, giveaways and
-   suggestions. The Monthly Issue's hand-placed tilts, sideways spine titles
-   and paper props, keyed by data-slot so another Theme can set them its own
-   way (api ADR-0008). */
+   franchises, Game Lists, member profiles, reviews and giveaways. The
+   Monthly Issue's hand-placed tilts, sideways spine titles and paper props,
+   keyed by data-slot so another Theme can set them its own way (api
+   ADR-0008). Suggestions live in staff.css (www#259), the Birthday tape in
+   community.css (www#258). */
 
 @layer themes {
     [data-theme="monthly-issue"] {
@@ -62,11 +63,6 @@
             @apply -rotate-8;
         }
 
-        /* A closed Suggestion's slip, taped on at its own tilt (--slip). */
-        [data-slot="closed-slip"] {
-            @apply rotate-(--slip) before:absolute before:-top-[7px] before:left-1/2 before:-ml-[27px] before:h-3.5 before:w-[54px] before:-rotate-3 before:bg-foreground/35;
-        }
-
         /* The review desk's notes, taped in the margin from lg. */
         [data-slot="desk-note-tape"] {
             @apply -rotate-2;
@@ -101,15 +97,6 @@
         /* Game Edit: a removed image is struck through on the diagonal. */
         [data-slot="image-tile-strike"] {
             @apply -rotate-24;
-        }
-
-        /* The member banner's Birthday tape, pinned at a tilt with a torn
-           end. */
-        [data-slot="birthday-tape"] {
-            @apply -rotate-[1.2deg];
-        }
-        [data-slot="birthday-tape-strip"] {
-            @apply [clip-path:polygon(0_0,100%_4%,99.2%_20%,100%_38%,99%_56%,100%_73%,99.3%_88%,100%_100%,0_96%)];
         }
     }
 }

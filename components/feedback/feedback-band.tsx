@@ -32,7 +32,7 @@ export function FeedbackBand({ feedback: f, phase }: { feedback: Feedback; phase
       data-slot="feedback-band"
       data-tone={phase}
       className={cn(
-        "flex items-center justify-between gap-3 rounded-t-md px-3.5 py-2 text-background",
+        "flex items-center justify-between gap-3 px-3.5 py-2 text-background",
         phase === "withdrawn" ? "text-faint-foreground shadow-[inset_0_0_0_1px_var(--band)]" : "bg-(--band)",
       )}
     >
