@@ -1,14 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { SessionTheme } from "@/lib/auth-types";
-
-// Aero has no stylesheet yet (ticket www#252): pretend this website ships it.
-vi.mock("@/themes/registry", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/themes/registry")>();
-  return { ...actual, shipsTheme: (key: string) => ["monthly-issue", "aero"].includes(key) };
-});
-
-const { themeCards, themeChoiceBody, themeToSave } = await import("./theme-picker");
+import { themeCards, themeChoiceBody, themeToSave } from "./theme-picker";
 
 const monthly: SessionTheme = { key: "monthly-issue", name: "Monthly Issue", released: true, available: true };
 const aero: SessionTheme = { key: "aero", name: "Frutiger Aero", released: false, available: true };

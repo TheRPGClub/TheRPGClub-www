@@ -10,12 +10,13 @@ import { ThemeSwatch } from "@/components/settings/theme-swatch";
 // Theme's swatch as its cover, its name, "Club default" or "Staff preview",
 // and a state word: "Wearing" on the Member's Theme, "Saving" while a choice
 // is on its way. A stored Theme the Member may no longer choose stays chosen
-// ("Yours"), greyed, with "Back when staff release it".
+// ("Yours"), greyed and disabled, with "Back when staff release it".
 export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; chosen: boolean; saving: boolean }) {
   const state = saving ? "Saving" : chosen ? (card.available ? "Wearing" : "Yours") : "";
   return (
     <ToggleGroupItem
       value={card.key}
+      disabled={!card.available}
       className="relative h-auto flex-col items-stretch justify-start gap-2.5 p-2 pb-3"
     >
       {chosen && !saving ? (

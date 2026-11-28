@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { ThemeCard } from "@/lib/theme-picker";
+import type { SessionTheme } from "@/lib/auth-types";
+import { themeCards, type ThemeCard } from "@/lib/theme-picker";
 import { LayoutTab } from "./layout-tab";
 import { ThemePicker } from "./theme-picker";
 
@@ -12,19 +13,11 @@ vi.mock("@/app/actions/pinned-pages", () => ({ resetPinnedPagesAction: vi.fn() }
 vi.mock("@/themes/aero/fonts", () => ({ aeroFonts: "aero-fonts" }));
 vi.mock("@/themes/monthly-issue/fonts", () => ({ monthlyIssueFonts: "monthly-issue-fonts" }));
 
-// Aero's stylesheet isn't shipped yet (www#252), so themeCards drops it: the
-// cards are built by hand here, as the API would send them for staff.
-const card = (over: Partial<ThemeCard>): ThemeCard => ({
-  key: "monthly-issue",
-  name: "Monthly Issue",
-  clubDefault: true,
-  chosen: true,
-  available: true,
-  staffPreview: false,
-  ...over,
-});
-const mi = card({});
-const aero = card({ key: "aero", name: "Frutiger Aero", clubDefault: false, chosen: false, staffPreview: true });
+// The cards as themeCards builds them from the session's Themes, for staff
+// (Aero a Staff preview), against the real registry.
+const monthly: SessionTheme = { key: "monthly-issue", name: "Monthly Issue", released: true, available: true };
+const aeroTheme: SessionTheme = { key: "aero", name: "Frutiger Aero", released: false, available: true };
+const [mi, aero] = themeCards({ chosen: null, list: [monthly, aeroTheme] })!;
 
 const render = (cards: ThemeCard[]) => renderToStaticMarkup(<ThemePicker cards={cards} />);
 
@@ -49,6 +42,7 @@ describe("ThemePicker", () => {
     expect(html).toContain("Wearing");
     expect(html).toContain("Staff preview");
     expect(html).not.toContain("Back when staff release it");
+    expect(html).not.toContain('aria-disabled="true"');
   });
 
   it("keeps an unavailable stored Theme chosen, greyed and disabled", () => {
@@ -57,6 +51,10 @@ describe("ThemePicker", () => {
     expect(html).toContain("Back when staff release it");
     expect(html).not.toContain("Wearing");
     expect(html).not.toContain("Staff preview");
+    const buttons = html.match(/<button[^>]*data-slot="toggle-group-item"[^>]*>/g) ?? [];
+    expect(buttons).toHaveLength(2);
+    expect(buttons[0]).toContain('aria-disabled="false"');
+    expect(buttons[1]).toContain('aria-disabled="true"');
   });
 });
 
