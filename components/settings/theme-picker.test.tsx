@@ -21,18 +21,22 @@ const card = (over: Partial<ThemeCard>): ThemeCard => ({
   ...over,
 });
 const mi = card({});
-const aero = card({ key: "frutiger-aero", name: "Frutiger Aero", clubDefault: false, chosen: false, staffPreview: true });
+const aero = card({ key: "aero", name: "Frutiger Aero", clubDefault: false, chosen: false, staffPreview: true });
 
 const render = (cards: ThemeCard[]) => renderToStaticMarkup(<ThemePicker cards={cards} />);
 
 describe("ThemePicker", () => {
-  it("draws one radio card per Theme, each swatch under its own data-theme", () => {
+  it("draws one toggle card per Theme, each swatch under its own data-theme", () => {
     const html = render([mi, aero]);
-    expect(html).toContain('role="radiogroup"');
+    // A toggle group, not a radio group: arrows only move focus there.
+    expect(html).toContain('role="group"');
+    expect(html).not.toContain('role="radio');
     expect(html).toContain('aria-label="Theme"');
-    expect(html.match(/data-variant="theme-card"/g)).toHaveLength(2);
+    expect(html.match(/<button[^>]*data-slot="toggle-group-item"[^>]*data-variant="theme-card"/g)).toHaveLength(2);
+    expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
+    expect(html.match(/aria-pressed="false"/g)).toHaveLength(1);
     expect(html).toContain('data-theme="monthly-issue"');
-    expect(html).toContain('data-theme="frutiger-aero"');
+    expect(html).toContain('data-theme="aero"');
     expect(html).toContain("2 Themes");
   });
 

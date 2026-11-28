@@ -1816,8 +1816,8 @@
         /* Theme picker (www#250, sketch A "Cover pair"): an ink-2 card with
            a hairline, the swatch as its cover; the chosen card rings in
            2px highlighter yellow, focus is a 3px yellow outline off it. */
-        [data-slot="label"][data-variant="theme-card"] {
-            @apply cursor-pointer rounded-sm bg-card text-card-foreground inset-ring-1 inset-ring-border transition-shadow hover:inset-ring-border-strong has-data-checked:inset-ring-2 has-data-checked:inset-ring-highlight has-focus-visible:outline-3 has-focus-visible:outline-solid has-focus-visible:outline-offset-3 has-focus-visible:outline-highlight/50 has-data-disabled:cursor-default motion-reduce:transition-none;
+        [data-slot="toggle-group-item"][data-variant="theme-card"] {
+            @apply cursor-pointer rounded-sm bg-card text-left whitespace-normal text-card-foreground inset-ring-1 inset-ring-border transition-shadow hover:inset-ring-border-strong focus-visible:ring-0 focus-visible:outline-3 focus-visible:outline-solid focus-visible:outline-offset-3 focus-visible:outline-highlight/50 aria-pressed:inset-ring-2 aria-pressed:inset-ring-highlight motion-reduce:transition-none;
         }
         [data-slot="label"][data-variant="kind-drop"] {
             @apply cursor-pointer rounded-sm border-[1.5px] border-dashed border-(--k)/50 bg-muted text-faint-foreground transition-colors hover:border-(--k) data-dragging:border-highlight data-dragging:bg-highlight/6 has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight motion-reduce:transition-none;

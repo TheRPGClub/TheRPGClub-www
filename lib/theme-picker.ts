@@ -38,6 +38,18 @@ export function themeCards(themes: SessionThemes | undefined): ThemeCard[] | nul
   }));
 }
 
+// Which Theme a press in the picker's toggle group asks to save, if any: the
+// newly pressed key, when it isn't the Member's Theme already, is one they
+// may choose, and no save is still on its way. Pressing the chosen card again
+// un-presses it (an empty list), which saves nothing. Arrow keys only move
+// focus in a toggle group, so they never get here.
+export function themeToSave(pressed: readonly unknown[], cards: readonly ThemeCard[], busy: boolean): string | null {
+  const key = pressed.at(-1);
+  if (busy || typeof key !== "string") return null;
+  const card = cards.find((c) => c.key === key);
+  return card && card.available && !card.chosen ? key : null;
+}
+
 // The body of `PUT /api/v1/me/theme`: choosing the default stores nothing
 // (null), so the Member follows the club default if it ever changes.
 export function themeChoiceBody(key: string): { theme: string | null } {

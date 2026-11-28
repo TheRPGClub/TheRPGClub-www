@@ -2081,10 +2081,20 @@
             color: var(--gotm);
             text-decoration: underline wavy var(--highlight);
         }
-        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"], [data-variant="theme-card"]) {
+        [data-slot="label"]:is([data-variant="option"], [data-variant="ruled"], [data-variant="choice"], [data-variant="choice-tile"], [data-variant="switch"], [data-variant="file"]) {
             background-color: var(--accent);
             color: var(--accent-foreground);
             border: 2px dashed var(--gotm);
+        }
+        [data-slot="toggle-group-item"][data-variant="theme-card"] {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px dashed var(--gotm);
+            text-align: left;
+            white-space: normal;
+            &[aria-pressed="true"] {
+                border-style: solid;
+            }
         }
         [data-slot="tabs-list"][data-variant="ticks"] [data-slot="tabs-trigger"] {
             background-color: var(--accent);

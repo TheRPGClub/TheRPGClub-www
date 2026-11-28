@@ -8,7 +8,7 @@ vi.mock("@/themes/registry", async (importOriginal) => {
   return { ...actual, shipsTheme: (key: string) => ["monthly-issue", "aero"].includes(key) };
 });
 
-const { themeCards, themeChoiceBody } = await import("./theme-picker");
+const { themeCards, themeChoiceBody, themeToSave } = await import("./theme-picker");
 
 const monthly: SessionTheme = { key: "monthly-issue", name: "Monthly Issue", released: true, available: true };
 const aero: SessionTheme = { key: "aero", name: "Frutiger Aero", released: false, available: true };
@@ -57,5 +57,24 @@ describe("themeChoiceBody", () => {
   it("sends null for the club default and the key for any other Theme", () => {
     expect(themeChoiceBody("monthly-issue")).toEqual({ theme: null });
     expect(themeChoiceBody("aero")).toEqual({ theme: "aero" });
+  });
+});
+
+describe("themeToSave", () => {
+  const cards = themeCards({ chosen: null, list: [monthly, aero] })!;
+
+  it("saves the newly pressed Theme (Space, Enter or a click)", () => {
+    expect(themeToSave(["monthly-issue", "aero"], cards, false)).toBe("aero");
+    expect(themeToSave(["aero"], cards, false)).toBe("aero");
+  });
+  it("saves nothing when the chosen card is pressed again, or while a save is on its way", () => {
+    expect(themeToSave([], cards, false)).toBeNull();
+    expect(themeToSave(["monthly-issue"], cards, false)).toBeNull();
+    expect(themeToSave(["aero"], cards, true)).toBeNull();
+  });
+  it("saves nothing for a Theme the Member may not choose, or an unknown key", () => {
+    const locked = themeCards({ chosen: "monthly-issue", list: [monthly, { ...aero, available: false }] })!;
+    expect(themeToSave(["aero"], locked, false)).toBeNull();
+    expect(themeToSave(["nope"], cards, false)).toBeNull();
   });
 });

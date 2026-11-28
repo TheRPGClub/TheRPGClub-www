@@ -7,15 +7,15 @@
 // the page's own Theme and still draws whole. It is a picture only.
 export function ThemeSwatch({ theme }: { theme: string }) {
   return (
-    <div
+    <span
       data-theme={theme}
       aria-hidden
-      className="@container relative aspect-[16/10] overflow-hidden rounded-xs bg-background text-foreground inset-ring-1 inset-ring-border"
+      className="@container relative block aspect-[16/10] overflow-hidden rounded-xs bg-background text-foreground inset-ring-1 inset-ring-border"
     >
       <span className="font-headline absolute top-[7%] left-[7%] text-[6.4cqw] leading-none uppercase">
         The <span className="text-gotm">RPG</span> Club
       </span>
-      <div className="absolute top-[22%] bottom-[9%] left-[7%] flex w-[55%] flex-col justify-between overflow-hidden rounded-xs bg-card p-[5%]">
+      <span className="absolute top-[22%] bottom-[9%] left-[7%] flex w-[55%] flex-col justify-between overflow-hidden rounded-xs bg-card p-[5%]">
         <span className="font-headline text-[15cqw] leading-[0.8] text-gotm">143</span>
         <span className="flex flex-col gap-[0.6cqw]">
           <span className="block h-[2.4cqw] w-[85%] rounded-full bg-card-foreground opacity-80" />
@@ -29,14 +29,14 @@ export function ThemeSwatch({ theme }: { theme: string }) {
             NR
           </span>
         </span>
-      </div>
-      <div className="absolute top-[22%] right-[7%] bottom-[9%] left-[66%] flex flex-col gap-[5%]">
+      </span>
+      <span className="absolute top-[22%] right-[7%] bottom-[9%] left-[66%] flex flex-col gap-[5%]">
         <span className="block h-[5%] rounded-full bg-muted-foreground opacity-60" />
         <span className="block h-[5%] w-[65%] rounded-full bg-muted-foreground opacity-40" />
         <span className="font-headline mt-auto flex h-[30%] items-center justify-center rounded-sm bg-highlight text-[5.4cqw] leading-none text-highlight-foreground uppercase">
           Vote
         </span>
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }

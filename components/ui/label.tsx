@@ -53,9 +53,6 @@ const labelVariants = cva("", {
       "kind-switch": "",
       "kind-choice": "",
       "kind-drop": "",
-      // www#250: a Theme picker card around its (visually hidden) radio,
-      // its swatch as the cover; the chosen card is ringed.
-      "theme-card": "",
     },
   },
   defaultVariants: { variant: "default" },

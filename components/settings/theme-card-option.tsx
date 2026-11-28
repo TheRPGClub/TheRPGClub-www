@@ -3,8 +3,7 @@
 import { Check, Loader2, Lock } from "lucide-react";
 import type { ThemeCard } from "@/lib/theme-picker";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { RadioGroupItem } from "@/components/ui/radio-group";
+import { ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ThemeSwatch } from "@/components/settings/theme-swatch";
 
 // One card of the Theme picker (ticket www#250, sketch A "Cover pair"): the
@@ -15,8 +14,10 @@ import { ThemeSwatch } from "@/components/settings/theme-swatch";
 export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; chosen: boolean; saving: boolean }) {
   const state = saving ? "Saving" : chosen ? (card.available ? "Wearing" : "Yours") : "";
   return (
-    <Label variant="theme-card" className="relative flex flex-col gap-2.5 p-2 pb-3">
-      <RadioGroupItem value={card.key} variant="choice" disabled={!card.available} className="sr-only" />
+    <ToggleGroupItem
+      value={card.key}
+      className="relative h-auto flex-col items-stretch justify-start gap-2.5 p-2 pb-3"
+    >
       {chosen && !saving ? (
         <span
           aria-hidden
@@ -25,9 +26,9 @@ export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; cho
           <Check className="size-4" strokeWidth={2.5} />
         </span>
       ) : null}
-      <div className={card.available ? undefined : "brightness-75 grayscale-[.85]"}>
+      <span className={card.available ? "block" : "block brightness-75 grayscale-[.85]"}>
         <ThemeSwatch theme={card.key} />
-      </div>
+      </span>
       <span className={`flex flex-col gap-1.5 px-1 ${saving ? "opacity-60" : ""}`}>
         <span
           className={`font-headline text-[1.1rem] leading-none sm:text-[1.35rem] ${card.available ? "" : "text-dim-foreground"}`}
@@ -61,6 +62,6 @@ export function ThemeCardOption({ card, chosen, saving }: { card: ThemeCard; cho
           </span>
         ) : null}
       </span>
-    </Label>
+    </ToggleGroupItem>
   );
 }
