@@ -34,6 +34,8 @@ export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
   return (
     <Link
       href={reviewHref(entry.review_id, { take: entry.revision_id ?? undefined })}
+      data-slot="review-box"
+      data-tone={track ?? undefined}
       className={cn(
         "group relative grid grid-cols-[4rem_minmax(0,1fr)] gap-x-3 gap-y-2.5 overflow-hidden rounded-[2.4px] border-2 bg-card p-2.5",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight @lg:flex @lg:min-h-[178px] @lg:gap-4 @lg:p-3",
@@ -65,6 +67,7 @@ export function ReviewBox({ entry }: { entry: ReviewFeedEntry }) {
           </span>
         )}
         <h3
+          data-slot="review-box-title"
           className={cn(
             "font-headline order-1 col-start-2 row-start-1 self-start text-[21px] leading-[0.98] text-balance break-words uppercase transition-colors group-hover:text-highlight @lg:order-none @lg:pr-0 @lg:text-[31px]",
             previous != null ? "pr-[7.5rem]" : "pr-[4.75rem]",

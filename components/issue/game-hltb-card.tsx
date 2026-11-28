@@ -70,7 +70,7 @@ export function GameHltbCard({
   const blockedUntil = !anyTime && state.kind === "times" && state.saved ? hltbForceBlockedUntil(state.hltb) : null;
 
   return (
-    <section aria-labelledby="game-hltb">
+    <section aria-labelledby="game-hltb" data-slot="hltb-card">
       <PanelHeading
         id="game-hltb"
         title="Time to beat"

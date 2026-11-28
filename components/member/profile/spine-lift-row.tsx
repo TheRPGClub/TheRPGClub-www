@@ -94,12 +94,13 @@ export function SpineLiftRow({ className, children }: { className: string; child
         setLifted(lift(el, true));
       }}
     >
-      <div className={cn(className, "flex-1")}>{children}</div>
+      <div data-slot="member-shelf-row" className={cn(className, "flex-1")}>{children}</div>
       {lifted && (
         <div
           ref={tag}
           aria-hidden
-          className="pointer-events-none absolute z-20 max-w-60 -rotate-2 rounded-xs bg-foreground px-2.5 py-2 whitespace-nowrap text-background shadow-[0_12px_30px_rgb(0_0_0/0.5)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-150"
+          data-slot="spine-lift-tag"
+          className="pointer-events-none absolute z-20 max-w-60 rounded-xs bg-foreground px-2.5 py-2 whitespace-nowrap text-background shadow-[0_12px_30px_rgb(0_0_0/0.5)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-150"
         >
           <b className="font-headline block text-2xl leading-[0.9] font-normal">{lifted.hours}</b>
           <small className="font-label mt-[3px] block truncate text-[0.68rem] leading-[1.3] font-extrabold tracking-[0.07em] text-[color-mix(in_oklab,var(--color-background)_72%,transparent)]">

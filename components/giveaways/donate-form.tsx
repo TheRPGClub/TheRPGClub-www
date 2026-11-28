@@ -58,13 +58,14 @@ export function DonateForm({ donorName }: { donorName: string }) {
 
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-12">
-      <div className="mx-auto w-full max-w-[11rem] sm:max-w-[15rem] lg:mt-4 lg:max-w-[22rem]">
+      <div data-slot="parcel-preview" className="mx-auto w-full max-w-[11rem] sm:max-w-[15rem] lg:mt-4 lg:max-w-[22rem]">
         <ParcelPreview game={game} platform={platformName} region={region} />
       </div>
       <form
         onSubmit={submit}
         aria-label="Donate a key"
-        className="rounded-md bg-foreground px-5 pt-5 pb-6 text-background shadow-[0_12px_30px_rgb(0_0_0/0.5)] sm:px-8 lg:-rotate-[0.6deg]"
+        data-slot="donate-slip"
+        className="rounded-md bg-foreground px-5 pt-5 pb-6 text-background shadow-[0_12px_30px_rgb(0_0_0/0.5)] sm:px-8"
       >
         <div className="mb-5 flex items-end justify-between gap-4 border-b-2 border-background pb-3">
           <p className="max-w-[34ch] text-sm text-slip-muted-foreground">

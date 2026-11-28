@@ -24,6 +24,8 @@ export function PodiumSpines({
         return (
           <li
             key={i}
+            data-slot="podium-place"
+            data-variant={`rank-${i + 1}`}
             className="flex shrink-0 flex-col items-stretch"
           >
             <Spine
@@ -34,6 +36,7 @@ export function PodiumSpines({
               lift={item.lift}
             />
             <span
+              data-slot="podium-step"
               className={cn(
                 "font-headline grid place-items-center border-t-2 border-foreground bg-muted text-foreground leading-none",
                 STEP[i],

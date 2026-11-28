@@ -8,11 +8,13 @@ export function ConqueredStamp({ date, size = "md", className }: { date?: string
   const sm = size === "sm";
   return (
     <span
+      data-slot="conquered-stamp"
+      data-size={size}
       className={cn(
         "inline-flex flex-col items-center gap-0.5 rounded-xs bg-background text-foreground outline-1 outline-foreground drop-shadow-[0_6px_14px_rgb(0_0_0/0.45)]",
         sm
-          ? "-rotate-4 border-2 border-foreground px-[7px] pt-[3px] pb-[2px] outline-offset-[1.5px]"
-          : "-rotate-8 border-[2.5px] border-foreground px-3 pt-1.5 pb-[5px] outline-offset-2",
+          ? "border-2 border-foreground px-[7px] pt-[3px] pb-[2px] outline-offset-[1.5px]"
+          : "border-[2.5px] border-foreground px-3 pt-1.5 pb-[5px] outline-offset-2",
         className,
       )}
     >

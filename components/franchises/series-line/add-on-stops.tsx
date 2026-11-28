@@ -39,7 +39,7 @@ export function AddOnStops({
                 "@xl/line:before:absolute @xl/line:before:top-[-6px] @xl/line:before:bottom-0 @xl/line:before:left-[3.75px] @xl/line:before:w-[2.5px] @xl/line:before:bg-highlight @xl/line:last:before:bottom-1/2",
             )}
           >
-            <span aria-hidden className={cn("relative shrink-0 bg-highlight", stops ? "size-2.5" : "size-1.5")} />
+            <span aria-hidden data-slot="add-on-bead" className={cn("relative shrink-0 bg-highlight", stops ? "size-2.5" : "size-1.5")} />
             <Link
               href={`/games/${g.game_id}`}
               title={g.title}

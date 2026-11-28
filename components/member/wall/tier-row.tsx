@@ -11,6 +11,7 @@ export function TierRow({ tier }: { tier: Tier }) {
   return (
     <section
       aria-labelledby={id}
+      data-slot="member-tier"
       className="grid gap-3 border-b border-border py-5 md:grid-cols-[11rem_1fr] md:gap-6 md:py-6"
     >
       <div className="flex items-baseline gap-3 md:block">

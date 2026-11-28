@@ -44,25 +44,27 @@ export function Spine({
         <img
           src={src}
           alt=""
+          data-slot="spine-art"
           className="absolute inset-0 size-full object-cover opacity-55 saturate-[1.1] transition-opacity duration-300 group-hover/spine:opacity-85 group-data-lifted/spine:opacity-85"
         />
       )}
       <span
         aria-hidden
+        data-slot="spine-shade"
         className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.45),transparent_30%,transparent_70%,rgb(0_0_0/0.5))]"
       />
       {numeral != null ? (
-        <span className="font-headline absolute inset-x-0 top-2 z-10 text-center text-2xl leading-none">
+        <span data-slot="spine-numeral" className="font-headline absolute inset-x-0 top-2 z-10 text-center text-2xl leading-none">
           {numeral}
         </span>
       ) : (
         tag && (
-          <span className="font-label absolute inset-x-0 top-2 z-10 truncate px-0.5 text-center text-[0.66rem] font-extrabold tracking-[0.06em] text-dim-foreground">
+          <span data-slot="spine-tag" className="font-label absolute inset-x-0 top-2 z-10 truncate px-0.5 text-center text-[0.66rem] font-extrabold tracking-[0.06em] text-dim-foreground">
             {tag}
           </span>
         )
       )}
-      <span className="font-headline absolute bottom-3 left-1/2 z-10 max-h-[calc(100%-2.75rem)] sm:max-h-[calc(100%-3.25rem)] -translate-x-1/2 rotate-180 overflow-hidden text-base leading-none text-ellipsis whitespace-nowrap [text-shadow:0_1px_6px_rgb(0_0_0/0.8)] [writing-mode:vertical-rl] sm:text-[1.2rem]">
+      <span data-slot="spine-title" className="font-headline absolute bottom-3 left-1/2 z-10 max-h-[calc(100%-2.75rem)] sm:max-h-[calc(100%-3.25rem)] -translate-x-1/2 overflow-hidden text-base leading-none text-ellipsis whitespace-nowrap [text-shadow:0_1px_6px_rgb(0_0_0/0.8)] sm:text-[1.2rem]">
         {title}
       </span>
       {lift && <span className="sr-only">, {lift.hours}</span>}
@@ -85,6 +87,7 @@ export function Spine({
     <Link
       href={href}
       title={title}
+      data-slot="spine"
       className={cn(cls, "[--spine-scale:0.92] sm:[--spine-scale:1]")}
       style={style}
       {...data}
@@ -94,6 +97,7 @@ export function Spine({
   ) : (
     <div
       title={title}
+      data-slot="spine"
       className={cn(cls, "[--spine-scale:0.92] sm:[--spine-scale:1]")}
       style={style}
       {...data}

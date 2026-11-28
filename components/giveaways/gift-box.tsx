@@ -36,13 +36,13 @@ export function GiftBox({
   const region = box.region !== "Global" ? ` · ${box.region}` : "";
 
   return (
-    <li className="min-w-0">
-      <div className="relative" style={{ "--p": ink } as CSSProperties}>
+    <li data-slot="gift-box" data-variant={next ? undefined : "gone"} className="min-w-0">
+      <div data-slot="gift-box-stack" className="relative" style={{ "--p": ink } as CSSProperties}>
         {open.length > 2 && (
-          <i aria-hidden className="gift-paper absolute inset-0 translate-x-3 -translate-y-3 rounded-sm brightness-75" />
+          <i aria-hidden data-slot="gift-box-sheet" className="gift-paper absolute inset-0 translate-x-3 -translate-y-3 rounded-sm brightness-75" />
         )}
         {open.length > 1 && (
-          <i aria-hidden className="gift-paper absolute inset-0 translate-x-1.5 -translate-y-1.5 rounded-sm brightness-90" />
+          <i aria-hidden data-slot="gift-box-sheet" className="gift-paper absolute inset-0 translate-x-1.5 -translate-y-1.5 rounded-sm brightness-90" />
         )}
         <WrappedCover
           title={box.title}
@@ -50,14 +50,14 @@ export function GiftBox({
           ink={ink}
           className={cn("w-full shadow-[0_12px_30px_rgb(0_0_0/0.5)]", !next && "brightness-50 grayscale")}
         >
-          <span className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
+          <span data-slot="gift-platform" className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
             <PlatformChip ink={ink}>
               {box.platform}
               {region}
             </PlatformChip>
           </span>
           {open.length > 1 && (
-            <span className="font-headline absolute bottom-2 left-2 rounded-xs bg-background px-1.5 py-px text-lg text-foreground">
+            <span data-slot="gift-count" className="font-headline absolute bottom-2 left-2 rounded-xs bg-background px-1.5 py-px text-lg text-foreground">
               ×{open.length}
             </span>
           )}

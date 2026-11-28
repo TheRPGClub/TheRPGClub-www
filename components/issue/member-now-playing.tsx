@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Gamepad2 } from "lucide-react";
 import type { UserNowPlaying } from "@/lib/api/types";
 import { resolveEntryId } from "@/lib/api/member-shelf-entry";
@@ -24,7 +24,7 @@ export function NowPlayingBooks<E extends UserNowPlaying>({
   className?: string;
 }) {
   return (
-    <ul className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", className)}>
+    <ul data-slot="now-playing" className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", className)}>
       {entries.map((entry, i) => (
         <li key={resolveEntryId("now_playing", entry) ?? i}>
           <OpenBook entry={entry} showSince={showSince} corner={corner?.(entry)} />
@@ -48,6 +48,9 @@ export function OpenBook({
   const art = game?.art_url ?? game?.cover_url ?? null;
   const platform = entry.platform?.platform_name ?? null;
   const since = showSince ? shortDate(entry.added_at) : null;
+  // The box art, for a Theme that shows the book as its cover (unused, and
+  // never fetched, under Monthly Issue).
+  const cover = game?.cover_url ? ({ "--book-cover": `url(${JSON.stringify(game.cover_url)})` } as CSSProperties) : undefined;
   const body = (
     <>
       {art && (
@@ -55,11 +58,13 @@ export function OpenBook({
         <img
           src={art}
           alt=""
+          data-slot="open-book-art"
           className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%] motion-safe:transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/book:scale-[1.04]"
         />
       )}
       <span
         aria-hidden
+        data-slot="open-book-scrim"
         className={cn(
           "absolute inset-0 -z-10",
           art
@@ -68,8 +73,8 @@ export function OpenBook({
         )}
       />
       {corner}
-      <span className="mt-auto block p-4">
-        <span className="font-headline block text-[1.75rem] leading-[0.95] text-balance">
+      <span data-slot="open-book-text" className="mt-auto block p-4">
+        <span data-slot="open-book-title" className="font-headline block text-[1.75rem] leading-[0.95] text-balance">
           {title}
         </span>
         {(platform || since) && (
@@ -89,10 +94,10 @@ export function OpenBook({
   const cls =
     "group/book relative isolate flex aspect-video overflow-hidden rounded-sm bg-black";
   return game ? (
-    <Link href={`/games/${game.game_id}`} className={cls}>
+    <Link href={`/games/${game.game_id}`} data-slot="open-book" style={cover} className={cls}>
       {body}
     </Link>
   ) : (
-    <div className={cls}>{body}</div>
+    <div data-slot="open-book" style={cover} className={cls}>{body}</div>
   );
 }

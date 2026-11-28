@@ -17,8 +17,8 @@ export function DonationGift({ gameKey: k, claimerName }: { gameKey: GameKey; cl
   const claimed = Boolean(k.claimed_by_user_id);
   const ink = platformFamily(k.platform).ink;
   return (
-    <li className="min-w-0">
-      <div style={{ "--p": ink } as CSSProperties}>
+    <li data-slot="gift-box" data-variant={claimed ? "claimed" : "mine"} className="min-w-0">
+      <div data-slot="gift-box-stack" style={{ "--p": ink } as CSSProperties}>
         <WrappedCover
           title={title}
           coverUrl={k.game?.cover_url}
@@ -29,20 +29,20 @@ export function DonationGift({ gameKey: k, claimerName }: { gameKey: GameKey; cl
             claimed ? "opacity-60 grayscale hover:opacity-90" : "shadow-[0_12px_30px_rgb(0_0_0/0.5)]",
           )}
         >
-          <span className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
+          <span data-slot="gift-platform" className="absolute top-2 left-2 rounded-xs shadow-[0_0_0_2px_rgb(11_11_13/0.45)]">
             <PlatformChip ink={ink}>
               {k.platform}
               {k.region !== "Global" ? ` · ${k.region}` : ""}
             </PlatformChip>
           </span>
           {claimed && (
-            <span className="font-headline absolute top-[30%] left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 -rotate-12 border-3 border-foreground bg-background/50 px-2.5 py-1 text-[1.35rem] leading-none text-foreground">
+            <span data-slot="gift-claimed-stamp" className="font-headline absolute top-[30%] left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 border-3 border-foreground bg-background/50 px-2.5 py-1 text-[1.35rem] leading-none text-foreground">
               Claimed
             </span>
           )}
         </WrappedCover>
       </div>
-      <div className={cn("mt-3.5 flex items-start gap-3 max-sm:flex-col max-sm:items-stretch max-sm:gap-2", claimed && "opacity-70")}>
+      <div data-slot="gift-tag" className={cn("mt-3.5 flex items-start gap-3 max-sm:flex-col max-sm:items-stretch max-sm:gap-2", claimed && "opacity-70")}>
         <div className="min-w-0 flex-1">
           <p className="font-headline text-[1.15rem] leading-[0.95] text-balance">
             {k.game ? (

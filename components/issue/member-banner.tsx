@@ -64,6 +64,7 @@ export function MemberBanner({
   return (
     <section
       aria-label="Member profile"
+      data-slot="member-banner"
       className="relative isolate overflow-hidden rounded-md border border-border bg-card"
     >
       {art && (
@@ -77,6 +78,7 @@ export function MemberBanner({
       {art && (
         <div
           aria-hidden
+          data-slot="member-banner-scrim"
           className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_97%,transparent)_0%,color-mix(in_oklab,var(--color-background)_88%,transparent)_38%,color-mix(in_oklab,var(--color-background)_35%,transparent)_72%,color-mix(in_oklab,var(--color-background)_60%,transparent)_100%),linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_90%,transparent)_0%,transparent_45%)]"
         />
       )}

@@ -21,18 +21,22 @@ export function GameHeadline({
   title,
   accentClassName,
   className,
+  track,
   as: Tag = "h1",
 }: {
   title: string;
   accentClassName?: string;
+  // The winner track ("gotm", "nr_gotm") its accent stands for, for a Theme
+  // that sets the second line by track.
+  track?: string | null;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p";
 }) {
   const [first, second] = splitGameTitle(title);
   return (
-    <Tag className={cn("font-headline text-balance break-words", className)}>
+    <Tag data-slot="game-headline" data-track={track ?? undefined} className={cn("font-headline text-balance break-words", className)}>
       {first && <span className="block">{first}</span>}
-      <span className={cn("block", accentClassName)}>{second}</span>
+      <span data-slot="game-headline-second" className={cn("block", accentClassName)}>{second}</span>
     </Tag>
   );
 }
@@ -58,6 +62,7 @@ export function GameCover({
 }) {
   return (
     <div
+      data-slot="game-cover"
       className={cn(
         "relative aspect-[3/4] shrink-0 overflow-hidden rounded-sm bg-muted outline -outline-offset-1 outline-foreground/12",
         className,
@@ -72,6 +77,7 @@ export function GameCover({
         />
       ) : (
         <span
+          data-slot="game-cover-fallback"
           className={cn(
             "font-headline grid size-full place-items-center p-3 text-center text-2xl leading-[0.95] text-faint-foreground",
             fallbackClassName,

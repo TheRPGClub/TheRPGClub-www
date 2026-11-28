@@ -59,7 +59,7 @@ export function ImageTile({
             )}
           />
         )}
-        {tile.deleted && <span aria-hidden className="absolute top-1/2 -right-[10%] -left-[10%] h-0.5 -rotate-24 bg-destructive" />}
+        {tile.deleted && <span aria-hidden data-slot="image-tile-strike" className="absolute top-1/2 -right-[10%] -left-[10%] h-0.5 bg-destructive" />}
         <span className={cn("absolute left-1.5", tile.deleted ? "bottom-1.5" : "top-1.5")}>
           {tile.deleted ? (
             <StagedMark kind="removing">Removing</StagedMark>
