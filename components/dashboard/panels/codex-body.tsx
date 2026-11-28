@@ -15,7 +15,7 @@ export async function CodexBody() {
   const [day, time] = read.clubDate ? dailyLabel(read.clubDate).split(" · ") : [null, null];
 
   return (
-    <article className="my-2 mb-3 -rotate-[0.8deg] rounded-xs bg-codex-fact bg-[repeating-linear-gradient(transparent_0_27px,rgb(11_11_13/0.13)_27px_28px)] bg-position-[0_46px] px-4 pt-3.5 pb-3 text-background shadow-[0_8px_18px_rgb(0_0_0/0.4)] motion-safe:transition-transform motion-safe:hover:rotate-0">
+    <article data-slot="codex-fact-card" className="my-2 mb-3 rounded-xs bg-codex-fact px-4 pt-3.5 pb-3 text-background">
       <header className="mb-2 flex items-baseline justify-between gap-3 border-b-2 border-background pb-1.5">
         <h4 className="font-headline text-2xl leading-[0.9]">{day ?? "Fun Fact"}</h4>
         {time && <span className="font-label text-[0.75rem] font-bold tracking-[0.06em]">Daily · {time}</span>}

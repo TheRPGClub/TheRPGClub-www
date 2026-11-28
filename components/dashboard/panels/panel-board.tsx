@@ -85,7 +85,7 @@ export function PanelBoard({
             {editing ? <Check aria-hidden /> : <SlidersHorizontal aria-hidden />}
             {editing ? "Done" : "Edit dashboard"}
             {freshLeft && !editing && (
-              <span aria-hidden className="font-headline ml-1 -rotate-6 rounded-xs bg-panel-new px-1.5 pt-0.75 pb-0.5 text-[0.85rem] leading-none tracking-normal text-background">
+              <span aria-hidden data-slot="panel-new-chip" className="font-headline ml-1 rounded-xs bg-panel-new px-1.5 pt-0.75 pb-0.5 text-[0.85rem] leading-none tracking-normal text-background">
                 New
               </span>
             )}

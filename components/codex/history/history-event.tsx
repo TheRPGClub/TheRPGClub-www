@@ -24,6 +24,8 @@ export function HistoryEvent({
   return (
     <article
       id={historyEventAnchor(event.id)}
+      data-slot="history-event"
+      data-tone={event.kind ?? undefined}
       style={{ "--ink": kindInk(event.kind) } as React.CSSProperties}
       className="group/event scroll-mt-9"
     >

@@ -33,6 +33,7 @@ export function NewsMosaic({
     <div className="@container">
       <ul
         aria-label={label}
+        data-slot="news-mosaic"
         className="grid gap-2.5 @md:auto-rows-[minmax(11.5rem,auto)] @md:grid-cols-2 @3xl:auto-rows-[minmax(9.125rem,auto)] @3xl:grid-cols-6"
       >
         {items.map((item, i) => (

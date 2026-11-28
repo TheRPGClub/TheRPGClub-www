@@ -13,21 +13,23 @@ const SLOTS = [
 
 export function LoreEmptyShelf() {
   return (
-    <div aria-hidden className="min-w-0 rounded-md bg-card px-7 pt-10">
+    <div aria-hidden data-slot="lore-shelf" data-variant="empty" className="min-w-0 rounded-md bg-card px-7 pt-10">
       <div className="flex h-60 items-end gap-1.5 overflow-hidden">
         {SLOTS.map((slot, i) => (
           <span
             key={i}
+            data-slot="lore-empty-slot"
+            data-variant={"lean" in slot ? "lean" : undefined}
             style={{ width: slot.w, height: slot.h }}
             className={
               "shrink-0 rounded-t-[2.4px] border-2 border-b-0 border-dashed border-border-strong" +
-              ("lean" in slot ? " ml-1 origin-bottom-left rotate-[9deg]" : "") +
+              ("lean" in slot ? " ml-1 origin-bottom-left" : "") +
               ("wide" in slot ? " max-sm:hidden" : "")
             }
           />
         ))}
       </div>
-      <div className="-mx-7 h-4 bg-border-strong shadow-[0_8px_16px_rgb(0_0_0/0.5)]" />
+      <div data-slot="lore-shelf-plank" className="-mx-7 h-4 bg-border-strong" />
       <div className="h-10" />
     </div>
   );

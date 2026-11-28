@@ -33,7 +33,7 @@ export function NewsNewCount({
     );
   }
   return (
-    <div className="flex flex-col lg:pt-1.5">
+    <div data-slot="news-new-count" className="flex flex-col lg:pt-1.5">
       <h2 id="news-count" className="font-headline flex items-end gap-4 leading-[0.86] lg:block">
         <span className="text-[6.5rem] tracking-[-0.01em] tabular-nums sm:text-[8rem] lg:text-[9.4rem]">
           {catchup.newCount}
@@ -56,7 +56,7 @@ function InkBar({ segments }: { segments: InkSegment[] }) {
   if (segments.length === 0) return null;
   return (
     <div className="mt-6 lg:mt-auto">
-      <div aria-hidden className="flex h-3.5 gap-0.5 overflow-hidden rounded-[2px]">
+      <div aria-hidden data-slot="news-ink-bar" className="flex h-3.5 gap-0.5 overflow-hidden rounded-[2px]">
         {segments.map((s) => (
           <i
             key={s.key}

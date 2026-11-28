@@ -10,7 +10,7 @@ export function RunCards({ runs, emptyAction }: { runs: RunCardView[] | null; em
   }
   if (runs.length === 0) return <Empty action={emptyAction}>No Runs yet. Be the first.</Empty>;
   return (
-    <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <ul data-slot="run-cards" className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
       {runs.map((run) => (
         <li key={run.id}>
           <RunCard run={run} />

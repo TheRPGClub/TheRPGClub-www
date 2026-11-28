@@ -36,6 +36,7 @@ export function LoreSpread({ entry, story }: { entry: CodexEntry; story: readonl
   const numbers = new Map(blocks.flatMap((block) => block.photos).map((photo, i) => [photo.id, i + 1]));
   return (
     <div
+      data-slot="lore-spread"
       style={{ "--rows": blocks.length, "--tail": `${spreadTail(blocks)}px` } as React.CSSProperties}
       className="grid grid-cols-1 lg:grid-cols-[minmax(200px,250px)_minmax(0,600px)_minmax(200px,1fr)] lg:[grid-template-rows:repeat(var(--rows),auto)] lg:gap-x-11 lg:pb-(--tail)"
     >

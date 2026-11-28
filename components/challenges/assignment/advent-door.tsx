@@ -21,7 +21,7 @@ const TAG = {
 export function AdventDoor({ door }: { door: Door }) {
   if (door.state === "open" && door.game) {
     return (
-      <li className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted shadow-[inset_0_0_0_2px_var(--color-border-strong)]">
+      <li data-slot="advent-door" data-variant="open" className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted shadow-[inset_0_0_0_2px_var(--color-border-strong)]">
         <GameCover
           title={door.game.title}
           coverUrl={door.game.cover_url}
@@ -45,6 +45,8 @@ export function AdventDoor({ door }: { door: Door }) {
   }
   return (
     <li
+      data-slot="advent-door"
+      data-variant={door.state}
       className={cn(
         "relative flex aspect-[3/4] flex-col justify-between overflow-hidden rounded-sm p-2.5",
         door.state === "waiting" || door.state === "empty" ? DIM : SHUT,
@@ -75,6 +77,8 @@ export function AdventDoor({ door }: { door: Door }) {
 function Tag({ tag }: { tag: NonNullable<Door["tag"]> }) {
   return (
     <span
+      data-slot="advent-door-tag"
+      data-tone={tag.tone}
       className={cn(
         "font-label absolute top-1.5 right-1.5 z-10 rounded-xs px-[5px] pt-1 pb-[3px] text-[0.66rem] leading-none font-extrabold tracking-[0.06em]",
         TAG[tag.tone],

@@ -45,7 +45,9 @@ export function FormatPicture({
 // staff and its Host.
 export function Tape({ children }: { children: React.ReactNode }) {
   return (
-    <span className="font-label absolute -top-3 left-1/2 z-10 -translate-x-1/2 rotate-2 bg-foreground px-3.5 pt-1.5 pb-[5px] text-[0.84rem] leading-none font-extrabold tracking-[0.08em] whitespace-nowrap text-background">
+    <span
+      data-slot="flyer-tape"
+      className="font-label absolute -top-3 left-1/2 z-10 -translate-x-1/2 bg-foreground px-3.5 pt-1.5 pb-[5px] text-[0.84rem] leading-none font-extrabold tracking-[0.08em] whitespace-nowrap text-background">
       {children}
     </span>
   );
@@ -55,7 +57,9 @@ export function Tape({ children }: { children: React.ReactNode }) {
 export function YourRunChip({ run, bar = false }: { run: ChallengeRun; bar?: boolean }) {
   const segments = bar ? runSegments(run.progress.cleared, run.progress.target) : [];
   return (
-    <p className="font-label relative inline-flex items-center gap-2 rounded-sm bg-background px-2.5 py-2.5 text-[0.84rem] leading-none font-extrabold tracking-[0.08em] text-foreground">
+    <p
+      data-slot="your-run-chip"
+      className="font-label relative inline-flex items-center gap-2 rounded-sm bg-background px-2.5 py-2.5 text-[0.84rem] leading-none font-extrabold tracking-[0.08em] text-foreground">
       {yourRunLine(run)}
       {segments.length > 0 && (
         <span className="inline-flex gap-[3px]" aria-hidden>

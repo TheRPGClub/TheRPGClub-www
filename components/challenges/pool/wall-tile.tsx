@@ -14,7 +14,7 @@ const FROM = { hand: "added by hand", list: "from the Game List", franchise: "fr
 export function WallTileCover({ tile }: { tile: WallTile }) {
   const played = isPlayed(tile);
   return (
-    <li className="flex flex-col gap-1.5">
+    <li data-slot="wall-tile" className="flex flex-col gap-1.5">
       <Link
         href={`/games/${tile.game.game_id}`}
         title={tile.source ? `${tile.game.title} (${FROM[tile.source]})` : tile.game.title}
@@ -31,7 +31,7 @@ export function WallTileCover({ tile }: { tile: WallTile }) {
           fallbackClassName="text-[0.85rem] p-1.5"
         />
         {tile.tag && (
-          <span className="font-label absolute bottom-[5px] left-[5px] rounded-xs bg-foreground px-1 pt-[3px] pb-0.5 text-[0.66rem] leading-none font-extrabold tracking-[0.06em] text-background">
+          <span data-slot="wall-tile-tag" className="font-label absolute bottom-[5px] left-[5px] rounded-xs bg-foreground px-1 pt-[3px] pb-0.5 text-[0.66rem] leading-none font-extrabold tracking-[0.06em] text-background">
             {tile.tag === "new" ? "New" : "Added"}
           </span>
         )}

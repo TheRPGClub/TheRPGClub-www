@@ -39,21 +39,23 @@ export function PanelFrame({
   return (
     <section
       aria-labelledby={headingId}
+      data-slot="dashboard-panel"
+      data-variant={panelKey}
+      data-state={state}
+      data-editing={editing || undefined}
       style={{ "--panel-ink": `var(--panel-${spec.ink})` } as CSSProperties}
-      className={cn(
-        "@container min-w-0 rounded-sm bg-card px-4 pt-4.5 pb-2.5 shadow-[inset_0_4px_0_var(--panel-ink)] transition-[opacity,box-shadow] sm:px-5 sm:pt-5 sm:pb-3",
-        state === "failed" && "shadow-[inset_0_4px_0_var(--panel-ink),inset_0_0_0_2px_var(--color-destructive)]",
-      )}
+      className="@container min-w-0 rounded-sm bg-card px-4 pt-4.5 pb-2.5 transition-[opacity,box-shadow] sm:px-5 sm:pt-5 sm:pb-3"
       {...rest}
     >
-      <header className="mb-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <h3 id={headingId} className="font-headline text-[1.75rem] leading-none sm:text-[1.9rem]">
+      <header data-slot="dashboard-panel-head" className="mb-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+        <h3 id={headingId} data-slot="dashboard-panel-title" className="font-headline text-[1.75rem] leading-none sm:text-[1.9rem]">
           {spec.title}
         </h3>
         {spec.chip && <ScopeChip scope={spec.scope} viewer={viewer} />}
         {seeAll && (
           <Link
             href={seeAll}
+            data-slot="dashboard-panel-see-all"
             className="font-label ml-auto inline-flex items-center gap-1.5 text-sm font-extrabold tracking-[0.06em] text-(--panel-ink) transition-colors hover:text-highlight [&_svg]:size-4 motion-safe:[&_svg]:transition-transform motion-safe:hover:[&_svg]:translate-x-0.5"
           >
             See all
@@ -84,7 +86,7 @@ export function ScopeChip({ scope, viewer }: { scope: "club" | "mine"; viewer: P
     );
   }
   return (
-    <span className="font-label inline-flex h-6.5 items-center gap-1.5 rounded-full pr-2.5 pl-0.5 text-[0.8rem] font-extrabold tracking-[0.08em] shadow-[inset_0_0_0_1px_var(--color-border-strong)]">
+    <span data-slot="dashboard-panel-scope" className="font-label inline-flex h-6.5 items-center gap-1.5 rounded-full pr-2.5 pl-0.5 text-[0.8rem] font-extrabold tracking-[0.08em] shadow-[inset_0_0_0_1px_var(--color-border-strong)]">
       <MemberMark name={viewer.name} src={viewer.avatarUrl} size={22} />
       Mine
     </span>

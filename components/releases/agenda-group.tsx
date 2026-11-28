@@ -11,6 +11,7 @@ export function AgendaGroup({ group, today }: { group: DateGroup; today: string 
   return (
     <div
       id={group.precision === "day" && group.date ? dayAnchor(group.date) : undefined}
+      data-slot="release-agenda-group"
       className="grid scroll-mt-20 grid-cols-[78px_minmax(0,1fr)] border-b border-border py-3.5 sm:grid-cols-[104px_minmax(0,1fr)] sm:py-4"
     >
       <DateColumn date={group.date} precision={group.precision} past={past} />
@@ -29,6 +30,7 @@ export function TodayRule({ label }: { label: string }) {
     <div
       role="separator"
       aria-label={label}
+      data-slot="release-today-rule"
       className="font-label mt-3.5 flex items-center gap-2.5 text-[0.78rem] leading-none font-extrabold tracking-[0.08em] text-gotm after:h-0.5 after:flex-1 after:bg-gotm"
     >
       {label}

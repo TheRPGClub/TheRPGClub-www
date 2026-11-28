@@ -25,7 +25,7 @@ export function NewsCategoryList({
   go: (href: string) => void;
 }) {
   return (
-    <section aria-labelledby={headingId}>
+    <section data-slot="news-category-rail" aria-labelledby={headingId}>
       <h2 id={headingId} className="font-label mb-1.5 text-[0.8rem] tracking-[0.08em] text-faint-foreground">
         News Categories
       </h2>

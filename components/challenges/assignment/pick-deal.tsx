@@ -36,7 +36,7 @@ export function PickDeal({
   return (
     // The deal's keys (← → S, Enter on the reel) bubble up from its card,
     // buttons and reel; the section itself isn't a stop.
-    <section aria-label={`Pick a game for ${recipient}`} className="mt-6" onKeyDown={deal.onKeyDown}>
+    <section data-slot="pick-deal" aria-label={`Pick a game for ${recipient}`} className="mt-6" onKeyDown={deal.onKeyDown}>
       {deal.error && (
         <NoticeSlip
           title="Not picked"
