@@ -30,7 +30,7 @@ export function WallSection({
         {aside && <div className="max-w-full min-w-0 text-[0.88rem] text-faint-foreground sm:ml-auto">{aside}</div>}
       </div>
       {tiles.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">{empty}</p>
+        <p data-slot="community-note" className="rounded-md border border-dashed border-border-strong px-4 py-3.5 text-faint-foreground">{empty}</p>
       ) : (
         <ul className="grid grid-cols-3 gap-x-3.5 gap-y-[18px] sm:grid-cols-5 lg:grid-cols-8 2xl:grid-cols-10">
           {tiles.map((tile) => (

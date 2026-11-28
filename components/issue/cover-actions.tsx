@@ -20,6 +20,7 @@ export function CoverActions({
 }) {
   return (
     <div
+      data-slot="cover-actions"
       className={cn(
         "flex flex-wrap items-center gap-x-1 gap-y-2",
         small ? "mt-3" : "mt-4",
@@ -41,6 +42,7 @@ export function CoverActions({
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
+          data-slot="cover-link"
           className="font-label inline-flex items-center gap-1 px-1.5 py-1 text-[0.85rem] text-dim-foreground transition-colors hover:text-highlight"
         >
           {link.label}

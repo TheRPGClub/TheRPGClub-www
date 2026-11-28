@@ -45,16 +45,18 @@ export function FunFactCard({
   return (
     <article
       id={anchor}
+      data-slot="fun-fact-card"
+      data-variant={light ? "light" : undefined}
       style={{ "--tilt": `${tilt}deg` } as React.CSSProperties}
       className={cn(
-        "relative flex min-h-40 scroll-mt-24 sm:min-h-[14.4rem] flex-col rounded-xs px-4.5 pt-5 pb-3.5 text-background shadow-[0_10px_22px_rgb(0_0_0/0.5)] [transform:rotate(calc(var(--tilt)/2))] sm:[transform:rotate(var(--tilt))] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:[transform:rotate(0deg)_translateY(-3px)] motion-safe:sm:hover:[transform:rotate(0deg)_translateY(-3px)]",
-        "bg-[repeating-linear-gradient(transparent_0_27px,rgb(11_11_13/0.13)_27px_28px)] bg-position-[0_46px]",
+        "relative flex min-h-40 scroll-mt-24 sm:min-h-[14.4rem] flex-col rounded-xs px-4.5 pt-5 pb-3.5 text-background",
         light ? "bg-codex-fact-light" : "bg-codex-fact",
       )}
     >
       <i
         aria-hidden
-        className="absolute -top-2.5 left-1/2 h-5.5 w-21 -translate-x-1/2 rotate-[calc(var(--tilt)*-1.6)] bg-foreground/70 shadow-[0_1px_3px_rgb(0_0_0/0.25)]"
+        data-slot="fun-fact-tape"
+        className="absolute -top-2.5 left-1/2 h-5.5 w-21 -translate-x-1/2 bg-foreground/70"
       />
       <header className="mb-2 flex items-baseline justify-between gap-3 border-b-2 border-background pb-1.5">
         <h3 className="font-headline text-2xl leading-[0.9]">No. {number}</h3>

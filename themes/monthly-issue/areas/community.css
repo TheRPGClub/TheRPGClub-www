@@ -1,0 +1,220 @@
+/* monthly-issue: community signature components (spec api#523, www#258):
+   news, Challenges, Club Codex, releases, birthdays, Dashboard Panels and
+   journals. Styled by data-slot. What lives here is the Monthly Issue's own
+   costume for each: the tilts (read from the component's stable --tilt),
+   the paper props (tape, stamps, pins, name tags), vertical type and the
+   paper shadows. The components keep their layout and token colours. */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* ---------------------------------------------------------------
+           Challenges
+           --------------------------------------------------------------- */
+
+        /* A flyer pinned to the board at its stable tilt (halved on
+           phones), straightening on hover or focus. */
+        [data-slot="challenge-flyer"] {
+            @apply rotate-(--tilt-sm) shadow-[0_12px_30px_rgb(0_0_0/0.5)] motion-safe:transition-transform motion-safe:duration-200 sm:rotate-(--tilt) motion-safe:hover:rotate-0 motion-safe:focus-within:rotate-0 sm:motion-safe:hover:rotate-0 sm:motion-safe:focus-within:rotate-0;
+        }
+        /* The running Challenge pasted up straight, with a heavier shadow. */
+        [data-slot="challenge-billboard"] {
+            @apply shadow-[0_18px_40px_rgb(0_0_0/0.55)];
+        }
+        /* The paper tape across a flyer's top edge. */
+        [data-slot="flyer-tape"] {
+            @apply rotate-2;
+        }
+        /* The Pool's fan of covers on a billboard leans out at the ends. */
+        [data-slot="cover-fan"][data-size="lg"] > :nth-child(1) {
+            @apply -rotate-5;
+        }
+        [data-slot="cover-fan"][data-size="lg"] > :nth-child(3) {
+            @apply rotate-5;
+        }
+        /* Secret Santa's paper name tag, cut to a luggage-tag point. */
+        [data-slot="flyer-name-tag"] {
+            @apply [clip-path:polygon(18px_0,100%_0,100%_100%,18px_100%,0_50%)];
+            &[data-size="lg"] {
+                @apply -rotate-4 shadow-[0_10px_22px_rgb(0_0_0/0.5)] [clip-path:polygon(34px_0,100%_0,100%_100%,34px_100%,0_50%)];
+            }
+        }
+        /* The ink slip that says why a Run couldn't start. */
+        [data-slot="run-slip"] {
+            @apply -rotate-1 shadow-[0_8px_18px_rgb(0_0_0/0.45)];
+        }
+        /* Rubber stamps: a Slots Run's outcome, Caught Up, a Run card's
+           Finished, a past Run's postmark. */
+        [data-slot="run-panel-stamp"],
+        [data-slot="caught-up-stamp"] {
+            @apply -rotate-6;
+        }
+        [data-slot="run-card-stamp"] {
+            @apply -rotate-5;
+        }
+        [data-slot="past-stamp-postmark"] {
+            @apply -rotate-12;
+        }
+        /* A Run as a perforated stamp at its stable tilt (halved on
+           phones). */
+        [data-slot="run-stamp"] {
+            @apply rotate-(--tilt-sm) shadow-[0_10px_20px_rgb(0_0_0/0.5)] sm:rotate-(--tilt);
+        }
+        /* The pick card's cover, leaning, and the tinsel string to the tag. */
+        [data-slot="pick-card-media"] > :first-child {
+            @apply rotate-3 shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        /* The paper luggage tag hanging off the pick card, its clipped top
+           corners, and the Picked stamp pressing on. */
+        [data-slot="name-tag"] {
+            @apply rotate-4 drop-shadow-[0_14px_30px_rgb(0_0_0/0.55)];
+        }
+        [data-slot="name-tag-card"] {
+            @apply [clip-path:polygon(18%_0,82%_0,100%_10%,100%_100%,0_100%,0_10%)];
+        }
+        [data-slot="name-tag-stamp"] {
+            @apply shadow-[inset_0_0_0_3px_currentColor] [--burst-rot:-10deg] motion-safe:animate-[burst-stamp_400ms_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:rotate-[-10deg];
+        }
+
+        /* ---------------------------------------------------------------
+           Club Codex
+           --------------------------------------------------------------- */
+
+        /* A Fun Fact as a ruled index card taped up at its own tilt
+           (halved on phones), lifting straight on hover; the strip of tape
+           across its top leans the other way. The dashboard's Codex fact is
+           the same card, barely leaning. */
+        [data-slot="fun-fact-card"] {
+            @apply shadow-[0_10px_22px_rgb(0_0_0/0.5)] [transform:rotate(calc(var(--tilt)/2))] sm:[transform:rotate(var(--tilt))] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:[transform:rotate(0deg)_translateY(-3px)] motion-safe:sm:hover:[transform:rotate(0deg)_translateY(-3px)];
+        }
+        :is([data-slot="fun-fact-card"], [data-slot="codex-fact-card"]) {
+            @apply bg-[repeating-linear-gradient(transparent_0_27px,rgb(11_11_13/0.13)_27px_28px)] bg-position-[0_46px];
+        }
+        [data-slot="codex-fact-card"] {
+            @apply -rotate-[0.8deg] shadow-[0_8px_18px_rgb(0_0_0/0.4)] motion-safe:transition-transform motion-safe:hover:rotate-0;
+        }
+        [data-slot="fun-fact-tape"] {
+            @apply rotate-[calc(var(--tilt)*-1.6)] shadow-[0_1px_3px_rgb(0_0_0/0.25)];
+        }
+        /* A History Event's photo on a paper mount, tilted, with a paper
+           pin at the top centre ringed in the muted ink. */
+        [data-slot="pinned-mount"] {
+            @apply rotate-[calc(var(--tilt)/2)] shadow-[0_12px_30px_rgb(0_0_0/0.5)] before:absolute before:-top-1.5 before:left-1/2 before:z-10 before:size-3 before:-translate-x-1/2 before:rounded-full before:bg-foreground before:shadow-[inset_0_0_0_3px_var(--color-muted),0_3px_6px_rgb(0_0_0/0.45)] before:content-[''] lg:rotate-(--tilt);
+        }
+        /* The writing desk: photos pinned at a tilt, drawer cards resting
+           at a slight one on wide screens, and the manuscript sheet lifted
+           off the desk. */
+        [data-slot="pinned-photo"] {
+            @apply shadow-[0_6px_14px_rgb(0_0_0/0.45)] lg:rotate-(--tilt);
+        }
+        [data-slot="drawer-card"] {
+            @apply shadow-[0_10px_24px_rgb(0_0_0/0.45)] lg:rotate-(--tilt);
+        }
+        [data-slot="manuscript-sheet"] {
+            @apply shadow-[inset_0_0_0_1px_var(--color-border),0_18px_40px_rgb(0_0_0/0.45)];
+        }
+        /* A photo taped into a Lore Entry's margin: on a paper mount,
+           tilted, straightening on hover, a strip of parchment tape across
+           its top. The frame is the Button around the mount. */
+        [data-slot="button"]:has(> [data-slot="taped-photo"]) {
+            @apply rotate-[calc(var(--tilt)/2)] motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:rotate-0 lg:rotate-(--tilt);
+        }
+        [data-slot="taped-photo"] {
+            @apply shadow-[0_14px_30px_rgb(0_0_0/0.55)];
+        }
+        [data-slot="taped-photo-tape"] {
+            @apply rotate-[calc(var(--tilt)*-2)] shadow-[0_1px_2px_rgb(0_0_0/0.2)];
+        }
+        /* The same, small, in the story editor. */
+        [data-slot="story-image-frame"] {
+            @apply -rotate-2 shadow-[0_6px_14px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="story-image-tape"] {
+            @apply rotate-3;
+        }
+        /* The Lore Entry's date pressed on as a rotated stamp. */
+        [data-slot="lore-date-stamp"] {
+            @apply -rotate-6;
+        }
+        /* The Lore shelf: spines standing on a plank, as wide as the story
+           is long, their titles set sideways; the picked one pulled up, the
+           viewer's own carrying a tilted "Yours" tag. The empty shelf's
+           last slot leans on the rest. */
+        [data-slot="lore-spine"] {
+            @apply shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12),inset_-6px_0_10px_-6px_rgb(0_0_0/0.35)];
+            width: calc(var(--spine-w) * var(--spine-scale));
+            height: calc(var(--spine-h) * var(--spine-scale));
+            &[data-picked] {
+                @apply -translate-y-[22px] shadow-[0_14px_28px_rgb(0_0_0/0.55)];
+            }
+        }
+        [data-slot="lore-spine-title"] {
+            @apply rotate-180 text-[calc(25px*var(--spine-scale))] [writing-mode:vertical-rl];
+        }
+        [data-slot="lore-spine-yours"] {
+            @apply -rotate-4;
+        }
+        [data-slot="lore-shelf-plank"] {
+            @apply shadow-[0_8px_16px_rgb(0_0_0/0.5)];
+        }
+        [data-slot="lore-empty-slot"][data-variant="lean"] {
+            @apply rotate-[9deg];
+        }
+
+        /* ---------------------------------------------------------------
+           Birthdays, the misprint letter
+           --------------------------------------------------------------- */
+
+        /* A paper day tape pinned across the banner's corner, its right
+           end torn. */
+        [data-slot="birthday-tape"] {
+            @apply -rotate-[1.2deg] drop-shadow-[0_6px_14px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="birthday-tape-strip"] {
+            @apply [clip-path:polygon(0_0,100%_4%,99.2%_20%,100%_38%,99%_56%,100%_73%,99.3%_88%,100%_100%,0_96%)];
+        }
+        /* The letters page's note, pinned at a tilt with a strip of tape. */
+        [data-slot="letter-note"] {
+            @apply -rotate-1 shadow-[0_24px_60px_rgb(0_0_0/0.6)] sm:-rotate-2;
+        }
+        [data-slot="letter-note-tape"] {
+            @apply rotate-3;
+        }
+
+        /* ---------------------------------------------------------------
+           Dashboard Panels, journals
+           --------------------------------------------------------------- */
+
+        /* A panel is an ink card topped by a 4px rule in its own ink,
+           ringed in signal orange when its change didn't save. */
+        [data-slot="dashboard-panel"] {
+            @apply shadow-[inset_0_4px_0_var(--panel-ink)];
+            &[data-state="failed"] {
+                @apply shadow-[inset_0_4px_0_var(--panel-ink),inset_0_0_0_2px_var(--color-destructive)];
+            }
+        }
+        /* "New" stamped on a hidden panel's card and on the Edit button. */
+        [data-slot="panel-new-stamp"] {
+            @apply -rotate-8 shadow-[inset_0_0_0_2px_var(--color-background),0_6px_14px_rgb(0_0_0/0.45)];
+        }
+        [data-slot="panel-new-chip"] {
+            @apply -rotate-6;
+        }
+        /* The journals shelf: volumes standing on a plank, names set
+           sideways, each at its stable height. */
+        [data-slot="journal-shelf"] {
+            @apply shadow-[0_10px_18px_-10px_rgb(0_0_0/0.8)];
+        }
+        [data-slot="journal-spine"]:not([data-variant]) {
+            height: var(--spine-h);
+        }
+        [data-slot="journal-spine-title"] {
+            @apply rotate-180 [writing-mode:vertical-rl];
+        }
+        [data-slot="journal-spine"]:not([data-variant]) [data-slot="journal-spine-title"] {
+            @apply max-h-[calc(100%-82px)];
+        }
+        [data-slot="journal-volume"] {
+            @apply shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+    }
+}

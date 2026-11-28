@@ -70,7 +70,7 @@ export function PickSentence({
         : "backlogged and collected";
 
   return (
-    <form method="get" className="border-b-2 border-foreground pb-6.5">
+    <form method="get" data-slot="pick-sentence" className="border-b-2 border-foreground pb-6.5">
       <p className="font-headline max-w-[22ch] text-[2.4rem] leading-[1.15] text-balance sm:text-5xl lg:text-[4rem]">
         I&apos;ve got{" "}
         <Blank

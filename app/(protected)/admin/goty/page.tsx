@@ -26,6 +26,7 @@ export default async function GotyDeskPage({ searchParams }: { searchParams: Pro
       <div className="space-y-6">
         <DeskHeader back={STAFF_DESK_BACK} title={SECTION.label} side={<>{down ? "Server unreachable" : "No GOTY Vote yet"}</>} />
         <p
+          data-slot="issue-note"
           role={down ? "alert" : undefined}
           className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground"
         >

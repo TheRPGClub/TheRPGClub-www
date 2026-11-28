@@ -29,7 +29,7 @@ export function YouTab({
 
   if (!birthDate) {
     return (
-      <section aria-labelledby="settings-birth-date" className="max-w-2xl">
+      <section data-slot="settings-section" aria-labelledby="settings-birth-date" className="max-w-2xl">
         {lead}
         <SettingsReadFailed>
           Couldn&apos;t load your Birth Date from the club&apos;s server. Reload the page to try again.

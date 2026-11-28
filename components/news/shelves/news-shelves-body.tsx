@@ -61,7 +61,7 @@ export async function NewsShelvesBody({
         <NewsNote>Couldn&apos;t load the news. Try again in a moment.</NewsNote>
       )}
       {lead.length > 0 && (
-        <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
+        <p data-slot="news-utc-note" className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
       )}
     </div>
   );

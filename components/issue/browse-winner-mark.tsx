@@ -2,7 +2,7 @@ import type { VotingCategory } from "@/lib/api/types";
 import { Starburst } from "@/components/issue/starburst";
 import { cn } from "@/lib/utils";
 
-// The starburst at badge scale, for a winner inside a grid or a panel where
+// The winner mark at badge scale, for a winner inside a grid or a panel where
 // the full three-line burst would not read. Same rule: it marks a GOTM or
 // NR-GOTM win and nothing else. Still (no stamp-in): a grid can hold a dozen.
 //
@@ -28,6 +28,7 @@ export function WinnerMark({
       rotate={-10}
       still
       className={cn("z-10", className)}
+      scale="badge"
       textClassName="text-[0.8rem] leading-[0.95] tracking-[0.02em]"
     />
   );

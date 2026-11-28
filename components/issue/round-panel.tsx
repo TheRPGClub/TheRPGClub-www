@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { RoundPanelNominations } from "@/components/issue/round-panel-nominations";
 import { cn } from "@/lib/utils";
 
-// The club's open business, in the call-to-action yellow: nominations or the
+// The club's open business, in the call-to-action highlight: nominations or the
 // vote for the next round, with a monumental days-left count. `tall` is the
 // panel taking a whole column (a round with only one track's winners), which
 // leaves room to list the latest nominations.
@@ -73,27 +73,30 @@ export function RoundPanel({
   return (
     <section
       aria-label={`Round ${n} ${title.toLowerCase()}`}
+      data-slot="round-panel"
+      data-phase={round.phase}
+      data-size={tall ? "tall" : "default"}
       className={cn(
         "flex flex-col rounded-md bg-highlight px-4.5 pt-3.5 pb-4 text-highlight-foreground",
         tall && "h-full",
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <h2 className="font-headline text-[1.65rem] leading-[0.95]">
+        <h2 data-slot="round-panel-title" className="font-headline text-[1.65rem] leading-[0.95]">
           Round {n}
           <br />
           {title}
         </h2>
         {days != null && (
-          <p className="font-label text-right text-xs leading-none font-extrabold">
-            <span className="font-headline block text-[2.4rem] leading-[0.85] font-normal">
+          <p data-slot="round-panel-clock" className="font-label text-right text-xs leading-none font-extrabold">
+            <span data-slot="round-panel-days" className="font-headline block text-[2.4rem] leading-[0.85] font-normal">
               {days}
             </span>
             {days === 1 ? "day left" : "days left"}
           </p>
         )}
       </div>
-      <p className="mt-1.5 text-[0.82rem] font-medium text-highlight-muted-foreground">
+      <p data-slot="round-panel-detail" className="mt-1.5 text-[0.82rem] font-medium text-highlight-muted-foreground">
         {detail}
       </p>
 

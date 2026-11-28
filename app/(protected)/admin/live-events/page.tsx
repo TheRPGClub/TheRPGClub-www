@@ -53,21 +53,23 @@ export default async function LiveEventsPage() {
           </>
         }
       />
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <ButtonLink href="/admin/live-events/new" variant="highlight">
-          <Plus data-icon="inline-start" />
-          New live event
-        </ButtonLink>
-        <p className="text-sm text-dim-foreground">{SECTION.blurb}</p>
-      </div>
-      <div className="mt-6">
-        {list === null ? (
-          <p role="alert" className="text-destructive">
-            {"Couldn't load the live events. Refresh to try again."}
-          </p>
-        ) : (
-          <LiveEventList events={events} guildId={discordLinkConfig().guildId} />
-        )}
+      <div data-slot="desk-body">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <ButtonLink href="/admin/live-events/new" variant="highlight">
+            <Plus data-icon="inline-start" />
+            New live event
+          </ButtonLink>
+          <p className="text-sm text-dim-foreground">{SECTION.blurb}</p>
+        </div>
+        <div className="mt-6">
+          {list === null ? (
+            <p role="alert" className="text-destructive">
+              {"Couldn't load the live events. Refresh to try again."}
+            </p>
+          ) : (
+            <LiveEventList events={events} guildId={discordLinkConfig().guildId} />
+          )}
+        </div>
       </div>
     </div>
   );

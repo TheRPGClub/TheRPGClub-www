@@ -8,6 +8,8 @@ export function YearRail({ years, current, months, all }: YearDialStops) {
   return (
     <nav
       aria-label="Choose a year"
+      data-slot="year-dial"
+      data-variant="rail"
       className="sticky top-20 flex max-h-[calc(100svh-6rem)] flex-col items-center gap-0.5 overflow-y-auto border-l border-border py-2.5"
     >
       {all && (

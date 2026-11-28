@@ -10,7 +10,8 @@ export type ThemeMode = "light" | "dark";
 export type Theme = {
   name: string;
   mode: ThemeMode;
-  // The browser chrome colour (viewport theme-color), the Theme's background.
+  // The browser chrome colour (viewport theme-color): the Theme's background,
+  // or what shows behind the top of the page (Aero's sky).
   themeColor: string;
   // Development only: its stylesheet is left out of production builds.
   devOnly?: boolean;
@@ -22,6 +23,15 @@ export const MONTHLY_ISSUE: Theme = {
   themeColor: "#0b0b0d",
 };
 
+// Frutiger Aero (spec api#523): light, round glass and Vista gel over a
+// sunlit lagoon. Its theme colour is the scene's sky, behind the browser
+// chrome.
+export const AERO: Theme = {
+  name: "aero",
+  mode: "light",
+  themeColor: "#0b55c9",
+};
+
 // A throwaway Theme that swaps every token for a loud colour, so a surface
 // still naming the Monthly Issue palette stands out. Development only.
 export const TEST_THEME: Theme = {
@@ -31,15 +41,32 @@ export const TEST_THEME: Theme = {
   devOnly: true,
 };
 
-export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, TEST_THEME];
+export const THEMES: readonly Theme[] = [MONTHLY_ISSUE, AERO, TEST_THEME];
 
 export const DEFAULT_THEME = MONTHLY_ISSUE;
 
 type ThemeEnv = { NODE_ENV?: string; DEV_THEME?: string };
 
-// The Theme for this request. Always the default for now (the Member's choice
-// is a follow-up spec); in development DEV_THEME=<name> picks another.
-export function resolveTheme(env: ThemeEnv): Theme {
-  if (env.NODE_ENV !== "development" || !env.DEV_THEME) return DEFAULT_THEME;
-  return THEMES.find((theme) => theme.name === env.DEV_THEME) ?? DEFAULT_THEME;
+// A shipped Theme by its key (the API's Theme keys, which it resolves for
+// the Member). A development-only Theme never comes from the session.
+function shippedTheme(key: string | null | undefined): Theme | undefined {
+  return THEMES.find((theme) => theme.name === key && !theme.devOnly);
+}
+
+// Whether this website can draw the Theme with this key: the Settings
+// picker offers only those, since any other renders as the default.
+export function shipsTheme(key: string): boolean {
+  return shippedTheme(key) !== undefined;
+}
+
+// The Theme for this request: the Member's Theme from the session (null for
+// a Visitor, who has no session, or when the session read failed), falling
+// back to the default for a key this website has no stylesheet for. In development
+// DEV_THEME=<name> overrides it.
+export function resolveTheme(env: ThemeEnv, memberTheme?: string | null): Theme {
+  if (env.NODE_ENV === "development" && env.DEV_THEME) {
+    const devTheme = THEMES.find((theme) => theme.name === env.DEV_THEME);
+    if (devTheme) return devTheme;
+  }
+  return shippedTheme(memberTheme) ?? DEFAULT_THEME;
 }

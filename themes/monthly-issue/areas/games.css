@@ -1,0 +1,102 @@
+/* monthly-issue: games signature components (spec api#523, www#256): games,
+   franchises, Game Lists, member profiles, reviews and giveaways. The
+   Monthly Issue's hand-placed tilts, sideways spine titles and paper props,
+   keyed by data-slot so another Theme can set them its own way (api
+   ADR-0008). Suggestions live in staff.css (www#259), the Birthday tape in
+   community.css (www#258). */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Spine titles (bookcase spines, Game List box sets, New list) read
+           bottom to top. */
+        [data-slot="spine-title"] {
+            @apply rotate-180 [writing-mode:vertical-rl];
+        }
+
+        /* The paper tag a lifted spine hangs, and a Private list's tag. */
+        [data-slot="spine-lift-tag"] {
+            @apply -rotate-2;
+        }
+        [data-slot="list-spine-private"] {
+            @apply -rotate-4;
+        }
+
+        /* A club list's covers as a hand of cards: each card's own tilt. */
+        [data-slot="cover-deck-card"] {
+            transform: rotate(var(--tilt));
+        }
+
+        /* A list wall's paper rank tag. */
+        [data-slot="wall-tile-rank"] {
+            @apply -rotate-3;
+        }
+
+        /* Giveaways: the name tag on a wrap without a cover, the cut ribbon
+           end of an untied (claimed) gift, a claimed donation's stamp, the
+           donate page's parcel and slip, the claimed envelopes and the
+           letter's torn edge and postmark. */
+        [data-slot="gift-name-tag"] {
+            @apply -rotate-2;
+        }
+        [data-slot="gift-ribbon-end"] {
+            @apply rotate-[18deg];
+        }
+        [data-slot="gift-claimed-stamp"] {
+            @apply -rotate-12;
+        }
+        [data-slot="parcel-preview"] [data-slot="gift-wrap"] {
+            @apply -rotate-1;
+        }
+        [data-slot="donate-slip"] {
+            @apply lg:-rotate-[0.6deg];
+        }
+        [data-slot="envelope"][data-variant="odd"] {
+            @apply -rotate-[0.6deg];
+        }
+        [data-slot="envelope"][data-variant="even"] {
+            @apply rotate-[0.7deg];
+        }
+        [data-slot="gift-letter-torn"] {
+            @apply [clip-path:polygon(0_0,100%_0,100%_60%,96%_95%,91%_62%,85%_92%,79%_58%,72%_96%,65%_60%,58%_90%,51%_62%,44%_94%,37%_58%,30%_88%,23%_60%,16%_96%,9%_62%,4%_90%,0_64%)];
+        }
+        [data-slot="gift-letter-stamp"] {
+            @apply -rotate-8;
+        }
+
+        /* The review desk's notes, taped in the margin from lg. */
+        [data-slot="desk-note-tape"] {
+            @apply -rotate-2;
+        }
+        [data-slot="desk-note"][data-variant="overall"] {
+            @apply lg:-rotate-[1deg];
+        }
+        [data-slot="desk-note"][data-variant="scorecard"] {
+            @apply lg:rotate-[0.5deg];
+        }
+        [data-slot="desk-note"][data-variant="take"] {
+            @apply lg:rotate-[0.8deg];
+        }
+
+        /* Shelf-form slips laid on the page at a slight tilt. */
+        [data-slot="completion-dialog"] [data-slot="shelf-slip"] {
+            @apply md:-rotate-[0.6deg];
+        }
+        :is([data-slot="entry-editor"], [data-slot="completion-editor"]) [data-slot="shelf-slip"] {
+            @apply sm:-rotate-[0.6deg];
+        }
+
+        /* The Conquered stamp, pressed at a tilt (less on the Members
+           table's small one). */
+        [data-slot="conquered-stamp"] {
+            @apply -rotate-8;
+        }
+        [data-slot="conquered-stamp"][data-size="sm"] {
+            @apply -rotate-4;
+        }
+
+        /* Game Edit: a removed image is struck through on the diagonal. */
+        [data-slot="image-tile-strike"] {
+            @apply -rotate-24;
+        }
+    }
+}

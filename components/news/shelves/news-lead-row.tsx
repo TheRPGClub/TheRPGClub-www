@@ -41,6 +41,8 @@ function LeadCard({
   const view = newsCardView(item);
   return (
     <article
+      data-slot="news-tile"
+      data-size="lead"
       className={cn(
         "group/tile relative isolate flex min-h-[12rem] overflow-hidden rounded-md bg-card lg:min-h-[13rem]",
         first && "min-h-[15rem] sm:col-span-2 lg:col-span-1",
@@ -49,12 +51,13 @@ function LeadCard({
       <NewsArtFill frames={view.frames} ink={newsInk(item.category_key).color} initial={siteInitial(view.site)} />
       <div
         aria-hidden
+        data-slot="news-scrim"
         className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,color-mix(in_oklab,var(--background)_55%,transparent)_55%,color-mix(in_oklab,var(--background)_94%,transparent))]"
       />
       <div className="absolute top-3 left-3">
         <NewsTag item={item} name={categoryName} />
       </div>
-      <div className="relative mt-auto w-full px-4 pt-14 pb-4">
+      <div data-slot="news-foot" className="relative mt-auto w-full px-4 pt-14 pb-4">
         {view.headline && (
           <h3
             className={cn(

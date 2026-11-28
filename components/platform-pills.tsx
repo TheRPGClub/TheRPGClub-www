@@ -33,18 +33,19 @@ export function PlatformPills({
 
   const shown = platforms.slice(0, max);
   const hidden = platforms.length - shown.length;
-  const pill =
-    "font-label inline-flex h-6 items-center rounded-xs bg-foreground/8 px-2 text-[0.78rem] text-dim-foreground";
+  // Each Theme draws the pill (themes/<name>/primitives.css).
+  const pill = "inline-flex h-6 items-center px-2";
 
   return (
-    <ul className={cn("flex flex-wrap items-center gap-1.5", className)}>
+    <ul data-slot="platform-pills" className={cn("flex flex-wrap items-center gap-1.5", className)}>
       {shown.map((platform) => (
-        <li key={platform.platform_id} className={pill}>
+        <li key={platform.platform_id} data-slot="platform-pill" className={pill}>
           {platformLabel(platform)}
         </li>
       ))}
       {hidden > 0 && (
         <li
+          data-slot="platform-pill"
           className={pill}
           // The visible pills already name themselves; this one needs to say
           // what it stands for.

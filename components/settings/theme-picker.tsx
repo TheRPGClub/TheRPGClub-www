@@ -1,0 +1,62 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { chooseThemeAction } from "@/app/actions/member-theme";
+import { themeToSave, type ThemeCard } from "@/lib/theme-picker";
+import { ToggleGroup } from "@/components/ui/toggle-group";
+import { SectionHeading } from "@/components/templates/page-header";
+import { ThemeCardOption } from "@/components/settings/theme-card-option";
+
+// The top row of Settings → Your look & layout (spec api#523 item 8, ticket
+// www#250, sketch A "Cover pair"): one card per Theme the Member may wear,
+// a single-press toggle group: arrow keys only move focus (choosing re-themes
+// the whole site, so it never happens per keypress); Space, Enter or a click
+// chooses. Choosing one saves it through PUT /me/theme; the action
+// refreshes, so the page re-renders in the new Theme. While it saves the Member's Theme stays checked and the picked card
+// says "Saving"; a refusal leaves it as it was and shows the action's sentence.
+export function ThemePicker({ cards }: { cards: ThemeCard[] }) {
+  const stored = cards.find((card) => card.chosen)?.key ?? cards[0]?.key;
+  const [pending, setPending] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const saving = isPending ? pending : null;
+
+  const choose = (pressed: unknown[]) => {
+    const key = themeToSave(pressed, cards, isPending);
+    if (!key) return;
+    setPending(key);
+    setError(null);
+    startTransition(async () => {
+      const result = await chooseThemeAction(key).catch(() => ({
+        ok: false,
+        error: "Your Theme wasn't saved. Try again.",
+      }));
+      if (!result.ok) setError(result.error ?? "Your Theme wasn't saved. Try again.");
+      setPending(null);
+    });
+  };
+
+  return (
+    <section data-slot="settings-section" aria-labelledby="settings-theme" className="flex max-w-2xl flex-col">
+      <SectionHeading title={<span id="settings-theme">Your Theme</span>} count={`${cards.length} Themes`} />
+      <p className="mt-3 max-w-[60ch] text-dim-foreground">How the whole site looks to you. Only you see it.</p>
+      <ToggleGroup
+        variant="theme-card"
+        value={stored ? [stored] : []}
+        onValueChange={choose}
+        aria-label="Theme"
+        aria-busy={isPending}
+        className="mt-4 grid w-full max-w-xl grid-cols-2 items-start gap-3 sm:gap-5"
+      >
+        {cards.map((card) => (
+          <ThemeCardOption key={card.key} card={card} chosen={card.key === stored} saving={card.key === saving} />
+        ))}
+      </ToggleGroup>
+      {error ? (
+        <p role="alert" className="mt-3 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </section>
+  );
+}

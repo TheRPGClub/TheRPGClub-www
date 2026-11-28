@@ -13,6 +13,7 @@ export function SeeAlsoBand({ items }: { items: readonly { link: CodexEntryLink;
   if (items.length === 0) return null;
   return (
     <section
+      data-slot="see-also-band"
       aria-labelledby="see-also"
       className="-mx-4 grid grid-cols-[minmax(0,1fr)] items-start gap-5 bg-codex-lore px-4 pt-5.5 pb-6.5 text-background sm:-mx-7 sm:px-7 lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-7"
     >

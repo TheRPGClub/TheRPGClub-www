@@ -78,10 +78,11 @@ export async function GameHeroPanel({ game, show }: { game: Game; show: GamePage
 
   const cols = { "--panel-cols": sections.map((s) => `minmax(0,${s.weight}fr)`).join(" ") } as CSSProperties;
   return (
-    <div aria-label="The club on this game" role="group" style={cols} className={cn(plateClass, "grid grid-cols-2 md:grid-cols-(--panel-cols)")}>
+    <div aria-label="The club on this game" role="group" data-slot="club-plate" style={cols} className={cn(plateClass, "grid grid-cols-2 md:grid-cols-(--panel-cols)")}>
       {sections.map((section, i) => (
         <div
           key={section.key}
+          data-slot="club-plate-section"
           className={cn(
             "min-w-0 p-3 md:px-4.5 md:py-3.5",
             section.wide ? "col-span-2 md:col-span-1" : "md:col-span-1",
@@ -99,7 +100,7 @@ export async function GameHeroPanel({ game, show }: { game: Game; show: GamePage
 
 export function GameHeroPanelSkeleton() {
   return (
-    <div className={plateClass}>
+    <div data-slot="club-plate" className={plateClass}>
       <Skeleton variant="control" className="h-40 w-full" />
     </div>
   );

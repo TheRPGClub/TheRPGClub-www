@@ -65,6 +65,8 @@ export function ReviewCard({
   if (variant === "card") {
     return (
       <article
+        data-slot="review-card"
+        data-variant="framed"
         className={cn(
           "overflow-hidden rounded-md border border-border bg-card",
           className,
@@ -98,6 +100,7 @@ export function ReviewCard({
 
   return (
     <article
+      data-slot="review-card"
       className={cn("flex flex-col gap-3 bg-card p-[18px]", className)}
     >
       <div className="flex items-center gap-2.5">

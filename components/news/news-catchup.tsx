@@ -47,7 +47,7 @@ export function NewsCatchup({
     );
   }
   return (
-    <div className="space-y-3">
+    <div data-slot="news-catchup" className="space-y-3">
       {catchup.hero && (
         <NewsHeroBand
           catchup={catchup}
@@ -65,7 +65,7 @@ export function NewsCatchup({
           <NewsMosaic items={catchup.seen} nameOf={nameOf} now={now} label="Seen items" fresh={false} />
         </section>
       )}
-      <div className="pt-3">
+      <div data-slot="community-pager" className="pt-3">
         <ListPagination
           currentPage={filters.page}
           totalPages={totalPages}

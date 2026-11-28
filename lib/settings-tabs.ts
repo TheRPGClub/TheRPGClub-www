@@ -1,5 +1,5 @@
 // /settings' tabs (design pick "C, big type", 2026-11-23): You, Features,
-// Notifications, Your layout and, for staff, Staff. Each tab carries a short
+// Notifications, Your look & layout and, for staff, Staff. Each tab carries a short
 // state line under its name, read from the page's data, so a member sees
 // what is in a tab without opening it. The tab is kept in the URL
 // (`?tab=you`); Features, the page's old content, is the default and has no
@@ -17,7 +17,7 @@ export const SETTINGS_TAB_LABELS: Record<SettingsTab, string> = {
   you: "You",
   features: "Features",
   notifications: "Notifications",
-  layout: "Your layout",
+  layout: "Your look & layout",
   staff: "Staff",
 };
 

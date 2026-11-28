@@ -42,6 +42,7 @@ export function FactBand({ panel, canAdd }: { panel: FactPanel; canAdd: boolean 
   return (
     <section
       aria-labelledby="codex-fact-band"
+      data-slot="fact-band"
       className="grid gap-x-8 gap-y-4 rounded-md bg-card px-5 py-6 shadow-[inset_0_4px_0_var(--color-codex-fact)] sm:px-7 lg:grid-cols-[16.25rem_minmax(0,1fr)_auto] lg:items-center"
     >
       <div>

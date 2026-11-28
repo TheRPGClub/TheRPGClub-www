@@ -1,0 +1,414 @@
+/* Frutiger Aero: the app shell and the scene (spec api#523, rendition O).
+   The lagoon at the waterline behind the whole app (the backdrop
+   ornament), the frosted sidebar and phone tab bar it shows through, the
+   logo's glass bubble (logo-halo) and the gloss over the Cover Story and
+   the game hero (glare). Every ornament is empty and aria-hidden; under
+   any other Theme app/globals.css keeps it off.
+
+   --aero-wl is the waterline's distance from the top of the viewport.
+   Layers, back to front (all fixed, so the scene holds still while the
+   page scrolls past):
+     body                         the sky (only where the app shell is)
+     backdrop                     sky, hills, skyline, meadow, sea, reef
+     backdrop::before             caustics (water only, breathing)
+     backdrop::after              Wii fog ribbons (drifting)
+     sidebar-wrapper::after       rising bubbles (water only)
+     body::before                 corner leaves and a waterline spray
+     sidebar-wrapper::before      the glass globe pouring over, the dolphin
+     sidebar-inset (z 1)          the page's glass windows
+     sidebar, tab bar (z 30)      frosted glass
+   Art: ./assets (see PROVENANCE.md). Motion only when motion-safe. */
+
+@layer themes {
+    [data-theme="aero"] {
+        --aero-wl: 720px;
+        --aero-ground: linear-gradient(180deg,
+            #0b55c9 0,
+            #1675e0 calc(var(--aero-wl) * 0.3),
+            #3a9cf0 calc(var(--aero-wl) * 0.62),
+            #8fd3fb calc(var(--aero-wl) - 60px),
+            #d8f4ff calc(var(--aero-wl) - 1px),
+            #6fd6f6 var(--aero-wl),
+            #22aee8 calc(var(--aero-wl) + 60px),
+            #0f88d6 calc(var(--aero-wl) + 260px),
+            #0a63b8 calc(var(--aero-wl) + 700px),
+            #0b5aae calc(100% - 340px),
+            #138ac4 calc(100% - 120px),
+            #31aed0 100%);
+
+        ::selection {
+            background: #bfe3fb;
+            color: var(--foreground);
+        }
+        :is(input, textarea) {
+            caret-color: var(--gotm);
+        }
+        * {
+            scrollbar-color: rgb(23 105 189 / 0.45) transparent;
+        }
+
+        /* Highlight as type is the amber ink (README: sunlight amber
+           #ffc93a is a fill; on white glass it measures 1.5:1). Areas
+           that set their own ink over it win by weight. */
+        .text-highlight,
+        :is([class~="hover:text-highlight"], [class~="focus-visible:text-highlight"]):is(:hover, :focus-visible),
+        :is(.group, [class*="group/"]):is(:hover, :focus-visible) [class*="group-hover"][class*=":text-highlight"] {
+            color: var(--aero-amber-ink);
+        }
+
+        /* The sky under everything, on the signed-in app only. */
+        body:has([data-ornament="backdrop"]) {
+            background: #0b55c9;
+        }
+
+        /* ---------------------------------------------------------- */
+        /* The scene.                                                  */
+        /* ---------------------------------------------------------- */
+        [data-ornament="backdrop"] {
+            display: block;
+            position: fixed;
+            z-index: 0;
+            inset: 0;
+            overflow: hidden;
+            background:
+                url("./assets/lilies.svg") left 180px top calc(var(--aero-wl) - 22px) / 1100px 70px repeat-x,
+                url("./assets/sea.svg") left -80px top calc(var(--aero-wl) - 34px) / 1600px 820px repeat-x,
+                url("./assets/seabed.svg") left -40px top max(calc(100vh - 300px), calc(var(--aero-wl) + 420px)) / 1400px 300px repeat-x,
+                url("./assets/deep.svg") left 260px top calc(var(--aero-wl) + 760px) / 900px 900px repeat,
+                url("./assets/butterflies.svg") left 300px top calc(var(--aero-wl) - 250px) / 1200px 260px repeat-x,
+                url("./assets/meadow.svg") left -200px top calc(var(--aero-wl) - 132px) / 1600px 150px repeat-x,
+                url("./assets/shore.svg") left 400px top calc(var(--aero-wl) - 236px) / 750px 212px no-repeat,
+                url("./assets/hills.svg") left -420px top calc(var(--aero-wl) - 336px) / 2700px 360px repeat-x,
+                url("./assets/sky.webp") left -120px top calc(var(--aero-wl) - 760px) / 2000px 760px repeat-x,
+                /* The sun: a white-gold bloom with a wide halo. */
+                radial-gradient(5rem 5rem at 84% 5%, #ffffff 0 30%, rgb(255 252 228 / 0.9) 45%, rgb(255 255 255 / 0) 100%),
+                radial-gradient(46rem 30rem at 84% 2%, rgb(255 250 214 / 0.85), rgb(210 240 255 / 0.35) 38%, rgb(255 255 255 / 0) 70%),
+                var(--aero-ground);
+        }
+        /* Caustics: water only, below the line, brightest under the
+           surface and on the reef. Two nets out of step; they breathe,
+           never pan. */
+        [data-ornament="backdrop"]::before {
+            content: "";
+            position: absolute;
+            inset: var(--aero-wl) -10% -10% -10%;
+            background:
+                url("./assets/caustics-a.webp") 0 0 / 420px 420px repeat,
+                url("./assets/caustics-b.webp") 120px 60px / 300px 300px repeat;
+            background-blend-mode: screen;
+            mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.95) 0, rgb(0 0 0 / 0.3) 180px, rgb(0 0 0 / 0.12) 50%, rgb(0 0 0 / 0.8) calc(100% - 240px), #000 100%);
+            opacity: 0.3;
+            mix-blend-mode: screen;
+            transform-origin: 45% 0;
+        }
+        /* Wii fog: soft white ribbons in front of the far scene, behind
+           the content; one band through the sky and the line, one deeper. */
+        [data-ornament="backdrop"]::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: calc(var(--aero-wl) - 560px);
+            width: calc(100% + 2400px);
+            height: 1700px;
+            background:
+                url("./assets/waves.webp") 0 0 / 2400px 900px repeat-x,
+                url("./assets/waves.webp") 900px 820px / 2000px 750px repeat-x;
+            opacity: 0.72;
+        }
+        [data-slot="sidebar-wrapper"]:has(> [data-ornament="backdrop"]) {
+            /* Rising bubbles and glints, in the water only. */
+            &::after {
+                content: "";
+                position: fixed;
+                z-index: 0;
+                inset: calc(var(--aero-wl) + 16px) 0 0;
+                pointer-events: none;
+                background: url("./assets/bubbles.svg") 40px 0 / 600px 1000px repeat;
+            }
+            /* The foreground: the glass globe tipped open, pouring the
+               lagoon full (seen through the sidebar's glass), and the
+               dolphin leaping by the right edge of the content. */
+            &::before {
+                content: "";
+                position: fixed;
+                z-index: 1;
+                inset: 0;
+                pointer-events: none;
+                background:
+                    url("./assets/dolphin.svg") right 120px top calc(var(--aero-wl) - 233px) / 400px 250px no-repeat,
+                    url("./assets/globe.svg") left -2px top calc(var(--aero-wl) - 300px) / 480px 345px no-repeat;
+            }
+        }
+        /* A light green frame: a corner cluster top right and bottom
+           left, a spray at the waterline on the right. */
+        body:has([data-ornament="backdrop"])::before {
+            content: "";
+            position: fixed;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+            background:
+                url("./assets/frame-edge-r.webp") right -50px top calc(var(--aero-wl) - 230px) / 240px 254px no-repeat,
+                url("./assets/frame-tr.webp") right -90px top -80px / 300px 300px no-repeat,
+                url("./assets/frame-bl.webp") left -60px bottom -70px / 340px 340px no-repeat;
+        }
+        /* The page sits on the scene, above the globe and the leaves. */
+        [data-slot="sidebar-inset"] {
+            z-index: 1;
+            background: transparent;
+        }
+        /* No veil over the page: every section sits in its own glass
+           window (the areas' CSS), so the scene shows between them. On
+           the dashboard the band under the issue is left open for the
+           waterline, the splash and the dolphin (rendition O). */
+        @media (min-width: 1024px) {
+            [data-slot="dashboard-issue"] > [data-slot="previous-rounds"] {
+                margin-top: 10rem;
+            }
+        }
+
+        /* ---------------------------------------------------------- */
+        /* The frosted sidebar: the scene seen softly through glass,   */
+        /* frost thick where type sits (the brand, the nav, the        */
+        /* account), thin below the nav so the globe reads through.    */
+        /* ---------------------------------------------------------- */
+        @media (min-width: 768px) {
+            [data-slot="sidebar-container"] {
+                border-right: 0;
+            }
+            [data-slot="sidebar-inner"] {
+                isolation: isolate;
+                background:
+                    linear-gradient(90deg, rgb(255 255 255 / 0) calc(100% - 1px), rgb(255 255 255 / 1) calc(100% - 1px)),
+                    linear-gradient(90deg, rgb(255 255 255 / 0) calc(100% - 16px), rgb(255 255 255 / 0.24) 100%),
+                    linear-gradient(162deg, rgb(255 255 255 / 0.42) 0%, rgb(255 255 255 / 0.12) 30%, rgb(255 255 255 / 0) 30.2%),
+                    rgb(255 255 255 / 0.1);
+                box-shadow: 6px 0 24px -12px rgb(16 64 96 / 0.4);
+                /* The thin frost over the whole pane. */
+                &::before {
+                    content: "";
+                    position: absolute;
+                    z-index: -2;
+                    inset: 0;
+                    pointer-events: none;
+                    backdrop-filter: blur(1.2px) saturate(1.3);
+                }
+            }
+            /* The thick frost behind the brand, every nav group and the
+               account; a group's frost fades out under its last row. */
+            [data-slot="sidebar-inner"] :is([data-slot="sidebar-header"], [data-slot="sidebar-group"], [data-slot="sidebar-footer"]) {
+                position: relative;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    z-index: -1;
+                    inset: 0;
+                    pointer-events: none;
+                    background: rgb(246 251 255 / 0.76);
+                    backdrop-filter: blur(9px) saturate(1.3);
+                }
+            }
+            [data-slot="sidebar-inner"] [data-slot="sidebar-group"]:last-child::before {
+                bottom: -48px;
+                mask-image: linear-gradient(180deg, #000 calc(100% - 56px), rgb(0 0 0 / 0) 100%);
+            }
+            [data-slot="sidebar-inner"] [data-slot="sidebar-footer"]::before {
+                top: -40px;
+                mask-image: linear-gradient(0deg, #000 calc(100% - 40px), rgb(0 0 0 / 0) 100%);
+            }
+        }
+        [data-slot="sidebar-footer"] {
+            border-color: rgb(16 64 96 / 0.12);
+        }
+
+        /* The phone tab bar: the same frost, a glass bar with a lit top. */
+        [data-slot="tab-bar"] {
+            border-top: 1px solid #ffffff;
+            background: linear-gradient(180deg, rgb(255 255 255 / 0.84) 0%, rgb(255 255 255 / 0.68) 49%, rgb(236 248 255 / 0.64) 50%, rgb(255 255 255 / 0.7) 100%);
+            backdrop-filter: blur(4px) saturate(1.3);
+            box-shadow: 0 -6px 20px -10px rgb(16 64 96 / 0.4);
+        }
+        [data-slot="tab-bar"] [data-slot="button"][data-variant="tab"] {
+            border-radius: 0;
+            &[data-current] {
+                color: var(--gotm);
+                &::before {
+                    inset: -1px 18px auto;
+                    height: 4px;
+                    border-radius: 0 0 4px 4px;
+                    background: linear-gradient(180deg, #5fb3ec, var(--gotm));
+                    box-shadow: 0 2px 6px rgb(23 105 189 / 0.45);
+                }
+            }
+        }
+
+        /* The logo in a glass bubble. The image itself never changes. */
+        [data-ornament="logo-halo"] {
+            display: inline-flex;
+            position: relative;
+            flex-shrink: 0;
+            border-radius: 9999px;
+            padding: 3px;
+            background: radial-gradient(circle at 35% 28%, #ffffff 0 18%, #d8f0fc 45%, #a9d8f3 100%);
+            box-shadow: inset 0 -3px 6px rgb(255 255 255 / 0.8), inset 0 0 0 1px rgb(255 255 255 / 0.9), 0 3px 8px rgb(16 64 96 / 0.3);
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 2px 9px auto;
+                height: 42%;
+                border-radius: 9999px;
+                background: linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0));
+                pointer-events: none;
+            }
+            & img {
+                width: 38px;
+                height: 38px;
+                border-radius: 9999px;
+            }
+        }
+        /* On the collapsed rail the logo is the expand key itself: the
+           pearl key is the bubble, so the halo adds only its shine. */
+        [data-slot="button"] > [data-ornament="logo-halo"] {
+            padding: 0;
+            background: none;
+            box-shadow: none;
+        }
+
+        /* ---------------------------------------------------------- */
+        /* Glare: a curved gloss over the key art. On the Cover Story  */
+        /* the right half, with C's sheen band crossing it on hover or */
+        /* focus and once every 16s; on a game hero the art side,      */
+        /* under the title.                                            */
+        /* ---------------------------------------------------------- */
+        [data-ornament="glare"] {
+            display: block;
+            position: absolute;
+            z-index: 5;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.95);
+            background: radial-gradient(130% 70% at 85% -18%, rgb(255 255 255 / 0.42) 0 48%, rgb(255 255 255 / 0) 49%) right top / 50% 100% no-repeat;
+        }
+        [data-slot="ornament"][data-ornament="glare"]:not([data-motion]) {
+            z-index: -5;
+            background: radial-gradient(130% 70% at 85% -18%, rgb(255 255 255 / 0.42) 0 48%, rgb(255 255 255 / 0) 49%);
+            mask-image: linear-gradient(90deg, transparent 52%, #000 70%);
+        }
+        /* The sheen band, parked off the right edge until it runs. */
+        [data-ornament="glare"][data-motion="sweep"]::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(105deg, rgb(255 255 255 / 0) 46.5%, rgb(200 240 255 / 0.14) 48%, rgb(255 255 255 / 0.42) 49.5%, rgb(255 255 255 / 0.55) 50%, rgb(255 255 255 / 0.42) 50.5%, rgb(200 240 255 / 0.14) 52%, rgb(255 255 255 / 0) 53.5%) no-repeat;
+            background-size: 400% 100%;
+            background-position: 100% 0;
+            mix-blend-mode: screen;
+        }
+    }
+
+    /* Tablet: no dolphin (the content fills the band it leaps in). */
+    @media (min-width: 768px) and (max-width: 1023.98px) {
+        [data-theme="aero"] [data-slot="sidebar-wrapper"]:has(> [data-ornament="backdrop"])::before {
+            background: url("./assets/globe.svg") left -2px top calc(var(--aero-wl) - 300px) / 480px 345px no-repeat;
+        }
+    }
+
+    /* Phone: sky and the globe in the strip above the first window; the
+       horizon, the skyline and the dolphin further down. */
+    @media (max-width: 767.98px) {
+        [data-theme="aero"] {
+            --aero-wl: 756px;
+            [data-ornament="backdrop"] {
+                background:
+                    url("./assets/lilies.svg") left 40px top calc(var(--aero-wl) - 18px) / 860px 55px repeat-x,
+                    url("./assets/sea.svg") left -60px top calc(var(--aero-wl) - 24px) / 1120px 574px repeat-x,
+                    url("./assets/seabed.svg") left -20px top max(calc(100vh - 230px), calc(var(--aero-wl) + 330px)) / 1070px 230px repeat-x,
+                    url("./assets/deep.svg") left -80px top calc(var(--aero-wl) + 420px) / 620px 620px repeat,
+                    url("./assets/butterflies.svg") left -120px top calc(var(--aero-wl) - 190px) / 900px 195px repeat-x,
+                    url("./assets/meadow.svg") left -360px top calc(var(--aero-wl) - 92px) / 1100px 103px repeat-x,
+                    url("./assets/shore.svg") right -40px top calc(var(--aero-wl) - 182px) / 570px 161px no-repeat,
+                    url("./assets/hills.svg") left -700px top calc(var(--aero-wl) - 252px) / 1950px 260px repeat-x,
+                    url("./assets/sky.webp") left -300px top calc(var(--aero-wl) - 456px) / 1200px 456px repeat-x,
+                    url("./assets/sky.webp") left -520px top -330px / 1200px 456px repeat-x,
+                    radial-gradient(3rem 3rem at 88% 4%, #ffffff 0 30%, rgb(255 252 228 / 0.9) 45%, rgb(255 255 255 / 0) 100%),
+                    radial-gradient(22rem 14rem at 88% 0, rgb(255 250 214 / 0.85), rgb(255 255 255 / 0) 70%),
+                    var(--aero-ground);
+            }
+            [data-ornament="backdrop"]::after {
+                top: 0;
+                background:
+                    url("./assets/waves.webp") 0 -120px / 1600px 600px repeat-x,
+                    url("./assets/waves.webp") 600px 520px / 1400px 525px repeat-x;
+            }
+            [data-slot="sidebar-wrapper"]:has(> [data-ornament="backdrop"])::before {
+                background:
+                    url("./assets/dolphin.svg") left 58px top calc(var(--aero-wl) - 186px) / 320px 200px no-repeat,
+                    url("./assets/globe-phone.svg") left 2px top 0 / 202px 504px no-repeat;
+            }
+            body:has([data-ornament="backdrop"])::before {
+                background:
+                    url("./assets/frame-edge-r.webp") right -60px top calc(var(--aero-wl) - 190px) / 160px 170px no-repeat,
+                    url("./assets/frame-tr.webp") right -60px top -50px / 190px 190px no-repeat,
+                    url("./assets/frame-bl.webp") left -50px bottom -40px / 200px 200px no-repeat;
+            }
+            /* Room for the sky and the globe above the first window, and
+               for the horizon and the dolphin in the gap under the cover. */
+            [data-slot="content-frame"] {
+                padding-top: calc(8rem + env(safe-area-inset-top));
+            }
+            [data-slot="issue-spread"] {
+                row-gap: 8rem;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        [data-theme="aero"] {
+            [data-slot="sidebar-wrapper"]:has(> [data-ornament="backdrop"])::after {
+                animation: aero-rise 120s linear infinite;
+            }
+            /* Caustics breathe: a slow scale and a slight turn, like light
+               through moving water, never a texture panning in a line. */
+            [data-ornament="backdrop"]::before {
+                animation: aero-caustic 28s ease-in-out infinite alternate;
+            }
+            /* The fog drifts sideways, very slowly, and swells a little. */
+            [data-ornament="backdrop"]::after {
+                animation: aero-fog 160s linear infinite, aero-fog-swell 22s ease-in-out infinite alternate;
+            }
+            /* The sheen: idle once every 16s, and on hover or focus. */
+            [data-ornament="glare"][data-motion="sweep"]::after {
+                animation: aero-sheen 16s cubic-bezier(0.45, 0, 0.2, 1) 2.5s infinite;
+            }
+            :is(:hover, :focus-within) > [data-ornament="glare"][data-motion="sweep"]::after {
+                animation: aero-sheen-once 2400ms cubic-bezier(0.3, 0, 0.2, 1) both;
+            }
+        }
+    }
+    @keyframes aero-caustic {
+        0% { transform: scale(1) rotate(0deg) translate(0, 0); }
+        50% { transform: scale(1.05) rotate(0.8deg) translate(-12px, 6px); }
+        100% { transform: scale(1.02) rotate(-0.6deg) translate(10px, -4px); }
+    }
+    @keyframes aero-sheen {
+        0% { background-position: 100% 0; }
+        12%, 100% { background-position: 0 0; }
+    }
+    @keyframes aero-sheen-once {
+        from { background-position: 100% 0; }
+        to { background-position: 0 0; }
+    }
+    @keyframes aero-fog {
+        from { translate: 0 0; }
+        to { translate: -2400px 0; }
+    }
+    @keyframes aero-fog-swell {
+        from { transform: scaleY(1); opacity: 0.72; }
+        to { transform: scaleY(1.06) translateY(-14px); opacity: 0.6; }
+    }
+    @keyframes aero-rise {
+        from { background-position: 40px 0; }
+        to { background-position: 40px -1000px; }
+    }
+}

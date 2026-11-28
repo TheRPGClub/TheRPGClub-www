@@ -24,7 +24,7 @@ export function HiddenPlatformsNote({
   const list = platformNames(names);
 
   return (
-    <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-border py-2.5 text-[0.9375rem] text-dim-foreground">
+    <div data-slot="hidden-platforms-note" className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-border py-2.5 text-[0.9375rem] text-dim-foreground">
       {filters.showHidden ? (
         <>
           <p className="flex items-center gap-2">

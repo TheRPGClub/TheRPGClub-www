@@ -31,10 +31,12 @@ export default async function ImageBackfillPage() {
           </>
         }
       />
-      <ImageBackfillDesk
-        initialRun={latest.ok ? (latest.run ?? null) : null}
-        initialError={latest.ok ? null : (latest.error ?? null)}
-      />
+      <div data-slot="desk-body">
+        <ImageBackfillDesk
+          initialRun={latest.ok ? (latest.run ?? null) : null}
+          initialError={latest.ok ? null : (latest.error ?? null)}
+        />
+      </div>
     </div>
   );
 }

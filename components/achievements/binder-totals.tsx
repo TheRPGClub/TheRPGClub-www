@@ -22,9 +22,9 @@ export function BinderTotals({
   const [lead, ...rest] = totalStats(totals, linked);
   const label = (s: typeof lead) => (s.value === 1 ? s.label[0] : s.label[1]);
   return (
-    <dl className={cn("flex flex-col gap-5", className)}>
+    <dl data-slot="binder-totals" className={cn("flex flex-col gap-5", className)}>
       <div className="flex items-end gap-3">
-        <dd className="font-headline text-[4.5rem] leading-[0.8] text-foreground sm:text-[5.25rem]">
+        <dd data-slot="binder-totals-lead" className="font-headline text-[4.5rem] leading-[0.8] text-foreground sm:text-[5.25rem]">
           {lead.value.toLocaleString("en-US")}
         </dd>
         <dt className="font-label max-w-[7ch] pb-0.5 text-[1rem] leading-[1.1] text-dim-foreground">
@@ -35,7 +35,7 @@ export function BinderTotals({
         <div className="flex flex-wrap gap-x-6 gap-y-4">
           {rest.map((stat) => (
             <div key={stat.key} className="flex flex-col-reverse gap-1.5">
-              <dt className="font-label text-[0.74rem] leading-[1.1] tracking-[0.08em] whitespace-nowrap text-faint-foreground">
+              <dt data-slot="binder-totals-label" className="font-label text-[0.74rem] leading-[1.1] tracking-[0.08em] whitespace-nowrap text-faint-foreground">
                 {label(stat)}
               </dt>
               <dd className="font-headline text-[2rem] leading-[0.8] text-foreground">

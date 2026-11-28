@@ -16,12 +16,12 @@ export function StaffTab({ prefs, desk }: { prefs: FeaturePreferences | null; de
   return (
     <div className="grid items-start gap-12 lg:grid-cols-2">
       {preview && (
-        <section aria-labelledby="settings-preview">
+        <section data-slot="settings-section" aria-labelledby="settings-preview">
           <SectionHeading title={<span id="settings-preview">Preview</span>} />
           <PreviewSwitch initial={prefs} />
         </section>
       )}
-      <section aria-labelledby="settings-desk">
+      <section data-slot="settings-section" aria-labelledby="settings-desk">
         <SectionHeading title={<span id="settings-desk">On the desk</span>} />
         <p className="mt-3 max-w-[60ch] text-dim-foreground">
           Settings for the whole club, and for other members, live on the desk.

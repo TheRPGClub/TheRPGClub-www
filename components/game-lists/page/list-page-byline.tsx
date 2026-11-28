@@ -8,7 +8,7 @@ import { ListOwner, VisibilityMark } from "@/components/game-lists/list-byline";
 // from; then its description.
 export function ListPageByline({ list, now }: { list: GameList; now: Date }) {
   return (
-    <div className="space-y-2">
+    <div data-slot="list-page-byline" className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.95rem] text-dim-foreground">
         <ListOwner list={list} size={22} className="font-semibold text-foreground" />
         <Dot />

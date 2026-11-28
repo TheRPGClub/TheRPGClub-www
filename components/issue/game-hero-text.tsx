@@ -42,6 +42,7 @@ export function GameHeroText({
       <GameHeadline
         title={game.title}
         accentClassName={trackAccentText(track)}
+        track={track}
         className="col-start-2 row-start-1 self-center text-[2.3rem] leading-[0.88] md:text-[5rem]"
       />
       {hasChips && (
@@ -56,7 +57,7 @@ export function GameHeroText({
         </div>
       )}
       {(game.description || igdb) && (
-        <div className="col-span-full flex max-w-[46rem] items-end gap-3.5 md:mt-3.5">
+        <div data-slot="game-hero-blurb" className="col-span-full flex max-w-[46rem] items-end gap-3.5 md:mt-3.5">
           {game.description && (
             <p className="line-clamp-3 min-w-0 flex-1 text-[0.9rem] leading-[1.55] text-dim-foreground">
               {game.description}

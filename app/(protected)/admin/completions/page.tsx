@@ -39,12 +39,14 @@ export default async function CompletionForMemberPage() {
           </>
         }
       />
-      <p className="mt-3 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
-      <CompletionForMemberForm
-        actorName={actorName}
-        platforms={platforms}
-        igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
-      />
+      <div data-slot="desk-body">
+        <p className="mt-3 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
+        <CompletionForMemberForm
+          actorName={actorName}
+          platforms={platforms}
+          igdbBlockedReason={igdbAddBlockedReason(true, session.membership)}
+        />
+      </div>
     </div>
   );
 }

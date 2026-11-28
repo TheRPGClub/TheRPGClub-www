@@ -34,11 +34,11 @@ export function FranchiseIndex({
         count={total != null ? numberFormat.format(total) : undefined}
         actions={canCreate && <NewFranchiseButton />}
       />
-      <div className="flex flex-wrap items-center gap-3.5">
+      <div data-slot="franchise-toolbar" className="flex flex-wrap items-center gap-3.5">
         <FranchiseSearch q={query.q} sort={query.sort} href={browseHref(query)} />
         <FranchiseSortSwitch query={query} />
       </div>
-      <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1fr)_1.5rem] lg:gap-x-6 lg:space-y-0">
+      <div data-slot="franchise-body" className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1fr)_1.5rem] lg:gap-x-6 lg:space-y-0">
         <LetterRail query={query} />
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <Suspense

@@ -22,13 +22,14 @@ export function GameEditBand({
   children?: ReactNode;
 }) {
   return (
-    <header className="relative isolate bleed -mt-6 overflow-hidden border-b border-border-strong bg-background px-4 pt-3.5 sm:px-7">
+    <header data-slot="game-edit-band" className="relative isolate bleed -mt-6 overflow-hidden border-b border-border-strong bg-background px-4 pt-3.5 sm:px-7">
       {artUrl && (
         // eslint-disable-next-line @next/next/no-img-element -- remote game art from the API's image hosts, which next/image isn't configured for
         <img src={artUrl} alt="" className="absolute inset-0 -z-20 size-full object-cover object-[60%_30%]" />
       )}
       <div
         aria-hidden
+        data-slot="game-edit-band-scrim"
         className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-background)_96%,transparent)_0%,color-mix(in_oklab,var(--color-background)_80%,transparent)_40%,color-mix(in_oklab,var(--color-background)_20%,transparent)_80%),linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_90%,transparent),transparent_60%)]"
       />
       <Link

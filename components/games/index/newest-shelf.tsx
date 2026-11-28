@@ -12,7 +12,7 @@ export async function NewestShelf() {
   const result = await fetchGames({ sort: "newest", per: NEWEST_SIZE });
   if (!result || result.games.length === 0) return null;
   return (
-    <section aria-labelledby="games-newest" className="space-y-4">
+    <section data-slot="games-newest" aria-labelledby="games-newest" className="space-y-4">
       <SectionHeading
         title={<span id="games-newest">Newest in GameDB</span>}
         count="Latest additions"

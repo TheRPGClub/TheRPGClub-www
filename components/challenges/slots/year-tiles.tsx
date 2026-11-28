@@ -28,7 +28,7 @@ export function YearTileView({ tile }: { tile: YearTile }) {
   if (tile.kind === "none") return <span aria-hidden />;
   if (tile.kind === "ghost") {
     return (
-      <span className="font-headline grid aspect-[3/4] place-items-center rounded-sm border border-dashed border-border text-[0.8rem] text-faint-foreground sm:text-[1.125rem]">
+      <span data-slot="year-tile" data-variant="ghost" className="font-headline grid aspect-[3/4] place-items-center rounded-sm border border-dashed border-border text-[0.8rem] text-faint-foreground sm:text-[1.125rem]">
         <Year year={tile.year} />
       </span>
     );
@@ -82,6 +82,9 @@ function OpenTile({ tile }: { tile: Extract<YearTile, { kind: "open" }> }) {
           : "Open";
   const face = (
     <span
+      data-slot="year-tile"
+      data-variant="open"
+      data-fits={(own && tile.fits) || undefined}
       className={cn(
         "flex aspect-[3/4] w-full flex-col items-center justify-center gap-1.5 rounded-sm border-[1.5px] border-dashed p-1.5 text-center",
         own && tile.fits ? "border-(--challenge-tint-hi)" : "border-border-strong",

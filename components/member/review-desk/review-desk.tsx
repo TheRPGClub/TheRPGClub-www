@@ -55,6 +55,7 @@ export function ReviewDesk({
   // its foot.
   return (
     <div
+      data-slot="review-desk"
       className={cn(
         "space-y-10 rounded-md border border-border bg-[radial-gradient(color-mix(in_oklab,var(--color-foreground)_5%,transparent)_1px,transparent_1px)] bg-size-[18px_18px] p-4 pt-7 sm:p-8",
         // Room above the sheet for the Draft's pencilled line.
@@ -72,7 +73,8 @@ export function ReviewDesk({
             id={OVERALL_ID}
             heading="Overall"
             aside={earlierTake?.rating != null ? `was ${earlierTake.rating}` : TRACK_NOTE[accent]}
-            className="scroll-mt-24 lg:-rotate-[1deg]"
+            variant="overall"
+            className="scroll-mt-24"
           >
             <RatingInput
               value={form.rating}
@@ -88,7 +90,7 @@ export function ReviewDesk({
               </p>
             )}
           </DeskNote>
-          <DeskNote className="lg:rotate-[0.5deg]">{scorecard}</DeskNote>
+          <DeskNote variant="scorecard">{scorecard}</DeskNote>
         </aside>
       </div>
       <div className="space-y-3 empty:hidden">{footer}</div>

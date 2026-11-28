@@ -1,0 +1,100 @@
+/* monthly-issue: achievements signature components (spec api#523, www#257).
+   Styled by data-slot. The look each component had baked in (die-cut
+   corners, stable tilts, the foil stamp's press, the binder's cover, pages
+   and rings, the index tabs' drop) lives here, so another Theme can set the
+   same slots differently (api ADR-0008). Sizes stay on the components: they
+   carry a `data-size` hook a Theme may override. */
+
+@layer themes {
+    [data-theme="monthly-issue"] {
+        /* Achievement Icon: a die-cut tile resting in its slot. The tile
+           tilts by its stable angle (`--tilt`, set from the id) and
+           straightens on hover; the sealed tile tilts too, the empty slot
+           doesn't. */
+        [data-slot="achievement-icon"] {
+            @apply rounded-[6px];
+            &[data-state="unlocked"] {
+                @apply shadow-[inset_0_0_0_1px_var(--color-border)];
+            }
+        }
+        [data-slot="achievement-icon-face"] {
+            @apply rounded-[6px];
+        }
+        [data-state="unlocked"] > [data-slot="achievement-icon-face"] {
+            @apply shadow-[0_3px_6px_rgb(0_0_0/0.45)] rotate-(--tilt) motion-safe:transition-[rotate] motion-safe:duration-200 hover:rotate-0;
+            /* The foil edge: a transparent border over the conic foil, the
+               tile's ink clipped to the padding box so only the edge shows
+               it. Without art, the tint (`--fill`) is the tile's ink. */
+            &[data-foil] {
+                border-color: transparent;
+                background:
+                    linear-gradient(var(--color-muted), var(--color-muted)) padding-box,
+                    var(--foil-sheen) border-box,
+                    var(--foil-conic) border-box;
+            }
+            &[data-fill] {
+                background: var(--fill);
+            }
+            &[data-fill][data-foil] {
+                background:
+                    linear-gradient(var(--fill), var(--fill)) padding-box,
+                    var(--foil-sheen) border-box,
+                    var(--foil-conic) border-box;
+            }
+        }
+        [data-state="hidden"] > [data-slot="achievement-icon-face"] {
+            @apply rotate-(--tilt);
+        }
+
+        /* Achievement Frame: a plain square with a thin rule edge. */
+        [data-slot="achievement-frame"] {
+            @apply rounded-xs shadow-[inset_0_0_0_1px_var(--color-border)];
+        }
+
+        /* Foil Stamp: pressed onto the page at -8deg, a background-coloured
+           inner edge and a drop shadow. */
+        [data-slot="foil-stamp"] {
+            @apply -rotate-8 rounded-xs outline-solid outline-background shadow-[0_6px_14px_rgb(0_0_0/0.45)];
+            &[data-size="sm"] {
+                @apply outline-offset-[-3px] outline-[1.5px];
+            }
+            &[data-size="md"] {
+                @apply outline-offset-[-5px] outline-2;
+            }
+            &[data-size="lg"] {
+                @apply outline-offset-[-6px] outline-2;
+            }
+        }
+
+        /* Binder: a cover (the rule colour) round two pages, each shaded
+           into the gutter, metal rings down it; each index row's game-tint
+           tab drops a shadow past the binder's edge. */
+        [data-slot="binder"] {
+            @apply rounded-lg bg-border shadow-[0_24px_60px_rgb(0_0_0/0.6)];
+        }
+        [data-slot="binder-page"] {
+            @apply rounded-md bg-card;
+            &[data-side="member"] {
+                @apply xl:shadow-[inset_-18px_0_22px_-14px_rgb(0_0_0/0.7)];
+            }
+            &[data-side="index"] {
+                @apply xl:shadow-[inset_18px_0_22px_-14px_rgb(0_0_0/0.7)];
+            }
+        }
+        [data-slot="binder-ring"] {
+            @apply rounded-[9px] border-[3px] border-muted-foreground bg-card shadow-[inset_0_2px_0_rgb(0_0_0/0.5),0_2px_4px_rgb(0_0_0/0.6)];
+        }
+        /* The set page's spread: each page shaded into the gutter. */
+        [data-slot="set-spread-page"] {
+            &[data-side="left"] {
+                @apply xl:shadow-[inset_-22px_0_26px_-20px_rgb(0_0_0/0.7)];
+            }
+            &[data-side="right"] {
+                @apply xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)];
+            }
+        }
+        [data-slot="binder-tab"] {
+            @apply rounded-r-[4px] shadow-[4px_4px_10px_rgb(0_0_0/0.45)];
+        }
+    }
+}

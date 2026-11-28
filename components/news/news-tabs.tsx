@@ -16,7 +16,7 @@ const TABS: { tab: NewsTab; label: string; path: string }[] = [
 export function NewsTabs({ active, mark }: { active: NewsTab; mark: string | null }) {
   const query = mark ? `?${new URLSearchParams({ mark })}` : "";
   return (
-    <nav aria-label="News views" className="flex gap-x-7 border-b border-border">
+    <nav data-slot="news-tabs" aria-label="News views" className="flex gap-x-7 border-b border-border">
       {TABS.map(({ tab, label, path }) => {
         const on = tab === active;
         const href = `${path}${query}`;

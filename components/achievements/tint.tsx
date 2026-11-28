@@ -18,6 +18,7 @@ export function TintSpine({
   return (
     <span
       aria-hidden
+      data-slot="tint-spine"
       className={cn("absolute inset-y-0 left-0 rounded-l-md", className)}
       style={{ width, background: tint }}
     />
@@ -39,6 +40,7 @@ export function TintBand({
 }) {
   return (
     <Tag
+      data-slot="tint-band"
       className={cn("rounded-md px-4 pt-2.5 pb-1.5", className)}
       style={{ background: tint.tint, color: tint.contrast }}
     >

@@ -20,7 +20,7 @@ export function AchievementDetails({ view }: { view: AchievementView }) {
   const rarity = displayRarity(view);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div data-slot="achievement-details" className="flex flex-col gap-3">
       <div className="flex items-start gap-3">
         <AchievementIcon view={view} size="md" />
         <div className="flex min-w-0 flex-col gap-1.5">

@@ -17,8 +17,7 @@ import { RunGoal } from "@/components/challenges/pool/run-goal";
 export function RunCard({ run }: { run: RunCardView }) {
   const faded = run.status === "abandoned" || run.status === "expired";
   return (
-    <article
-      className={cn(
+    <article data-slot="run-card" data-variant={run.status} className={cn(
         "relative flex flex-col gap-3 rounded-md bg-card px-[18px] pt-[18px] pb-4",
         run.you && "shadow-[inset_0_0_0_2px_var(--color-highlight)]",
         faded && "opacity-75",
@@ -77,9 +76,8 @@ export function RunCard({ run }: { run: RunCardView }) {
         {run.canDelete && <DeleteRunButton runId={run.id} />}
       </footer>
       {run.status === "finished" && (
-        <span
-          className={cn(
-            "font-headline absolute right-4 -rotate-5 rounded-xs bg-card px-[9px] pt-1.5 pb-1 text-[1.06rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]",
+        <span data-slot="run-card-stamp" className={cn(
+            "font-headline absolute right-4 rounded-xs bg-card px-[9px] pt-1.5 pb-1 text-[1.06rem] leading-none text-(--challenge-tint-hi) shadow-[inset_0_0_0_2px_currentColor]",
             // Under the score on a Pool Run, clear of its two bars and counts.
             run.goal ? "top-[5.25rem]" : "bottom-11",
           )}

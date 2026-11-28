@@ -66,7 +66,7 @@ export function ManagedReel(props: {
   };
 
   return (
-    <div className="space-y-4">
+    <div data-slot="managed-reel" className="space-y-4">
       <UndoLines manage={manage} listName={listName} />
       <CompletedReel {...props} manage={reel} />
     </div>

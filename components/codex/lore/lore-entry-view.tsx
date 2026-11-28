@@ -25,7 +25,7 @@ export function LoreEntryView({
   const { can_edit, can_delete } = entry.viewer;
   return (
     <article>
-      <div className="mb-3 flex items-start justify-between gap-3">
+      <div data-slot="lore-entry-top" className="mb-3 flex items-start justify-between gap-3">
         <BackLink {...LORE_BACK} className="mb-0" />
         {badge}
       </div>

@@ -59,7 +59,7 @@ export function FeedbackDesk({ rows: initial }: { rows: Feedback[] | null }) {
       {decision && <DeskNotice decision={decision} onDismiss={() => setDecision(null)} />}
 
       {initial === null ? (
-        <p role="alert" className="text-destructive">
+        <p data-slot="staff-alert" role="alert" className="text-destructive">
           {"Couldn't load the Feedback. Refresh to try again."}
         </p>
       ) : (

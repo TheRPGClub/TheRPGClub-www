@@ -57,7 +57,12 @@ export function BotJobStatusView({
   // Never read and never will be (403, 404): say why, with no status to show.
   if (!job && stuck) {
     return (
-      <div role="status" className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm", className)}>
+      <div
+        role="status"
+        data-slot="bot-job-status"
+        data-phase="unavailable"
+        className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5", className)}
+      >
         <Badge className="border-0">
           <AlertTriangle aria-hidden className="size-3.5 shrink-0" />
           Unavailable
@@ -71,7 +76,10 @@ export function BotJobStatusView({
     <div
       role="status"
       aria-live="polite"
-      className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm", className)}
+      // Each Theme draws the line by its phase (themes/<name>/primitives.css).
+      data-slot="bot-job-status"
+      data-phase={phase}
+      className={cn("flex flex-wrap items-center gap-x-2.5 gap-y-1.5", className)}
     >
       <Badge tone={phase === "done" ? "highlight" : "neutral"} className="border-0">
         <PhaseIcon phase={phase} busy={busy} />

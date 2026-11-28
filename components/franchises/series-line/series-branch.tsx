@@ -27,12 +27,12 @@ function Spinoff({ entry, first, last, branch }: { entry: FranchiseEntry; first:
     <li className="relative grid grid-cols-[1.75rem_2.5rem_minmax(0,1fr)] gap-x-3 pb-4 @xl/line:flex @xl/line:flex-col @xl/line:items-center @xl/line:pb-0">
       <span aria-hidden className="absolute inset-y-0 left-0 w-7 @xl/line:hidden">
         {!(first && last) && (
-          <span className={cn("absolute left-1/2 w-[3px] -translate-x-1/2 bg-dim-foreground", first ? "top-6.5" : "top-0", last ? "h-6.5" : "bottom-0")} />
+          <span data-slot="series-branch-rail" className={cn("absolute left-1/2 w-[3px] -translate-x-1/2 bg-dim-foreground", first ? "top-6.5" : "top-0", last ? "h-6.5" : "bottom-0")} />
         )}
         <Stop className="top-6.5" />
       </span>
       <span aria-hidden className="relative hidden h-5 w-full @xl/line:block">
-        <span className={cn("absolute top-[8.5px] h-[3px] bg-dim-foreground", first ? "left-1/2" : "-left-px", last ? "right-1/2" : "-right-px")} />
+        <span data-slot="series-branch-rail" className={cn("absolute top-[8.5px] h-[3px] bg-dim-foreground", first ? "left-1/2" : "-left-px", last ? "right-1/2" : "-right-px")} />
         {first && branch && (
           <span className="absolute right-1/2 bottom-[8.5px] h-9 w-[calc(50%+1.5rem)] rounded-bl-[12px] border-b-3 border-l-3 border-dim-foreground" />
         )}
@@ -55,6 +55,6 @@ function Spinoff({ entry, first, last, branch }: { entry: FranchiseEntry; first:
 
 function Stop({ className }: { className?: string }) {
   return (
-    <span className={cn("absolute left-1/2 z-[1] size-[11px] -translate-1/2 rounded-full border-[2.5px] border-dim-foreground bg-background", className)} />
+    <span data-slot="series-branch-stop" className={cn("absolute left-1/2 z-[1] size-[11px] -translate-1/2 rounded-full border-[2.5px] border-dim-foreground bg-background", className)} />
   );
 }

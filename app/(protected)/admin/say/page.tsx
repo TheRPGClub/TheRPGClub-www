@@ -30,18 +30,20 @@ export default async function SayPage() {
           </>
         }
       />
-      <p className="mt-4 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
-      {channels === null ? (
-        <p role="alert" className="mt-6 text-destructive">
-          {"Couldn't load the channel list. Refresh to try again."}
-        </p>
-      ) : channels.length === 0 ? (
-        <p className="mt-6 text-dim-foreground">
-          No channels have been synced from Discord yet. The bot sends the list when it starts.
-        </p>
-      ) : (
-        <SayForm channels={channels} guildId={process.env.DISCORD_GUILD_ID || null} />
-      )}
+      <div data-slot="desk-body">
+        <p className="mt-4 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
+        {channels === null ? (
+          <p role="alert" className="mt-6 text-destructive">
+            {"Couldn't load the channel list. Refresh to try again."}
+          </p>
+        ) : channels.length === 0 ? (
+          <p className="mt-6 text-dim-foreground">
+            No channels have been synced from Discord yet. The bot sends the list when it starts.
+          </p>
+        ) : (
+          <SayForm channels={channels} guildId={process.env.DISCORD_GUILD_ID || null} />
+        )}
+      </div>
     </div>
   );
 }

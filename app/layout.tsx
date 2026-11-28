@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import { fetchShareCardWinners, SHARE_CARD_METADATA_TIMEOUT_MS } from "@/lib/api/public-winners";
 import { shareCardMetadata } from "@/lib/share-card/metadata";
-import { DEFAULT_THEME, rootTheme } from "@/themes";
+import { rootTheme } from "@/themes";
 import "./globals.css";
 
 // Development-only Themes (themes/registry.ts) load here, in development
@@ -20,24 +20,26 @@ export async function generateMetadata(): Promise<Metadata> {
   return shareCardMetadata(await fetchShareCardWinners(SHARE_CARD_METADATA_TIMEOUT_MS), process.env);
 }
 
-// Matches the manifest's theme_color: the default Theme's background.
-// viewportFit "cover": the page runs under a phone's notch and home
-// indicator, so the safe-area insets are real numbers; the body keeps
-// content clear of the notch at the sides, and fixed pieces (the sidebar,
-// the phone tab bar) clear the insets themselves.
-export const viewport: Viewport = {
-  themeColor: DEFAULT_THEME.themeColor,
-  viewportFit: "cover",
-};
+// theme-color is the page's Theme's background (the manifest keeps the
+// default Theme's). viewportFit "cover": the page runs under a phone's notch
+// and home indicator, so the safe-area insets are real numbers; the body
+// keeps content clear of the notch at the sides, and fixed pieces (the
+// sidebar, the phone tab bar) clear the insets themselves.
+export async function generateViewport(): Promise<Viewport> {
+  const { theme } = await rootTheme();
+  return { themeColor: theme.themeColor, viewportFit: "cover" };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   // The Theme and its declared light or dark mode, set on the server
-  // (api ADR-0008). Always the default Theme for now.
-  const { theme, fontClassName } = rootTheme();
+  // (api ADR-0008): a signed-in Member's own on every page, the default for
+  // Visitors (themes/index.ts). Dialogs and sheets portal into <body>,
+  // so they take it too.
+  const { theme, fontClassName } = await rootTheme();
   return (
     <html
       lang="en"

@@ -38,7 +38,7 @@ export function ViewSwitch({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mt-9 mb-4 flex flex-wrap items-baseline gap-x-[22px] gap-y-3 border-b-2 border-foreground pb-2">
+    <div data-slot="challenge-view-switch" className="mt-9 mb-4 flex flex-wrap items-baseline gap-x-[22px] gap-y-3 border-b-2 border-foreground pb-2">
       <nav aria-label="Views" className="flex items-baseline gap-x-4 whitespace-nowrap sm:gap-x-[22px]">
         {views.map((view) => {
           const on = view.key === current;

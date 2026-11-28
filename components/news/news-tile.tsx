@@ -37,6 +37,8 @@ export function NewsTile({
   if (size === "quote") {
     return (
       <article
+        data-slot="news-tile"
+        data-size="quote"
         style={{ "--news-ink": ink.color } as CSSProperties}
         className={cn(shell, "border-t-[3px] border-t-(--news-ink) px-3.5 pt-3 pb-3", ink.dashed && "[border-top-style:dashed]")}
       >
@@ -59,17 +61,17 @@ export function NewsTile({
 
   const art = size === "large" || size === "normal";
   return (
-    <article className={cn(shell, "justify-end", art ? "min-h-[13rem]" : "min-h-[10rem]")}>
+    <article data-slot="news-tile" data-size={size} className={cn(shell, "justify-end", art ? "min-h-[13rem]" : "min-h-[10rem]")}>
       {art ? (
         <>
           <NewsArtFill frames={view.frames} ink={ink.color} initial={siteInitial(view.site)} />
-          <div aria-hidden className={SCRIM} />
+          <div aria-hidden data-slot="news-scrim" className={SCRIM} />
         </>
       ) : (
         <InkPanel ink={ink.color} initial={siteInitial(view.site)} />
       )}
       {fresh && <NewDot />}
-      <div className="relative px-3.5 pt-10 pb-3">
+      <div data-slot="news-foot" className="relative px-3.5 pt-10 pb-3">
         <NewsTag item={item} name={categoryName} />
         {view.headline && (
           <h3

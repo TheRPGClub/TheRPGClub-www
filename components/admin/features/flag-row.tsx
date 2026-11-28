@@ -40,7 +40,7 @@ export function FlagRow({ entry, clock, landed, onSaved }: RowProps & { entry: F
           >
             {entry.name}
             {entry.state === "preview" && (
-              <span className="font-label inline-flex h-[22px] items-center rounded-xs px-[7px] text-[0.72rem] font-extrabold tracking-[0.08em] text-highlight shadow-[inset_0_0_0_1.5px_var(--color-highlight)]">
+              <span data-slot="flag-preview-chip" className="font-label inline-flex h-[22px] items-center px-[7px] text-[0.72rem] font-extrabold tracking-[0.08em] text-highlight">
                 Staff only
               </span>
             )}

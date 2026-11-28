@@ -38,7 +38,7 @@ export function KindHeader({
   const meta = kindMeta(kind);
   const Icon = KIND_ICON[kind];
   return (
-    <header className="flex flex-wrap items-center gap-x-[18px] gap-y-4 bg-(--k) px-5 py-5 text-background sm:px-6">
+    <header data-slot="feedback-kind-head" className="flex flex-wrap items-center gap-x-[18px] gap-y-4 bg-(--k) px-5 py-5 text-background sm:px-6">
       <Icon aria-hidden className={cn("size-11 shrink-0 stroke-[2.5]", compact ? "size-9" : "sm:size-14")} />
       <div className="min-w-0 flex-1">
         <DialogTitle variant="kind" className={compact ? "text-[2.1rem]" : "text-[2.4rem] sm:text-[3.2rem]"}>

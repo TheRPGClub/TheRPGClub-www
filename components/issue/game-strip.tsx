@@ -51,13 +51,13 @@ export function GameStrip({
       <div className="flex flex-1 flex-col justify-between px-4 py-3.5 sm:px-7 md:px-8 md:py-5.5">
         <div className="flex flex-col">
           <BackLink href={`/games/${game.game_id}`} label="Game page" onArt className="mb-2" />
-          <p className="font-headline line-clamp-2 text-[2rem] leading-[0.9] md:text-[2.9rem]">
+          <p data-slot="game-headline" data-track={track ?? undefined} className="font-headline line-clamp-2 text-[2rem] leading-[0.9] md:text-[2.9rem]">
             <Link
               href={`/games/${game.game_id}`}
               className="transition-opacity hover:opacity-85"
             >
               {first && <>{first} </>}
-              <span className={trackAccentText(track)}>{second}</span>
+              <span data-slot="game-headline-second" className={trackAccentText(track)}>{second}</span>
             </Link>
           </p>
           <div className="mt-2.5 flex flex-wrap gap-1.5">

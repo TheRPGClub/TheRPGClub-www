@@ -76,7 +76,7 @@ export async function ReviewFeed({
           />
         )}
         {entries.length > 0 && (
-          <p className="font-label -mt-4 text-[0.72rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
+          <p data-slot="feed-utc-note" className="font-label -mt-4 text-[0.72rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
         )}
       </div>
     </div>
@@ -86,7 +86,7 @@ export async function ReviewFeed({
 // The world's empty state: a dashed strong-rule frame and one muted line.
 function FeedNote({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-[2.4px] border-2 border-dashed border-border-strong px-7 py-11">
+    <div data-slot="shelf-empty" className="flex flex-col items-start gap-4 rounded-[2.4px] border-2 border-dashed border-border-strong px-7 py-11">
       <p className="max-w-[60ch] text-[1.02rem] text-dim-foreground">{children}</p>
       {action}
     </div>

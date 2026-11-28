@@ -36,9 +36,9 @@ export function CodexDoor({
   isPublic?: boolean;
 }) {
   return (
-    <article className={cn("relative flex flex-col rounded-md px-6 pt-6 pb-5.5 text-background has-[a[data-door]:focus-visible]:ring-3 has-[a[data-door]:focus-visible]:ring-highlight lg:min-h-[27.5rem]", ink)}>
+    <article data-slot="codex-door" data-variant={ink.replace(/^bg-codex-/, "")} className={cn("relative flex flex-col rounded-md px-6 pt-6 pb-5.5 text-background has-[a[data-door]:focus-visible]:ring-3 has-[a[data-door]:focus-visible]:ring-highlight lg:min-h-[27.5rem]", ink)}>
       {isPublic && (
-        <span className="font-label absolute top-5.5 right-5.5 z-10 inline-flex items-center gap-1.5 rounded-xs px-2 py-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] shadow-[inset_0_0_0_1.5px_currentColor]">
+        <span data-slot="codex-door-public" className="font-label absolute top-5.5 right-5.5 z-10 inline-flex items-center gap-1.5 rounded-xs px-2 py-1.5 text-[0.78rem] font-extrabold tracking-[0.08em] shadow-[inset_0_0_0_1.5px_currentColor]">
           <Eye aria-hidden className="size-3.5" />
           Public
         </span>

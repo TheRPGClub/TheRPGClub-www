@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/shell/app-sidebar";
 import { AccountMenu } from "@/components/shell/account-menu";
 import { TabBar } from "@/components/shell/tab-bar";
+import { Ornament } from "@/components/ornament";
 
 // The signed-in site's frame: the sidebar beside the page and the content
 // frame that owns page width. There is no top bar (www#164): each page's
@@ -42,6 +43,8 @@ export function AppShell({
   return (
     <TooltipProvider>
       <SidebarProvider defaultOpen={sidebarOpen}>
+        {/* A Theme's scene behind the whole app (none under Monthly Issue). */}
+        <Ornament role="backdrop" />
         <AppSidebar
           principal={principal}
           membership={membership}
@@ -59,7 +62,7 @@ export function AppShell({
               to max-w-page and centers past it. Its head clears a phone's
               notch (viewportFit "cover"); on phones its foot clears the tab
               bar. */}
-          <div className="mx-auto flex w-full max-w-page flex-1 flex-col px-4 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-7 md:pb-6">
+          <div data-slot="content-frame" className="mx-auto flex w-full max-w-page flex-1 flex-col px-4 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-7 md:pb-6">
             {children}
           </div>
         </SidebarInset>

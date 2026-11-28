@@ -18,6 +18,7 @@ export function LearnedShelf({
   return (
     <section
       aria-labelledby="already-learned"
+      data-slot="learned-shelf"
       className="relative z-10 mt-6 border-t-2 border-foreground bg-card px-4 py-3.5 md:mx-auto md:max-w-[44rem] md:px-5"
     >
       <h2 id="already-learned" className="font-headline text-xl leading-none">

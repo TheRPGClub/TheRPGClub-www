@@ -42,7 +42,7 @@ export function PatchVersionFoot({ versions }: { versions: Versions | null }) {
   const line = versionLine(versions, ["www", "api"]);
   if (!line) return null;
   return (
-    <footer className="font-label mt-12 flex min-h-11 items-center border-t border-border text-xs font-bold tracking-[0.08em] text-faint-foreground">
+    <footer data-slot="patch-version-foot" className="font-label mt-12 flex min-h-11 items-center border-t border-border text-xs font-bold tracking-[0.08em] text-faint-foreground">
       <Link
         href={PATCH_NOTES_PATH}
         className="tabular-nums underline decoration-border-strong underline-offset-4 transition-colors hover:text-highlight hover:decoration-highlight"

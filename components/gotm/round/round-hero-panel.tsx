@@ -52,6 +52,7 @@ export function RoundHeroPanel({
       )}
       <span
         aria-hidden
+        data-slot="round-hero-scrim"
         className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-background)_94%,transparent)_0%,color-mix(in_oklab,var(--color-background)_62%,transparent)_45%,color-mix(in_oklab,var(--color-background)_8%,transparent)_85%)]"
       />
       <WinnerMark
@@ -76,13 +77,15 @@ export function RoundHeroPanel({
           <span className="max-md:hidden"> winner</span>
         </span>
         <h2
+          data-slot="round-hero-title"
+          data-tone={nr ? "nr" : "gotm"}
           className={cn(
             "font-headline leading-[1.02] uppercase text-balance",
             compact ? "text-[1.625rem] md:text-[1.75rem]" : "text-[1.625rem] md:text-[2.5rem]",
           )}
         >
           <span className="block">{lead}</span>
-          {tail && <span className={cn("block", nr ? "text-nr-soft" : "text-highlight")}>{tail}</span>}
+          {tail && <span data-slot="round-hero-title-second" className={cn("block", nr ? "text-nr-soft" : "text-highlight")}>{tail}</span>}
         </h2>
         <RoundHeroCredit row={row} meta={meta} mirrored={mirrored} />
         <OutboundLinks links={links} className={cn("mt-2", mirrored && "md:-mr-1 md:ml-0 md:justify-end")} />

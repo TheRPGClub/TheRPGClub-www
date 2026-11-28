@@ -10,7 +10,7 @@ import { useSwitchSaves } from "@/hooks/use-switch-saves";
 const ID = "show_preview";
 
 // "Show Preview features" for Admins and Superadmins, on the Staff tab: a
-// raised ink-2 panel, saving on flip like every settings switch. It saves to
+// raised panel, saving on flip like every settings switch. It saves to
 // the same Feature Preferences the Features tab does; the action refreshes
 // the page, so both read the API's answer.
 export function PreviewSwitch({ initial }: { initial: FeaturePreferences }) {
@@ -23,7 +23,7 @@ export function PreviewSwitch({ initial }: { initial: FeaturePreferences }) {
   const on = state.show_preview_features === true;
 
   return (
-    <ul className="mt-4 rounded-md border border-border bg-card px-4" aria-label="Staff">
+    <ul data-slot="preference-list" data-variant="panel" className="mt-4 border border-border bg-card px-4" aria-label="Staff">
       <PreferenceRow
         id={ID}
         name="Show Preview features"

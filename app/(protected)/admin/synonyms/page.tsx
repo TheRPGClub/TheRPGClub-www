@@ -60,13 +60,15 @@ export default async function SynonymsPage() {
           )
         }
       />
-      {groups === null ? (
-        <p role="alert" className="mt-5 text-destructive">
-          {"Couldn't load the synonyms. Refresh to try again."}
-        </p>
-      ) : (
-        <SynonymsDictionary groups={groups} />
-      )}
+      <div data-slot="desk-body">
+        {groups === null ? (
+          <p role="alert" className="mt-5 text-destructive">
+            {"Couldn't load the synonyms. Refresh to try again."}
+          </p>
+        ) : (
+          <SynonymsDictionary groups={groups} />
+        )}
+      </div>
     </div>
   );
 }

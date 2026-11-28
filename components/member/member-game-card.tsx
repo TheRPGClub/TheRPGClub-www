@@ -87,7 +87,7 @@ export const memberGridClass =
 
 export function MemberListEmpty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-sm border border-dashed border-border-strong px-4 py-10 text-center text-sm text-faint-foreground">
+    <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-10 text-center text-sm text-faint-foreground">
       {children}
     </p>
   );

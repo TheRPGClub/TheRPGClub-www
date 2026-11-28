@@ -68,7 +68,7 @@ export function LoreShelf({
 
   return (
     <div className="grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_440px]">
-      <div className="min-w-0 rounded-md bg-card px-4 pt-6.5 sm:px-7">
+      <div data-slot="lore-shelf" className="min-w-0 rounded-md bg-card px-4 pt-6.5 sm:px-7">
         <div
           ref={row}
           style={scale ? ({ "--spine-scale": scale } as React.CSSProperties) : undefined}
@@ -78,6 +78,7 @@ export function LoreShelf({
             role="listbox"
             aria-label="Lore Entries, newest first"
             aria-orientation="horizontal"
+            data-slot="lore-shelf-row"
             onKeyDown={onKeyDown}
             className="flex h-[calc(540px*var(--spine-scale))] w-max min-w-full items-end gap-1.5 px-1 pt-6"
           >
@@ -107,8 +108,8 @@ export function LoreShelf({
             ))}
           </div>
         </div>
-        <div aria-hidden className="-mx-4 h-4 bg-border-strong shadow-[0_8px_16px_rgb(0_0_0/0.5)] sm:-mx-7" />
-        <p className="font-label py-3 text-[0.75rem] font-bold tracking-[0.08em] text-faint-foreground">
+        <div aria-hidden data-slot="lore-shelf-plank" className="-mx-4 h-4 bg-border-strong sm:-mx-7" />
+        <p data-slot="lore-shelf-note" className="font-label py-3 text-[0.75rem] font-bold tracking-[0.08em] text-faint-foreground">
           Newest on the left. A spine&apos;s width is its story&apos;s length.
         </p>
       </div>

@@ -25,6 +25,7 @@ export function LetterRail({ query }: { query: BrowseQuery }) {
                 })}
                 scroll={false}
                 aria-current={on ? "true" : undefined}
+                data-slot="letter-rail-letter"
                 aria-label={
                   on
                     ? `${label(letter)}, shown. Show every Franchise`

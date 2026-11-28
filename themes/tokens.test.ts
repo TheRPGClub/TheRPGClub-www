@@ -52,10 +52,13 @@ describe("Theme tokens", () => {
     expect(tokensReadByGlobals().filter((token) => !tokens.has(token))).toEqual([]);
   });
 
-  it("the test Theme swaps every token the Monthly Issue Theme sets", () => {
-    const testTheme = tokensOf("test");
-    expect([...tokensOf("monthly-issue")].filter((token) => !testTheme.has(token))).toEqual([]);
-  });
+  it.each(THEMES.filter((theme) => theme.name !== "monthly-issue").map((theme) => theme.name))(
+    "the %s Theme sets every token the Monthly Issue Theme sets",
+    (name) => {
+      const tokens = tokensOf(name);
+      expect([...tokensOf("monthly-issue")].filter((token) => !tokens.has(token))).toEqual([]);
+    },
+  );
 
   it.each(THEMES.map((theme) => theme.name))("the %s Theme leaves the fixed colours alone", (name) => {
     expect([...tokensOf(name)].filter((token) => /provider|tier-|brand-/.test(token))).toEqual([]);

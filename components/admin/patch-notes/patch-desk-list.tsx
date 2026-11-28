@@ -13,16 +13,16 @@ import { cn } from "@/lib/utils";
 export function PatchDeskList({ patches }: { patches: readonly Patch[] }) {
   if (patches.length === 0) {
     return (
-      <p className="rounded-[3px] border border-dashed border-border-strong px-4 py-3.5 text-[0.9375rem] text-dim-foreground">
+      <p data-slot="desk-empty" className="rounded-[3px] border border-dashed border-border-strong px-4 py-3.5 text-[0.9375rem] text-dim-foreground">
         No Patches yet. Start the first one: it becomes Patch 1.
       </p>
     );
   }
   const ordered = [...patches.filter((p) => p.status === "draft"), ...patches.filter((p) => p.status !== "draft")];
   return (
-    <ul className="border-t-2 border-foreground">
+    <ul data-slot="patch-desk-list" className="border-t-2 border-foreground">
       {ordered.map((patch) => (
-        <li key={patch.number} className="border-b border-border">
+        <li key={patch.number} data-slot="patch-desk-row" className="border-b border-border">
           <Link
             href={patchEditPath(patch.number)}
             className="group/row grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-x-4 rounded-xs py-3 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"

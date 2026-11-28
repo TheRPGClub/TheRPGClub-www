@@ -20,11 +20,12 @@ export function CalendarGrid({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="relative mt-4 grid grid-cols-7 border-t border-l border-border">
+    <div data-slot="release-calendar" className="relative mt-4 grid grid-cols-7 border-t border-l border-border">
       {GRID_WEEKDAYS.map((name) => (
         <div
           key={name}
           aria-hidden
+          data-slot="release-calendar-weekday"
           className="font-label border-r border-b border-border bg-card px-2.5 pt-2.5 pb-2 text-[0.78rem] leading-none font-extrabold tracking-[0.08em] text-faint-foreground"
         >
           {name}
@@ -37,6 +38,10 @@ export function CalendarGrid({
         return (
           <div
             key={day}
+            data-slot="release-calendar-day"
+            data-today={(isToday && inMonth) || undefined}
+            data-past={past || undefined}
+            data-weekend={weekend || undefined}
             className={cn(
               "flex min-h-33 min-w-0 flex-col gap-2 border-r border-b border-border p-2 pb-2.5",
               weekend && "bg-foreground/[0.015]",
@@ -51,6 +56,7 @@ export function CalendarGrid({
             )}
             <span
               aria-hidden
+              data-slot="release-calendar-date"
               className={cn(
                 "font-headline grid h-7 min-w-7 place-items-center self-start rounded-xs text-[1.2rem] leading-none",
                 !inMonth && "invisible",

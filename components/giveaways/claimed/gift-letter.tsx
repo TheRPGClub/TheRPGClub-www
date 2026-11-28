@@ -38,9 +38,10 @@ export function GiftLetter({
     <article
       aria-label={`Your key for ${title}`}
       style={{ "--p": ink } as CSSProperties}
+      data-slot="gift-letter"
       className="relative overflow-hidden rounded-md bg-foreground pb-8 text-background shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
     >
-      <i aria-hidden className="gift-paper block h-11 [clip-path:polygon(0_0,100%_0,100%_60%,96%_95%,91%_62%,85%_92%,79%_58%,72%_96%,65%_60%,58%_90%,51%_62%,44%_94%,37%_58%,30%_88%,23%_60%,16%_96%,9%_62%,4%_90%,0_64%)]" />
+      <i aria-hidden data-slot="gift-letter-torn" className="gift-paper block h-11" />
       <p className="font-label mx-6 mt-3 border-b-2 border-background pb-2 text-[0.75rem] font-extrabold sm:mx-9">
         The RPG Club bot · to {viewerName}
       </p>
@@ -69,7 +70,7 @@ export function GiftLetter({
         </p>
       </div>
       {claimedOn && (
-        <span aria-hidden className="absolute top-[5.5rem] right-7 hidden size-24 -rotate-8 place-content-center rounded-full border-[3px] border-background text-center leading-none opacity-85 md:grid">
+        <span aria-hidden data-slot="gift-letter-stamp" className="absolute top-[5.5rem] right-7 hidden size-24 place-content-center rounded-full border-[3px] border-background text-center leading-none opacity-85 md:grid">
           <span className="font-label text-[0.7rem] font-extrabold">Claimed</span>
           <span className="font-headline text-[1.6rem]">{claimedOn}</span>
         </span>

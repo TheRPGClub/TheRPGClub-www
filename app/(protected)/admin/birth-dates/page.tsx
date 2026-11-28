@@ -29,8 +29,10 @@ export default async function BirthDatesPage() {
           </>
         }
       />
-      <p className="mt-3 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
-      <BirthDateForMember today={clubToday()} />
+      <div data-slot="desk-body">
+        <p className="mt-3 max-w-[60ch] text-dim-foreground">{SECTION.blurb}</p>
+        <BirthDateForMember today={clubToday()} />
+      </div>
     </div>
   );
 }

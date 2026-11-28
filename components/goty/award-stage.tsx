@@ -34,7 +34,7 @@ export function AwardStage({
         })}
       </TabsList>
       {vote.awards.map((a) => (
-        <TabsContent key={a.award} value={a.award} keepMounted className="text-base">
+        <TabsContent data-slot="goty-award-panel" key={a.award} value={a.award} keepMounted className="text-base">
           <AwardPanel
             vote={vote}
             award={a}

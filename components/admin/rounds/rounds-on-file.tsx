@@ -20,7 +20,7 @@ export function RoundsOnFile({
   totalPages: number;
 }) {
   return (
-    <section aria-labelledby="rounds-on-file" className="mt-12">
+    <section data-slot="issue-desk" data-variant="rounds-on-file" aria-labelledby="rounds-on-file" className="mt-12">
       <h2
         id="rounds-on-file"
         className="font-headline border-b-2 border-foreground pb-1.5 text-[2rem] leading-none"

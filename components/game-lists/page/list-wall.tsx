@@ -33,7 +33,7 @@ export function ListWall({
 
   if (entries.length === 0 && !editing) {
     return (
-      <p className="rounded-md border border-dashed border-border-strong px-4 py-10 text-center text-sm text-faint-foreground">
+      <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-10 text-center text-sm text-faint-foreground">
         No games on this list yet.
       </p>
     );

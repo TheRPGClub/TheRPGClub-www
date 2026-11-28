@@ -36,7 +36,7 @@ export function ProfileLists({ lists, own, now }: { lists: GameList[]; own: bool
           size="bare"
           className="h-[11.5rem] w-[4.4rem] shrink-0 flex-col items-center justify-center gap-2 self-end max-sm:hidden"
         >
-          <span className="font-headline rotate-180 text-[1.05rem] leading-none [writing-mode:vertical-rl]">
+          <span data-slot="spine-title" className="font-headline text-[1.05rem] leading-none">
             New list
           </span>
           <Plus aria-hidden />

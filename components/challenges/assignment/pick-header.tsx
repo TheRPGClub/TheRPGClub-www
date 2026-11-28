@@ -23,7 +23,7 @@ export function PickHeader({
   badge?: React.ReactNode;
 }) {
   return (
-    <header>
+    <header data-slot="pick-header">
       <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border-b-2 border-foreground pb-3">
         <div className="min-w-0">
           <div className="mb-3 flex flex-wrap items-center gap-1.5">

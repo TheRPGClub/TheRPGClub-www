@@ -17,7 +17,7 @@ export function ReviewVerdictScore({
   authorName: string;
 }) {
   return (
-    <div className="flex flex-wrap items-end gap-x-3.5 bg-foreground p-4 text-background md:flex-col md:flex-nowrap md:items-stretch md:p-5.5">
+    <div data-slot="verdict-score" className="flex flex-wrap items-end gap-x-3.5 bg-foreground p-4 text-background md:flex-col md:flex-nowrap md:items-stretch md:p-5.5">
       <h2 id="verdict" className="sr-only">
         Verdict
       </h2>

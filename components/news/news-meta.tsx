@@ -14,6 +14,7 @@ export function NewsTag({ item, name }: { item: NewsItem; name: string }) {
   return (
     <span
       title={name}
+      data-slot="news-tag"
       className="font-label inline-flex h-[22px] items-center gap-1.5 rounded-xs bg-background/75 px-2 text-xs font-bold tracking-[0.08em] text-foreground uppercase"
     >
       <InkSquare {...newsInk(item.category_key)} className="size-2" />
@@ -73,6 +74,7 @@ export function NewDot() {
   return (
     <span
       aria-hidden
+      data-slot="news-new-dot"
       className="absolute top-3 right-3 z-10 size-[9px] rounded-full bg-highlight shadow-[0_0_0_3px_color-mix(in_oklab,var(--background)_70%,transparent)]"
     />
   );

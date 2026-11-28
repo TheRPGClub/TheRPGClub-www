@@ -38,7 +38,7 @@ export function PatchPage({
         dateTime={patch.published_at}
         badge={badge}
       />
-      <div className="mt-7 grid gap-7 md:mt-8 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-0 md:px-7 lg:grid-cols-[16.75rem_minmax(0,1fr)]">
+      <div data-slot="patch-page-body" className="mt-7 grid gap-7 md:mt-8 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-0 md:px-7 lg:grid-cols-[16.75rem_minmax(0,1fr)]">
         <div className="border-b border-border pb-5 md:border-b-0 md:border-r-2 md:border-r-foreground md:pr-7 md:pb-0">
           <PatchLedger date={patchDate(patch)} dateTime={patch.published_at} counts={patch.counts} />
         </div>

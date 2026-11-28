@@ -12,7 +12,7 @@ export function LoreMasthead({ entry, actions }: { entry: CodexEntry; actions?: 
   const [first, second] = titleLines(entry.title ?? "");
   const stamp = dateStamp(entry.occurred_on, entry.date_precision);
   return (
-    <header>
+    <header data-slot="lore-masthead">
       <div className="grid items-end gap-x-7 gap-y-4 border-b-2 border-foreground pb-4.5 sm:grid-cols-[minmax(0,1fr)_auto]">
         <h1 className="font-headline text-[3rem] leading-[0.86] text-balance break-words sm:text-[4.5rem] xl:text-[6rem]">
           {first}
@@ -25,7 +25,7 @@ export function LoreMasthead({ entry, actions }: { entry: CodexEntry; actions?: 
         </h1>
         {stamp && (
           <div className="justify-self-start text-center sm:mr-2 sm:mb-2 sm:justify-self-end">
-            <p className="font-headline inline-block -rotate-6 rounded-[2px] px-3.5 py-2.5 text-[1.25rem] leading-[0.95] text-codex-lore shadow-[inset_0_0_0_2px_var(--color-codex-lore)] sm:text-[1.625rem]">
+            <p data-slot="lore-date-stamp" className="font-headline inline-block rounded-[2px] px-3.5 py-2.5 text-[1.25rem] leading-[0.95] text-codex-lore shadow-[inset_0_0_0_2px_var(--color-codex-lore)] sm:text-[1.625rem]">
               {stamp.lines.map((line) => (
                 <span key={line} className="block">
                   {line}

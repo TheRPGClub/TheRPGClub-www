@@ -51,9 +51,10 @@ export function ManuscriptSheet({
   return (
     <section
       aria-label="The manuscript"
-      className="relative rounded-[4px] bg-card pb-6.5 shadow-[inset_0_0_0_1px_var(--color-border),0_18px_40px_rgb(0_0_0/0.45)]"
+      data-slot="manuscript-sheet"
+      className="relative rounded-[4px] bg-card pb-6.5"
     >
-      <div className="sticky top-[env(safe-area-inset-top)] z-20 flex items-center gap-3 rounded-t-[4px] bg-muted px-3 py-2 sm:px-12">
+      <div data-slot="manuscript-sheet-toolbar" className="sticky top-[env(safe-area-inset-top)] z-20 flex items-center gap-3 rounded-t-[4px] bg-muted px-3 py-2 sm:px-12">
         <RichTextToolbar schema={schema} className="min-w-0 flex-1 flex-nowrap overflow-x-auto">
           <ToolbarButton label="Mention a member" onClick={mention.begin}>
             <AtSign className="size-4" strokeWidth={1.75} />

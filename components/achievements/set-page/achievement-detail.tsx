@@ -71,7 +71,7 @@ export function AchievementDetail({
       <div className="flex items-end gap-4">
         <AchievementIcon view={view} size="lg" slot={slot} tint={tint} />
         <p className="font-label pb-1 text-[0.85rem] text-faint-foreground">
-          No. <span style={{ color: tint }}>{formatSlot(slot)}</span>
+          No. <span data-slot="detail-slot-number" style={{ color: tint }}>{formatSlot(slot)}</span>
         </p>
       </div>
 

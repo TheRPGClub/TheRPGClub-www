@@ -3,6 +3,8 @@
 import { createElement } from "react";
 import { getSocialIcon } from "@/lib/socials-icons";
 
+const SLOT = { "data-slot": "social-icon" } as const;
+
 interface SocialIconProps {
   label?: string | null;
   width?: string;
@@ -24,5 +26,8 @@ export function SocialIcon({
     height,
     className,
     "aria-hidden": true,
+    // A Theme may tint the brand glyph (themes/<name>/primitives.css). The
+    // icon passes every prop to its <svg>; its type lists only SVG props.
+    ...SLOT,
   });
 }

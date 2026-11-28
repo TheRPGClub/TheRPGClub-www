@@ -90,7 +90,7 @@ describe("GotmHistory", () => {
 
   it("sets the round numeral on the banners' corner, the month and nominated tag beside it", () => {
     const html = render([R144]);
-    expect(html).toMatch(/<span class="font-headline[^"]*sm:text-\[5\.75rem\][^"]*"><span class="sr-only">Round <\/span>144<\/span>/);
+    expect(html).toMatch(/<span data-slot="gotm-round-number" class="font-headline[^"]*sm:text-\[5\.75rem\][^"]*"><span class="sr-only">Round <\/span>144<\/span>/);
     expect(html).toContain("Nov 2026");
     expect(html.indexOf(">144<")).toBeLessThan(html.indexOf("8 nominated"));
     expect(html.indexOf("8 nominated")).toBeLessThan(html.indexOf("<h3"));
@@ -168,7 +168,7 @@ describe("GotmHistory", () => {
   });
 
   it("breaks headlines at the subtitle colon", () => {
-    expect(render([R120])).toMatch(/Metaphor:<\/span><span class="[^"]*text-highlight[^"]*">ReFantazio/);
+    expect(render([R120])).toMatch(/Metaphor:<\/span><span [^>]*class="[^"]*text-highlight[^"]*">ReFantazio/);
   });
 
   it("marks only the newest round's winners with the starburst, on the roll's first page", () => {

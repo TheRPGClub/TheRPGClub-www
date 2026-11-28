@@ -85,7 +85,7 @@ export async function NewsBody({
         <NewsCatchup top={top!} rows={rows} filters={filters} nameOf={nameOf} now={now} />
       )}
       {ok && (top?.items.length || rows.items.length) ? (
-        <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+        <p data-slot="news-utc-note" className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
           Days and times in UTC
         </p>
       ) : null}

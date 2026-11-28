@@ -3,13 +3,15 @@ import { Starburst } from "@/components/issue/starburst";
 import { CoverPanel } from "@/components/issue/cover-panel";
 import { SIZES, TRACK } from "@/components/issue/cover-track";
 import type { GameCounts } from "@/lib/api/game-counts";
+import { Ornament } from "@/components/ornament";
 import { cn } from "@/lib/utils";
 
 // The issue's cover story: a round's winners for one track, full-bleed key art
 // under a monumental round number. GOTM is normally the cover; NR-GOTM takes
 // it only when a round has no GOTM. Co-winners share the one cover: two split
 // it, three put a lead panel beside two stacked ones. Server-only (the
-// Discord link config reads server env vars).
+// Discord link config reads server env vars). A Theme places the winner mark
+// by the story's slot, track and winner count (data-count).
 export function CoverStory({
   kind,
   roundNumber,
@@ -40,26 +42,18 @@ export function CoverStory({
   return (
     <section
       aria-label={`${track.label}, round ${roundNumber}${count > 1 ? `: ${count} winners` : ""}`}
+      data-slot="cover-story"
+      data-track={kind}
+      data-count={count}
       className={cn(
         "relative grid min-h-[30rem] gap-1 overflow-hidden rounded-md bg-background lg:min-h-[32rem]",
         count === 2 && "sm:grid-cols-[1.42fr_1fr]",
         count === 3 && "sm:grid-cols-[1.3fr_1fr] sm:grid-rows-2",
       )}
     >
-      <Starburst
-        track={kind}
-        className={cn(
-          "absolute z-10",
-          count === 1 && "top-7 right-8 size-32 sm:size-42",
-          count === 2 &&
-            "top-6 right-6 size-28 sm:right-auto sm:left-[calc(58.6%-4.6rem)] sm:size-37",
-          count >= 3 &&
-            "top-6 right-6 size-28 sm:right-auto sm:left-[calc(56.5%-10.5rem)] sm:size-35",
-        )}
-        textClassName={cn(
-          kind === "nr_gotm" ? "text-[1.05rem] sm:text-xl" : "text-lg sm:text-2xl",
-        )}
-      />
+      {/* A Theme's gloss over the key art (none under Monthly Issue). */}
+      <Ornament role="glare" motion="sweep" />
+      <Starburst track={kind} className="absolute z-10" textClassName="" />
       {winners.map((entry, i) => (
         <CoverPanel
           key={entry.gamedb_game_id ?? `index-${i}`}

@@ -34,7 +34,7 @@ export default async function PatchEditorListPage() {
       />
       <NewPatchButton />
       {patches === null ? (
-        <p role="alert" className="text-destructive">
+        <p data-slot="staff-alert" role="alert" className="text-destructive">
           {"Couldn't load the Patches. Refresh to try again."}
         </p>
       ) : (

@@ -36,6 +36,7 @@ export function RunPanel({
   return (
     <section
       id="run"
+      data-slot="run-panel"
       aria-label={member ? `${memberName(member.user)}'s Run` : "Your Run"}
       className="mt-[26px] scroll-mt-24 rounded-md bg-card px-3.5 pt-5 pb-5 sm:px-[22px] sm:pb-[22px]"
     >

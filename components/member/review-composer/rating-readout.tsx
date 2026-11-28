@@ -34,7 +34,7 @@ export function RatingReadout({
 
   return (
     <div className="flex items-end gap-2">
-      <span className={cn("relative inline-flex", desk && "h-[5.75rem] w-[9rem] items-center justify-center")}>
+      <span data-slot="rating-readout" data-size={desk ? "desk" : "quick"} className={cn("relative inline-flex", desk && "h-[5.75rem] w-[9rem] items-center justify-center")}>
         {desk && ringed && <PencilRing dashed={unset} />}
         <Input
           variant="bare"
@@ -71,6 +71,7 @@ function PencilRing({ dashed }: { dashed: boolean }) {
   return (
     <svg
       aria-hidden
+      data-slot="pencil-ring"
       viewBox="0 0 100 60"
       preserveAspectRatio="none"
       className="pointer-events-none absolute inset-0 size-full text-highlight"

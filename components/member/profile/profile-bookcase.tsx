@@ -8,7 +8,7 @@ import { BacklogShelf, CollectionShelf } from "@/components/member/profile/list-
 export function ProfileBookcase({ profile }: { profile: MemberProfile }) {
   const { show } = profile;
   return (
-    <div className="border-t-2 border-foreground">
+    <div data-slot="profile-bookcase" className="border-t-2 border-foreground">
       <FavoritesShelf profile={profile} />
       {show.completed && <CompletedShelf profile={profile} />}
       {show.backlog && <BacklogShelf profile={profile} />}

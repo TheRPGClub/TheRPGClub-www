@@ -83,7 +83,8 @@ export function SetSpread({
         {/* left page */}
         <section
           aria-label={SET_PAGE_VIEWS.find((v) => v.key === view)?.label}
-          className="relative flex min-w-0 flex-col gap-5 rounded-md bg-card py-5 pr-4 pl-7 sm:py-7 sm:pr-7 sm:pl-11 xl:rounded-r-none xl:shadow-[inset_-22px_0_26px_-20px_rgb(0_0_0/0.7)]"
+          data-slot="set-spread-page" data-side="left"
+          className="relative flex min-w-0 flex-col gap-5 rounded-md bg-card py-5 pr-4 pl-7 sm:py-7 sm:pr-7 sm:pl-11 xl:rounded-r-none"
         >
           <TintSpine tint={tint.tint} width={12} />
           <PageHead
@@ -106,7 +107,8 @@ export function SetSpread({
         {/* right page */}
         <aside
           aria-label="Details"
-          className="flex flex-col gap-6 rounded-md bg-card p-5 sm:p-7 xl:rounded-l-none xl:shadow-[inset_22px_0_26px_-20px_rgb(0_0_0/0.7)]"
+          data-slot="set-spread-page" data-side="right"
+          className="flex flex-col gap-6 rounded-md bg-card p-5 sm:p-7 xl:rounded-l-none"
         >
           <PageHead left={`${memberName}’s Unlocks`} right="By Rarity" className="max-xl:hidden" />
           <div className="hidden xl:sticky xl:top-6 xl:flex xl:flex-col xl:gap-6">

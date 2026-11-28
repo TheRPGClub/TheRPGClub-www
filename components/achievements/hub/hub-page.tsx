@@ -51,7 +51,7 @@ export function HubPage({
         buildHref={(page) => feedHref(filters, { page })}
       />
       {cards.length > 0 && (
-        <p className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+        <p data-slot="hub-note" className="font-label text-[0.8rem] tracking-[0.08em] text-faint-foreground">
           Days and times in UTC
         </p>
       )}

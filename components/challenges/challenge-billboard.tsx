@@ -33,8 +33,9 @@ export function ChallengeBillboard({
   const when = edition ? `Edition ${edition.year}` : whenLabel(challenge);
   return (
     <article
+      data-slot="challenge-billboard"
       style={tintStyle(challengeTint(challenge))}
-      className="relative grid grid-cols-1 gap-x-5 rounded-md bg-(--challenge-tint) px-5 pt-5 pb-5 text-(--challenge-type) shadow-[0_18px_40px_rgb(0_0_0/0.55)] sm:grid-cols-[minmax(0,1fr)_196px] sm:px-6 sm:pt-[22px]"
+      className="relative grid grid-cols-1 gap-x-5 rounded-md bg-(--challenge-tint) px-5 pt-5 pb-5 text-(--challenge-type) sm:grid-cols-[minmax(0,1fr)_196px] sm:px-6 sm:pt-[22px]"
     >
       {challenge.hidden && <Tape>Hidden</Tape>}
       <div className="min-w-0">

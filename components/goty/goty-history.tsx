@@ -7,7 +7,7 @@ import { HistoryAward } from "./history-award";
 // disclosure (api#476: each year is read in full for its tally).
 export function GotyHistory({ years }: { years: GotyVote[] }) {
   return (
-    <section className="mt-2.5">
+    <section data-slot="goty-stage" data-variant="history" className="mt-2.5">
       <SectionHeading title="Winners by year" count="Newest first" className="mb-1" />
       {years.length === 0 ? (
         <p className="py-6 text-dim-foreground">No year has been decided yet. The first winners land here.</p>

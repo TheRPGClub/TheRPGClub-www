@@ -1813,6 +1813,12 @@
         [data-slot="label"][data-variant="kind-choice"] {
             @apply font-label cursor-pointer rounded-sm bg-muted font-bold tracking-[0.06em] text-dim-foreground uppercase inset-ring-1 inset-ring-(--k)/35 transition-colors hover:text-foreground hover:inset-ring-(--k)/60 has-data-checked:bg-(--k) has-data-checked:text-background has-data-checked:inset-ring-(--k) has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight motion-reduce:transition-none;
         }
+        /* Theme picker (www#250, sketch A "Cover pair"): an ink-2 card with
+           a hairline, the swatch as its cover; the chosen card rings in
+           2px highlighter yellow, focus is a 3px yellow outline off it. */
+        [data-slot="toggle-group-item"][data-variant="theme-card"] {
+            @apply cursor-pointer rounded-sm bg-card text-left whitespace-normal text-card-foreground inset-ring-1 inset-ring-border transition-shadow hover:inset-ring-border-strong focus-visible:ring-0 focus-visible:outline-3 focus-visible:outline-solid focus-visible:outline-offset-3 focus-visible:outline-highlight/50 aria-pressed:inset-ring-2 aria-pressed:inset-ring-highlight motion-reduce:transition-none;
+        }
         [data-slot="label"][data-variant="kind-drop"] {
             @apply cursor-pointer rounded-sm border-[1.5px] border-dashed border-(--k)/50 bg-muted text-faint-foreground transition-colors hover:border-(--k) data-dragging:border-highlight data-dragging:bg-highlight/6 has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-highlight motion-reduce:transition-none;
         }
@@ -1828,6 +1834,53 @@
         }
         [data-slot="tabs-list"][data-variant="desk"] [data-slot="tabs-trigger"] {
             @apply flex-none rounded-none bg-transparent px-4 pt-3 pb-2.5 text-faint-foreground uppercase shadow-none after:bottom-[-1px] after:h-0.5 after:bg-foreground hover:text-foreground focus-visible:[--tw-ring-shadow:0_0_#0000] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-highlight data-active:bg-transparent data-active:text-foreground data-active:shadow-none data-active:after:opacity-100;
+        }
+
+        /* The root components (www#252). corner-ribbon: a diagonal band
+           across a card's corner, in its track's ink; a long label steps
+           down in size and tracking (data-fit). platform-pills: neutral
+           label chips, a faint paper wash with dim type. social-icon and
+           bot-job-status keep the look their parts give them; the status
+           line is small type. */
+        [data-slot="corner-ribbon"] {
+            @apply rotate-45;
+            &[data-size="default"] {
+                @apply -right-14 top-7 h-7 w-52;
+            }
+            &[data-size="sm"] {
+                @apply -right-10 top-3 h-5 w-32;
+            }
+            &[data-tone="gotm"] [data-slot="corner-ribbon-band"] {
+                @apply bg-gotm text-gotm-foreground;
+            }
+            &[data-tone="nr"] [data-slot="corner-ribbon-band"] {
+                @apply bg-nr text-nr-foreground;
+            }
+            &[data-size="default"] [data-slot="corner-ribbon-band"] {
+                &[data-fit="roomy"] {
+                    @apply text-[10px] tracking-[0.25em];
+                }
+                &[data-fit="tight"] {
+                    @apply text-[9px] tracking-[0.15em];
+                }
+            }
+            &[data-size="sm"] [data-slot="corner-ribbon-band"] {
+                &[data-fit="roomy"] {
+                    @apply text-[9px] tracking-[0.15em];
+                }
+                &[data-fit="tight"] {
+                    @apply text-[8px] tracking-[0.05em];
+                }
+            }
+        }
+        [data-slot="corner-ribbon-band"] {
+            @apply font-label font-extrabold shadow-md;
+        }
+        [data-slot="platform-pill"] {
+            @apply font-label rounded-xs bg-foreground/8 text-[0.78rem] text-dim-foreground;
+        }
+        [data-slot="bot-job-status"] {
+            @apply text-sm;
         }
     }
 }

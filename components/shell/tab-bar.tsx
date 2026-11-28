@@ -50,6 +50,7 @@ export function TabBar({
   return (
     <nav
       aria-label="Main"
+      data-slot="tab-bar"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-sidebar-border bg-sidebar pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
     >
       <ul className="grid h-15.5 auto-cols-fr grid-flow-col">

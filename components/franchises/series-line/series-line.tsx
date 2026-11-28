@@ -15,13 +15,13 @@ export function SeriesLine({ layout }: { layout: FranchiseLayout }) {
   const { mainline, other, strays } = layout;
   if (mainline.length + other.length + strays.length === 0) {
     return (
-      <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+      <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
         No games are linked to this Franchise yet.
       </p>
     );
   }
   return (
-    <div className="@container/line">
+    <div data-slot="series-line" className="@container/line">
       <Key mainline={mainline.length > 0} spinoffs={other.length > 0} addOns={layout.counts.addOns > 0} />
       {mainline.length > 0 && (
         <ol aria-label="Mainline, in release order" className="grid @xl/line:grid-cols-4 @xl/line:gap-y-12 @xl/line:pr-12 @xl/line:pl-6 @3xl/line:grid-cols-6 @5xl/line:grid-cols-8">
@@ -61,13 +61,13 @@ function Key({ mainline, spinoffs, addOns }: { mainline: boolean; spinoffs: bool
   return (
     <p aria-hidden className="font-label mb-5 flex flex-wrap justify-end gap-x-5 gap-y-1 text-[0.72rem] text-dim-foreground">
       {mainline && (
-        <span className="flex items-center gap-2"><i className="h-1.5 w-5 bg-foreground" />Mainline</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="mainline" className="h-1.5 w-5 bg-foreground" />Mainline</span>
       )}
       {spinoffs && (
-        <span className="flex items-center gap-2"><i className="h-[3px] w-5 bg-dim-foreground" />Spin-off</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="spin-off" className="h-[3px] w-5 bg-dim-foreground" />Spin-off</span>
       )}
       {addOns && (
-        <span className="flex items-center gap-2"><i className="size-2.5 bg-highlight" />Add-on</span>
+        <span className="flex items-center gap-2"><i data-slot="series-key" data-variant="add-on" className="size-2.5 bg-highlight" />Add-on</span>
       )}
     </p>
   );

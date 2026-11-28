@@ -50,7 +50,9 @@ export default async function MemberscanPage() {
           </>
         }
       />
-      <MemberscanDesk recent={recent} />
+      <div data-slot="desk-body">
+        <MemberscanDesk recent={recent} />
+      </div>
     </div>
   );
 }

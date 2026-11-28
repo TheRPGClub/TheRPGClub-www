@@ -6,8 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 // instead of waiting on the API with the old page still up.
 export function RouteSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading" className="space-y-6">
-      <div className="flex items-end gap-5 border-b-2 border-border pb-3">
+    <div data-slot="route-skeleton" aria-busy="true" aria-label="Loading" className="space-y-6">
+      <div data-slot="route-skeleton-head" className="flex items-end gap-5 border-b-2 border-border pb-3">
         <Skeleton variant="text" className="h-12 w-56 sm:h-14 sm:w-72" />
         <Skeleton variant="text" className="mb-1 h-4 w-28" />
       </div>

@@ -29,6 +29,7 @@ export function CalendarNote({
   return (
     <div
       role="status"
+      data-slot="calendar-note"
       className={cn(
         "rounded-[3px] border border-dashed border-border-strong bg-background px-4 py-4 sm:px-6 sm:py-[22px]",
         overlay && "absolute top-1/2 left-1/2 w-[min(640px,86%)] -translate-x-1/2 -translate-y-[38%]",

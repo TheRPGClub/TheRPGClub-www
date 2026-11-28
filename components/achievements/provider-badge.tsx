@@ -34,7 +34,7 @@ export function ProviderBadge({
     >
       {short ? PROVIDER_SHORT_LABEL[provider] : PROVIDER_LABEL[provider]}
       {name && (
-        <span className="ml-1.5 min-w-0 truncate font-sans text-[0.85rem] font-semibold tracking-normal normal-case">
+        <span data-slot="provider-badge-name" className="ml-1.5 min-w-0 truncate font-sans text-[0.85rem] font-semibold tracking-normal normal-case">
           {name}
         </span>
       )}

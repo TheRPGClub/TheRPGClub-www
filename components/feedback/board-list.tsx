@@ -22,20 +22,21 @@ export function BoardList({
   const noun = kindMeta(board.kind).plural;
   if (rows === null) {
     return (
-      <p role="alert" className="mt-5 text-destructive">
+      <p data-slot="staff-alert" role="alert" className="mt-5 text-destructive">
         {`Couldn't load the ${noun}. Refresh to try again.`}
       </p>
     );
   }
   if (rows.length === 0) {
     return (
-      <p className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-6 text-faint-foreground">
+      <p data-slot="feedback-wall-empty" className="mt-5 rounded-md border border-dashed border-border-strong px-4 py-6 text-faint-foreground">
         {status === "open" ? `No open ${noun} yet.` : `No ${noun} have been closed.`}
       </p>
     );
   }
   return (
     <ul
+      data-slot="feedback-wall"
       className={cn(
         "grid items-start gap-x-[22px] gap-y-6 pt-5 sm:grid-cols-2 xl:grid-cols-3",
         // Room above each row for the Roadmap badges hanging over the cards.

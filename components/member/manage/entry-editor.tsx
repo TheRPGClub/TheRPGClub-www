@@ -38,6 +38,7 @@ export function EntryEditor({
   return (
     <section
       aria-labelledby={titleId}
+      data-slot="entry-editor"
       onKeyDown={(event) => event.key === "Escape" && onCancel()}
       className="relative isolate grid items-start gap-4 overflow-hidden rounded-md bg-black p-4 shadow-[0_0_0_2px_var(--color-highlight)] sm:grid-cols-[10rem_minmax(0,32rem)] sm:gap-7 sm:p-7"
     >
@@ -78,7 +79,7 @@ export function EntryEditor({
         onSaved={onSaved}
         onCancel={onCancel}
         onRemove={onRemove}
-        className="sm:-rotate-[0.6deg] sm:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
+        className="sm:shadow-[0_24px_60px_rgb(0_0_0/0.6)]"
       />
     </section>
   );

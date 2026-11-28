@@ -10,9 +10,10 @@ import { TierBand } from "./tier-band";
 // `foot` closes the tree under the trunk (the "Already learned" shelf).
 export function SkillTree({ children, foot }: { children: ReactNode; foot?: ReactNode }) {
   return (
-    <div className="relative">
+    <div data-slot="skill-tree" className="relative">
       <div
         aria-hidden
+        data-slot="skill-tree-trunk"
         className="absolute top-0 bottom-0 left-[15px] w-1 bg-border-strong md:left-1/2 md:-ml-0.5"
       />
       <ol className="relative space-y-6">{children}</ol>
@@ -25,7 +26,7 @@ export function SkillTree({ children, foot }: { children: ReactNode; foot?: Reac
 // straddling it from md. Staff editing spreads a Make Room zone onto it.
 export function Branches({ children, className, ...rest }: React.ComponentProps<"ul">) {
   return (
-    <ul className={cn("grid gap-y-2.5 pl-10 md:grid-cols-2 md:gap-x-[120px] md:pl-0", className)} {...rest}>
+    <ul data-slot="skill-branches" className={cn("grid gap-y-2.5 pl-10 md:grid-cols-2 md:gap-x-[120px] md:pl-0", className)} {...rest}>
       {children}
     </ul>
   );

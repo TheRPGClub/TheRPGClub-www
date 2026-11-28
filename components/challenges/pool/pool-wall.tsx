@@ -51,7 +51,7 @@ export function PoolWall({
   );
   const none = filter === "all" ? "None yet." : "No games here.";
   return (
-    <section aria-label="The Pool">
+    <section data-slot="pool-wall" aria-label="The Pool">
       {all.core.length === 0 && <div className="mb-5">{filterNav}</div>}
       {all.core.length > 0 && (
         <WallSection

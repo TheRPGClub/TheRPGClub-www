@@ -24,6 +24,7 @@ export function DeskHeader({
 }) {
   return (
     <header
+      data-slot="desk-header"
       className={cn(
         "grid items-end gap-x-5 gap-y-2 border-b-2 border-foreground pb-3 md:grid-cols-[minmax(0,1fr)_auto]",
         className,

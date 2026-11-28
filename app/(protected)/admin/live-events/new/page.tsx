@@ -28,7 +28,9 @@ export default async function NewLiveEventPage() {
           </>
         }
       />
-      <LiveEventForm guildId={discordLinkConfig().guildId} />
+      <div data-slot="desk-body">
+        <LiveEventForm guildId={discordLinkConfig().guildId} />
+      </div>
     </div>
   );
 }

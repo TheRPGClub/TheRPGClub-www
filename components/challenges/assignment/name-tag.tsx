@@ -19,13 +19,11 @@ export function NameTag({
   className?: string;
 }) {
   return (
-    <div
-      className={cn("relative w-[250px] rotate-4 drop-shadow-[0_14px_30px_rgb(0_0_0/0.55)]", className)}
-      aria-live="polite"
-    >
-      <div className="relative rounded-b-md bg-foreground px-[22px] pt-10 pb-5 text-background [clip-path:polygon(18%_0,82%_0,100%_10%,100%_100%,0_100%,0_10%)]">
+    <div data-slot="name-tag" className={cn("relative w-[250px]", className)} aria-live="polite">
+      <div data-slot="name-tag-card" className="relative rounded-b-md bg-foreground px-[22px] pt-10 pb-5 text-background">
         <i
           aria-hidden
+          data-slot="name-tag-eyelet"
           className="absolute top-3.5 left-1/2 size-[13px] -translate-x-1/2 rounded-full bg-background shadow-[0_0_0_3px_var(--color-tinsel)]"
         />
         <span className="font-label text-[0.75rem] font-extrabold tracking-[0.1em] text-slip-muted-foreground">To</span>
@@ -57,7 +55,8 @@ export function NameTag({
         <span
           key={picked.gameId}
           aria-hidden
-          className="font-headline absolute -right-2 bottom-[58px] motion-reduce:rotate-[-10deg] rounded-[3px] bg-foreground/85 px-[9px] pt-[5px] pb-[3px] text-[1.375rem] leading-none text-(--challenge-tint) shadow-[inset_0_0_0_3px_currentColor] [--burst-rot:-10deg] motion-safe:animate-[burst-stamp_400ms_cubic-bezier(0.16,1,0.3,1)_both]"
+          data-slot="name-tag-stamp"
+          className="font-headline absolute -right-2 bottom-[58px] rounded-[3px] bg-foreground/85 px-[9px] pt-[5px] pb-[3px] text-[1.375rem] leading-none text-(--challenge-tint)"
         >
           Picked
         </span>

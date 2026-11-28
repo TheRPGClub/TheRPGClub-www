@@ -59,7 +59,7 @@ export function FeaturePreferencesForm({
 
   return (
     <>
-      <ul className="mt-4 grid border-t border-border lg:grid-cols-2 lg:gap-x-10">
+      <ul data-slot="preference-list" className="mt-4 grid border-t border-border lg:grid-cols-2 lg:gap-x-10">
         {prefs.features.map((f) => (
           <PreferenceRow
             key={f.key}

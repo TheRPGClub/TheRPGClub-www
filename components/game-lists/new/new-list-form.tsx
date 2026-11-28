@@ -42,7 +42,7 @@ export function NewListForm({ initialPicks, badge }: { initialPicks: GameListGam
     });
 
   return (
-    <div className="space-y-8 pb-4">
+    <div data-slot="new-list-form" className="space-y-8 pb-4">
       <PageHeader back={{ href: "/lists", label: "Lists" }} title="New list" badge={badge} />
       <ListSettings draft={draft} onChange={(next) => setDraft((d) => ({ ...d, ...next }))} />
       <section aria-labelledby="first-games" className="space-y-4">

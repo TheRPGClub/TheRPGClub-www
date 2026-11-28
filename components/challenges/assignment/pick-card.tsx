@@ -40,6 +40,7 @@ export function PickCard({
       <article
         aria-roledescription="dealt game"
         aria-label={card.title}
+        data-slot="pick-card"
         className="relative overflow-hidden rounded-md bg-(--challenge-tint) @4xl:min-h-[460px]"
         {...swipe}
       >
@@ -54,18 +55,20 @@ export function PickCard({
         )}
         <div
           aria-hidden
+          data-slot="pick-card-scrim"
           className="absolute inset-0 bg-linear-to-b from-background/45 to-background/95 @4xl:bg-linear-to-r @4xl:from-background/96 @4xl:via-background/85 @4xl:via-42% @4xl:to-background/10"
         />
-        <div className="relative flex flex-col items-center gap-6 px-4 pt-6 @4xl:absolute @4xl:inset-y-0 @4xl:right-0 @4xl:block @4xl:w-[490px] @4xl:p-0">
+        <div data-slot="pick-card-media" className="relative flex flex-col items-center gap-6 px-4 pt-6 @4xl:absolute @4xl:inset-y-0 @4xl:right-0 @4xl:block @4xl:w-[490px] @4xl:p-0">
           <GameCover
             key={card.gameId}
             title={card.title}
             coverUrl={card.coverUrl}
-            className="w-[160px] rotate-3 shadow-[0_24px_60px_rgb(0_0_0/0.6)] @4xl:absolute @4xl:top-[46px] @4xl:right-[250px] @4xl:w-[220px]"
+            className="w-[160px] @4xl:absolute @4xl:top-[46px] @4xl:right-[250px] @4xl:w-[220px]"
             fallbackClassName="text-[1.6rem] p-4 @4xl:text-[2rem]"
           />
           <svg
             aria-hidden
+            data-slot="pick-card-string"
             viewBox="0 0 220 120"
             className="pointer-events-none absolute top-9 right-[120px] z-10 hidden h-[120px] w-[220px] @4xl:block"
           >

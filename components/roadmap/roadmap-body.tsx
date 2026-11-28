@@ -30,7 +30,7 @@ export function RoadmapBody({ roadmap }: { roadmap: Roadmap | null }) {
 // The dashed empty-state box (DESIGN.md, Cards / Containers).
 export function RoadmapNote({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-border-strong px-5 py-8 text-center text-dim-foreground">
+    <p data-slot="roadmap-note" className="rounded-md border border-dashed border-border-strong px-5 py-8 text-center text-dim-foreground">
       {children}
     </p>
   );

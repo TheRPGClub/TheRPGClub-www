@@ -26,7 +26,7 @@ export function FavoritesRanking({
   const podium = page === 1 ? entries.slice(0, 3) : [];
   const rest = page === 1 ? entries.slice(3) : entries;
   return (
-    <div className="space-y-12">
+    <div data-slot="favorites-ranking" className="space-y-12">
       {podium.length > 0 && <FavoritesPodium entries={podium} />}
       {rest.length > 0 && (
         <ol className={memberGridClass}>

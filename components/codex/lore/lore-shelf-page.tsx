@@ -51,11 +51,11 @@ export function LoreShelfPage({
     <>
       <PageHeader back={CODEX_BACK} title="Club Lore" badge={badge} count={failed ? null : partCount("lore_entry", total)} actions={add} />
       <div className="mt-7">
-        {failed && <p className={SLIP}>Club Lore couldn&apos;t be read just now. Try again in a moment.</p>}
+        {failed && <p data-slot="community-note" className={SLIP}>Club Lore couldn&apos;t be read just now. Try again in a moment.</p>}
         {!failed && initial === undefined && (
           <div className="grid items-start gap-9 lg:grid-cols-[minmax(0,1fr)_440px]">
             <LoreEmptyShelf />
-            <div className={SLIP}>
+            <div data-slot="community-note" className={SLIP}>
               {page > 1 ? (
                 <>
                   There&apos;s no page {page}.{" "}

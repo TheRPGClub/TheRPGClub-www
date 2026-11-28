@@ -30,7 +30,7 @@ export function AssignmentRules({ form, runCount }: { form: ChallengeFormState; 
     new Date().getFullYear(),
   );
   return (
-    <div>
+    <div data-slot="challenge-desk-body">
       <p className="rounded-md bg-card px-5 py-5 text-[1.5rem] leading-[1.6] font-medium text-dim-foreground sm:px-7 sm:py-6 sm:text-[2.375rem] sm:leading-[1.55]">
         Members sign up until{" "}
         <RuleWord label="Sign-up cutoff" {...word("signup-cutoff")}>

@@ -58,6 +58,7 @@ export function InkPanel({ ink, initial, big = false }: { ink: string; initial: 
   return (
     <div
       aria-hidden
+      data-slot="news-ink-panel"
       style={{ "--news-ink": ink } as CSSProperties}
       className="absolute inset-0 overflow-hidden bg-[linear-gradient(160deg,color-mix(in_oklab,var(--news-ink)_30%,transparent),color-mix(in_oklab,var(--news-ink)_8%,transparent))]"
     >

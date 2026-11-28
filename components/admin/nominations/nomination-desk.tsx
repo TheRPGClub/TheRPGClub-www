@@ -68,7 +68,7 @@ export function NominationDesk({
   };
 
   return (
-    <div className="mt-6 gap-x-11 md:grid md:grid-cols-2">
+    <div data-slot="issue-desk" data-variant="nomination-desk" className="mt-6 gap-x-11 md:grid md:grid-cols-2">
       {tracks.map((track) => (
         <NominationTrackSection key={track.category} track={track} desk={desk} />
       ))}

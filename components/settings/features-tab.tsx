@@ -16,7 +16,7 @@ export function FeaturesTab({
   hiddenPlatforms: HiddenPlatformsData | null;
 }) {
   return (
-    <section aria-label="Features">
+    <section data-slot="settings-section" aria-label="Features">
       <p className="max-w-[60ch] text-dim-foreground">
         Hide parts of the club you don&apos;t use. They leave your sidebar, your dashboard and other pages.
         Direct links still work.

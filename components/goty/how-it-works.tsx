@@ -11,7 +11,7 @@ const LABEL = { gotm: "text-gotm-soft", nr_gotm: "text-nr-soft", game_of_the_yea
 export function HowItWorks({ vote }: { vote: GotyVote }) {
   const how = howItWorks(vote);
   return (
-    <section aria-labelledby="goty-how" className="mt-2.5">
+    <section data-slot="goty-stage" data-variant="how-it-works" aria-labelledby="goty-how" className="mt-2.5">
       <SectionHeading title={<span id="goty-how">How it works</span>} count={vote.name} className="mb-1" />
       <div className="grid gap-x-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <ul>

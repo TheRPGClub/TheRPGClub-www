@@ -22,7 +22,7 @@ export function FranchiseSwitch({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mt-8 mb-5 flex flex-wrap items-baseline gap-x-6 gap-y-3 border-b-2 border-foreground pb-2">
+    <div data-slot="franchise-switch" className="mt-8 mb-5 flex flex-wrap items-baseline gap-x-6 gap-y-3 border-b-2 border-foreground pb-2">
       <nav aria-label="Views" className="flex min-w-0 items-baseline gap-x-3 min-[390px]:gap-x-4 sm:gap-x-6">
         {views.map((view) => {
           const on = view.key === current;

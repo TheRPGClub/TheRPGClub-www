@@ -10,8 +10,8 @@ export function HubDay({ day, now }: { day: FeedDay; now: Date }) {
   const heading = hubDayHeading(day.day, day.cards, now);
   const groups = day.cards.filter((card): card is AchievementFeedGroup => card.kind === "group");
   return (
-    <section aria-label={heading.title}>
-      <h2 className="mb-1 flex items-baseline gap-3">
+    <section aria-label={heading.title} data-slot="hub-day">
+      <h2 data-slot="hub-day-band" className="mb-1 flex items-baseline gap-3">
         {day.day ? (
           <time dateTime={day.day} className="font-headline shrink-0 text-3xl">
             {heading.title}
@@ -19,10 +19,10 @@ export function HubDay({ day, now }: { day: FeedDay; now: Date }) {
         ) : (
           <span className="font-headline shrink-0 text-3xl">{heading.title}</span>
         )}
-        <span className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-faint-foreground">
+        <span data-slot="hub-day-note" className="font-label shrink-0 text-[0.8rem] tracking-[0.08em] text-faint-foreground">
           {heading.note}
         </span>
-        <span aria-hidden className="h-0.5 min-w-6 flex-1 self-center bg-border-strong" />
+        <span aria-hidden data-slot="hub-day-rule" className="h-0.5 min-w-6 flex-1 self-center bg-border-strong" />
       </h2>
       <ul>
         {groups.map((card) => (

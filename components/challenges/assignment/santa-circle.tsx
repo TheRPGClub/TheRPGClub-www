@@ -20,7 +20,7 @@ export function SantaCircle({ assignments, viewerId }: { assignments: EditionAss
   const { seats, arrows, seatSize } = santaCircle(assignments, viewerId);
   const santa = yourSanta(assignments, viewerId);
   return (
-    <figure className="m-0 space-y-3">
+    <figure data-slot="santa-circle" className="m-0 space-y-3">
       <div className="relative mx-auto" style={{ width: RING, height: RING }}>
         <svg width={RING} height={RING} viewBox={`0 0 ${RING} ${RING}`} aria-hidden className="absolute inset-0">
           <defs>

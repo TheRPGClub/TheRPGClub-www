@@ -14,7 +14,7 @@ export function HubRow({ card }: { card: AchievementFeedGroup }) {
   const name = memberName(card.user);
   const time = formatUtcTime(card.latest_unlocked_at);
   return (
-    <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-5 gap-y-3 border-t border-border py-3.5 first:border-t-0 md:grid-cols-[15rem_minmax(0,1fr)_auto]">
+    <li data-slot="hub-row" className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-5 gap-y-3 border-t border-border py-3.5 first:border-t-0 md:grid-cols-[15rem_minmax(0,1fr)_auto]">
       <div className="flex min-w-0 items-center gap-3">
         <ReviewerAvatar userId={card.user.user_id} discordAvatar={card.user.discord_avatar} name={name} size="sm" className="shrink-0" />
         <div className="flex min-w-0 flex-col">

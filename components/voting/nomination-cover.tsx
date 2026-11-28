@@ -4,7 +4,9 @@ import { cn } from "@/lib/utils";
 
 // A nomination's box art, footed in the track's ink (GOTM red, NR-GOTM
 // violet), with its marks: the viewer's own pick wears the nominations
-// yellow, the leader once the vote has ended, and the viewer's vote.
+// highlight, the leader once the vote has ended, and the viewer's vote.
+// Each Theme draws the cover and its foot by slot (data-tone, data-mine,
+// data-voted).
 
 const TRACK = {
   gotm: { bar: "after:bg-gotm", voted: "ring-gotm", chip: "bg-gotm text-gotm-foreground" },
@@ -29,6 +31,10 @@ export function NominationCover({
   const track = TRACK[category];
   return (
     <span
+      data-slot="nomination-cover"
+      data-tone={category === "gotm" ? "gotm" : "nr"}
+      data-mine={isOwn || undefined}
+      data-voted={showVoted || undefined}
       className={cn(
         "relative block aspect-[3/4] overflow-hidden rounded-sm bg-muted after:absolute after:inset-x-0 after:bottom-0 after:h-1",
         track.bar,
@@ -51,12 +57,14 @@ export function NominationCover({
       )}
       <span className="absolute top-2 left-2 flex flex-col items-start gap-1">
         {isOwn && (
-          <span className={chipClass("bg-highlight text-highlight-foreground")}>Your pick</span>
+          <span data-slot="nomination-chip" data-tone="highlight" className={chipClass("bg-highlight text-highlight-foreground")}>Your pick</span>
         )}
-        {isWinner && <span className={chipClass(track.chip)}>Most votes</span>}
+        {isWinner && <span data-slot="nomination-chip" data-tone={category === "gotm" ? "gotm" : "nr"} className={chipClass(track.chip)}>Most votes</span>}
       </span>
       {showVoted && (
         <span
+          data-slot="nomination-chip"
+          data-tone={category === "gotm" ? "gotm" : "nr"}
           className={cn(
             chipClass(track.chip),
             "absolute top-2 right-2 inline-flex items-center gap-1",

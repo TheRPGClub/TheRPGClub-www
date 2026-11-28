@@ -28,7 +28,7 @@ export function NewsShelfSection({
   const seeAll = newsHref(filters, { categories: [key] });
 
   return (
-    <section aria-labelledby={headingId}>
+    <section data-slot="news-shelf" aria-labelledby={headingId}>
       <div className="mb-2.5 flex items-center gap-2.5">
         <InkSquare {...newsInk(key)} className="size-2.5" />
         <h2 id={headingId} className={`${LABEL} min-w-0 truncate text-[1.1rem] font-extrabold text-foreground sm:text-[1.2rem]`}>

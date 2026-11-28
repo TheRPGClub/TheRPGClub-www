@@ -56,7 +56,7 @@ export function DeskDuplicate({
 
   return (
     <form onSubmit={submit} aria-label={`Mark "${feedback.title}" a Duplicate`} className="space-y-3">
-      <label htmlFor="duplicate-search" className="font-label block text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground uppercase">
+      <label htmlFor="duplicate-search" data-slot="desk-field-label" className="font-label block text-[0.8rem] font-bold tracking-[0.06em] text-faint-foreground">
         Its original
       </label>
       <Input

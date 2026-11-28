@@ -40,7 +40,7 @@ export function BotJobs({
   const filter = <BotJobsFilter jobs={jobs} groups={groups} show={show} from={from} onShow={setShow} onFrom={setFrom} />;
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-12">
+    <div data-slot="bot-jobs" className="grid items-start gap-6 lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-12">
       <aside className="hidden lg:block">{filter}</aside>
       <Collapsible className="lg:hidden">
         <CollapsibleTrigger render={<Button type="button" variant="outline" />} className="group/filter cursor-pointer">
@@ -54,8 +54,8 @@ export function BotJobs({
         <CollapsibleContent className="mt-3 max-w-md">{filter}</CollapsibleContent>
       </Collapsible>
 
-      <section aria-labelledby="bot-jobs-heading" className="min-w-0">
-        <div className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
+      <section data-slot="bot-jobs-column" aria-labelledby="bot-jobs-heading" className="min-w-0">
+        <div data-slot="desk-rule-head" className="flex items-baseline gap-3 border-b-2 border-foreground pb-2">
           <h2 id="bot-jobs-heading" className="font-headline text-[1.9rem]">
             {scope === "all" ? "Everyone's jobs" : "Your jobs"}
           </h2>
@@ -86,7 +86,7 @@ export function BotJobs({
                 : "None of your bot jobs yet. A job lands here when a tool you use asks the bot to do something in Discord."}
           </p>
         ) : (
-          <ol>
+          <ol data-slot="bot-jobs-list">
             {shown.map((job) => (
               <li key={job.id}>
                 <WireSlip job={job} showRequester={scope === "all"} wide />

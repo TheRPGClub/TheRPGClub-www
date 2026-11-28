@@ -2,39 +2,10 @@ import Link from "next/link";
 import type { AchievementSetProgress } from "@/lib/api/types";
 import { progressPercent, setTitle } from "@/lib/achievements";
 import type { SetTint } from "@/lib/achievements/tint-color";
-import { slotDots, topSetBadge } from "@/lib/member-achievements";
-import { cn } from "@/lib/utils";
+import { topSetBadge } from "@/lib/member-achievements";
 import { FoilStamp } from "./foil-stamp";
 import { ProviderBadge } from "./provider-badge";
-
-// A set's slots as a strip of dots in the game tint, earned first and the
-// rest dashed.
-export function SlotDots({
-  earned,
-  total,
-  tint,
-  className,
-}: {
-  earned: number;
-  total: number;
-  tint: string;
-  className?: string;
-}) {
-  const { filled, empty } = slotDots(earned, total);
-  return (
-    <span aria-hidden className={cn("flex flex-wrap gap-[3px]", className)}>
-      {Array.from({ length: filled }, (_, i) => (
-        <i key={`f${i}`} className="size-[7px] rounded-full" style={{ background: tint }} />
-      ))}
-      {Array.from({ length: empty }, (_, i) => (
-        <i
-          key={`e${i}`}
-          className="size-[7px] rounded-full border border-dashed border-faint-foreground/70"
-        />
-      ))}
-    </span>
-  );
-}
+import { SlotDots } from "./slot-dots";
 
 // One set in the binder's index: a game-tint tab past the binder's edge, the
 // row number in the tint, the title and Provider chip over the slot dots,
@@ -58,11 +29,15 @@ export function BinderIndexRow({
   const n = String(number).padStart(2, "0");
 
   return (
-    <li className="group relative flex min-h-[5.25rem] flex-col justify-center gap-2.5 border-b border-border pt-3 pb-4 sm:pb-3">
+    <li
+      data-slot="binder-index-row"
+      className="group relative flex min-h-[5.25rem] flex-col justify-center gap-2.5 border-b border-border pt-3 pb-4 sm:pb-3"
+      style={{ "--tint": tint.tint, "--tint-contrast": tint.contrast } as React.CSSProperties}
+    >
       <span
         aria-hidden
-        className="font-headline absolute top-3 left-full ml-[18px] flex h-12 w-5 items-center justify-end rounded-r-[4px] pr-2 text-[1.2rem] leading-none shadow-[4px_4px_10px_rgb(0_0_0/0.45)] sm:ml-[26px] xl:ml-[30px] xl:h-14 xl:w-[3.25rem]"
-        style={{ background: tint.tint, color: tint.contrast }}
+        data-slot="binder-tab"
+        className="font-headline absolute top-3 left-full ml-[18px] flex h-12 w-5 items-center justify-end bg-(--tint) pr-2 text-[1.2rem] leading-none text-(--tint-contrast) sm:ml-[26px] xl:ml-[30px] xl:h-14 xl:w-[3.25rem]"
       >
         <span className="hidden xl:inline">{n}</span>
       </span>
@@ -70,8 +45,8 @@ export function BinderIndexRow({
       <div className="flex min-w-0 items-center gap-2.5">
         <span
           aria-hidden
-          className="font-headline w-7 shrink-0 text-[1.15rem] leading-none"
-          style={{ color: tint.tint }}
+          data-slot="binder-row-number"
+          className="font-headline w-7 shrink-0 text-[1.15rem] leading-none text-(--tint)"
         >
           {n}
         </span>

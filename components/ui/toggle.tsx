@@ -36,6 +36,10 @@ const toggleVariants = cva(
         // A member's own on/off pick drawn as a chip (/settings' News
         // Categories): pressed is on; off is struck through.
         ink: "",
+        // www#250: a Theme picker card, its swatch as the cover; the
+        // pressed (chosen) card is ringed. Arrows move between cards and
+        // only Space, Enter or a click choose one.
+        "theme-card": "",
       },
       size: {
         default:

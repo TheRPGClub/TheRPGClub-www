@@ -31,10 +31,15 @@ export function FrameIcon({
 }) {
   const sealed = view.hidden && !view.viewerUnlocked;
   const src = missing ? (view.iconLockedUrl ?? view.iconUrl) : view.iconUrl;
+  // Theme hooks: `data-size` is the caller's size (a Theme may hold every
+  // frame at one size); the corners and rule edge are the Theme's.
   return (
     <span
+      data-slot="achievement-frame"
+      data-size={size}
+      data-state={sealed ? "hidden" : missing ? "missing" : src ? "art" : "noart"}
       className={cn(
-        "relative block shrink-0 overflow-hidden rounded-xs bg-muted shadow-[inset_0_0_0_1px_var(--color-border)]",
+        "relative block shrink-0 overflow-hidden bg-muted",
         missing && "bg-background",
         SIZE[size],
         className,

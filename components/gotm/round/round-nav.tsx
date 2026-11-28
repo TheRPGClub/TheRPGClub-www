@@ -16,12 +16,14 @@ export function RoundNav({
 }) {
   return (
     <nav
+      data-slot="round-nav"
       aria-label="Rounds"
       className="mt-9 grid grid-cols-2 gap-2 border-t-2 border-foreground pt-4 md:grid-cols-[1fr_auto_1fr] md:gap-4.5"
     >
       <RoundCard round={previous} filters={filters} side="previous" />
       <Link
         href={gotmHistoryHref(filters)}
+        data-slot="round-nav-history"
         className="font-label flex items-center justify-center pt-1.5 text-[0.85rem] font-bold tracking-[0.12em] text-highlight uppercase hover:underline max-md:col-span-2 max-md:row-start-2 md:pt-0"
       >
         GOTM history
@@ -44,7 +46,7 @@ function RoundCard({
   const Arrow = next ? ArrowRight : ArrowLeft;
   const body = (
     <>
-      {round != null && <Arrow aria-hidden className="size-4.5 shrink-0 text-highlight" />}
+      {round != null && <Arrow aria-hidden data-slot="round-nav-arrow" className="size-4.5 shrink-0 text-highlight" />}
       <span className="min-w-0">
         <span className="font-headline block text-[1.0625rem] leading-none uppercase md:text-[1.375rem]">
           {round != null ? `Round ${round}` : next ? "Newest round" : "Oldest round"}
@@ -88,7 +90,7 @@ export function RoundSteps({
     { round: next, label: next != null ? `Round ${next}` : "Newest round", Arrow: ArrowRight, before: false },
   ];
   return (
-    <nav aria-label="Step through rounds" className={cn("flex gap-2", className)}>
+    <nav data-slot="round-steps" aria-label="Step through rounds" className={cn("flex gap-2", className)}>
       {steps.map(({ round, label, Arrow, before }) => {
         const body = (
           <>

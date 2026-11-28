@@ -50,7 +50,7 @@ export default async function FeaturesDeskPage() {
         }
       />
       {entries === null ? (
-        <p role="alert" className="mt-5 text-destructive">
+        <p data-slot="staff-alert" role="alert" className="mt-5 text-destructive">
           {"Couldn't load the Feature Flags. Refresh to try again."}
         </p>
       ) : (
