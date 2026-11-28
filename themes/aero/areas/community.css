@@ -1060,6 +1060,16 @@
                 bottom: -0.75rem;
                 border-radius: 9999px 9999px 0 0;
             }
+            /* Three views fit a phone's strip. */
+            @media (width < 30rem) {
+                padding-inline: 0.75rem;
+                & nav {
+                    column-gap: 0.85rem;
+                }
+                & nav a {
+                    font-size: 1.3rem;
+                }
+            }
         }
         [data-slot="runs-timeline"] {
             margin-top: 2.5rem;
