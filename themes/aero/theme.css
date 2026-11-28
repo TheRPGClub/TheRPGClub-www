@@ -14,6 +14,7 @@
 @import "./areas/achievements.css";
 @import "./areas/community.css";
 @import "./areas/staff.css";
+@import "./areas/templates.css";
 
 @layer themes {
     [data-theme="aero"] {

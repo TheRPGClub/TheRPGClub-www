@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 export function ImportingLine({ prefix = "Importing", name }: { prefix?: string; name: ReactNode }) {
   if (!name) return null;
   return (
-    <p className="text-sm text-faint-foreground">
+    <p data-slot="importing-line" className="text-sm text-faint-foreground">
       {prefix} <span className="font-semibold text-foreground">{name}</span>
     </p>
   );
@@ -24,7 +24,7 @@ export function ImportStep({
   children?: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-md border border-border bg-card p-5 sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:p-6">
+    <section data-slot="import-step" className="grid gap-4 rounded-md border border-border bg-card p-5 sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:p-6">
       {step !== undefined && (
         <span
           aria-hidden

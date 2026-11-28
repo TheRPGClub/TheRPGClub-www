@@ -28,15 +28,15 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("space-y-3", className)}>
+    <header data-slot="page-header" className={cn("space-y-3", className)}>
       {back && <BackLink {...back} className="mb-0" />}
-      <div className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b-2 border-foreground pb-3">
-        <h1 className="font-headline text-5xl text-balance sm:text-6xl">
+      <div data-slot="page-header-rule" className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b-2 border-foreground pb-3">
+        <h1 data-slot="page-header-title" className="font-headline text-5xl text-balance sm:text-6xl">
           {title}
         </h1>
         {badge && <div className="pb-2">{badge}</div>}
         {count != null && (
-          <p className="font-label pb-1 text-sm text-faint-foreground">{count}</p>
+          <p data-slot="page-header-count" className="font-label pb-1 text-sm text-faint-foreground">{count}</p>
         )}
         {actions && (
           <div className="ml-auto flex flex-wrap items-center gap-2 pb-1">
@@ -45,7 +45,7 @@ export function PageHeader({
         )}
       </div>
       {description && (
-        <p className="max-w-[65ch] text-dim-foreground">{description}</p>
+        <p data-slot="page-header-description" className="max-w-[65ch] text-dim-foreground">{description}</p>
       )}
     </header>
   );
@@ -66,14 +66,15 @@ export function SectionHeading({
 }) {
   return (
     <div
+      data-slot="section-heading"
       className={cn(
         "flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-foreground pb-2.5",
         className,
       )}
     >
-      <Heading className="font-headline text-3xl">{title}</Heading>
+      <Heading data-slot="section-heading-title" className="font-headline text-3xl">{title}</Heading>
       {count != null && (
-        <span className="font-label text-sm text-faint-foreground">{count}</span>
+        <span data-slot="section-heading-count" className="font-label text-sm text-faint-foreground">{count}</span>
       )}
       {action && <div className="ml-auto">{action}</div>}
     </div>

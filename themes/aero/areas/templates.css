@@ -1,0 +1,138 @@
+/* aero: the shared page templates (components/templates: page header,
+   section heading, masthead tabs, desk header, detail/member-list/import
+   templates), styled by data-slot on every route. Owned by the www#253
+   sweep.
+
+   Nothing loose on the scene: every heading these templates set sits in a
+   glass window of its own (H's "glass windows: every section that sits on
+   the scene"), so the content frame's veil can lift. The window is white
+   glass at 92% or more: over the darkest part of the scene (even black)
+   the faintest ink (--faint-foreground) still clears 4.5:1. */
+
+@layer themes {
+    [data-theme="aero"] {
+        --tpl-window: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.92));
+        --tpl-strip-shadow: var(--aero-edge), 0 1px 2px rgb(16 64 96 / 0.08), 0 8px 22px -12px rgb(16 64 96 / 0.4);
+
+        /* ---------------------------------------------------------------
+           A page's opening (PageHeader, and its stand-in while the route
+           loads): a round glass window holding the way back, the title on
+           H's bead rule (a leaf-green bead on a pale hairline), the count,
+           the actions and the intro line. */
+        :is([data-slot="page-header"], [data-slot="route-skeleton-head"], [data-slot="member-list-head"], [data-slot="desk-header"]) {
+            border-radius: var(--radius-xl);
+            background: var(--aero-gloss), var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+            padding: 0.9rem 1rem 1rem;
+            @media (min-width: 640px) {
+                padding: 1.1rem 1.5rem 1.25rem;
+            }
+        }
+        :is([data-slot="page-header-rule"], [data-slot="route-skeleton-head"]) {
+            border-bottom: 0;
+            background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+        }
+        /* The skeleton's head keeps its rule inside the window's padding. */
+        [data-slot="route-skeleton-head"] {
+            background:
+                linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left 1rem bottom 1rem / calc(100% - 2rem) 3px no-repeat,
+                var(--aero-gloss),
+                var(--tpl-window);
+            padding-bottom: 1.75rem;
+            @media (min-width: 640px) {
+                background-position: left 1.5rem bottom 1.1rem, 0 0, 0 0;
+                background-size: calc(100% - 3rem) 3px, auto, auto;
+            }
+        }
+        /* A member sub-page's head is one window: the way back, the member
+           and their lists, then the page title; its PageHeader joins it. */
+        [data-slot="member-list-head"] [data-slot="page-header"] {
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            padding: 0;
+        }
+        /* The desk's head: the window replaces its rule. */
+        [data-slot="desk-header"] {
+            border-bottom: 0;
+        }
+        [data-slot="member-list-switcher"] a:not([aria-current]):hover {
+            background: var(--aero-sky-wash);
+        }
+
+        /* ---------------------------------------------------------------
+           A department's heading (SectionHeading) on the scene: a glass
+           plaque, as H's panel board heading. Inside a window (a detail
+           section, a card) the plaque melts into the glass round it. */
+        [data-slot="section-heading"] {
+            align-items: center;
+            border-bottom: 0;
+            border-radius: var(--radius-lg);
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            backdrop-filter: blur(14px) saturate(1.3);
+            padding: 0.55rem 1rem 0.6rem 1.25rem;
+        }
+        [data-slot="section-heading-title"] {
+            letter-spacing: -0.01em;
+        }
+
+        /* ---------------------------------------------------------------
+           A detail page's section (DetailSection): the whole department is
+           one glass window, its heading on the bead rule inside. */
+        [data-slot="detail-section"] {
+            border-radius: var(--radius-xl);
+            background: var(--tpl-window);
+            box-shadow: var(--aero-edge), var(--aero-day);
+            backdrop-filter: blur(16px) saturate(1.3);
+            padding: 1.1rem 1rem 1.25rem;
+            @media (min-width: 640px) {
+                padding: 1.5rem 1.75rem 1.75rem;
+            }
+            & > [data-slot="section-heading"] {
+                align-items: baseline;
+                border-radius: 0;
+                background: linear-gradient(90deg, var(--nr) 0 3.5rem, var(--border) 3.5rem) left bottom / 100% 3px no-repeat;
+                box-shadow: none;
+                backdrop-filter: none;
+                padding: 0 0 0.7rem;
+            }
+        }
+
+        /* ---------------------------------------------------------------
+           Page tabs (MastheadTabs) on the scene: the row is a glass strip,
+           the open tab's gel bar along its foot. The Game Edit band frames
+           its own row and keeps it. */
+        [data-slot="masthead-tabs"] > [data-slot="tabs-list"][data-variant="masthead"] {
+            margin-inline: 0;
+            width: 100%;
+            border-bottom: 0;
+            border-radius: var(--radius-lg);
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            backdrop-filter: blur(14px) saturate(1.3);
+            padding-inline: 1.25rem;
+            gap: 1.5rem;
+            scroll-padding-inline: 1.25rem;
+        }
+
+        /* ---------------------------------------------------------------
+           Imports: "Importing <name>" is a small glass pill; a step is
+           already a white card. */
+        [data-slot="importing-line"] {
+            width: fit-content;
+            max-width: 100%;
+            border-radius: 9999px;
+            background: var(--tpl-window);
+            box-shadow: var(--tpl-strip-shadow);
+            padding: 0.35rem 0.9rem;
+        }
+        [data-slot="import-step"] {
+            border: 0;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--aero-edge), var(--aero-day);
+        }
+    }
+}
