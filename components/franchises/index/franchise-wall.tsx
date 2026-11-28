@@ -56,7 +56,7 @@ export async function FranchiseBoxWall({ query }: { query: BrowseQuery }) {
 
 function Empty({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col items-center rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+    <div data-slot="shelf-empty" className="flex flex-col items-center rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </div>
   );

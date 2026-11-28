@@ -22,7 +22,7 @@ export function FranchiseProgressTab({ franchiseId, progress }: { franchiseId: n
   const avatar = user ? progressMemberAvatar(user) : null;
 
   return (
-    <div>
+    <div data-slot="franchise-progress">
       {preview && <PreviewBadge className="mb-3" />}
       {theirs && (
         <div className="mb-3.5 flex items-center gap-2.5 rounded-[3px] bg-card px-3 py-2 text-[0.92rem] text-dim-foreground shadow-[inset_0_0_0_1px_var(--color-border-strong)]">

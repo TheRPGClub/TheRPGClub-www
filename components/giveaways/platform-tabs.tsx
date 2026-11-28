@@ -16,7 +16,7 @@ export function PlatformTabs({
   counts: Map<string, number>;
 }) {
   return (
-    <nav aria-label="Platforms" className="flex flex-wrap gap-x-4 gap-y-1">
+    <nav data-slot="platform-tabs" aria-label="Platforms" className="flex flex-wrap gap-x-4 gap-y-1">
       <PlatformTab href="/giveaways" active={!picked} label="All" count={total} />
       {PLATFORM_FAMILIES.filter((f) => f.key !== "other" || counts.has("other")).map((f) => (
         <PlatformTab

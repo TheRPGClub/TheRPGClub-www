@@ -26,13 +26,13 @@ export function FranchiseHistory({
   const at = new Date(now);
   if (changes.length === 0) {
     return (
-      <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+      <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
         No one has changed this Franchise yet. Its games are as IGDB has them.
       </p>
     );
   }
   return (
-    <div className="max-w-215">
+    <div data-slot="franchise-history" className="max-w-215">
       {editor.error && (
         <p role="alert" className="mb-3 text-sm text-destructive">
           {editor.error}

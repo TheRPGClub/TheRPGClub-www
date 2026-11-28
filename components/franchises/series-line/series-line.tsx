@@ -15,13 +15,13 @@ export function SeriesLine({ layout }: { layout: FranchiseLayout }) {
   const { mainline, other, strays } = layout;
   if (mainline.length + other.length + strays.length === 0) {
     return (
-      <p className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
+      <p data-slot="shelf-empty" className="rounded-sm border border-dashed border-border-strong px-4 py-6 text-dim-foreground">
         No games are linked to this Franchise yet.
       </p>
     );
   }
   return (
-    <div className="@container/line">
+    <div data-slot="series-line" className="@container/line">
       <Key mainline={mainline.length > 0} spinoffs={other.length > 0} addOns={layout.counts.addOns > 0} />
       {mainline.length > 0 && (
         <ol aria-label="Mainline, in release order" className="grid @xl/line:grid-cols-4 @xl/line:gap-y-12 @xl/line:pr-12 @xl/line:pl-6 @3xl/line:grid-cols-6 @5xl/line:grid-cols-8">

@@ -28,7 +28,7 @@ export function CompletedView({
     /^\d{4}$/.test(year) && !q ? dialMonths(year, view.monthJumps) : [];
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_5rem] lg:gap-7">
-      <div className="min-w-0 space-y-6">
+      <div data-slot="completed-main" className="min-w-0 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <h2 className="font-headline text-3xl sm:text-[2.5rem]">
             {q ? (

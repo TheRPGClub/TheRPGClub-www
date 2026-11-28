@@ -136,7 +136,7 @@ export function GameReviewsList({
 
       {reviews.length === 0 ? (
         !composing && (
-          <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
+          <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
             {canWriteReview
               ? `${emptyMessage} Be the first to share what you think.`
               : emptyMessage}

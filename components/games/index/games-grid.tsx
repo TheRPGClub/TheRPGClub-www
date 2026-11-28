@@ -54,7 +54,7 @@ export async function GamesGrid({
     : undefined;
 
   return (
-    <section aria-labelledby="games-grid" className="space-y-5">
+    <section data-slot="games-grid" aria-labelledby="games-grid" className="space-y-5">
       <SectionHeading
         title={<span id="games-grid">{title}</span>}
         count={count}
@@ -99,7 +99,7 @@ export async function GamesGrid({
 
 function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+    <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

@@ -21,7 +21,7 @@ export function ImportKindList({
   if (kinds.length === 0) {
     // Every list an import writes to is hidden (flag or preference).
     return (
-      <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-dim-foreground">
+      <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-dim-foreground">
         Nothing to import right now. Imports add to your Collection and Completed lists, and
         neither is shown to you.
       </p>
@@ -29,7 +29,7 @@ export function ImportKindList({
   }
 
   return (
-    <ul className="border-t-2 border-foreground">
+    <ul data-slot="import-kind-list" className="border-t-2 border-foreground">
       {kinds.map(({ kind, active }) => {
         const account = requiredAccount(kind);
         const blocked = !active && account !== null && !hasRequiredAccount(kind, socials);

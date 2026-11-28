@@ -13,7 +13,7 @@ export function BacklogGrid({ entries }: { entries: UserBacklog[] }) {
     return <MemberListEmpty>Nothing in the backlog yet.</MemberListEmpty>;
   }
   return (
-    <ul className={memberGridClass}>
+    <ul data-slot="member-grid" className={memberGridClass}>
       {entries.map((entry, i) => {
         const added = shortDate(entry.created_at);
         return (

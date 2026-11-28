@@ -31,7 +31,7 @@ export function ListsIndex({ page, q, badge }: { page: ListsIndexPage; q: string
       <ListSearch key={`${q}|${lead ?? ""}`} q={q} game={game} />
 
       {searching && club.length === 0 && members.length === 0 && (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
+        <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           No Game Lists match {game ? `${game.title}${q ? ` and "${q}"` : ""}` : `"${q}"`}.
         </p>
       )}
@@ -48,7 +48,7 @@ export function ListsIndex({ page, q, badge }: { page: ListsIndexPage; q: string
       )}
 
       {members.length > 0 && (
-        <section aria-labelledby="member-lists" className="space-y-5 pt-2">
+        <section data-slot="lists-section" aria-labelledby="member-lists" className="space-y-5 pt-2">
           <SectionHeading title={<span id="member-lists">Members&apos; lists</span>} count={searching ? `${members.length} found` : undefined} />
           <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {members.map((list) => (
@@ -59,7 +59,7 @@ export function ListsIndex({ page, q, badge }: { page: ListsIndexPage; q: string
       )}
 
       {!searching && club.length === 0 && members.length === 0 && (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
+        <p data-slot="shelf-empty" className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-faint-foreground">
           No Game Lists yet. Make the first: a top 10, a backlog, a theme.
         </p>
       )}

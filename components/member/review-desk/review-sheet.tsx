@@ -28,6 +28,7 @@ export function ReviewSheet({ form, game }: { form: ReviewFormState; game?: Revi
   return (
     <section
       aria-label={form.revision ? "Your revision" : form.draft ? "Your draft" : "Your review"}
+      data-slot="review-sheet"
       className="relative flex flex-col bg-card pb-6 shadow-[0_18px_40px_rgb(0_0_0/0.5)]"
     >
       <CropMarks pencil={form.draft} />

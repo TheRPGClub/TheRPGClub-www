@@ -5,7 +5,7 @@ import { TierRow } from "./tier-row";
 
 export function MemberTiers({ tiers }: { tiers: Tier[] }) {
   return (
-    <div className="border-t border-border">
+    <div data-slot="member-tiers" className="border-t border-border">
       {tiers.map((tier) => (
         <TierRow key={tier.key} tier={tier} />
       ))}

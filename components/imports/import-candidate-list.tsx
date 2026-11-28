@@ -56,7 +56,7 @@ export function ImportCandidateList({
         </legend>
 
         {candidates.length === 0 ? (
-          <p className="mt-2.5 rounded-sm border border-dashed border-border-strong px-4 py-5 text-sm text-faint-foreground">
+          <p data-slot="shelf-empty" className="mt-2.5 rounded-sm border border-dashed border-border-strong px-4 py-5 text-sm text-faint-foreground">
             No GameDB matches for this title. Search a different title, pick a
             game yourself or try IGDB.
           </p>
