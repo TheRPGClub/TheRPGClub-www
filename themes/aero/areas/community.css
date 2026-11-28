@@ -152,6 +152,11 @@
             opacity: 1;
             filter: saturate(0.35);
         }
+        /* The writing desk's drawer cards carry the faintest ink (a
+           placement's "After paragraph 2"): white glass at 92% or more. */
+        [data-slot="drawer-card"] {
+            background: var(--community-window);
+        }
         /* The writing desk's note and save error: glass strips. */
         [data-slot="writing-desk-note"] {
             border-radius: 9999px;
@@ -818,6 +823,14 @@
         [data-slot="history-event"] > div:first-child > span:first-child {
             background: radial-gradient(circle at 35% 30%, #ffffff 0 15%, var(--ink) 55%);
             box-shadow: 0 1px 2px rgb(16 64 96 / 0.3);
+        }
+
+        /* An event's Kind as type: its ink a shade deeper, so it clears
+           4.5:1 on the year's glass; mixed case. */
+        [data-slot="history-event"] .text-\(--ink\) {
+            color: color-mix(in srgb, var(--ink) 82%, #000000);
+            text-transform: none;
+            letter-spacing: 0.02em;
         }
 
         /* The writing desk: a glass manuscript and glass drawer cards. */

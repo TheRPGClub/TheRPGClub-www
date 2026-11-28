@@ -113,6 +113,13 @@
         /* Game hero (desktop): the white scrim holds further across the
            art and the blurb stays inside it, so its type clears 4.5:1
            over any key art. */
+        /* Phone: the art is a band at the top; below it the hero is
+           solid ground, and the white rises well into the art. */
+        @media (max-width: 767.98px) {
+            [data-slot="game-hero-scrim"] {
+                background: linear-gradient(0deg, var(--background) 0%, var(--background) 48%, rgb(238 247 251 / 0.86) 62%, rgb(238 247 251 / 0.3) 100%);
+            }
+        }
         @media (min-width: 768px) {
             [data-slot="game-hero-scrim"] {
                 background:
@@ -549,6 +556,15 @@
             border-radius: calc(var(--radius) * 1.25);
             box-shadow: var(--aero-edge), var(--aero-day);
         }
+        /* Phone: the banner's type runs the full width, so its scrim
+           holds white across it. */
+        @media (max-width: 767.98px) {
+            [data-slot="member-banner-scrim"] {
+                background:
+                    linear-gradient(90deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.92) 60%, rgb(238 247 251 / 0.8) 100%),
+                    linear-gradient(0deg, rgb(238 247 251 / 0.9), rgb(238 247 251 / 0) 45%);
+            }
+        }
         /* The Completed reel and its year dial. */
         [data-slot="reel-spotlight"] {
             border-radius: calc(var(--radius) * 1.25);
@@ -556,7 +572,7 @@
         }
         [data-slot="reel-spotlight-scrim"]:not(.bg-card) {
             background:
-                linear-gradient(90deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.92) 60%, rgb(238 247 251 / 0.82) 100%),
+                linear-gradient(90deg, rgb(238 247 251 / 0.97) 0%, rgb(238 247 251 / 0.93) 60%, rgb(238 247 251 / 0.9) 100%),
                 linear-gradient(0deg, rgb(238 247 251 / 0.92), rgb(238 247 251 / 0) 55%);
         }
         [data-slot="year-dial"] a {

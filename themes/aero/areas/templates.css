@@ -179,7 +179,7 @@
             backdrop-filter: none;
             padding: 0 0 0.7rem;
         }
-        :is([data-slot="compare-form"], [data-slot="pick-note"]) {
+        :is([data-slot="compare-form"], [data-slot="pick-note"], [data-slot="feed-utc-note"]) {
             width: fit-content;
             max-width: 100%;
             border-radius: var(--radius-lg);

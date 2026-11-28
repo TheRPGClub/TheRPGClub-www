@@ -76,7 +76,7 @@ export async function ReviewFeed({
           />
         )}
         {entries.length > 0 && (
-          <p className="font-label -mt-4 text-[0.72rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
+          <p data-slot="feed-utc-note" className="font-label -mt-4 text-[0.72rem] tracking-[0.08em] text-faint-foreground">Days and times in UTC</p>
         )}
       </div>
     </div>

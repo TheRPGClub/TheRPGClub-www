@@ -470,6 +470,11 @@
 
         /* The set page's spread: two glass pages meeting at a soft
            gutter of light, no dark shadow. */
+        /* The open Achievement's number: its rarity tint is a pale gel
+           here, too light as type; deep-lake ink instead. */
+        [data-slot="detail-slot-number"] {
+            color: var(--foreground) !important;
+        }
         [data-slot="set-spread-page"] {
             box-shadow: var(--aero-edge), var(--aero-day);
             @media (min-width: 80rem) {
