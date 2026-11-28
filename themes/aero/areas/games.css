@@ -117,7 +117,7 @@
            solid ground, and the white rises well into the art. */
         @media (max-width: 767.98px) {
             [data-slot="game-hero-scrim"] {
-                background: linear-gradient(0deg, var(--background) 0%, var(--background) 48%, rgb(238 247 251 / 0.86) 62%, rgb(238 247 251 / 0.3) 100%);
+                background: linear-gradient(0deg, var(--background) 0%, var(--background) 48%, rgb(238 247 251 / 0.93) 66%, rgb(238 247 251 / 0.45) 100%);
             }
         }
         @media (min-width: 768px) {
