@@ -71,7 +71,7 @@ export function MonthView({
         <CalendarMini month={filters.month} byDay={view.byDay} today={today} />
         {note(false)}
         {days.length > 0 && (
-          <div className="mt-1.5">
+          <div data-slot="release-agenda" className="mt-1.5">
             <AgendaGroups groups={dateGroups(days)} month={filters.month} today={today} />
           </div>
         )}

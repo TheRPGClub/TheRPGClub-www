@@ -22,7 +22,7 @@ export function NewsNewCount({
 }) {
   if (catchup.state !== "new") {
     return (
-      <div className="flex flex-col justify-end pb-1 lg:pt-2">
+      <div data-slot="news-caught-up" className="flex flex-col justify-end pb-1 lg:pt-2">
         <h2 id="news-count" className="font-headline text-[3.4rem] leading-[0.95] sm:text-[4.5rem]">
           All caught up
         </h2>

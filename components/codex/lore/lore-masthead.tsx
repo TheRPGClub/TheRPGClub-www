@@ -12,7 +12,7 @@ export function LoreMasthead({ entry, actions }: { entry: CodexEntry; actions?: 
   const [first, second] = titleLines(entry.title ?? "");
   const stamp = dateStamp(entry.occurred_on, entry.date_precision);
   return (
-    <header>
+    <header data-slot="lore-masthead">
       <div className="grid items-end gap-x-7 gap-y-4 border-b-2 border-foreground pb-4.5 sm:grid-cols-[minmax(0,1fr)_auto]">
         <h1 className="font-headline text-[3rem] leading-[0.86] text-balance break-words sm:text-[4.5rem] xl:text-[6rem]">
           {first}

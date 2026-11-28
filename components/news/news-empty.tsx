@@ -62,7 +62,7 @@ const INLINE_LINK =
 
 export function NewsNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
+    <p data-slot="community-note" className="rounded-md border border-dashed border-border-strong px-4 py-12 text-center text-dim-foreground">
       {children}
     </p>
   );

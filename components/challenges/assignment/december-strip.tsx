@@ -23,6 +23,7 @@ export function DecemberStrip({ tiles, label, wrap = false }: { tiles: StripTile
   return (
     <ol
       ref={scroller}
+      data-slot="december-strip"
       aria-label={label}
       className={cn(
         "flex gap-[3px] pb-5 md:grid md:auto-cols-fr md:grid-flow-col md:overflow-visible",

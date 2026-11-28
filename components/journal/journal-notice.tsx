@@ -15,6 +15,7 @@ export function JournalNotice({
 }) {
   return (
     <p
+      data-slot="community-note"
       className={cn(
         "rounded-md border border-dashed border-border-strong px-4 text-sm text-faint-foreground",
         centered ? "py-8 text-center" : "py-6",

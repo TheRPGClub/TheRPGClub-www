@@ -8,7 +8,7 @@ const LABEL = "font-label text-[0.8rem] font-bold tracking-[0.08em] uppercase";
 
 export function NewsSeenRule({ more }: { more: { count: number; href: string } | null }) {
   return (
-    <div className="flex items-center gap-3">
+    <div data-slot="news-seen-rule" className="flex items-center gap-3">
       {more && (
         <>
           <Link href={more.href} className={`${LABEL} shrink-0 text-foreground underline decoration-highlight decoration-2 underline-offset-4 ${OUTBOUND_LINK}`}>

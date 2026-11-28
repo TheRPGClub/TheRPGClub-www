@@ -25,6 +25,7 @@ export function HiddenTray({
 }) {
   return (
     <section
+      data-slot="hidden-tray"
       aria-labelledby="hidden-panels"
       className="rounded-sm border-[1.5px] border-dashed border-border-strong p-4 sm:p-5"
     >

@@ -9,7 +9,7 @@ import { MemberLink } from "@/components/member/member-link";
 export function ChallengeRules({ page, tools }: { page: ChallengePage; tools?: React.ReactNode }) {
   const { challenge, facts } = page;
   return (
-    <section aria-label="Rules" className="grid grid-cols-1 gap-x-9 gap-y-6 pt-[26px] lg:grid-cols-[1.3fr_1fr]">
+    <section data-slot="challenge-rules" aria-label="Rules" className="grid grid-cols-1 gap-x-9 gap-y-6 pt-[26px] lg:grid-cols-[1.3fr_1fr]">
       <div className="min-w-0 space-y-4">
         {challenge.description ? (
           <p className="max-w-[75ch] leading-[1.55] whitespace-pre-line text-dim-foreground">{challenge.description}</p>

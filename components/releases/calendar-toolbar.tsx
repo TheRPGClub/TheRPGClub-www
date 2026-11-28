@@ -35,7 +35,7 @@ export function CalendarToolbar({
   const next = shiftMonth(filters.month, 1);
   const current = filters.month === monthOf(today);
   return (
-    <div className="mt-[18px] flex flex-wrap items-center gap-2">
+    <div data-slot="release-toolbar" className="mt-[18px] flex flex-wrap items-center gap-2">
       <ButtonLink
         href={calendarHref(filters, { month: prev }, today)}
         variant="outline"

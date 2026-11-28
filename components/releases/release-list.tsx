@@ -21,7 +21,9 @@ export function ReleaseList({
           title={section.title}
           count={note ? `${upcomingCount(section.count)} · ${note}` : upcomingCount(section.count)}
         />
-        <AgendaGroups groups={section.groups} month={section.month} today={today} />
+        <div data-slot="release-agenda">
+          <AgendaGroups groups={section.groups} month={section.month} today={today} />
+        </div>
       </section>
     );
   });
