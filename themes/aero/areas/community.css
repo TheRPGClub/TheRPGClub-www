@@ -115,10 +115,13 @@
         }
         /* The tape becomes a glass chip in the top corner. */
         [data-slot="flyer-tape"] {
-            top: 12px;
+            top: -11px;
             left: auto;
-            right: 12px;
+            right: 14px;
             translate: none;
+        }
+        :is([data-slot="challenge-flyer"], [data-slot="challenge-billboard"]) b.font-headline {
+            font-weight: 900;
         }
         /* Your Run: a gel pill in the tint. */
         [data-slot="your-run-chip"] {
@@ -362,9 +365,11 @@
             color: var(--dim-foreground);
         }
         [data-slot="past-stamp-postmark"] {
-            right: 50%;
-            translate: 50% 0;
-            bottom: 12px;
+            top: 10px;
+            right: 10px;
+            bottom: auto;
+            padding: 2px 9px;
+            font-size: 0.7rem;
         }
 
         /* ---------------------------------------------------------------
@@ -460,7 +465,9 @@
            on pale glass, the part's ink in the name. */
         [data-slot="codex-door"] {
             --door-ink: var(--codex-lore);
-            border-radius: 9999px 9999px var(--radius) var(--radius) / 9rem 9rem var(--radius) var(--radius);
+            border-radius: var(--radius);
+            border-top-left-radius: 50% 8rem;
+            border-top-right-radius: 50% 8rem;
             background:
                 var(--community-gloss),
                 linear-gradient(180deg, color-mix(in srgb, var(--door-ink) 14%, #ffffff), color-mix(in srgb, var(--door-ink) 28%, #ffffff));
@@ -496,6 +503,11 @@
            blue, the viewer's own carrying a "Yours" chip. */
         [data-slot="lore-shelf"] {
             padding-bottom: 1rem;
+        }
+        /* "Newest on the left" describes the standing shelf; the capsules
+           read newest first from the top. */
+        [data-slot="lore-shelf-note"] {
+            display: none;
         }
         [data-slot="lore-shelf-row"] {
             flex-direction: column;
@@ -700,6 +712,9 @@
             margin-bottom: 1rem;
             & h2 {
                 color: var(--gotm);
+                @media (width >= 64rem) {
+                    font-size: 5.25rem;
+                }
             }
         }
         [data-slot="history-event"] > div:first-child > span:first-child {
